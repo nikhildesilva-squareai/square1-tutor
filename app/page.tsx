@@ -11,6 +11,7 @@ import { GitHubPortfolio } from "@/components/landing/GitHubPortfolio";
 import { StatsSection } from "@/components/landing/StatsSection";
 import { TransformationStories } from "@/components/landing/TransformationStories";
 import { SkillRadarPreview } from "@/components/landing/SkillRadarPreview";
+import { JourneySection } from "@/components/landing/JourneySection";
 import { CookieConsent } from "@/components/ui/cookie-consent";
 
 // ─── Server-side data fetch ───────────────────────────────────────────────────
@@ -51,14 +52,6 @@ const FALLBACK_COURSES: CourseRow[] = [
   { id: "8", slug: "#", title: "Data Science",       description: "Analysis, visualisation, ML basics",    icon: "📊", color: "#19A65F", total_lessons: 42, total_projects: 10, status: "active" },
 ];
 
-// ─── How It Works steps ───────────────────────────────────────────────────────
-const HOW_IT_WORKS = [
-  { n: "01", icon: "📋", title: "Take the Assessment",   desc: "20 questions — MCQ, short answer, and real code. AI grades everything. 30 minutes." },
-  { n: "02", icon: "📊", title: "Get Your Skill Report", desc: "See exactly where you stand — topic by topic. Strengths, gaps, AI recommendations." },
-  { n: "03", icon: "🗓️", title: "Choose Your Plan",      desc: "3, 6, or 9 months. Adapts to your schedule and skill level automatically." },
-  { n: "04", icon: "🚀", title: "Build Real Projects",   desc: "10–12 deployed projects. A portfolio employers can open, read, and run." },
-];
-
 // ─── PAGE ─────────────────────────────────────────────────────────────────────
 export default async function Home() {
   const dbCourses = await getCourses();
@@ -70,45 +63,11 @@ export default async function Home() {
       {/* ── 1. Hero ──────────────────────────────────────────────────────────── */}
       <HeroSection />
 
-      {/* ── 1b. Terminal Demo ────────────────────────────────────────────────── */}
-      <TerminalDemo />
+      {/* ── 2. Journey (sticky scroll) ───────────────────────────────────────── */}
+      <JourneySection />
 
-      {/* ── 2. How It Works ──────────────────────────────────────────────────── */}
-      <section className="py-14 sm:py-18 lg:py-24 bg-surface-soft">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12 sm:mb-16">
-            <span className="text-sm font-semibold text-brand uppercase tracking-widest">
-              The process
-            </span>
-            <h2 className="mt-3 text-2xl sm:text-3xl lg:text-4xl font-bold text-ink">
-              From zero to hired in one platform
-            </h2>
-            <p className="mt-3 text-ink-muted">Four steps. One platform. Real outcomes.</p>
-          </div>
-          <div className="relative">
-            {/* Connecting line (desktop) */}
-            <div className="hidden lg:block absolute top-10 left-[12.5%] right-[12.5%] h-0.5 bg-gradient-to-r from-brand via-indigo-400 to-brand opacity-30" />
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-              {HOW_IT_WORKS.map((step, i) => (
-                <div
-                  key={step.n}
-                  className="relative text-center group"
-                  style={{ animationDelay: `${i * 0.1}s` }}
-                >
-                  <div className="w-20 h-20 rounded-2xl bg-surface border-2 border-border group-hover:border-brand transition-colors mx-auto mb-4 flex items-center justify-center text-3xl shadow-card group-hover:shadow-card-hover">
-                    {step.icon}
-                  </div>
-                  <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-brand text-white text-xs font-bold px-2 py-0.5 rounded-full">
-                    {step.n}
-                  </span>
-                  <h3 className="font-bold text-ink mb-2">{step.title}</h3>
-                  <p className="text-sm text-ink-secondary leading-relaxed">{step.desc}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
+      {/* ── 2b. Terminal Demo ────────────────────────────────────────────────── */}
+      <TerminalDemo />
 
       {/* ── 3. Comparison ────────────────────────────────────────────────────── */}
       <ComparisonSection />
