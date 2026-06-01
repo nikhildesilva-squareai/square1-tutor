@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Logo } from "@/components/ui/logo";
 import { createClient } from "@/lib/supabase/server";
 import { HeroSection } from "@/components/landing/HeroSection";
+import { TerminalDemo } from "@/components/landing/TerminalDemo";
 import { ComparisonSection } from "@/components/landing/ComparisonSection";
 import { InteractiveDemo } from "@/components/landing/InteractiveDemo";
 import { TimelineSection } from "@/components/landing/TimelineSection";
@@ -68,6 +69,9 @@ export default async function Home() {
 
       {/* ── 1. Hero ──────────────────────────────────────────────────────────── */}
       <HeroSection />
+
+      {/* ── 1b. Terminal Demo ────────────────────────────────────────────────── */}
+      <TerminalDemo />
 
       {/* ── 2. How It Works ──────────────────────────────────────────────────── */}
       <section className="py-14 sm:py-18 lg:py-24 bg-surface-soft">

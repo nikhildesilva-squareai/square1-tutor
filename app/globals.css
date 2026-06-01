@@ -79,6 +79,10 @@ body {
   button, a {
     min-height: 44px;
   }
+  /* Nav inline links are small by design — override the tap-target minimum */
+  nav a {
+    min-height: unset;
+  }
 }
 
 /* ─── Scrollbar ─────────────────────────────────────────────────────────────── */
