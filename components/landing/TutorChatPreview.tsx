@@ -68,10 +68,10 @@ export function TutorChatPreview() {
   }, []);
 
   return (
-    <section className="py-24 px-6 bg-surface-soft" ref={ref}>
+    <section className="py-16 sm:py-24 px-4 sm:px-6 lg:px-8 bg-surface-soft" ref={ref}>
       <div className="max-w-3xl mx-auto">
-        <div className="text-center mb-10">
-          <h2 className="text-3xl sm:text-4xl font-bold text-ink">
+        <div className="text-center mb-8 sm:mb-10">
+          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-ink">
             Your AI tutor knows your code
           </h2>
           <p className="mt-3 text-ink-muted text-lg">
@@ -117,7 +117,7 @@ export function TutorChatPreview() {
                   </div>
                 )}
                 <div
-                  className={`max-w-[85%] rounded-2xl px-4 py-3 text-sm leading-relaxed ${
+                  className={`max-w-[85%] sm:max-w-[75%] rounded-2xl px-4 py-3 text-sm leading-relaxed ${
                     msg.role === "student"
                       ? "bg-brand text-white rounded-br-sm"
                       : "bg-white/8 text-slate-200 rounded-bl-sm border border-white/10"

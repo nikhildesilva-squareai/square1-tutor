@@ -92,10 +92,10 @@ export function SkillRadarPreview() {
   const labelRadius = R + 26;
 
   return (
-    <section className="py-24 px-6 bg-surface-soft" ref={ref}>
+    <section className="py-14 sm:py-18 lg:py-24 px-4 sm:px-6 lg:px-8 bg-surface-soft" ref={ref}>
       <div className="max-w-5xl mx-auto">
-        <div className="text-center mb-10">
-          <h2 className="text-3xl sm:text-4xl font-bold text-ink">
+        <div className="text-center mb-8 sm:mb-10">
+          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-ink">
             See exactly where you stand
           </h2>
           <p className="mt-3 text-ink-muted text-lg">
@@ -103,14 +103,14 @@ export function SkillRadarPreview() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
+        <div className="flex flex-col lg:flex-row gap-10 items-center">
           {/* Radar SVG */}
-          <div className="flex justify-center">
+          <div className="w-full max-w-xs sm:max-w-sm mx-auto lg:max-w-none lg:flex-1 flex justify-center">
             <svg
               viewBox="0 0 400 400"
-              width="380"
-              height="380"
-              className="w-full max-w-[380px]"
+              width="100%"
+              height="auto"
+              className="w-full max-w-xs sm:max-w-sm"
             >
               {/* Grid rings */}
               {rings.map((ring) => {
@@ -191,7 +191,7 @@ export function SkillRadarPreview() {
           </div>
 
           {/* Skill bars */}
-          <div className="space-y-4">
+          <div className="w-full lg:flex-1 space-y-4">
             {SKILLS.map((s) => {
               const displayVal = Math.round(s.value * progress);
               return (

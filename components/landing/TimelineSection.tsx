@@ -53,13 +53,13 @@ const MONTHS = [
 
 export function TimelineSection() {
   return (
-    <section className="py-24 px-6" style={{ background: "#050B14" }}>
+    <section className="py-14 sm:py-18 lg:py-24 px-4 sm:px-6 lg:px-8" style={{ background: "#050B14" }}>
       <div className="max-w-6xl mx-auto">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl sm:text-4xl font-bold text-white">
+        <div className="text-center mb-10 sm:mb-12">
+          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white">
             Your 6-month transformation
           </h2>
-          <p className="mt-3 text-slate-400 text-lg">
+          <p className="mt-3 text-slate-400 text-base sm:text-lg">
             Every week, a new lesson. Every month, a new project shipped.
           </p>
         </div>
@@ -72,7 +72,7 @@ export function TimelineSection() {
           {MONTHS.map((month, i) => (
             <div
               key={month.n}
-              className="snap-start shrink-0 w-[280px] rounded-2xl border border-white/10 p-6 flex flex-col gap-4"
+              className="snap-start shrink-0 w-[260px] sm:w-[280px] rounded-2xl border border-white/10 p-6 flex flex-col gap-4"
               style={{
                 background: "rgba(255,255,255,0.04)",
                 backdropFilter: "blur(12px)",

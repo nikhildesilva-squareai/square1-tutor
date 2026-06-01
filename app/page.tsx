@@ -70,13 +70,13 @@ export default async function Home() {
       <HeroSection />
 
       {/* ── 2. How It Works ──────────────────────────────────────────────────── */}
-      <section className="py-24 bg-surface-soft">
-        <div className="max-w-6xl mx-auto px-6">
-          <div className="text-center mb-16">
+      <section className="py-14 sm:py-18 lg:py-24 bg-surface-soft">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12 sm:mb-16">
             <span className="text-sm font-semibold text-brand uppercase tracking-widest">
               The process
             </span>
-            <h2 className="mt-3 text-3xl sm:text-4xl font-bold text-ink">
+            <h2 className="mt-3 text-2xl sm:text-3xl lg:text-4xl font-bold text-ink">
               From zero to hired in one platform
             </h2>
             <p className="mt-3 text-ink-muted">Four steps. One platform. Real outcomes.</p>
@@ -84,7 +84,7 @@ export default async function Home() {
           <div className="relative">
             {/* Connecting line (desktop) */}
             <div className="hidden lg:block absolute top-10 left-[12.5%] right-[12.5%] h-0.5 bg-gradient-to-r from-brand via-indigo-400 to-brand opacity-30" />
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
               {HOW_IT_WORKS.map((step, i) => (
                 <div
                   key={step.n}
@@ -180,10 +180,10 @@ export default async function Home() {
       <TransformationStories />
 
       {/* ── Final CTA ────────────────────────────────────────────────────────── */}
-      <section className="py-24 text-center" style={{ background: "#00183A" }}>
-        <div className="max-w-2xl mx-auto px-6">
-          <h2 className="text-4xl font-bold text-white mb-4">Your portfolio starts today.</h2>
-          <p className="text-slate-400 mb-10 text-lg">
+      <section className="py-14 sm:py-24 text-center" style={{ background: "#00183A" }}>
+        <div className="max-w-2xl mx-auto px-4 sm:px-6">
+          <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4">Your portfolio starts today.</h2>
+          <p className="text-slate-400 mb-8 sm:mb-10 text-base sm:text-lg">
             Join learners building real skills, real projects, real careers.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">

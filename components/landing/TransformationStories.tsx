@@ -50,10 +50,10 @@ export function TransformationStories() {
   }, []);
 
   return (
-    <section className="py-24 px-6 bg-white" ref={ref}>
+    <section className="py-14 sm:py-18 lg:py-24 px-4 sm:px-6 lg:px-8 bg-white" ref={ref}>
       <div className="max-w-6xl mx-auto">
-        <div className="text-center mb-14">
-          <h2 className="text-3xl sm:text-4xl font-bold text-ink">
+        <div className="text-center mb-10 sm:mb-14">
+          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-ink">
             Real learners. Real transformations.
           </h2>
           <p className="mt-3 text-ink-muted text-lg">
@@ -61,11 +61,11 @@ export function TransformationStories() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {STORIES.map((s, i) => (
             <div
               key={s.name}
-              className="rounded-2xl border border-border bg-surface-soft p-7 flex flex-col gap-4 shadow-card hover:shadow-card-hover transition-shadow"
+              className="rounded-2xl border border-border bg-surface-soft p-5 sm:p-6 flex flex-col gap-4 shadow-card hover:shadow-card-hover transition-shadow"
               style={
                 visible
                   ? { animation: `fadeInUp 0.5s ease-out ${i * 0.12}s both` }

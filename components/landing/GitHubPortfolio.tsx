@@ -34,10 +34,10 @@ const OPACITY = ["opacity-5", "opacity-20", "opacity-50", "opacity-75", "opacity
 
 export function GitHubPortfolio() {
   return (
-    <section className="py-24 px-6 bg-white">
+    <section className="py-14 sm:py-18 lg:py-24 px-4 sm:px-6 lg:px-8 bg-white">
       <div className="max-w-4xl mx-auto">
-        <div className="text-center mb-10">
-          <h2 className="text-3xl sm:text-4xl font-bold text-ink">
+        <div className="text-center mb-8 sm:mb-10">
+          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-ink">
             Graduate with proof, not just a certificate
           </h2>
           <p className="mt-3 text-ink-muted text-lg">
@@ -46,7 +46,7 @@ export function GitHubPortfolio() {
         </div>
 
         <div
-          className="rounded-2xl overflow-hidden border border-white/10 shadow-2xl"
+          className="rounded-2xl overflow-hidden border border-white/10 shadow-2xl w-full max-w-2xl mx-auto sm:max-w-full"
           style={{ background: "#0D1117" }}
         >
           {/* GitHub-style header */}
@@ -65,8 +65,8 @@ export function GitHubPortfolio() {
           </div>
 
           <div className="p-6 space-y-6">
-            {/* Contribution graph */}
-            <div>
+            {/* Contribution graph — hidden on mobile, shown sm+ */}
+            <div className="hidden sm:block">
               <p className="text-xs text-slate-400 mb-3">Contribution activity — last 12 months</p>
               <div className="flex gap-0.5 overflow-x-auto">
                 {contributions.map((week, wi) => (
@@ -84,10 +84,10 @@ export function GitHubPortfolio() {
 
             {/* Repo list */}
             <div className="space-y-3">
-              {REPOS.map((repo) => (
+              {REPOS.map((repo, idx) => (
                 <div
                   key={repo.name}
-                  className="flex items-center justify-between py-3 border-b border-white/5 last:border-0"
+                  className={`flex items-center justify-between py-3 border-b border-white/5 last:border-0 ${idx >= 4 ? "hidden sm:flex" : ""}`}
                 >
                   <div className="flex items-center gap-3 min-w-0">
                     <span className="text-base shrink-0">📁</span>

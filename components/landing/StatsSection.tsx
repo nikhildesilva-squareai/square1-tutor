@@ -54,7 +54,7 @@ function StatItem({ stat, active }: { stat: Stat; active: boolean }) {
   return (
     <div className="text-center">
       <p
-        className="text-5xl sm:text-6xl font-bold tabular-nums"
+        className="text-4xl sm:text-5xl lg:text-6xl font-bold tabular-nums"
         style={{ color: "#3388FF" }}
       >
         {displayed}

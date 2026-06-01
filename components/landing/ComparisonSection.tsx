@@ -35,17 +35,17 @@ export function ComparisonSection() {
   }, []);
 
   return (
-    <section className="py-24 bg-white px-6" ref={ref}>
+    <section className="py-14 sm:py-18 lg:py-24 bg-white px-4 sm:px-6 lg:px-8" ref={ref}>
       <div className="max-w-5xl mx-auto">
-        <div className="text-center mb-14">
-          <h2 className="text-3xl sm:text-4xl font-bold text-ink">
+        <div className="text-center mb-10 sm:mb-14">
+          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-ink">
             Why Square 1 beats everything else
           </h2>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Old Way */}
-          <div className="rounded-2xl bg-slate-50 border border-slate-200 p-8">
+          <div className="rounded-2xl bg-slate-50 border border-slate-200 p-5 sm:p-8">
             <div className="flex items-center gap-3 mb-6">
               <span className="text-2xl">😩</span>
               <h3 className="text-lg font-bold text-slate-600">The Old Way</h3>
@@ -54,7 +54,7 @@ export function ComparisonSection() {
               {OLD_WAY.map((item, i) => (
                 <li
                   key={item}
-                  className="flex items-center gap-3 text-sm text-slate-500"
+                  className="flex items-center gap-3 text-sm sm:text-base text-slate-500"
                   style={
                     visible
                       ? { animation: `fadeInUp 0.4s ease-out ${i * 0.08}s both` }
@@ -72,7 +72,7 @@ export function ComparisonSection() {
 
           {/* Square 1 */}
           <div
-            className="rounded-2xl border-2 border-brand p-8 shadow-[0_4px_40px_rgb(0_86_206_/_0.15)]"
+            className="rounded-2xl border-2 border-brand p-5 sm:p-8 shadow-[0_4px_40px_rgb(0_86_206_/_0.15)]"
             style={{ background: "linear-gradient(135deg, #EFF6FF 0%, #F0F4FF 100%)" }}
           >
             <div className="flex items-center gap-3 mb-6">
@@ -83,7 +83,7 @@ export function ComparisonSection() {
               {NEW_WAY.map((item, i) => (
                 <li
                   key={item}
-                  className="flex items-center gap-3 text-sm text-ink font-medium"
+                  className="flex items-center gap-3 text-sm sm:text-base text-ink font-medium"
                   style={
                     visible
                       ? { animation: `fadeInUp 0.4s ease-out ${i * 0.08 + 0.1}s both` }

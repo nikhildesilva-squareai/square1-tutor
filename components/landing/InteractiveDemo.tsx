@@ -72,10 +72,10 @@ export function InteractiveDemo() {
   const fb = selected !== null ? FEEDBACK[selected] : null;
 
   return (
-    <section className="py-24 px-6 bg-surface-soft">
+    <section className="py-14 sm:py-18 lg:py-24 px-4 sm:px-6 lg:px-8 bg-surface-soft">
       <div className="max-w-3xl mx-auto">
-        <div className="text-center mb-10">
-          <h2 className="text-3xl sm:text-4xl font-bold text-ink">
+        <div className="text-center mb-8 sm:mb-10">
+          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-ink">
             Try it right now — no sign-up needed
           </h2>
           <p className="mt-3 text-ink-muted text-lg">
@@ -104,7 +104,7 @@ export function InteractiveDemo() {
             {/* Options */}
             <div className="space-y-3 mb-6">
               {QUESTION.options.map((opt, idx) => {
-                let base = "flex items-center gap-3 w-full rounded-xl border-2 px-4 py-3 text-sm text-left transition-all cursor-pointer ";
+                let base = "flex items-center gap-3 w-full max-w-xl mx-auto rounded-xl border-2 px-4 py-3 text-sm text-left transition-all cursor-pointer ";
                 if (!submitted) {
                   base += selected === idx
                     ? "border-brand bg-surface-tint text-brand font-semibold"
@@ -156,7 +156,7 @@ export function InteractiveDemo() {
               <button
                 onClick={handleSubmit}
                 disabled={selected === null || isLoading}
-                className="w-full py-3 rounded-xl bg-brand text-white font-bold text-sm hover:bg-brand-dark transition-colors disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                className="w-full max-w-xl mx-auto block py-3 rounded-xl bg-brand text-white font-bold text-sm hover:bg-brand-dark transition-colors disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2"
               >
                 {isLoading ? (
                   <>

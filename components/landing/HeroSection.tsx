@@ -307,7 +307,7 @@ export function HeroSection() {
   const isDone      = phase === "done";
 
   return (
-    <section className="relative overflow-hidden min-h-screen flex flex-col" style={{ background: "#050B14" }}>
+    <section className="hero-section relative overflow-hidden min-h-screen flex flex-col" style={{ background: "#050B14" }}>
 
       {/* ── Gradient blobs ──────────────────────────────────────────── */}
       <div className="animate-blob-1 pointer-events-none absolute -top-40 -left-40 rounded-full"
@@ -339,15 +339,18 @@ export function HeroSection() {
       {/* ── Top Nav ─────────────────────────────────────────────────── */}
       <nav className="relative z-30 w-full border-b border-white/[0.06]"
         style={{ backdropFilter: "blur(16px)", background: "rgba(5,11,20,0.65)" }}>
-        <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between">
           <Logo variant="light" size="md" />
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5 sm:gap-2">
             <Link href="/login"
-              className="text-sm font-medium text-slate-300 hover:text-white transition-all px-4 py-2 rounded-lg border border-white/[0.12] hover:border-white/30 hover:bg-white/[0.06]">
-              Sign In
+              className="text-sm font-medium text-slate-300 hover:text-white transition-all px-2 sm:px-4 py-2 rounded-lg border border-white/[0.12] hover:border-white/30 hover:bg-white/[0.06] flex items-center gap-1">
+              <svg className="w-4 h-4 sm:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
+              </svg>
+              <span className="hidden sm:inline">Sign In</span>
             </Link>
             <Link href="/signup"
-              className="text-sm font-bold px-5 py-2 rounded-lg bg-white text-brand hover:bg-slate-100 transition-all shadow-lg hover:shadow-[0_0_20px_rgba(99,102,241,0.35)] hover:-translate-y-px">
+              className="text-sm font-bold px-4 sm:px-5 py-2 rounded-lg bg-white text-brand hover:bg-slate-100 transition-all shadow-lg hover:shadow-[0_0_20px_rgba(99,102,241,0.35)] hover:-translate-y-px">
               Get Started →
             </Link>
           </div>
@@ -364,7 +367,7 @@ export function HeroSection() {
         </div>
 
         {/* Headline */}
-        <h1 className="text-center text-5xl sm:text-6xl lg:text-7xl font-bold text-white leading-[1.07] tracking-tight mb-5">
+        <h1 className="text-center text-4xl sm:text-5xl lg:text-7xl font-bold text-white leading-[1.07] tracking-tight mb-5">
           The AI tutor that
           <br />
           <span style={{
@@ -395,7 +398,7 @@ export function HeroSection() {
 
         {/* ── Code Terminal ─────────────────────────────────────────── */}
         <div
-          className={`w-full max-w-2xl rounded-2xl overflow-hidden border transition-all duration-700 ${
+          className={`w-full max-w-full sm:max-w-2xl rounded-2xl overflow-hidden border transition-all duration-700 ${
             isGrading   ? "animate-glow-pulse border-brand/50" :
             isFeedback  ? "border-brand/25 shadow-[0_0_40px_rgba(0,86,206,0.15)]" :
             isDone      ? "border-emerald-500/20" :
@@ -422,7 +425,7 @@ export function HeroSection() {
           </div>
 
           {/* Code body */}
-          <div className="relative p-5 font-mono text-sm" style={{ minHeight: 230 }}>
+          <div className="relative p-3 sm:p-5 font-mono text-xs sm:text-sm min-h-0 sm:min-h-[230px]">
 
             {/* Scan beam */}
             {isScanning && (
@@ -442,7 +445,7 @@ export function HeroSection() {
 
                 return (
                   <div key={lineIdx} className="flex items-start">
-                    <span className="select-none text-slate-600 text-right mr-5 shrink-0 tabular-nums"
+                    <span className="hidden sm:inline select-none text-slate-600 text-right mr-5 shrink-0 tabular-nums"
                       style={{ width: 18, fontSize: 11 }}>
                       {lineIdx + 1}
                     </span>

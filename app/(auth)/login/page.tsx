@@ -169,7 +169,7 @@ export default function LoginPage() {
     <div className="min-h-screen flex">
       {brandPanel}
 
-      <div className="flex-1 flex items-center justify-center p-8 bg-surface-soft">
+      <div className="flex-1 flex items-center justify-center p-6 sm:p-8 bg-surface-soft">
         <div className="w-full max-w-sm">
           {/* Mobile logo */}
           <div className="lg:hidden mb-8">
@@ -242,7 +242,7 @@ export default function LoginPage() {
                 </p>
               </div>
 
-              <div className="flex gap-2 mb-5" onPaste={handlePaste}>
+              <div className="flex gap-1.5 sm:gap-2 mb-5" onPaste={handlePaste}>
                 {digits.map((digit, i) => (
                   <input
                     key={i}
@@ -257,7 +257,7 @@ export default function LoginPage() {
                     onKeyDown={(e) => handleKeyDown(i, e)}
                     onFocus={(e) => e.target.select()}
                     className={[
-                      "w-full aspect-[3/4] max-h-[56px] rounded-[var(--radius-md)] border-2 text-center text-xl font-bold",
+                      "w-full aspect-[3/4] max-h-[56px] rounded-[var(--radius-md)] border-2 text-center text-lg sm:text-xl font-bold",
                       "bg-surface text-ink transition-all",
                       "focus:outline-none focus:border-brand focus:ring-2 focus:ring-brand/20",
                       "disabled:opacity-50 disabled:cursor-not-allowed",
