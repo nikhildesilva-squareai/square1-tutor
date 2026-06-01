@@ -9,10 +9,12 @@ import Link from "next/link";
 
 const CODE_LENGTH = 6;
 
-export default function LoginPage() {
+export default function SignupPage() {
   const router = useRouter();
 
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+  const [gdprConsent, setGdprConsent] = useState(false);
   const [step, setStep] = useState<"email" | "otp">("email");
   const [digits, setDigits] = useState<string[]>(Array(CODE_LENGTH).fill(""));
   const [loading, setLoading] = useState(false);
@@ -29,6 +31,10 @@ export default function LoginPage() {
 
   async function handleSendCode(e: React.FormEvent) {
     e.preventDefault();
+    if (!gdprConsent) {
+      setError("Please accept the Privacy Policy and Terms of Service to continue.");
+      return;
+    }
     setLoading(true);
     setError(null);
 
@@ -38,6 +44,10 @@ export default function LoginPage() {
     if (error) {
       setError(error.message);
     } else {
+      // Store name temporarily for post-verify onboarding
+      if (name.trim()) {
+        localStorage.setItem("sq1_pending_name", name.trim());
+      }
       setStep("otp");
       setDigits(Array(CODE_LENGTH).fill(""));
       setResendCountdown(30);
@@ -62,9 +72,24 @@ export default function LoginPage() {
         setError("Invalid or expired code. Please try again.");
         setDigits(Array(CODE_LENGTH).fill(""));
         setTimeout(() => inputRefs.current[0]?.focus(), 50);
-      } else {
-        router.push("/dashboard");
+        setLoading(false);
+        return;
       }
+
+      // Post-verify: onboard the student with their name
+      const pendingName = localStorage.getItem("sq1_pending_name");
+      try {
+        await fetch("/api/onboard", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name: pendingName ?? "" }),
+        });
+        localStorage.removeItem("sq1_pending_name");
+      } catch {
+        // Non-fatal — student record may already exist or will be created lazily
+      }
+
+      router.push("/dashboard");
       setLoading(false);
     },
     [email, router]
@@ -136,7 +161,9 @@ export default function LoginPage() {
       <div>
         <Logo variant="light" size="md" />
         <h1 className="mt-8 text-4xl font-bold leading-tight">
-          Welcome back.
+          Your learning
+          <br />journey starts
+          <br />here.
         </h1>
         <p className="mt-4 text-base text-[#94A3B8]">
           AI-powered personalised learning. Get assessed, get a plan, build 10+ real projects.
@@ -176,17 +203,37 @@ export default function LoginPage() {
             <Logo size="sm" />
           </div>
 
-          {/* Step 1: Email */}
+          {/* Step 1: Email + Name */}
           {step === "email" && (
             <>
               <div className="mb-8">
-                <h2 className="text-2xl font-bold text-ink">Sign in</h2>
+                <h2 className="text-2xl font-bold text-ink">Create your account</h2>
                 <p className="text-sm text-ink-muted mt-1">
-                  Enter your email and we&apos;ll send a 6-digit code — no password needed.
+                  Free to start. No credit card required.
                 </p>
               </div>
 
               <form onSubmit={handleSendCode} className="space-y-4">
+                {/* Name field */}
+                <div>
+                  <label
+                    htmlFor="name"
+                    className="block text-xs font-semibold text-ink-muted mb-1.5 uppercase tracking-wide"
+                  >
+                    Your name <span className="text-ink-muted font-normal normal-case">(optional)</span>
+                  </label>
+                  <input
+                    id="name"
+                    type="text"
+                    autoComplete="name"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    placeholder="Your name"
+                    className="w-full h-11 px-3.5 rounded-[var(--radius-md)] border border-border bg-surface text-ink placeholder:text-ink-muted text-sm focus:outline-none focus:ring-2 focus:ring-brand focus:border-brand transition-colors"
+                  />
+                </div>
+
+                {/* Email field */}
                 <div>
                   <label
                     htmlFor="email"
@@ -206,6 +253,28 @@ export default function LoginPage() {
                   />
                 </div>
 
+                {/* GDPR consent checkbox */}
+                <div className="flex items-start gap-3 pt-1">
+                  <input
+                    id="gdpr"
+                    type="checkbox"
+                    required
+                    checked={gdprConsent}
+                    onChange={(e) => setGdprConsent(e.target.checked)}
+                    className="mt-0.5 h-4 w-4 rounded border-border text-brand focus:ring-brand shrink-0"
+                  />
+                  <label htmlFor="gdpr" className="text-xs text-ink-secondary leading-relaxed">
+                    I agree to the{" "}
+                    <Link href="/privacy" className="text-brand underline" target="_blank">
+                      Privacy Policy
+                    </Link>{" "}
+                    and{" "}
+                    <Link href="/terms" className="text-brand underline" target="_blank">
+                      Terms of Service
+                    </Link>
+                  </label>
+                </div>
+
                 {error && (
                   <p className="text-sm text-error bg-error-bg px-3 py-2 rounded-[var(--radius-md)]">
                     {error}
@@ -213,7 +282,7 @@ export default function LoginPage() {
                 )}
 
                 <Button type="submit" className="w-full" size="lg" loading={loading}>
-                  Send code
+                  Create account →
                 </Button>
               </form>
 
@@ -222,9 +291,9 @@ export default function LoginPage() {
               </p>
 
               <p className="mt-4 text-center text-sm text-ink-secondary">
-                Don&apos;t have an account?{" "}
-                <Link href="/signup" className="text-brand font-semibold hover:underline">
-                  Sign up free →
+                Already have an account?{" "}
+                <Link href="/login" className="text-brand font-semibold hover:underline">
+                  Sign in →
                 </Link>
               </p>
             </>
@@ -234,7 +303,7 @@ export default function LoginPage() {
           {step === "otp" && (
             <>
               <div className="mb-8">
-                <h2 className="text-2xl font-bold text-ink">Enter your code</h2>
+                <h2 className="text-2xl font-bold text-ink">Check your email</h2>
                 <p className="text-sm text-ink-muted mt-1">
                   We sent a 6-digit code to{" "}
                   <strong className="text-ink">{email}</strong>.
@@ -283,7 +352,7 @@ export default function LoginPage() {
                 className="w-full"
                 size="lg"
               >
-                Verify code
+                Verify &amp; start learning →
               </Button>
 
               <div className="mt-6 flex flex-col items-center gap-3">
