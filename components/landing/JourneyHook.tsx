@@ -443,7 +443,7 @@ export function JourneyHook() {
       <section
         ref={heroRef}
         className="relative w-full overflow-hidden py-20 sm:py-28 lg:py-32 px-4 sm:px-6 lg:px-8"
-        style={{ background: "linear-gradient(180deg, #FFFFFF 0%, #F8FAFC 100%)" }}
+        style={{ background: "linear-gradient(180deg, #FFFFFF 0%, #F8FAFC 80%, #F0F4FB 100%)" }}
       >
         {/* Background accent glows — subtle on white */}
         <div className="pointer-events-none absolute top-1/4 left-0 -translate-x-1/2 w-[600px] h-[600px] rounded-full"
@@ -511,16 +511,31 @@ export function JourneyHook() {
       </section>
 
       {/* ════════════════════════════════════════════════════════════════════════ */}
-      {/* DIVIDER — gradient from white Zone 1 to dark Zone 2 */}
+      {/* DIVIDER — seamless multi-stop fade from white Zone 1 to dark Zone 2 */}
       {/* ════════════════════════════════════════════════════════════════════════ */}
-      <div className="py-16 px-4"
-        style={{ background: "linear-gradient(180deg, #F8FAFC 0%, #050B14 100%)" }}>
-        <div className="flex items-center gap-4 max-w-md mx-auto">
-          <div className="flex-1 h-px bg-white/[0.15]" />
-          <span className="text-[10px] tracking-[0.3em] uppercase text-slate-400 font-semibold whitespace-nowrap">
+      <div
+        className="relative py-32 sm:py-40 px-4 overflow-hidden"
+        style={{
+          background:
+            "linear-gradient(180deg, #F8FAFC 0%, #E2E8F5 18%, #94A8C8 38%, #3E5070 58%, #15243C 78%, #050B14 100%)",
+        }}
+      >
+        {/* Subtle radial accents to break up the linear banding */}
+        <div className="pointer-events-none absolute top-1/3 left-1/4 w-[400px] h-[200px] rounded-full opacity-30"
+          style={{ background: "radial-gradient(ellipse, rgba(99,102,241,0.18) 0%, transparent 70%)", filter: "blur(40px)" }} />
+        <div className="pointer-events-none absolute bottom-1/3 right-1/4 w-[400px] h-[200px] rounded-full opacity-30"
+          style={{ background: "radial-gradient(ellipse, rgba(0,86,206,0.15) 0%, transparent 70%)", filter: "blur(40px)" }} />
+
+        {/* Centred label */}
+        <div className="relative flex items-center gap-4 max-w-md mx-auto">
+          <div className="flex-1 h-px"
+            style={{ background: "linear-gradient(90deg, transparent, rgba(148,168,200,0.4))" }} />
+          <span className="text-[10px] tracking-[0.3em] uppercase font-semibold whitespace-nowrap text-slate-500"
+            style={{ textShadow: "0 1px 2px rgba(0,0,0,0.2)" }}>
             How they got there ↓
           </span>
-          <div className="flex-1 h-px bg-white/[0.15]" />
+          <div className="flex-1 h-px"
+            style={{ background: "linear-gradient(270deg, transparent, rgba(148,168,200,0.4))" }} />
         </div>
       </div>
 
@@ -530,7 +545,7 @@ export function JourneyHook() {
       <section
         ref={stepsRef}
         className="relative w-full overflow-hidden py-16 sm:py-20 lg:py-24 px-4 sm:px-6 lg:px-8"
-        style={{ background: "linear-gradient(180deg, #050B14 0%, #081827 50%, #050B14 100%)" }}
+        style={{ background: "linear-gradient(180deg, #050B14 0%, #0B1626 50%, #050B14 100%)" }}
       >
         {/* Background accent */}
         <div className="pointer-events-none absolute bottom-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] rounded-full"
@@ -667,15 +682,46 @@ export function JourneyHook() {
       </section>
 
       {/* ════════════════════════════════════════════════════════════════════════ */}
-      {/* ZONE 3 — CLOSING CTA (after the 5-step journey) */}
+      {/* DIVIDER 2 — seamless multi-stop fade from dark Zone 2 to light Zone 3 */}
+      {/* ════════════════════════════════════════════════════════════════════════ */}
+      <div
+        className="relative py-32 sm:py-40 px-4 overflow-hidden"
+        style={{
+          background:
+            "linear-gradient(180deg, #050B14 0%, #15243C 22%, #3E5070 42%, #94A8C8 62%, #E2E8F5 82%, #F8FAFC 100%)",
+        }}
+      >
+        {/* Subtle radial accents to break up the linear banding */}
+        <div className="pointer-events-none absolute top-1/3 left-1/4 w-[400px] h-[200px] rounded-full opacity-30"
+          style={{ background: "radial-gradient(ellipse, rgba(99,102,241,0.18) 0%, transparent 70%)", filter: "blur(40px)" }} />
+        <div className="pointer-events-none absolute bottom-1/3 right-1/4 w-[400px] h-[200px] rounded-full opacity-30"
+          style={{ background: "radial-gradient(ellipse, rgba(16,185,129,0.18) 0%, transparent 70%)", filter: "blur(40px)" }} />
+
+        {/* Centred label */}
+        <div className="relative flex items-center gap-4 max-w-md mx-auto">
+          <div className="flex-1 h-px"
+            style={{ background: "linear-gradient(90deg, transparent, rgba(148,168,200,0.4))" }} />
+          <span className="text-[10px] tracking-[0.3em] uppercase font-semibold whitespace-nowrap text-slate-400"
+            style={{ textShadow: "0 1px 2px rgba(0,0,0,0.15)" }}>
+            Your move ↓
+          </span>
+          <div className="flex-1 h-px"
+            style={{ background: "linear-gradient(270deg, transparent, rgba(148,168,200,0.4))" }} />
+        </div>
+      </div>
+
+      {/* ════════════════════════════════════════════════════════════════════════ */}
+      {/* ZONE 3 — CLOSING CTA (after the 5-step journey) · LIGHT THEME */}
       {/* ════════════════════════════════════════════════════════════════════════ */}
       <section
         className="relative w-full overflow-hidden py-20 sm:py-24 lg:py-28 px-4 sm:px-6 lg:px-8"
-        style={{ background: "linear-gradient(180deg, #050B14 0%, #00183A 100%)" }}
+        style={{ background: "linear-gradient(180deg, #F8FAFC 0%, #FFFFFF 100%)" }}
       >
-        {/* Background glow */}
+        {/* Subtle background accent glows */}
         <div className="pointer-events-none absolute top-0 left-1/2 -translate-x-1/2 w-[900px] h-[500px] rounded-full"
-          style={{ background: "radial-gradient(ellipse, rgba(0,86,206,0.18) 0%, transparent 70%)", filter: "blur(90px)" }} />
+          style={{ background: "radial-gradient(ellipse, rgba(0,86,206,0.10) 0%, transparent 70%)", filter: "blur(90px)" }} />
+        <div className="pointer-events-none absolute bottom-0 left-0 -translate-x-1/2 w-[500px] h-[400px] rounded-full"
+          style={{ background: "radial-gradient(ellipse, rgba(16,185,129,0.08) 0%, transparent 70%)", filter: "blur(80px)" }} />
 
         <div className="relative max-w-3xl mx-auto text-center">
           {/* Label */}
@@ -684,7 +730,7 @@ export function JourneyHook() {
           </span>
 
           {/* Closing headline */}
-          <h3 className="mt-4 mb-5 font-black text-white tracking-tight leading-[0.95]"
+          <h3 className="mt-4 mb-5 font-black text-slate-900 tracking-tight leading-[0.95]"
             style={{ fontSize: "clamp(36px, 6vw, 76px)" }}>
             Start the assessment.
             <br />
@@ -698,17 +744,16 @@ export function JourneyHook() {
             </span>
           </h3>
 
-          <p className="text-sm sm:text-base text-slate-400 max-w-md mx-auto mb-10">
+          <p className="text-sm sm:text-base text-slate-600 max-w-md mx-auto mb-10">
             30 minutes to find out where you stand. Zero pressure. Free forever.
           </p>
 
           {/* Live ticker + cohort */}
           <div className="flex flex-col items-center gap-4 mb-10">
-            {/* Dark-themed inline version of the ticker */}
-            <DarkTicker />
+            <LiveTicker />
             <p className="text-xs text-slate-500 flex items-center gap-2">
-              <span className="w-1 h-1 rounded-full bg-amber-400 animate-pulse" />
-              Next cohort starts <span className="font-bold text-amber-400">Monday</span> · spots filling
+              <span className="w-1 h-1 rounded-full bg-amber-500 animate-pulse" />
+              Next cohort starts <span className="font-bold text-amber-600">Monday</span> · spots filling
             </p>
           </div>
 
@@ -719,7 +764,7 @@ export function JourneyHook() {
               className="group relative inline-flex items-center gap-3 px-10 py-5 rounded-2xl text-base lg:text-lg font-bold text-white transition-all overflow-hidden"
               style={{
                 background: "linear-gradient(135deg, #0056CE 0%, #4F46E5 100%)",
-                boxShadow: "0 16px 48px rgba(0,86,206,0.5), 0 0 0 1px rgba(255,255,255,0.1) inset",
+                boxShadow: "0 16px 48px rgba(0,86,206,0.35), 0 0 0 1px rgba(255,255,255,0.1) inset",
               }}
             >
               <span>Take the assessment</span>
@@ -733,28 +778,5 @@ export function JourneyHook() {
         </div>
       </section>
     </>
-  );
-}
-
-// ─── Dark-themed ticker for the closing CTA zone ──────────────────────────────
-function DarkTicker() {
-  const [idx, setIdx] = useState(0);
-  useEffect(() => {
-    const t = setInterval(() => setIdx((i) => (i + 1) % TICKER_STATS.length), 3500);
-    return () => clearInterval(t);
-  }, []);
-  const stat = TICKER_STATS[idx];
-  return (
-    <div className="inline-flex items-center gap-3 px-4 py-2.5 rounded-full border border-white/10"
-      style={{ background: "rgba(8,18,32,0.7)", backdropFilter: "blur(12px)" }}>
-      <span className="relative flex items-center justify-center">
-        <span className="absolute w-2.5 h-2.5 rounded-full animate-ping" style={{ background: stat.color, opacity: 0.5 }} />
-        <span className="w-2 h-2 rounded-full" style={{ background: stat.color }} />
-      </span>
-      <span key={idx} className="animate-fade-in-up text-xs sm:text-sm text-slate-300">
-        <span className="font-bold tabular-nums text-white">{stat.value.toLocaleString()}</span>{" "}
-        <span className="text-slate-400">{stat.label}</span>
-      </span>
-    </div>
   );
 }
