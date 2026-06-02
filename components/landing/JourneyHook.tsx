@@ -777,38 +777,30 @@ export function JourneyHook() {
             </div>
           </div>
 
-          {/* Big ALIVE CTA — emerald gradient · larger · conversion-optimised */}
+          {/* Big CTA — brand blue gradient · large · calm and premium */}
           <div className="flex flex-col items-center gap-5">
-            <div className="relative inline-block">
-              {/* Pulse rings — concentric, expanding, emerald */}
-              <div className="absolute inset-0 rounded-2xl pointer-events-none animate-cta-ring"
-                style={{ background: "linear-gradient(135deg, #059669, #10B981)" }} />
-              <div className="absolute inset-0 rounded-2xl pointer-events-none animate-cta-ring"
-                style={{ background: "linear-gradient(135deg, #10B981, #34D399)", animationDelay: "1.2s" }} />
+            <Link
+              href="/signup"
+              className="relative group inline-flex items-center gap-4 px-12 sm:px-16 py-6 sm:py-7 rounded-2xl text-lg sm:text-xl lg:text-2xl font-black text-white overflow-hidden tracking-tight hover:-translate-y-0.5 transition-transform duration-300"
+              style={{
+                background: "linear-gradient(135deg, #0056CE 0%, #3388FF 50%, #4F46E5 100%)",
+                boxShadow: "0 20px 56px rgba(0,86,206,0.40), 0 0 80px rgba(99,102,241,0.25), 0 0 0 1px rgba(255,255,255,0.12) inset",
+                letterSpacing: "-0.01em",
+                willChange: "transform",
+              }}
+            >
+              <span className="relative z-10">Take the assessment</span>
+              <span className="relative z-10 text-2xl sm:text-3xl transition-transform duration-300 group-hover:translate-x-2">→</span>
 
-              {/* The button itself — bigger, bolder, emerald */}
-              <Link
-                href="/signup"
-                className="relative group inline-flex items-center gap-4 px-12 sm:px-16 py-6 sm:py-7 rounded-2xl text-lg sm:text-xl lg:text-2xl font-black text-white overflow-hidden animate-cta-breathe animate-cta-glow tracking-tight"
+              {/* Subtle auto-shimmer — premium polish, not blinking */}
+              <span
+                className="absolute inset-0 animate-cta-shimmer pointer-events-none"
                 style={{
-                  background: "linear-gradient(135deg, #059669 0%, #10B981 45%, #34D399 100%)",
-                  willChange: "transform",
-                  letterSpacing: "-0.01em",
+                  background: "linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.35) 50%, transparent 100%)",
+                  width: "60%",
                 }}
-              >
-                <span className="relative z-10">Take the assessment</span>
-                <span className="relative z-10 text-2xl sm:text-3xl transition-transform group-hover:translate-x-2">→</span>
-
-                {/* Auto-running shimmer (no hover required) */}
-                <span
-                  className="absolute inset-0 animate-cta-shimmer pointer-events-none"
-                  style={{
-                    background: "linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.45) 50%, transparent 100%)",
-                    width: "60%",
-                  }}
-                />
-              </Link>
-            </div>
+              />
+            </Link>
 
             <p className="text-xs sm:text-sm text-slate-500 font-medium">
               No credit card · No commitment · Just signal
