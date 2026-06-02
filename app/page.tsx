@@ -5,8 +5,7 @@ import { HeroSection } from "@/components/landing/HeroSection";
 import { ComparisonSection } from "@/components/landing/ComparisonSection";
 import { TimelineSection } from "@/components/landing/TimelineSection";
 import { AICopilotSlider } from "@/components/landing/AICopilotSlider";
-import { StatsSection } from "@/components/landing/StatsSection";
-import { TransformationStories } from "@/components/landing/TransformationStories";
+import { SocialProofSection } from "@/components/landing/SocialProofSection";
 import { SkillRadarPreview } from "@/components/landing/SkillRadarPreview";
 import { JourneyHook } from "@/components/landing/JourneyHook";
 import { CourseGridSection } from "@/components/landing/CourseGridSection";
@@ -79,11 +78,8 @@ export default async function Home() {
       {/* ── 7. Skill Radar ───────────────────────────────────────────────────── */}
       <SkillRadarPreview />
 
-      {/* ── 8. Stats ─────────────────────────────────────────────────────────── */}
-      <StatsSection />
-
-      {/* ── 9. Student Transformation Stories ────────────────────────────────── */}
-      <TransformationStories />
+      {/* ── 8. Social Proof — rotating stories + embedded stats ────────────── */}
+      <SocialProofSection />
 
       {/* ── Final CTA ────────────────────────────────────────────────────────── */}
       <section className="py-14 sm:py-24 text-center" style={{ background: "#00183A" }}>
