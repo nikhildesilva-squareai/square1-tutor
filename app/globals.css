@@ -212,3 +212,74 @@ body {
   to   { opacity: 1; transform: translateX(0)    scale(1); }
 }
 .animate-mockup-in { animation: mockup-in 0.55s ease-out forwards; }
+
+/* ─── Journey Hero animations (the money shot) ──────────────────────────────── */
+/* Pop a station node when the orb arrives */
+@keyframes station-pop {
+  0%   { transform: scale(1);   }
+  50%  { transform: scale(1.35); }
+  100% { transform: scale(1.08); }
+}
+.animate-station-pop { animation: station-pop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
+
+/* Burst of light around a station as it activates */
+@keyframes station-burst {
+  0%   { transform: scale(0.4); opacity: 0; }
+  40%  { opacity: 1; }
+  100% { transform: scale(2.5); opacity: 0; }
+}
+.animate-station-burst { animation: station-burst 0.8s ease-out forwards; }
+
+/* Particle spark flying outward */
+@keyframes spark-fly {
+  0%   { transform: translate(0, 0) scale(1); opacity: 1; }
+  100% { transform: translate(var(--spark-x), var(--spark-y)) scale(0); opacity: 0; }
+}
+.animate-spark { animation: spark-fly 0.9s ease-out forwards; }
+
+/* Final celebration — large outward glow at HIRED */
+@keyframes hired-celebrate {
+  0%   { transform: scale(0); opacity: 0; }
+  50%  { opacity: 1; }
+  100% { transform: scale(4); opacity: 0; }
+}
+.animate-hired-celebrate { animation: hired-celebrate 1.4s ease-out forwards; }
+
+/* Confetti piece falling */
+@keyframes confetti-fall {
+  0%   { transform: translateY(-30px) rotate(0deg);   opacity: 1; }
+  100% { transform: translateY(120px) rotate(540deg); opacity: 0; }
+}
+.animate-confetti { animation: confetti-fall 1.6s ease-in forwards; }
+
+/* HIRED stamp slam in with bounce */
+@keyframes hired-stamp {
+  0%   { transform: scale(2.5) rotate(-12deg); opacity: 0; }
+  60%  { transform: scale(0.9) rotate(-12deg); opacity: 1; }
+  100% { transform: scale(1)   rotate(-12deg); opacity: 1; }
+}
+.animate-hired-stamp { animation: hired-stamp 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
+
+/* Subtle continuous pulse on idle stations after sequence completes */
+@keyframes idle-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 currentColor; }
+  50%       { box-shadow: 0 0 0 8px transparent; }
+}
+.animate-idle-pulse { animation: idle-pulse 2s ease-in-out infinite; }
+
+/* Final node breathing glow */
+@keyframes breathe-glow {
+  0%, 100% { filter: brightness(1)   drop-shadow(0 0 12px rgba(16,185,129,0.5)); }
+  50%       { filter: brightness(1.2) drop-shadow(0 0 24px rgba(16,185,129,0.9)); }
+}
+.animate-breathe-glow { animation: breathe-glow 2.2s ease-in-out infinite; }
+
+/* Flowing gradient on the connecting line */
+@keyframes flow-shimmer {
+  from { background-position: -200% 0; }
+  to   { background-position:  200% 0; }
+}
+.animate-flow-shimmer {
+  background-size: 200% 100%;
+  animation: flow-shimmer 2.5s linear infinite;
+}

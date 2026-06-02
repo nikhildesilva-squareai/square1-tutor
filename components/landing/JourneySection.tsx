@@ -273,62 +273,310 @@ function StepMockup({ preview }: { preview: string }) {
   }
 }
 
-// ─── Progress bar dots ────────────────────────────────────────────────────────
+// ─── Station icons (one per step) ─────────────────────────────────────────────
+const STATION_ICONS = ["📋", "📊", "🗓️", "🚀", "🎯"];
 
-function ProgressDots({
-  activeStep,
-  stepProgress,
+// ─── Journey Hero (the MONEY SHOT) ────────────────────────────────────────────
+// A self-running "speed run" preview that auto-plays the moment the section
+// enters view. A glowing orb travels left→right, lighting up each station,
+// emitting sparks, with a celebration finale at HIRED. Replays every 9 seconds.
+
+function JourneyHero({
+  scrollActiveStep,
+  scrollProgress,
 }: {
-  activeStep: number;
-  stepProgress: number;
+  scrollActiveStep: number;
+  scrollProgress: number;
 }) {
+  const heroRef = useRef<HTMLDivElement>(null);
+  const [hasStarted, setHasStarted]   = useState(false);
+  const [orbProgress, setOrbProgress] = useState(0);   // 0..1 across full journey
+  const [poppedSteps, setPoppedSteps] = useState<Set<number>>(new Set());
+  const [bursts, setBursts]           = useState<Set<number>>(new Set());
+  const [celebrating, setCelebrating] = useState(false);
+  const [showStamp, setShowStamp]     = useState(false);
+  const [replayCounter, setReplayCounter] = useState(0);
+
+  // Trigger speed-run when section enters view
+  useEffect(() => {
+    const el = heroRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting && !hasStarted) setHasStarted(true);
+      },
+      { threshold: 0.4 }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [hasStarted]);
+
+  // Speed-run animation — runs each time replayCounter changes
+  useEffect(() => {
+    if (!hasStarted) return;
+
+    setPoppedSteps(new Set());
+    setBursts(new Set());
+    setCelebrating(false);
+    setShowStamp(false);
+    setOrbProgress(0);
+
+    const DURATION = 3500;        // total run time
+    const start    = performance.now();
+    let raf = 0;
+
+    function tick(now: number) {
+      const elapsed = now - start;
+      const t = Math.min(1, elapsed / DURATION);
+      // Ease-out cubic — feels like the orb is gaining momentum then settling
+      const eased = 1 - Math.pow(1 - t, 2);
+      setOrbProgress(eased);
+
+      // Trigger station pops + bursts as orb passes
+      STEPS.forEach((_, i) => {
+        const stationT = i / (STEPS.length - 1);
+        if (eased >= stationT) {
+          setPoppedSteps(prev => prev.has(i) ? prev : new Set(prev).add(i));
+          setBursts(prev => {
+            if (prev.has(i)) return prev;
+            const next = new Set(prev);
+            next.add(i);
+            return next;
+          });
+        }
+      });
+
+      if (t < 1) {
+        raf = requestAnimationFrame(tick);
+      } else {
+        // Reached the end → celebrate + show HIRED stamp
+        setCelebrating(true);
+        setTimeout(() => setShowStamp(true), 200);
+        // Auto-replay after a pause
+        setTimeout(() => setReplayCounter(c => c + 1), 5500);
+      }
+    }
+
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [hasStarted, replayCounter]);
+
+  // Allow scroll-driven progress to ALSO drive the strip after speed-run completes
+  const usingScroll = orbProgress >= 1 && !celebrating;
+  const displayProgress = usingScroll
+    ? (scrollActiveStep + scrollProgress) / STEPS.length
+    : orbProgress;
+
   return (
-    <div className="flex items-center gap-0 relative">
-      {STEPS.map((step, i) => {
-        const isActive = i === activeStep;
-        const isPast = i < activeStep;
-        const dotColor = isPast || isActive ? step.color : "rgba(255,255,255,0.15)";
+    <div ref={heroRef} className="relative w-full px-4 sm:px-8 py-6 sm:py-8">
+      {/* Section label */}
+      <div className="text-center mb-4 sm:mb-6">
+        <span className="text-[10px] sm:text-[11px] tracking-[0.35em] uppercase text-slate-500 font-bold">
+          The Journey
+        </span>
+      </div>
 
-        // Fill fraction for the connecting line after this dot
-        let lineFill = 0;
-        if (isPast) lineFill = 1;
-        else if (isActive) lineFill = stepProgress;
+      {/* Journey strip */}
+      <div className="relative max-w-5xl mx-auto">
 
-        return (
-          <div key={step.label} className="flex items-center">
-            {/* Dot */}
-            <div className="flex flex-col items-center gap-1.5">
+        {/* Connecting line — background track */}
+        <div className="absolute left-[10%] right-[10%] top-7 sm:top-9 h-0.5 bg-white/[0.08] rounded-full" />
+
+        {/* Connecting line — animated fill */}
+        <div
+          className="absolute left-[10%] top-7 sm:top-9 h-0.5 rounded-full overflow-hidden"
+          style={{
+            width: `${displayProgress * 80}%`, // 80% = the visible track between first/last node centres
+            background: "linear-gradient(90deg, #0056CE 0%, #4F46E5 25%, #7C3AED 50%, #9333EA 75%, #10B981 100%)",
+            boxShadow: "0 0 12px rgba(99,102,241,0.5)",
+            transition: usingScroll ? "width 0.3s ease" : "none",
+          }}
+        >
+          {/* Inner shimmer */}
+          <div className="absolute inset-0 animate-flow-shimmer"
+            style={{
+              background: "linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.5) 50%, transparent 100%)",
+            }}
+          />
+        </div>
+
+        {/* Traveling orb */}
+        {!usingScroll && (
+          <div
+            className="absolute top-7 sm:top-9 -translate-x-1/2 -translate-y-1/2 pointer-events-none z-20"
+            style={{
+              left: `calc(10% + ${displayProgress * 80}%)`,
+              willChange: "left",
+            }}
+          >
+            {/* Outer glow */}
+            <div
+              className="absolute -inset-4 rounded-full"
+              style={{
+                background: "radial-gradient(circle, rgba(99,102,241,0.6) 0%, transparent 70%)",
+                filter: "blur(8px)",
+              }}
+            />
+            {/* Inner orb */}
+            <div
+              className="relative w-4 h-4 rounded-full"
+              style={{
+                background: "radial-gradient(circle, #ffffff 0%, #0056CE 60%, #4F46E5 100%)",
+                boxShadow: "0 0 24px rgba(99,102,241,0.9), 0 0 8px rgba(255,255,255,0.9)",
+              }}
+            />
+          </div>
+        )}
+
+        {/* Stations */}
+        <div className="relative flex items-start justify-between">
+          {STEPS.map((step, i) => {
+            const isLast = i === STEPS.length - 1;
+            const popped = poppedSteps.has(i) || (usingScroll && i <= scrollActiveStep);
+            const burst  = bursts.has(i);
+
+            return (
+              <div key={step.label} className="relative flex flex-col items-center gap-2 sm:gap-3" style={{ width: 80 }}>
+
+                {/* Burst ring */}
+                {burst && (
+                  <div
+                    className="absolute top-0 left-1/2 -translate-x-1/2 w-14 h-14 sm:w-16 sm:h-16 rounded-full pointer-events-none animate-station-burst"
+                    style={{
+                      border: `2px solid ${step.color}`,
+                      boxShadow: `0 0 30px ${step.color}`,
+                    }}
+                  />
+                )}
+
+                {/* Sparks (for last station, lots of them) */}
+                {burst && isLast && (
+                  <div className="absolute top-7 left-1/2 -translate-x-1/2 pointer-events-none">
+                    {Array.from({ length: 12 }).map((_, k) => {
+                      const angle = (k / 12) * Math.PI * 2;
+                      const dist  = 40 + Math.random() * 30;
+                      return (
+                        <div
+                          key={k}
+                          className="absolute w-1.5 h-1.5 rounded-full animate-spark"
+                          style={{
+                            background: k % 2 === 0 ? "#10B981" : "#FBBF24",
+                            ["--spark-x" as string]: `${Math.cos(angle) * dist}px`,
+                            ["--spark-y" as string]: `${Math.sin(angle) * dist}px`,
+                            boxShadow: "0 0 6px currentColor",
+                          }}
+                        />
+                      );
+                    })}
+                  </div>
+                )}
+
+                {/* Station node */}
+                <div
+                  className={`relative w-12 h-12 sm:w-14 sm:h-14 rounded-2xl flex items-center justify-center text-xl sm:text-2xl transition-all duration-500 will-change-transform ${popped ? "animate-station-pop" : ""} ${isLast && celebrating ? "animate-breathe-glow" : ""}`}
+                  style={{
+                    background: popped ? `linear-gradient(135deg, ${step.color}, ${step.color}cc)` : "rgba(255,255,255,0.04)",
+                    border: `2px solid ${popped ? step.color : "rgba(255,255,255,0.10)"}`,
+                    boxShadow: popped
+                      ? `0 0 24px ${step.color}80, 0 0 8px ${step.color}, inset 0 0 12px ${step.color}30`
+                      : "0 2px 8px rgba(0,0,0,0.2)",
+                  }}
+                >
+                  <span style={{ filter: popped ? "none" : "grayscale(1) opacity(0.4)" }}>
+                    {STATION_ICONS[i]}
+                  </span>
+
+                  {/* Big celebration ring on last node */}
+                  {isLast && celebrating && (
+                    <div
+                      className="absolute inset-0 rounded-2xl pointer-events-none animate-hired-celebrate"
+                      style={{
+                        background: "radial-gradient(circle, #10B981 0%, transparent 70%)",
+                      }}
+                    />
+                  )}
+                </div>
+
+                {/* Label */}
+                <div className="text-center">
+                  <span
+                    className={`block text-[10px] sm:text-[11px] font-bold tracking-wide whitespace-nowrap transition-all duration-500 ${isLast && celebrating ? "scale-110" : ""}`}
+                    style={{
+                      color: popped ? step.color : "rgba(255,255,255,0.25)",
+                    }}
+                  >
+                    {step.label}
+                  </span>
+                  {/* Sub-label */}
+                  <span
+                    className={`hidden sm:block text-[8px] uppercase tracking-widest mt-0.5 transition-all duration-500 ${popped ? "opacity-60" : "opacity-0"}`}
+                    style={{ color: step.color }}
+                  >
+                    {i === 0 && "Step 1"}
+                    {i === 1 && "Step 2"}
+                    {i === 2 && "Step 3"}
+                    {i === 3 && "Step 4"}
+                    {i === 4 && "Goal"}
+                  </span>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* HIRED stamp + confetti at the end */}
+        {showStamp && (
+          <>
+            <div
+              className="absolute right-[2%] sm:right-[4%] top-0 sm:-top-2 animate-hired-stamp pointer-events-none z-30"
+            >
               <div
-                className="w-2.5 h-2.5 rounded-full transition-all duration-500 will-change-transform"
+                className="px-3 py-1.5 rounded-md text-[10px] sm:text-xs font-black tracking-widest"
                 style={{
-                  background: dotColor,
-                  boxShadow: isActive ? `0 0 0 3px ${step.color}30` : "none",
-                  transform: isActive ? "scale(1.3)" : "scale(1)",
+                  background: "rgba(16,185,129,0.95)",
+                  color: "#FFFFFF",
+                  border: "2px solid #10B981",
+                  boxShadow: "0 8px 24px rgba(16,185,129,0.5), 0 0 0 1px rgba(255,255,255,0.2) inset",
+                  textShadow: "0 1px 2px rgba(0,0,0,0.3)",
                 }}
-              />
-              <span
-                className="text-[9px] font-semibold whitespace-nowrap transition-colors duration-500"
-                style={{ color: isPast || isActive ? step.color : "rgba(255,255,255,0.25)" }}
               >
-                {step.label}
-              </span>
+                ✓ HIRED
+              </div>
             </div>
 
-            {/* Connecting line (not after last dot) */}
-            {i < STEPS.length - 1 && (
-              <div className="relative w-12 sm:w-16 lg:w-20 h-0.5 mx-1 bg-white/10 overflow-hidden">
+            {/* Confetti */}
+            {Array.from({ length: 24 }).map((_, k) => {
+              const colors = ["#10B981", "#3388FF", "#FBBF24", "#EC4899", "#8B5CF6", "#06B6D4"];
+              const left   = 75 + Math.random() * 20; // confetti rains down on right side
+              const delay  = Math.random() * 0.4;
+              return (
                 <div
-                  className="absolute inset-y-0 left-0 transition-all duration-500"
+                  key={`confetti-${replayCounter}-${k}`}
+                  className="absolute top-4 pointer-events-none animate-confetti"
                   style={{
-                    width: `${lineFill * 100}%`,
-                    background: step.color,
+                    left: `${left}%`,
+                    width: 5,
+                    height: 9,
+                    background: colors[k % colors.length],
+                    transform: `rotate(${Math.random() * 360}deg)`,
+                    animationDelay: `${delay}s`,
+                    borderRadius: 1,
                   }}
                 />
-              </div>
-            )}
+              );
+            })}
+          </>
+        )}
+
+        {/* Replay hint after first run */}
+        {celebrating && (
+          <div className="mt-4 sm:mt-6 text-center">
+            <span className="text-[10px] tracking-widest uppercase text-slate-600 font-semibold">
+              Scroll to explore the journey ↓
+            </span>
           </div>
-        );
-      })}
+        )}
+      </div>
     </div>
   );
 }
@@ -436,16 +684,17 @@ export function JourneySection() {
   return (
     <section style={{ background: "#050B14" }}>
       {/* ── MOBILE: stacked cards ──────────────────────────────────────────── */}
-      <div className="lg:hidden px-4 py-16 space-y-6">
-        <div className="text-center mb-10">
-          <span className="text-[10px] tracking-[0.3em] uppercase text-slate-500 font-semibold">
-            The Journey
-          </span>
-          <h2 className="mt-3 text-2xl font-bold text-white">Five steps. One outcome.</h2>
+      <div className="lg:hidden px-4 py-12">
+        {/* Mobile hero strip — runs the same speed-run animation */}
+        <JourneyHero scrollActiveStep={0} scrollProgress={0} />
+        <div className="text-center mt-8 mb-10">
+          <h2 className="text-2xl font-bold text-white">Five steps. One outcome.</h2>
         </div>
-        {STEPS.map((step, i) => (
-          <MobileStepCard key={step.number} step={step} index={i} />
-        ))}
+        <div className="space-y-6">
+          {STEPS.map((step, i) => (
+            <MobileStepCard key={step.number} step={step} index={i} />
+          ))}
+        </div>
       </div>
 
       {/* ── DESKTOP: sticky scroll ─────────────────────────────────────────── */}
@@ -459,16 +708,9 @@ export function JourneySection() {
           className="sticky top-0 h-screen flex flex-col overflow-hidden"
           style={{ background: "#050B14" }}
         >
-          {/* "THE JOURNEY" label */}
-          <div className="absolute top-0 left-0 right-0 z-20 flex justify-center pt-8 pointer-events-none">
-            <span className="text-[10px] tracking-[0.3em] uppercase text-slate-500 font-semibold">
-              The Journey
-            </span>
-          </div>
-
-          {/* Top: progress dots */}
-          <div className="flex-none flex justify-center items-center pt-16 pb-4 px-8">
-            <ProgressDots activeStep={activeStep} stepProgress={stepProgress} />
+          {/* Top: Journey Hero (auto-play speed run + scroll-driven) */}
+          <div className="flex-none pt-6">
+            <JourneyHero scrollActiveStep={activeStep} scrollProgress={stepProgress} />
           </div>
 
           {/* Main content row */}
