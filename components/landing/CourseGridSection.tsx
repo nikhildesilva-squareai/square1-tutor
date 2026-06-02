@@ -2,6 +2,18 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import {
+  Sparkles,
+  BrainCircuit,
+  Cpu,
+  ShieldCheck,
+  Eye,
+  Gamepad2,
+  Code2,
+  Layers,
+  Boxes,
+  type LucideIcon,
+} from "lucide-react";
 
 type Course = {
   id: string;
@@ -14,6 +26,22 @@ type Course = {
   total_projects: number;
   status: string;
 };
+
+// ─── Clean SVG icons per course (no more emojis) ──────────────────────────────
+const COURSE_ICONS: Record<string, LucideIcon> = {
+  "generative-ai":           Sparkles,
+  "machine-learning":        BrainCircuit,
+  "artificial-intelligence": Cpu,
+  "cybersecurity":           ShieldCheck,
+  "computer-vision":         Eye,
+  "game-development":        Gamepad2,
+  "frontend-development":    Code2,
+  "fullstack-development":   Layers,
+};
+
+function getCourseIcon(slug: string): LucideIcon {
+  return COURSE_ICONS[slug] ?? Boxes;
+}
 
 // ─── Career outcomes mapped by slug ───────────────────────────────────────────
 type CareerMeta = {
@@ -97,13 +125,24 @@ function CourseCard({
         {/* Icon + Lock badge if locked */}
         <div className="flex items-start justify-between mb-5">
           <div
-            className="w-14 h-14 rounded-2xl flex items-center justify-center text-2xl transition-transform duration-500 group-hover:scale-110 group-hover:-rotate-6"
+            className="w-14 h-14 rounded-2xl flex items-center justify-center transition-transform duration-500 group-hover:scale-110 group-hover:-rotate-6 border"
             style={{
-              background: `linear-gradient(135deg, ${course.color}20, ${course.color}08)`,
-              boxShadow: `0 4px 16px ${course.color}20`,
+              background: `linear-gradient(135deg, ${course.color}18, ${course.color}05)`,
+              borderColor: `${course.color}25`,
+              boxShadow: `0 4px 16px ${course.color}15, 0 0 0 1px ${course.color}10 inset`,
             }}
           >
-            {course.icon}
+            {(() => {
+              const Icon = getCourseIcon(course.slug);
+              return (
+                <Icon
+                  size={26}
+                  strokeWidth={2.2}
+                  color={course.color}
+                  className="transition-transform duration-500"
+                />
+              );
+            })()}
           </div>
           {isLocked ? (
             <span className="text-[9px] tracking-widest uppercase font-bold px-2 py-1 rounded-full bg-slate-100 text-slate-500">
