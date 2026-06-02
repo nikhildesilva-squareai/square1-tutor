@@ -33,6 +33,7 @@ const META: Record<string, CourseMeta> = {
   "frontend-development":    { role: "Frontend Engineer",      salary: "$90–150k",  enrolled: 1456, projects: ["Portfolio Site", "E-commerce UI", "Dashboard"] },
   "fullstack-development":   { role: "Full Stack Engineer",    salary: "$100–160k", enrolled: 1672, projects: ["SaaS App", "Real-time Chat", "Payment System"] },
   "drone-technology":        { role: "Drone / Robotics Engineer", salary: "$115–185k", enrolled: 542, projects: ["Autonomous Flight", "Aerial Vision AI", "Swarm Controller"] },
+  "data-science":            { role: "Data Scientist",         salary: "$115–185k", enrolled: 1156, projects: ["Cohort Analysis", "A/B Test Lab", "Sales Forecaster"] },
   "default":                 { role: "Software Engineer",      salary: "$90–150k",  enrolled:  500, projects: ["Starter Project", "Mid-level Project", "Capstone"] },
 };
 
