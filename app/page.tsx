@@ -12,6 +12,7 @@ import { StatsSection } from "@/components/landing/StatsSection";
 import { TransformationStories } from "@/components/landing/TransformationStories";
 import { SkillRadarPreview } from "@/components/landing/SkillRadarPreview";
 import { JourneyHook } from "@/components/landing/JourneyHook";
+import { CourseGridSection } from "@/components/landing/CourseGridSection";
 import { CookieConsent } from "@/components/ui/cookie-consent";
 
 // ─── Server-side data fetch ───────────────────────────────────────────────────
@@ -69,54 +70,8 @@ export default async function Home() {
       {/* ── 3. Why Square 1 beats everything else (moved up · gradient bg) ──── */}
       <ComparisonSection />
 
-      {/* ── 4. Courses grid — 8 subjects (moved up) ──────────────────────────── */}
-      <section className="py-24 bg-surface">
-        <div className="max-w-6xl mx-auto px-6">
-          <div className="text-center mb-12">
-            <span className="text-sm font-semibold text-brand uppercase tracking-widest">
-              Curriculum
-            </span>
-            <h2 className="mt-3 text-3xl sm:text-4xl font-bold text-ink">
-              8 subjects. All tech. All in-demand.
-            </h2>
-            <p className="mt-3 text-ink-muted">
-              Every course has an assessment, personalised plan, and 10–12 projects.
-            </p>
-          </div>
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-            {courses.map((course) => (
-              <Link
-                key={course.id}
-                href={course.status === "active" && course.slug !== "#" ? `/courses/${course.slug}` : "#"}
-                className="group relative p-5 rounded-2xl bg-surface-soft border-2 border-border hover:border-brand hover:shadow-card-hover transition-all overflow-hidden"
-              >
-                <div
-                  className="absolute left-0 top-0 bottom-0 w-1 rounded-l-2xl group-hover:w-1.5 transition-all"
-                  style={{ backgroundColor: course.color }}
-                />
-                <div className="text-3xl mb-3">{course.icon}</div>
-                <h3 className="font-bold text-ink text-sm leading-snug mb-1 group-hover:text-brand transition-colors">
-                  {course.title}
-                </h3>
-                <p className="text-xs text-ink-muted mb-3 line-clamp-2">{course.description}</p>
-                <div className="flex gap-2 flex-wrap">
-                  <span className="text-[10px] bg-surface-alt text-ink-secondary px-2 py-0.5 rounded-full">
-                    {course.total_lessons} lessons
-                  </span>
-                  <span className="text-[10px] bg-surface-alt text-ink-secondary px-2 py-0.5 rounded-full">
-                    {course.total_projects} projects
-                  </span>
-                </div>
-              </Link>
-            ))}
-          </div>
-          <div className="text-center mt-10">
-            <Link href="/courses" className="inline-flex items-center gap-2 text-brand font-semibold hover:underline">
-              Browse all courses →
-            </Link>
-          </div>
-        </div>
-      </section>
+      {/* ── 4. Courses grid — 8 subjects with career outcomes ────────────────── */}
+      <CourseGridSection courses={courses} />
 
       {/* ── 5. Terminal Demo — AI grades your code (moved DOWN) ─────────────── */}
       <TerminalDemo />
