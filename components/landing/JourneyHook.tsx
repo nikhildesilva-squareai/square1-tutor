@@ -711,17 +711,24 @@ export function JourneyHook() {
       </div>
 
       {/* ════════════════════════════════════════════════════════════════════════ */}
-      {/* ZONE 3 — CLOSING CTA (after the 5-step journey) · LIGHT THEME */}
+      {/* ZONE 3 — CLOSING CTA · LIGHT GRADIENT THEME · ALIVE BUTTON */}
       {/* ════════════════════════════════════════════════════════════════════════ */}
       <section
-        className="relative w-full overflow-hidden py-20 sm:py-24 lg:py-28 px-4 sm:px-6 lg:px-8"
-        style={{ background: "linear-gradient(180deg, #F8FAFC 0%, #FFFFFF 100%)" }}
+        className="relative w-full overflow-hidden py-20 sm:py-24 lg:py-32 px-4 sm:px-6 lg:px-8"
+        style={{
+          background: `
+            radial-gradient(ellipse 900px 450px at 20% 25%, rgba(0,86,206,0.10), transparent 60%),
+            radial-gradient(ellipse 700px 500px at 80% 75%, rgba(16,185,129,0.10), transparent 60%),
+            radial-gradient(ellipse 800px 600px at 50% 50%, rgba(167,139,250,0.07), transparent 60%),
+            linear-gradient(180deg, #F8FAFC 0%, #FFFFFF 50%, #F4F8FF 100%)
+          `,
+        }}
       >
-        {/* Subtle background accent glows */}
-        <div className="pointer-events-none absolute top-0 left-1/2 -translate-x-1/2 w-[900px] h-[500px] rounded-full"
-          style={{ background: "radial-gradient(ellipse, rgba(0,86,206,0.10) 0%, transparent 70%)", filter: "blur(90px)" }} />
-        <div className="pointer-events-none absolute bottom-0 left-0 -translate-x-1/2 w-[500px] h-[400px] rounded-full"
-          style={{ background: "radial-gradient(ellipse, rgba(16,185,129,0.08) 0%, transparent 70%)", filter: "blur(80px)" }} />
+        {/* Extra animated background blobs for depth */}
+        <div className="pointer-events-none absolute top-0 left-1/4 w-[500px] h-[500px] rounded-full opacity-40 animate-blob-1"
+          style={{ background: "radial-gradient(circle, rgba(0,86,206,0.15) 0%, transparent 70%)", filter: "blur(80px)" }} />
+        <div className="pointer-events-none absolute bottom-0 right-1/4 w-[600px] h-[500px] rounded-full opacity-40 animate-blob-2"
+          style={{ background: "radial-gradient(circle, rgba(99,102,241,0.12) 0%, transparent 70%)", filter: "blur(90px)" }} />
 
         <div className="relative max-w-3xl mx-auto text-center">
           {/* Label */}
@@ -757,20 +764,51 @@ export function JourneyHook() {
             </p>
           </div>
 
-          {/* Big CTA */}
-          <div className="flex flex-col items-center gap-3">
-            <Link
-              href="/signup"
-              className="group relative inline-flex items-center gap-3 px-10 py-5 rounded-2xl text-base lg:text-lg font-bold text-white transition-all overflow-hidden"
-              style={{
-                background: "linear-gradient(135deg, #0056CE 0%, #4F46E5 100%)",
-                boxShadow: "0 16px 48px rgba(0,86,206,0.35), 0 0 0 1px rgba(255,255,255,0.1) inset",
-              }}
-            >
-              <span>Take the assessment</span>
-              <span className="text-xl transition-transform group-hover:translate-x-1">→</span>
-              <span className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/30 to-transparent group-hover:translate-x-full transition-transform duration-1000" />
-            </Link>
+          {/* Live "viewing now" micro-pill — drives urgency */}
+          <div className="flex justify-center mb-4">
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-emerald-500/30 bg-emerald-50">
+              <span className="relative flex items-center justify-center">
+                <span className="absolute w-2 h-2 rounded-full bg-emerald-500 opacity-40 animate-cta-live" />
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+              </span>
+              <span className="text-[10px] sm:text-[11px] font-bold text-emerald-700 tracking-wide">
+                12 people taking the assessment right now
+              </span>
+            </div>
+          </div>
+
+          {/* Big ALIVE CTA */}
+          <div className="flex flex-col items-center gap-4">
+            <div className="relative inline-block">
+              {/* Pulse rings — concentric, expanding */}
+              <div className="absolute inset-0 rounded-2xl pointer-events-none animate-cta-ring"
+                style={{ background: "linear-gradient(135deg, #0056CE, #4F46E5)" }} />
+              <div className="absolute inset-0 rounded-2xl pointer-events-none animate-cta-ring"
+                style={{ background: "linear-gradient(135deg, #4F46E5, #8B5CF6)", animationDelay: "1.2s" }} />
+
+              {/* The button itself — breathing + glowing */}
+              <Link
+                href="/signup"
+                className="relative group inline-flex items-center gap-3 px-10 py-5 rounded-2xl text-base lg:text-lg font-bold text-white overflow-hidden animate-cta-breathe animate-cta-glow"
+                style={{
+                  background: "linear-gradient(135deg, #0056CE 0%, #4F46E5 50%, #6366F1 100%)",
+                  willChange: "transform",
+                }}
+              >
+                <span className="relative z-10">Take the assessment</span>
+                <span className="relative z-10 text-xl transition-transform group-hover:translate-x-1.5">→</span>
+
+                {/* Auto-running shimmer (no hover required) */}
+                <span
+                  className="absolute inset-0 animate-cta-shimmer pointer-events-none"
+                  style={{
+                    background: "linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.4) 50%, transparent 100%)",
+                    width: "60%",
+                  }}
+                />
+              </Link>
+            </div>
+
             <p className="text-xs text-slate-500">
               No credit card · No commitment · Just signal
             </p>
