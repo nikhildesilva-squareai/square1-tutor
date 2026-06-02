@@ -777,14 +777,15 @@ export function JourneyHook() {
             </div>
           </div>
 
-          {/* Big CTA — brand blue gradient · large · calm and premium */}
+          {/* Big CTA — rich red gradient · large · warm and premium */}
           <div className="flex flex-col items-center gap-5">
             <Link
               href="/signup"
               className="relative group inline-flex items-center gap-4 px-12 sm:px-16 py-6 sm:py-7 rounded-2xl text-lg sm:text-xl lg:text-2xl font-black text-white overflow-hidden tracking-tight hover:-translate-y-0.5 transition-transform duration-300"
               style={{
-                background: "linear-gradient(135deg, #0056CE 0%, #3388FF 50%, #4F46E5 100%)",
-                boxShadow: "0 20px 56px rgba(0,86,206,0.40), 0 0 80px rgba(99,102,241,0.25), 0 0 0 1px rgba(255,255,255,0.12) inset",
+                /* Sophisticated 3-stop red: deep red → vibrant red → rose-red */
+                background: "linear-gradient(135deg, #B91C1C 0%, #DC2626 35%, #EF4444 70%, #F43F5E 100%)",
+                boxShadow: "0 20px 56px rgba(220,38,38,0.45), 0 0 80px rgba(244,63,94,0.30), 0 0 0 1px rgba(255,255,255,0.15) inset",
                 letterSpacing: "-0.01em",
                 willChange: "transform",
               }}
@@ -796,7 +797,7 @@ export function JourneyHook() {
               <span
                 className="absolute inset-0 animate-cta-shimmer pointer-events-none"
                 style={{
-                  background: "linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.35) 50%, transparent 100%)",
+                  background: "linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.40) 50%, transparent 100%)",
                   width: "60%",
                 }}
               />
