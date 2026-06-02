@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <defs>
+    <linearGradient id="sq1-bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#5B8DEF"/>
+      <stop offset="100%" stop-color="#0056CE"/>
+    </linearGradient>
+  </defs>
+  <rect width="64" height="64" rx="14" fill="url(#sq1-bg)"/>
+  <path
+    d="M 14 16 L 36 16 M 14 16 L 14 38 M 14 38 L 28 38 M 36 16 L 36 32"
+    stroke="white"
+    stroke-width="3.5"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    fill="none"
+  />
+  <text
+    x="44"
+    y="42"
+    fill="white"
+    font-family="system-ui, -apple-system, sans-serif"
+    font-size="28"
+    font-weight="800"
+    text-anchor="middle"
+  >1</text>
+</svg>
