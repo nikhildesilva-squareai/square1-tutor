@@ -5,13 +5,15 @@ import Link from "next/link";
 import { VariantA } from "@/components/landing/journey-variants/VariantA";
 import { VariantB } from "@/components/landing/journey-variants/VariantB";
 import { VariantC } from "@/components/landing/journey-variants/VariantC";
+import { VariantD } from "@/components/landing/journey-variants/VariantD";
 
-type Variant = "A" | "B" | "C";
+type Variant = "A" | "B" | "C" | "D";
 
-const VARIANTS: { id: Variant; label: string; tagline: string }[] = [
-  { id: "A", label: "Outcome First",    tagline: "Lead with the destination" },
-  { id: "B", label: "Living Stack",     tagline: "Watch the portfolio grow" },
+const VARIANTS: { id: Variant; label: string; tagline: string; recommended?: boolean }[] = [
+  { id: "A", label: "Outcome First",      tagline: "Lead with the destination" },
+  { id: "B", label: "Living Stack",       tagline: "Watch the portfolio grow" },
   { id: "C", label: "Numbers Over Icons", tagline: "Restraint, typography, real UI" },
+  { id: "D", label: "Mix A + C",          tagline: "Outcome hero + numbered steps — the brainstormed version", recommended: true },
 ];
 
 export default function JourneyPreviewPage() {
@@ -47,7 +49,7 @@ export default function JourneyPreviewPage() {
                 <button
                   key={v.id}
                   onClick={() => setVariant(v.id)}
-                  className={`px-3 sm:px-4 py-1.5 rounded-full text-xs font-bold transition-all ${
+                  className={`relative px-3 sm:px-4 py-1.5 rounded-full text-xs font-bold transition-all ${
                     active
                       ? "bg-white text-slate-900 shadow-lg"
                       : "text-slate-400 hover:text-white"
@@ -56,6 +58,10 @@ export default function JourneyPreviewPage() {
                 >
                   <span className="font-mono">{v.id}</span>
                   <span className="hidden sm:inline ml-1.5">· {v.label}</span>
+                  {v.recommended && (
+                    <span className="absolute -top-1.5 -right-1 w-2 h-2 rounded-full bg-amber-400 animate-pulse"
+                      title="Recommended" />
+                  )}
                 </button>
               );
             })}
@@ -75,13 +81,14 @@ export default function JourneyPreviewPage() {
         {variant === "A" && <VariantA />}
         {variant === "B" && <VariantB />}
         {variant === "C" && <VariantC />}
+        {variant === "D" && <VariantD />}
       </div>
 
       {/* Decision footer */}
       <div className="py-12 px-4 text-center">
         <p className="text-xs text-slate-600 mb-2">Which one feels right?</p>
         <p className="text-[10px] text-slate-700">
-          Tell me &ldquo;Go with A&rdquo; / &ldquo;Go with B&rdquo; / &ldquo;Go with C&rdquo; and I&apos;ll wire it into the real homepage.
+          Tell me &ldquo;Go with A/B/C/D&rdquo; and I&apos;ll wire it into the real homepage.
         </p>
       </div>
     </main>
