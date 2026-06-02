@@ -138,19 +138,29 @@ function OutcomeCard({
   delay: number;
 }) {
   const value = useCountUp(outcome.target, isVisible);
+  // Premium gradient — accent at corners, white in the middle for legibility
+  const cardBg = `
+    linear-gradient(135deg, ${outcome.accent}14 0%, #FFFFFF 45%, ${outcome.accent}08 100%),
+    radial-gradient(circle at top right, ${outcome.accent}10, transparent 60%)
+  `;
   return (
     <div
-      className="relative group rounded-3xl p-6 lg:p-8 transition-all duration-700 will-change-transform border bg-white"
+      className="relative group rounded-3xl p-6 lg:p-8 transition-all duration-700 will-change-transform border overflow-hidden"
       style={{
-        borderColor: "rgba(15,28,49,0.08)",
-        boxShadow: "0 8px 32px rgba(15,28,49,0.06), 0 0 0 1px rgba(15,28,49,0.02) inset",
+        background: cardBg,
+        borderColor: `${outcome.accent}30`,
+        boxShadow: `0 10px 32px ${outcome.accent}15, 0 0 0 1px ${outcome.accent}10 inset`,
         opacity: isVisible ? 1 : 0,
         transform: isVisible ? "translateY(0)" : "translateY(30px)",
         transitionDelay: `${delay}ms`,
       }}
     >
+      {/* Decorative corner gradient blob */}
+      <div className="absolute -top-12 -right-12 w-32 h-32 rounded-full pointer-events-none opacity-50"
+        style={{ background: `radial-gradient(circle, ${outcome.accent}30 0%, transparent 70%)`, filter: "blur(16px)" }} />
+
       {/* Live dot */}
-      <div className="absolute top-5 right-5 flex items-center gap-1.5">
+      <div className="relative z-10 absolute top-5 right-5 flex items-center gap-1.5">
         <div className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: outcome.accent }} />
         <span className="text-[9px] tracking-widest uppercase font-bold" style={{ color: outcome.accent }}>
           Live
@@ -158,7 +168,7 @@ function OutcomeCard({
       </div>
 
       {/* Number */}
-      <div className="mt-4 mb-4 flex items-baseline gap-0.5 leading-none">
+      <div className="relative z-10 mt-4 mb-4 flex items-baseline gap-0.5 leading-none">
         {outcome.prefix && (
           <span className="text-2xl lg:text-3xl font-semibold text-slate-400 tabular-nums">
             {outcome.prefix}
@@ -184,12 +194,13 @@ function OutcomeCard({
         )}
       </div>
 
-      <p className="text-sm lg:text-base font-bold text-slate-900 mb-1.5">{outcome.label}</p>
-      <p className="text-xs text-slate-500 leading-relaxed">{outcome.sub}</p>
+      <p className="relative text-sm lg:text-base font-bold text-slate-900 mb-1.5">{outcome.label}</p>
+      <p className="relative text-xs text-slate-600 leading-relaxed">{outcome.sub}</p>
 
+      {/* Hover enhancement */}
       <div
         className="absolute inset-0 rounded-3xl pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-        style={{ boxShadow: `inset 0 0 40px ${outcome.accent}18, 0 12px 40px ${outcome.accent}25` }}
+        style={{ boxShadow: `0 16px 48px ${outcome.accent}35, 0 0 0 1px ${outcome.accent}40 inset` }}
       />
     </div>
   );
@@ -365,9 +376,11 @@ const MOCKUPS = [MockupAssessment, MockupReport, MockupPlan, MockupBuild, Mockup
 export function JourneyHook() {
   const heroRef = useRef<HTMLDivElement>(null);
   const stepsRef = useRef<HTMLDivElement>(null);
+  const stepsTrackRef = useRef<HTMLDivElement>(null);
   const [heroVisible, setHeroVisible]       = useState(false);
   const [visibleSteps, setVisibleSteps]     = useState<Set<number>>(new Set());
   const [roleIdx, setRoleIdx]               = useState(0);
+  const [stepsProgress, setStepsProgress]   = useState(0); // 0..1 through steps
 
   // Rotate the role in the headline
   useEffect(() => {
@@ -402,6 +415,24 @@ export function JourneyHook() {
     );
     stepEls.forEach((el) => observer.observe(el));
     return () => observer.disconnect();
+  }, []);
+
+  // Scroll-driven progress line through the steps section
+  useEffect(() => {
+    function onScroll() {
+      if (!stepsTrackRef.current) return;
+      const rect       = stepsTrackRef.current.getBoundingClientRect();
+      const viewportH  = window.innerHeight;
+      // Triggers when the track enters the viewport from the bottom
+      // Reaches 1.0 when the track has fully scrolled past the middle
+      const start      = viewportH * 0.7;             // line starts filling when track is ~70% down
+      const end        = -rect.height + viewportH * 0.3; // line is full when track has scrolled past
+      const scrolled   = Math.max(0, Math.min(1, (start - rect.top) / (start - end)));
+      setStepsProgress(scrolled);
+    }
+    window.addEventListener("scroll", onScroll, { passive: true });
+    onScroll();
+    return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
   return (
@@ -471,38 +502,10 @@ export function JourneyHook() {
           </div>
 
           {/* 3 outcome cards */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 lg:gap-6 mb-12 lg:mb-14">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 lg:gap-6">
             {OUTCOMES.map((o, i) => (
               <OutcomeCard key={o.label} outcome={o} isVisible={heroVisible} delay={i * 150} />
             ))}
-          </div>
-
-          {/* Live ticker + cohort */}
-          <div className="flex flex-col items-center gap-4 mb-10 lg:mb-12">
-            <LiveTicker />
-            <p className="text-xs text-slate-500 flex items-center gap-2">
-              <span className="w-1 h-1 rounded-full bg-amber-500 animate-pulse" />
-              Next cohort starts <span className="font-bold text-amber-600">Monday</span> · spots filling
-            </p>
-          </div>
-
-          {/* CTA */}
-          <div className="flex flex-col items-center gap-3">
-            <Link
-              href="/signup"
-              className="group relative inline-flex items-center gap-3 px-9 py-5 rounded-2xl text-base lg:text-lg font-bold text-white transition-all overflow-hidden"
-              style={{
-                background: "linear-gradient(135deg, #0056CE 0%, #4F46E5 100%)",
-                boxShadow: "0 12px 40px rgba(0,86,206,0.35), 0 0 0 1px rgba(255,255,255,0.1) inset",
-              }}
-            >
-              <span>Take the assessment</span>
-              <span className="text-xl transition-transform group-hover:translate-x-1">→</span>
-              <span className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/30 to-transparent group-hover:translate-x-full transition-transform duration-1000" />
-            </Link>
-            <p className="text-xs text-slate-500">
-              30 minutes · No card required · Free forever
-            </p>
           </div>
         </div>
       </section>
@@ -548,8 +551,54 @@ export function JourneyHook() {
             </p>
           </div>
 
-          {/* Steps */}
-          <div className="space-y-12 sm:space-y-16 lg:space-y-24">
+          {/* Steps with scroll-driven progress line */}
+          <div ref={stepsTrackRef} className="relative space-y-12 sm:space-y-16 lg:space-y-24">
+
+            {/* Vertical scroll progress line — hidden on mobile */}
+            <div className="hidden lg:block absolute left-1/2 -translate-x-1/2 top-0 bottom-0 w-px pointer-events-none z-0">
+              {/* Background track */}
+              <div className="absolute inset-0 bg-white/[0.06]" />
+              {/* Filled portion — gradient */}
+              <div
+                className="absolute top-0 left-0 right-0 will-change-[height]"
+                style={{
+                  height: `${stepsProgress * 100}%`,
+                  background:
+                    "linear-gradient(180deg, #3388FF 0%, #A78BFA 25%, #8B5CF6 50%, #6366F1 75%, #10B981 100%)",
+                  boxShadow: "0 0 16px rgba(99,102,241,0.4)",
+                  transition: "height 0.05s linear",
+                }}
+              />
+              {/* Glowing orb at current scroll position */}
+              {stepsProgress > 0 && stepsProgress < 1 && (
+                <div
+                  className="absolute left-1/2 -translate-x-1/2 will-change-transform"
+                  style={{
+                    top: `${stepsProgress * 100}%`,
+                    transform: "translate(-50%, -50%)",
+                    transition: "top 0.05s linear",
+                  }}
+                >
+                  {/* Outer halo */}
+                  <div
+                    className="absolute -inset-6 rounded-full"
+                    style={{
+                      background: "radial-gradient(circle, rgba(99,102,241,0.5) 0%, transparent 70%)",
+                      filter: "blur(8px)",
+                    }}
+                  />
+                  {/* Inner bright dot */}
+                  <div
+                    className="relative w-3.5 h-3.5 rounded-full"
+                    style={{
+                      background: "radial-gradient(circle, #ffffff 0%, #6366F1 60%, #4F46E5 100%)",
+                      boxShadow: "0 0 24px rgba(99,102,241,0.9), 0 0 8px rgba(255,255,255,0.9)",
+                    }}
+                  />
+                </div>
+              )}
+            </div>
+
             {STEPS.map((step, i) => {
               const Mockup = MOCKUPS[i];
               const isVisible = visibleSteps.has(i);
@@ -558,7 +607,7 @@ export function JourneyHook() {
                 <div
                   key={step.n}
                   data-step-idx={i}
-                  className={`grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-12 items-center transition-all duration-700 ${i % 2 === 1 ? "lg:[direction:rtl]" : ""}`}
+                  className={`relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-12 items-center transition-all duration-700 ${i % 2 === 1 ? "lg:[direction:rtl]" : ""}`}
                   style={{
                     opacity: isVisible ? 1 : 0,
                     transform: isVisible ? "translateY(0)" : "translateY(40px)",
@@ -603,14 +652,6 @@ export function JourneyHook() {
                         <p className="text-sm lg:text-base text-slate-400 leading-relaxed mb-4">
                           {step.desc}
                         </p>
-                        {isFinal && (
-                          <Link
-                            href="/signup"
-                            className="inline-flex items-center gap-2 px-5 py-3 rounded-full bg-emerald-500 hover:bg-emerald-600 transition-colors text-white text-sm font-bold"
-                          >
-                            Start your journey →
-                          </Link>
-                        )}
                       </div>
 
                       <div className="w-full max-w-[260px] mx-auto sm:mx-0">
@@ -624,6 +665,96 @@ export function JourneyHook() {
           </div>
         </div>
       </section>
+
+      {/* ════════════════════════════════════════════════════════════════════════ */}
+      {/* ZONE 3 — CLOSING CTA (after the 5-step journey) */}
+      {/* ════════════════════════════════════════════════════════════════════════ */}
+      <section
+        className="relative w-full overflow-hidden py-20 sm:py-24 lg:py-28 px-4 sm:px-6 lg:px-8"
+        style={{ background: "linear-gradient(180deg, #050B14 0%, #00183A 100%)" }}
+      >
+        {/* Background glow */}
+        <div className="pointer-events-none absolute top-0 left-1/2 -translate-x-1/2 w-[900px] h-[500px] rounded-full"
+          style={{ background: "radial-gradient(ellipse, rgba(0,86,206,0.18) 0%, transparent 70%)", filter: "blur(90px)" }} />
+
+        <div className="relative max-w-3xl mx-auto text-center">
+          {/* Label */}
+          <span className="text-[10px] sm:text-[11px] tracking-[0.35em] uppercase text-slate-500 font-bold">
+            Your turn
+          </span>
+
+          {/* Closing headline */}
+          <h3 className="mt-4 mb-5 font-black text-white tracking-tight leading-[0.95]"
+            style={{ fontSize: "clamp(36px, 6vw, 76px)" }}>
+            Start the assessment.
+            <br />
+            <span style={{
+              background: "linear-gradient(135deg, #3388FF 0%, #A78BFA 50%, #10B981 100%)",
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent",
+              backgroundClip: "text",
+            }}>
+              Take step one.
+            </span>
+          </h3>
+
+          <p className="text-sm sm:text-base text-slate-400 max-w-md mx-auto mb-10">
+            30 minutes to find out where you stand. Zero pressure. Free forever.
+          </p>
+
+          {/* Live ticker + cohort */}
+          <div className="flex flex-col items-center gap-4 mb-10">
+            {/* Dark-themed inline version of the ticker */}
+            <DarkTicker />
+            <p className="text-xs text-slate-500 flex items-center gap-2">
+              <span className="w-1 h-1 rounded-full bg-amber-400 animate-pulse" />
+              Next cohort starts <span className="font-bold text-amber-400">Monday</span> · spots filling
+            </p>
+          </div>
+
+          {/* Big CTA */}
+          <div className="flex flex-col items-center gap-3">
+            <Link
+              href="/signup"
+              className="group relative inline-flex items-center gap-3 px-10 py-5 rounded-2xl text-base lg:text-lg font-bold text-white transition-all overflow-hidden"
+              style={{
+                background: "linear-gradient(135deg, #0056CE 0%, #4F46E5 100%)",
+                boxShadow: "0 16px 48px rgba(0,86,206,0.5), 0 0 0 1px rgba(255,255,255,0.1) inset",
+              }}
+            >
+              <span>Take the assessment</span>
+              <span className="text-xl transition-transform group-hover:translate-x-1">→</span>
+              <span className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/30 to-transparent group-hover:translate-x-full transition-transform duration-1000" />
+            </Link>
+            <p className="text-xs text-slate-500">
+              No credit card · No commitment · Just signal
+            </p>
+          </div>
+        </div>
+      </section>
     </>
+  );
+}
+
+// ─── Dark-themed ticker for the closing CTA zone ──────────────────────────────
+function DarkTicker() {
+  const [idx, setIdx] = useState(0);
+  useEffect(() => {
+    const t = setInterval(() => setIdx((i) => (i + 1) % TICKER_STATS.length), 3500);
+    return () => clearInterval(t);
+  }, []);
+  const stat = TICKER_STATS[idx];
+  return (
+    <div className="inline-flex items-center gap-3 px-4 py-2.5 rounded-full border border-white/10"
+      style={{ background: "rgba(8,18,32,0.7)", backdropFilter: "blur(12px)" }}>
+      <span className="relative flex items-center justify-center">
+        <span className="absolute w-2.5 h-2.5 rounded-full animate-ping" style={{ background: stat.color, opacity: 0.5 }} />
+        <span className="w-2 h-2 rounded-full" style={{ background: stat.color }} />
+      </span>
+      <span key={idx} className="animate-fade-in-up text-xs sm:text-sm text-slate-300">
+        <span className="font-bold tabular-nums text-white">{stat.value.toLocaleString()}</span>{" "}
+        <span className="text-slate-400">{stat.label}</span>
+      </span>
+    </div>
   );
 }
