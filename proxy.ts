@@ -7,6 +7,7 @@ const PUBLIC_PATHS = [
   "/signup",
   "/privacy",
   "/terms",
+  "/preview",
   "/api/auth/callback",
   "/api/onboard",
 ];
