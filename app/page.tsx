@@ -63,19 +63,13 @@ export default async function Home() {
       {/* ── 1. Hero ──────────────────────────────────────────────────────────── */}
       <HeroSection />
 
-      {/* ── 2. THE HOOK — Why take the course + 5-step journey to hired ─────── */}
+      {/* ── 2. THE HOOK — Why take the course + 5-step journey + red CTA ────── */}
       <JourneyHook />
 
-      {/* ── 3. Terminal Demo ─────────────────────────────────────────────────── */}
-      <TerminalDemo />
-
-      {/* ── 3. Comparison ────────────────────────────────────────────────────── */}
+      {/* ── 3. Why Square 1 beats everything else (moved up · gradient bg) ──── */}
       <ComparisonSection />
 
-      {/* ── 4. Interactive Demo ──────────────────────────────────────────────── */}
-      <InteractiveDemo />
-
-      {/* ── 5. Courses grid ──────────────────────────────────────────────────── */}
+      {/* ── 4. Courses grid — 8 subjects (moved up) ──────────────────────────── */}
       <section className="py-24 bg-surface">
         <div className="max-w-6xl mx-auto px-6">
           <div className="text-center mb-12">
@@ -124,22 +118,28 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* ── 6. Journey Timeline ──────────────────────────────────────────────── */}
+      {/* ── 5. Terminal Demo — AI grades your code (moved DOWN) ─────────────── */}
+      <TerminalDemo />
+
+      {/* ── 6. Interactive Demo ──────────────────────────────────────────────── */}
+      <InteractiveDemo />
+
+      {/* ── 7. Journey Timeline ──────────────────────────────────────────────── */}
       <TimelineSection />
 
-      {/* ── 7. AI Tutor Chat Preview ─────────────────────────────────────────── */}
+      {/* ── 8. AI Tutor Chat Preview ─────────────────────────────────────────── */}
       <TutorChatPreview />
 
-      {/* ── 8. GitHub Portfolio ──────────────────────────────────────────────── */}
+      {/* ── 9. GitHub Portfolio ──────────────────────────────────────────────── */}
       <GitHubPortfolio />
 
-      {/* ── 9. Skill Radar ───────────────────────────────────────────────────── */}
+      {/* ── 10. Skill Radar ──────────────────────────────────────────────────── */}
       <SkillRadarPreview />
 
-      {/* ── 10. Stats ────────────────────────────────────────────────────────── */}
+      {/* ── 11. Stats ────────────────────────────────────────────────────────── */}
       <StatsSection />
 
-      {/* ── 11. Student Transformation Stories ──────────────────────────────── */}
+      {/* ── 12. Student Transformation Stories ───────────────────────────────── */}
       <TransformationStories />
 
       {/* ── Final CTA ────────────────────────────────────────────────────────── */}
