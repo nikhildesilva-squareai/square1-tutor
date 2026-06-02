@@ -213,6 +213,13 @@ body {
 }
 .animate-mockup-in { animation: mockup-in 0.55s ease-out forwards; }
 
+/* Marquee — continuously scrolling role list */
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+.animate-marquee { animation: marquee 22s linear infinite; }
+
 /* ─── Journey Hero animations (the money shot) ──────────────────────────────── */
 /* Pop a station node when the orb arrives */
 @keyframes station-pop {

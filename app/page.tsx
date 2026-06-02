@@ -11,7 +11,7 @@ import { GitHubPortfolio } from "@/components/landing/GitHubPortfolio";
 import { StatsSection } from "@/components/landing/StatsSection";
 import { TransformationStories } from "@/components/landing/TransformationStories";
 import { SkillRadarPreview } from "@/components/landing/SkillRadarPreview";
-import { JourneySection } from "@/components/landing/JourneySection";
+import { JourneyHook } from "@/components/landing/JourneyHook";
 import { CookieConsent } from "@/components/ui/cookie-consent";
 
 // ─── Server-side data fetch ───────────────────────────────────────────────────
@@ -63,10 +63,10 @@ export default async function Home() {
       {/* ── 1. Hero ──────────────────────────────────────────────────────────── */}
       <HeroSection />
 
-      {/* ── 2. Journey (sticky scroll) ───────────────────────────────────────── */}
-      <JourneySection />
+      {/* ── 2. THE HOOK — Why take the course + 5-step journey to hired ─────── */}
+      <JourneyHook />
 
-      {/* ── 2b. Terminal Demo ────────────────────────────────────────────────── */}
+      {/* ── 3. Terminal Demo ─────────────────────────────────────────────────── */}
       <TerminalDemo />
 
       {/* ── 3. Comparison ────────────────────────────────────────────────────── */}
