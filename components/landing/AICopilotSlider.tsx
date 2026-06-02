@@ -285,7 +285,7 @@ export function AICopilotSlider() {
 
   return (
     <section
-      className="relative overflow-hidden py-20 sm:py-28 lg:py-32 px-4 sm:px-6 lg:px-8"
+      className="relative overflow-hidden py-14 sm:py-20 lg:py-24 px-4 sm:px-6 lg:px-8"
       style={{
         background: "linear-gradient(180deg, #050B14 0%, #0B1626 50%, #050B14 100%)",
       }}
@@ -293,42 +293,50 @@ export function AICopilotSlider() {
       onMouseLeave={() => setIsPaused(false)}
     >
       {/* Background accents — colour shifts with active slide */}
-      <div className="pointer-events-none absolute top-0 left-1/4 w-[500px] h-[500px] rounded-full opacity-25 transition-all duration-1000"
-        style={{ background: `radial-gradient(circle, ${slide.accent}40 0%, transparent 70%)`, filter: "blur(90px)" }} />
-      <div className="pointer-events-none absolute bottom-0 right-1/4 w-[600px] h-[500px] rounded-full opacity-20 transition-all duration-1000"
-        style={{ background: `radial-gradient(circle, ${slide.accent}30 0%, transparent 70%)`, filter: "blur(90px)" }} />
+      <div className="pointer-events-none absolute top-0 left-1/4 w-[400px] h-[400px] rounded-full opacity-25 transition-all duration-1000"
+        style={{ background: `radial-gradient(circle, ${slide.accent}40 0%, transparent 70%)`, filter: "blur(80px)" }} />
+      <div className="pointer-events-none absolute bottom-0 right-1/4 w-[500px] h-[400px] rounded-full opacity-20 transition-all duration-1000"
+        style={{ background: `radial-gradient(circle, ${slide.accent}30 0%, transparent 70%)`, filter: "blur(80px)" }} />
 
-      <div className="relative max-w-6xl mx-auto">
+      <div className="relative max-w-5xl mx-auto">
 
-        {/* Heading area — crossfades with key={activeIdx} */}
-        <div className="text-center mb-10 sm:mb-14 min-h-[180px] sm:min-h-[200px] flex flex-col justify-center">
+        {/* Heading area — compact, supporting role */}
+        <div className="text-center mb-8 sm:mb-10 min-h-[110px] sm:min-h-[120px] flex flex-col justify-center">
           <div key={`head-${activeIdx}`} className="animate-step-in">
-            <span
-              className="text-[10px] sm:text-[11px] tracking-[0.35em] uppercase font-bold"
-              style={{ color: slide.accent }}
-            >
-              {slide.eyebrow}
-            </span>
-            <h2 className="mt-4 font-black tracking-tight text-white leading-[0.95]"
-              style={{ fontSize: "clamp(32px, 5.5vw, 72px)" }}>
+            {/* Pill eyebrow instead of huge text */}
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border mb-4"
+              style={{
+                background: `${slide.accent}15`,
+                borderColor: `${slide.accent}40`,
+              }}>
+              <span className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: slide.accent }} />
+              <span className="text-[10px] tracking-[0.25em] uppercase font-bold" style={{ color: slide.accent }}>
+                {slide.eyebrow}
+              </span>
+            </div>
+
+            {/* Compact heading — visual is the hero now */}
+            <h2 className="font-black tracking-tight text-white leading-[1.05]"
+              style={{ fontSize: "clamp(24px, 3.5vw, 44px)", letterSpacing: "-0.02em" }}>
               {slide.titleStart}
               <span style={{
-                background: `linear-gradient(135deg, ${slide.accent} 0%, #FFFFFF 100%)`,
+                background: `linear-gradient(135deg, ${slide.accent} 0%, #FFFFFF 110%)`,
                 WebkitBackgroundClip: "text",
                 WebkitTextFillColor: "transparent",
                 backgroundClip: "text",
+                filter: `drop-shadow(0 0 24px ${slide.accent}40)`,
               }}>
                 {slide.titleAccent}
               </span>
             </h2>
-            <p className="mt-4 text-sm sm:text-base text-slate-400 max-w-xl mx-auto leading-relaxed">
+            <p className="mt-3 text-xs sm:text-sm text-slate-400 max-w-md mx-auto leading-relaxed">
               {slide.description}
             </p>
           </div>
         </div>
 
-        {/* Visual area — crossfades with key */}
-        <div className="relative min-h-[420px] sm:min-h-[460px] flex items-center justify-center mb-10">
+        {/* Visual area — this is the HERO. Bigger, brighter. */}
+        <div className="relative min-h-[400px] sm:min-h-[440px] flex items-center justify-center mb-8">
           <div key={`visual-${activeIdx}`} className="w-full animate-mockup-in">
             <Visual />
           </div>
