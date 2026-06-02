@@ -18,6 +18,42 @@ export function HeroSection() {
       className="hero-section relative min-h-screen flex flex-col overflow-hidden"
       style={{ background: "#050B14" }}
     >
+      {/* ── Background video — neural network ──────────────────────────── */}
+      {/* Sits behind everything else; muted/autoplay/loop/playsInline for       */}
+      {/* cross-platform support. Respects prefers-reduced-motion via media query. */}
+      <video
+        autoPlay
+        muted
+        loop
+        playsInline
+        preload="auto"
+        aria-hidden="true"
+        className="motion-safe:block motion-reduce:hidden absolute inset-0 w-full h-full object-cover pointer-events-none"
+        style={{
+          opacity: 0.45,
+          mixBlendMode: "screen",
+        }}
+      >
+        <source src="/videos/neural-hero.mp4" type="video/mp4" />
+      </video>
+
+      {/* Dark gradient overlay to keep text legible over the video */}
+      <div
+        className="pointer-events-none absolute inset-0"
+        style={{
+          background:
+            "linear-gradient(180deg, rgba(5,11,20,0.55) 0%, rgba(5,11,20,0.35) 50%, rgba(5,11,20,0.75) 100%)",
+        }}
+      />
+      {/* Left-side darkening — makes text panel readable on bright frames */}
+      <div
+        className="hidden lg:block pointer-events-none absolute inset-y-0 left-0 w-2/3"
+        style={{
+          background:
+            "linear-gradient(90deg, rgba(5,11,20,0.85) 0%, rgba(5,11,20,0.55) 50%, transparent 100%)",
+        }}
+      />
+
       {/* ── Background blobs ───────────────────────────────────────────── */}
       <div
         className="animate-blob-1 pointer-events-none absolute -top-40 -left-40 rounded-full opacity-[0.12]"
