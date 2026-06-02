@@ -81,50 +81,217 @@ export default async function Home() {
       {/* ── 8. Social Proof — rotating stories + embedded stats ────────────── */}
       <SocialProofSection />
 
-      {/* ── Final CTA ────────────────────────────────────────────────────────── */}
-      <section className="py-14 sm:py-24 text-center" style={{ background: "#00183A" }}>
-        <div className="max-w-2xl mx-auto px-4 sm:px-6">
-          <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4">Your portfolio starts today.</h2>
-          <p className="text-slate-400 mb-8 sm:mb-10 text-base sm:text-lg">
-            Join learners building real skills, real projects, real careers.
+      {/* ── About + Final CTA + Footer ────────────────────────────────────── */}
+      <section className="relative overflow-hidden" style={{ background: "#050B14" }}>
+
+        {/* Background accents */}
+        <div className="pointer-events-none absolute top-1/4 left-0 -translate-x-1/2 w-[700px] h-[700px] rounded-full opacity-15"
+          style={{ background: "radial-gradient(circle, #0056CE 0%, transparent 70%)", filter: "blur(100px)" }} />
+        <div className="pointer-events-none absolute bottom-1/4 right-0 translate-x-1/2 w-[800px] h-[800px] rounded-full opacity-10"
+          style={{ background: "radial-gradient(circle, #4F46E5 0%, transparent 70%)", filter: "blur(100px)" }} />
+
+        {/* ── About Square 1 Ai ───────────────────────────────────────── */}
+        <div className="relative max-w-5xl mx-auto px-6 sm:px-8 pt-24 sm:pt-32 lg:pt-40 pb-16 sm:pb-20">
+          {/* Logo centered + large */}
+          <div className="flex justify-center mb-10">
+            <Logo variant="light" size="xl" />
+          </div>
+
+          {/* Mission statement */}
+          <div className="text-center max-w-3xl mx-auto">
+            <h2 className="font-black tracking-tight text-white leading-[1.05] mb-6"
+              style={{ fontSize: "clamp(32px, 5vw, 60px)", letterSpacing: "-0.03em" }}>
+              We&apos;re building the future of{" "}
+              <span style={{
+                background: "linear-gradient(135deg, #3388FF 0%, #A78BFA 50%, #10B981 100%)",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+                backgroundClip: "text",
+              }}>
+                technical education.
+              </span>
+            </h2>
+
+            <p className="text-base sm:text-lg text-slate-400 leading-relaxed mb-8 max-w-2xl mx-auto">
+              Square1 Ai is the world&apos;s first AI-powered learn-to-launch platform.
+              We don&apos;t just teach you — we assess your level, personalise your path,
+              grade every line of code you write, and walk you from day one to a deployed
+              portfolio and a real job offer.
+            </p>
+
+            <p className="text-sm sm:text-base text-slate-500 leading-relaxed max-w-2xl mx-auto">
+              Traditional education gives you theory and hopes you figure out the rest.
+              Bootcamps rush you through and hand you a certificate.{" "}
+              <span className="text-white font-semibold">We give you 12 deployed projects,
+              an AI tutor that knows your code, and a skill report that proves you&apos;re
+              ready.</span> That&apos;s the difference.
+            </p>
+          </div>
+
+          {/* Principles row */}
+          <div className="mt-14 sm:mt-20 grid grid-cols-1 sm:grid-cols-3 gap-6 max-w-3xl mx-auto">
+            {[
+              {
+                label: "Proof over certificates",
+                desc: "12 real projects. Live on GitHub. Run the code, not a PDF.",
+                accent: "#3388FF",
+              },
+              {
+                label: "Feedback over content",
+                desc: "Content is free on YouTube. Personalised AI feedback on YOUR code isn't.",
+                accent: "#A78BFA",
+              },
+              {
+                label: "Outcomes over promises",
+                desc: "Every course maps to a real role with a real salary. That's the bar.",
+                accent: "#10B981",
+              },
+            ].map((p) => (
+              <div key={p.label} className="text-center">
+                <div className="w-10 h-10 rounded-full mx-auto mb-4 flex items-center justify-center"
+                  style={{ background: `${p.accent}15`, border: `1px solid ${p.accent}30` }}>
+                  <span className="text-sm font-black" style={{ color: p.accent }}>✓</span>
+                </div>
+                <h4 className="text-sm font-bold text-white mb-2">{p.label}</h4>
+                <p className="text-xs text-slate-500 leading-relaxed">{p.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* ── Divider ─────────────────────────────────────────────────── */}
+        <div className="max-w-md mx-auto px-6 flex items-center gap-4 py-8">
+          <div className="flex-1 h-px bg-white/[0.08]" />
+          <span className="text-[9px] tracking-[0.35em] uppercase text-slate-600 font-bold whitespace-nowrap">
+            Ready?
+          </span>
+          <div className="flex-1 h-px bg-white/[0.08]" />
+        </div>
+
+        {/* ── Final CTA ───────────────────────────────────────────────── */}
+        <div className="relative max-w-3xl mx-auto px-6 sm:px-8 pb-20 sm:pb-24 text-center">
+          <h3 className="font-black tracking-tight text-white leading-[0.95] mb-5"
+            style={{ fontSize: "clamp(36px, 6vw, 76px)" }}>
+            Your career starts
+            <br />
+            <span style={{
+              background: "linear-gradient(135deg, #3388FF 0%, #A78BFA 50%, #10B981 100%)",
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent",
+              backgroundClip: "text",
+            }}>
+              with one test.
+            </span>
+          </h3>
+
+          <p className="text-sm sm:text-base text-slate-400 max-w-md mx-auto mb-10">
+            30 minutes. Free forever. No credit card.
+            <br />Find out where you stand — and exactly how to get where you want to be.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+
+          <div className="flex flex-col sm:flex-row gap-3 justify-center mb-6">
             <Link
               href="/signup"
-              className="px-8 py-4 bg-white text-brand font-bold rounded-xl text-lg hover:bg-slate-100 transition-colors shadow-lg"
+              className="group relative inline-flex items-center justify-center gap-3 px-10 py-5 rounded-2xl text-base lg:text-lg font-bold text-white overflow-hidden transition-all hover:-translate-y-0.5"
+              style={{
+                background: "linear-gradient(135deg, #DC2626 0%, #EF4444 50%, #F87171 100%)",
+                boxShadow: "0 16px 48px rgba(220,38,38,0.40), 0 0 0 1px rgba(255,255,255,0.10) inset",
+              }}
             >
-              Get started for free →
+              <span className="relative z-10">Take the assessment</span>
+              <span className="relative z-10 text-xl transition-transform group-hover:translate-x-2">→</span>
+              <span className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent group-hover:translate-x-full transition-transform duration-1000" />
             </Link>
             <Link
               href="/login"
-              className="px-8 py-4 border-2 border-white/30 text-white font-semibold rounded-xl text-lg hover:border-white/60 hover:bg-white/5 transition-colors"
+              className="inline-flex items-center justify-center px-8 py-5 rounded-2xl text-white text-base font-semibold transition-all hover:bg-white/[0.06]"
+              style={{ border: "1px solid rgba(255,255,255,0.12)" }}
             >
               Sign in
             </Link>
           </div>
-        </div>
-      </section>
 
-      {/* ── Footer ───────────────────────────────────────────────────────────── */}
-      <footer className="border-t border-white/10 py-10" style={{ background: "#00183A" }}>
-        <div className="max-w-6xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-6">
-          <Logo variant="light" />
-          <div className="flex flex-wrap gap-6 text-sm text-slate-400">
-            <Link href="/privacy" className="hover:text-white transition-colors">
-              Privacy Policy
-            </Link>
-            <Link href="/terms" className="hover:text-white transition-colors">
-              Terms of Service
-            </Link>
-            <a href="mailto:hello@square1.ai" className="hover:text-white transition-colors">
-              Contact
-            </a>
-          </div>
-          <p className="text-xs text-slate-500 text-center md:text-right">
-            © 2026 Square 1 AI · GDPR Compliant · Essential Eight · SOC 2
+          <p className="text-[10px] text-slate-600 tracking-widest uppercase">
+            12 subjects · 12 projects per course · AI graded · Career-mapped
           </p>
         </div>
-      </footer>
+
+        {/* ── Footer ──────────────────────────────────────────────────── */}
+        <footer className="relative border-t border-white/[0.06]">
+          <div className="max-w-6xl mx-auto px-6 sm:px-8 py-12 sm:py-16">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-10 md:gap-8">
+
+              {/* Col 1 — Brand */}
+              <div className="md:col-span-1">
+                <Logo variant="light" size="md" />
+                <p className="mt-4 text-xs text-slate-500 leading-relaxed max-w-xs">
+                  The world&apos;s first AI-powered learn-to-launch platform.
+                  From assessment to job offer.
+                </p>
+                <div className="mt-4 flex items-center gap-2">
+                  <span className="text-[9px] tracking-widest uppercase text-slate-600 font-bold px-2 py-1 rounded border border-white/[0.08]">GDPR</span>
+                  <span className="text-[9px] tracking-widest uppercase text-slate-600 font-bold px-2 py-1 rounded border border-white/[0.08]">SOC 2</span>
+                  <span className="text-[9px] tracking-widest uppercase text-slate-600 font-bold px-2 py-1 rounded border border-white/[0.08]">Essential 8</span>
+                </div>
+              </div>
+
+              {/* Col 2 — Platform */}
+              <div>
+                <h5 className="text-[10px] tracking-[0.3em] uppercase text-slate-500 font-bold mb-4">Platform</h5>
+                <ul className="space-y-2.5">
+                  {["Courses", "Assessment", "AI Tutor", "Projects", "Pricing"].map((item) => (
+                    <li key={item}>
+                      <Link href={item === "Courses" ? "/courses" : "/signup"} className="text-sm text-slate-400 hover:text-white transition-colors">
+                        {item}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              {/* Col 3 — Company */}
+              <div>
+                <h5 className="text-[10px] tracking-[0.3em] uppercase text-slate-500 font-bold mb-4">Company</h5>
+                <ul className="space-y-2.5">
+                  {[
+                    { label: "About", href: "#" },
+                    { label: "Careers", href: "#" },
+                    { label: "Contact", href: "mailto:hello@square1.ai" },
+                    { label: "Blog", href: "#" },
+                  ].map((item) => (
+                    <li key={item.label}>
+                      <a href={item.href} className="text-sm text-slate-400 hover:text-white transition-colors">
+                        {item.label}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              {/* Col 4 — Legal */}
+              <div>
+                <h5 className="text-[10px] tracking-[0.3em] uppercase text-slate-500 font-bold mb-4">Legal</h5>
+                <ul className="space-y-2.5">
+                  <li><Link href="/privacy" className="text-sm text-slate-400 hover:text-white transition-colors">Privacy Policy</Link></li>
+                  <li><Link href="/terms" className="text-sm text-slate-400 hover:text-white transition-colors">Terms of Service</Link></li>
+                  <li><a href="#" className="text-sm text-slate-400 hover:text-white transition-colors">Cookie Policy</a></li>
+                  <li><a href="#" className="text-sm text-slate-400 hover:text-white transition-colors">Accessibility</a></li>
+                </ul>
+              </div>
+            </div>
+
+            {/* Bottom bar */}
+            <div className="mt-12 pt-8 border-t border-white/[0.06] flex flex-col sm:flex-row items-center justify-between gap-4">
+              <p className="text-xs text-slate-600">
+                © 2026 Square 1 Ai. All rights reserved.
+              </p>
+              <p className="text-[10px] text-slate-700 text-center sm:text-right">
+                Built with ❤️ for learners who want more than tutorials.
+              </p>
+            </div>
+          </div>
+        </footer>
+      </section>
 
       <CookieConsent />
     </main>
