@@ -48,6 +48,9 @@ export async function proxy(request: NextRequest) {
     ) ||
     pathname.startsWith("/_next") ||
     pathname.startsWith("/favicon") ||
+    // Static media in /public — videos, images, audio
+    pathname.startsWith("/videos") ||
+    pathname.startsWith("/images") ||
     // Allow API routes (each route protects itself)
     pathname.startsWith("/api");
 
@@ -68,6 +71,7 @@ export async function proxy(request: NextRequest) {
 
 export const config = {
   matcher: [
-    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
+    // Skip Next internals, favicon, all images/videos/audio in /public
+    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|mp4|webm|mov|m4a|mp3|wav|ogg|woff|woff2|ttf|otf)$).*)",
   ],
 };
