@@ -27,13 +27,15 @@ const META: Record<string, CourseMeta> = {
   "generative-ai":           { role: "AI Engineer",            salary: "$130–200k", enrolled: 1842, projects: ["AI Chatbot", "RAG Pipeline", "Research Agent"] },
   "machine-learning":        { role: "ML Engineer",            salary: "$140–220k", enrolled: 1247, projects: ["House Price Predictor", "Image Classifier", "Fraud Detector"] },
   "artificial-intelligence": { role: "AI Engineer",            salary: "$130–200k", enrolled:  892, projects: ["Pathfinding Visualiser", "Game AI", "Decision Engine"] },
-  "cybersecurity":           { role: "Cybersecurity Engineer", salary: "$110–180k", enrolled: 1108, projects: ["Vulnerability Scanner", "Password Auditor", "Secure Auth"] },
+  "cybersecurity":           { role: "Cybersecurity Engineer",  salary: "$110–180k", enrolled: 1108, projects: ["Vulnerability Scanner", "Password Auditor", "Secure Auth"] },
   "computer-vision":         { role: "Computer Vision Engineer", salary: "$120–180k", enrolled: 624, projects: ["Face Detection", "OCR App", "Object Tracker"] },
   "game-development":        { role: "Game Developer",         salary: "$80–150k",  enrolled:  738, projects: ["2D Platformer", "AI Enemy System", "Multiplayer Game"] },
-  "frontend-development":    { role: "Frontend Engineer",      salary: "$90–150k",  enrolled: 1456, projects: ["Portfolio Site", "E-commerce UI", "Dashboard"] },
   "fullstack-development":   { role: "Full Stack Engineer",    salary: "$100–160k", enrolled: 1672, projects: ["SaaS App", "Real-time Chat", "Payment System"] },
   "drone-technology":        { role: "Drone / Robotics Engineer", salary: "$115–185k", enrolled: 542, projects: ["Autonomous Flight", "Aerial Vision AI", "Swarm Controller"] },
   "data-science":            { role: "Data Scientist",         salary: "$115–185k", enrolled: 1156, projects: ["Cohort Analysis", "A/B Test Lab", "Sales Forecaster"] },
+  "llm-agent-architect":     { role: "LLM Agent Architect",    salary: "$150–250k", enrolled:  896, projects: ["Tool-use Agent", "Multi-agent System", "Autonomous Workflow"] },
+  "ai-product-management":   { role: "AI Product Manager",     salary: "$140–220k", enrolled:  734, projects: ["AI Product Spec", "Go-to-Market Plan", "User Research Report"] },
+  "devops-engineering":      { role: "DevOps Engineer",        salary: "$120–190k", enrolled: 1324, projects: ["CI/CD Pipeline", "K8s Deployment", "Monitoring Stack"] },
   "default":                 { role: "Software Engineer",      salary: "$90–150k",  enrolled:  500, projects: ["Starter Project", "Mid-level Project", "Capstone"] },
 };
 
@@ -207,7 +209,7 @@ export function CourseGridSection({ courses }: { courses: Course[] }) {
           </span>
           <h2 className="mt-4 font-black tracking-tight text-slate-900 leading-[0.95]"
             style={{ fontSize: "clamp(36px, 6vw, 80px)" }}>
-            8 subjects.
+            12 subjects.
             <br />
             <span style={{
               background: "linear-gradient(135deg, #3388FF 0%, #A78BFA 50%, #10B981 100%)",
@@ -224,7 +226,7 @@ export function CourseGridSection({ courses }: { courses: Course[] }) {
         </div>
 
         {/* 8 course cards — same grid as timeline (3 cols on lg) */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 lg:gap-5">
           {courses.map((course, i) => (
             <CourseCard key={course.id} course={course} index={i} isVisible={visible} />
           ))}

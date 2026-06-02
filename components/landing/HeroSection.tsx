@@ -123,7 +123,7 @@ export function HeroSection() {
           {/* Tag line */}
           <div className="mb-6 sm:mb-8">
             <span className="text-[10px] sm:text-xs font-bold tracking-[0.25em] uppercase text-brand border border-brand/30 bg-brand/10 px-3 py-1.5 rounded-full">
-              AI-Powered Learning Platform
+              AI Powered Learn to Launch Platform
             </span>
           </div>
 
@@ -185,7 +185,7 @@ export function HeroSection() {
 
           {/* Mini trust bar */}
           <div className="mt-8 flex items-center gap-4 text-[10px] text-slate-600 uppercase tracking-widest">
-            <span>8 Subjects</span>
+            <span>12 Subjects</span>
             <span className="w-1 h-1 rounded-full bg-slate-700" />
             <span>10–12 Projects</span>
             <span className="w-1 h-1 rounded-full bg-slate-700" />

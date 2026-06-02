@@ -5,43 +5,45 @@ interface LogoProps {
   className?: string;
   size?: "sm" | "md" | "lg" | "xl";
   variant?: "light" | "dark";
-  /** When true, render only the square-bracket icon without the wordmark */
   iconOnly?: boolean;
-  /** When true, render the filled blue gradient "app-icon" style (used for favicons / avatars) */
   appIcon?: boolean;
 }
 
 const HEIGHTS = { sm: "h-6", md: "h-8", lg: "h-10", xl: "h-14" };
 
-// ─── The square-bracket mark from the Square 1 AI brand ────────────────────
-// A clean square frame where the right side reads as a stylized "1":
-// the vertical line on the right doesn't fully meet the bottom edge,
-// giving the icon its distinctive open form.
-function BracketMark({ color, strokeWidth = 3 }: { color: string; strokeWidth?: number }) {
+// ─── The Square 1 Ai brand mark ──────────────────────────────────────────────
+// An open square bracket — thick, bold, matching the Figma design.
+// The bracket is open on the bottom-right, suggesting forward movement.
+function BracketMark({ color, strokeW = 3.5 }: { color: string; strokeW?: number }) {
   return (
     <svg
-      viewBox="0 0 36 36"
+      viewBox="0 0 32 32"
       fill="none"
       className="h-full w-auto shrink-0"
-      stroke={color}
-      strokeWidth={strokeWidth}
-      strokeLinecap="round"
-      strokeLinejoin="round"
       xmlns="http://www.w3.org/2000/svg"
     >
-      {/* Top edge */}
-      <path d="M 6.5 6.5 L 29.5 6.5" />
-      {/* Left edge */}
-      <path d="M 6.5 6.5 L 6.5 29.5" />
-      {/* Bottom edge (partial — leaves room for the '1' to stand on its own) */}
-      <path d="M 6.5 29.5 L 22 29.5" />
-      {/* Right edge (a stylized '1' — doesn't fully meet the bottom) */}
-      <path d="M 29.5 6.5 L 29.5 24" />
+      {/* Open square bracket — L-shaped top + left + partial bottom */}
+      <path
+        d="M 26 5 L 5 5 L 5 27 L 18 27"
+        stroke={color}
+        strokeWidth={strokeW}
+        strokeLinecap="square"
+        strokeLinejoin="miter"
+        fill="none"
+      />
+      {/* Right vertical (partial — stops short to create the open form) */}
+      <path
+        d="M 26 5 L 26 20"
+        stroke={color}
+        strokeWidth={strokeW}
+        strokeLinecap="square"
+        fill="none"
+      />
     </svg>
   );
 }
 
-// ─── The "S1" filled app-icon (gradient square — for favicons, avatars) ────
+// ─── Filled app-icon (gradient square — for favicons, avatars) ───────────────
 function AppIcon({ size = 36 }: { size?: number }) {
   return (
     <svg
@@ -57,28 +59,35 @@ function AppIcon({ size = 36 }: { size?: number }) {
           <stop offset="100%" stopColor="#0056CE" />
         </linearGradient>
       </defs>
-      {/* Rounded blue gradient square */}
       <rect width="64" height="64" rx="14" fill="url(#sq1-gradient)" />
-      {/* Inner bracket mark */}
+      {/* White bracket mark inside the gradient square */}
       <path
-        d="M 14 16 L 36 16 M 14 16 L 14 38 M 14 38 L 28 38 M 36 16 L 36 32"
+        d="M 44 14 L 14 14 L 14 50 L 32 50"
         stroke="white"
-        strokeWidth="3.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
+        strokeWidth="4.5"
+        strokeLinecap="square"
+        strokeLinejoin="miter"
         fill="none"
       />
-      {/* '1' character */}
+      <path
+        d="M 44 14 L 44 38"
+        stroke="white"
+        strokeWidth="4.5"
+        strokeLinecap="square"
+        fill="none"
+      />
+      {/* S1 text */}
       <text
-        x="44"
-        y="42"
+        x="38"
+        y="54"
         fill="white"
         fontFamily="system-ui, -apple-system, sans-serif"
-        fontSize="28"
+        fontSize="16"
         fontWeight="800"
         textAnchor="middle"
+        opacity="0.7"
       >
-        1
+        S1
       </text>
     </svg>
   );
@@ -91,25 +100,21 @@ export function Logo({
   iconOnly = false,
   appIcon = false,
 }: LogoProps) {
-  // Brand colour palette
-  const lightFg = "#FFFFFF";
-  const darkFg  = "#3388FF";  // brand light blue from the screenshot
-  const color   = variant === "light" ? lightFg : darkFg;
+  const BRAND_BLUE = "#0056CE";
+  const color = variant === "light" ? "#FFFFFF" : BRAND_BLUE;
 
-  // App-icon variant ignores text — just the gradient square
   if (appIcon) {
     const px = size === "sm" ? 28 : size === "md" ? 36 : size === "lg" ? 44 : 56;
     return (
-      <div className={cn("inline-flex", className)} aria-label="Square 1 AI">
+      <div className={cn("inline-flex", className)} aria-label="Square1 Ai">
         <AppIcon size={px} />
       </div>
     );
   }
 
-  // Icon-only variant — just the bracket mark, no wordmark
   if (iconOnly) {
     return (
-      <div className={cn(HEIGHTS[size], "inline-flex", className)} aria-label="Square 1 AI">
+      <div className={cn(HEIGHTS[size], "inline-flex", className)} aria-label="Square1 Ai">
         <BracketMark color={color} />
       </div>
     );
@@ -118,20 +123,19 @@ export function Logo({
   // Default: bracket + wordmark
   return (
     <div
-      className={cn(HEIGHTS[size], "inline-flex items-center gap-2", className)}
-      aria-label="Square 1 AI"
+      className={cn(HEIGHTS[size], "inline-flex items-center gap-1.5", className)}
+      aria-label="Square1 Ai"
     >
       <BracketMark color={color} />
       <span
-        className="font-bold tracking-tight whitespace-nowrap leading-none"
+        className="font-black tracking-tight whitespace-nowrap leading-none"
         style={{
           color,
-          fontSize: size === "sm" ? "1rem" : size === "md" ? "1.15rem" : size === "lg" ? "1.4rem" : "1.75rem",
-          letterSpacing: "-0.02em",
+          fontSize: size === "sm" ? "0.95rem" : size === "md" ? "1.1rem" : size === "lg" ? "1.35rem" : "1.7rem",
+          letterSpacing: "-0.03em",
         }}
       >
-        Square<span className="font-black">1</span>
-        <span className="ml-1.5 font-bold">Ai</span>
+        Square1 <span className="font-bold" style={{ color: variant === "light" ? "#FFFFFF" : BRAND_BLUE }}>Ai</span>
       </span>
     </div>
   );

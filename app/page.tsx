@@ -67,7 +67,7 @@ export default async function Home() {
       {/* ── 3. Why Square 1 beats everything else (moved up · gradient bg) ──── */}
       <ComparisonSection />
 
-      {/* ── 4. Courses grid — 8 subjects with career outcomes ────────────────── */}
+      {/* ── 4. Courses grid — 12 subjects with career outcomes ───────────────── */}
       <CourseGridSection courses={courses} />
 
       {/* ── 5. AI Co-pilot Slider — Terminal + Tutor + Portfolio (rotates 5s) ── */}

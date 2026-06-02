@@ -261,7 +261,7 @@ const FEATURES = [
     headline: "Every course → a real job.",
     tagline:  "Tied to a role. Tied to a salary. Tied to your future.",
     accent:   "#EC4899",
-    facts:    ["8 career paths", "Real US salaries", "Verifiable outcomes"],
+    facts:    ["12 career paths", "Real US salaries", "Verifiable outcomes"],
     Visual:   CareerVisual,
   },
 ];
