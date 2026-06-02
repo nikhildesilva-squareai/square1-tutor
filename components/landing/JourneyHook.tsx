@@ -777,39 +777,40 @@ export function JourneyHook() {
             </div>
           </div>
 
-          {/* Big ALIVE CTA */}
-          <div className="flex flex-col items-center gap-4">
+          {/* Big ALIVE CTA — emerald gradient · larger · conversion-optimised */}
+          <div className="flex flex-col items-center gap-5">
             <div className="relative inline-block">
-              {/* Pulse rings — concentric, expanding */}
+              {/* Pulse rings — concentric, expanding, emerald */}
               <div className="absolute inset-0 rounded-2xl pointer-events-none animate-cta-ring"
-                style={{ background: "linear-gradient(135deg, #0056CE, #4F46E5)" }} />
+                style={{ background: "linear-gradient(135deg, #059669, #10B981)" }} />
               <div className="absolute inset-0 rounded-2xl pointer-events-none animate-cta-ring"
-                style={{ background: "linear-gradient(135deg, #4F46E5, #8B5CF6)", animationDelay: "1.2s" }} />
+                style={{ background: "linear-gradient(135deg, #10B981, #34D399)", animationDelay: "1.2s" }} />
 
-              {/* The button itself — breathing + glowing */}
+              {/* The button itself — bigger, bolder, emerald */}
               <Link
                 href="/signup"
-                className="relative group inline-flex items-center gap-3 px-10 py-5 rounded-2xl text-base lg:text-lg font-bold text-white overflow-hidden animate-cta-breathe animate-cta-glow"
+                className="relative group inline-flex items-center gap-4 px-12 sm:px-16 py-6 sm:py-7 rounded-2xl text-lg sm:text-xl lg:text-2xl font-black text-white overflow-hidden animate-cta-breathe animate-cta-glow tracking-tight"
                 style={{
-                  background: "linear-gradient(135deg, #0056CE 0%, #4F46E5 50%, #6366F1 100%)",
+                  background: "linear-gradient(135deg, #059669 0%, #10B981 45%, #34D399 100%)",
                   willChange: "transform",
+                  letterSpacing: "-0.01em",
                 }}
               >
                 <span className="relative z-10">Take the assessment</span>
-                <span className="relative z-10 text-xl transition-transform group-hover:translate-x-1.5">→</span>
+                <span className="relative z-10 text-2xl sm:text-3xl transition-transform group-hover:translate-x-2">→</span>
 
                 {/* Auto-running shimmer (no hover required) */}
                 <span
                   className="absolute inset-0 animate-cta-shimmer pointer-events-none"
                   style={{
-                    background: "linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.4) 50%, transparent 100%)",
+                    background: "linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.45) 50%, transparent 100%)",
                     width: "60%",
                   }}
                 />
               </Link>
             </div>
 
-            <p className="text-xs text-slate-500">
+            <p className="text-xs sm:text-sm text-slate-500 font-medium">
               No credit card · No commitment · Just signal
             </p>
           </div>

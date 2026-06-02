@@ -242,19 +242,19 @@ body {
 }
 .animate-cta-breathe { animation: cta-breathe 3s ease-in-out infinite; }
 
-/* Drop-shadow glow pulses in intensity */
+/* Drop-shadow glow pulses in intensity — EMERALD (conversion-optimised) */
 @keyframes cta-glow-pulse {
   0%, 100% {
     box-shadow:
-      0 16px 48px rgba(0,86,206,0.35),
-      0 0 60px rgba(99,102,241,0.25),
-      0 0 0 1px rgba(255,255,255,0.1) inset;
+      0 18px 48px rgba(16,185,129,0.40),
+      0 0 60px rgba(16,185,129,0.30),
+      0 0 0 1px rgba(255,255,255,0.15) inset;
   }
   50% {
     box-shadow:
-      0 20px 64px rgba(0,86,206,0.55),
-      0 0 90px rgba(99,102,241,0.45),
-      0 0 0 1px rgba(255,255,255,0.15) inset;
+      0 28px 80px rgba(16,185,129,0.65),
+      0 0 100px rgba(16,185,129,0.55),
+      0 0 0 1px rgba(255,255,255,0.25) inset;
   }
 }
 .animate-cta-glow { animation: cta-glow-pulse 2.4s ease-in-out infinite; }
