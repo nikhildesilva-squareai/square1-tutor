@@ -2,11 +2,9 @@ import Link from "next/link";
 import { Logo } from "@/components/ui/logo";
 import { createClient } from "@/lib/supabase/server";
 import { HeroSection } from "@/components/landing/HeroSection";
-import { TerminalDemo } from "@/components/landing/TerminalDemo";
 import { ComparisonSection } from "@/components/landing/ComparisonSection";
 import { TimelineSection } from "@/components/landing/TimelineSection";
-import { TutorChatPreview } from "@/components/landing/TutorChatPreview";
-import { GitHubPortfolio } from "@/components/landing/GitHubPortfolio";
+import { AICopilotSlider } from "@/components/landing/AICopilotSlider";
 import { StatsSection } from "@/components/landing/StatsSection";
 import { TransformationStories } from "@/components/landing/TransformationStories";
 import { SkillRadarPreview } from "@/components/landing/SkillRadarPreview";
@@ -72,25 +70,19 @@ export default async function Home() {
       {/* ── 4. Courses grid — 8 subjects with career outcomes ────────────────── */}
       <CourseGridSection courses={courses} />
 
-      {/* ── 5. Terminal Demo — AI grades your code (moved DOWN) ─────────────── */}
-      <TerminalDemo />
+      {/* ── 5. AI Co-pilot Slider — Terminal + Tutor + Portfolio (rotates 5s) ── */}
+      <AICopilotSlider />
 
       {/* ── 6. Journey Timeline ──────────────────────────────────────────────── */}
       <TimelineSection />
 
-      {/* ── 7. AI Tutor Chat Preview ─────────────────────────────────────────── */}
-      <TutorChatPreview />
-
-      {/* ── 8. GitHub Portfolio ──────────────────────────────────────────────── */}
-      <GitHubPortfolio />
-
-      {/* ── 9. Skill Radar ───────────────────────────────────────────────────── */}
+      {/* ── 7. Skill Radar ───────────────────────────────────────────────────── */}
       <SkillRadarPreview />
 
-      {/* ── 10. Stats ────────────────────────────────────────────────────────── */}
+      {/* ── 8. Stats ─────────────────────────────────────────────────────────── */}
       <StatsSection />
 
-      {/* ── 11. Student Transformation Stories ───────────────────────────────── */}
+      {/* ── 9. Student Transformation Stories ────────────────────────────────── */}
       <TransformationStories />
 
       {/* ── Final CTA ────────────────────────────────────────────────────────── */}
