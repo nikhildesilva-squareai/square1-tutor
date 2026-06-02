@@ -4,7 +4,6 @@ import { createClient } from "@/lib/supabase/server";
 import { HeroSection } from "@/components/landing/HeroSection";
 import { TerminalDemo } from "@/components/landing/TerminalDemo";
 import { ComparisonSection } from "@/components/landing/ComparisonSection";
-import { InteractiveDemo } from "@/components/landing/InteractiveDemo";
 import { TimelineSection } from "@/components/landing/TimelineSection";
 import { TutorChatPreview } from "@/components/landing/TutorChatPreview";
 import { GitHubPortfolio } from "@/components/landing/GitHubPortfolio";
@@ -76,25 +75,22 @@ export default async function Home() {
       {/* ── 5. Terminal Demo — AI grades your code (moved DOWN) ─────────────── */}
       <TerminalDemo />
 
-      {/* ── 6. Interactive Demo ──────────────────────────────────────────────── */}
-      <InteractiveDemo />
-
-      {/* ── 7. Journey Timeline ──────────────────────────────────────────────── */}
+      {/* ── 6. Journey Timeline ──────────────────────────────────────────────── */}
       <TimelineSection />
 
-      {/* ── 8. AI Tutor Chat Preview ─────────────────────────────────────────── */}
+      {/* ── 7. AI Tutor Chat Preview ─────────────────────────────────────────── */}
       <TutorChatPreview />
 
-      {/* ── 9. GitHub Portfolio ──────────────────────────────────────────────── */}
+      {/* ── 8. GitHub Portfolio ──────────────────────────────────────────────── */}
       <GitHubPortfolio />
 
-      {/* ── 10. Skill Radar ──────────────────────────────────────────────────── */}
+      {/* ── 9. Skill Radar ───────────────────────────────────────────────────── */}
       <SkillRadarPreview />
 
-      {/* ── 11. Stats ────────────────────────────────────────────────────────── */}
+      {/* ── 10. Stats ────────────────────────────────────────────────────────── */}
       <StatsSection />
 
-      {/* ── 12. Student Transformation Stories ───────────────────────────────── */}
+      {/* ── 11. Student Transformation Stories ───────────────────────────────── */}
       <TransformationStories />
 
       {/* ── Final CTA ────────────────────────────────────────────────────────── */}
