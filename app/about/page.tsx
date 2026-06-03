@@ -207,32 +207,133 @@ function EcosystemCards() {
 }
 
 // ─── Animated AI feature cards ───────────────────────────────────────────────
+// ─── Mini visual per AI feature ───────────────────────────────────────────────
+function AiMiniVisual({ type, accent }: { type: string; accent: string }) {
+  if (type === "grades") {
+    // Mini code review lines
+    return (
+      <div className="mt-5 space-y-1.5 font-mono text-[10px]">
+        {[
+          { ok: true,  line: "1", code: "def chat(msg):" },
+          { ok: true,  line: "2", code: "  client = Anthropic()" },
+          { ok: false, line: "3", code: "  response = client.send(msg)" },
+        ].map((l) => (
+          <div key={l.line} className="flex items-center gap-2 px-2.5 py-1.5 rounded-lg"
+            style={{ background: l.ok ? "rgba(16,185,129,0.08)" : "rgba(239,68,68,0.08)", border: `1px solid ${l.ok ? "rgba(16,185,129,0.15)" : "rgba(239,68,68,0.15)"}` }}>
+            <span className={l.ok ? "text-emerald-400" : "text-red-400"}>{l.ok ? "✓" : "✗"}</span>
+            <span className="text-slate-500 w-3">{l.line}</span>
+            <span className="text-slate-300">{l.code}</span>
+          </div>
+        ))}
+      </div>
+    );
+  }
+  if (type === "level") {
+    // Mini skill bars
+    return (
+      <div className="mt-5 space-y-2">
+        {[
+          { label: "LLM", pct: 85, color: "#10B981" },
+          { label: "RAG", pct: 45, color: "#F59E0B" },
+          { label: "Agents", pct: 25, color: "#EF4444" },
+        ].map((b) => (
+          <div key={b.label} className="flex items-center gap-2">
+            <span className="text-[9px] text-slate-500 w-10">{b.label}</span>
+            <div className="flex-1 h-1.5 rounded-full bg-white/[0.06] overflow-hidden">
+              <div className="h-full rounded-full" style={{ width: `${b.pct}%`, background: b.color }} />
+            </div>
+            <span className="text-[9px] tabular-nums font-bold" style={{ color: b.color }}>{b.pct}%</span>
+          </div>
+        ))}
+      </div>
+    );
+  }
+  if (type === "adapts") {
+    // Mini adaptive progress
+    return (
+      <div className="mt-5 flex items-center gap-3">
+        {["Beginner", "Intermediate", "Advanced"].map((l, i) => (
+          <div key={l} className="flex-1 text-center">
+            <div className="h-1.5 rounded-full mb-1.5 overflow-hidden" style={{ background: "rgba(255,255,255,0.06)" }}>
+              <div className="h-full rounded-full" style={{
+                width: i === 0 ? "100%" : i === 1 ? "65%" : "20%",
+                background: `linear-gradient(90deg, ${accent}, ${accent}88)`,
+              }} />
+            </div>
+            <span className="text-[8px] text-slate-500">{l}</span>
+          </div>
+        ))}
+      </div>
+    );
+  }
+  // "proves" — portfolio score
+  return (
+    <div className="mt-5 flex items-center gap-4">
+      <div className="flex-1">
+        <div className="flex items-baseline gap-1">
+          <span className="text-2xl font-black text-white tabular-nums">94</span>
+          <span className="text-xs text-slate-500">/100</span>
+        </div>
+        <p className="text-[9px] text-slate-500 mt-0.5">Portfolio score</p>
+      </div>
+      <div className="flex gap-0.5">
+        {[...Array(10)].map((_, i) => (
+          <div key={i} className="w-2.5 h-2.5 rounded-sm"
+            style={{ background: i < 9 ? `linear-gradient(135deg, ${accent}, ${accent}88)` : "rgba(255,255,255,0.06)" }} />
+        ))}
+      </div>
+    </div>
+  );
+}
+
 function AiFeatureCards() {
   const { ref, visible } = useReveal(0.15);
+  const miniTypes = ["grades", "level", "adapts", "proves"];
   return (
     <div ref={ref} className="grid grid-cols-1 sm:grid-cols-2 gap-5 lg:gap-6">
       {AI_FEATURES.map((f, index) => (
         <div key={f.title}
-          className="rounded-3xl p-6 lg:p-8 border overflow-hidden relative"
+          className="group rounded-3xl p-6 lg:p-8 border overflow-hidden relative transition-all duration-500 hover:scale-[1.02] hover:shadow-xl"
           style={{
-            background: `linear-gradient(135deg, ${f.accent}12 0%, rgba(255,255,255,0.02) 100%)`,
-            borderColor: `${f.accent}25`,
-            boxShadow: `0 8px 32px ${f.accent}10`,
+            background: `linear-gradient(135deg, ${f.accent}14 0%, rgba(13,17,23,0.95) 50%, ${f.accent}08 100%)`,
+            borderColor: `${f.accent}30`,
+            boxShadow: `0 8px 32px ${f.accent}12, 0 0 0 1px ${f.accent}10 inset`,
             opacity: visible ? 1 : 0,
             transform: visible ? "translateY(0)" : "translateY(30px)",
-            transition: "opacity 0.7s ease-out, transform 0.7s ease-out",
+            transition: "opacity 0.7s ease-out, transform 0.7s ease-out, box-shadow 0.5s ease, scale 0.5s ease",
             transitionDelay: `${index * 120}ms`,
           }}>
-          <div className="absolute -top-12 -right-12 w-32 h-32 rounded-full pointer-events-none opacity-40"
-            style={{ background: `radial-gradient(circle, ${f.accent}30 0%, transparent 70%)`, filter: "blur(16px)" }} />
+          {/* Animated glow blob — intensifies on hover */}
+          <div className="absolute -top-16 -right-16 w-40 h-40 rounded-full pointer-events-none opacity-30 group-hover:opacity-70 transition-opacity duration-700"
+            style={{ background: `radial-gradient(circle, ${f.accent}40 0%, transparent 70%)`, filter: "blur(20px)" }} />
+
           <div className="relative">
-            <div className="w-10 h-10 rounded-xl flex items-center justify-center mb-4"
-              style={{ background: `${f.accent}20`, border: `1px solid ${f.accent}30` }}>
-              <span className="text-sm font-black" style={{ color: f.accent }}>AI</span>
+            {/* Header row: badge + accent line */}
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-11 h-11 rounded-2xl flex items-center justify-center border transition-transform duration-500 group-hover:scale-110 group-hover:-rotate-6"
+                style={{ background: `linear-gradient(135deg, ${f.accent}25, ${f.accent}10)`, borderColor: `${f.accent}40`, boxShadow: `0 4px 16px ${f.accent}20` }}>
+                <span className="text-sm font-black" style={{ color: f.accent }}>AI</span>
+              </div>
+              <div className="h-px flex-1" style={{ background: `linear-gradient(90deg, ${f.accent}30, transparent)` }} />
+              <span className="text-[8px] tracking-widest uppercase font-bold px-2 py-0.5 rounded-full border"
+                style={{ background: `${f.accent}15`, borderColor: `${f.accent}30`, color: f.accent }}>
+                {index === 0 ? "Code" : index === 1 ? "Skill Map" : index === 2 ? "Adaptive" : "Portfolio"}
+              </span>
             </div>
-            <h3 className="text-lg font-black text-white mb-2">{f.title}</h3>
+
+            {/* Title */}
+            <h3 className="text-lg lg:text-xl font-black text-white mb-2 leading-tight">{f.title}</h3>
+
+            {/* Description */}
             <p className="text-sm text-slate-400 leading-relaxed">{f.desc}</p>
+
+            {/* Mini visual — different for each card */}
+            <AiMiniVisual type={miniTypes[index]} accent={f.accent} />
           </div>
+
+          {/* Bottom hover glow */}
+          <div className="absolute inset-0 rounded-3xl pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+            style={{ boxShadow: `0 16px 48px ${f.accent}30, 0 0 0 1px ${f.accent}40 inset` }} />
         </div>
       ))}
     </div>
