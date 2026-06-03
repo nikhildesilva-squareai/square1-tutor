@@ -246,11 +246,11 @@ export default function ContactPage() {
             <iframe
               src={`${CALENDLY_URL}?hide_gdpr_banner=1&hide_landing_page_details=1`}
               width="100%"
-              height="660"
+              height="420"
               frameBorder="0"
               title="Book a meeting with Square1 Ai"
               className="w-full"
-              style={{ minHeight: 660, background: "#FFFFFF" }}
+              style={{ minHeight: 420, background: "#FFFFFF" }}
             />
           </div>
 

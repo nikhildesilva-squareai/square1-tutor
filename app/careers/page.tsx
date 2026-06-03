@@ -85,11 +85,11 @@ export default function CareersPage() {
           <iframe
             src="https://calendly.com/nikhil-desilva-square1ai?hide_gdpr_banner=1&hide_landing_page_details=1"
             width="100%"
-            height="660"
+            height="420"
             frameBorder="0"
             title="Book a career chat with Square1 Ai"
             className="w-full"
-            style={{ minHeight: 660, background: "#FFFFFF" }}
+            style={{ minHeight: 420, background: "#FFFFFF" }}
           />
         </div>
         <p className="mt-6 text-center text-sm text-slate-500">
