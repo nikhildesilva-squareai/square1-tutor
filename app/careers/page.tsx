@@ -67,18 +67,37 @@ export default function CareersPage() {
         </div>
       </div>
 
-      {/* Contact CTA */}
-      <div className="max-w-3xl mx-auto px-6 sm:px-8 mt-12 text-center">
-        <a
-          href="mailto:tech@square1ai.com"
-          className="inline-flex items-center justify-center px-8 py-4 rounded-2xl text-base font-bold text-white transition-all hover:-translate-y-0.5"
+      {/* Book a chat — Calendly embed */}
+      <div className="max-w-3xl mx-auto px-6 sm:px-8 mt-12">
+        <h2 className="text-[10px] tracking-[0.3em] uppercase text-slate-500 font-bold mb-4">
+          Book a Chat
+        </h2>
+        <p className="text-sm text-slate-400 mb-6">
+          Pick a time that works for you. We&apos;d love to hear what you&apos;d build.
+        </p>
+        <div
+          className="rounded-2xl border overflow-hidden"
           style={{
-            background: "linear-gradient(135deg, #3388FF 0%, #A78BFA 50%, #6366f1 100%)",
-            boxShadow: "0 16px 48px rgba(51,136,255,0.3), 0 0 0 1px rgba(255,255,255,0.10) inset",
+            borderColor: "rgba(167,139,250,0.30)",
+            boxShadow: "0 12px 40px rgba(167,139,250,0.15)",
           }}
         >
-          tech@square1ai.com
-        </a>
+          <iframe
+            src="https://calendly.com/nikhil-desilva-square1ai?hide_gdpr_banner=1&hide_landing_page_details=1"
+            width="100%"
+            height="660"
+            frameBorder="0"
+            title="Book a career chat with Square1 Ai"
+            className="w-full"
+            style={{ minHeight: 660, background: "#FFFFFF" }}
+          />
+        </div>
+        <p className="mt-6 text-center text-sm text-slate-500">
+          Or email us at{" "}
+          <a href="mailto:tech@square1ai.com" className="text-brand hover:underline font-semibold">
+            tech@square1ai.com
+          </a>
+        </p>
       </div>
 
       {/* Values */}
