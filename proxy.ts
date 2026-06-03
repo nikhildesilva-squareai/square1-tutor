@@ -8,6 +8,9 @@ const PUBLIC_PATHS = [
   "/privacy",
   "/terms",
   "/preview",
+  "/about",
+  "/careers",
+  "/contact",
   "/api/auth/callback",
   "/api/onboard",
 ];

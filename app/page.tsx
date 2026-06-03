@@ -219,53 +219,61 @@ export default async function Home() {
         {/* ── Footer ──────────────────────────────────────────────────── */}
         <footer className="relative border-t border-white/[0.06]">
           <div className="max-w-6xl mx-auto px-6 sm:px-8 py-12 sm:py-16">
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-10 md:gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-10 md:gap-8">
 
-              {/* Col 1 — Brand */}
-              <div className="md:col-span-1">
+              {/* Col 1 — Brand + Social */}
+              <div>
                 <Logo variant="light" size="md" />
                 <p className="mt-4 text-xs text-slate-500 leading-relaxed max-w-xs">
                   The world&apos;s first AI-powered learn-to-launch platform.
                   From assessment to job offer.
                 </p>
-                <div className="mt-4 flex items-center gap-2">
+                {/* Social links */}
+                <div className="mt-5 flex items-center gap-3">
+                  {[
+                    { label: "LinkedIn", href: "https://linkedin.com/company/square1ai", icon: (
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+                    )},
+                    { label: "X", href: "https://x.com/square1ai", icon: (
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                    )},
+                    { label: "GitHub", href: "https://github.com/nikhildesilva-squareai", icon: (
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.44 9.8 8.21 11.39.6.11.82-.26.82-.58 0-.29-.01-1.04-.02-2.05-3.34.73-4.04-1.61-4.04-1.61C4.42 17.92 3.63 17.5 3.63 17.5c-1.09-.74.08-.73.08-.73 1.21.09 1.85 1.24 1.85 1.24 1.07 1.84 2.81 1.31 3.49 1 .11-.78.42-1.31.76-1.61-2.66-.3-5.47-1.33-5.47-5.92 0-1.31.47-2.38 1.24-3.22-.13-.3-.54-1.52.12-3.17 0 0 1-.32 3.3 1.23A11.5 11.5 0 0 1 12 5.8c1.02.01 2.04.14 3 .4 2.29-1.55 3.3-1.23 3.3-1.23.66 1.65.25 2.87.12 3.17.77.84 1.24 1.91 1.24 3.22 0 4.6-2.81 5.62-5.49 5.92.43.37.82 1.1.82 2.21 0 1.6-.02 2.89-.02 3.28 0 .32.22.7.83.58A12 12 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
+                    )},
+                    { label: "YouTube", href: "https://youtube.com/@square1ai", icon: (
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+                    )},
+                  ].map((s) => (
+                    <a key={s.label} href={s.href} target="_blank" rel="noopener noreferrer"
+                      className="w-9 h-9 rounded-full border border-white/[0.08] flex items-center justify-center text-slate-500 hover:text-white hover:border-white/25 transition-colors"
+                      aria-label={s.label} style={{ minHeight: "unset" }}>
+                      {s.icon}
+                    </a>
+                  ))}
+                </div>
+                <div className="mt-5 flex items-center gap-2">
                   <span className="text-[9px] tracking-widest uppercase text-slate-600 font-bold px-2 py-1 rounded border border-white/[0.08]">GDPR</span>
                   <span className="text-[9px] tracking-widest uppercase text-slate-600 font-bold px-2 py-1 rounded border border-white/[0.08]">SOC 2</span>
                   <span className="text-[9px] tracking-widest uppercase text-slate-600 font-bold px-2 py-1 rounded border border-white/[0.08]">Essential 8</span>
                 </div>
               </div>
 
-              {/* Col 2 — Platform */}
-              <div>
-                <h5 className="text-[10px] tracking-[0.3em] uppercase text-slate-500 font-bold mb-4">Platform</h5>
-                <ul className="space-y-2.5">
-                  <li><Link href="/courses" className="text-sm text-slate-400 hover:text-white transition-colors">Courses</Link></li>
-                  <li><Link href="/signup" className="text-sm text-slate-400 hover:text-white transition-colors">Free Assessment</Link></li>
-                  <li><span className="text-sm text-slate-600 flex items-center gap-1.5">AI Tutor <span className="text-[8px] tracking-widest uppercase font-bold px-1.5 py-0.5 rounded border border-white/[0.08] text-slate-600">Soon</span></span></li>
-                  <li><span className="text-sm text-slate-600 flex items-center gap-1.5">Projects <span className="text-[8px] tracking-widest uppercase font-bold px-1.5 py-0.5 rounded border border-white/[0.08] text-slate-600">Soon</span></span></li>
-                  <li><span className="text-sm text-slate-600 flex items-center gap-1.5">Pricing <span className="text-[8px] tracking-widest uppercase font-bold px-1.5 py-0.5 rounded border border-white/[0.08] text-slate-600">Soon</span></span></li>
-                </ul>
-              </div>
-
-              {/* Col 3 — Company */}
+              {/* Col 2 — Company */}
               <div>
                 <h5 className="text-[10px] tracking-[0.3em] uppercase text-slate-500 font-bold mb-4">Company</h5>
                 <ul className="space-y-2.5">
-                  <li><Link href="/" className="text-sm text-slate-400 hover:text-white transition-colors">About</Link></li>
-                  <li><a href="mailto:careers@square1.ai" className="text-sm text-slate-400 hover:text-white transition-colors">Careers</a></li>
-                  <li><a href="mailto:hello@square1.ai" className="text-sm text-slate-400 hover:text-white transition-colors">Contact</a></li>
-                  <li><span className="text-sm text-slate-600 flex items-center gap-1.5">Blog <span className="text-[8px] tracking-widest uppercase font-bold px-1.5 py-0.5 rounded border border-white/[0.08] text-slate-600">Soon</span></span></li>
+                  <li><Link href="/about" className="text-sm text-slate-400 hover:text-white transition-colors">About Us</Link></li>
+                  <li><Link href="/careers" className="text-sm text-slate-400 hover:text-white transition-colors">Careers</Link></li>
+                  <li><Link href="/contact" className="text-sm text-slate-400 hover:text-white transition-colors">Contact</Link></li>
                 </ul>
               </div>
 
-              {/* Col 4 — Legal */}
+              {/* Col 3 — Legal */}
               <div>
                 <h5 className="text-[10px] tracking-[0.3em] uppercase text-slate-500 font-bold mb-4">Legal</h5>
                 <ul className="space-y-2.5">
                   <li><Link href="/privacy" className="text-sm text-slate-400 hover:text-white transition-colors">Privacy Policy</Link></li>
                   <li><Link href="/terms" className="text-sm text-slate-400 hover:text-white transition-colors">Terms of Service</Link></li>
-                  <li><Link href="/privacy" className="text-sm text-slate-400 hover:text-white transition-colors">Cookie Policy</Link></li>
-                  <li><Link href="/terms" className="text-sm text-slate-400 hover:text-white transition-colors">Accessibility</Link></li>
                 </ul>
               </div>
             </div>

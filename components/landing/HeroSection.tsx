@@ -82,6 +82,13 @@ export function HeroSection() {
           {/* Right side — Lusion-inspired */}
           <div className="flex items-center gap-3 sm:gap-4">
             <Link
+              href="/about"
+              className="hidden sm:block text-[11px] font-semibold tracking-[0.12em] uppercase text-white/50 hover:text-white transition-colors"
+              style={{ minHeight: "unset" }}
+            >
+              About
+            </Link>
+            <Link
               href="/login"
               className="hidden sm:block text-[11px] font-semibold tracking-[0.12em] uppercase text-white/50 hover:text-white transition-colors"
               style={{ minHeight: "unset" }}
