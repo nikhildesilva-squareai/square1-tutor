@@ -1,32 +1,55 @@
 import Link from "next/link";
 import { Logo } from "@/components/ui/logo";
 
-// ─── The 5-step ecosystem ─────────────────────────────────────────────────────
+// ─── The ecosystem pillars ────────────────────────────────────────────────────
 const ECOSYSTEM = [
   {
-    n: "01", title: "Learning",
-    desc: "AI-enhanced courses that adapt to your level. Theory meets practice from day one.",
+    n: "01", title: "AI Assessment & Skill Mapping",
+    desc: "Take a 30-minute test across MCQ, short answer, and real code. AI grades everything and maps your skills topic by topic — strengths, gaps, and a personalised learning plan.",
     accent: "#3388FF",
+    status: "live",
   },
   {
-    n: "02", title: "Practical Application",
-    desc: "Real-world projects, coding challenges, and competitions — not toy apps. Every project ships live.",
+    n: "02", title: "On-Demand Courses",
+    desc: "Self-paced, AI-enhanced courses across 12 subjects. Theory, coding challenges, and real projects — 45 minutes a day, at your own speed. AI grades every line of code you write.",
     accent: "#6366F1",
+    status: "building",
   },
   {
-    n: "03", title: "Certification",
-    desc: "AI-verified skill reports and deployed portfolios that prove what you can do — not just what you studied.",
+    n: "03", title: "Live Courses & Workshops",
+    desc: "Instructor-led cohort sessions with real-time AI assistance. Weekly live workshops, Q&A, and pair programming. The energy of a classroom, the intelligence of AI.",
     accent: "#A78BFA",
+    status: "coming",
   },
   {
-    n: "04", title: "Career Enablement",
-    desc: "Job-ready assessment scores, interview preparation, and direct pathways to employers who trust our graduates.",
+    n: "04", title: "Community",
+    desc: "A global network of learners, builders, and mentors. Peer code reviews, study groups, accountability partners, and a Slack-like space where you're never learning alone.",
+    accent: "#EC4899",
+    status: "coming",
+  },
+  {
+    n: "05", title: "Competitions & Hackathons",
+    desc: "Monthly AI-judged coding competitions and team hackathons. Build under pressure, win recognition, and add real competition results to your portfolio.",
+    accent: "#F59E0B",
+    status: "coming",
+  },
+  {
+    n: "06", title: "Research Lab",
+    desc: "Collaborative research projects on cutting-edge AI, cybersecurity, and emerging tech. Publish papers, contribute to open source, and build credibility beyond coursework.",
+    accent: "#06B6D4",
+    status: "coming",
+  },
+  {
+    n: "07", title: "Career Enablement",
+    desc: "AI-powered interview prep, portfolio scoring, resume generation, and direct pathways to employers who trust our graduates. Mock interviews graded by AI.",
     accent: "#8B5CF6",
+    status: "coming",
   },
   {
-    n: "05", title: "Startup Incubation",
-    desc: "For builders who want to launch, not just land a job. Mentorship, investor access, and a community of founders.",
+    n: "08", title: "Startup Incubation",
+    desc: "For builders who want to launch, not just land a job. Mentorship from founders, investor access, pitch coaching, and a community of builders turning projects into products.",
     accent: "#10B981",
+    status: "coming",
   },
 ];
 
@@ -249,7 +272,7 @@ export default function AboutPage() {
             </span>
             <h2 className="mt-4 font-black tracking-tight text-slate-900 leading-[0.95]"
               style={{ fontSize: "clamp(32px, 5vw, 64px)" }}>
-              Five pillars.{" "}
+              Eight pillars.{" "}
               <span style={{
                 background: "linear-gradient(135deg, #3388FF 0%, #A78BFA 50%, #10B981 100%)",
                 WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text",
@@ -257,44 +280,72 @@ export default function AboutPage() {
                 One platform.
               </span>
             </h2>
-            <p className="mt-4 text-sm sm:text-base text-slate-600 max-w-xl mx-auto">
-              Square1 Ai isn&apos;t just courses. It&apos;s a complete ecosystem — from learning to launching.
+            <p className="mt-4 text-sm sm:text-base text-slate-600 max-w-2xl mx-auto">
+              Square1 Ai isn&apos;t just courses. We&apos;re building an end-to-end education
+              ecosystem powered by AI — from your first assessment to your first startup.
             </p>
           </div>
 
-          {/* 5 pillars — alternating left/right with big numbers */}
-          <div className="space-y-12 sm:space-y-16 lg:space-y-20">
-            {ECOSYSTEM.map((step, i) => (
-              <div key={step.n} className={`grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-12 items-center ${i % 2 === 1 ? "lg:[direction:rtl]" : ""}`}>
-                {/* Big number */}
-                <div className={`lg:col-span-4 ${i % 2 === 1 ? "lg:[direction:ltr]" : ""}`}>
-                  <span className="font-black tabular-nums leading-none select-none"
-                    style={{
-                      fontSize: "clamp(80px, 14vw, 180px)",
-                      letterSpacing: "-0.06em",
-                      background: `linear-gradient(180deg, ${step.accent} 0%, ${step.accent}55 100%)`,
-                      WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text",
-                      filter: `drop-shadow(0 0 24px ${step.accent}30)`,
-                    }}>
-                    {step.n}
-                  </span>
-                  <div className="mt-2 flex items-center gap-3">
-                    <span className="text-[10px] font-black tracking-[0.35em] uppercase"
-                      style={{ color: step.accent }}>{step.title}</span>
-                    <span className="h-px flex-1 max-w-[80px] bg-slate-200" />
+          {/* 8 pillars — premium gradient cards in a grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 lg:gap-5">
+            {ECOSYSTEM.map((step) => (
+              <div key={step.n}
+                className="relative rounded-3xl p-6 lg:p-8 border overflow-hidden group transition-all hover:shadow-lg"
+                style={{
+                  background: `linear-gradient(135deg, ${step.accent}10 0%, #FFFFFF 50%, ${step.accent}06 100%)`,
+                  borderColor: `${step.accent}25`,
+                  boxShadow: `0 4px 24px ${step.accent}08`,
+                }}>
+                {/* Decorative blob */}
+                <div className="absolute -top-12 -right-12 w-32 h-32 rounded-full pointer-events-none opacity-40 group-hover:opacity-70 transition-opacity"
+                  style={{ background: `radial-gradient(circle, ${step.accent}25 0%, transparent 70%)`, filter: "blur(16px)" }} />
+
+                <div className="relative">
+                  {/* Header: number + status badge */}
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center gap-3">
+                      <span className="font-black tabular-nums leading-none select-none"
+                        style={{
+                          fontSize: "clamp(32px, 4vw, 48px)",
+                          letterSpacing: "-0.04em",
+                          background: `linear-gradient(180deg, ${step.accent} 0%, ${step.accent}55 100%)`,
+                          WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text",
+                          filter: `drop-shadow(0 0 12px ${step.accent}30)`,
+                        }}>
+                        {step.n}
+                      </span>
+                      <div className="h-px w-8" style={{ background: `${step.accent}30` }} />
+                    </div>
+                    <span
+                      className="text-[8px] sm:text-[9px] font-black tracking-widest uppercase px-2 py-1 rounded-full border"
+                      style={{
+                        background: step.status === "live" ? "rgba(16,185,129,0.15)" : step.status === "building" ? "rgba(245,158,11,0.15)" : `${step.accent}10`,
+                        borderColor: step.status === "live" ? "rgba(16,185,129,0.30)" : step.status === "building" ? "rgba(245,158,11,0.30)" : `${step.accent}25`,
+                        color: step.status === "live" ? "#10B981" : step.status === "building" ? "#F59E0B" : step.accent,
+                      }}
+                    >
+                      {step.status === "live" ? "● Live" : step.status === "building" ? "◐ Building" : "○ Coming"}
+                    </span>
                   </div>
-                </div>
-                {/* Content */}
-                <div className={`lg:col-span-8 ${i % 2 === 1 ? "lg:[direction:ltr]" : ""}`}>
-                  <h3 className="text-2xl lg:text-3xl font-black text-slate-900 leading-tight mb-3">
+
+                  <h3 className="text-lg lg:text-xl font-black text-slate-900 leading-tight mb-3">
                     {step.title}
                   </h3>
-                  <p className="text-sm lg:text-base text-slate-600 leading-relaxed max-w-lg">
+                  <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
                     {step.desc}
                   </p>
                 </div>
               </div>
             ))}
+          </div>
+
+          {/* Ecosystem summary line */}
+          <div className="mt-12 text-center">
+            <p className="text-sm text-slate-500 max-w-xl mx-auto">
+              This is not a roadmap. This is what we&apos;re building{" "}
+              <span className="font-bold text-slate-700">right now</span> —
+              piece by piece, AI-first, student-first.
+            </p>
           </div>
         </div>
       </section>
@@ -347,6 +398,72 @@ export default function AboutPage() {
                 </div>
               </div>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════════════════════════════════ */}
+      {/* BEYOND LEARNING — the full vision */}
+      {/* ═══════════════════════════════════════════════════════════════════════ */}
+      <section
+        className="relative overflow-hidden py-20 sm:py-28 lg:py-32 px-4 sm:px-6 lg:px-8"
+        style={{
+          background: `
+            radial-gradient(ellipse 900px 500px at 30% 30%, rgba(0,86,206,0.08), transparent 60%),
+            radial-gradient(ellipse 800px 500px at 70% 70%, rgba(16,185,129,0.07), transparent 60%),
+            linear-gradient(180deg, #F8FAFC 0%, #FFFFFF 50%, #F4F8FF 100%)
+          `,
+        }}
+      >
+        <div className="relative max-w-4xl mx-auto">
+          <div className="text-center mb-14">
+            <span className="text-[10px] sm:text-[11px] tracking-[0.35em] uppercase text-slate-500 font-bold">
+              Beyond Learning
+            </span>
+            <h2 className="mt-4 font-black tracking-tight text-slate-900 leading-[0.95]"
+              style={{ fontSize: "clamp(32px, 5vw, 64px)" }}>
+              An end-to-end{" "}
+              <span style={{
+                background: "linear-gradient(135deg, #3388FF 0%, #A78BFA 50%, #10B981 100%)",
+                WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text",
+              }}>
+                education ecosystem.
+              </span>
+            </h2>
+          </div>
+
+          <div className="space-y-8 text-center max-w-3xl mx-auto">
+            <p className="text-base sm:text-lg text-slate-700 leading-relaxed">
+              Most platforms stop at courses. We&apos;re building something bigger — a
+              complete ecosystem where you learn, build, compete, research, connect,
+              and launch. All powered by AI. All under one roof.
+            </p>
+
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-4">
+              {[
+                { label: "On-Demand Courses", sub: "Self-paced, AI-graded" },
+                { label: "Live Workshops", sub: "Instructor + AI combined" },
+                { label: "Community", sub: "Global peer network" },
+                { label: "Competitions", sub: "Monthly hackathons" },
+                { label: "Research Lab", sub: "Open source + papers" },
+                { label: "Career Tools", sub: "Interview prep + scoring" },
+                { label: "Startup Club", sub: "Mentors + investors" },
+                { label: "AI Tutor 24/7", sub: "Knows your code" },
+              ].map((item) => (
+                <div key={item.label} className="rounded-xl p-4 border bg-white/60"
+                  style={{ borderColor: "rgba(15,23,42,0.06)" }}>
+                  <p className="text-xs sm:text-sm font-bold text-slate-900 mb-1">{item.label}</p>
+                  <p className="text-[10px] text-slate-500">{item.sub}</p>
+                </div>
+              ))}
+            </div>
+
+            <p className="text-sm text-slate-500 pt-4">
+              We&apos;re not building a better course platform.{" "}
+              <span className="font-bold text-slate-800">
+                We&apos;re building the operating system for technical careers.
+              </span>
+            </p>
           </div>
         </div>
       </section>
