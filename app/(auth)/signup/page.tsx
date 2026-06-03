@@ -334,10 +334,10 @@ export default function SignupPage() {
   /* ── Shared input styles ───────────────────────────────────────────────── */
 
   const inputClass =
-    "w-full h-12 px-4 rounded-xl text-sm text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-brand/50 transition-all";
+    "w-full h-11 px-3.5 rounded-lg text-sm text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-brand/50 transition-all";
 
   const selectClass =
-    "w-full h-12 px-4 rounded-xl text-sm text-white focus:outline-none focus:ring-2 focus:ring-brand/50 transition-all appearance-none cursor-pointer [&>option]:bg-[#0D1117] [&>option]:text-white";
+    "w-full h-11 px-3.5 rounded-lg text-sm text-white focus:outline-none focus:ring-2 focus:ring-brand/50 transition-all appearance-none cursor-pointer [&>option]:bg-[#0D1117] [&>option]:text-white";
 
   const inputStyle: React.CSSProperties = {
     background: "rgba(255,255,255,0.06)",
@@ -345,13 +345,13 @@ export default function SignupPage() {
   };
 
   const labelClass =
-    "block text-[11px] font-medium text-slate-400 mb-1.5 uppercase tracking-wider";
+    "block text-[10px] font-medium text-slate-400 mb-1 uppercase tracking-wider";
 
   /* ── Render ───────────────────────────────────────────────────────────── */
 
   return (
     <div
-      className="relative min-h-screen flex items-center justify-center p-4 sm:p-8 overflow-hidden"
+      className="relative min-h-screen py-8 sm:py-12 px-4 sm:px-8 flex flex-col items-center overflow-y-auto"
       style={{
         background: `
           radial-gradient(ellipse 800px 500px at 20% 20%, rgba(0,86,206,0.08), transparent 60%),
@@ -367,7 +367,7 @@ export default function SignupPage() {
         style={{ background: "radial-gradient(circle, rgba(99,102,241,0.12) 0%, transparent 70%)", filter: "blur(90px)" }} />
 
       <div
-        className="relative w-full max-w-md mx-auto rounded-3xl p-8 sm:p-10 overflow-hidden"
+        className="relative w-full max-w-md mx-auto my-auto rounded-3xl p-6 sm:p-8 overflow-hidden"
         style={{
           background: "linear-gradient(135deg, #050B14 0%, #0B1626 50%, #0D1929 100%)",
           border: "1px solid rgba(255,255,255,0.10)",
@@ -375,7 +375,7 @@ export default function SignupPage() {
         }}
       >
         {/* Logo */}
-        <div className="flex flex-col items-center gap-3 mb-8">
+        <div className="flex flex-col items-center gap-2 mb-5">
           <Logo variant="light" size="lg" />
           <span
             className="inline-flex items-center gap-2 rounded-full px-3 py-1 text-[10px] font-semibold uppercase tracking-widest text-slate-400"
@@ -389,22 +389,22 @@ export default function SignupPage() {
         {/* ── Step 1: OAuth + Email form ──────────────────────────────────── */}
         {step === "email" && (
           <>
-            <div className="text-center mb-8">
-              <h1 className="text-2xl font-bold text-white">
+            <div className="text-center mb-5">
+              <h1 className="text-xl font-bold text-white">
                 Create your account
               </h1>
-              <p className="text-sm text-slate-400 mt-1">
+              <p className="text-xs text-slate-400 mt-1">
                 Free forever. No credit card.
               </p>
             </div>
 
             {/* OAuth buttons */}
-            <div className="space-y-3 mb-4">
+            <div className="space-y-2.5 mb-3">
               <button
                 type="button"
                 onClick={() => handleOAuth("google")}
                 disabled={loading}
-                className="w-full flex items-center justify-center gap-3 h-12 rounded-xl bg-white text-slate-900 font-semibold text-sm hover:bg-slate-50 transition-all shadow-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full flex items-center justify-center gap-3 h-11 rounded-lg bg-white text-slate-900 font-semibold text-sm hover:bg-slate-50 transition-all shadow-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <GoogleIcon />
                 Sign up with Google
@@ -414,7 +414,7 @@ export default function SignupPage() {
                 type="button"
                 onClick={() => handleOAuth("azure")}
                 disabled={loading}
-                className="w-full flex items-center justify-center gap-3 h-12 rounded-xl text-white font-semibold text-sm transition-all hover:brightness-125 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full flex items-center justify-center gap-3 h-11 rounded-lg text-white font-semibold text-sm transition-all hover:brightness-125 disabled:opacity-50 disabled:cursor-not-allowed"
                 style={{ background: "#1F1F1F", border: "1px solid rgba(255,255,255,0.12)" }}
               >
                 <MicrosoftIcon />
@@ -423,7 +423,7 @@ export default function SignupPage() {
             </div>
 
             {/* OAuth implied-consent note */}
-            <p className="text-[11px] text-slate-500 text-center mb-6">
+            <p className="text-[10px] text-slate-500 text-center mb-4">
               By signing up, you agree to our{" "}
               <Link
                 href="/privacy"
@@ -442,16 +442,16 @@ export default function SignupPage() {
             </p>
 
             {/* Divider */}
-            <div className="flex items-center gap-3 mb-6">
+            <div className="flex items-center gap-3 mb-4">
               <div className="flex-1 h-px bg-white/[0.06]" />
-              <span className="text-[11px] text-slate-500 uppercase tracking-wider font-medium">
+              <span className="text-[10px] text-slate-500 uppercase tracking-widest font-medium">
                 or sign up with email
               </span>
               <div className="flex-1 h-px bg-white/[0.06]" />
             </div>
 
             {/* Email signup form */}
-            <form onSubmit={handleSendCode} className="space-y-4">
+            <form onSubmit={handleSendCode} className="space-y-3">
               {/* Name */}
               <div>
                 <label htmlFor="name" className={labelClass}>
