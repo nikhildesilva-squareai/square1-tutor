@@ -1,5 +1,44 @@
+"use client";
+
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { Logo } from "@/components/ui/logo";
+
+// ─── Reusable scroll-reveal hook ──────────────────────────────────────────────
+function useReveal(threshold = 0.2) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [visible, setVisible] = useState(false);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(
+      ([entry]) => { if (entry.isIntersecting) { setVisible(true); obs.disconnect(); } },
+      { threshold }
+    );
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, [threshold]);
+  return { ref, visible };
+}
+
+// ─── Count-up hook ────────────────────────────────────────────────────────────
+function useCountUp(target: number, isVisible: boolean, duration = 1400) {
+  const [v, setV] = useState(0);
+  useEffect(() => {
+    if (!isVisible) return;
+    const start = performance.now();
+    let raf = 0;
+    function tick(now: number) {
+      const t = Math.min(1, (now - start) / duration);
+      const eased = 1 - Math.pow(1 - t, 3);
+      setV(Math.round(target * eased));
+      if (t < 1) raf = requestAnimationFrame(tick);
+    }
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [target, isVisible, duration]);
+  return v;
+}
 
 // ─── The ecosystem pillars ────────────────────────────────────────────────────
 const ECOSYSTEM = [
@@ -76,6 +115,329 @@ const AI_FEATURES = [
     accent: "#F59E0B",
   },
 ];
+
+// ─── Stats strip ─────────────────────────────────────────────────────────────
+function StatsStrip() {
+  const { ref, visible } = useReveal(0.3);
+  const s1 = useCountUp(12, visible);
+  const s2 = useCountUp(120, visible);
+  const s3 = useCountUp(100, visible);
+  return (
+    <section ref={ref} className="py-16 sm:py-20 px-4 sm:px-6 lg:px-8" style={{ background: "#050B14" }}>
+      <div className="max-w-4xl mx-auto grid grid-cols-2 sm:grid-cols-4 gap-8 text-center">
+        {[
+          { v: s1, suffix: "", label: "career paths" },
+          { v: s2, suffix: "+", label: "lessons built" },
+          { v: s3, suffix: "+", label: "projects designed" },
+          { v: visible ? "$0" : "$0", suffix: "", label: "cost to start", isText: true },
+        ].map((s) => (
+          <div key={s.label}>
+            <p className="font-black tabular-nums text-white leading-none"
+              style={{ fontSize: "clamp(36px, 5vw, 56px)", letterSpacing: "-0.04em" }}>
+              {s.isText ? s.v : `${s.v}${s.suffix}`}
+            </p>
+            <p className="text-[10px] sm:text-xs text-slate-500 mt-2 font-medium uppercase tracking-widest">{s.label}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+// ─── Animated ecosystem cards ────────────────────────────────────────────────
+function EcosystemCards() {
+  const { ref, visible } = useReveal(0.15);
+  return (
+    <div ref={ref} className="grid grid-cols-1 sm:grid-cols-2 gap-4 lg:gap-5">
+      {ECOSYSTEM.map((step, index) => (
+        <div key={step.n}
+          className="relative rounded-3xl p-6 lg:p-8 border overflow-hidden group transition-all hover:shadow-lg"
+          style={{
+            background: `linear-gradient(135deg, ${step.accent}10 0%, #FFFFFF 50%, ${step.accent}06 100%)`,
+            borderColor: `${step.accent}25`,
+            boxShadow: `0 4px 24px ${step.accent}08`,
+            opacity: visible ? 1 : 0,
+            transform: visible ? "translateY(0)" : "translateY(30px)",
+            transition: "opacity 0.7s ease-out, transform 0.7s ease-out",
+            transitionDelay: `${index * 100}ms`,
+          }}>
+          {/* Decorative blob */}
+          <div className="absolute -top-12 -right-12 w-32 h-32 rounded-full pointer-events-none opacity-40 group-hover:opacity-70 transition-opacity"
+            style={{ background: `radial-gradient(circle, ${step.accent}25 0%, transparent 70%)`, filter: "blur(16px)" }} />
+
+          <div className="relative">
+            {/* Header: number + status badge */}
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-3">
+                <span className="font-black tabular-nums leading-none select-none"
+                  style={{
+                    fontSize: "clamp(32px, 4vw, 48px)",
+                    letterSpacing: "-0.04em",
+                    background: `linear-gradient(180deg, ${step.accent} 0%, ${step.accent}55 100%)`,
+                    WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text",
+                    filter: `drop-shadow(0 0 12px ${step.accent}30)`,
+                  }}>
+                  {step.n}
+                </span>
+                <div className="h-px w-8" style={{ background: `${step.accent}30` }} />
+              </div>
+              <span
+                className="text-[8px] sm:text-[9px] font-black tracking-widest uppercase px-2 py-1 rounded-full border"
+                style={{
+                  background: step.status === "live" ? "rgba(16,185,129,0.15)" : step.status === "building" ? "rgba(245,158,11,0.15)" : `${step.accent}10`,
+                  borderColor: step.status === "live" ? "rgba(16,185,129,0.30)" : step.status === "building" ? "rgba(245,158,11,0.30)" : `${step.accent}25`,
+                  color: step.status === "live" ? "#10B981" : step.status === "building" ? "#F59E0B" : step.accent,
+                }}
+              >
+                {step.status === "live" ? "● Live" : step.status === "building" ? "◐ Building" : "○ Coming"}
+              </span>
+            </div>
+
+            <h3 className="text-lg lg:text-xl font-black text-slate-900 leading-tight mb-3">
+              {step.title}
+            </h3>
+            <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
+              {step.desc}
+            </p>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+// ─── Animated AI feature cards ───────────────────────────────────────────────
+function AiFeatureCards() {
+  const { ref, visible } = useReveal(0.15);
+  return (
+    <div ref={ref} className="grid grid-cols-1 sm:grid-cols-2 gap-5 lg:gap-6">
+      {AI_FEATURES.map((f, index) => (
+        <div key={f.title}
+          className="rounded-3xl p-6 lg:p-8 border overflow-hidden relative"
+          style={{
+            background: `linear-gradient(135deg, ${f.accent}12 0%, rgba(255,255,255,0.02) 100%)`,
+            borderColor: `${f.accent}25`,
+            boxShadow: `0 8px 32px ${f.accent}10`,
+            opacity: visible ? 1 : 0,
+            transform: visible ? "translateY(0)" : "translateY(30px)",
+            transition: "opacity 0.7s ease-out, transform 0.7s ease-out",
+            transitionDelay: `${index * 120}ms`,
+          }}>
+          <div className="absolute -top-12 -right-12 w-32 h-32 rounded-full pointer-events-none opacity-40"
+            style={{ background: `radial-gradient(circle, ${f.accent}30 0%, transparent 70%)`, filter: "blur(16px)" }} />
+          <div className="relative">
+            <div className="w-10 h-10 rounded-xl flex items-center justify-center mb-4"
+              style={{ background: `${f.accent}20`, border: `1px solid ${f.accent}30` }}>
+              <span className="text-sm font-black" style={{ color: f.accent }}>AI</span>
+            </div>
+            <h3 className="text-lg font-black text-white mb-2">{f.title}</h3>
+            <p className="text-sm text-slate-400 leading-relaxed">{f.desc}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+// ─── Animated beyond-learning mini-cards ─────────────────────────────────────
+function BeyondLearningCards() {
+  const { ref, visible } = useReveal(0.15);
+  const items = [
+    { label: "On-Demand Courses", sub: "Self-paced, AI-graded" },
+    { label: "Live Workshops", sub: "Instructor + AI combined" },
+    { label: "Community", sub: "Global peer network" },
+    { label: "Competitions", sub: "Monthly hackathons" },
+    { label: "Research Lab", sub: "Open source + papers" },
+    { label: "Career Tools", sub: "Interview prep + scoring" },
+    { label: "Startup Club", sub: "Mentors + investors" },
+    { label: "AI Tutor 24/7", sub: "Knows your code" },
+  ];
+  return (
+    <div ref={ref} className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-4">
+      {items.map((item, index) => (
+        <div key={item.label} className="rounded-xl p-4 border bg-white/60"
+          style={{
+            borderColor: "rgba(15,23,42,0.06)",
+            opacity: visible ? 1 : 0,
+            transform: visible ? "translateY(0)" : "translateY(30px)",
+            transition: "opacity 0.7s ease-out, transform 0.7s ease-out",
+            transitionDelay: `${index * 80}ms`,
+          }}>
+          <p className="text-xs sm:text-sm font-bold text-slate-900 mb-1">{item.label}</p>
+          <p className="text-[10px] text-slate-500">{item.sub}</p>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+// ─── Animated "What We Are" checklist ────────────────────────────────────────
+function WhatWeAreChecklist() {
+  const { ref, visible } = useReveal(0.2);
+  const items = [
+    { label: "Personalised", desc: "Your path adapts to your level — beginner to advanced" },
+    { label: "Project-based", desc: "12 deployed projects, not 12 certificates" },
+    { label: "AI-graded", desc: "Every line of code reviewed by Claude AI" },
+    { label: "Career-mapped", desc: "Every course leads to a real role with a real salary" },
+  ];
+  return (
+    <div ref={ref} className="space-y-4">
+      {items.map((item, index) => (
+        <div key={item.label} className="flex items-start gap-3"
+          style={{
+            opacity: visible ? 1 : 0,
+            transform: visible ? "translateX(0)" : "translateX(-30px)",
+            transition: "opacity 0.6s ease-out, transform 0.6s ease-out",
+            transitionDelay: `${index * 100}ms`,
+          }}>
+          <span className="w-6 h-6 rounded-full bg-brand/10 border border-brand/30 flex items-center justify-center text-[10px] font-black text-brand shrink-0 mt-0.5">✓</span>
+          <div>
+            <p className="text-sm font-bold text-slate-900">{item.label}</p>
+            <p className="text-xs text-slate-500">{item.desc}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+// ─── Animated mission text ───────────────────────────────────────────────────
+function MissionContent() {
+  const { ref, visible } = useReveal(0.2);
+  return (
+    <div ref={ref} className="relative max-w-3xl mx-auto text-center">
+      <span className="text-[10px] sm:text-[11px] tracking-[0.35em] uppercase text-slate-500 font-bold"
+        style={{
+          opacity: visible ? 1 : 0,
+          transform: visible ? "translateY(0)" : "translateY(20px)",
+          transition: "opacity 0.7s ease-out, transform 0.7s ease-out",
+        }}>
+        Our Mission
+      </span>
+      <h2 className="mt-4 mb-8 font-black tracking-tight text-white leading-[1.05]"
+        style={{
+          fontSize: "clamp(28px, 4.5vw, 56px)",
+          opacity: visible ? 1 : 0,
+          transform: visible ? "translateY(0)" : "translateY(20px)",
+          transition: "opacity 0.7s ease-out, transform 0.7s ease-out",
+          transitionDelay: "100ms",
+        }}>
+        Make world-class technical education{" "}
+        <span style={{
+          background: "linear-gradient(135deg, #3388FF 0%, #A78BFA 50%, #10B981 100%)",
+          WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text",
+        }}>
+          accessible to everyone.
+        </span>
+      </h2>
+      <div className="space-y-6 text-base sm:text-lg text-slate-400 leading-relaxed">
+        <p style={{
+          opacity: visible ? 1 : 0,
+          transform: visible ? "translateY(0)" : "translateY(20px)",
+          transition: "opacity 0.7s ease-out, transform 0.7s ease-out",
+          transitionDelay: "200ms",
+        }}>
+          The best engineers in the world didn&apos;t get there by watching videos.
+          They got there by building things, getting feedback, and iterating. But until
+          now, that kind of mentorship cost $15,000+ or required knowing the right people.
+        </p>
+        <p className="text-white font-semibold" style={{
+          opacity: visible ? 1 : 0,
+          transform: visible ? "translateY(0)" : "translateY(20px)",
+          transition: "opacity 0.7s ease-out, transform 0.7s ease-out",
+          transitionDelay: "300ms",
+        }}>
+          We believe every person on earth should have access to a personal AI tutor that
+          grades their code, a curriculum that adapts to their level, and a portfolio that
+          proves they&apos;re ready — regardless of where they went to school or how much
+          they can afford.
+        </p>
+      </div>
+    </div>
+  );
+}
+
+// ─── Animated promise section ────────────────────────────────────────────────
+function PromiseContent() {
+  const { ref, visible } = useReveal(0.2);
+  return (
+    <div ref={ref} className="relative max-w-3xl mx-auto text-center">
+      <span className="text-[10px] sm:text-[11px] tracking-[0.35em] uppercase text-slate-500 font-bold"
+        style={{
+          opacity: visible ? 1 : 0,
+          transform: visible ? "translateY(0)" : "translateY(20px)",
+          transition: "opacity 0.7s ease-out, transform 0.7s ease-out",
+        }}>
+        Our Promise
+      </span>
+      <h2 className="mt-4 mb-8 font-black tracking-tight text-slate-900 leading-[1.05]"
+        style={{
+          fontSize: "clamp(28px, 4.5vw, 56px)",
+          opacity: visible ? 1 : 0,
+          transform: visible ? "translateY(0)" : "translateY(20px)",
+          transition: "opacity 0.7s ease-out, transform 0.7s ease-out",
+          transitionDelay: "100ms",
+        }}>
+        We don&apos;t stop until{" "}
+        <span style={{
+          background: "linear-gradient(135deg, #3388FF 0%, #A78BFA 50%, #10B981 100%)",
+          WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text",
+        }}>
+          you&apos;re hired.
+        </span>
+      </h2>
+      <p className="text-base sm:text-lg text-slate-600 leading-relaxed mb-12 max-w-2xl mx-auto"
+        style={{
+          opacity: visible ? 1 : 0,
+          transform: visible ? "translateY(0)" : "translateY(20px)",
+          transition: "opacity 0.7s ease-out, transform 0.7s ease-out",
+          transitionDelay: "200ms",
+        }}>
+        Every feature we build, every course we design, every AI model we tune —
+        exists for one reason: to get you from where you are today to a real career
+        in tech. Not someday. Not maybe.{" "}
+        <span className="font-bold text-slate-900">In 3 to 9 months.</span>
+      </p>
+
+      <div className="flex flex-col sm:flex-row gap-3 justify-center mb-6"
+        style={{
+          opacity: visible ? 1 : 0,
+          transform: visible ? "translateY(0)" : "translateY(20px)",
+          transition: "opacity 0.7s ease-out, transform 0.7s ease-out",
+          transitionDelay: "300ms",
+        }}>
+        <Link
+          href="/signup"
+          className="group relative inline-flex items-center justify-center gap-3 px-10 py-5 rounded-2xl text-base lg:text-lg font-bold text-white overflow-hidden transition-all hover:-translate-y-0.5"
+          style={{
+            background: "linear-gradient(135deg, #DC2626 0%, #EF4444 50%, #F87171 100%)",
+            boxShadow: "0 16px 48px rgba(220,38,38,0.35)",
+          }}
+        >
+          <span className="relative z-10">Take the assessment</span>
+          <span className="relative z-10 text-xl transition-transform group-hover:translate-x-2">→</span>
+          <span className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent group-hover:translate-x-full transition-transform duration-1000" />
+        </Link>
+        <Link
+          href="/contact"
+          className="inline-flex items-center justify-center px-8 py-5 rounded-2xl text-slate-700 text-base font-semibold transition-all hover:bg-slate-50"
+          style={{ border: "1px solid rgba(15,23,42,0.10)" }}
+        >
+          Get in touch
+        </Link>
+      </div>
+      <p className="text-xs text-slate-500"
+        style={{
+          opacity: visible ? 1 : 0,
+          transition: "opacity 0.7s ease-out",
+          transitionDelay: "400ms",
+        }}>
+        Or email us at{" "}
+        <a href="mailto:hello@square1.ai" className="text-brand hover:underline font-semibold">hello@square1.ai</a>
+      </p>
+    </div>
+  );
+}
 
 export default function AboutPage() {
   return (
@@ -192,22 +554,7 @@ export default function AboutPage() {
                 12 real projects and landed the job — or launched the startup.
               </p>
             </div>
-            <div className="space-y-4">
-              {[
-                { label: "Personalised", desc: "Your path adapts to your level — beginner to advanced" },
-                { label: "Project-based", desc: "12 deployed projects, not 12 certificates" },
-                { label: "AI-graded", desc: "Every line of code reviewed by Claude AI" },
-                { label: "Career-mapped", desc: "Every course leads to a real role with a real salary" },
-              ].map((item) => (
-                <div key={item.label} className="flex items-start gap-3">
-                  <span className="w-6 h-6 rounded-full bg-brand/10 border border-brand/30 flex items-center justify-center text-[10px] font-black text-brand shrink-0 mt-0.5">✓</span>
-                  <div>
-                    <p className="text-sm font-bold text-slate-900">{item.label}</p>
-                    <p className="text-xs text-slate-500">{item.desc}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
+            <WhatWeAreChecklist />
           </div>
         </div>
       </section>
@@ -222,35 +569,13 @@ export default function AboutPage() {
         <div className="pointer-events-none absolute top-1/3 left-1/4 w-[500px] h-[500px] rounded-full opacity-20"
           style={{ background: "radial-gradient(circle, rgba(0,86,206,0.20) 0%, transparent 70%)", filter: "blur(90px)" }} />
 
-        <div className="relative max-w-3xl mx-auto text-center">
-          <span className="text-[10px] sm:text-[11px] tracking-[0.35em] uppercase text-slate-500 font-bold">
-            Our Mission
-          </span>
-          <h2 className="mt-4 mb-8 font-black tracking-tight text-white leading-[1.05]"
-            style={{ fontSize: "clamp(28px, 4.5vw, 56px)" }}>
-            Make world-class technical education{" "}
-            <span style={{
-              background: "linear-gradient(135deg, #3388FF 0%, #A78BFA 50%, #10B981 100%)",
-              WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text",
-            }}>
-              accessible to everyone.
-            </span>
-          </h2>
-          <div className="space-y-6 text-base sm:text-lg text-slate-400 leading-relaxed">
-            <p>
-              The best engineers in the world didn&apos;t get there by watching videos.
-              They got there by building things, getting feedback, and iterating. But until
-              now, that kind of mentorship cost $15,000+ or required knowing the right people.
-            </p>
-            <p className="text-white font-semibold">
-              We believe every person on earth should have access to a personal AI tutor that
-              grades their code, a curriculum that adapts to their level, and a portfolio that
-              proves they&apos;re ready — regardless of where they went to school or how much
-              they can afford.
-            </p>
-          </div>
-        </div>
+        <MissionContent />
       </section>
+
+      {/* ═══════════════════════════════════════════════════════════════════════ */}
+      {/* STATS STRIP */}
+      {/* ═══════════════════════════════════════════════════════════════════════ */}
+      <StatsStrip />
 
       {/* ═══════════════════════════════════════════════════════════════════════ */}
       {/* HOW IT WORKS — The 5-step ecosystem */}
@@ -287,57 +612,7 @@ export default function AboutPage() {
           </div>
 
           {/* 8 pillars — premium gradient cards in a grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 lg:gap-5">
-            {ECOSYSTEM.map((step) => (
-              <div key={step.n}
-                className="relative rounded-3xl p-6 lg:p-8 border overflow-hidden group transition-all hover:shadow-lg"
-                style={{
-                  background: `linear-gradient(135deg, ${step.accent}10 0%, #FFFFFF 50%, ${step.accent}06 100%)`,
-                  borderColor: `${step.accent}25`,
-                  boxShadow: `0 4px 24px ${step.accent}08`,
-                }}>
-                {/* Decorative blob */}
-                <div className="absolute -top-12 -right-12 w-32 h-32 rounded-full pointer-events-none opacity-40 group-hover:opacity-70 transition-opacity"
-                  style={{ background: `radial-gradient(circle, ${step.accent}25 0%, transparent 70%)`, filter: "blur(16px)" }} />
-
-                <div className="relative">
-                  {/* Header: number + status badge */}
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="flex items-center gap-3">
-                      <span className="font-black tabular-nums leading-none select-none"
-                        style={{
-                          fontSize: "clamp(32px, 4vw, 48px)",
-                          letterSpacing: "-0.04em",
-                          background: `linear-gradient(180deg, ${step.accent} 0%, ${step.accent}55 100%)`,
-                          WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text",
-                          filter: `drop-shadow(0 0 12px ${step.accent}30)`,
-                        }}>
-                        {step.n}
-                      </span>
-                      <div className="h-px w-8" style={{ background: `${step.accent}30` }} />
-                    </div>
-                    <span
-                      className="text-[8px] sm:text-[9px] font-black tracking-widest uppercase px-2 py-1 rounded-full border"
-                      style={{
-                        background: step.status === "live" ? "rgba(16,185,129,0.15)" : step.status === "building" ? "rgba(245,158,11,0.15)" : `${step.accent}10`,
-                        borderColor: step.status === "live" ? "rgba(16,185,129,0.30)" : step.status === "building" ? "rgba(245,158,11,0.30)" : `${step.accent}25`,
-                        color: step.status === "live" ? "#10B981" : step.status === "building" ? "#F59E0B" : step.accent,
-                      }}
-                    >
-                      {step.status === "live" ? "● Live" : step.status === "building" ? "◐ Building" : "○ Coming"}
-                    </span>
-                  </div>
-
-                  <h3 className="text-lg lg:text-xl font-black text-slate-900 leading-tight mb-3">
-                    {step.title}
-                  </h3>
-                  <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
-                    {step.desc}
-                  </p>
-                </div>
-              </div>
-            ))}
-          </div>
+          <EcosystemCards />
 
           {/* Ecosystem summary line */}
           <div className="mt-12 text-center">
@@ -377,28 +652,7 @@ export default function AboutPage() {
             </h2>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 lg:gap-6">
-            {AI_FEATURES.map((f) => (
-              <div key={f.title}
-                className="rounded-3xl p-6 lg:p-8 border overflow-hidden relative"
-                style={{
-                  background: `linear-gradient(135deg, ${f.accent}12 0%, rgba(255,255,255,0.02) 100%)`,
-                  borderColor: `${f.accent}25`,
-                  boxShadow: `0 8px 32px ${f.accent}10`,
-                }}>
-                <div className="absolute -top-12 -right-12 w-32 h-32 rounded-full pointer-events-none opacity-40"
-                  style={{ background: `radial-gradient(circle, ${f.accent}30 0%, transparent 70%)`, filter: "blur(16px)" }} />
-                <div className="relative">
-                  <div className="w-10 h-10 rounded-xl flex items-center justify-center mb-4"
-                    style={{ background: `${f.accent}20`, border: `1px solid ${f.accent}30` }}>
-                    <span className="text-sm font-black" style={{ color: f.accent }}>AI</span>
-                  </div>
-                  <h3 className="text-lg font-black text-white mb-2">{f.title}</h3>
-                  <p className="text-sm text-slate-400 leading-relaxed">{f.desc}</p>
-                </div>
-              </div>
-            ))}
-          </div>
+          <AiFeatureCards />
         </div>
       </section>
 
@@ -439,24 +693,7 @@ export default function AboutPage() {
               and launch. All powered by AI. All under one roof.
             </p>
 
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-4">
-              {[
-                { label: "On-Demand Courses", sub: "Self-paced, AI-graded" },
-                { label: "Live Workshops", sub: "Instructor + AI combined" },
-                { label: "Community", sub: "Global peer network" },
-                { label: "Competitions", sub: "Monthly hackathons" },
-                { label: "Research Lab", sub: "Open source + papers" },
-                { label: "Career Tools", sub: "Interview prep + scoring" },
-                { label: "Startup Club", sub: "Mentors + investors" },
-                { label: "AI Tutor 24/7", sub: "Knows your code" },
-              ].map((item) => (
-                <div key={item.label} className="rounded-xl p-4 border bg-white/60"
-                  style={{ borderColor: "rgba(15,23,42,0.06)" }}>
-                  <p className="text-xs sm:text-sm font-bold text-slate-900 mb-1">{item.label}</p>
-                  <p className="text-[10px] text-slate-500">{item.sub}</p>
-                </div>
-              ))}
-            </div>
+            <BeyondLearningCards />
 
             <p className="text-sm text-slate-500 pt-4">
               We&apos;re not building a better course platform.{" "}
@@ -480,53 +717,7 @@ export default function AboutPage() {
           `,
         }}
       >
-        <div className="relative max-w-3xl mx-auto text-center">
-          <span className="text-[10px] sm:text-[11px] tracking-[0.35em] uppercase text-slate-500 font-bold">
-            Our Promise
-          </span>
-          <h2 className="mt-4 mb-8 font-black tracking-tight text-slate-900 leading-[1.05]"
-            style={{ fontSize: "clamp(28px, 4.5vw, 56px)" }}>
-            We don&apos;t stop until{" "}
-            <span style={{
-              background: "linear-gradient(135deg, #3388FF 0%, #A78BFA 50%, #10B981 100%)",
-              WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text",
-            }}>
-              you&apos;re hired.
-            </span>
-          </h2>
-          <p className="text-base sm:text-lg text-slate-600 leading-relaxed mb-12 max-w-2xl mx-auto">
-            Every feature we build, every course we design, every AI model we tune —
-            exists for one reason: to get you from where you are today to a real career
-            in tech. Not someday. Not maybe.{" "}
-            <span className="font-bold text-slate-900">In 3 to 9 months.</span>
-          </p>
-
-          <div className="flex flex-col sm:flex-row gap-3 justify-center mb-6">
-            <Link
-              href="/signup"
-              className="group relative inline-flex items-center justify-center gap-3 px-10 py-5 rounded-2xl text-base lg:text-lg font-bold text-white overflow-hidden transition-all hover:-translate-y-0.5"
-              style={{
-                background: "linear-gradient(135deg, #DC2626 0%, #EF4444 50%, #F87171 100%)",
-                boxShadow: "0 16px 48px rgba(220,38,38,0.35)",
-              }}
-            >
-              <span className="relative z-10">Take the assessment</span>
-              <span className="relative z-10 text-xl transition-transform group-hover:translate-x-2">→</span>
-              <span className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent group-hover:translate-x-full transition-transform duration-1000" />
-            </Link>
-            <Link
-              href="/contact"
-              className="inline-flex items-center justify-center px-8 py-5 rounded-2xl text-slate-700 text-base font-semibold transition-all hover:bg-slate-50"
-              style={{ border: "1px solid rgba(15,23,42,0.10)" }}
-            >
-              Get in touch
-            </Link>
-          </div>
-          <p className="text-xs text-slate-500">
-            Or email us at{" "}
-            <a href="mailto:hello@square1.ai" className="text-brand hover:underline font-semibold">hello@square1.ai</a>
-          </p>
-        </div>
+        <PromiseContent />
       </section>
     </main>
   );
