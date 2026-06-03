@@ -351,30 +351,27 @@ export default function SignupPage() {
 
   return (
     <div
-      className="relative min-h-screen flex items-center justify-center p-4 sm:p-6 overflow-hidden"
-      style={{ background: "#050B14" }}
+      className="relative min-h-screen flex items-center justify-center p-4 sm:p-8 overflow-hidden"
+      style={{
+        background: `
+          radial-gradient(ellipse 800px 500px at 20% 20%, rgba(0,86,206,0.08), transparent 60%),
+          radial-gradient(ellipse 700px 500px at 80% 80%, rgba(167,139,250,0.06), transparent 60%),
+          linear-gradient(180deg, #F8FAFC 0%, #FFFFFF 50%, #F4F8FF 100%)
+        `,
+      }}
     >
-      {/* ── Background gradient blobs ──────────────────────────────────── */}
-      <div
-        className="pointer-events-none absolute -top-40 -left-40 h-[600px] w-[600px] rounded-full opacity-30 blur-[120px]"
-        style={{ background: "radial-gradient(circle, #0056CE 0%, transparent 70%)" }}
-      />
-      <div
-        className="pointer-events-none absolute -bottom-40 -right-40 h-[500px] w-[500px] rounded-full opacity-25 blur-[120px]"
-        style={{ background: "radial-gradient(circle, #4F46E5 0%, transparent 70%)" }}
-      />
-      {/* Radial glow behind card */}
-      <div
-        className="pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-[500px] w-[500px] rounded-full opacity-15 blur-[100px]"
-        style={{ background: "radial-gradient(circle, #0056CE 0%, transparent 70%)" }}
-      />
+      {/* Subtle animated blobs */}
+      <div className="pointer-events-none absolute top-0 left-1/4 w-[500px] h-[500px] rounded-full opacity-20 animate-blob-1"
+        style={{ background: "radial-gradient(circle, rgba(0,86,206,0.15) 0%, transparent 70%)", filter: "blur(80px)" }} />
+      <div className="pointer-events-none absolute bottom-0 right-1/4 w-[600px] h-[500px] rounded-full opacity-15 animate-blob-2"
+        style={{ background: "radial-gradient(circle, rgba(99,102,241,0.12) 0%, transparent 70%)", filter: "blur(90px)" }} />
 
       <div
-        className="relative w-full max-w-md mx-auto rounded-2xl p-8 sm:p-10"
+        className="relative w-full max-w-md mx-auto rounded-3xl p-8 sm:p-10 overflow-hidden"
         style={{
-          background: "#0D1117",
-          border: "1px solid rgba(255,255,255,0.08)",
-          boxShadow: "0 24px 64px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.04) inset",
+          background: "linear-gradient(135deg, #050B14 0%, #0B1626 50%, #0D1929 100%)",
+          border: "1px solid rgba(255,255,255,0.10)",
+          boxShadow: "0 32px 80px rgba(0,0,0,0.35), 0 0 0 1px rgba(255,255,255,0.05) inset, 0 0 60px rgba(0,86,206,0.08)",
         }}
       >
         {/* Logo */}
