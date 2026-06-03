@@ -27,6 +27,7 @@ interface Response {
 interface TopicAccum {
   correct: number;
   total: number;
+  questionCount: number;
 }
 
 interface QuestionResult {
@@ -34,123 +35,213 @@ interface QuestionResult {
   number: number;
   stem: string;
   type: string;
+  topicTag: string;
   marksAwarded: number;
   marksTotal: number;
   feedback: string | null;
   correct: boolean;
+  correctAnswer: string | null;
+  studentAnswer: string | null;
+  improvedCode: string | null;
+  breakdown: Array<{ criterion: string; awarded: number; reasoning: string }> | null;
+  topicUnderstanding: string | null;
 }
 
-async function gradeWithAI(
+/* ── Grade short answer questions with Claude ──────────────────────────── */
+async function gradeShortAnswer(
   anthropic: Anthropic,
-  questions: Question[],
-  responses: Response[]
-): Promise<Record<string, { marks: number; feedback: string }>> {
-  const results: Record<string, { marks: number; feedback: string }> = {};
-
-  const nonMCQ = questions.filter((q) => q.type !== "mcq");
-  if (nonMCQ.length === 0) return results;
-
-  const responseMap = new Map(responses.map((r) => [r.question_id, r]));
-
-  const items = nonMCQ.map((q) => {
-    const resp = responseMap.get(q.id);
-    const answer = q.type === "code"
-      ? (resp?.code_response ?? "")
-      : (resp?.response_text ?? "");
-    return `Q${q.number} [${q.type.toUpperCase()} | ${q.marks} marks]:
-Question: ${q.stem_md}
-${q.mark_scheme_md ? `Mark scheme: ${q.mark_scheme_md}` : ""}
-Student answer: ${answer || "(no answer)"}`;
-  }).join("\n\n---\n\n");
-
-  const prompt = `You are an expert examiner grading a technical assessment. Grade each question below strictly but fairly.
-
-For each question, provide:
-1. marks: integer from 0 to the max marks
-2. feedback: one concise sentence explaining what was good or where marks were lost
-
-Return valid JSON only in this format:
-{
-  "grades": [
-    { "questionNumber": 1, "marks": 2, "feedback": "..." },
-    ...
-  ]
-}
-
-Questions to grade:
-${items}`;
-
+  question: Question,
+  answer: string,
+  subject: string
+): Promise<{
+  marks: number;
+  feedback: string;
+  breakdown: Array<{ criterion: string; awarded: number; reasoning: string }>;
+  topicUnderstanding: string;
+}> {
   const message = await anthropic.messages.create({
     model: "claude-sonnet-4-5",
-    max_tokens: 2048,
-    messages: [{ role: "user", content: prompt }],
+    max_tokens: 1024,
+    messages: [{
+      role: "user",
+      content: `You are an expert examiner for ${subject}. Grade this answer strictly.
+
+Question (${question.marks} marks):
+${question.stem_md}
+
+${question.mark_scheme_md ? `Mark scheme:\n${question.mark_scheme_md}` : ""}
+
+Student's answer:
+${answer || "(no answer provided)"}
+
+Rules:
+- Award marks ONLY for points in the mark scheme
+- Be fair but rigorous
+- Provide specific, actionable feedback
+
+Return JSON only:
+{
+  "marks_awarded": number,
+  "max_marks": ${question.marks},
+  "breakdown": [{ "criterion": "...", "awarded": 0 or 1, "reasoning": "..." }],
+  "feedback": "2-3 sentences: what was right, what was missing, how to improve",
+  "topic_understanding": "strong" | "partial" | "weak"
+}`,
+    }],
   });
 
   const text = message.content[0].type === "text" ? message.content[0].text : "";
 
   try {
     const jsonMatch = text.match(/\{[\s\S]*\}/);
-    if (!jsonMatch) throw new Error("No JSON in response");
-    const parsed = JSON.parse(jsonMatch[0]) as { grades: { questionNumber: number; marks: number; feedback: string }[] };
-
-    for (const grade of parsed.grades) {
-      const q = nonMCQ.find((q) => q.number === grade.questionNumber);
-      if (q) {
-        results[q.id] = {
-          marks: Math.min(Math.max(0, Math.round(grade.marks)), q.marks),
-          feedback: grade.feedback,
-        };
-      }
-    }
+    if (!jsonMatch) throw new Error("No JSON");
+    const parsed = JSON.parse(jsonMatch[0]);
+    return {
+      marks: Math.min(Math.max(0, Math.round(parsed.marks_awarded ?? 0)), question.marks),
+      feedback: parsed.feedback ?? "No feedback available.",
+      breakdown: parsed.breakdown ?? [],
+      topicUnderstanding: parsed.topic_understanding ?? "partial",
+    };
   } catch {
-    // fallback: give partial credit
-    for (const q of nonMCQ) {
-      const resp = responseMap.get(q.id);
-      const hasAnswer = q.type === "code"
-        ? (resp?.code_response ?? "").trim().length > 20
-        : (resp?.response_text ?? "").trim().split(/\s+/).length > 10;
-      results[q.id] = {
-        marks: hasAnswer ? Math.floor(q.marks * 0.5) : 0,
-        feedback: "Could not automatically grade — partial credit awarded where answer was provided.",
-      };
-    }
+    const hasAnswer = answer.trim().split(/\s+/).length > 10;
+    return {
+      marks: hasAnswer ? Math.floor(question.marks * 0.5) : 0,
+      feedback: "Could not automatically grade - partial credit awarded where answer was provided.",
+      breakdown: [],
+      topicUnderstanding: "partial",
+    };
   }
-
-  return results;
 }
 
-async function generateRecommendations(
+/* ── Grade code questions with Claude ──────────────────────────────────── */
+async function gradeCode(
   anthropic: Anthropic,
-  level: string,
-  topicMastery: Array<{ topic: string; percentage: number }>
-): Promise<string> {
-  const sorted = [...topicMastery].sort((a, b) => a.percentage - b.percentage);
-  const weakTopics = sorted.slice(0, 3).map((t) => `${t.topic} (${t.percentage}%)`).join(", ");
-  const strongTopics = sorted.reverse().slice(0, 3).map((t) => `${t.topic} (${t.percentage}%)`).join(", ");
+  question: Question,
+  code: string,
+  subject: string
+): Promise<{
+  marks: number;
+  feedback: string;
+  breakdown: Array<{ criterion: string; awarded: number; reasoning: string }>;
+  topicUnderstanding: string;
+  improvedCode: string | null;
+}> {
+  const language = question.language ?? "Python";
 
   const message = await anthropic.messages.create({
     model: "claude-sonnet-4-5",
-    max_tokens: 600,
+    max_tokens: 2048,
     messages: [{
       role: "user",
-      content: `A student just completed a tech skill assessment and placed at ${level} level.
+      content: `You are a senior engineer reviewing code for ${subject}. Grade this submission.
+
+Question (${question.marks} marks):
+${question.stem_md}
+
+${question.mark_scheme_md ? `Mark scheme:\n${question.mark_scheme_md}` : ""}
+
+Language: ${language}
+
+Student's code:
+\`\`\`${language.toLowerCase()}
+${code || "// No code submitted"}
+\`\`\`
+
+Evaluate:
+1. Correctness - does it solve the problem?
+2. Code quality - clean, readable, well-structured?
+3. Edge cases - does it handle errors/edge cases?
+4. Best practices - follows conventions for ${language}?
+
+Return JSON only:
+{
+  "marks_awarded": number,
+  "max_marks": ${question.marks},
+  "correctness_score": 0 to 3,
+  "quality_score": 0 to 2,
+  "edge_cases_score": 0 to 2,
+  "best_practices_score": 0 to 1,
+  "issues": ["issue 1", "issue 2"],
+  "feedback": "What's good, what needs fixing, and how",
+  "improved_code": "the corrected version of their code"
+}`,
+    }],
+  });
+
+  const text = message.content[0].type === "text" ? message.content[0].text : "";
+
+  try {
+    const jsonMatch = text.match(/\{[\s\S]*\}/);
+    if (!jsonMatch) throw new Error("No JSON");
+    const parsed = JSON.parse(jsonMatch[0]);
+    const marks = Math.min(Math.max(0, Math.round(parsed.marks_awarded ?? 0)), question.marks);
+    const breakdown = [
+      { criterion: "Correctness", awarded: parsed.correctness_score ?? 0, reasoning: "" },
+      { criterion: "Code quality", awarded: parsed.quality_score ?? 0, reasoning: "" },
+      { criterion: "Edge cases", awarded: parsed.edge_cases_score ?? 0, reasoning: "" },
+      { criterion: "Best practices", awarded: parsed.best_practices_score ?? 0, reasoning: "" },
+    ];
+    if (parsed.issues?.length) {
+      breakdown.forEach((b, i) => {
+        b.reasoning = parsed.issues[i] ?? "";
+      });
+    }
+    return {
+      marks,
+      feedback: parsed.feedback ?? "No feedback available.",
+      breakdown,
+      topicUnderstanding: marks >= question.marks * 0.7 ? "strong" : marks >= question.marks * 0.4 ? "partial" : "weak",
+      improvedCode: parsed.improved_code ?? null,
+    };
+  } catch {
+    const hasCode = code.trim().length > 20;
+    return {
+      marks: hasCode ? Math.floor(question.marks * 0.5) : 0,
+      feedback: "Could not automatically grade - partial credit awarded where code was provided.",
+      breakdown: [],
+      topicUnderstanding: "partial",
+      improvedCode: null,
+    };
+  }
+}
+
+/* ── Generate AI recommendations ───────────────────────────────────────── */
+async function generateRecommendations(
+  anthropic: Anthropic,
+  level: string,
+  topicMastery: Array<{ topic: string; percentage: number }>,
+  subject: string
+): Promise<string> {
+  const sorted = [...topicMastery].sort((a, b) => a.percentage - b.percentage);
+  const weakTopics = sorted.slice(0, 3).map((t) => `${t.topic} (${t.percentage}%)`).join(", ");
+  const strongTopics = [...sorted].reverse().slice(0, 3).map((t) => `${t.topic} (${t.percentage}%)`).join(", ");
+
+  const message = await anthropic.messages.create({
+    model: "claude-sonnet-4-5",
+    max_tokens: 800,
+    messages: [{
+      role: "user",
+      content: `A student just completed a skill assessment for ${subject} and placed at ${level} level.
 
 Their strongest areas: ${strongTopics || "none identified"}
 Their weakest areas: ${weakTopics || "none identified"}
 
-Write a personalised 3–4 paragraph learning recommendation in markdown. Be specific, encouraging, and actionable. Include:
-1. A brief summary of their current level
-2. What to focus on first (weakest areas)
-3. How to leverage their strengths
-4. A motivating closing line
+Write a personalised learning strategy in this exact structure:
 
-Keep it concise — max 250 words.`,
+1. A brief paragraph summarising their current level
+2. A numbered list of 3 specific modules to focus on, ordered by priority (weakest first), with why each matters
+3. An estimated time to close all gaps (in months at 1 hour/day)
+
+Keep it concise, specific, encouraging, and actionable. Max 200 words. Do NOT use markdown headers.`,
     }],
   });
 
   return message.content[0].type === "text" ? message.content[0].text : "";
 }
 
+/* ═══════════════════════════════════════════════════════════════════════ */
+/*  MAIN HANDLER                                                          */
+/* ═══════════════════════════════════════════════════════════════════════ */
 export async function POST(
   _request: Request,
   { params }: { params: Promise<{ attemptId: string }> }
@@ -179,7 +270,7 @@ export async function POST(
       return NextResponse.json({ error: "Student not found" }, { status: 404 });
     }
 
-    // Check if already graded — return existing report
+    // Load attempt
     const { data: existingAttempt } = await supabase
       .from("assessment_attempts")
       .select("id, status, paper_id, score, max_score, percentage, level_determined")
@@ -191,8 +282,8 @@ export async function POST(
       return NextResponse.json({ error: "Attempt not found" }, { status: 404 });
     }
 
+    /* ── Return existing report if already graded ──────────────────────── */
     if (existingAttempt.status === "graded") {
-      // Return existing report
       const { data: existingReport } = await supabase
         .from("skill_reports")
         .select("*")
@@ -207,7 +298,7 @@ export async function POST(
 
         const { data: questions } = await supabase
           .from("assessment_questions")
-          .select("id, number, type, stem_md, marks")
+          .select("id, number, type, stem_md, marks, correct_answer, mark_scheme_md, topic_tags, language, starter_code")
           .eq("paper_id", existingAttempt.paper_id)
           .order("number", { ascending: true }) as { data: Question[] | null };
 
@@ -223,17 +314,62 @@ export async function POST(
         const qResults: QuestionResult[] = (questions ?? []).map((q) => {
           const r = qResultMap.get(q.id);
           const awarded = r?.marks_awarded ?? 0;
+          const studentAnswer = q.type === "mcq"
+            ? r?.selected_option ?? null
+            : q.type === "code"
+            ? r?.code_response ?? null
+            : r?.response_text ?? null;
+
+          // Parse feedback JSON if possible (for breakdown data)
+          let breakdown = null;
+          let topicUnderstanding = null;
+          let improvedCode = null;
+          try {
+            if (r?.ai_feedback) {
+              const parsed = JSON.parse(r.ai_feedback);
+              if (parsed.breakdown) breakdown = parsed.breakdown;
+              if (parsed.topicUnderstanding) topicUnderstanding = parsed.topicUnderstanding;
+              if (parsed.improvedCode) improvedCode = parsed.improvedCode;
+            }
+          } catch {
+            // ai_feedback is plain text
+          }
+
           return {
             id: q.id,
             number: q.number,
             stem: q.stem_md,
             type: q.type,
+            topicTag: q.topic_tags?.[0] ?? "General",
             marksAwarded: awarded,
             marksTotal: q.marks,
-            feedback: r?.ai_feedback ?? null,
+            feedback: typeof r?.ai_feedback === "string" && !r.ai_feedback.startsWith("{")
+              ? r.ai_feedback
+              : breakdown ? null : r?.ai_feedback ?? null,
             correct: awarded >= q.marks,
+            correctAnswer: q.correct_answer ?? q.mark_scheme_md ?? null,
+            studentAnswer,
+            improvedCode,
+            breakdown,
+            topicUnderstanding,
           };
         });
+
+        // Parse feedback from stored JSON for existing results
+        for (const qr of qResults) {
+          const r = qResultMap.get(qr.id);
+          if (r?.ai_feedback) {
+            try {
+              const parsed = JSON.parse(r.ai_feedback);
+              if (parsed.feedback) qr.feedback = parsed.feedback;
+              if (parsed.breakdown) qr.breakdown = parsed.breakdown;
+              if (parsed.topicUnderstanding) qr.topicUnderstanding = parsed.topicUnderstanding;
+              if (parsed.improvedCode) qr.improvedCode = parsed.improvedCode;
+            } catch {
+              qr.feedback = r.ai_feedback;
+            }
+          }
+        }
 
         return NextResponse.json({
           reportId: existingReport.id,
@@ -248,7 +384,7 @@ export async function POST(
       }
     }
 
-    // Load questions
+    /* ── Load questions and responses ──────────────────────────────────── */
     const { data: questions, error: qErr } = await supabase
       .from("assessment_questions")
       .select("id, number, type, stem_md, options, correct_answer, mark_scheme_md, marks, topic_tags, language, starter_code")
@@ -259,7 +395,6 @@ export async function POST(
       return NextResponse.json({ error: "Failed to load questions" }, { status: 500 });
     }
 
-    // Load responses
     const { data: responses, error: rErr } = await supabase
       .from("assessment_responses")
       .select("question_id, selected_option, response_text, code_response")
@@ -271,57 +406,128 @@ export async function POST(
 
     const responseMap = new Map((responses ?? []).map((r) => [r.question_id, r]));
 
-    // Auto-grade MCQ
-    const mcqGrades: Record<string, { marks: number; feedback: string | null }> = {};
+    // Get course name for context
+    const { data: paper } = await supabase
+      .from("assessment_papers")
+      .select("course_id")
+      .eq("id", existingAttempt.paper_id)
+      .maybeSingle();
+
+    let subject = "Technology";
+    if (paper?.course_id) {
+      const { data: course } = await supabase
+        .from("courses")
+        .select("title")
+        .eq("id", paper.course_id)
+        .maybeSingle();
+      if (course?.title) subject = course.title;
+    }
+
+    /* ── Grade all questions ───────────────────────────────────────────── */
+    const anthropic = new Anthropic();
+    const allGrades: Record<string, {
+      marks: number;
+      feedback: string;
+      breakdown: Array<{ criterion: string; awarded: number; reasoning: string }> | null;
+      topicUnderstanding: string | null;
+      improvedCode: string | null;
+    }> = {};
+
+    // MCQ - auto-grade (no AI needed)
     for (const q of questions.filter((q) => q.type === "mcq")) {
       const resp = responseMap.get(q.id);
       const selected = (resp?.selected_option ?? "").trim().toLowerCase();
       const correct = (q.correct_answer ?? "").trim().toLowerCase();
       const isCorrect = selected === correct;
-      mcqGrades[q.id] = {
+      allGrades[q.id] = {
         marks: isCorrect ? q.marks : 0,
-        feedback: isCorrect ? null : `Correct answer: ${q.correct_answer}`,
+        feedback: isCorrect ? "Correct!" : `Incorrect. The correct answer is: ${q.correct_answer}`,
+        breakdown: null,
+        topicUnderstanding: isCorrect ? "strong" : "weak",
+        improvedCode: null,
       };
     }
 
-    // AI-grade non-MCQ
-    const anthropic = new Anthropic();
-    const aiGrades = await gradeWithAI(anthropic, questions, responses ?? []);
+    // Short answer - AI grade each individually
+    const shortAnswerQs = questions.filter((q) => q.type === "short_answer");
+    for (const q of shortAnswerQs) {
+      const resp = responseMap.get(q.id);
+      const answer = resp?.response_text ?? "";
+      const result = await gradeShortAnswer(anthropic, q, answer, subject);
+      allGrades[q.id] = {
+        marks: result.marks,
+        feedback: result.feedback,
+        breakdown: result.breakdown,
+        topicUnderstanding: result.topicUnderstanding,
+        improvedCode: null,
+      };
+    }
 
-    const allGrades: Record<string, { marks: number; feedback: string | null }> = {
-      ...mcqGrades,
-      ...Object.fromEntries(
-        Object.entries(aiGrades).map(([k, v]) => [k, { marks: v.marks, feedback: v.feedback }])
-      ),
-    };
+    // Code - AI grade each individually
+    const codeQs = questions.filter((q) => q.type === "code");
+    for (const q of codeQs) {
+      const resp = responseMap.get(q.id);
+      const code = resp?.code_response ?? "";
+      const result = await gradeCode(anthropic, q, code, subject);
+      allGrades[q.id] = {
+        marks: result.marks,
+        feedback: result.feedback,
+        breakdown: result.breakdown,
+        topicUnderstanding: result.topicUnderstanding,
+        improvedCode: result.improvedCode,
+      };
+    }
 
-    // Calculate scores
+    /* ── Calculate scores and topic mastery ─────────────────────────────── */
     let totalScore = 0;
     let totalMax = 0;
     const topicAccum: Record<string, TopicAccum> = {};
 
+    // Score by question type
+    let mcqScore = 0, mcqMax = 0;
+    let shortScore = 0, shortMax = 0;
+    let codeScore = 0, codeMax = 0;
+
     const questionResults: QuestionResult[] = [];
 
     for (const q of questions) {
-      const grade = allGrades[q.id] ?? { marks: 0, feedback: null };
+      const grade = allGrades[q.id] ?? { marks: 0, feedback: null, breakdown: null, topicUnderstanding: null, improvedCode: null };
       totalScore += grade.marks;
       totalMax += q.marks;
 
+      if (q.type === "mcq") { mcqScore += grade.marks; mcqMax += q.marks; }
+      else if (q.type === "short_answer") { shortScore += grade.marks; shortMax += q.marks; }
+      else { codeScore += grade.marks; codeMax += q.marks; }
+
       for (const tag of q.topic_tags ?? []) {
-        if (!topicAccum[tag]) topicAccum[tag] = { correct: 0, total: 0 };
+        if (!topicAccum[tag]) topicAccum[tag] = { correct: 0, total: 0, questionCount: 0 };
         topicAccum[tag].correct += grade.marks;
         topicAccum[tag].total += q.marks;
+        topicAccum[tag].questionCount += 1;
       }
+
+      const resp = responseMap.get(q.id);
+      const studentAnswer = q.type === "mcq"
+        ? resp?.selected_option ?? null
+        : q.type === "code"
+        ? resp?.code_response ?? null
+        : resp?.response_text ?? null;
 
       questionResults.push({
         id: q.id,
         number: q.number,
         stem: q.stem_md,
         type: q.type,
+        topicTag: q.topic_tags?.[0] ?? "General",
         marksAwarded: grade.marks,
         marksTotal: q.marks,
         feedback: grade.feedback,
         correct: grade.marks >= q.marks,
+        correctAnswer: q.correct_answer ?? q.mark_scheme_md ?? null,
+        studentAnswer,
+        improvedCode: grade.improvedCode,
+        breakdown: grade.breakdown,
+        topicUnderstanding: grade.topicUnderstanding,
       });
     }
 
@@ -329,24 +535,18 @@ export async function POST(
     const level: "beginner" | "intermediate" | "advanced" =
       percentage >= 70 ? "advanced" : percentage >= 40 ? "intermediate" : "beginner";
 
-    const topicMastery = Object.entries(topicAccum).map(([topic, { correct, total }]) => ({
+    const topicMastery = Object.entries(topicAccum).map(([topic, { correct, total, questionCount }]) => ({
       topic,
       correct,
       total,
       percentage: total > 0 ? Math.round((correct / total) * 100) : 0,
+      questionCount,
     }));
 
-    // Generate recommendations
-    const recommendationsMd = await generateRecommendations(anthropic, level, topicMastery);
+    /* ── Generate AI recommendations ───────────────────────────────────── */
+    const recommendationsMd = await generateRecommendations(anthropic, level, topicMastery, subject);
 
-    // Find course_id from paper
-    const { data: paper } = await supabase
-      .from("assessment_papers")
-      .select("course_id")
-      .eq("id", existingAttempt.paper_id)
-      .maybeSingle();
-
-    // Save skill report
+    /* ── Save skill report ─────────────────────────────────────────────── */
     const { data: report, error: reportErr } = await supabase
       .from("skill_reports")
       .insert({
@@ -368,21 +568,28 @@ export async function POST(
       return NextResponse.json({ error: "Failed to save skill report" }, { status: 500 });
     }
 
-    // Update responses with marks
+    /* ── Update responses with marks + structured feedback ─────────────── */
     for (const q of questions) {
       const grade = allGrades[q.id];
       if (!grade) continue;
+      // Store structured data as JSON in ai_feedback
+      const feedbackData = JSON.stringify({
+        feedback: grade.feedback,
+        breakdown: grade.breakdown,
+        topicUnderstanding: grade.topicUnderstanding,
+        improvedCode: grade.improvedCode,
+      });
       await supabase
         .from("assessment_responses")
         .update({
           marks_awarded: grade.marks,
-          ai_feedback: grade.feedback,
+          ai_feedback: feedbackData,
         })
         .eq("attempt_id", attemptId)
         .eq("question_id", q.id);
     }
 
-    // Update attempt
+    /* ── Update attempt status ─────────────────────────────────────────── */
     await supabase
       .from("assessment_attempts")
       .update({
@@ -401,6 +608,12 @@ export async function POST(
       score: totalScore,
       maxScore: totalMax,
       percentage,
+      mcqScore,
+      mcqMax,
+      shortScore,
+      shortMax,
+      codeScore,
+      codeMax,
       topicMastery,
       recommendationsMd,
       questionResults,
