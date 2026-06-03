@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { createClient } from "@/lib/supabase/client";
+import { Logo } from "@/components/ui/logo";
 
 const nav = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -37,19 +38,17 @@ export function SidebarNav({ userEmail }: SidebarNavProps) {
   }
 
   return (
-    <aside className="hidden lg:flex lg:w-60 flex-col shrink-0 bg-surface border-r border-border h-full">
+    <aside
+      className="hidden lg:flex lg:w-64 flex-col shrink-0 border-r border-white/[0.06] h-full"
+      style={{ background: "#0D1117" }}
+    >
       {/* Logo */}
-      <div className="h-16 px-5 flex items-center border-b border-border">
-        <div className="flex items-center gap-2.5">
-          <div className="w-7 h-7 rounded-[var(--radius-md)] bg-brand flex items-center justify-center">
-            <span className="text-xs font-bold text-white">S1</span>
-          </div>
-          <span className="text-sm font-bold text-ink">Square 1 AI</span>
-        </div>
+      <div className="h-16 px-5 flex items-center">
+        <Logo variant="light" size="sm" />
       </div>
 
       {/* Nav items */}
-      <nav className="flex-1 px-3 py-4 space-y-0.5 overflow-y-auto">
+      <nav className="flex-1 px-3 py-2 space-y-0.5 overflow-y-auto">
         {nav.map(({ href, label, icon: Icon }) => {
           const isActive = pathname === href || pathname.startsWith(href + "/");
           return (
@@ -57,13 +56,13 @@ export function SidebarNav({ userEmail }: SidebarNavProps) {
               key={href}
               href={href}
               className={cn(
-                "flex items-center gap-3 px-3 py-2.5 rounded-[var(--radius-md)] text-sm font-medium transition-colors",
+                "h-10 px-4 rounded-lg flex items-center gap-3 text-sm font-medium transition-all",
                 isActive
-                  ? "bg-surface-tint text-brand"
-                  : "text-ink-secondary hover:bg-surface-alt hover:text-ink"
+                  ? "bg-white/[0.06] text-white border-l-[3px] border-[#5B8DEF]"
+                  : "text-slate-400 hover:text-white hover:bg-white/[0.04] border-l-[3px] border-transparent"
               )}
             >
-              <Icon size={17} className={isActive ? "text-brand" : "text-ink-muted"} />
+              <Icon className="w-4 h-4" />
               {label}
             </Link>
           );
@@ -71,15 +70,15 @@ export function SidebarNav({ userEmail }: SidebarNavProps) {
       </nav>
 
       {/* User footer */}
-      <div className="px-3 py-4 border-t border-border">
-        <div className="px-3 py-2 mb-1">
-          <p className="text-xs font-medium text-ink truncate">{userEmail}</p>
+      <div className="px-3 py-4 border-t border-white/[0.06]">
+        <div className="px-4 py-2 mb-1">
+          <p className="text-xs text-slate-500 truncate">{userEmail}</p>
         </div>
         <button
           onClick={handleSignOut}
-          className="flex items-center gap-3 px-3 py-2.5 w-full rounded-[var(--radius-md)] text-sm font-medium text-ink-secondary hover:bg-error-bg hover:text-error transition-colors"
+          className="flex items-center gap-3 px-4 h-10 w-full rounded-lg text-xs text-slate-500 hover:text-white transition-all"
         >
-          <LogOut size={17} />
+          <LogOut className="w-4 h-4" />
           Sign out
         </button>
       </div>

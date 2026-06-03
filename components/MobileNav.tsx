@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { createClient } from "@/lib/supabase/client";
+import { Logo } from "@/components/ui/logo";
 
 const nav = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -50,53 +51,45 @@ export function MobileNav({ userEmail }: MobileNavProps) {
 
   return (
     <>
-      {/* ── Mobile/Tablet top bar (shown below lg) ── */}
-      <div className="lg:hidden flex items-center justify-between h-14 px-4 bg-surface border-b border-border shrink-0 z-30">
-        {/* Logo mark */}
-        <div className="flex items-center gap-2">
-          <div className="w-7 h-7 rounded-[var(--radius-md)] bg-brand flex items-center justify-center">
-            <span className="text-xs font-bold text-white">S1</span>
-          </div>
-          <span className="text-sm font-bold text-ink">Square 1 AI</span>
-        </div>
-        {/* Hamburger button */}
+      {/* Mobile/Tablet top bar (shown below lg) */}
+      <div
+        className="lg:hidden flex items-center justify-between h-14 px-4 border-b border-white/[0.06] shrink-0 z-30"
+        style={{ background: "#0D1117" }}
+      >
+        <Logo variant="light" size="sm" />
         <button
           onClick={() => setOpen(true)}
           aria-label="Open navigation menu"
-          className="p-2 rounded-lg text-ink-secondary hover:bg-surface-alt hover:text-ink transition-colors"
+          className="p-2 rounded-lg text-white hover:bg-white/[0.04] transition-colors"
         >
           <Menu size={20} />
         </button>
       </div>
 
-      {/* ── Backdrop ── */}
+      {/* Backdrop */}
       {open && (
         <div
-          className="fixed inset-0 z-40 bg-black/50 lg:hidden"
+          className="fixed inset-0 z-40 bg-black/60 lg:hidden"
           onClick={() => setOpen(false)}
           aria-hidden="true"
         />
       )}
 
-      {/* ── Slide-in drawer ── */}
+      {/* Slide-in drawer */}
       <aside
         className={cn(
-          "fixed top-0 left-0 h-full w-64 bg-surface border-r border-border z-50 flex flex-col transition-transform duration-300 ease-in-out lg:hidden",
+          "fixed top-0 left-0 h-full w-64 border-r border-white/[0.06] z-50 flex flex-col transition-transform duration-300 ease-in-out lg:hidden",
           open ? "translate-x-0" : "-translate-x-full"
         )}
+        style={{ background: "#0D1117" }}
       >
         {/* Drawer header */}
-        <div className="h-14 px-4 flex items-center justify-between border-b border-border shrink-0">
-          <div className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-[var(--radius-md)] bg-brand flex items-center justify-center">
-              <span className="text-xs font-bold text-white">S1</span>
-            </div>
-            <span className="text-sm font-bold text-ink">Square 1 AI</span>
-          </div>
+        <div className="h-14 px-4 flex items-center justify-between shrink-0">
+          <Logo variant="light" size="sm" />
           <button
             onClick={() => setOpen(false)}
             aria-label="Close navigation menu"
-            className="p-2 rounded-lg text-ink-secondary hover:bg-surface-alt hover:text-ink transition-colors"
+            className="p-2 rounded-lg text-white hover:bg-white/[0.04] transition-colors"
           >
             <X size={18} />
           </button>
@@ -111,13 +104,13 @@ export function MobileNav({ userEmail }: MobileNavProps) {
                 key={href}
                 href={href}
                 className={cn(
-                  "flex items-center gap-3 px-3 py-2.5 rounded-[var(--radius-md)] text-sm font-medium transition-colors",
+                  "h-10 px-4 rounded-lg flex items-center gap-3 text-sm font-medium transition-all",
                   isActive
-                    ? "bg-surface-tint text-brand"
-                    : "text-ink-secondary hover:bg-surface-alt hover:text-ink"
+                    ? "bg-white/[0.06] text-white border-l-[3px] border-[#5B8DEF]"
+                    : "text-slate-400 hover:text-white hover:bg-white/[0.04] border-l-[3px] border-transparent"
                 )}
               >
-                <Icon size={17} className={isActive ? "text-brand" : "text-ink-muted"} />
+                <Icon className="w-4 h-4" />
                 {label}
               </Link>
             );
@@ -125,15 +118,15 @@ export function MobileNav({ userEmail }: MobileNavProps) {
         </nav>
 
         {/* User footer */}
-        <div className="px-3 py-4 border-t border-border">
-          <div className="px-3 py-2 mb-1">
-            <p className="text-xs font-medium text-ink truncate">{userEmail}</p>
+        <div className="px-3 py-4 border-t border-white/[0.06]">
+          <div className="px-4 py-2 mb-1">
+            <p className="text-xs text-slate-500 truncate">{userEmail}</p>
           </div>
           <button
             onClick={handleSignOut}
-            className="flex items-center gap-3 px-3 py-2.5 w-full rounded-[var(--radius-md)] text-sm font-medium text-ink-secondary hover:bg-error-bg hover:text-error transition-colors"
+            className="flex items-center gap-3 px-4 h-10 w-full rounded-lg text-xs text-slate-500 hover:text-white transition-all"
           >
-            <LogOut size={17} />
+            <LogOut className="w-4 h-4" />
             Sign out
           </button>
         </div>
