@@ -4,7 +4,8 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 
 const OnboardSchema = z.object({
-  name: z.string().max(120).optional().default(""),
+  name: z.string().min(1).max(100).optional(),
+  country: z.string().min(1).max(100).optional(),
 });
 
 export async function POST(request: Request) {
@@ -33,11 +34,13 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Invalid input" }, { status: 400 });
     }
 
-    const { name } = parsed.data;
+    const { name, country } = parsed.data;
 
     // Find or create student record for this user
-    // Note: consent_given_at timestamptz should be added to the students table via migration:
-    // ALTER TABLE students ADD COLUMN IF NOT EXISTS consent_given_at timestamptz;
+    //
+    // Migration required — run these if the columns don't exist yet:
+    //   ALTER TABLE students ADD COLUMN IF NOT EXISTS country text;
+    //   ALTER TABLE students ADD COLUMN IF NOT EXISTS consent_given_at timestamptz;
     const { data: existing, error: fetchError } = await supabase
       .from("students")
       .select("id")
@@ -51,14 +54,16 @@ export async function POST(request: Request) {
     let studentId: string;
 
     if (existing) {
-      // Update name if provided
-      if (name) {
+      // Update name and/or country if provided
+      const updates: Record<string, string> = {};
+      if (name) updates.name = name;
+      if (country) updates.country = country;
+      // updates.consent_given_at = new Date().toISOString(); // Uncomment after migration
+
+      if (Object.keys(updates).length > 0) {
         const { error: updateError } = await supabase
           .from("students")
-          .update({
-            name: name || undefined,
-            // consent_given_at: new Date().toISOString(), // Uncomment after migration
-          })
+          .update(updates)
           .eq("user_id", user.id);
 
         if (updateError) {
@@ -74,6 +79,7 @@ export async function POST(request: Request) {
           user_id: user.id,
           email: user.email ?? "",
           name: name || null,
+          country: country || null,
           // consent_given_at: new Date().toISOString(), // Uncomment after migration
         })
         .select("id")
