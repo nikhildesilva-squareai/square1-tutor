@@ -618,6 +618,14 @@ export function JourneyHook() {
               const Mockup = MOCKUPS[i];
               const isVisible = visibleSteps.has(i);
               const isFinal = step.isFinal;
+              // Active step = the one the orb is currently passing through
+              const stepFraction = i / (STEPS.length - 1);
+              const nextFraction = (i + 1) / (STEPS.length - 1);
+              const isActive = stepsProgress >= stepFraction - 0.05 && stepsProgress < nextFraction + 0.05;
+              const isPassed = stepsProgress >= nextFraction;
+              // Step-specific accent colours for the active glow
+              const stepAccents = ["#3388FF", "#6366F1", "#A78BFA", "#8B5CF6", "#10B981"];
+              const accent = stepAccents[i] ?? "#3388FF";
               return (
                 <div
                   key={step.n}
@@ -628,32 +636,42 @@ export function JourneyHook() {
                     transform: isVisible ? "translateY(0)" : "translateY(40px)",
                   }}
                 >
-                  {/* HUGE numeral */}
+                  {/* HUGE numeral — lights up when active */}
                   <div className={`lg:col-span-5 ${i % 2 === 1 ? "lg:[direction:ltr]" : ""}`}>
                     <div className="flex items-baseline gap-4">
                       <span
-                        className="font-black tabular-nums leading-none select-none"
+                        className="font-black tabular-nums leading-none select-none transition-all duration-500"
                         style={{
                           fontSize: "clamp(96px, 16vw, 220px)",
                           letterSpacing: "-0.06em",
                           background: isFinal
                             ? "linear-gradient(135deg, #10B981 0%, #34D399 100%)"
-                            : "linear-gradient(180deg, #FFFFFF 0%, #475569 110%)",
+                            : isActive || isPassed
+                              ? `linear-gradient(180deg, ${accent} 0%, ${accent}88 110%)`
+                              : "linear-gradient(180deg, #FFFFFF 0%, #475569 110%)",
                           WebkitBackgroundClip: "text",
                           WebkitTextFillColor: "transparent",
                           backgroundClip: "text",
-                          filter: isFinal && isVisible ? "drop-shadow(0 0 32px rgba(16,185,129,0.5))" : "none",
+                          filter: (isActive || (isFinal && isVisible))
+                            ? `drop-shadow(0 0 32px ${accent}60)`
+                            : "none",
+                          transform: isActive ? "scale(1.03)" : "scale(1)",
                         }}
                       >
                         {step.n}
                       </span>
                     </div>
-                    <div className="mt-3 lg:mt-5 flex items-center gap-3">
-                      <span className={`text-[10px] font-black tracking-[0.35em] uppercase ${isFinal ? "text-emerald-400" : "text-slate-500"}`}>
+                    <div className="mt-3 lg:mt-5 flex items-center gap-3 transition-all duration-500">
+                      <span
+                        className="text-[10px] font-black tracking-[0.35em] uppercase transition-colors duration-500"
+                        style={{ color: isFinal ? "#10B981" : isActive || isPassed ? accent : "rgba(148,163,184,1)" }}
+                      >
                         {step.label}
                       </span>
-                      <span className="h-px flex-1 max-w-[80px] bg-white/8" />
-                      <span className="text-[10px] tabular-nums text-slate-600">{step.duration}</span>
+                      <span className="h-px flex-1 max-w-[80px] transition-all duration-500"
+                        style={{ background: isActive || isPassed ? `${accent}50` : "rgba(255,255,255,0.08)" }} />
+                      <span className="text-[10px] tabular-nums transition-colors duration-500"
+                        style={{ color: isActive ? accent : "rgba(71,85,105,1)" }}>{step.duration}</span>
                     </div>
                   </div>
 
@@ -661,15 +679,21 @@ export function JourneyHook() {
                   <div className={`lg:col-span-7 ${i % 2 === 1 ? "lg:[direction:ltr]" : ""}`}>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 lg:gap-8 items-center">
                       <div>
-                        <h4 className="text-2xl lg:text-3xl font-bold text-white leading-tight mb-3">
+                        <h4 className="text-2xl lg:text-3xl font-bold text-white leading-tight mb-3 transition-all duration-500"
+                          style={{ textShadow: isActive ? `0 0 30px ${accent}40` : "none" }}>
                           {step.title}
                         </h4>
-                        <p className="text-sm lg:text-base text-slate-400 leading-relaxed mb-4">
+                        <p className="text-sm lg:text-base leading-relaxed mb-4 transition-colors duration-500"
+                          style={{ color: isActive ? "rgba(226,232,240,1)" : "rgba(148,163,184,1)" }}>
                           {step.desc}
                         </p>
                       </div>
 
-                      <div className="w-full max-w-[260px] mx-auto sm:mx-0">
+                      <div className="w-full max-w-[260px] mx-auto sm:mx-0 rounded-2xl transition-all duration-500"
+                        style={{
+                          boxShadow: isActive ? `0 0 32px ${accent}30, 0 0 0 1px ${accent}25` : "none",
+                          transform: isActive ? "scale(1.02)" : "scale(1)",
+                        }}>
                         <Mockup />
                       </div>
                     </div>
