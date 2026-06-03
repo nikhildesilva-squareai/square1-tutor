@@ -12,12 +12,12 @@ const securityHeaders = [
     key: "Content-Security-Policy",
     value: [
       "default-src 'self'",
-      "script-src 'self' 'unsafe-eval' 'unsafe-inline'", // unsafe-eval needed for Monaco editor
-      "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+      "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://assets.calendly.com", // unsafe-eval needed for Monaco editor
+      "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://assets.calendly.com",
       "font-src 'self' https://fonts.gstatic.com",
       "img-src 'self' data: blob:",
       "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.anthropic.com",
-      "frame-src 'none'",
+      "frame-src 'self' https://calendly.com",
       "object-src 'none'",
       "base-uri 'self'",
       "form-action 'self'",
