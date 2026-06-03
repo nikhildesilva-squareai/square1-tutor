@@ -64,6 +64,32 @@ const COUNTRIES = [
   "Other",
 ] as const;
 
+const SUBJECTS = [
+  "Generative AI",
+  "Machine Learning",
+  "Artificial Intelligence",
+  "Cybersecurity",
+  "Data Science",
+  "Full Stack Development",
+  "Game Development",
+  "Computer Vision",
+  "Drone Technology",
+  "LLM Agent Architect",
+  "AI Product Management",
+  "DevOps Engineering",
+] as const;
+
+const EXPERIENCE_LEVELS = [
+  "High School Student",
+  "Undergraduate Student",
+  "Graduate Student",
+  "Career Changer",
+  "Working Professional",
+  "Senior / Manager",
+  "Freelancer / Self-taught",
+  "Other",
+] as const;
+
 /* ─── Brand SVG icons (inline — no external requests) ─────────────────────── */
 
 function GoogleIcon() {
@@ -108,6 +134,8 @@ export default function SignupPage() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [country, setCountry] = useState("");
+  const [subject, setSubject] = useState("");
+  const [experience, setExperience] = useState("");
   const [gdprConsent, setGdprConsent] = useState(false);
   const [step, setStep] = useState<"email" | "otp">("email");
   const [digits, setDigits] = useState<string[]>(Array(CODE_LENGTH).fill(""));
@@ -152,8 +180,8 @@ export default function SignupPage() {
       );
       return;
     }
-    if (!country) {
-      setError("Please select your country.");
+    if (!country || !subject || !experience) {
+      setError("Please fill in all fields.");
       return;
     }
 
@@ -170,9 +198,9 @@ export default function SignupPage() {
       if (name.trim()) {
         localStorage.setItem("sq1_pending_name", name.trim());
       }
-      if (country) {
-        localStorage.setItem("sq1_pending_country", country);
-      }
+      if (country) localStorage.setItem("sq1_pending_country", country);
+      if (subject) localStorage.setItem("sq1_pending_subject", subject);
+      if (experience) localStorage.setItem("sq1_pending_experience", experience);
       setStep("otp");
       setDigits(Array(CODE_LENGTH).fill(""));
       setResendCountdown(30);
@@ -203,9 +231,11 @@ export default function SignupPage() {
         return;
       }
 
-      // Post-verify: onboard the student with name + country
+      // Post-verify: onboard the student with name + country + subject + experience
       const pendingName = localStorage.getItem("sq1_pending_name");
       const pendingCountry = localStorage.getItem("sq1_pending_country");
+      const pendingSubject = localStorage.getItem("sq1_pending_subject");
+      const pendingExperience = localStorage.getItem("sq1_pending_experience");
       try {
         await fetch("/api/onboard", {
           method: "POST",
@@ -213,10 +243,14 @@ export default function SignupPage() {
           body: JSON.stringify({
             name: pendingName ?? "",
             country: pendingCountry ?? "",
+            subject: pendingSubject ?? "",
+            experience: pendingExperience ?? "",
           }),
         });
         localStorage.removeItem("sq1_pending_name");
         localStorage.removeItem("sq1_pending_country");
+        localStorage.removeItem("sq1_pending_subject");
+        localStorage.removeItem("sq1_pending_experience");
       } catch {
         // Non-fatal — student record may already exist or will be created lazily
       }
@@ -459,6 +493,60 @@ export default function SignupPage() {
                   {COUNTRIES.map((c) => (
                     <option key={c} value={c}>
                       {c}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Subject interest */}
+              <div>
+                <label
+                  htmlFor="subject"
+                  className="block text-xs font-semibold text-slate-400 mb-1.5 uppercase tracking-wide"
+                >
+                  What would you like to learn?
+                </label>
+                <select
+                  id="subject"
+                  required
+                  value={subject}
+                  onChange={(e) => setSubject(e.target.value)}
+                  className={inputClass}
+                  style={inputStyle}
+                >
+                  <option value="" disabled>
+                    Select a subject
+                  </option>
+                  {SUBJECTS.map((s) => (
+                    <option key={s} value={s}>
+                      {s}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Experience level */}
+              <div>
+                <label
+                  htmlFor="experience"
+                  className="block text-xs font-semibold text-slate-400 mb-1.5 uppercase tracking-wide"
+                >
+                  Your current level
+                </label>
+                <select
+                  id="experience"
+                  required
+                  value={experience}
+                  onChange={(e) => setExperience(e.target.value)}
+                  className={inputClass}
+                  style={inputStyle}
+                >
+                  <option value="" disabled>
+                    Select your level
+                  </option>
+                  {EXPERIENCE_LEVELS.map((l) => (
+                    <option key={l} value={l}>
+                      {l}
                     </option>
                   ))}
                 </select>

@@ -6,6 +6,8 @@ import { z } from "zod";
 const OnboardSchema = z.object({
   name: z.string().min(1).max(100).optional(),
   country: z.string().min(1).max(100).optional(),
+  subject: z.string().min(1).max(100).optional(),
+  experience: z.string().min(1).max(100).optional(),
 });
 
 export async function POST(request: Request) {
@@ -34,12 +36,14 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Invalid input" }, { status: 400 });
     }
 
-    const { name, country } = parsed.data;
+    const { name, country, subject, experience } = parsed.data;
 
     // Find or create student record for this user
     //
     // Migration required — run these if the columns don't exist yet:
     //   ALTER TABLE students ADD COLUMN IF NOT EXISTS country text;
+    //   ALTER TABLE students ADD COLUMN IF NOT EXISTS subject_interest text;
+    //   ALTER TABLE students ADD COLUMN IF NOT EXISTS experience_level text;
     //   ALTER TABLE students ADD COLUMN IF NOT EXISTS consent_given_at timestamptz;
     const { data: existing, error: fetchError } = await supabase
       .from("students")
@@ -58,6 +62,8 @@ export async function POST(request: Request) {
       const updates: Record<string, string> = {};
       if (name) updates.name = name;
       if (country) updates.country = country;
+      if (subject) updates.subject_interest = subject;
+      if (experience) updates.experience_level = experience;
       // updates.consent_given_at = new Date().toISOString(); // Uncomment after migration
 
       if (Object.keys(updates).length > 0) {
@@ -80,6 +86,8 @@ export async function POST(request: Request) {
           email: user.email ?? "",
           name: name || null,
           country: country || null,
+          subject_interest: subject || null,
+          experience_level: experience || null,
           // consent_given_at: new Date().toISOString(), // Uncomment after migration
         })
         .select("id")
