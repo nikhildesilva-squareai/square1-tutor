@@ -202,7 +202,7 @@ export default function SignupPage() {
       if (experience) localStorage.setItem("sq1_pending_experience", experience);
       setStep("otp");
       setDigits(Array(CODE_LENGTH).fill(""));
-      setResendCountdown(30);
+      setResendCountdown(60);
       setTimeout(() => inputRefs.current[0]?.focus(), 50);
     }
     setLoading(false);
@@ -325,7 +325,7 @@ export default function SignupPage() {
       setError(error.message);
     } else {
       setDigits(Array(CODE_LENGTH).fill(""));
-      setResendCountdown(30);
+      setResendCountdown(60);
       setTimeout(() => inputRefs.current[0]?.focus(), 50);
     }
     setLoading(false);

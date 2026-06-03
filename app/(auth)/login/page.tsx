@@ -116,7 +116,7 @@ export default function LoginPage() {
     } else {
       setStep("otp");
       setDigits(Array(CODE_LENGTH).fill(""));
-      setResendCountdown(30);
+      setResendCountdown(60);
       setTimeout(() => inputRefs.current[0]?.focus(), 50);
     }
     setLoading(false);
@@ -213,7 +213,7 @@ export default function LoginPage() {
       setError(error.message);
     } else {
       setDigits(Array(CODE_LENGTH).fill(""));
-      setResendCountdown(30);
+      setResendCountdown(60);
       setTimeout(() => inputRefs.current[0]?.focus(), 50);
     }
     setLoading(false);
