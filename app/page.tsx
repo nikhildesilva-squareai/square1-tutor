@@ -37,16 +37,20 @@ async function getCourses(): Promise<CourseRow[]> {
   }
 }
 
-// ─── Static fallback courses (shown when Supabase is not yet configured) ──────
+// ─── Static fallback courses (matches the actual 12 courses in Supabase) ──────
 const FALLBACK_COURSES: CourseRow[] = [
-  { id: "1", slug: "#", title: "Python",             description: "From scripting to data pipelines",      icon: "🐍", color: "#3776AB", total_lessons: 42, total_projects: 11, status: "active" },
-  { id: "2", slug: "#", title: "React & Next.js",    description: "Modern frontend & full-stack",           icon: "⚛️", color: "#61DAFB", total_lessons: 48, total_projects: 12, status: "active" },
-  { id: "3", slug: "#", title: "SQL & Databases",    description: "Relational design to query optimisation",icon: "🛢️", color: "#F29111", total_lessons: 38, total_projects: 10, status: "active" },
-  { id: "4", slug: "#", title: "AI & LLMs",          description: "Prompt engineering to deployed AI apps", icon: "🤖", color: "#0056CE", total_lessons: 44, total_projects: 12, status: "active" },
-  { id: "5", slug: "#", title: "Cloud & DevOps",     description: "AWS, Docker, CI/CD pipelines",          icon: "☁️", color: "#FF9900", total_lessons: 40, total_projects: 10, status: "active" },
-  { id: "6", slug: "#", title: "Cybersecurity",      description: "Foundations to ethical hacking",        icon: "🔐", color: "#E53E3E", total_lessons: 36, total_projects: 10, status: "active" },
-  { id: "7", slug: "#", title: "Mobile (React Native)", description: "Cross-platform app development",     icon: "📱", color: "#61DAFB", total_lessons: 40, total_projects: 11, status: "active" },
-  { id: "8", slug: "#", title: "Data Science",       description: "Analysis, visualisation, ML basics",    icon: "📊", color: "#19A65F", total_lessons: 42, total_projects: 10, status: "active" },
+  { id: "1",  slug: "generative-ai",          title: "Generative AI",          description: "Master LLMs, RAG, prompt engineering, and AI agents.",           icon: "🤖", color: "#6366f1", total_lessons: 40, total_projects: 10, status: "active" },
+  { id: "2",  slug: "machine-learning",        title: "Machine Learning",       description: "From linear regression to neural networks.",                    icon: "🧠", color: "#8b5cf6", total_lessons: 40, total_projects: 10, status: "active" },
+  { id: "3",  slug: "artificial-intelligence",  title: "Artificial Intelligence", description: "Search algorithms, knowledge representation, and planning.",   icon: "⚡", color: "#0ea5e9", total_lessons: 40, total_projects: 10, status: "active" },
+  { id: "4",  slug: "cybersecurity",           title: "Cybersecurity",          description: "Ethical hacking, cryptography, OWASP, and incident response.",  icon: "🔐", color: "#ef4444", total_lessons: 40, total_projects: 10, status: "active" },
+  { id: "5",  slug: "data-science",            title: "Data Science",           description: "Statistics, SQL, data analysis, and predictive insights.",       icon: "📊", color: "#14b8a6", total_lessons: 40, total_projects: 10, status: "active" },
+  { id: "6",  slug: "fullstack-development",   title: "Full Stack Development", description: "APIs, databases, auth, and end-to-end web applications.",       icon: "🚀", color: "#06b6d4", total_lessons: 40, total_projects: 12, status: "active" },
+  { id: "7",  slug: "game-development",        title: "Game Development",       description: "Build games from scratch — game loop, physics, AI enemies.",    icon: "🎮", color: "#f59e0b", total_lessons: 40, total_projects: 10, status: "active" },
+  { id: "8",  slug: "computer-vision",         title: "Computer Vision",        description: "Image processing, CNNs, object detection, and segmentation.",   icon: "👁️", color: "#10b981", total_lessons: 40, total_projects: 10, status: "active" },
+  { id: "9",  slug: "drone-technology",        title: "Drone Technology",       description: "Autonomous flight, computer vision navigation, and aerial AI.", icon: "🚁", color: "#EC4899", total_lessons: 40, total_projects: 10, status: "active" },
+  { id: "10", slug: "llm-agent-architect",     title: "LLM Agent Architect",    description: "Design autonomous AI agents with tool use and orchestration.",  icon: "🤖", color: "#7C3AED", total_lessons: 40, total_projects: 10, status: "active" },
+  { id: "11", slug: "ai-product-management",   title: "AI Product Management",  description: "Ship AI products — strategy, roadmapping, and go-to-market.",  icon: "📋", color: "#0EA5E9", total_lessons: 40, total_projects: 10, status: "active" },
+  { id: "12", slug: "devops-engineering",      title: "DevOps Engineering",     description: "CI/CD, Docker, Kubernetes, and production reliability.",        icon: "⚙️", color: "#F97316", total_lessons: 40, total_projects: 10, status: "active" },
 ];
 
 // ─── PAGE ─────────────────────────────────────────────────────────────────────

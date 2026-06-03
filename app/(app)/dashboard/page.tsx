@@ -39,19 +39,33 @@ function getGreeting() {
 }
 
 const POPULAR = [
-  { slug: "generative-ai", title: "Generative AI", salary: "$130–200k", color: "#6366f1" },
-  { slug: "machine-learning", title: "Machine Learning", salary: "$140–220k", color: "#8b5cf6" },
-  { slug: "cybersecurity", title: "Cybersecurity", salary: "$110–180k", color: "#ef4444" },
-  { slug: "fullstack-development", title: "Full Stack", salary: "$100–160k", color: "#06b6d4" },
+  { slug: "generative-ai",        title: "Generative AI",        salary: "$130–200k", color: "#6366f1" },
+  { slug: "machine-learning",     title: "Machine Learning",     salary: "$140–220k", color: "#8b5cf6" },
+  { slug: "cybersecurity",        title: "Cybersecurity",        salary: "$110–180k", color: "#ef4444" },
+  { slug: "fullstack-development", title: "Full Stack Dev",      salary: "$100–160k", color: "#06b6d4" },
+  { slug: "data-science",         title: "Data Science",         salary: "$115–185k", color: "#14b8a6" },
+  { slug: "artificial-intelligence", title: "AI",                salary: "$130–200k", color: "#0ea5e9" },
+  { slug: "llm-agent-architect",  title: "LLM Agents",          salary: "$150–250k", color: "#7C3AED" },
+  { slug: "devops-engineering",   title: "DevOps",              salary: "$120–190k", color: "#F97316" },
+  { slug: "computer-vision",      title: "Computer Vision",     salary: "$120–180k", color: "#10b981" },
+  { slug: "game-development",     title: "Game Dev",            salary: "$80–150k",  color: "#f59e0b" },
+  { slug: "drone-technology",     title: "Drone Tech",          salary: "$115–185k", color: "#EC4899" },
+  { slug: "ai-product-management", title: "AI Product Mgmt",    salary: "$140–220k", color: "#0EA5E9" },
 ];
 
 const COURSE_COLORS: Record<string, string> = {
   "generative-ai": "#6366f1",
   "machine-learning": "#8b5cf6",
+  "artificial-intelligence": "#0ea5e9",
   "cybersecurity": "#ef4444",
+  "data-science": "#14b8a6",
   "fullstack-development": "#06b6d4",
-  "data-science": "#f59e0b",
-  "cloud-computing": "#10b981",
+  "game-development": "#f59e0b",
+  "computer-vision": "#10b981",
+  "drone-technology": "#EC4899",
+  "llm-agent-architect": "#7C3AED",
+  "ai-product-management": "#0EA5E9",
+  "devops-engineering": "#F97316",
 };
 
 export default async function DashboardPage() {
