@@ -337,6 +337,9 @@ export default function SignupPage() {
   const inputClass =
     "w-full h-12 px-4 rounded-xl border text-sm text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-brand focus:border-brand transition-colors";
 
+  const selectClass =
+    "w-full h-12 px-4 rounded-xl border text-sm text-white focus:outline-none focus:ring-2 focus:ring-brand focus:border-brand transition-colors appearance-none cursor-pointer [&>option]:bg-[#0F172A] [&>option]:text-white";
+
   const inputStyle = {
     background: "rgba(255,255,255,0.04)",
     borderColor: "rgba(255,255,255,0.10)",
@@ -484,7 +487,7 @@ export default function SignupPage() {
                   required
                   value={country}
                   onChange={(e) => setCountry(e.target.value)}
-                  className={inputClass}
+                  className={selectClass}
                   style={inputStyle}
                 >
                   <option value="" disabled>
@@ -511,7 +514,7 @@ export default function SignupPage() {
                   required
                   value={subject}
                   onChange={(e) => setSubject(e.target.value)}
-                  className={inputClass}
+                  className={selectClass}
                   style={inputStyle}
                 >
                   <option value="" disabled>
@@ -538,7 +541,7 @@ export default function SignupPage() {
                   required
                   value={experience}
                   onChange={(e) => setExperience(e.target.value)}
-                  className={inputClass}
+                  className={selectClass}
                   style={inputStyle}
                 >
                   <option value="" disabled>
