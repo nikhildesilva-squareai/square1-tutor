@@ -11,34 +11,28 @@ interface LogoProps {
 
 const HEIGHTS = { sm: "h-6", md: "h-8", lg: "h-10", xl: "h-14" };
 
-// ─── The Square 1 Ai brand mark ──────────────────────────────────────────────
-// An open square bracket — thick, bold, matching the Figma design.
-// The bracket is open on the bottom-right, suggesting forward movement.
-function BracketMark({ color, strokeW = 3.5 }: { color: string; strokeW?: number }) {
+// ─── The Square 1 Ai brand mark (matches Figma exactly) ──────────────────────
+// An open square: top + left + bottom (shorter) edges form an L-shape,
+// right edge starts from top-right corner and goes down ~70% of the height.
+// The bottom-right corner is OPEN — creating the distinctive gap.
+function BracketMark({ color, strokeW = 2.5 }: { color: string; strokeW?: number }) {
+  // The bracket colour is lighter than the text for the dark variant
+  const bracketColor = color === "#FFFFFF" ? "#FFFFFF" : "#5B8DEF";
   return (
     <svg
-      viewBox="0 0 32 32"
+      viewBox="0 0 28 28"
       fill="none"
       className="h-full w-auto shrink-0"
       xmlns="http://www.w3.org/2000/svg"
     >
-      {/* Open square bracket — L-shaped top + left + partial bottom */}
-      <path
-        d="M 26 5 L 5 5 L 5 27 L 18 27"
-        stroke={color}
-        strokeWidth={strokeW}
-        strokeLinecap="square"
-        strokeLinejoin="miter"
-        fill="none"
-      />
-      {/* Right vertical (partial — stops short to create the open form) */}
-      <path
-        d="M 26 5 L 26 20"
-        stroke={color}
-        strokeWidth={strokeW}
-        strokeLinecap="square"
-        fill="none"
-      />
+      {/* Top edge: full width */}
+      <line x1="4" y1="4" x2="24" y2="4" stroke={bracketColor} strokeWidth={strokeW} strokeLinecap="round" />
+      {/* Left edge: full height */}
+      <line x1="4" y1="4" x2="4" y2="24" stroke={bracketColor} strokeWidth={strokeW} strokeLinecap="round" />
+      {/* Bottom edge: shorter — stops at ~65% */}
+      <line x1="4" y1="24" x2="17" y2="24" stroke={bracketColor} strokeWidth={strokeW} strokeLinecap="round" />
+      {/* Right edge: starts from top, goes down ~70% */}
+      <line x1="24" y1="4" x2="24" y2="19" stroke={bracketColor} strokeWidth={strokeW} strokeLinecap="round" />
     </svg>
   );
 }
@@ -60,35 +54,11 @@ function AppIcon({ size = 36 }: { size?: number }) {
         </linearGradient>
       </defs>
       <rect width="64" height="64" rx="14" fill="url(#sq1-gradient)" />
-      {/* White bracket mark inside the gradient square */}
-      <path
-        d="M 44 14 L 14 14 L 14 50 L 32 50"
-        stroke="white"
-        strokeWidth="4.5"
-        strokeLinecap="square"
-        strokeLinejoin="miter"
-        fill="none"
-      />
-      <path
-        d="M 44 14 L 44 38"
-        stroke="white"
-        strokeWidth="4.5"
-        strokeLinecap="square"
-        fill="none"
-      />
-      {/* S1 text */}
-      <text
-        x="38"
-        y="54"
-        fill="white"
-        fontFamily="system-ui, -apple-system, sans-serif"
-        fontSize="16"
-        fontWeight="800"
-        textAnchor="middle"
-        opacity="0.7"
-      >
-        S1
-      </text>
+      {/* White bracket mark — same proportions as BracketMark */}
+      <line x1="14" y1="14" x2="50" y2="14" stroke="white" strokeWidth="4" strokeLinecap="round" />
+      <line x1="14" y1="14" x2="14" y2="50" stroke="white" strokeWidth="4" strokeLinecap="round" />
+      <line x1="14" y1="50" x2="34" y2="50" stroke="white" strokeWidth="4" strokeLinecap="round" />
+      <line x1="50" y1="14" x2="50" y2="38" stroke="white" strokeWidth="4" strokeLinecap="round" />
     </svg>
   );
 }
@@ -101,7 +71,7 @@ export function Logo({
   appIcon = false,
 }: LogoProps) {
   const BRAND_BLUE = "#0056CE";
-  const color = variant === "light" ? "#FFFFFF" : BRAND_BLUE;
+  const textColor = variant === "light" ? "#FFFFFF" : BRAND_BLUE;
 
   if (appIcon) {
     const px = size === "sm" ? 28 : size === "md" ? 36 : size === "lg" ? 44 : 56;
@@ -115,7 +85,7 @@ export function Logo({
   if (iconOnly) {
     return (
       <div className={cn(HEIGHTS[size], "inline-flex", className)} aria-label="Square1 Ai">
-        <BracketMark color={color} />
+        <BracketMark color={textColor} />
       </div>
     );
   }
@@ -123,19 +93,22 @@ export function Logo({
   // Default: bracket + wordmark
   return (
     <div
-      className={cn(HEIGHTS[size], "inline-flex items-center gap-1.5", className)}
+      className={cn(HEIGHTS[size], "inline-flex items-center gap-2", className)}
       aria-label="Square1 Ai"
     >
-      <BracketMark color={color} />
+      <BracketMark color={textColor} />
       <span
-        className="font-black tracking-tight whitespace-nowrap leading-none"
+        className="font-extrabold tracking-tight whitespace-nowrap leading-none"
         style={{
-          color,
-          fontSize: size === "sm" ? "0.95rem" : size === "md" ? "1.1rem" : size === "lg" ? "1.35rem" : "1.7rem",
-          letterSpacing: "-0.03em",
+          color: textColor,
+          fontSize: size === "sm" ? "0.9rem" : size === "md" ? "1.05rem" : size === "lg" ? "1.3rem" : "1.65rem",
+          letterSpacing: "-0.02em",
         }}
       >
-        Square1 <span className="font-bold" style={{ color: variant === "light" ? "#FFFFFF" : BRAND_BLUE }}>Ai</span>
+        Square1{" "}
+        <span className="font-extrabold" style={{ color: textColor }}>
+          Ai
+        </span>
       </span>
     </div>
   );
