@@ -239,13 +239,11 @@ export default async function Home() {
               <div>
                 <h5 className="text-[10px] tracking-[0.3em] uppercase text-slate-500 font-bold mb-4">Platform</h5>
                 <ul className="space-y-2.5">
-                  {["Courses", "Assessment", "AI Tutor", "Projects", "Pricing"].map((item) => (
-                    <li key={item}>
-                      <Link href={item === "Courses" ? "/courses" : "/signup"} className="text-sm text-slate-400 hover:text-white transition-colors">
-                        {item}
-                      </Link>
-                    </li>
-                  ))}
+                  <li><Link href="/courses" className="text-sm text-slate-400 hover:text-white transition-colors">Courses</Link></li>
+                  <li><Link href="/signup" className="text-sm text-slate-400 hover:text-white transition-colors">Free Assessment</Link></li>
+                  <li><span className="text-sm text-slate-600 flex items-center gap-1.5">AI Tutor <span className="text-[8px] tracking-widest uppercase font-bold px-1.5 py-0.5 rounded border border-white/[0.08] text-slate-600">Soon</span></span></li>
+                  <li><span className="text-sm text-slate-600 flex items-center gap-1.5">Projects <span className="text-[8px] tracking-widest uppercase font-bold px-1.5 py-0.5 rounded border border-white/[0.08] text-slate-600">Soon</span></span></li>
+                  <li><span className="text-sm text-slate-600 flex items-center gap-1.5">Pricing <span className="text-[8px] tracking-widest uppercase font-bold px-1.5 py-0.5 rounded border border-white/[0.08] text-slate-600">Soon</span></span></li>
                 </ul>
               </div>
 
@@ -253,18 +251,10 @@ export default async function Home() {
               <div>
                 <h5 className="text-[10px] tracking-[0.3em] uppercase text-slate-500 font-bold mb-4">Company</h5>
                 <ul className="space-y-2.5">
-                  {[
-                    { label: "About", href: "#" },
-                    { label: "Careers", href: "#" },
-                    { label: "Contact", href: "mailto:hello@square1.ai" },
-                    { label: "Blog", href: "#" },
-                  ].map((item) => (
-                    <li key={item.label}>
-                      <a href={item.href} className="text-sm text-slate-400 hover:text-white transition-colors">
-                        {item.label}
-                      </a>
-                    </li>
-                  ))}
+                  <li><Link href="/" className="text-sm text-slate-400 hover:text-white transition-colors">About</Link></li>
+                  <li><a href="mailto:careers@square1.ai" className="text-sm text-slate-400 hover:text-white transition-colors">Careers</a></li>
+                  <li><a href="mailto:hello@square1.ai" className="text-sm text-slate-400 hover:text-white transition-colors">Contact</a></li>
+                  <li><span className="text-sm text-slate-600 flex items-center gap-1.5">Blog <span className="text-[8px] tracking-widest uppercase font-bold px-1.5 py-0.5 rounded border border-white/[0.08] text-slate-600">Soon</span></span></li>
                 </ul>
               </div>
 
@@ -274,8 +264,8 @@ export default async function Home() {
                 <ul className="space-y-2.5">
                   <li><Link href="/privacy" className="text-sm text-slate-400 hover:text-white transition-colors">Privacy Policy</Link></li>
                   <li><Link href="/terms" className="text-sm text-slate-400 hover:text-white transition-colors">Terms of Service</Link></li>
-                  <li><a href="#" className="text-sm text-slate-400 hover:text-white transition-colors">Cookie Policy</a></li>
-                  <li><a href="#" className="text-sm text-slate-400 hover:text-white transition-colors">Accessibility</a></li>
+                  <li><Link href="/privacy" className="text-sm text-slate-400 hover:text-white transition-colors">Cookie Policy</Link></li>
+                  <li><Link href="/terms" className="text-sm text-slate-400 hover:text-white transition-colors">Accessibility</Link></li>
                 </ul>
               </div>
             </div>
