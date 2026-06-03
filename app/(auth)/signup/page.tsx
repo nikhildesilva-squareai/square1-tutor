@@ -187,12 +187,25 @@ export default function SignupPage() {
     setLoading(true);
     setError(null);
 
-    const supabase = createClient();
-    const { error } = await supabase.auth.signInWithOtp({ email });
+    try {
+      const supabase = createClient();
+      const { error } = await supabase.auth.signInWithOtp({
+        email: email.trim().toLowerCase(),
+      });
 
-    if (error) {
-      setError(error.message);
-    } else {
+      if (error) {
+        setError(error.message);
+        setLoading(false);
+        return;
+      }
+    } catch {
+      setError("Something went wrong. Please check your email and try again.");
+      setLoading(false);
+      return;
+    }
+
+    // Success — store form data for post-verify onboarding
+    {
       // Store name + country temporarily for post-verify onboarding
       if (name.trim()) {
         localStorage.setItem("sq1_pending_name", name.trim());
