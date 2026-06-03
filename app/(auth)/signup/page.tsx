@@ -25,7 +25,6 @@
 import { useState, useRef, useCallback, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
-import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/ui/logo";
 import Link from "next/link";
 
@@ -332,39 +331,62 @@ export default function SignupPage() {
     setLoading(false);
   }
 
-  /* ── Shared input className ───────────────────────────────────────────── */
+  /* ── Shared input styles ───────────────────────────────────────────────── */
 
   const inputClass =
-    "w-full h-12 px-4 rounded-xl border text-sm text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-brand focus:border-brand transition-colors";
+    "w-full h-12 px-4 rounded-xl text-sm text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-brand/50 transition-all";
 
   const selectClass =
-    "w-full h-12 px-4 rounded-xl border text-sm text-white focus:outline-none focus:ring-2 focus:ring-brand focus:border-brand transition-colors appearance-none cursor-pointer [&>option]:bg-[#0F172A] [&>option]:text-white";
+    "w-full h-12 px-4 rounded-xl text-sm text-white focus:outline-none focus:ring-2 focus:ring-brand/50 transition-all appearance-none cursor-pointer [&>option]:bg-[#0D1117] [&>option]:text-white";
 
-  const inputStyle = {
-    background: "rgba(255,255,255,0.04)",
-    borderColor: "rgba(255,255,255,0.10)",
+  const inputStyle: React.CSSProperties = {
+    background: "rgba(255,255,255,0.06)",
+    border: "1px solid rgba(255,255,255,0.12)",
   };
+
+  const labelClass =
+    "block text-[11px] font-medium text-slate-400 mb-1.5 uppercase tracking-wider";
 
   /* ── Render ───────────────────────────────────────────────────────────── */
 
   return (
     <div
-      className="min-h-screen flex items-center justify-center p-4 sm:p-6"
+      className="relative min-h-screen flex items-center justify-center p-4 sm:p-6 overflow-hidden"
       style={{ background: "#050B14" }}
     >
+      {/* ── Background gradient blobs ──────────────────────────────────── */}
       <div
-        className="w-full max-w-md mx-auto rounded-3xl p-8 sm:p-10 border"
+        className="pointer-events-none absolute -top-40 -left-40 h-[600px] w-[600px] rounded-full opacity-30 blur-[120px]"
+        style={{ background: "radial-gradient(circle, #0056CE 0%, transparent 70%)" }}
+      />
+      <div
+        className="pointer-events-none absolute -bottom-40 -right-40 h-[500px] w-[500px] rounded-full opacity-25 blur-[120px]"
+        style={{ background: "radial-gradient(circle, #4F46E5 0%, transparent 70%)" }}
+      />
+      {/* Radial glow behind card */}
+      <div
+        className="pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-[500px] w-[500px] rounded-full opacity-15 blur-[100px]"
+        style={{ background: "radial-gradient(circle, #0056CE 0%, transparent 70%)" }}
+      />
+
+      <div
+        className="relative w-full max-w-md mx-auto rounded-2xl p-8 sm:p-10"
         style={{
-          background:
-            "linear-gradient(180deg, rgba(15,28,49,0.6) 0%, rgba(8,18,32,0.4) 100%)",
-          backdropFilter: "blur(16px)",
-          borderColor: "rgba(255,255,255,0.08)",
-          boxShadow: "0 20px 60px rgba(0,0,0,0.4)",
+          background: "#0D1117",
+          border: "1px solid rgba(255,255,255,0.08)",
+          boxShadow: "0 24px 64px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.04) inset",
         }}
       >
         {/* Logo */}
-        <div className="flex justify-center mb-8">
-          <Logo variant="light" size="md" />
+        <div className="flex flex-col items-center gap-3 mb-8">
+          <Logo variant="light" size="lg" />
+          <span
+            className="inline-flex items-center gap-2 rounded-full px-3 py-1 text-[10px] font-semibold uppercase tracking-widest text-slate-400"
+            style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.06)" }}
+          >
+            <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
+            AI Powered Learn to Launch Platform
+          </span>
         </div>
 
         {/* ── Step 1: OAuth + Email form ──────────────────────────────────── */}
@@ -385,7 +407,7 @@ export default function SignupPage() {
                 type="button"
                 onClick={() => handleOAuth("google")}
                 disabled={loading}
-                className="w-full flex items-center justify-center gap-3 px-4 py-3.5 rounded-xl bg-white text-slate-800 font-semibold text-sm border border-slate-200 hover:bg-slate-50 transition-all hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full flex items-center justify-center gap-3 h-12 rounded-xl bg-white text-slate-900 font-semibold text-sm hover:bg-slate-50 transition-all shadow-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <GoogleIcon />
                 Sign up with Google
@@ -395,7 +417,8 @@ export default function SignupPage() {
                 type="button"
                 onClick={() => handleOAuth("azure")}
                 disabled={loading}
-                className="w-full flex items-center justify-center gap-3 px-4 py-3.5 rounded-xl bg-[#2F2F2F] text-white font-semibold text-sm border border-white/10 hover:bg-[#404040] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full flex items-center justify-center gap-3 h-12 rounded-xl text-white font-semibold text-sm transition-all hover:brightness-125 disabled:opacity-50 disabled:cursor-not-allowed"
+                style={{ background: "#1F1F1F", border: "1px solid rgba(255,255,255,0.12)" }}
               >
                 <MicrosoftIcon />
                 Sign up with Microsoft
@@ -423,21 +446,18 @@ export default function SignupPage() {
 
             {/* Divider */}
             <div className="flex items-center gap-3 mb-6">
-              <div className="flex-1 h-px bg-white/10" />
-              <span className="text-xs text-slate-500 uppercase tracking-wide">
+              <div className="flex-1 h-px bg-white/[0.06]" />
+              <span className="text-[11px] text-slate-500 uppercase tracking-wider font-medium">
                 or sign up with email
               </span>
-              <div className="flex-1 h-px bg-white/10" />
+              <div className="flex-1 h-px bg-white/[0.06]" />
             </div>
 
             {/* Email signup form */}
             <form onSubmit={handleSendCode} className="space-y-4">
               {/* Name */}
               <div>
-                <label
-                  htmlFor="name"
-                  className="block text-xs font-semibold text-slate-400 mb-1.5 uppercase tracking-wide"
-                >
+                <label htmlFor="name" className={labelClass}>
                   Full name
                 </label>
                 <input
@@ -455,10 +475,7 @@ export default function SignupPage() {
 
               {/* Email */}
               <div>
-                <label
-                  htmlFor="email"
-                  className="block text-xs font-semibold text-slate-400 mb-1.5 uppercase tracking-wide"
-                >
+                <label htmlFor="email" className={labelClass}>
                   Email address
                 </label>
                 <input
@@ -474,12 +491,17 @@ export default function SignupPage() {
                 />
               </div>
 
+              {/* ── Section divider: About You ─────────────────────────────── */}
+              <div className="pt-2 pb-1">
+                <div className="h-px bg-white/[0.04]" />
+                <p className="text-[10px] font-semibold text-slate-500 uppercase tracking-widest mt-4 mb-0">
+                  About you
+                </p>
+              </div>
+
               {/* Country */}
               <div>
-                <label
-                  htmlFor="country"
-                  className="block text-xs font-semibold text-slate-400 mb-1.5 uppercase tracking-wide"
-                >
+                <label htmlFor="country" className={labelClass}>
                   Country
                 </label>
                 <select
@@ -503,10 +525,7 @@ export default function SignupPage() {
 
               {/* Subject interest */}
               <div>
-                <label
-                  htmlFor="subject"
-                  className="block text-xs font-semibold text-slate-400 mb-1.5 uppercase tracking-wide"
-                >
+                <label htmlFor="subject" className={labelClass}>
                   What would you like to learn?
                 </label>
                 <select
@@ -530,10 +549,7 @@ export default function SignupPage() {
 
               {/* Experience level */}
               <div>
-                <label
-                  htmlFor="experience"
-                  className="block text-xs font-semibold text-slate-400 mb-1.5 uppercase tracking-wide"
-                >
+                <label htmlFor="experience" className={labelClass}>
                   Your current level
                 </label>
                 <select
@@ -556,7 +572,7 @@ export default function SignupPage() {
               </div>
 
               {/* GDPR consent checkbox */}
-              <div className="flex items-start gap-3 pt-1">
+              <div className="flex items-start gap-3 pt-2">
                 <input
                   id="gdpr"
                   type="checkbox"
@@ -570,7 +586,7 @@ export default function SignupPage() {
                 />
                 <label
                   htmlFor="gdpr"
-                  className="text-xs text-slate-400 leading-relaxed"
+                  className="text-[12px] text-slate-500 leading-relaxed"
                 >
                   I agree to the{" "}
                   <Link
@@ -594,22 +610,41 @@ export default function SignupPage() {
               </div>
 
               {error && (
-                <p className="text-sm text-red-400 bg-red-400/10 px-3 py-2 rounded-xl">
+                <div
+                  className="text-sm text-red-400 px-4 py-3 rounded-xl"
+                  style={{
+                    background: "rgba(239,68,68,0.1)",
+                    border: "1px solid rgba(239,68,68,0.2)",
+                  }}
+                >
                   {error}
-                </p>
+                </div>
               )}
 
-              <Button
+              <button
                 type="submit"
-                className="w-full"
-                size="lg"
-                loading={loading}
+                disabled={loading}
+                className="w-full h-12 rounded-xl font-bold text-sm text-white transition-all hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0"
+                style={{
+                  background: "linear-gradient(135deg, #0056CE, #4F46E5)",
+                  boxShadow: "0 8px 24px rgba(0,86,206,0.35)",
+                }}
               >
-                Create account
-              </Button>
+                {loading ? (
+                  <span className="inline-flex items-center gap-2">
+                    <svg className="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
+                    </svg>
+                    Creating...
+                  </span>
+                ) : (
+                  "Create account"
+                )}
+              </button>
             </form>
 
-            <p className="mt-6 text-center text-sm text-slate-400">
+            <p className="mt-6 text-center text-sm text-slate-500">
               Already have an account?{" "}
               <Link
                 href="/login"
@@ -637,7 +672,7 @@ export default function SignupPage() {
             </div>
 
             <div
-              className="flex gap-2 mb-5 justify-center"
+              className="flex gap-2.5 mb-5 justify-center"
               onPaste={handlePaste}
             >
               {digits.map((digit, i) => (
@@ -655,35 +690,53 @@ export default function SignupPage() {
                   onChange={(e) => handleDigitChange(i, e.target.value)}
                   onKeyDown={(e) => handleKeyDown(i, e)}
                   onFocus={(e) => e.target.select()}
-                  className="w-12 h-14 rounded-xl border-2 text-center text-xl font-bold text-white transition-all focus:outline-none focus:ring-2 focus:ring-brand/30 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-12 h-14 rounded-xl text-center text-xl font-bold text-white transition-all focus:outline-none focus:ring-2 focus:ring-brand/30 disabled:opacity-50 disabled:cursor-not-allowed"
                   style={{
-                    background: "rgba(255,255,255,0.04)",
-                    borderColor: digit
-                      ? "var(--color-brand, #0056CE)"
-                      : "rgba(255,255,255,0.10)",
+                    background: digit ? "rgba(0,86,206,0.05)" : "#161B22",
+                    border: digit
+                      ? "1px solid var(--color-brand, #0056CE)"
+                      : "1px solid rgba(255,255,255,0.10)",
                   }}
                 />
               ))}
             </div>
 
             {error && (
-              <p className="text-sm text-red-400 bg-red-400/10 px-3 py-2 rounded-xl mb-4">
+              <div
+                className="text-sm text-red-400 px-4 py-3 rounded-xl mb-4"
+                style={{
+                  background: "rgba(239,68,68,0.1)",
+                  border: "1px solid rgba(239,68,68,0.2)",
+                }}
+              >
                 {error}
-              </p>
+              </div>
             )}
 
-            <Button
+            <button
               onClick={() => {
                 const code = digits.join("");
                 if (code.length === CODE_LENGTH) handleVerify(code);
               }}
               disabled={digits.join("").length < CODE_LENGTH || loading}
-              loading={loading}
-              className="w-full"
-              size="lg"
+              className="w-full h-12 rounded-xl font-bold text-sm text-white transition-all hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0"
+              style={{
+                background: "linear-gradient(135deg, #0056CE, #4F46E5)",
+                boxShadow: "0 8px 24px rgba(0,86,206,0.35)",
+              }}
             >
-              Verify &amp; start learning
-            </Button>
+              {loading ? (
+                <span className="inline-flex items-center gap-2">
+                  <svg className="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
+                  </svg>
+                  Verifying...
+                </span>
+              ) : (
+                "Verify & start learning"
+              )}
+            </button>
 
             <div className="mt-6 flex flex-col items-center gap-3">
               {resendCountdown > 0 ? (
