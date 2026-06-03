@@ -171,8 +171,8 @@ export default function TermsPage() {
               <h2 className="text-xl font-bold text-ink mb-3">10. Contact</h2>
               <p>
                 For questions about these Terms:{" "}
-                <a href="mailto:hello@square1.ai" className="text-brand hover:underline">
-                  hello@square1.ai
+                <a href="mailto:tech@square1ai.com" className="text-brand hover:underline">
+                  tech@square1ai.com
                 </a>
               </p>
             </section>

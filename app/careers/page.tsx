@@ -70,14 +70,14 @@ export default function CareersPage() {
       {/* Contact CTA */}
       <div className="max-w-3xl mx-auto px-6 sm:px-8 mt-12 text-center">
         <a
-          href="mailto:careers@square1.ai"
+          href="mailto:tech@square1ai.com"
           className="inline-flex items-center justify-center px-8 py-4 rounded-2xl text-base font-bold text-white transition-all hover:-translate-y-0.5"
           style={{
             background: "linear-gradient(135deg, #3388FF 0%, #A78BFA 50%, #6366f1 100%)",
             boxShadow: "0 16px 48px rgba(51,136,255,0.3), 0 0 0 1px rgba(255,255,255,0.10) inset",
           }}
         >
-          careers@square1.ai
+          tech@square1ai.com
         </a>
       </div>
 

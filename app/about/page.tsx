@@ -534,7 +534,7 @@ function PromiseContent() {
           transitionDelay: "400ms",
         }}>
         Or email us at{" "}
-        <a href="mailto:hello@square1.ai" className="text-brand hover:underline font-semibold">hello@square1.ai</a>
+        <a href="mailto:tech@square1ai.com" className="text-brand hover:underline font-semibold">tech@square1ai.com</a>
       </p>
     </div>
   );
