@@ -223,7 +223,7 @@ export default function LoginPage() {
 
   return (
     <div
-      className="relative min-h-screen flex items-center justify-center p-4 sm:p-8 overflow-hidden"
+      className="min-h-screen w-full flex items-center justify-center"
       style={{
         background: `
           radial-gradient(ellipse 800px 500px at 20% 20%, rgba(0,86,206,0.08), transparent 60%),
@@ -232,18 +232,13 @@ export default function LoginPage() {
         `,
       }}
     >
-      {/* Subtle animated blobs */}
-      <div className="pointer-events-none absolute top-0 left-1/4 w-[500px] h-[500px] rounded-full opacity-20 animate-blob-1"
-        style={{ background: "radial-gradient(circle, rgba(0,86,206,0.15) 0%, transparent 70%)", filter: "blur(80px)" }} />
-      <div className="pointer-events-none absolute bottom-0 right-1/4 w-[600px] h-[500px] rounded-full opacity-15 animate-blob-2"
-        style={{ background: "radial-gradient(circle, rgba(99,102,241,0.12) 0%, transparent 70%)", filter: "blur(90px)" }} />
-
-      <div
-        className="relative w-full max-w-md mx-auto rounded-3xl p-8 sm:p-10 overflow-hidden"
-        style={{
-          background: "linear-gradient(135deg, #050B14 0%, #0B1626 50%, #0D1929 100%)",
-          border: "1px solid rgba(255,255,255,0.10)",
-          boxShadow: "0 32px 80px rgba(0,0,0,0.35), 0 0 0 1px rgba(255,255,255,0.05) inset, 0 0 60px rgba(0,86,206,0.08)",
+      <div className="w-full max-w-md mx-auto px-4 sm:px-0 py-10 sm:py-14">
+        <div
+          className="relative rounded-3xl p-6 sm:p-8"
+          style={{
+            background: "linear-gradient(135deg, #050B14 0%, #0B1626 50%, #0D1929 100%)",
+            border: "1px solid rgba(255,255,255,0.10)",
+            boxShadow: "0 32px 80px rgba(0,0,0,0.35), 0 0 0 1px rgba(255,255,255,0.05) inset, 0 0 60px rgba(0,86,206,0.08)",
         }}
       >
         {/* Logo */}
@@ -486,6 +481,7 @@ export default function LoginPage() {
             </div>
           </>
         )}
+        </div>
       </div>
     </div>
   );
