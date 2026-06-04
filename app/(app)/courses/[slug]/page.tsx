@@ -50,33 +50,31 @@ export default async function CourseDetailPage({ params }: PageProps) {
 
   return (
     <div className="pb-24">
-      {/* Hero */}
-      <div className="bg-brand-deep text-white px-6 py-10">
-        <div className="max-w-4xl mx-auto">
-          <Link href="/courses" className="text-xs text-brand-light hover:underline mb-4 inline-block">
-            ← Back to courses
-          </Link>
-          <div className="flex items-start gap-5">
-            <div className="w-16 h-16 rounded-[var(--radius-xl)] bg-white/10 flex items-center justify-center text-3xl shrink-0">
-              {course.icon}
+      {/* Header */}
+      <div className="px-6 py-8 max-w-4xl mx-auto">
+        <Link href="/courses" className="text-sm text-brand hover:underline mb-6 inline-block">
+          ← Back to courses
+        </Link>
+        <div className="flex items-start gap-5">
+          <div className="w-16 h-16 rounded-[var(--radius-xl)] bg-surface-tint flex items-center justify-center text-3xl shrink-0">
+            {course.icon}
+          </div>
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-3 mb-2">
+              <h1 className="text-2xl font-bold text-ink">{course.title}</h1>
+              <Badge variant={levelVariant(course.level)}>
+                {course.level.charAt(0).toUpperCase() + course.level.slice(1)}
+              </Badge>
             </div>
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-3 mb-2">
-                <h1 className="text-2xl font-bold">{course.title}</h1>
-                <Badge variant={levelVariant(course.level)}>
-                  {course.level.charAt(0).toUpperCase() + course.level.slice(1)}
-                </Badge>
-              </div>
-              <p className="text-brand-light/80 text-sm leading-relaxed max-w-2xl">
-                {course.description}
-              </p>
-              <div className="flex items-center gap-5 mt-4 text-sm text-white/60">
-                <span>{course.total_modules} modules</span>
-                <span>·</span>
-                <span>{course.total_lessons} lessons</span>
-                <span>·</span>
-                <span>{course.total_projects} projects</span>
-              </div>
+            <p className="text-ink-muted text-sm leading-relaxed max-w-2xl">
+              {course.description}
+            </p>
+            <div className="flex items-center gap-5 mt-4 text-sm text-ink-muted">
+              <span>{course.total_modules} modules</span>
+              <span className="text-border-mid">·</span>
+              <span>{course.total_lessons} lessons</span>
+              <span className="text-border-mid">·</span>
+              <span>{course.total_projects} projects</span>
             </div>
           </div>
         </div>

@@ -92,46 +92,32 @@ export default function PlanPage({ params }: PageProps) {
       {/* ═══════════════════════════════════════════════════════════════ */}
       {/*  HERO                                                          */}
       {/* ═══════════════════════════════════════════════════════════════ */}
-      <section className="relative overflow-hidden pt-16 sm:pt-20 pb-8 px-4 sm:px-6" style={{ background: "#050B14" }}>
-        {/* Decorative blobs */}
-        <div className="pointer-events-none absolute top-0 left-1/4 w-[600px] h-[600px] rounded-full opacity-15 animate-blob-1"
-          style={{ background: "radial-gradient(circle, #3388FF20 0%, transparent 70%)", filter: "blur(80px)" }} />
-        <div className="pointer-events-none absolute bottom-0 right-1/4 w-[500px] h-[500px] rounded-full opacity-10 animate-blob-2"
-          style={{ background: "radial-gradient(circle, #A78BFA15 0%, transparent 70%)", filter: "blur(90px)" }} />
-
-        <div className="relative max-w-4xl mx-auto text-center">
+      <section className="pt-16 sm:pt-20 pb-8 px-4 sm:px-6">
+        <div className="max-w-4xl mx-auto text-center">
           {/* Pill eyebrow */}
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-brand/30 bg-brand/10 mb-6">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-            <span className="text-[10px] tracking-[0.2em] uppercase font-bold text-brand-light">
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-brand/20 bg-surface-tint mb-6">
+            <span className="w-1.5 h-1.5 rounded-full bg-success animate-pulse" />
+            <span className="text-[10px] tracking-[0.2em] uppercase font-bold text-brand">
               Choose Your Plan
             </span>
           </div>
 
-          <h1 className="text-3xl sm:text-5xl font-black text-white mb-3 leading-tight">
-            Start{" "}
-            <span style={{
-              background: "linear-gradient(135deg, #3388FF 0%, #A78BFA 50%, #10B981 100%)",
-              WebkitBackgroundClip: "text",
-              WebkitTextFillColor: "transparent",
-              backgroundClip: "text",
-            }}>
-              closing the gaps
-            </span>
+          <h1 className="text-3xl sm:text-5xl font-black text-ink mb-3 leading-tight">
+            Start closing the gaps
           </h1>
-          <p className="text-white/40 text-sm sm:text-base max-w-md mx-auto mb-10">
+          <p className="text-ink-muted text-sm sm:text-base max-w-md mx-auto mb-10">
             All plans cover the same curriculum, with the same AI-graded projects and tutor access. Just pick your pace.
           </p>
 
           {/* ── Billing toggle ──────────────────────────────────────────── */}
-          <div className="inline-flex items-center gap-1 p-1 rounded-full border border-white/10 bg-white/5 mb-12">
+          <div className="inline-flex items-center gap-1 p-1 rounded-full border border-border bg-surface-alt mb-12">
             <button
               onClick={() => setBillingCycle("monthly")}
               className={cn(
                 "px-5 py-2 rounded-full text-xs font-bold transition-all",
                 billingCycle === "monthly"
-                  ? "bg-white text-slate-900"
-                  : "text-white/50 hover:text-white/70"
+                  ? "bg-brand text-white"
+                  : "text-ink-muted hover:text-ink-secondary"
               )}
             >
               Monthly
@@ -141,16 +127,16 @@ export default function PlanPage({ params }: PageProps) {
               className={cn(
                 "px-5 py-2 rounded-full text-xs font-bold transition-all flex items-center gap-1.5",
                 billingCycle === "upfront"
-                  ? "bg-white text-slate-900"
-                  : "text-white/50 hover:text-white/70"
+                  ? "bg-brand text-white"
+                  : "text-ink-muted hover:text-ink-secondary"
               )}
             >
               Pay upfront
               <span className={cn(
                 "px-1.5 py-0.5 rounded-full text-[9px] font-bold",
                 billingCycle === "upfront"
-                  ? "bg-emerald-500 text-white"
-                  : "bg-emerald-500/20 text-emerald-400"
+                  ? "bg-success text-white"
+                  : "bg-success-bg text-success"
               )}>
                 SAVE 10%
               </span>
@@ -162,7 +148,7 @@ export default function PlanPage({ params }: PageProps) {
       {/* ═══════════════════════════════════════════════════════════════ */}
       {/*  PLAN CARDS                                                    */}
       {/* ═══════════════════════════════════════════════════════════════ */}
-      <section className="relative px-4 sm:px-6 pb-16 sm:pb-20" style={{ background: "#050B14" }}>
+      <section className="px-4 sm:px-6 pb-16 sm:pb-20">
         <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-5">
           {PLANS.map((plan) => {
             const price = billingCycle === "monthly" ? plan.monthlyPrice : plan.upfrontPrice;
@@ -175,59 +161,55 @@ export default function PlanPage({ params }: PageProps) {
               <div
                 key={plan.months}
                 className={cn(
-                  "relative rounded-2xl border p-6 sm:p-8 transition-all",
+                  "relative rounded-2xl border p-6 sm:p-8 transition-all bg-surface",
                   plan.isFeatured
-                    ? "border-brand/50 bg-white/[0.06]"
-                    : "border-white/10 bg-white/[0.02] hover:border-white/20"
+                    ? "border-brand shadow-card-hover"
+                    : "border-border shadow-card hover:shadow-card-hover"
                 )}
-                style={plan.isFeatured ? {
-                  boxShadow: "0 0 40px rgba(51,136,255,0.15), 0 8px 32px rgba(0,0,0,0.3)",
-                } : undefined}
               >
                 {/* Featured badge */}
                 {plan.isFeatured && (
                   <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                    <span className="px-4 py-1 rounded-full bg-brand text-white text-[10px] font-bold uppercase tracking-wider shadow-lg"
-                      style={{ boxShadow: "0 4px 16px rgba(0,86,206,0.4)" }}>
-                      <span className="mr-1">*</span> Recommended
+                    <span className="px-4 py-1 rounded-full bg-brand text-white text-[10px] font-bold uppercase tracking-wider shadow-card-hover">
+                      Recommended
                     </span>
                   </div>
                 )}
 
                 {/* Plan name */}
                 <div className="mb-6">
-                  <h3 className="text-lg font-black text-white">{plan.label}</h3>
-                  <p className="text-xs text-white/40 font-semibold uppercase tracking-wider">{plan.sublabel}</p>
+                  <h3 className="text-lg font-black text-ink">{plan.label}</h3>
+                  <p className="text-xs text-ink-muted font-semibold uppercase tracking-wider">{plan.sublabel}</p>
                 </div>
 
                 {/* Price */}
                 <div className="mb-6">
                   <div className="flex items-baseline gap-1">
-                    <span className="text-4xl font-black text-white">${price}</span>
-                    <span className="text-sm text-white/40">{priceLabel}</span>
+                    <span className="text-4xl font-black text-ink">${price}</span>
+                    <span className="text-sm text-ink-muted">{priceLabel}</span>
                   </div>
-                  <p className="text-xs text-white/25 mt-1">{altPrice}</p>
+                  <p className="text-xs text-ink-muted mt-1">{altPrice}</p>
                 </div>
 
                 {/* Details */}
                 <div className="space-y-3 mb-8">
                   <div className="flex items-center gap-3">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.3)" strokeWidth="2">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" strokeWidth="2">
                       <circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" />
                     </svg>
-                    <span className="text-sm text-white/60">{plan.daily}</span>
+                    <span className="text-sm text-ink-secondary">{plan.daily}</span>
                   </div>
                   <div className="flex items-center gap-3">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.3)" strokeWidth="2">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" strokeWidth="2">
                       <rect x="3" y="4" width="18" height="18" rx="2" ry="2" /><line x1="16" y1="2" x2="16" y2="6" /><line x1="8" y1="2" x2="8" y2="6" /><line x1="3" y1="10" x2="21" y2="10" />
                     </svg>
-                    <span className="text-sm text-white/60">{plan.daysPerWeek} days/week</span>
+                    <span className="text-sm text-ink-secondary">{plan.daysPerWeek} days/week</span>
                   </div>
                   <div className="flex items-center gap-3">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.3)" strokeWidth="2">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" strokeWidth="2">
                       <polyline points="16 18 22 12 16 6" /><polyline points="8 6 2 12 8 18" />
                     </svg>
-                    <span className="text-sm text-white/60">{plan.projects} projects</span>
+                    <span className="text-sm text-ink-secondary">{plan.projects} projects</span>
                   </div>
                 </div>
 
@@ -235,15 +217,11 @@ export default function PlanPage({ params }: PageProps) {
                 <button
                   onClick={() => setShowModal(true)}
                   className={cn(
-                    "w-full h-12 rounded-xl font-bold text-sm transition-all hover:-translate-y-0.5",
+                    "w-full h-12 rounded-xl font-bold text-sm transition-all",
                     plan.isFeatured
-                      ? "text-white"
-                      : "text-white border border-white/20 hover:border-white/40 bg-white/5 hover:bg-white/10"
+                      ? "bg-brand text-white hover:bg-brand-dark"
+                      : "bg-surface border border-border text-ink hover:bg-surface-alt"
                   )}
-                  style={plan.isFeatured ? {
-                    background: "linear-gradient(135deg, #10B981 0%, #059669 100%)",
-                    boxShadow: "0 8px 24px rgba(16,185,129,0.3)",
-                  } : undefined}
                 >
                   Start Now
                 </button>
@@ -256,36 +234,26 @@ export default function PlanPage({ params }: PageProps) {
       {/* ═══════════════════════════════════════════════════════════════ */}
       {/*  WHAT'S INCLUDED                                               */}
       {/* ═══════════════════════════════════════════════════════════════ */}
-      <section className="py-16 sm:py-20 px-4 sm:px-6"
-        style={{ background: "linear-gradient(180deg, #FFFFFF 0%, #F4F8FF 100%)" }}>
+      <section className="py-16 sm:py-20 px-4 sm:px-6">
         <div className="max-w-3xl mx-auto">
           <div className="text-center mb-10">
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-brand/20 bg-brand/5 mb-4">
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-brand/20 bg-surface-tint mb-4">
               <span className="text-[10px] tracking-[0.2em] uppercase font-bold text-brand">
                 What&apos;s Included
               </span>
             </div>
-            <h2 className="text-2xl sm:text-3xl font-black text-slate-900">
-              Everything you need to{" "}
-              <span style={{
-                background: "linear-gradient(135deg, #3388FF 0%, #A78BFA 50%, #10B981 100%)",
-                WebkitBackgroundClip: "text",
-                WebkitTextFillColor: "transparent",
-                backgroundClip: "text",
-              }}>
-                master it
-              </span>
+            <h2 className="text-2xl sm:text-3xl font-black text-ink">
+              Everything you need to master it
             </h2>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {FEATURES.map((f) => (
-              <div key={f.text} className="flex items-center gap-3 rounded-xl border border-slate-200 bg-white px-5 py-4"
-                style={{ boxShadow: "0 1px 3px rgba(0,0,0,0.04)" }}>
-                <div className="w-8 h-8 rounded-lg bg-brand/10 flex items-center justify-center shrink-0">
+              <div key={f.text} className="flex items-center gap-3 rounded-xl border border-border bg-surface px-5 py-4 shadow-card">
+                <div className="w-8 h-8 rounded-lg bg-surface-tint flex items-center justify-center shrink-0">
                   <FeatureIcon name={f.icon} />
                 </div>
-                <span className="text-sm font-medium text-slate-700">{f.text}</span>
+                <span className="text-sm font-medium text-ink-secondary">{f.text}</span>
               </div>
             ))}
           </div>
@@ -295,16 +263,15 @@ export default function PlanPage({ params }: PageProps) {
       {/* ═══════════════════════════════════════════════════════════════ */}
       {/*  GUARANTEE                                                     */}
       {/* ═══════════════════════════════════════════════════════════════ */}
-      <section className="py-12 sm:py-16 px-4 sm:px-6"
-        style={{ background: "linear-gradient(180deg, #F4F8FF 0%, #FFFFFF 100%)" }}>
+      <section className="py-12 sm:py-16 px-4 sm:px-6">
         <div className="max-w-lg mx-auto text-center">
-          <div className="w-16 h-16 rounded-2xl bg-emerald-500/10 flex items-center justify-center mx-auto mb-4">
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#10B981" strokeWidth="2">
+          <div className="w-16 h-16 rounded-2xl bg-success-bg flex items-center justify-center mx-auto mb-4">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#19A65F" strokeWidth="2">
               <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
             </svg>
           </div>
-          <h3 className="text-lg font-bold text-slate-900 mb-2">30-day money-back guarantee</h3>
-          <p className="text-sm text-slate-500">No questions asked. If it&apos;s not for you, you get a full refund.</p>
+          <h3 className="text-lg font-bold text-ink mb-2">30-day money-back guarantee</h3>
+          <p className="text-sm text-ink-muted">No questions asked. If it&apos;s not for you, you get a full refund.</p>
         </div>
       </section>
 
@@ -313,23 +280,22 @@ export default function PlanPage({ params }: PageProps) {
       {/* ═══════════════════════════════════════════════════════════════ */}
       {showModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4"
-          style={{ background: "rgba(0,0,0,0.7)", backdropFilter: "blur(4px)" }}>
-          <div className="max-w-md w-full rounded-2xl border border-white/10 p-8 text-center"
-            style={{ background: "#0A1628" }}>
-            <div className="w-14 h-14 rounded-2xl bg-brand/20 flex items-center justify-center mx-auto mb-5">
-              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#3388FF" strokeWidth="2">
+          style={{ background: "rgba(15,23,42,0.5)", backdropFilter: "blur(4px)" }}>
+          <div className="max-w-md w-full bg-surface rounded-2xl border border-border p-8 text-center shadow-card-hover">
+            <div className="w-14 h-14 rounded-2xl bg-surface-tint flex items-center justify-center mx-auto mb-5">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#0056CE" strokeWidth="2">
                 <circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" />
               </svg>
             </div>
 
-            <h3 className="text-xl font-bold text-white mb-2">Coming soon</h3>
-            <p className="text-sm text-white/50 mb-6">
+            <h3 className="text-xl font-bold text-ink mb-2">Coming soon</h3>
+            <p className="text-sm text-ink-muted mb-6">
               Payments are launching shortly. Enter your email to be first in line.
             </p>
 
             {emailSubmitted ? (
-              <div className="rounded-xl bg-emerald-500/10 border border-emerald-500/20 p-4">
-                <div className="flex items-center justify-center gap-2 text-emerald-400 text-sm font-semibold">
+              <div className="rounded-xl bg-success-bg border border-success/20 p-4">
+                <div className="flex items-center justify-center gap-2 text-success text-sm font-semibold">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
                     <polyline points="20 6 9 17 4 12" />
                   </svg>
@@ -343,14 +309,13 @@ export default function PlanPage({ params }: PageProps) {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="you@email.com"
-                  className="flex-1 h-11 px-4 rounded-xl border border-white/10 bg-white/5 text-white text-sm placeholder:text-white/25 focus:outline-none focus:ring-2 focus:ring-brand/50 focus:border-brand/50"
+                  className="flex-1 h-11 px-4 rounded-xl border border-border bg-surface text-ink text-sm placeholder:text-ink-muted focus:outline-none focus:ring-2 focus:ring-brand focus:border-brand transition-colors"
                 />
                 <button
                   onClick={() => {
                     if (email.includes("@")) setEmailSubmitted(true);
                   }}
-                  className="h-11 px-5 rounded-xl text-white font-semibold text-sm shrink-0"
-                  style={{ background: "linear-gradient(135deg, #3388FF, #A78BFA)" }}
+                  className="h-11 px-5 rounded-xl bg-brand text-white font-semibold text-sm shrink-0 hover:bg-brand-dark transition-colors"
                 >
                   Notify me
                 </button>
@@ -359,7 +324,7 @@ export default function PlanPage({ params }: PageProps) {
 
             <button
               onClick={() => setShowModal(false)}
-              className="mt-6 text-xs text-white/30 hover:text-white/50 transition-colors"
+              className="mt-6 text-xs text-ink-muted hover:text-ink-secondary transition-colors"
             >
               Close
             </button>

@@ -16,13 +16,10 @@ type Phase = "welcome" | "question" | "review" | "submitting";
 function ProgressBar({ current, total }: { current: number; total: number }) {
   const pct = total > 0 ? Math.round((current / total) * 100) : 0;
   return (
-    <div className="w-full bg-white/10 rounded-full h-1.5">
+    <div className="w-full bg-surface-alt rounded-full h-1.5">
       <div
-        className="h-1.5 rounded-full transition-all duration-500"
-        style={{
-          width: `${pct}%`,
-          background: "linear-gradient(90deg, #3388FF, #A78BFA)",
-        }}
+        className="h-1.5 rounded-full bg-brand transition-all duration-500"
+        style={{ width: `${pct}%` }}
       />
     </div>
   );
@@ -43,7 +40,7 @@ function Timer({ startedAt }: { startedAt: number }) {
   const m = Math.floor((elapsed % 3600) / 60);
   const s = elapsed % 60;
   return (
-    <span className="text-xs text-white/50 font-mono tabular-nums">
+    <span className="text-xs text-ink-muted font-mono tabular-nums">
       {h > 0 && `${String(h).padStart(2, "0")}:`}
       {String(m).padStart(2, "0")}:{String(s).padStart(2, "0")}
     </span>
@@ -53,9 +50,9 @@ function Timer({ startedAt }: { startedAt: number }) {
 /* ─── Difficulty badge ────────────────────────────────────────────────────── */
 function DifficultyBadge({ level }: { level: string }) {
   const config: Record<string, { bg: string; text: string; label: string }> = {
-    easy: { bg: "bg-emerald-500/15", text: "text-emerald-400", label: "Easy" },
-    medium: { bg: "bg-amber-500/15", text: "text-amber-400", label: "Medium" },
-    hard: { bg: "bg-red-500/15", text: "text-red-400", label: "Hard" },
+    easy: { bg: "bg-success-bg", text: "text-success", label: "Easy" },
+    medium: { bg: "bg-warning-bg", text: "text-warning", label: "Medium" },
+    hard: { bg: "bg-error-bg", text: "text-error", label: "Hard" },
   };
   const c = config[level.toLowerCase()] ?? config.medium;
   return (
@@ -69,7 +66,7 @@ function DifficultyBadge({ level }: { level: string }) {
 function TypeBadge({ type }: { type: string }) {
   const label = type === "mcq" ? "MCQ" : type === "short_answer" ? "Short Answer" : "Code";
   return (
-    <span className="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-brand/20 text-brand-light">
+    <span className="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-surface-tint text-brand">
       {label}
     </span>
   );
@@ -118,10 +115,10 @@ function QuestionNavigator({
             className={cn(
               "shrink-0 w-8 h-8 rounded-lg text-xs font-bold transition-all",
               isCurrent
-                ? "bg-brand text-white shadow-[0_0_12px_rgba(51,136,255,0.4)]"
+                ? "bg-brand text-white shadow-card-hover"
                 : answered
-                ? "bg-emerald-500/20 text-emerald-400 hover:bg-emerald-500/30"
-                : "bg-white/5 text-white/40 hover:bg-white/10 hover:text-white/60"
+                ? "bg-success-bg text-success hover:bg-success-bg/80"
+                : "bg-surface-alt text-ink-muted hover:bg-border hover:text-ink-secondary"
             )}
           >
             {i + 1}
@@ -258,59 +255,50 @@ export default function AssessPage({ params }: PageProps) {
   /* ═══════════════════════════════════════════════════════════════════════ */
   if (phase === "welcome") {
     return (
-      <div className="min-h-screen flex items-center justify-center p-6" style={{ background: "#050B14" }}>
-        {/* Decorative blobs */}
-        <div className="pointer-events-none absolute top-0 left-1/4 w-[500px] h-[500px] rounded-full opacity-20 animate-blob-1"
-          style={{ background: "radial-gradient(circle, #3388FF25 0%, transparent 70%)", filter: "blur(80px)" }} />
-        <div className="pointer-events-none absolute bottom-0 right-1/4 w-[500px] h-[500px] rounded-full opacity-15 animate-blob-2"
-          style={{ background: "radial-gradient(circle, #A78BFA18 0%, transparent 70%)", filter: "blur(90px)" }} />
-
-        <div className="relative max-w-lg w-full rounded-2xl border border-white/10 p-8 sm:p-10 text-center"
-          style={{ background: "linear-gradient(180deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.01) 100%)" }}>
+      <div className="min-h-screen flex items-center justify-center p-6">
+        <div className="relative max-w-lg w-full bg-surface border border-border rounded-2xl p-8 sm:p-10 text-center shadow-card">
           {/* Course icon */}
-          <div className="w-20 h-20 rounded-2xl flex items-center justify-center text-4xl mx-auto mb-6"
-            style={{ background: "linear-gradient(135deg, #3388FF20, #A78BFA15)" }}>
+          <div className="w-20 h-20 rounded-2xl bg-surface-tint flex items-center justify-center mx-auto mb-6">
             <span className="drop-shadow-lg" aria-hidden="true">
-              <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#3388FF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#0056CE" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M12 20h9" /><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
               </svg>
             </span>
           </div>
 
-          <h1 className="text-2xl sm:text-3xl font-black text-white mb-2">Skill Assessment</h1>
+          <h1 className="text-2xl sm:text-3xl font-black text-ink mb-2">Skill Assessment</h1>
 
           {/* Pill eyebrow */}
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-brand/30 bg-brand/10 mb-6">
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-brand/30 bg-surface-tint mb-6">
             <span className="w-1.5 h-1.5 rounded-full bg-brand animate-pulse" />
-            <span className="text-[10px] tracking-[0.2em] uppercase font-bold text-brand-light">
+            <span className="text-[10px] tracking-[0.2em] uppercase font-bold text-brand">
               Diagnostic Test
             </span>
           </div>
 
-          <div className="flex items-center justify-center gap-4 text-sm text-white/50 mb-8 flex-wrap">
+          <div className="flex items-center justify-center gap-4 text-sm text-ink-muted mb-8 flex-wrap">
             <span>20 Questions</span>
-            <span className="w-1 h-1 rounded-full bg-white/20" />
+            <span className="w-1 h-1 rounded-full bg-border-mid" />
             <span>~30 minutes</span>
-            <span className="w-1 h-1 rounded-full bg-white/20" />
+            <span className="w-1 h-1 rounded-full bg-border-mid" />
             <span>MCQ + Short Answer + Code</span>
           </div>
 
-          <div className="rounded-xl p-5 text-left space-y-4 mb-8"
-            style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)" }}>
+          <div className="rounded-xl bg-surface-soft border border-border p-5 text-left space-y-4 mb-8">
             {[
-              { icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#10B981" strokeWidth="2"><path d="M9 11l3 3L22 4" /><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" /></svg>, text: "Your answers are graded by Claude AI" },
-              { icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3388FF" strokeWidth="2"><circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" /></svg>, text: "Results are instant - you'll get a full skill report" },
-              { icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#A78BFA" strokeWidth="2"><path d="M12 2L2 7l10 5 10-5-10-5z" /><path d="M2 17l10 5 10-5" /><path d="M2 12l10 5 10-5" /></svg>, text: "MCQ + Short Answer + Code exercises" },
+              { icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#19A65F" strokeWidth="2"><path d="M9 11l3 3L22 4" /><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" /></svg>, text: "Your answers are graded by Claude AI" },
+              { icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0056CE" strokeWidth="2"><circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" /></svg>, text: "Results are instant - you'll get a full skill report" },
+              { icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#7C3AED" strokeWidth="2"><path d="M12 2L2 7l10 5 10-5-10-5z" /><path d="M2 17l10 5 10-5" /><path d="M2 12l10 5 10-5" /></svg>, text: "MCQ + Short Answer + Code exercises" },
             ].map((item) => (
               <div key={item.text} className="flex items-center gap-3">
                 <span className="shrink-0">{item.icon}</span>
-                <p className="text-sm text-white/60">{item.text}</p>
+                <p className="text-sm text-ink-secondary">{item.text}</p>
               </div>
             ))}
           </div>
 
           {error && (
-            <p className="text-sm text-red-400 bg-red-500/10 border border-red-500/20 px-4 py-2.5 rounded-lg mb-4">
+            <p className="text-sm text-error bg-error-bg border border-error/20 px-4 py-2.5 rounded-lg mb-4">
               {error}
             </p>
           )}
@@ -318,11 +306,7 @@ export default function AssessPage({ params }: PageProps) {
           <button
             onClick={startAssessment}
             disabled={loading}
-            className="w-full relative overflow-hidden h-14 rounded-xl text-white font-bold text-base transition-all hover:-translate-y-0.5 disabled:opacity-50 disabled:pointer-events-none"
-            style={{
-              background: "linear-gradient(135deg, #10B981 0%, #059669 100%)",
-              boxShadow: "0 12px 32px rgba(16,185,129,0.35)",
-            }}
+            className="w-full h-14 rounded-xl bg-brand text-white font-bold text-base transition-all hover:bg-brand-dark disabled:opacity-50 disabled:pointer-events-none"
           >
             {loading ? (
               <span className="flex items-center justify-center gap-2">
@@ -335,11 +319,6 @@ export default function AssessPage({ params }: PageProps) {
             ) : (
               "Start Assessment →"
             )}
-            {/* Shimmer */}
-            <div className="absolute inset-0 overflow-hidden rounded-xl pointer-events-none">
-              <div className="absolute inset-0 -translate-x-full animate-cta-shimmer"
-                style={{ background: "linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.15) 50%, transparent 100%)" }} />
-            </div>
           </button>
         </div>
       </div>
@@ -351,16 +330,16 @@ export default function AssessPage({ params }: PageProps) {
   /* ═══════════════════════════════════════════════════════════════════════ */
   if (phase === "submitting") {
     return (
-      <div className="min-h-screen flex items-center justify-center p-6" style={{ background: "#050B14" }}>
+      <div className="min-h-screen flex items-center justify-center p-6">
         <div className="text-center">
-          <div className="w-16 h-16 rounded-2xl bg-brand/20 flex items-center justify-center mx-auto mb-4">
-            <svg className="animate-spin h-8 w-8 text-brand-light" viewBox="0 0 24 24" fill="none">
+          <div className="w-16 h-16 rounded-2xl bg-surface-tint flex items-center justify-center mx-auto mb-4">
+            <svg className="animate-spin h-8 w-8 text-brand" viewBox="0 0 24 24" fill="none">
               <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
               <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
             </svg>
           </div>
-          <h2 className="text-xl font-bold text-white mb-2">Submitting your assessment...</h2>
-          <p className="text-white/40 text-sm">Hang tight, this will only take a moment.</p>
+          <h2 className="text-xl font-bold text-ink mb-2">Submitting your assessment...</h2>
+          <p className="text-ink-muted text-sm">Hang tight, this will only take a moment.</p>
         </div>
       </div>
     );
@@ -371,17 +350,17 @@ export default function AssessPage({ params }: PageProps) {
   /* ═══════════════════════════════════════════════════════════════════════ */
   if (phase === "review") {
     return (
-      <div className="min-h-screen flex flex-col" style={{ background: "#050B14" }}>
-        <div className="border-b border-white/10 px-6 py-4">
+      <div className="min-h-screen flex flex-col">
+        <div className="border-b border-border px-6 py-4 bg-surface">
           <div className="max-w-3xl mx-auto flex items-center justify-between">
-            <h2 className="text-lg font-bold text-white">Review Your Answers</h2>
+            <h2 className="text-lg font-bold text-ink">Review Your Answers</h2>
             <Timer startedAt={startedAt} />
           </div>
         </div>
 
         <div className="flex-1 px-6 py-8">
           <div className="max-w-3xl mx-auto">
-            <p className="text-white/50 text-sm mb-6">
+            <p className="text-ink-muted text-sm mb-6">
               {answeredCount} of {questions.length} questions answered.
               {answeredCount < questions.length && " Unanswered questions will receive 0 marks."}
             </p>
@@ -395,15 +374,15 @@ export default function AssessPage({ params }: PageProps) {
                     onClick={() => { setCurrentIdx(i); setPhase("question"); }}
                     className={cn(
                       "w-full flex items-center gap-4 px-4 py-3 rounded-xl text-left transition-all",
-                      "border hover:border-white/20",
+                      "border hover:border-brand/30",
                       answered
-                        ? "border-white/10 bg-white/[0.03]"
-                        : "border-amber-500/30 bg-amber-500/5"
+                        ? "border-border bg-surface"
+                        : "border-warning/30 bg-warning-bg/30"
                     )}
                   >
                     <div className={cn(
                       "w-8 h-8 rounded-lg flex items-center justify-center text-xs font-bold shrink-0",
-                      answered ? "bg-emerald-500/20 text-emerald-400" : "bg-amber-500/20 text-amber-400"
+                      answered ? "bg-success-bg text-success" : "bg-warning-bg text-warning"
                     )}>
                       {answered ? (
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><polyline points="20 6 9 17 4 12" /></svg>
@@ -412,13 +391,13 @@ export default function AssessPage({ params }: PageProps) {
                       )}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm text-white/80 truncate">Q{i + 1}: {q.stem_md.slice(0, 80)}{q.stem_md.length > 80 ? "..." : ""}</p>
+                      <p className="text-sm text-ink truncate">Q{i + 1}: {q.stem_md.slice(0, 80)}{q.stem_md.length > 80 ? "..." : ""}</p>
                       <div className="flex items-center gap-2 mt-0.5">
                         <TypeBadge type={q.type} />
-                        <span className="text-[10px] text-white/30">{q.marks} mark{q.marks !== 1 ? "s" : ""}</span>
+                        <span className="text-[10px] text-ink-muted">{q.marks} mark{q.marks !== 1 ? "s" : ""}</span>
                       </div>
                     </div>
-                    <span className={cn("text-xs font-semibold", answered ? "text-emerald-400" : "text-amber-400")}>
+                    <span className={cn("text-xs font-semibold", answered ? "text-success" : "text-warning")}>
                       {answered ? "Answered" : "Skipped"}
                     </span>
                   </button>
@@ -427,7 +406,7 @@ export default function AssessPage({ params }: PageProps) {
             </div>
 
             {error && (
-              <p className="text-sm text-red-400 bg-red-500/10 border border-red-500/20 px-4 py-2.5 rounded-lg mb-4">
+              <p className="text-sm text-error bg-error-bg border border-error/20 px-4 py-2.5 rounded-lg mb-4">
                 {error}
               </p>
             )}
@@ -436,18 +415,14 @@ export default function AssessPage({ params }: PageProps) {
               <Button
                 variant="ghost"
                 onClick={() => setPhase("question")}
-                className="border-white/10 text-white/60 hover:text-white hover:bg-white/5"
+                className="border border-border text-ink-secondary hover:text-ink hover:bg-surface-alt"
               >
                 Back to Questions
               </Button>
               <button
                 onClick={handleSubmit}
                 disabled={loading}
-                className="h-12 px-8 rounded-xl text-white font-bold text-sm transition-all hover:-translate-y-0.5 disabled:opacity-50"
-                style={{
-                  background: "linear-gradient(135deg, #10B981 0%, #059669 100%)",
-                  boxShadow: "0 8px 24px rgba(16,185,129,0.3)",
-                }}
+                className="h-12 px-8 rounded-xl bg-brand text-white font-bold text-sm transition-all hover:bg-brand-dark disabled:opacity-50"
               >
                 Submit Assessment
               </button>
@@ -476,12 +451,12 @@ export default function AssessPage({ params }: PageProps) {
   const topicTag = currentQ.topic_tags?.[0] ?? "General";
 
   return (
-    <div className="min-h-screen flex flex-col" style={{ background: "#050B14" }}>
+    <div className="min-h-screen flex flex-col">
       {/* ── Header ─────────────────────────────────────────────────────── */}
-      <div className="border-b border-white/10 px-4 sm:px-6 py-4">
+      <div className="border-b border-border bg-surface px-4 sm:px-6 py-4">
         <div className="max-w-3xl mx-auto space-y-3">
           <div className="flex items-center justify-between">
-            <p className="text-sm font-semibold text-white/60">
+            <p className="text-sm font-semibold text-ink-secondary">
               Question {currentIdx + 1} of {questions.length}
             </p>
             <Timer startedAt={startedAt} />
@@ -502,7 +477,7 @@ export default function AssessPage({ params }: PageProps) {
       {/* ── Main layout ────────────────────────────────────────────────── */}
       <div className="flex-1 flex">
         {/* Desktop sidebar navigator */}
-        <div className="hidden sm:flex flex-col gap-1.5 p-4 border-r border-white/5 overflow-y-auto"
+        <div className="hidden sm:flex flex-col gap-1.5 p-4 border-r border-border overflow-y-auto bg-surface"
           style={{ width: "60px" }}>
           {questions.map((q, i) => {
             const answered = isAnswered(q);
@@ -514,10 +489,10 @@ export default function AssessPage({ params }: PageProps) {
                 className={cn(
                   "w-8 h-8 rounded-lg text-xs font-bold transition-all mx-auto",
                   isCurrent
-                    ? "bg-brand text-white shadow-[0_0_12px_rgba(51,136,255,0.4)]"
+                    ? "bg-brand text-white shadow-card-hover"
                     : answered
-                    ? "bg-emerald-500/20 text-emerald-400 hover:bg-emerald-500/30"
-                    : "bg-white/5 text-white/40 hover:bg-white/10"
+                    ? "bg-success-bg text-success hover:bg-success-bg/80"
+                    : "bg-surface-alt text-ink-muted hover:bg-border"
                 )}
               >
                 {i + 1}
@@ -532,15 +507,15 @@ export default function AssessPage({ params }: PageProps) {
             {/* Topic + difficulty + type */}
             <div className="flex items-center gap-2 flex-wrap">
               <TypeBadge type={currentQ.type} />
-              <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-white/5 text-white/50">
+              <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-surface-alt text-ink-muted">
                 {topicTag}
               </span>
               <DifficultyBadge level={difficulty} />
-              <span className="text-[10px] text-white/30 ml-auto">{currentQ.marks} mark{currentQ.marks !== 1 ? "s" : ""}</span>
+              <span className="text-[10px] text-ink-muted ml-auto">{currentQ.marks} mark{currentQ.marks !== 1 ? "s" : ""}</span>
             </div>
 
             {/* Question stem */}
-            <p className="text-base sm:text-lg font-medium text-white leading-relaxed whitespace-pre-wrap">
+            <p className="text-base sm:text-lg font-medium text-ink leading-relaxed whitespace-pre-wrap">
               {currentQ.stem_md}
             </p>
 
@@ -557,17 +532,17 @@ export default function AssessPage({ params }: PageProps) {
                       className={cn(
                         "w-full text-left px-5 py-4 rounded-xl border-2 transition-all flex items-start gap-4",
                         isSelected
-                          ? "border-brand bg-brand/10"
-                          : "border-white/10 bg-white/[0.02] hover:border-white/20 hover:bg-white/[0.04]"
+                          ? "border-brand bg-surface-tint"
+                          : "border-border bg-surface hover:border-brand/30 hover:bg-surface-soft"
                       )}
                     >
                       <span className={cn(
                         "w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold shrink-0",
-                        isSelected ? "bg-brand text-white" : "bg-white/10 text-white/50"
+                        isSelected ? "bg-brand text-white" : "bg-surface-alt text-ink-muted"
                       )}>
                         {letter}
                       </span>
-                      <span className={cn("text-sm pt-1", isSelected ? "text-white" : "text-white/70")}>
+                      <span className={cn("text-sm pt-1", isSelected ? "text-ink font-medium" : "text-ink-secondary")}>
                         {option}
                       </span>
                     </button>
@@ -588,13 +563,13 @@ export default function AssessPage({ params }: PageProps) {
                   }}
                   placeholder="Type your answer..."
                   rows={8}
-                  className="w-full px-5 py-4 rounded-xl border border-white/10 bg-white/[0.03] text-white text-sm placeholder:text-white/25 focus:outline-none focus:ring-2 focus:ring-brand/50 focus:border-brand/50 resize-none"
+                  className="w-full px-5 py-4 rounded-xl border border-border bg-surface text-ink text-sm placeholder:text-ink-muted focus:outline-none focus:ring-2 focus:ring-brand focus:border-brand resize-none"
                 />
                 <div className="flex items-center justify-between mt-2">
-                  <span className="text-[10px] text-white/25">You can use **bold** and `code`</span>
+                  <span className="text-[10px] text-ink-muted">You can use **bold** and `code`</span>
                   <span className={cn(
                     "text-xs tabular-nums",
-                    (currentResponse.responseText ?? "").length > 450 ? "text-amber-400" : "text-white/30"
+                    (currentResponse.responseText ?? "").length > 450 ? "text-warning" : "text-ink-muted"
                   )}>
                     {(currentResponse.responseText ?? "").length}/500
                   </span>
@@ -604,7 +579,7 @@ export default function AssessPage({ params }: PageProps) {
 
             {/* ─── Code Editor ──────────────────────────────────────────── */}
             {currentQ.type === "code" && (
-              <div className="rounded-xl overflow-hidden border border-white/10">
+              <div className="rounded-xl overflow-hidden border border-border">
                 {/* Terminal header */}
                 <div className="flex items-center gap-2 px-4 py-2.5" style={{ background: "#161B22" }}>
                   <div className="w-3 h-3 rounded-full bg-red-500/60" />
@@ -645,7 +620,7 @@ export default function AssessPage({ params }: PageProps) {
             )}
 
             {error && (
-              <p className="text-sm text-red-400 bg-red-500/10 border border-red-500/20 px-4 py-2.5 rounded-lg">
+              <p className="text-sm text-error bg-error-bg border border-error/20 px-4 py-2.5 rounded-lg">
                 {error}
               </p>
             )}
@@ -656,7 +631,7 @@ export default function AssessPage({ params }: PageProps) {
                 variant="ghost"
                 onClick={() => goTo(currentIdx - 1)}
                 disabled={currentIdx === 0}
-                className="border-white/10 text-white/60 hover:text-white hover:bg-white/5 disabled:opacity-30"
+                className="border border-border text-ink-secondary hover:text-ink hover:bg-surface-alt disabled:opacity-30"
               >
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M19 12H5" /><polyline points="12 19 5 12 12 5" /></svg>
                 Previous
@@ -665,11 +640,7 @@ export default function AssessPage({ params }: PageProps) {
               {isLast ? (
                 <button
                   onClick={() => setPhase("review")}
-                  className="h-11 px-6 rounded-xl text-white font-semibold text-sm transition-all hover:-translate-y-0.5"
-                  style={{
-                    background: "linear-gradient(135deg, #3388FF 0%, #A78BFA 100%)",
-                    boxShadow: "0 8px 24px rgba(51,136,255,0.25)",
-                  }}
+                  className="h-11 px-6 rounded-xl bg-brand text-white font-semibold text-sm transition-all hover:bg-brand-dark"
                 >
                   Review & Submit
                 </button>

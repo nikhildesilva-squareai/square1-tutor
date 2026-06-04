@@ -122,28 +122,27 @@ function RadarChart({ topics, animate }: { topics: TopicMastery[]; animate: bool
           key={ring}
           points={toPoints(topics.map((_, i) => point(i, ring * R)))}
           fill="none"
-          stroke="rgba(255,255,255,0.1)"
+          stroke="#E8EEF5"
           strokeWidth="1"
           strokeDasharray={ring < 1 ? "4 3" : "none"}
         />
       ))}
       {topics.map((_, i) => {
         const [x, y] = point(i, R);
-        return <line key={i} x1={CX} y1={CY} x2={x} y2={y} stroke="rgba(255,255,255,0.08)" strokeWidth="1" />;
+        return <line key={i} x1={CX} y1={CY} x2={x} y2={y} stroke="#E8EEF5" strokeWidth="1" />;
       })}
       <defs>
         <radialGradient id="radarFillReport" cx="50%" cy="50%" r="50%">
-          <stop offset="0%" stopColor="#3388FF" stopOpacity="0.5" />
-          <stop offset="100%" stopColor="#3388FF" stopOpacity="0.1" />
+          <stop offset="0%" stopColor="#0056CE" stopOpacity="0.35" />
+          <stop offset="100%" stopColor="#0056CE" stopOpacity="0.08" />
         </radialGradient>
       </defs>
       <polygon
         points={toPoints(dataPoints)}
         fill="url(#radarFillReport)"
-        stroke="#3388FF"
+        stroke="#0056CE"
         strokeWidth="2.5"
         strokeLinejoin="round"
-        style={{ filter: "drop-shadow(0 0 12px rgba(51,136,255,0.4))" }}
       />
       {dataPoints.map(([x, y], i) => {
         const isHover = hoverIdx === i;
@@ -152,8 +151,8 @@ function RadarChart({ topics, animate }: { topics: TopicMastery[]; animate: bool
             key={i}
             cx={x} cy={y}
             r={progress > 0.05 ? (isHover ? 7 : 4.5) : 0}
-            fill={isHover ? "white" : "#3388FF"}
-            stroke={isHover ? "#3388FF" : "white"}
+            fill={isHover ? "#0056CE" : "white"}
+            stroke="#0056CE"
             strokeWidth={isHover ? 3 : 1.5}
             onMouseEnter={() => setHoverIdx(i)}
             onMouseLeave={() => setHoverIdx(null)}
@@ -173,7 +172,7 @@ function RadarChart({ topics, animate }: { topics: TopicMastery[]; animate: bool
             dominantBaseline="middle"
             fontSize="10"
             fontFamily="system-ui, sans-serif"
-            fill={isHover ? "#3388FF" : "rgba(255,255,255,0.6)"}
+            fill={isHover ? "#0056CE" : "#475569"}
             fontWeight={isHover ? 700 : 500}
             onMouseEnter={() => setHoverIdx(i)}
             onMouseLeave={() => setHoverIdx(null)}
@@ -183,7 +182,7 @@ function RadarChart({ topics, animate }: { topics: TopicMastery[]; animate: bool
           </text>
         );
       })}
-      <circle cx={CX} cy={CY} r={3} fill="#3388FF" />
+      <circle cx={CX} cy={CY} r={3} fill="#0056CE" />
     </svg>
   );
 }
@@ -242,17 +241,17 @@ export default function ReportPage({ params }: PageProps) {
   /* ═══════════════════════════════════════════════════════════════════ */
   if (error) {
     return (
-      <div className="min-h-screen flex items-center justify-center p-6" style={{ background: "#050B14" }}>
+      <div className="min-h-screen flex items-center justify-center p-6">
         <div className="text-center max-w-md">
-          <div className="w-16 h-16 rounded-2xl bg-red-500/20 flex items-center justify-center mx-auto mb-4">
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#EF4444" strokeWidth="2">
+          <div className="w-16 h-16 rounded-2xl bg-error-bg flex items-center justify-center mx-auto mb-4">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#D93636" strokeWidth="2">
               <circle cx="12" cy="12" r="10" /><line x1="15" y1="9" x2="9" y2="15" /><line x1="9" y1="9" x2="15" y2="15" />
             </svg>
           </div>
-          <h2 className="text-xl font-bold text-white mb-2">Grading failed</h2>
-          <p className="text-sm text-red-400 mb-6">{error}</p>
+          <h2 className="text-xl font-bold text-ink mb-2">Grading failed</h2>
+          <p className="text-sm text-error mb-6">{error}</p>
           <Link href={`/courses/${slug}`}
-            className="inline-flex items-center px-5 py-2.5 rounded-xl bg-white/10 text-white/70 text-sm font-semibold hover:bg-white/15 transition-colors">
+            className="inline-flex items-center px-5 py-2.5 rounded-xl bg-surface border border-border text-ink-secondary text-sm font-semibold hover:bg-surface-alt transition-colors">
             Back to course
           </Link>
         </div>
@@ -269,28 +268,23 @@ export default function ReportPage({ params }: PageProps) {
     const progressPct = (completedDuration / totalDuration) * 100;
 
     return (
-      <div className="min-h-screen flex items-center justify-center p-6" style={{ background: "#050B14" }}>
-        {/* Decorative blobs */}
-        <div className="pointer-events-none absolute top-0 left-1/4 w-[500px] h-[500px] rounded-full opacity-20 animate-blob-1"
-          style={{ background: "radial-gradient(circle, #3388FF25 0%, transparent 70%)", filter: "blur(80px)" }} />
-
-        <div className="relative max-w-md w-full rounded-2xl border border-white/10 p-8"
-          style={{ background: "linear-gradient(180deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.01) 100%)" }}>
+      <div className="min-h-screen flex items-center justify-center p-6">
+        <div className="relative max-w-md w-full bg-surface border border-border rounded-2xl p-8 shadow-card">
           <div className="text-center mb-8">
-            <div className="w-16 h-16 rounded-2xl bg-brand/20 flex items-center justify-center mx-auto mb-4">
-              <svg className="animate-spin h-8 w-8 text-brand-light" viewBox="0 0 24 24" fill="none">
+            <div className="w-16 h-16 rounded-2xl bg-surface-tint flex items-center justify-center mx-auto mb-4">
+              <svg className="animate-spin h-8 w-8 text-brand" viewBox="0 0 24 24" fill="none">
                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
               </svg>
             </div>
-            <h2 className="text-xl font-bold text-white">Analysing your answers...</h2>
-            <p className="text-sm text-white/40 mt-1">This usually takes 15-30 seconds.</p>
+            <h2 className="text-xl font-bold text-ink">Analysing your answers...</h2>
+            <p className="text-sm text-ink-muted mt-1">This usually takes 15-30 seconds.</p>
           </div>
 
           {/* Progress bar */}
-          <div className="w-full bg-white/10 rounded-full h-1.5 mb-6">
-            <div className="h-1.5 rounded-full transition-all duration-700"
-              style={{ width: `${progressPct}%`, background: "linear-gradient(90deg, #3388FF, #A78BFA)" }} />
+          <div className="w-full bg-surface-alt rounded-full h-1.5 mb-6">
+            <div className="h-1.5 rounded-full bg-brand transition-all duration-700"
+              style={{ width: `${progressPct}%` }} />
           </div>
 
           {/* Steps */}
@@ -302,9 +296,9 @@ export default function ReportPage({ params }: PageProps) {
                 <div key={step.label} className="flex items-center gap-3">
                   <div className={cn(
                     "w-6 h-6 rounded-full flex items-center justify-center shrink-0 text-xs transition-all",
-                    done ? "bg-emerald-500 text-white" :
-                    active ? "bg-brand/30 border-2 border-brand animate-pulse" :
-                    "bg-white/5"
+                    done ? "bg-success text-white" :
+                    active ? "bg-surface-tint border-2 border-brand animate-pulse" :
+                    "bg-surface-alt"
                   )}>
                     {done && (
                       <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
@@ -312,7 +306,7 @@ export default function ReportPage({ params }: PageProps) {
                       </svg>
                     )}
                   </div>
-                  <span className={cn("text-sm transition-colors", done ? "text-white" : "text-white/30")}>
+                  <span className={cn("text-sm transition-colors", done ? "text-ink" : "text-ink-muted")}>
                     {step.label}
                   </span>
                 </div>
@@ -332,47 +326,35 @@ export default function ReportPage({ params }: PageProps) {
   const gaps = sortedTopics.slice(0, 3);
 
   const levelConfig = {
-    beginner: { label: "BEGINNER", bg: "bg-red-500/20", text: "text-red-400", border: "border-red-500/30" },
-    intermediate: { label: "INTERMEDIATE", bg: "bg-amber-500/20", text: "text-amber-400", border: "border-amber-500/30" },
-    advanced: { label: "ADVANCED", bg: "bg-emerald-500/20", text: "text-emerald-400", border: "border-emerald-500/30" },
+    beginner: { label: "BEGINNER", bg: "bg-error-bg", text: "text-error", border: "border-error/30" },
+    intermediate: { label: "INTERMEDIATE", bg: "bg-warning-bg", text: "text-warning", border: "border-warning/30" },
+    advanced: { label: "ADVANCED", bg: "bg-success-bg", text: "text-success", border: "border-success/30" },
   };
   const lc = levelConfig[report.level];
 
   return (
     <div ref={reportRef}>
       {/* ═══════════════════════════════════════════════════════════════ */}
-      {/*  SECTION 1 — HERO SCORE (dark)                                */}
+      {/*  SECTION 1 — SCORE                                            */}
       {/* ═══════════════════════════════════════════════════════════════ */}
-      <section className="relative overflow-hidden py-16 sm:py-20 px-4 sm:px-6" style={{ background: "#050B14" }}>
-        {/* Decorative blobs */}
-        <div className="pointer-events-none absolute top-0 left-1/4 w-[600px] h-[600px] rounded-full opacity-15 animate-blob-1"
-          style={{ background: "radial-gradient(circle, #3388FF20 0%, transparent 70%)", filter: "blur(80px)" }} />
-        <div className="pointer-events-none absolute bottom-0 right-1/4 w-[500px] h-[500px] rounded-full opacity-10 animate-blob-2"
-          style={{ background: "radial-gradient(circle, #A78BFA15 0%, transparent 70%)", filter: "blur(90px)" }} />
-
+      <section className="py-16 sm:py-20 px-4 sm:px-6">
         <div className="relative max-w-3xl mx-auto text-center">
           {/* Pill eyebrow */}
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-brand/30 bg-brand/10 mb-8">
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-brand/20 bg-surface-tint mb-8">
             <span className="w-1.5 h-1.5 rounded-full bg-brand animate-pulse" />
-            <span className="text-[10px] tracking-[0.2em] uppercase font-bold text-brand-light">
+            <span className="text-[10px] tracking-[0.2em] uppercase font-bold text-brand">
               Your Skill Report
             </span>
           </div>
 
-          <p className="text-white/40 text-sm uppercase tracking-wider mb-4">Your Score</p>
+          <p className="text-ink-muted text-sm uppercase tracking-wider mb-4">Your Score</p>
 
           {/* Big animated score */}
           <div className="mb-4">
-            <span className="text-7xl sm:text-8xl font-black tabular-nums animate-score-pop"
-              style={{
-                background: "linear-gradient(135deg, #3388FF 0%, #A78BFA 50%, #10B981 100%)",
-                WebkitBackgroundClip: "text",
-                WebkitTextFillColor: "transparent",
-                backgroundClip: "text",
-              }}>
+            <span className="text-7xl sm:text-8xl font-black tabular-nums text-ink animate-score-pop">
               {displayScore}
             </span>
-            <span className="text-2xl sm:text-3xl font-bold text-white/30 ml-2">/ 100</span>
+            <span className="text-2xl sm:text-3xl font-bold text-ink-muted ml-2">/ 100</span>
           </div>
 
           {/* Level badge */}
@@ -384,25 +366,25 @@ export default function ReportPage({ params }: PageProps) {
           <div className="mt-8 flex items-center justify-center gap-6 sm:gap-10 flex-wrap">
             {report.mcqMax != null && report.mcqMax > 0 && (
               <div className="text-center">
-                <p className="text-2xl font-bold text-white tabular-nums">{report.mcqScore ?? 0}/{report.mcqMax}</p>
-                <p className="text-xs text-white/40 mt-0.5">MCQ</p>
+                <p className="text-2xl font-bold text-ink tabular-nums">{report.mcqScore ?? 0}/{report.mcqMax}</p>
+                <p className="text-xs text-ink-muted mt-0.5">MCQ</p>
               </div>
             )}
             {report.shortMax != null && report.shortMax > 0 && (
               <>
-                <div className="w-px h-10 bg-white/10" />
+                <div className="w-px h-10 bg-border" />
                 <div className="text-center">
-                  <p className="text-2xl font-bold text-white tabular-nums">{report.shortScore ?? 0}/{report.shortMax}</p>
-                  <p className="text-xs text-white/40 mt-0.5">Short Answer</p>
+                  <p className="text-2xl font-bold text-ink tabular-nums">{report.shortScore ?? 0}/{report.shortMax}</p>
+                  <p className="text-xs text-ink-muted mt-0.5">Short Answer</p>
                 </div>
               </>
             )}
             {report.codeMax != null && report.codeMax > 0 && (
               <>
-                <div className="w-px h-10 bg-white/10" />
+                <div className="w-px h-10 bg-border" />
                 <div className="text-center">
-                  <p className="text-2xl font-bold text-white tabular-nums">{report.codeScore ?? 0}/{report.codeMax}</p>
-                  <p className="text-xs text-white/40 mt-0.5">Code</p>
+                  <p className="text-2xl font-bold text-ink tabular-nums">{report.codeScore ?? 0}/{report.codeMax}</p>
+                  <p className="text-xs text-ink-muted mt-0.5">Code</p>
                 </div>
               </>
             )}
@@ -411,43 +393,33 @@ export default function ReportPage({ params }: PageProps) {
       </section>
 
       {/* ═══════════════════════════════════════════════════════════════ */}
-      {/*  SECTION 2 — TOPIC MASTERY (white gradient)                   */}
+      {/*  SECTION 2 — TOPIC MASTERY                                    */}
       {/* ═══════════════════════════════════════════════════════════════ */}
       {report.topicMastery.length > 0 && (
-        <section className="py-16 sm:py-20 px-4 sm:px-6"
-          style={{ background: "linear-gradient(180deg, #FFFFFF 0%, #F4F8FF 100%)" }}>
+        <section className="py-16 sm:py-20 px-4 sm:px-6">
           <div className="max-w-3xl mx-auto">
             <div className="text-center mb-10">
-              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-brand/20 bg-brand/5 mb-4">
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-brand/20 bg-surface-tint mb-4">
                 <span className="text-[10px] tracking-[0.2em] uppercase font-bold text-brand">
                   Topic Mastery
                 </span>
               </div>
-              <h2 className="text-2xl sm:text-3xl font-black text-slate-900">
-                Where you{" "}
-                <span style={{
-                  background: "linear-gradient(135deg, #3388FF 0%, #A78BFA 50%, #10B981 100%)",
-                  WebkitBackgroundClip: "text",
-                  WebkitTextFillColor: "transparent",
-                  backgroundClip: "text",
-                }}>
-                  stand
-                </span>
+              <h2 className="text-2xl sm:text-3xl font-black text-ink">
+                Where you stand
               </h2>
             </div>
 
             <div className="space-y-4">
               {sortedTopics.map((t) => {
-                const color = t.percentage >= 70 ? "#10B981" : t.percentage >= 40 ? "#E5B217" : "#EF4444";
-                const bgColor = t.percentage >= 70 ? "rgba(16,185,129,0.1)" : t.percentage >= 40 ? "rgba(229,178,23,0.1)" : "rgba(239,68,68,0.1)";
+                const color = t.percentage >= 70 ? "#19A65F" : t.percentage >= 40 ? "#E5B217" : "#D93636";
+                const bgColor = t.percentage >= 70 ? "rgba(25,166,95,0.1)" : t.percentage >= 40 ? "rgba(229,178,23,0.1)" : "rgba(217,54,54,0.1)";
                 return (
-                  <div key={t.topic} className="rounded-xl border border-slate-200 bg-white p-4"
-                    style={{ boxShadow: "0 1px 3px rgba(0,0,0,0.04)" }}>
+                  <div key={t.topic} className="rounded-xl border border-border bg-surface p-4 shadow-card">
                     <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center gap-2">
-                        <span className="text-sm font-semibold text-slate-800">{t.topic}</span>
+                        <span className="text-sm font-semibold text-ink">{t.topic}</span>
                         {t.questionCount != null && (
-                          <span className="text-[10px] text-slate-400">{t.questionCount} question{t.questionCount !== 1 ? "s" : ""}</span>
+                          <span className="text-[10px] text-ink-muted">{t.questionCount} question{t.questionCount !== 1 ? "s" : ""}</span>
                         )}
                       </div>
                       <span className="text-sm font-bold tabular-nums" style={{ color }}>{t.percentage}%</span>
@@ -465,41 +437,38 @@ export default function ReportPage({ params }: PageProps) {
       )}
 
       {/* ═══════════════════════════════════════════════════════════════ */}
-      {/*  SECTION 3 — RADAR CHART (white gradient continued)           */}
+      {/*  SECTION 3 — RADAR CHART                                      */}
       {/* ═══════════════════════════════════════════════════════════════ */}
       {report.topicMastery.length >= 3 && (
-        <section className="pb-16 sm:pb-20 px-4 sm:px-6"
-          style={{ background: "linear-gradient(180deg, #F4F8FF 0%, #FFFFFF 100%)" }}>
-          <div className="max-w-lg mx-auto rounded-2xl border border-slate-200 p-6 sm:p-8 bg-slate-900"
-            style={{ boxShadow: "0 8px 32px rgba(0,0,0,0.12)" }}>
-            <h3 className="text-center text-sm font-semibold text-white/60 mb-4">Skill Radar</h3>
+        <section className="pb-16 sm:pb-20 px-4 sm:px-6">
+          <div className="max-w-lg mx-auto rounded-2xl border border-border p-6 sm:p-8 bg-surface shadow-card">
+            <h3 className="text-center text-sm font-semibold text-ink-secondary mb-4">Skill Radar</h3>
             <RadarChart topics={report.topicMastery} animate={true} />
           </div>
         </section>
       )}
 
       {/* ═══════════════════════════════════════════════════════════════ */}
-      {/*  SECTION 4 — STRENGTHS & GAPS (white gradient)                */}
+      {/*  SECTION 4 — STRENGTHS & GAPS                                 */}
       {/* ═══════════════════════════════════════════════════════════════ */}
-      <section className="py-16 sm:py-20 px-4 sm:px-6"
-        style={{ background: "linear-gradient(180deg, #FFFFFF 0%, #F8FAFC 100%)" }}>
+      <section className="py-16 sm:py-20 px-4 sm:px-6">
         <div className="max-w-3xl mx-auto grid grid-cols-1 sm:grid-cols-2 gap-6">
           {/* Strengths */}
-          <div className="rounded-2xl border border-emerald-200 bg-emerald-50/50 p-6">
+          <div className="rounded-2xl border border-success/20 bg-success-bg/30 p-6">
             <div className="flex items-center gap-2 mb-5">
-              <div className="w-8 h-8 rounded-full bg-emerald-500/20 flex items-center justify-center">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10B981" strokeWidth="2.5">
+              <div className="w-8 h-8 rounded-full bg-success-bg flex items-center justify-center">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#19A65F" strokeWidth="2.5">
                   <polyline points="20 6 9 17 4 12" />
                 </svg>
               </div>
-              <h3 className="text-sm font-bold text-emerald-700 uppercase tracking-wider">Strengths</h3>
+              <h3 className="text-sm font-bold text-success uppercase tracking-wider">Strengths</h3>
             </div>
             <div className="space-y-4">
               {strengths.map((t) => (
                 <div key={t.topic}>
                   <div className="flex items-center justify-between mb-0.5">
-                    <span className="text-sm font-semibold text-slate-800">{t.topic}</span>
-                    <span className="text-xs font-bold text-emerald-600">{t.percentage}%</span>
+                    <span className="text-sm font-semibold text-ink">{t.topic}</span>
+                    <span className="text-xs font-bold text-success">{t.percentage}%</span>
                   </div>
                 </div>
               ))}
@@ -507,21 +476,21 @@ export default function ReportPage({ params }: PageProps) {
           </div>
 
           {/* Gaps */}
-          <div className="rounded-2xl border border-red-200 bg-red-50/50 p-6">
+          <div className="rounded-2xl border border-error/20 bg-error-bg/30 p-6">
             <div className="flex items-center gap-2 mb-5">
-              <div className="w-8 h-8 rounded-full bg-red-500/20 flex items-center justify-center">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#EF4444" strokeWidth="2.5">
+              <div className="w-8 h-8 rounded-full bg-error-bg flex items-center justify-center">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#D93636" strokeWidth="2.5">
                   <circle cx="12" cy="12" r="10" /><line x1="15" y1="9" x2="9" y2="15" /><line x1="9" y1="9" x2="15" y2="15" />
                 </svg>
               </div>
-              <h3 className="text-sm font-bold text-red-700 uppercase tracking-wider">Gaps to Close</h3>
+              <h3 className="text-sm font-bold text-error uppercase tracking-wider">Gaps to Close</h3>
             </div>
             <div className="space-y-4">
               {gaps.map((t) => (
                 <div key={t.topic}>
                   <div className="flex items-center justify-between mb-0.5">
-                    <span className="text-sm font-semibold text-slate-800">{t.topic}</span>
-                    <span className="text-xs font-bold text-red-600">{t.percentage}%</span>
+                    <span className="text-sm font-semibold text-ink">{t.topic}</span>
+                    <span className="text-xs font-bold text-error">{t.percentage}%</span>
                   </div>
                 </div>
               ))}
@@ -531,27 +500,18 @@ export default function ReportPage({ params }: PageProps) {
       </section>
 
       {/* ═══════════════════════════════════════════════════════════════ */}
-      {/*  SECTION 5 — QUESTION BREAKDOWN (dark)                        */}
+      {/*  SECTION 5 — QUESTION BREAKDOWN                               */}
       {/* ═══════════════════════════════════════════════════════════════ */}
-      <section className="py-16 sm:py-20 px-4 sm:px-6" style={{ background: "#050B14" }}>
+      <section className="py-16 sm:py-20 px-4 sm:px-6">
         <div className="max-w-3xl mx-auto">
           <div className="text-center mb-10">
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-white/10 bg-white/5 mb-4">
-              <span className="text-[10px] tracking-[0.2em] uppercase font-bold text-white/50">
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-brand/20 bg-surface-tint mb-4">
+              <span className="text-[10px] tracking-[0.2em] uppercase font-bold text-brand">
                 Question Breakdown
               </span>
             </div>
-            <h2 className="text-2xl sm:text-3xl font-black text-white">
-              Every{" "}
-              <span style={{
-                background: "linear-gradient(135deg, #3388FF 0%, #A78BFA 50%, #10B981 100%)",
-                WebkitBackgroundClip: "text",
-                WebkitTextFillColor: "transparent",
-                backgroundClip: "text",
-              }}>
-                question
-              </span>
-              {" "}reviewed
+            <h2 className="text-2xl sm:text-3xl font-black text-ink">
+              Every question reviewed
             </h2>
           </div>
 
@@ -559,19 +519,18 @@ export default function ReportPage({ params }: PageProps) {
             {report.questionResults.map((q) => {
               const isExpanded = expandedQ === q.id;
               const typeBadge = q.type === "mcq" ? "MCQ" : q.type === "short_answer" ? "Short" : "Code";
-              const typeColor = q.type === "mcq" ? "bg-blue-500/20 text-blue-400" : q.type === "short_answer" ? "bg-purple-500/20 text-purple-400" : "bg-emerald-500/20 text-emerald-400";
+              const typeColor = q.type === "mcq" ? "bg-surface-tint text-brand" : q.type === "short_answer" ? "bg-surface-tint text-brand" : "bg-success-bg text-success";
 
               return (
-                <div key={q.id} className="rounded-xl border border-white/10 overflow-hidden transition-all"
-                  style={{ background: "rgba(255,255,255,0.02)" }}>
+                <div key={q.id} className="rounded-xl border border-border bg-surface overflow-hidden transition-all shadow-card">
                   {/* Header (always visible) */}
                   <button
                     onClick={() => setExpandedQ(isExpanded ? null : q.id)}
-                    className="w-full flex items-center gap-3 p-4 text-left hover:bg-white/[0.02] transition-colors"
+                    className="w-full flex items-center gap-3 p-4 text-left hover:bg-surface-soft transition-colors"
                   >
                     <div className={cn(
                       "w-8 h-8 rounded-lg flex items-center justify-center text-xs font-bold shrink-0",
-                      q.correct ? "bg-emerald-500/20 text-emerald-400" : "bg-red-500/20 text-red-400"
+                      q.correct ? "bg-success-bg text-success" : "bg-error-bg text-error"
                     )}>
                       {q.correct ? (
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><polyline points="20 6 9 17 4 12" /></svg>
@@ -581,38 +540,38 @@ export default function ReportPage({ params }: PageProps) {
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-0.5">
-                        <span className="text-sm font-semibold text-white">Q{q.number}</span>
+                        <span className="text-sm font-semibold text-ink">Q{q.number}</span>
                         <span className={cn("px-1.5 py-0.5 rounded text-[9px] font-bold uppercase", typeColor)}>{typeBadge}</span>
-                        <span className="text-[10px] text-white/30">{q.topicTag}</span>
+                        <span className="text-[10px] text-ink-muted">{q.topicTag}</span>
                       </div>
-                      <p className="text-xs text-white/40 truncate">{q.stem.slice(0, 100)}</p>
+                      <p className="text-xs text-ink-muted truncate">{q.stem.slice(0, 100)}</p>
                     </div>
-                    <span className="text-sm font-bold text-white/60 tabular-nums shrink-0">{q.marksAwarded}/{q.marksTotal}</span>
+                    <span className="text-sm font-bold text-ink-secondary tabular-nums shrink-0">{q.marksAwarded}/{q.marksTotal}</span>
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
-                      className={cn("text-white/30 shrink-0 transition-transform", isExpanded && "rotate-180")}>
+                      className={cn("text-ink-muted shrink-0 transition-transform", isExpanded && "rotate-180")}>
                       <polyline points="6 9 12 15 18 9" />
                     </svg>
                   </button>
 
                   {/* Expanded details */}
                   {isExpanded && (
-                    <div className="border-t border-white/5 p-4 space-y-4 animate-step-in">
+                    <div className="border-t border-border p-4 space-y-4 animate-step-in">
                       {/* Full question */}
                       <div>
-                        <p className="text-[10px] uppercase tracking-wider text-white/30 mb-1">Question</p>
-                        <p className="text-sm text-white/70 whitespace-pre-wrap">{q.stem}</p>
+                        <p className="text-[10px] uppercase tracking-wider text-ink-muted mb-1">Question</p>
+                        <p className="text-sm text-ink-secondary whitespace-pre-wrap">{q.stem}</p>
                       </div>
 
                       {/* Student's answer */}
                       {q.studentAnswer && (
                         <div>
-                          <p className="text-[10px] uppercase tracking-wider text-white/30 mb-1">Your Answer</p>
+                          <p className="text-[10px] uppercase tracking-wider text-ink-muted mb-1">Your Answer</p>
                           {q.type === "code" ? (
-                            <pre className="text-xs text-emerald-300 bg-black/30 rounded-lg p-3 overflow-x-auto font-mono whitespace-pre-wrap">
+                            <pre className="text-xs text-emerald-300 rounded-lg p-3 overflow-x-auto font-mono whitespace-pre-wrap" style={{ background: "#0D1117" }}>
                               {q.studentAnswer}
                             </pre>
                           ) : (
-                            <p className="text-sm text-white/60">{q.studentAnswer}</p>
+                            <p className="text-sm text-ink-secondary">{q.studentAnswer}</p>
                           )}
                         </div>
                       )}
@@ -620,36 +579,36 @@ export default function ReportPage({ params }: PageProps) {
                       {/* Correct answer / mark scheme */}
                       {q.correctAnswer && (
                         <div>
-                          <p className="text-[10px] uppercase tracking-wider text-white/30 mb-1">
+                          <p className="text-[10px] uppercase tracking-wider text-ink-muted mb-1">
                             {q.type === "mcq" ? "Correct Answer" : "Mark Scheme"}
                           </p>
-                          <p className="text-sm text-emerald-400/80">{q.correctAnswer}</p>
+                          <p className="text-sm text-success">{q.correctAnswer}</p>
                         </div>
                       )}
 
                       {/* AI Feedback */}
                       {q.feedback && (
-                        <div className="rounded-lg bg-brand/5 border border-brand/20 p-3">
-                          <p className="text-[10px] uppercase tracking-wider text-brand-light/60 mb-1">AI Feedback</p>
-                          <p className="text-sm text-white/70">{q.feedback}</p>
+                        <div className="rounded-lg bg-surface-tint border border-brand/20 p-3">
+                          <p className="text-[10px] uppercase tracking-wider text-brand mb-1">AI Feedback</p>
+                          <p className="text-sm text-ink-secondary">{q.feedback}</p>
                         </div>
                       )}
 
                       {/* Grading breakdown */}
                       {q.breakdown && q.breakdown.length > 0 && (
                         <div>
-                          <p className="text-[10px] uppercase tracking-wider text-white/30 mb-2">Grading Breakdown</p>
+                          <p className="text-[10px] uppercase tracking-wider text-ink-muted mb-2">Grading Breakdown</p>
                           <div className="space-y-1.5">
                             {q.breakdown.map((b, i) => (
                               <div key={i} className="flex items-center gap-2 text-xs">
                                 <span className={cn(
                                   "w-5 h-5 rounded flex items-center justify-center text-[10px] font-bold",
-                                  b.awarded > 0 ? "bg-emerald-500/20 text-emerald-400" : "bg-red-500/20 text-red-400"
+                                  b.awarded > 0 ? "bg-success-bg text-success" : "bg-error-bg text-error"
                                 )}>
                                   {b.awarded}
                                 </span>
-                                <span className="text-white/50">{b.criterion}</span>
-                                {b.reasoning && <span className="text-white/30">- {b.reasoning}</span>}
+                                <span className="text-ink-secondary">{b.criterion}</span>
+                                {b.reasoning && <span className="text-ink-muted">- {b.reasoning}</span>}
                               </div>
                             ))}
                           </div>
@@ -659,8 +618,8 @@ export default function ReportPage({ params }: PageProps) {
                       {/* Improved code suggestion */}
                       {q.improvedCode && (
                         <div>
-                          <p className="text-[10px] uppercase tracking-wider text-white/30 mb-1">Improved Code</p>
-                          <pre className="text-xs text-emerald-300/80 bg-black/30 rounded-lg p-3 overflow-x-auto font-mono whitespace-pre-wrap">
+                          <p className="text-[10px] uppercase tracking-wider text-ink-muted mb-1">Improved Code</p>
+                          <pre className="text-xs text-emerald-300 rounded-lg p-3 overflow-x-auto font-mono whitespace-pre-wrap" style={{ background: "#0D1117" }}>
                             {q.improvedCode}
                           </pre>
                         </div>
@@ -675,32 +634,29 @@ export default function ReportPage({ params }: PageProps) {
       </section>
 
       {/* ═══════════════════════════════════════════════════════════════ */}
-      {/*  SECTION 6 — AI RECOMMENDATIONS (white)                       */}
+      {/*  SECTION 6 — AI RECOMMENDATIONS                               */}
       {/* ═══════════════════════════════════════════════════════════════ */}
       {report.recommendationsMd && (
-        <section className="py-16 sm:py-20 px-4 sm:px-6"
-          style={{ background: "linear-gradient(180deg, #FFFFFF 0%, #F4F8FF 100%)" }}>
+        <section className="py-16 sm:py-20 px-4 sm:px-6">
           <div className="max-w-3xl mx-auto">
-            <div className="rounded-2xl border border-brand/20 p-6 sm:p-8"
-              style={{ background: "linear-gradient(135deg, rgba(51,136,255,0.05), rgba(167,139,250,0.03))" }}>
+            <div className="rounded-2xl border border-brand/20 bg-surface-tint p-6 sm:p-8 shadow-card">
               <div className="flex items-start gap-4">
-                <div className="shrink-0 w-12 h-12 rounded-xl flex items-center justify-center text-sm font-black text-white"
-                  style={{ background: "linear-gradient(135deg, #3388FF, #A78BFA)" }}>
+                <div className="shrink-0 w-12 h-12 rounded-xl bg-brand flex items-center justify-center text-sm font-black text-white">
                   AI
                 </div>
                 <div className="flex-1 min-w-0">
-                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-brand/20 bg-brand/5 mb-3">
+                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-brand/20 bg-surface mb-3">
                     <span className="text-[10px] tracking-[0.2em] uppercase font-bold text-brand">
                       AI Recommendation
                     </span>
                   </div>
-                  <div className="text-sm sm:text-base text-slate-700 leading-relaxed space-y-3">
+                  <div className="text-sm sm:text-base text-ink-secondary leading-relaxed space-y-3">
                     {report.recommendationsMd.split("\n").map((line, i) => {
                       if (!line.trim()) return <div key={i} className="h-1" />;
                       if (line.match(/^\d+\./)) {
                         return (
-                          <p key={i} className="pl-4 border-l-2 border-brand/20 text-slate-600">
-                            <span className="font-semibold text-slate-800">{line.slice(0, line.indexOf(".") + 1)}</span>
+                          <p key={i} className="pl-4 border-l-2 border-brand/20 text-ink-secondary">
+                            <span className="font-semibold text-ink">{line.slice(0, line.indexOf(".") + 1)}</span>
                             {line.slice(line.indexOf(".") + 1)}
                           </p>
                         );
@@ -716,42 +672,24 @@ export default function ReportPage({ params }: PageProps) {
       )}
 
       {/* ═══════════════════════════════════════════════════════════════ */}
-      {/*  SECTION 7 — CTA (white)                                      */}
+      {/*  SECTION 7 — CTA                                              */}
       {/* ═══════════════════════════════════════════════════════════════ */}
-      <section className="py-16 sm:py-24 px-4 sm:px-6"
-        style={{ background: "linear-gradient(180deg, #F4F8FF 0%, #FFFFFF 100%)" }}>
+      <section className="py-16 sm:py-24 px-4 sm:px-6">
         <div className="max-w-lg mx-auto text-center">
-          <h2 className="text-2xl sm:text-3xl font-black text-slate-900 mb-3">
-            Ready to close these{" "}
-            <span style={{
-              background: "linear-gradient(135deg, #3388FF 0%, #A78BFA 50%, #10B981 100%)",
-              WebkitBackgroundClip: "text",
-              WebkitTextFillColor: "transparent",
-              backgroundClip: "text",
-            }}>
-              gaps?
-            </span>
+          <h2 className="text-2xl sm:text-3xl font-black text-ink mb-3">
+            Ready to close these gaps?
           </h2>
-          <p className="text-slate-500 text-sm mb-8">
+          <p className="text-ink-muted text-sm mb-8">
             Choose a learning plan tailored to your skill level and schedule.
           </p>
           <Link
             href={`/courses/${slug}/plan?reportId=${report.reportId}`}
-            className="relative inline-flex items-center gap-2 h-14 px-10 rounded-xl text-white font-bold text-base shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all overflow-hidden"
-            style={{
-              background: "linear-gradient(135deg, #EF4444 0%, #DC2626 100%)",
-              boxShadow: "0 12px 32px rgba(239,68,68,0.35)",
-            }}
+            className="inline-flex items-center gap-2 h-14 px-10 rounded-xl bg-brand text-white font-bold text-base hover:bg-brand-dark transition-all"
           >
             Choose your plan
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
               <path d="M5 12h14" /><polyline points="12 5 19 12 12 19" />
             </svg>
-            {/* Shimmer */}
-            <div className="absolute inset-0 overflow-hidden rounded-xl pointer-events-none">
-              <div className="absolute inset-0 -translate-x-full animate-cta-shimmer"
-                style={{ background: "linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.15) 50%, transparent 100%)" }} />
-            </div>
           </Link>
         </div>
       </section>
