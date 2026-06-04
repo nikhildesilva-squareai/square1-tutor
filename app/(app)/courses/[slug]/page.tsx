@@ -2,7 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
-import type { Course, Module, Project } from "@/types/database";
+import type { Course, Module, Lesson, Project } from "@/types/database";
 
 function levelVariant(level: string): "success" | "warning" | "error" {
   if (level === "advanced") return "success";
@@ -23,6 +23,8 @@ interface PageProps {
 export default async function CourseDetailPage({ params }: PageProps) {
   const { slug } = await params;
   const supabase = await createClient();
+
+  const { data: { user } } = await supabase.auth.getUser();
 
   const { data: course } = await supabase
     .from("courses")
@@ -45,8 +47,83 @@ export default async function CourseDetailPage({ params }: PageProps) {
     .order("order_index", { ascending: true })
     .limit(4)) as { data: Project[] | null };
 
+  // Fetch all lessons for this course
+  const { data: lessons } = (await supabase
+    .from("lessons")
+    .select("id, module_id, order_index, title, estimated_minutes")
+    .eq("course_id", course.id)
+    .order("order_index", { ascending: true })) as { data: Pick<Lesson, "id" | "module_id" | "order_index" | "title" | "estimated_minutes">[] | null };
+
+  // Fetch student + enrollment + completions (if logged in)
+  let studentId: string | null = null;
+  let currentLessonId: string | null = null;
+  let completedLessonIds: Set<string> = new Set();
+
+  if (user) {
+    const { data: student } = await supabase
+      .from("students")
+      .select("id")
+      .eq("user_id", user.id)
+      .maybeSingle();
+
+    if (student) {
+      studentId = student.id;
+
+      const { data: enrollment } = await supabase
+        .from("student_enrollments")
+        .select("id, current_lesson_id")
+        .eq("student_id", student.id)
+        .eq("course_id", course.id)
+        .eq("status", "active")
+        .maybeSingle();
+
+      currentLessonId = enrollment?.current_lesson_id ?? null;
+
+      if (enrollment) {
+        const { data: completions } = await supabase
+          .from("lesson_completions")
+          .select("lesson_id")
+          .eq("student_id", student.id);
+
+        if (completions) {
+          completedLessonIds = new Set(completions.map((c) => c.lesson_id));
+        }
+      }
+    }
+  }
+
   const moduleList = modules ?? [];
   const projectList = projects ?? [];
+  const lessonList = lessons ?? [];
+
+  // Group lessons by module
+  const lessonsByModule: Record<string, typeof lessonList> = {};
+  for (const lesson of lessonList) {
+    if (!lessonsByModule[lesson.module_id]) {
+      lessonsByModule[lesson.module_id] = [];
+    }
+    lessonsByModule[lesson.module_id].push(lesson);
+  }
+
+  // Determine if a module is fully completed
+  function isModuleCompleted(moduleId: string): boolean {
+    const modLessons = lessonsByModule[moduleId] ?? [];
+    return modLessons.length > 0 && modLessons.every((l) => completedLessonIds.has(l.id));
+  }
+
+  // Determine lesson status
+  function getLessonStatus(lessonId: string, moduleIndex: number): "completed" | "current" | "locked" {
+    if (completedLessonIds.has(lessonId)) return "completed";
+    if (lessonId === currentLessonId) return "current";
+    // If student has no enrollment, all are locked
+    if (!studentId) return "locked";
+    // First lesson of first module is accessible if nothing completed
+    if (moduleIndex === 0 && completedLessonIds.size === 0 && currentLessonId === null) {
+      const firstModuleLessons = lessonsByModule[moduleList[0]?.id] ?? [];
+      if (firstModuleLessons.length > 0 && firstModuleLessons[0].id === lessonId) return "current";
+    }
+    return "locked";
+  }
 
   return (
     <div className="pb-24">
@@ -119,28 +196,101 @@ export default async function CourseDetailPage({ params }: PageProps) {
           </section>
         )}
 
-        {/* Curriculum */}
+        {/* Curriculum with lessons */}
         {moduleList.length > 0 && (
           <section>
-            <h2 className="text-lg font-semibold text-ink mb-5">Curriculum overview</h2>
-            <div className="space-y-3">
-              {moduleList.map((mod, i) => (
-                <div
-                  key={mod.id}
-                  className="bg-surface border border-border rounded-[var(--radius-lg)] px-5 py-4 flex items-center gap-4 shadow-card"
-                >
-                  <div className="w-8 h-8 rounded-full bg-surface-tint flex items-center justify-center text-xs font-bold text-brand shrink-0">
-                    {i + 1}
+            <h2 className="text-lg font-semibold text-ink mb-1">Curriculum</h2>
+            <p className="text-sm text-ink-muted mb-5">
+              {lessonList.length} lessons across {moduleList.length} modules
+            </p>
+            <div className="space-y-5">
+              {moduleList.map((mod, mi) => {
+                const modLessons = lessonsByModule[mod.id] ?? [];
+                const modCompleted = isModuleCompleted(mod.id);
+                const completedCount = modLessons.filter((l) => completedLessonIds.has(l.id)).length;
+
+                return (
+                  <div key={mod.id} className="bg-surface border border-border rounded-[var(--radius-lg)] shadow-card overflow-hidden">
+                    {/* Module header */}
+                    <div className="px-5 py-4 flex items-center gap-4 border-b border-border">
+                      <div className={[
+                        "w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold shrink-0",
+                        modCompleted ? "bg-success-bg text-success" : "bg-surface-tint text-brand",
+                      ].join(" ")}>
+                        {modCompleted ? "✓" : mi + 1}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-semibold text-ink">
+                          Module {mi + 1}: {mod.title}
+                        </p>
+                        <p className="text-xs text-ink-muted mt-0.5">
+                          {modLessons.length} lessons {completedCount > 0 && `· ${completedCount}/${modLessons.length} complete`}
+                        </p>
+                      </div>
+                      <span className="text-xs text-ink-muted shrink-0">Week {mod.week_number}</span>
+                    </div>
+
+                    {/* Lessons list */}
+                    <div className="divide-y divide-border">
+                      {modLessons.map((lesson, li) => {
+                        const status = getLessonStatus(lesson.id, mi);
+                        return (
+                          <div
+                            key={lesson.id}
+                            className={[
+                              "px-5 py-3 flex items-center gap-3",
+                              status === "locked" ? "opacity-60" : "",
+                            ].join(" ")}
+                          >
+                            {/* Status indicator */}
+                            <span className="w-5 h-5 flex items-center justify-center text-xs shrink-0">
+                              {status === "completed" && (
+                                <span className="text-success font-bold">{"✓"}</span>
+                              )}
+                              {status === "current" && (
+                                <span className="text-brand font-bold">{"→"}</span>
+                              )}
+                              {status === "locked" && (
+                                <span className="text-ink-muted">{"•"}</span>
+                              )}
+                            </span>
+
+                            {/* Lesson info */}
+                            <div className="flex-1 min-w-0">
+                              <p className={[
+                                "text-sm",
+                                status === "completed" ? "text-ink-secondary" : "",
+                                status === "current" ? "text-ink font-medium" : "",
+                                status === "locked" ? "text-ink-muted" : "",
+                              ].join(" ")}>
+                                Lesson {li + 1}: {lesson.title}
+                              </p>
+                            </div>
+
+                            {/* Action */}
+                            {status === "completed" && (
+                              <Link
+                                href={`/learn/${lesson.id}`}
+                                className="text-xs text-brand hover:underline font-medium shrink-0"
+                              >
+                                Review
+                              </Link>
+                            )}
+                            {status === "current" && (
+                              <Link
+                                href={`/learn/${lesson.id}`}
+                                className="inline-flex items-center gap-1 text-xs text-white bg-brand px-3 py-1.5 rounded-lg font-semibold hover:bg-brand-dark transition-colors shrink-0"
+                              >
+                                Start &rarr;
+                              </Link>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-semibold text-ink">{mod.title}</p>
-                    {mod.description && (
-                      <p className="text-xs text-ink-muted mt-0.5 truncate">{mod.description}</p>
-                    )}
-                  </div>
-                  <span className="text-xs text-ink-muted shrink-0">Week {mod.week_number}</span>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </section>
         )}

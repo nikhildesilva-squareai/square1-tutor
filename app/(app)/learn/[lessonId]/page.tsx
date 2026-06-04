@@ -1,0 +1,87 @@
+import { createClient } from "@/lib/supabase/server";
+import { notFound, redirect } from "next/navigation";
+import { LearnClient } from "./LearnClient";
+
+interface PageProps {
+  params: Promise<{ lessonId: string }>;
+}
+
+export default async function LearnPage({ params }: PageProps) {
+  const { lessonId } = await params;
+  const supabase = await createClient();
+
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) redirect("/login");
+
+  // Get student
+  const { data: student } = await supabase
+    .from("students")
+    .select("id, name")
+    .eq("user_id", user.id)
+    .maybeSingle();
+
+  if (!student) redirect("/dashboard");
+
+  // Get lesson with its module and course
+  const { data: lesson } = await supabase
+    .from("lessons")
+    .select("id, module_id, course_id, order_index, title, theory_md, estimated_minutes, learning_objectives")
+    .eq("id", lessonId)
+    .maybeSingle();
+
+  if (!lesson) notFound();
+
+  // Get module info
+  const { data: module } = await supabase
+    .from("modules")
+    .select("id, title, order_index, course_id")
+    .eq("id", lesson.module_id)
+    .maybeSingle();
+
+  // Get course info
+  const { data: course } = await supabase
+    .from("courses")
+    .select("id, slug, title, total_lessons")
+    .eq("id", lesson.course_id)
+    .maybeSingle();
+
+  // Get all lessons in this module to determine position
+  const { data: moduleLessons } = await supabase
+    .from("lessons")
+    .select("id, order_index, title")
+    .eq("module_id", lesson.module_id)
+    .order("order_index", { ascending: true });
+
+  const lessonList = moduleLessons ?? [];
+  const lessonIndex = lessonList.findIndex((l) => l.id === lessonId);
+  const totalLessonsInModule = lessonList.length;
+  const nextLesson = lessonIndex < lessonList.length - 1 ? lessonList[lessonIndex + 1] : null;
+
+  // Get exercises for this lesson
+  const { data: exercises } = await supabase
+    .from("exercises")
+    .select("id, lesson_id, order_index, type, title, prompt_md, starter_code, solution_code, test_cases, marks, language, options, correct_answer")
+    .eq("lesson_id", lessonId)
+    .order("order_index", { ascending: true });
+
+  // Check if already completed
+  const { data: completion } = await supabase
+    .from("lesson_completions")
+    .select("id")
+    .eq("student_id", student.id)
+    .eq("lesson_id", lessonId)
+    .maybeSingle();
+
+  return (
+    <LearnClient
+      lesson={lesson}
+      module={module}
+      course={course}
+      exercises={exercises ?? []}
+      lessonPosition={lessonIndex + 1}
+      totalLessonsInModule={totalLessonsInModule}
+      nextLessonId={nextLesson?.id ?? null}
+      alreadyCompleted={!!completion}
+    />
+  );
+}

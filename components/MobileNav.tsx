@@ -8,6 +8,7 @@ import {
   BookOpen,
   FolderKanban,
   Award,
+  BarChart3,
   MessageSquare,
   Settings,
   LogOut,
@@ -19,12 +20,13 @@ import { createClient } from "@/lib/supabase/client";
 import { Logo } from "@/components/ui/logo";
 
 const nav = [
-  { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/courses",   label: "Courses",    icon: BookOpen         },
+  { href: "/dashboard", label: "Dashboard",   icon: LayoutDashboard },
+  { href: "/courses",   label: "Courses",     icon: BookOpen        },
   { href: "/projects",  label: "My Projects", icon: FolderKanban    },
-  { href: "/portfolio", label: "Portfolio",  icon: Award            },
-  { href: "/tutor",     label: "AI Tutor",   icon: MessageSquare    },
-  { href: "/settings",  label: "Settings",   icon: Settings         },
+  { href: "/portfolio", label: "Portfolio",   icon: Award           },
+  { href: "/progress",  label: "Progress",    icon: BarChart3       },
+  { href: "/tutor",     label: "AI Tutor",    icon: MessageSquare   },
+  { href: "/settings",  label: "Settings",    icon: Settings        },
 ];
 
 interface MobileNavProps {
