@@ -105,3 +105,27 @@ export interface Enrollment {
   target_completion_date: string | null;
   status: EnrollmentStatus;
 }
+
+export interface ProjectSubmission {
+  id: string;
+  student_id: string;
+  project_id: string;
+  github_url: string;
+  live_url: string | null;
+  description: string | null;
+  score: number | null;
+  max_score: number;
+  breakdown: ScoreBreakdown[] | null;
+  overall_feedback: string | null;
+  strengths: string[] | null;
+  improvements: string[] | null;
+  submitted_at: string;
+  reviewed_at: string | null;
+}
+
+export interface ScoreBreakdown {
+  criterion: string;
+  score: number;
+  max: number;
+  feedback: string;
+}

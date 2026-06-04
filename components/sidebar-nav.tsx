@@ -6,6 +6,7 @@ import {
   LayoutDashboard,
   BookOpen,
   FolderKanban,
+  Award,
   MessageSquare,
   Settings,
   LogOut,
@@ -18,6 +19,7 @@ const nav = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/courses", label: "Courses", icon: BookOpen },
   { href: "/projects", label: "My Projects", icon: FolderKanban },
+  { href: "/portfolio", label: "Portfolio", icon: Award },
   { href: "/tutor", label: "AI Tutor", icon: MessageSquare },
   { href: "/settings", label: "Settings", icon: Settings },
 ];
