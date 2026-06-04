@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import type { AssessmentQuestion } from "@/types/database";
+import { CodeEditor } from "@/components/ui/code-editor";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -579,42 +580,20 @@ export default function AssessPage({ params }: PageProps) {
 
             {/* ─── Code Editor ──────────────────────────────────────────── */}
             {currentQ.type === "code" && (
-              <div className="rounded-xl overflow-hidden border border-border">
-                {/* Terminal header */}
-                <div className="flex items-center gap-2 px-4 py-2.5" style={{ background: "#161B22" }}>
-                  <div className="w-3 h-3 rounded-full bg-red-500/60" />
-                  <div className="w-3 h-3 rounded-full bg-amber-500/60" />
-                  <div className="w-3 h-3 rounded-full bg-emerald-500/60" />
-                  <span className="text-[10px] text-white/30 font-mono ml-2 uppercase tracking-wider">
+              <div>
+                {/* Language badge */}
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="text-[10px] font-bold tracking-widest uppercase px-2.5 py-1 rounded-md bg-surface-alt text-ink-muted">
                     {currentQ.language ?? "python"}
                   </span>
                 </div>
-                {/* Code textarea */}
-                <textarea
+                {/* CodeMirror editor */}
+                <CodeEditor
                   value={currentResponse.codeResponse ?? (currentQ.starter_code ?? "")}
-                  onChange={(e) => updateResponse(currentQ.id, { codeResponse: e.target.value })}
-                  spellCheck={false}
-                  className="w-full px-5 py-4 text-sm text-emerald-300 placeholder:text-white/20 focus:outline-none resize-none font-mono leading-relaxed"
-                  style={{
-                    background: "#0D1117",
-                    minHeight: "320px",
-                    tabSize: 2,
-                  }}
-                  onKeyDown={(e) => {
-                    // Tab support
-                    if (e.key === "Tab") {
-                      e.preventDefault();
-                      const start = e.currentTarget.selectionStart;
-                      const end = e.currentTarget.selectionEnd;
-                      const val = e.currentTarget.value;
-                      const newVal = val.substring(0, start) + "  " + val.substring(end);
-                      updateResponse(currentQ.id, { codeResponse: newVal });
-                      // Restore cursor position
-                      requestAnimationFrame(() => {
-                        e.currentTarget.selectionStart = e.currentTarget.selectionEnd = start + 2;
-                      });
-                    }
-                  }}
+                  onChange={(val) => updateResponse(currentQ.id, { codeResponse: val })}
+                  language={(currentQ.language as "python" | "typescript" | "javascript") ?? "python"}
+                  placeholder="Write your code here..."
+                  minHeight="300px"
                 />
               </div>
             )}
