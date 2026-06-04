@@ -39,12 +39,11 @@ export function SidebarNav({ userEmail }: SidebarNavProps) {
 
   return (
     <aside
-      className="hidden lg:flex lg:w-64 flex-col shrink-0 border-r border-white/[0.06] h-full"
-      style={{ background: "#0D1117" }}
+      className="hidden lg:flex lg:w-64 flex-col shrink-0 border-r border-border bg-surface h-full"
     >
       {/* Logo */}
       <div className="h-16 px-5 flex items-center">
-        <Logo variant="light" size="sm" />
+        <Logo variant="dark" size="sm" />
       </div>
 
       {/* Nav items */}
@@ -58,8 +57,8 @@ export function SidebarNav({ userEmail }: SidebarNavProps) {
               className={cn(
                 "h-10 px-4 rounded-lg flex items-center gap-3 text-sm font-medium transition-all",
                 isActive
-                  ? "bg-white/[0.06] text-white border-l-[3px] border-[#5B8DEF]"
-                  : "text-slate-400 hover:text-white hover:bg-white/[0.04] border-l-[3px] border-transparent"
+                  ? "bg-surface-tint text-brand border border-brand/20"
+                  : "text-ink-secondary hover:bg-surface-alt hover:text-ink border border-transparent"
               )}
             >
               <Icon className="w-4 h-4" />
@@ -70,13 +69,13 @@ export function SidebarNav({ userEmail }: SidebarNavProps) {
       </nav>
 
       {/* User footer */}
-      <div className="px-3 py-4 border-t border-white/[0.06]">
+      <div className="px-3 py-4 border-t border-border">
         <div className="px-4 py-2 mb-1">
-          <p className="text-xs text-slate-500 truncate">{userEmail}</p>
+          <p className="text-xs text-ink-muted truncate">{userEmail}</p>
         </div>
         <button
           onClick={handleSignOut}
-          className="flex items-center gap-3 px-4 h-10 w-full rounded-lg text-xs text-slate-500 hover:text-white transition-all"
+          className="flex items-center gap-3 px-4 h-10 w-full rounded-lg text-xs text-ink-secondary hover:bg-error-bg hover:text-error transition-all"
         >
           <LogOut className="w-4 h-4" />
           Sign out

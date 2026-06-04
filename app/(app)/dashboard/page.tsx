@@ -115,29 +115,19 @@ export default async function DashboardPage() {
   if (activeEnrollments.length === 0) {
     return (
       <div className="relative min-h-full px-6 py-10 max-w-5xl mx-auto">
-        {/* Subtle gradient blobs */}
-        <div className="pointer-events-none absolute top-0 left-1/4 w-[600px] h-[600px] rounded-full opacity-[0.07]" style={{ background: "radial-gradient(circle, #5B8DEF 0%, transparent 70%)" }} />
-        <div className="pointer-events-none absolute top-40 right-0 w-[400px] h-[400px] rounded-full opacity-[0.05]" style={{ background: "radial-gradient(circle, #6366f1 0%, transparent 70%)" }} />
-
         {/* Greeting */}
         <div className="relative mb-10">
-          <h1 className="text-3xl font-bold text-white">
+          <h1 className="text-3xl font-bold text-ink">
             {greeting}, {name}
           </h1>
-          <p className="text-slate-400 mt-2 text-base">
+          <p className="text-ink-muted mt-2 text-base">
             Let&apos;s get you started.
           </p>
         </div>
 
         {/* Journey card */}
-        <div
-          className="relative rounded-2xl p-8 mb-8 overflow-hidden"
-          style={{
-            background: "#0D1117",
-            border: "1px solid rgba(255,255,255,0.08)",
-          }}
-        >
-          <p className="text-[11px] font-semibold text-slate-500 uppercase tracking-widest mb-6">
+        <div className="relative rounded-2xl p-8 mb-8 overflow-hidden bg-surface border border-border">
+          <p className="text-[11px] font-semibold text-ink-muted uppercase tracking-widest mb-6">
             Your journey starts here
           </p>
 
@@ -149,25 +139,17 @@ export default async function DashboardPage() {
               "Choose your learning plan",
             ].map((step, i) => (
               <div key={i} className="flex items-center gap-4">
-                <span
-                  className="flex items-center justify-center w-8 h-8 rounded-full text-sm font-bold text-white shrink-0"
-                  style={{
-                    background: "linear-gradient(135deg, #5B8DEF 0%, #6366f1 100%)",
-                  }}
-                >
+                <span className="flex items-center justify-center w-8 h-8 rounded-full text-sm font-bold text-white bg-brand shrink-0">
                   {i + 1}
                 </span>
-                <span className="text-slate-300 text-sm">{step}</span>
+                <span className="text-ink text-sm">{step}</span>
               </div>
             ))}
           </div>
 
           <Link
             href="/courses"
-            className="inline-flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-semibold text-white transition-all hover:opacity-90"
-            style={{
-              background: "linear-gradient(135deg, #5B8DEF 0%, #6366f1 100%)",
-            }}
+            className="inline-flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-semibold text-white bg-brand hover:bg-brand-dark transition-all"
           >
             Browse Courses
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M6 3l5 5-5 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
@@ -183,22 +165,18 @@ export default async function DashboardPage() {
           ].map((stat, i) => (
             <div
               key={i}
-              className="rounded-xl p-5 text-center"
-              style={{
-                background: "#0D1117",
-                border: "1px solid rgba(255,255,255,0.08)",
-              }}
+              className="rounded-xl p-5 text-center bg-surface border border-border"
             >
-              <p className="text-2xl font-black text-white mb-1">{stat.value}</p>
-              <p className="text-xs text-slate-400">{stat.label}</p>
-              <p className="text-xs text-slate-500">{stat.sublabel}</p>
+              <p className="text-2xl font-black text-ink mb-1">{stat.value}</p>
+              <p className="text-xs text-ink-secondary">{stat.label}</p>
+              <p className="text-xs text-ink-muted">{stat.sublabel}</p>
             </div>
           ))}
         </div>
 
         {/* Popular courses */}
         <div className="relative">
-          <p className="text-[11px] font-semibold text-slate-500 uppercase tracking-widest mb-4">
+          <p className="text-[11px] font-semibold text-ink-muted uppercase tracking-widest mb-4">
             Popular courses
           </p>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
@@ -206,17 +184,13 @@ export default async function DashboardPage() {
               <Link
                 key={course.slug}
                 href={`/courses/${course.slug}`}
-                className="group rounded-xl p-5 transition-all hover:scale-[1.02]"
-                style={{
-                  background: "#0D1117",
-                  border: "1px solid rgba(255,255,255,0.08)",
-                  borderLeft: `3px solid ${course.color}`,
-                }}
+                className="group rounded-xl p-5 transition-all hover:scale-[1.02] bg-surface border border-border"
+                style={{ borderLeft: `3px solid ${course.color}` }}
               >
-                <p className="text-sm font-semibold text-white mb-2 group-hover:text-slate-200">
+                <p className="text-sm font-semibold text-ink mb-2 group-hover:text-ink-secondary">
                   {course.title}
                 </p>
-                <p className="text-xs text-slate-500">{course.salary}</p>
+                <p className="text-xs" style={{ color: course.color }}>{course.salary}</p>
               </Link>
             ))}
           </div>
@@ -228,78 +202,53 @@ export default async function DashboardPage() {
   // ── Active student dashboard ──────────────────────────────────
   return (
     <div className="relative min-h-full px-6 py-10 max-w-5xl mx-auto">
-      {/* Subtle gradient blobs */}
-      <div className="pointer-events-none absolute top-0 left-1/4 w-[600px] h-[600px] rounded-full opacity-[0.07]" style={{ background: "radial-gradient(circle, #5B8DEF 0%, transparent 70%)" }} />
-      <div className="pointer-events-none absolute bottom-0 right-0 w-[400px] h-[400px] rounded-full opacity-[0.05]" style={{ background: "radial-gradient(circle, #6366f1 0%, transparent 70%)" }} />
-
       {/* Header */}
       <div className="relative flex items-start justify-between mb-10">
         <div>
-          <h1 className="text-3xl font-bold text-white">
+          <h1 className="text-3xl font-bold text-ink">
             {greeting}, {name}
           </h1>
-          <p className="text-slate-400 mt-2 text-base">
+          <p className="text-ink-muted mt-2 text-base">
             You&apos;re on track. Keep going.
           </p>
         </div>
         {/* Streak badge */}
-        <div
-          className="flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold"
-          style={{
-            background: "rgba(245, 158, 11, 0.1)",
-            border: "1px solid rgba(245, 158, 11, 0.2)",
-            color: "#f59e0b",
-            boxShadow: "0 0 20px rgba(245, 158, 11, 0.08)",
-          }}
-        >
-          <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M8 1C8 1 3 6 3 9.5C3 12.5 5.2 14.5 8 14.5C10.8 14.5 13 12.5 13 9.5C13 6 8 1 8 1Z" fill="#f59e0b"/></svg>
+        <div className="flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold bg-warning-bg text-warning">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M8 1C8 1 3 6 3 9.5C3 12.5 5.2 14.5 8 14.5C10.8 14.5 13 12.5 13 9.5C13 6 8 1 8 1Z" fill="currentColor"/></svg>
           7 day streak
         </div>
       </div>
 
       {/* Today's Session */}
       {todayEnrollment && (
-        <div
-          className="relative rounded-2xl p-6 mb-8 overflow-hidden"
-          style={{
-            background: "linear-gradient(135deg, rgba(13,17,23,1) 0%, rgba(18,24,34,1) 100%)",
-            border: "1px solid rgba(255,255,255,0.08)",
-            borderLeft: "3px solid #5B8DEF",
-          }}
-        >
+        <div className="relative rounded-2xl p-6 mb-8 overflow-hidden bg-surface border border-border border-l-4 border-l-brand shadow-card">
           <div className="flex items-center justify-between gap-6">
             <div className="min-w-0">
-              <p className="text-[11px] font-semibold text-slate-500 uppercase tracking-widest mb-2">
+              <p className="text-[11px] font-semibold text-ink-muted uppercase tracking-widest mb-2">
                 Today&apos;s Session
               </p>
-              <p className="text-lg font-semibold text-white mb-1">
+              <p className="text-lg font-semibold text-ink mb-1">
                 {todayEnrollment.course?.title}
               </p>
-              <p className="text-sm text-slate-400 mb-4">
+              <p className="text-sm text-ink-secondary mb-4">
                 {todayEnrollment.current_lesson?.title ?? "Start your next lesson"}
               </p>
               {/* Progress bar */}
               <div className="flex items-center gap-3">
-                <div className="flex-1 h-2 rounded-full max-w-xs" style={{ background: "rgba(255,255,255,0.06)" }}>
+                <div className="flex-1 h-2 rounded-full max-w-xs bg-surface-alt">
                   <div
-                    className="h-2 rounded-full"
-                    style={{
-                      width: "60%",
-                      background: "linear-gradient(90deg, #5B8DEF 0%, #6366f1 100%)",
-                    }}
+                    className="h-2 rounded-full bg-brand"
+                    style={{ width: "60%" }}
                   />
                 </div>
-                <span className="text-xs text-slate-500">
+                <span className="text-xs text-ink-muted">
                   {todayEnrollment.current_lesson?.estimated_minutes ?? 30} min
                 </span>
               </div>
             </div>
             <Link
               href={`/courses/${todayEnrollment.course?.slug}`}
-              className="shrink-0 inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold text-white transition-all hover:opacity-90"
-              style={{
-                background: "linear-gradient(135deg, #5B8DEF 0%, #6366f1 100%)",
-              }}
+              className="shrink-0 inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold text-white bg-brand hover:bg-brand-dark transition-all"
             >
               Continue
               <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M6 3l5 5-5 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
@@ -310,7 +259,7 @@ export default async function DashboardPage() {
 
       {/* Progress stats */}
       <div className="mb-8">
-        <p className="text-[11px] font-semibold text-slate-500 uppercase tracking-widest mb-4">
+        <p className="text-[11px] font-semibold text-ink-muted uppercase tracking-widest mb-4">
           Your progress
         </p>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
@@ -322,15 +271,11 @@ export default async function DashboardPage() {
           ].map((stat, i) => (
             <div
               key={i}
-              className="rounded-xl p-5 text-center"
-              style={{
-                background: "#0D1117",
-                border: "1px solid rgba(255,255,255,0.08)",
-              }}
+              className="rounded-xl p-5 text-center bg-surface border border-border"
             >
-              <p className="text-2xl font-black text-white mb-1">{stat.value}</p>
-              <p className="text-xs text-slate-400">{stat.label}</p>
-              <p className="text-xs text-slate-500">{stat.sublabel}</p>
+              <p className="text-2xl font-black text-ink mb-1">{stat.value}</p>
+              <p className="text-xs text-ink-secondary">{stat.label}</p>
+              <p className="text-xs text-ink-muted">{stat.sublabel}</p>
             </div>
           ))}
         </div>
@@ -339,10 +284,10 @@ export default async function DashboardPage() {
       {/* My Courses */}
       <div className="relative mb-8">
         <div className="flex items-center justify-between mb-4">
-          <p className="text-[11px] font-semibold text-slate-500 uppercase tracking-widest">
+          <p className="text-[11px] font-semibold text-ink-muted uppercase tracking-widest">
             My courses
           </p>
-          <Link href="/courses" className="text-xs text-slate-500 hover:text-white transition-colors">
+          <Link href="/courses" className="text-xs text-ink-muted hover:text-brand transition-colors">
             Browse more
           </Link>
         </div>
@@ -358,34 +303,30 @@ export default async function DashboardPage() {
               <Link
                 key={enrollment.id}
                 href={`/courses/${slug}`}
-                className="group rounded-xl p-5 transition-all hover:scale-[1.01]"
-                style={{
-                  background: "#0D1117",
-                  border: "1px solid rgba(255,255,255,0.08)",
-                  borderLeft: `3px solid ${accentColor}`,
-                }}
+                className="group rounded-xl p-5 transition-all hover:scale-[1.01] bg-surface border border-border"
+                style={{ borderTop: `3px solid ${accentColor}` }}
               >
                 <div className="flex items-start justify-between mb-3">
-                  <p className="text-sm font-semibold text-white group-hover:text-slate-200">
+                  <p className="text-sm font-semibold text-ink group-hover:text-ink-secondary">
                     {enrollment.course?.title}
                   </p>
                   {level && (
-                    <span className="text-[10px] font-medium text-slate-500 px-2 py-0.5 rounded-full" style={{ background: "rgba(255,255,255,0.04)" }}>
+                    <span className="text-[10px] font-medium text-ink-muted px-2 py-0.5 rounded-full bg-surface-alt">
                       {level}
                     </span>
                   )}
                 </div>
                 {/* Progress bar */}
-                <div className="w-full h-1.5 rounded-full mb-2" style={{ background: "rgba(255,255,255,0.06)" }}>
+                <div className="w-full h-1.5 rounded-full mb-2 bg-surface-alt">
                   <div
                     className="h-1.5 rounded-full transition-all"
                     style={{
                       width: "20%",
-                      background: `linear-gradient(90deg, ${accentColor} 0%, ${accentColor}aa 100%)`,
+                      background: accentColor,
                     }}
                   />
                 </div>
-                <p className="text-xs text-slate-500">Progress tracked by lessons</p>
+                <p className="text-xs text-ink-muted">Progress tracked by lessons</p>
               </Link>
             );
           })}
@@ -396,10 +337,10 @@ export default async function DashboardPage() {
       {projects && projects.length > 0 && (
         <div className="relative">
           <div className="flex items-center justify-between mb-4">
-            <p className="text-[11px] font-semibold text-slate-500 uppercase tracking-widest">
+            <p className="text-[11px] font-semibold text-ink-muted uppercase tracking-widest">
               Recent projects
             </p>
-            <Link href="/projects" className="text-xs text-slate-500 hover:text-white transition-colors">
+            <Link href="/projects" className="text-xs text-ink-muted hover:text-brand transition-colors">
               View all
             </Link>
           </div>
@@ -415,17 +356,13 @@ export default async function DashboardPage() {
               return (
                 <div
                   key={p.id}
-                  className="rounded-xl px-5 py-4 flex items-center justify-between"
-                  style={{
-                    background: "#0D1117",
-                    border: "1px solid rgba(255,255,255,0.08)",
-                  }}
+                  className="rounded-xl px-5 py-4 flex items-center justify-between bg-surface border border-border"
                 >
                   <div>
-                    <p className="text-sm font-medium text-white">
+                    <p className="text-sm font-medium text-ink">
                       {p.project?.title ?? "Project"}
                     </p>
-                    <p className="text-xs text-slate-500 capitalize mt-0.5">
+                    <p className="text-xs text-ink-muted capitalize mt-0.5">
                       {p.project?.difficulty} difficulty
                     </p>
                   </div>

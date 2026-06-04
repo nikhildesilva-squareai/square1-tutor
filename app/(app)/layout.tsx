@@ -12,7 +12,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   }
 
   return (
-    <div className="flex h-screen overflow-hidden" style={{ background: "#050B14" }}>
+    <div className="flex h-screen overflow-hidden bg-surface-soft">
       {/* Desktop sidebar — hidden on mobile/tablet */}
       <SidebarNav userEmail={user.email ?? ""} userId={user.id} />
 

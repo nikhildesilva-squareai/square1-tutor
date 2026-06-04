@@ -53,14 +53,13 @@ export function MobileNav({ userEmail }: MobileNavProps) {
     <>
       {/* Mobile/Tablet top bar (shown below lg) */}
       <div
-        className="lg:hidden flex items-center justify-between h-14 px-4 border-b border-white/[0.06] shrink-0 z-30"
-        style={{ background: "#0D1117" }}
+        className="lg:hidden flex items-center justify-between h-14 px-4 border-b border-border bg-surface shrink-0 z-30"
       >
-        <Logo variant="light" size="sm" />
+        <Logo variant="dark" size="sm" />
         <button
           onClick={() => setOpen(true)}
           aria-label="Open navigation menu"
-          className="p-2 rounded-lg text-white hover:bg-white/[0.04] transition-colors"
+          className="p-2 rounded-lg text-ink hover:bg-surface-alt transition-colors"
         >
           <Menu size={20} />
         </button>
@@ -69,7 +68,7 @@ export function MobileNav({ userEmail }: MobileNavProps) {
       {/* Backdrop */}
       {open && (
         <div
-          className="fixed inset-0 z-40 bg-black/60 lg:hidden"
+          className="fixed inset-0 z-40 bg-black/30 lg:hidden"
           onClick={() => setOpen(false)}
           aria-hidden="true"
         />
@@ -78,18 +77,17 @@ export function MobileNav({ userEmail }: MobileNavProps) {
       {/* Slide-in drawer */}
       <aside
         className={cn(
-          "fixed top-0 left-0 h-full w-64 border-r border-white/[0.06] z-50 flex flex-col transition-transform duration-300 ease-in-out lg:hidden",
+          "fixed top-0 left-0 h-full w-64 border-r border-border bg-surface z-50 flex flex-col transition-transform duration-300 ease-in-out lg:hidden",
           open ? "translate-x-0" : "-translate-x-full"
         )}
-        style={{ background: "#0D1117" }}
       >
         {/* Drawer header */}
         <div className="h-14 px-4 flex items-center justify-between shrink-0">
-          <Logo variant="light" size="sm" />
+          <Logo variant="dark" size="sm" />
           <button
             onClick={() => setOpen(false)}
             aria-label="Close navigation menu"
-            className="p-2 rounded-lg text-white hover:bg-white/[0.04] transition-colors"
+            className="p-2 rounded-lg text-ink hover:bg-surface-alt transition-colors"
           >
             <X size={18} />
           </button>
@@ -106,8 +104,8 @@ export function MobileNav({ userEmail }: MobileNavProps) {
                 className={cn(
                   "h-10 px-4 rounded-lg flex items-center gap-3 text-sm font-medium transition-all",
                   isActive
-                    ? "bg-white/[0.06] text-white border-l-[3px] border-[#5B8DEF]"
-                    : "text-slate-400 hover:text-white hover:bg-white/[0.04] border-l-[3px] border-transparent"
+                    ? "bg-surface-tint text-brand border border-brand/20"
+                    : "text-ink-secondary hover:bg-surface-alt hover:text-ink border border-transparent"
                 )}
               >
                 <Icon className="w-4 h-4" />
@@ -118,13 +116,13 @@ export function MobileNav({ userEmail }: MobileNavProps) {
         </nav>
 
         {/* User footer */}
-        <div className="px-3 py-4 border-t border-white/[0.06]">
+        <div className="px-3 py-4 border-t border-border">
           <div className="px-4 py-2 mb-1">
-            <p className="text-xs text-slate-500 truncate">{userEmail}</p>
+            <p className="text-xs text-ink-muted truncate">{userEmail}</p>
           </div>
           <button
             onClick={handleSignOut}
-            className="flex items-center gap-3 px-4 h-10 w-full rounded-lg text-xs text-slate-500 hover:text-white transition-all"
+            className="flex items-center gap-3 px-4 h-10 w-full rounded-lg text-xs text-ink-secondary hover:bg-error-bg hover:text-error transition-all"
           >
             <LogOut className="w-4 h-4" />
             Sign out
