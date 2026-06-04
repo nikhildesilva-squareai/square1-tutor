@@ -79,6 +79,7 @@ export async function POST(request: Request) {
       .insert({
         student_id: student.id,
         paper_id: paper.id,
+        course_id: course.id,
         status: "in_progress",
       })
       .select("id")

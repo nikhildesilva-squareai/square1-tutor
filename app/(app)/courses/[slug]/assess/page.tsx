@@ -287,7 +287,7 @@ export default function AssessPage({ params }: PageProps) {
 
           <div className="rounded-xl bg-surface-soft border border-border p-5 text-left space-y-4 mb-8">
             {[
-              { icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#19A65F" strokeWidth="2"><path d="M9 11l3 3L22 4" /><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" /></svg>, text: "Your answers are graded by Claude AI" },
+              { icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#19A65F" strokeWidth="2"><path d="M9 11l3 3L22 4" /><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" /></svg>, text: "Your answers are graded by AI instantly" },
               { icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0056CE" strokeWidth="2"><circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" /></svg>, text: "Results are instant - you'll get a full skill report" },
               { icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#7C3AED" strokeWidth="2"><path d="M12 2L2 7l10 5 10-5-10-5z" /><path d="M2 17l10 5 10-5" /><path d="M2 12l10 5 10-5" /></svg>, text: "MCQ + Short Answer + Code exercises" },
             ].map((item) => (
