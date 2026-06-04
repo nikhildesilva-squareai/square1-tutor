@@ -56,9 +56,7 @@ export default async function CourseDetailPage({ params }: PageProps) {
           ← Back to courses
         </Link>
         <div className="flex items-start gap-5">
-          <div className="w-16 h-16 rounded-[var(--radius-xl)] bg-surface-tint flex items-center justify-center text-3xl shrink-0">
-            {course.icon}
-          </div>
+          <div className="w-16 h-1.5 rounded-full mt-4 shrink-0" style={{ background: course.color }} />
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-3 mb-2">
               <h1 className="text-2xl font-bold text-ink">{course.title}</h1>

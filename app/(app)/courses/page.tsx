@@ -29,8 +29,7 @@ export default async function CoursesPage() {
 
       {!courses || courses.length === 0 ? (
         <div className="text-center py-20">
-          <div className="text-5xl mb-4">📚</div>
-          <p className="text-ink-muted">No courses available yet. Check back soon!</p>
+          <p className="text-ink-muted">No courses available yet. Check back soon.</p>
         </div>
       ) : (
         <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-5">
@@ -44,18 +43,16 @@ export default async function CoursesPage() {
                   isComingSoon ? "opacity-60" : "hover:shadow-card-hover transition-shadow",
                 ].join(" ")}
               >
-                {/* Icon */}
                 <div className="px-5 pt-5 pb-3">
-                  <div className="w-14 h-14 rounded-[var(--radius-lg)] bg-surface-tint flex items-center justify-center text-3xl mb-4">
-                    {course.icon}
-                  </div>
+                  {/* Course colour accent bar */}
+                  <div className="w-10 h-1 rounded-full mb-5" style={{ background: course.color }} />
 
                   <div className="flex items-start justify-between gap-2 mb-2">
-                    <h3 className="text-sm font-semibold text-ink leading-snug">
+                    <h3 className="text-base font-bold text-ink leading-snug">
                       {course.title}
                     </h3>
                     {isComingSoon ? (
-                      <span className="shrink-0 text-lg">🔒</span>
+                      <span className="shrink-0 text-[10px] font-bold tracking-widest uppercase text-ink-muted px-2 py-0.5 rounded-full border border-border">Soon</span>
                     ) : (
                       <Badge variant={levelVariant(course.level)} className="shrink-0">
                         {course.level.charAt(0).toUpperCase() + course.level.slice(1)}
