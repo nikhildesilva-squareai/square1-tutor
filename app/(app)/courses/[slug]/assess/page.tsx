@@ -13,89 +13,97 @@ interface PageProps {
 
 type Phase = "welcome" | "question" | "review" | "submitting";
 
-/* ─── Progress bar ────────────────────────────────────────────────────────── */
-function ProgressBar({ current, total }: { current: number; total: number }) {
-  const pct = total > 0 ? Math.round((current / total) * 100) : 0;
+/* ═══════════════════════════════════════════════════════════════════════════ */
+/*  CSS-ONLY ANIMATIONS (injected once)                                      */
+/* ═══════════════════════════════════════════════════════════════════════════ */
+const ANIM_STYLES = `
+@keyframes slideInRight  { from { opacity:0; transform:translateX(60px) }  to { opacity:1; transform:translateX(0) } }
+@keyframes slideInLeft   { from { opacity:0; transform:translateX(-60px) } to { opacity:1; transform:translateX(0) } }
+@keyframes slideOutLeft  { from { opacity:1; transform:translateX(0) }     to { opacity:0; transform:translateX(-60px) } }
+@keyframes slideOutRight { from { opacity:1; transform:translateX(0) }     to { opacity:0; transform:translateX(60px) } }
+@keyframes fadeUp        { from { opacity:0; transform:translateY(24px) }  to { opacity:1; transform:translateY(0) } }
+@keyframes fadeIn        { from { opacity:0 } to { opacity:1 } }
+@keyframes scaleIn       { from { opacity:0; transform:scale(0.95) }       to { opacity:1; transform:scale(1) } }
+@keyframes slideUpSpring { from { opacity:0; transform:translateY(100%) }  to { opacity:1; transform:translateY(0) } }
+@keyframes pulseGlow     { 0%,100% { box-shadow: 0 0 0 0 rgba(0,86,206,0.3) } 50% { box-shadow: 0 0 0 8px rgba(0,86,206,0) } }
+@keyframes ringFill      { from { stroke-dashoffset: 126 } }
+@keyframes checkDraw     { from { stroke-dashoffset: 24 } to { stroke-dashoffset: 0 } }
+@keyframes confettiBurst { 0% { opacity:1; transform: scale(0) } 50% { opacity:1; transform: scale(1.2) } 100% { opacity:0; transform: scale(1.5) } }
+
+.anim-slide-in-right  { animation: slideInRight 0.35s cubic-bezier(0.16,1,0.3,1) both }
+.anim-slide-in-left   { animation: slideInLeft 0.35s cubic-bezier(0.16,1,0.3,1) both }
+.anim-fade-up         { animation: fadeUp 0.5s cubic-bezier(0.16,1,0.3,1) both }
+.anim-fade-in         { animation: fadeIn 0.3s ease both }
+.anim-scale-in        { animation: scaleIn 0.3s cubic-bezier(0.16,1,0.3,1) both }
+.anim-slide-up-spring { animation: slideUpSpring 0.4s cubic-bezier(0.34,1.56,0.64,1) both }
+.anim-pulse-glow      { animation: pulseGlow 1.5s ease-in-out 1 }
+.delay-1 { animation-delay: 0.05s }
+.delay-2 { animation-delay: 0.10s }
+.delay-3 { animation-delay: 0.15s }
+.delay-4 { animation-delay: 0.20s }
+`;
+
+/* ═══════════════════════════════════════════════════════════════════════════ */
+/*  PROGRESS RING                                                            */
+/* ═══════════════════════════════════════════════════════════════════════════ */
+function ProgressRing({ current, total, size = 44 }: { current: number; total: number; size?: number }) {
+  const r = (size - 6) / 2;
+  const circ = 2 * Math.PI * r;
+  const pct = total > 0 ? current / total : 0;
+  const offset = circ * (1 - pct);
+
   return (
-    <div className="w-full bg-surface-alt rounded-full h-1.5">
-      <div
-        className="h-1.5 rounded-full bg-brand transition-all duration-500"
-        style={{ width: `${pct}%` }}
-      />
+    <div className="relative" style={{ width: size, height: size }}>
+      <svg width={size} height={size} className="-rotate-90">
+        <circle cx={size/2} cy={size/2} r={r} fill="none" stroke="#E2E8F0" strokeWidth="3" />
+        <circle
+          cx={size/2} cy={size/2} r={r} fill="none"
+          stroke="#0056CE" strokeWidth="3" strokeLinecap="round"
+          strokeDasharray={circ} strokeDashoffset={offset}
+          className="transition-all duration-700 ease-out"
+        />
+      </svg>
+      <span className="absolute inset-0 flex items-center justify-center text-[11px] font-bold text-ink tabular-nums">
+        {current}/{total}
+      </span>
     </div>
   );
 }
 
-/* ─── Timer (counts UP) ──────────────────────────────────────────────────── */
+/* ═══════════════════════════════════════════════════════════════════════════ */
+/*  TIMER                                                                    */
+/* ═══════════════════════════════════════════════════════════════════════════ */
 function Timer({ startedAt }: { startedAt: number }) {
   const [elapsed, setElapsed] = useState(0);
-
   useEffect(() => {
-    const id = setInterval(() => {
-      setElapsed(Math.floor((Date.now() - startedAt) / 1000));
-    }, 1000);
+    const id = setInterval(() => setElapsed(Math.floor((Date.now() - startedAt) / 1000)), 1000);
     return () => clearInterval(id);
   }, [startedAt]);
-
-  const h = Math.floor(elapsed / 3600);
-  const m = Math.floor((elapsed % 3600) / 60);
+  const m = Math.floor(elapsed / 60);
   const s = elapsed % 60;
   return (
-    <span className="text-xs text-ink-muted font-mono tabular-nums">
-      {h > 0 && `${String(h).padStart(2, "0")}:`}
-      {String(m).padStart(2, "0")}:{String(s).padStart(2, "0")}
-    </span>
+    <div className="flex items-center gap-1.5 text-ink-muted">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+        <circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" />
+      </svg>
+      <span className="text-xs font-mono tabular-nums">
+        {String(m).padStart(2, "0")}:{String(s).padStart(2, "0")}
+      </span>
+    </div>
   );
 }
 
-/* ─── Difficulty badge ────────────────────────────────────────────────────── */
-function DifficultyBadge({ level }: { level: string }) {
-  const config: Record<string, { bg: string; text: string; label: string }> = {
-    easy: { bg: "bg-success-bg", text: "text-success", label: "Easy" },
-    medium: { bg: "bg-warning-bg", text: "text-warning", label: "Medium" },
-    hard: { bg: "bg-error-bg", text: "text-error", label: "Hard" },
-  };
-  const c = config[level.toLowerCase()] ?? config.medium;
-  return (
-    <span className={cn("px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider", c.bg, c.text)}>
-      {c.label}
-    </span>
-  );
-}
-
-/* ─── Question type badge ─────────────────────────────────────────────────── */
-function TypeBadge({ type }: { type: string }) {
-  const label = type === "mcq" ? "MCQ" : type === "short_answer" ? "Short Answer" : "Code";
-  return (
-    <span className="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-surface-tint text-brand">
-      {label}
-    </span>
-  );
-}
-
-/* ─── Question Navigator (mobile = horizontal scroll, desktop = sidebar) ── */
-function QuestionNavigator({
-  questions,
-  currentIdx,
-  responses,
-  onSelect,
-  className,
+/* ═══════════════════════════════════════════════════════════════════════════ */
+/*  QUESTION DOT NAVIGATOR                                                   */
+/* ═══════════════════════════════════════════════════════════════════════════ */
+function DotNavigator({
+  questions, currentIdx, responses, onSelect,
 }: {
   questions: AssessmentQuestion[];
   currentIdx: number;
   responses: Record<string, { selectedOption?: string; responseText?: string; codeResponse?: string }>;
-  onSelect: (idx: number) => void;
-  className?: string;
+  onSelect: (i: number) => void;
 }) {
-  const scrollRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (scrollRef.current) {
-      const btn = scrollRef.current.children[currentIdx] as HTMLElement;
-      btn?.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
-    }
-  }, [currentIdx]);
-
   function isAnswered(q: AssessmentQuestion) {
     const r = responses[q.id];
     if (!r) return false;
@@ -105,25 +113,24 @@ function QuestionNavigator({
   }
 
   return (
-    <div ref={scrollRef} className={cn("flex gap-1.5 overflow-x-auto scrollbar-none", className)}>
+    <div className="flex items-center gap-1.5 flex-wrap justify-center">
       {questions.map((q, i) => {
         const answered = isAnswered(q);
-        const isCurrent = i === currentIdx;
+        const active = i === currentIdx;
         return (
           <button
             key={q.id}
             onClick={() => onSelect(i)}
             className={cn(
-              "shrink-0 w-8 h-8 rounded-lg text-xs font-bold transition-all",
-              isCurrent
-                ? "bg-brand text-white shadow-card-hover"
+              "transition-all duration-300 rounded-full",
+              active
+                ? "w-8 h-3 bg-brand"
                 : answered
-                ? "bg-success-bg text-success hover:bg-success-bg/80"
-                : "bg-surface-alt text-ink-muted hover:bg-border hover:text-ink-secondary"
+                ? "w-3 h-3 bg-success hover:scale-125"
+                : "w-3 h-3 bg-border hover:bg-ink-muted hover:scale-125"
             )}
-          >
-            {i + 1}
-          </button>
+            title={`Question ${i + 1}`}
+          />
         );
       })}
     </div>
@@ -131,11 +138,12 @@ function QuestionNavigator({
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════ */
-/*  MAIN COMPONENT                                                          */
+/*  MAIN ASSESSMENT COMPONENT                                                */
 /* ═══════════════════════════════════════════════════════════════════════════ */
 export default function AssessPage({ params }: PageProps) {
   const { slug } = use(params);
   const router = useRouter();
+  const styleRef = useRef(false);
 
   const [phase, setPhase] = useState<Phase>("welcome");
   const [loading, setLoading] = useState(false);
@@ -144,6 +152,9 @@ export default function AssessPage({ params }: PageProps) {
   const [attemptId, setAttemptId] = useState("");
   const [questions, setQuestions] = useState<AssessmentQuestion[]>([]);
   const [currentIdx, setCurrentIdx] = useState(0);
+  const [prevIdx, setPrevIdx] = useState(0);
+  const [slideDir, setSlideDir] = useState<"left" | "right">("left");
+  const [animKey, setAnimKey] = useState(0);
   const [responses, setResponses] = useState<Record<string, {
     selectedOption?: string;
     responseText?: string;
@@ -151,7 +162,17 @@ export default function AssessPage({ params }: PageProps) {
   }>>({});
   const [startedAt, setStartedAt] = useState(Date.now());
 
-  /* ── Start assessment ──────────────────────────────────────────────────── */
+  // Inject animation styles once
+  useEffect(() => {
+    if (styleRef.current) return;
+    styleRef.current = true;
+    const el = document.createElement("style");
+    el.textContent = ANIM_STYLES;
+    document.head.appendChild(el);
+    return () => { el.remove(); };
+  }, []);
+
+  /* ── API Logic (unchanged) ──────────────────────────────────────────── */
   async function startAssessment() {
     setLoading(true);
     setError(null);
@@ -174,11 +195,8 @@ export default function AssessPage({ params }: PageProps) {
     }
   }
 
-  /* ── Auto-save response ────────────────────────────────────────────────── */
   const saveResponse = useCallback(async (questionId: string, payload: {
-    selectedOption?: string;
-    responseText?: string;
-    codeResponse?: string;
+    selectedOption?: string; responseText?: string; codeResponse?: string;
   }) => {
     try {
       await fetch("/api/assess/response", {
@@ -186,44 +204,33 @@ export default function AssessPage({ params }: PageProps) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ attemptId, questionId, ...payload }),
       });
-    } catch {
-      // non-blocking save
-    }
+    } catch { /* non-blocking */ }
   }, [attemptId]);
 
-  function getResponse(questionId: string) {
-    return responses[questionId] ?? {};
-  }
+  function getResponse(qId: string) { return responses[qId] ?? {}; }
 
-  function updateResponse(questionId: string, patch: {
-    selectedOption?: string;
-    responseText?: string;
-    codeResponse?: string;
+  function updateResponse(qId: string, patch: {
+    selectedOption?: string; responseText?: string; codeResponse?: string;
   }) {
-    setResponses((prev) => ({
-      ...prev,
-      [questionId]: { ...prev[questionId], ...patch },
-    }));
-    saveResponse(questionId, { ...responses[questionId], ...patch });
+    setResponses((prev) => ({ ...prev, [qId]: { ...prev[qId], ...patch } }));
+    saveResponse(qId, { ...responses[qId], ...patch });
   }
 
-  /* ── Navigate with auto-save ───────────────────────────────────────────── */
   function goTo(idx: number) {
-    // Save current answer before navigating
+    if (idx === currentIdx) return;
     const q = questions[currentIdx];
-    if (q && responses[q.id]) {
-      saveResponse(q.id, responses[q.id]);
-    }
+    if (q && responses[q.id]) saveResponse(q.id, responses[q.id]);
+    setSlideDir(idx > currentIdx ? "left" : "right");
+    setPrevIdx(currentIdx);
     setCurrentIdx(idx);
+    setAnimKey((k) => k + 1);
   }
 
-  /* ── Submit ────────────────────────────────────────────────────────────── */
   async function handleSubmit() {
     setPhase("submitting");
     try {
       const q = questions[currentIdx];
       if (q) await saveResponse(q.id, responses[q.id] ?? {});
-
       const res = await fetch("/api/assess/submit", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -238,7 +245,6 @@ export default function AssessPage({ params }: PageProps) {
     }
   }
 
-  /* ── Helpers ───────────────────────────────────────────────────────────── */
   function isAnswered(q: AssessmentQuestion) {
     const r = responses[q.id];
     if (!r) return false;
@@ -250,77 +256,78 @@ export default function AssessPage({ params }: PageProps) {
   const currentQ = questions[currentIdx] ?? null;
   const currentResponse = currentQ ? getResponse(currentQ.id) : {};
   const answeredCount = questions.filter(isAnswered).length;
+  const currentAnswered = currentQ ? isAnswered(currentQ) : false;
 
   /* ═══════════════════════════════════════════════════════════════════════ */
   /*  WELCOME SCREEN                                                       */
   /* ═══════════════════════════════════════════════════════════════════════ */
   if (phase === "welcome") {
     return (
-      <div className="min-h-screen flex items-center justify-center p-6">
-        <div className="relative max-w-lg w-full bg-surface border border-border rounded-2xl p-8 sm:p-10 text-center shadow-card">
-          {/* Course icon */}
-          <div className="w-20 h-20 rounded-2xl bg-surface-tint flex items-center justify-center mx-auto mb-6">
-            <span className="drop-shadow-lg" aria-hidden="true">
-              <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#0056CE" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <div className="min-h-screen flex items-center justify-center p-6 bg-surface-soft">
+        <div className="relative max-w-md w-full">
+          {/* Decorative glow */}
+          <div className="absolute -inset-4 bg-gradient-to-br from-brand/5 via-transparent to-brand/5 rounded-3xl blur-2xl" />
+
+          <div className="relative bg-surface border border-border rounded-2xl p-8 sm:p-10 shadow-card anim-scale-in">
+            {/* Icon */}
+            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-brand to-brand/80 flex items-center justify-center mx-auto mb-6 anim-fade-up">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round">
                 <path d="M12 20h9" /><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
               </svg>
-            </span>
-          </div>
+            </div>
 
-          <h1 className="text-2xl sm:text-3xl font-black text-ink mb-2">Skill Assessment</h1>
-
-          {/* Pill eyebrow */}
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-brand/30 bg-surface-tint mb-6">
-            <span className="w-1.5 h-1.5 rounded-full bg-brand animate-pulse" />
-            <span className="text-[10px] tracking-[0.2em] uppercase font-bold text-brand">
-              Diagnostic Test
-            </span>
-          </div>
-
-          <div className="flex items-center justify-center gap-4 text-sm text-ink-muted mb-8 flex-wrap">
-            <span>20 Questions</span>
-            <span className="w-1 h-1 rounded-full bg-border-mid" />
-            <span>~30 minutes</span>
-            <span className="w-1 h-1 rounded-full bg-border-mid" />
-            <span>MCQ + Short Answer + Code</span>
-          </div>
-
-          <div className="rounded-xl bg-surface-soft border border-border p-5 text-left space-y-4 mb-8">
-            {[
-              { icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#19A65F" strokeWidth="2"><path d="M9 11l3 3L22 4" /><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" /></svg>, text: "Your answers are graded by AI instantly" },
-              { icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0056CE" strokeWidth="2"><circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" /></svg>, text: "Results are instant - you'll get a full skill report" },
-              { icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#7C3AED" strokeWidth="2"><path d="M12 2L2 7l10 5 10-5-10-5z" /><path d="M2 17l10 5 10-5" /><path d="M2 12l10 5 10-5" /></svg>, text: "MCQ + Short Answer + Code exercises" },
-            ].map((item) => (
-              <div key={item.text} className="flex items-center gap-3">
-                <span className="shrink-0">{item.icon}</span>
-                <p className="text-sm text-ink-secondary">{item.text}</p>
+            {/* Badge */}
+            <div className="flex justify-center mb-4 anim-fade-up delay-1">
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-brand/20 bg-surface-tint">
+                <span className="w-1.5 h-1.5 rounded-full bg-brand animate-pulse" />
+                <span className="text-[10px] tracking-[0.2em] uppercase font-bold text-brand">Skill Assessment</span>
               </div>
-            ))}
-          </div>
+            </div>
 
-          {error && (
-            <p className="text-sm text-error bg-error-bg border border-error/20 px-4 py-2.5 rounded-lg mb-4">
-              {error}
+            <h1 className="text-2xl sm:text-3xl font-black text-ink text-center mb-2 anim-fade-up delay-2">
+              Ready to show what you know?
+            </h1>
+            <p className="text-sm text-ink-muted text-center mb-8 anim-fade-up delay-3">
+              20 questions across MCQ, short answer, and code. AI-graded instantly.
             </p>
-          )}
 
-          <button
-            onClick={startAssessment}
-            disabled={loading}
-            className="w-full h-14 rounded-xl bg-brand text-white font-bold text-base transition-all hover:bg-brand-dark disabled:opacity-50 disabled:pointer-events-none"
-          >
-            {loading ? (
-              <span className="flex items-center justify-center gap-2">
-                <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24" fill="none">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
-                </svg>
-                Starting...
-              </span>
-            ) : (
-              "Start Assessment →"
+            {/* Stats row */}
+            <div className="grid grid-cols-3 gap-3 mb-8 anim-fade-up delay-3">
+              {[
+                { icon: "📝", label: "Questions", value: "20" },
+                { icon: "⏱", label: "Duration", value: "~30m" },
+                { icon: "⚡", label: "Grading", value: "AI" },
+              ].map((s) => (
+                <div key={s.label} className="text-center bg-surface-soft rounded-xl p-3 border border-border">
+                  <span className="text-lg">{s.icon}</span>
+                  <p className="text-sm font-bold text-ink mt-1">{s.value}</p>
+                  <p className="text-[10px] text-ink-muted uppercase tracking-wider">{s.label}</p>
+                </div>
+              ))}
+            </div>
+
+            {error && (
+              <p className="text-sm text-error bg-error-bg border border-error/20 px-4 py-2.5 rounded-lg mb-4 anim-fade-in">
+                {error}
+              </p>
             )}
-          </button>
+
+            <button
+              onClick={startAssessment}
+              disabled={loading}
+              className="w-full h-14 rounded-xl bg-brand text-white font-bold text-base transition-all hover:bg-brand/90 hover:shadow-lg hover:shadow-brand/20 hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-50 disabled:pointer-events-none anim-fade-up delay-4"
+            >
+              {loading ? (
+                <span className="flex items-center justify-center gap-2">
+                  <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24" fill="none">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
+                  </svg>
+                  Loading...
+                </span>
+              ) : "Begin Assessment →"}
+            </button>
+          </div>
         </div>
       </div>
     );
@@ -331,16 +338,21 @@ export default function AssessPage({ params }: PageProps) {
   /* ═══════════════════════════════════════════════════════════════════════ */
   if (phase === "submitting") {
     return (
-      <div className="min-h-screen flex items-center justify-center p-6">
-        <div className="text-center">
-          <div className="w-16 h-16 rounded-2xl bg-surface-tint flex items-center justify-center mx-auto mb-4">
-            <svg className="animate-spin h-8 w-8 text-brand" viewBox="0 0 24 24" fill="none">
-              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+      <div className="min-h-screen flex items-center justify-center p-6 bg-surface-soft">
+        <div className="text-center anim-scale-in">
+          <div className="w-20 h-20 rounded-full bg-surface-tint border-2 border-brand/20 flex items-center justify-center mx-auto mb-6">
+            <svg className="animate-spin h-10 w-10 text-brand" viewBox="0 0 24 24" fill="none">
+              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" />
               <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
             </svg>
           </div>
-          <h2 className="text-xl font-bold text-ink mb-2">Submitting your assessment...</h2>
-          <p className="text-ink-muted text-sm">Hang tight, this will only take a moment.</p>
+          <h2 className="text-xl font-bold text-ink mb-2">Grading your assessment...</h2>
+          <p className="text-ink-muted text-sm">Our AI is reviewing your answers. This takes about 15 seconds.</p>
+          <div className="mt-6 flex items-center justify-center gap-1">
+            {[0,1,2].map(i => (
+              <div key={i} className="w-2 h-2 rounded-full bg-brand animate-bounce" style={{ animationDelay: `${i * 0.15}s` }} />
+            ))}
+          </div>
         </div>
       </div>
     );
@@ -351,83 +363,81 @@ export default function AssessPage({ params }: PageProps) {
   /* ═══════════════════════════════════════════════════════════════════════ */
   if (phase === "review") {
     return (
-      <div className="min-h-screen flex flex-col">
-        <div className="border-b border-border px-6 py-4 bg-surface">
-          <div className="max-w-3xl mx-auto flex items-center justify-between">
-            <h2 className="text-lg font-bold text-ink">Review Your Answers</h2>
-            <Timer startedAt={startedAt} />
+      <div className="min-h-screen bg-surface-soft">
+        {/* Header */}
+        <div className="border-b border-border bg-surface px-6 py-4">
+          <div className="max-w-2xl mx-auto flex items-center justify-between">
+            <h2 className="text-lg font-bold text-ink">Review Answers</h2>
+            <div className="flex items-center gap-4">
+              <span className="text-sm text-ink-muted">
+                <span className="font-bold text-brand">{answeredCount}</span>/{questions.length} answered
+              </span>
+              <Timer startedAt={startedAt} />
+            </div>
           </div>
         </div>
 
-        <div className="flex-1 px-6 py-8">
-          <div className="max-w-3xl mx-auto">
-            <p className="text-ink-muted text-sm mb-6">
-              {answeredCount} of {questions.length} questions answered.
-              {answeredCount < questions.length && " Unanswered questions will receive 0 marks."}
-            </p>
-
-            <div className="space-y-2 mb-8">
-              {questions.map((q, i) => {
-                const answered = isAnswered(q);
-                return (
-                  <button
-                    key={q.id}
-                    onClick={() => { setCurrentIdx(i); setPhase("question"); }}
-                    className={cn(
-                      "w-full flex items-center gap-4 px-4 py-3 rounded-xl text-left transition-all",
-                      "border hover:border-brand/30",
-                      answered
-                        ? "border-border bg-surface"
-                        : "border-warning/30 bg-warning-bg/30"
-                    )}
-                  >
-                    <div className={cn(
-                      "w-8 h-8 rounded-lg flex items-center justify-center text-xs font-bold shrink-0",
-                      answered ? "bg-success-bg text-success" : "bg-warning-bg text-warning"
-                    )}>
-                      {answered ? (
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><polyline points="20 6 9 17 4 12" /></svg>
-                      ) : (
-                        <span>{i + 1}</span>
-                      )}
+        <div className="max-w-2xl mx-auto px-6 py-8">
+          {/* Question grid */}
+          <div className="grid grid-cols-1 gap-2 mb-8">
+            {questions.map((q, i) => {
+              const answered = isAnswered(q);
+              return (
+                <button
+                  key={q.id}
+                  onClick={() => { setCurrentIdx(i); setAnimKey(k => k+1); setPhase("question"); }}
+                  className={cn(
+                    "flex items-center gap-4 px-4 py-3.5 rounded-xl text-left transition-all border hover:shadow-card",
+                    "anim-fade-up",
+                    answered ? "border-border bg-surface" : "border-warning/30 bg-warning-bg/20"
+                  )}
+                  style={{ animationDelay: `${i * 0.02}s` }}
+                >
+                  <div className={cn(
+                    "w-9 h-9 rounded-xl flex items-center justify-center text-xs font-bold shrink-0 transition-colors",
+                    answered ? "bg-success-bg text-success" : "bg-surface-alt text-ink-muted"
+                  )}>
+                    {answered ? (
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><polyline points="20 6 9 17 4 12" /></svg>
+                    ) : i + 1}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm text-ink truncate">Q{i + 1}: {q.stem_md.slice(0, 70)}{q.stem_md.length > 70 ? "..." : ""}</p>
+                    <div className="flex items-center gap-2 mt-1">
+                      <span className={cn(
+                        "text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full",
+                        q.type === "mcq" ? "bg-blue-50 text-blue-600" : q.type === "code" ? "bg-purple-50 text-purple-600" : "bg-amber-50 text-amber-600"
+                      )}>
+                        {q.type === "mcq" ? "MCQ" : q.type === "code" ? "Code" : "Written"}
+                      </span>
+                      <span className="text-[10px] text-ink-muted">{q.marks}m</span>
                     </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm text-ink truncate">Q{i + 1}: {q.stem_md.slice(0, 80)}{q.stem_md.length > 80 ? "..." : ""}</p>
-                      <div className="flex items-center gap-2 mt-0.5">
-                        <TypeBadge type={q.type} />
-                        <span className="text-[10px] text-ink-muted">{q.marks} mark{q.marks !== 1 ? "s" : ""}</span>
-                      </div>
-                    </div>
-                    <span className={cn("text-xs font-semibold", answered ? "text-success" : "text-warning")}>
-                      {answered ? "Answered" : "Skipped"}
-                    </span>
-                  </button>
-                );
-              })}
-            </div>
+                  </div>
+                  <span className={cn("text-xs font-semibold", answered ? "text-success" : "text-warning")}>
+                    {answered ? "Done" : "Empty"}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
 
-            {error && (
-              <p className="text-sm text-error bg-error-bg border border-error/20 px-4 py-2.5 rounded-lg mb-4">
-                {error}
-              </p>
-            )}
+          {error && (
+            <p className="text-sm text-error bg-error-bg border border-error/20 px-4 py-2.5 rounded-lg mb-4">{error}</p>
+          )}
 
-            <div className="flex items-center justify-between gap-4">
-              <Button
-                variant="ghost"
-                onClick={() => setPhase("question")}
-                className="border border-border text-ink-secondary hover:text-ink hover:bg-surface-alt"
-              >
-                Back to Questions
-              </Button>
-              <button
-                onClick={handleSubmit}
-                disabled={loading}
-                className="h-12 px-8 rounded-xl bg-brand text-white font-bold text-sm transition-all hover:bg-brand-dark disabled:opacity-50"
-              >
-                Submit Assessment
-              </button>
-            </div>
+          <div className="flex items-center justify-between gap-4">
+            <button
+              onClick={() => setPhase("question")}
+              className="h-12 px-6 rounded-xl border border-border bg-surface text-ink-secondary font-semibold text-sm hover:bg-surface-alt transition-all"
+            >
+              ← Back
+            </button>
+            <button
+              onClick={handleSubmit}
+              className="h-12 px-8 rounded-xl bg-brand text-white font-bold text-sm transition-all hover:bg-brand/90 hover:shadow-lg hover:shadow-brand/20"
+            >
+              Submit Assessment →
+            </button>
           </div>
         </div>
       </div>
@@ -435,94 +445,73 @@ export default function AssessPage({ params }: PageProps) {
   }
 
   /* ═══════════════════════════════════════════════════════════════════════ */
-  /*  QUESTION SCREEN                                                       */
+  /*  QUESTION SCREEN — THE CORE EXPERIENCE                                 */
   /* ═══════════════════════════════════════════════════════════════════════ */
   if (!currentQ) return null;
 
   const isLast = currentIdx === questions.length - 1;
-
-  // Determine difficulty from bloom_level or fallback
-  const difficulty = currentQ.bloom_level === "remember" || currentQ.bloom_level === "understand"
-    ? "Easy"
-    : currentQ.bloom_level === "apply" || currentQ.bloom_level === "analyze"
-    ? "Medium"
-    : "Hard";
-
-  // Get first topic tag
   const topicTag = currentQ.topic_tags?.[0] ?? "General";
+  const difficulty = currentQ.bloom_level === "remember" || currentQ.bloom_level === "understand"
+    ? "easy" : currentQ.bloom_level === "apply" || currentQ.bloom_level === "analyze" ? "medium" : "hard";
+  const diffColors: Record<string, string> = {
+    easy: "bg-emerald-50 text-emerald-600 border-emerald-200",
+    medium: "bg-amber-50 text-amber-600 border-amber-200",
+    hard: "bg-red-50 text-red-600 border-red-200",
+  };
 
   return (
-    <div className="min-h-screen flex flex-col">
-      {/* ── Header ─────────────────────────────────────────────────────── */}
-      <div className="border-b border-border bg-surface px-4 sm:px-6 py-4">
-        <div className="max-w-3xl mx-auto space-y-3">
-          <div className="flex items-center justify-between">
-            <p className="text-sm font-semibold text-ink-secondary">
-              Question {currentIdx + 1} of {questions.length}
+    <div className="min-h-screen flex flex-col bg-surface-soft">
+      {/* ── Minimal Header ─────────────────────────────────────────────── */}
+      <div className="bg-surface border-b border-border px-4 sm:px-6 py-3">
+        <div className="max-w-3xl mx-auto flex items-center justify-between gap-4">
+          <ProgressRing current={currentIdx + 1} total={questions.length} />
+          <div className="flex-1 text-center">
+            <p className="text-sm font-semibold text-ink">
+              Question {currentIdx + 1}
+              <span className="text-ink-muted font-normal"> of {questions.length}</span>
             </p>
-            <Timer startedAt={startedAt} />
           </div>
-          <ProgressBar current={currentIdx + 1} total={questions.length} />
-          {/* Mobile question navigator */}
-          <div className="sm:hidden">
-            <QuestionNavigator
-              questions={questions}
-              currentIdx={currentIdx}
-              responses={responses}
-              onSelect={goTo}
-            />
-          </div>
+          <Timer startedAt={startedAt} />
         </div>
       </div>
 
-      {/* ── Main layout ────────────────────────────────────────────────── */}
-      <div className="flex-1 flex">
-        {/* Desktop sidebar navigator */}
-        <div className="hidden sm:flex flex-col gap-1.5 p-4 border-r border-border overflow-y-auto bg-surface"
-          style={{ width: "60px" }}>
-          {questions.map((q, i) => {
-            const answered = isAnswered(q);
-            const isCurrent = i === currentIdx;
-            return (
-              <button
-                key={q.id}
-                onClick={() => goTo(i)}
-                className={cn(
-                  "w-8 h-8 rounded-lg text-xs font-bold transition-all mx-auto",
-                  isCurrent
-                    ? "bg-brand text-white shadow-card-hover"
-                    : answered
-                    ? "bg-success-bg text-success hover:bg-success-bg/80"
-                    : "bg-surface-alt text-ink-muted hover:bg-border"
-                )}
-              >
-                {i + 1}
-              </button>
-            );
-          })}
-        </div>
-
-        {/* Question content */}
-        <div className="flex-1 px-4 sm:px-8 py-8 overflow-y-auto">
-          <div className="max-w-3xl mx-auto space-y-6">
-            {/* Topic + difficulty + type */}
-            <div className="flex items-center gap-2 flex-wrap">
-              <TypeBadge type={currentQ.type} />
-              <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-surface-alt text-ink-muted">
+      {/* ── Question Content (animated) ────────────────────────────────── */}
+      <div className="flex-1 flex flex-col">
+        <div
+          key={animKey}
+          className={cn(
+            "flex-1 px-4 sm:px-6 py-6 sm:py-10",
+            slideDir === "left" ? "anim-slide-in-right" : "anim-slide-in-left"
+          )}
+        >
+          <div className="max-w-3xl mx-auto">
+            {/* Meta badges */}
+            <div className="flex items-center gap-2 flex-wrap mb-5 anim-fade-up">
+              <span className={cn(
+                "px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider border",
+                currentQ.type === "mcq" ? "bg-blue-50 text-blue-600 border-blue-200"
+                  : currentQ.type === "code" ? "bg-purple-50 text-purple-600 border-purple-200"
+                  : "bg-amber-50 text-amber-600 border-amber-200"
+              )}>
+                {currentQ.type === "mcq" ? "Multiple Choice" : currentQ.type === "code" ? "Write Code" : "Written Answer"}
+              </span>
+              <span className="px-2.5 py-1 rounded-lg text-[10px] font-semibold bg-surface-alt text-ink-muted border border-border">
                 {topicTag}
               </span>
-              <DifficultyBadge level={difficulty} />
-              <span className="text-[10px] text-ink-muted ml-auto">{currentQ.marks} mark{currentQ.marks !== 1 ? "s" : ""}</span>
+              <span className={cn("px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase border", diffColors[difficulty])}>
+                {difficulty}
+              </span>
+              <span className="text-[10px] text-ink-muted ml-auto font-semibold">{currentQ.marks} marks</span>
             </div>
 
             {/* Question stem */}
-            <p className="text-base sm:text-lg font-medium text-ink leading-relaxed whitespace-pre-wrap">
+            <h2 className="text-lg sm:text-xl font-semibold text-ink leading-relaxed mb-8 whitespace-pre-wrap">
               {currentQ.stem_md}
-            </p>
+            </h2>
 
-            {/* ─── MCQ Options ──────────────────────────────────────────── */}
+            {/* ─── MCQ: Big tappable cards ──────────────────────────────── */}
             {currentQ.type === "mcq" && currentQ.options && (
-              <div className="space-y-3">
+              <div className="grid gap-3">
                 {currentQ.options.map((option, i) => {
                   const letter = ["A", "B", "C", "D"][i] ?? String(i + 1);
                   const isSelected = currentResponse.selectedOption === option;
@@ -531,19 +520,28 @@ export default function AssessPage({ params }: PageProps) {
                       key={option}
                       onClick={() => updateResponse(currentQ.id, { selectedOption: option })}
                       className={cn(
-                        "w-full text-left px-5 py-4 rounded-xl border-2 transition-all flex items-start gap-4",
+                        "group w-full text-left px-5 py-4 rounded-2xl border-2 transition-all duration-200 flex items-center gap-4",
+                        "anim-fade-up",
                         isSelected
-                          ? "border-brand bg-surface-tint"
-                          : "border-border bg-surface hover:border-brand/30 hover:bg-surface-soft"
+                          ? "border-brand bg-surface-tint shadow-md shadow-brand/10 anim-pulse-glow"
+                          : "border-border bg-surface hover:border-brand/40 hover:bg-surface-soft hover:shadow-card hover:scale-[1.01] active:scale-[0.99]"
                       )}
+                      style={{ animationDelay: `${i * 0.05}s` }}
                     >
                       <span className={cn(
-                        "w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold shrink-0",
-                        isSelected ? "bg-brand text-white" : "bg-surface-alt text-ink-muted"
+                        "w-10 h-10 rounded-xl flex items-center justify-center text-sm font-bold shrink-0 transition-all duration-200",
+                        isSelected
+                          ? "bg-brand text-white scale-110"
+                          : "bg-surface-alt text-ink-muted group-hover:bg-brand/10 group-hover:text-brand"
                       )}>
-                        {letter}
+                        {isSelected ? (
+                          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><polyline points="20 6 9 17 4 12" /></svg>
+                        ) : letter}
                       </span>
-                      <span className={cn("text-sm pt-1", isSelected ? "text-ink font-medium" : "text-ink-secondary")}>
+                      <span className={cn(
+                        "text-sm sm:text-base transition-colors",
+                        isSelected ? "text-ink font-medium" : "text-ink-secondary group-hover:text-ink"
+                      )}>
                         {option}
                       </span>
                     </button>
@@ -552,90 +550,135 @@ export default function AssessPage({ params }: PageProps) {
               </div>
             )}
 
-            {/* ─── Short Answer ─────────────────────────────────────────── */}
+            {/* ─── Short Answer: Focused writing zone ──────────────────── */}
             {currentQ.type === "short_answer" && (
-              <div>
-                <textarea
-                  value={currentResponse.responseText ?? ""}
-                  onChange={(e) => {
-                    if (e.target.value.length <= 500) {
-                      updateResponse(currentQ.id, { responseText: e.target.value });
-                    }
-                  }}
-                  placeholder="Type your answer..."
-                  rows={8}
-                  className="w-full px-5 py-4 rounded-xl border border-border bg-surface text-ink text-sm placeholder:text-ink-muted focus:outline-none focus:ring-2 focus:ring-brand focus:border-brand resize-none"
-                />
-                <div className="flex items-center justify-between mt-2">
-                  <span className="text-[10px] text-ink-muted">You can use **bold** and `code`</span>
-                  <span className={cn(
-                    "text-xs tabular-nums",
-                    (currentResponse.responseText ?? "").length > 450 ? "text-warning" : "text-ink-muted"
-                  )}>
-                    {(currentResponse.responseText ?? "").length}/500
-                  </span>
+              <div className="anim-fade-up">
+                <div className={cn(
+                  "rounded-2xl border-2 transition-all duration-300 overflow-hidden bg-surface",
+                  "focus-within:border-brand focus-within:shadow-lg focus-within:shadow-brand/5",
+                  "border-border"
+                )}>
+                  {/* Writing zone header */}
+                  <div className="px-5 py-3 bg-surface-soft border-b border-border flex items-center justify-between">
+                    <span className="text-xs font-semibold text-ink-muted flex items-center gap-2">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path d="M12 20h9" /><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
+                      </svg>
+                      Your answer
+                    </span>
+                    {/* Character count ring */}
+                    <div className="flex items-center gap-2">
+                      <span className={cn(
+                        "text-xs tabular-nums font-medium transition-colors",
+                        (currentResponse.responseText ?? "").length > 450 ? "text-warning" : "text-ink-muted"
+                      )}>
+                        {(currentResponse.responseText ?? "").length}/500
+                      </span>
+                    </div>
+                  </div>
+                  <textarea
+                    value={currentResponse.responseText ?? ""}
+                    onChange={(e) => {
+                      if (e.target.value.length <= 500) {
+                        updateResponse(currentQ.id, { responseText: e.target.value });
+                      }
+                    }}
+                    placeholder="Start typing your answer..."
+                    rows={8}
+                    className="w-full px-5 py-4 bg-transparent text-ink text-sm leading-relaxed placeholder:text-ink-muted/50 focus:outline-none resize-none"
+                  />
                 </div>
               </div>
             )}
 
-            {/* ─── Code Editor ──────────────────────────────────────────── */}
+            {/* ─── Code: Split-pane IDE ─────────────────────────────────── */}
             {currentQ.type === "code" && (
-              <div>
-                {/* Language badge */}
-                <div className="flex items-center gap-2 mb-2">
-                  <span className="text-[10px] font-bold tracking-widest uppercase px-2.5 py-1 rounded-md bg-surface-alt text-ink-muted">
-                    {currentQ.language ?? "python"}
-                  </span>
+              <div className="anim-fade-up">
+                <div className="rounded-2xl border border-border overflow-hidden shadow-card bg-surface">
+                  {/* IDE Header */}
+                  <div className="flex items-center gap-3 px-4 py-2.5 bg-[#0D1117] border-b border-white/10">
+                    <div className="flex gap-1.5">
+                      <div className="w-3 h-3 rounded-full bg-[#FF5F57]" />
+                      <div className="w-3 h-3 rounded-full bg-[#FEBC2E]" />
+                      <div className="w-3 h-3 rounded-full bg-[#28C840]" />
+                    </div>
+                    <span className="text-xs text-slate-400 font-mono flex-1">
+                      solution.{currentQ.language === "typescript" ? "ts" : currentQ.language === "javascript" ? "js" : "py"}
+                    </span>
+                    <span className="text-[10px] font-bold tracking-widest uppercase text-slate-500">
+                      {currentQ.language ?? "python"}
+                    </span>
+                  </div>
+                  {/* Editor */}
+                  <CodeEditor
+                    value={currentResponse.codeResponse ?? (currentQ.starter_code ?? "")}
+                    onChange={(val) => updateResponse(currentQ.id, { codeResponse: val })}
+                    language={(currentQ.language as "python" | "typescript" | "javascript") ?? "python"}
+                    placeholder="Write your code here..."
+                    minHeight="320px"
+                  />
                 </div>
-                {/* CodeMirror editor */}
-                <CodeEditor
-                  value={currentResponse.codeResponse ?? (currentQ.starter_code ?? "")}
-                  onChange={(val) => updateResponse(currentQ.id, { codeResponse: val })}
-                  language={(currentQ.language as "python" | "typescript" | "javascript") ?? "python"}
-                  placeholder="Write your code here..."
-                  minHeight="300px"
-                />
               </div>
             )}
+          </div>
+        </div>
 
-            {error && (
-              <p className="text-sm text-error bg-error-bg border border-error/20 px-4 py-2.5 rounded-lg">
-                {error}
-              </p>
-            )}
+        {/* ── Dot navigator ────────────────────────────────────────────── */}
+        <div className="px-4 py-3 bg-surface border-t border-border">
+          <div className="max-w-3xl mx-auto">
+            <DotNavigator
+              questions={questions}
+              currentIdx={currentIdx}
+              responses={responses}
+              onSelect={goTo}
+            />
+          </div>
+        </div>
 
-            {/* ─── Navigation ───────────────────────────────────────────── */}
-            <div className="flex items-center justify-between pt-4">
-              <Button
-                variant="ghost"
-                onClick={() => goTo(currentIdx - 1)}
-                disabled={currentIdx === 0}
-                className="border border-border text-ink-secondary hover:text-ink hover:bg-surface-alt disabled:opacity-30"
-              >
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M19 12H5" /><polyline points="12 19 5 12 12 5" /></svg>
-                Previous
-              </Button>
+        {/* ── Bottom action bar (slides up when answered) ───────────── */}
+        <div className="bg-surface border-t border-border px-4 sm:px-6 py-4">
+          <div className="max-w-3xl mx-auto flex items-center justify-between gap-4">
+            <button
+              onClick={() => goTo(currentIdx - 1)}
+              disabled={currentIdx === 0}
+              className="h-11 px-5 rounded-xl border border-border text-ink-secondary font-semibold text-sm hover:bg-surface-alt transition-all disabled:opacity-30 disabled:pointer-events-none flex items-center gap-2"
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M19 12H5" /><polyline points="12 19 5 12 12 5" /></svg>
+              Back
+            </button>
 
+            <div className={cn(
+              "transition-all duration-300",
+              currentAnswered ? "opacity-100 translate-y-0" : "opacity-40 translate-y-1"
+            )}>
               {isLast ? (
                 <button
                   onClick={() => setPhase("review")}
-                  className="h-11 px-6 rounded-xl bg-brand text-white font-semibold text-sm transition-all hover:bg-brand-dark"
+                  className="h-11 px-8 rounded-xl bg-brand text-white font-bold text-sm transition-all hover:bg-brand/90 hover:shadow-lg hover:shadow-brand/20 hover:-translate-y-0.5 active:translate-y-0 flex items-center gap-2"
                 >
                   Review & Submit
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="9 18 15 12 9 6" /></svg>
                 </button>
               ) : (
-                <Button
+                <button
                   onClick={() => goTo(currentIdx + 1)}
-                  className="bg-brand hover:bg-brand-dark"
+                  className="h-11 px-8 rounded-xl bg-brand text-white font-bold text-sm transition-all hover:bg-brand/90 hover:shadow-lg hover:shadow-brand/20 hover:-translate-y-0.5 active:translate-y-0 flex items-center gap-2"
                 >
                   Next
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M5 12h14" /><polyline points="12 5 19 12 12 19" /></svg>
-                </Button>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="9 18 15 12 9 6" /></svg>
+                </button>
               )}
             </div>
           </div>
         </div>
       </div>
+
+      {/* Error toast */}
+      {error && (
+        <div className="fixed bottom-24 left-1/2 -translate-x-1/2 px-5 py-3 rounded-xl bg-error text-white text-sm font-medium shadow-lg anim-slide-up-spring z-50">
+          {error}
+        </div>
+      )}
     </div>
   );
 }
