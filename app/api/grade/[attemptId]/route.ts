@@ -547,6 +547,14 @@ export async function POST(
     const recommendationsMd = await generateRecommendations(anthropic, level, topicMastery, subject);
 
     /* ── Save skill report ─────────────────────────────────────────────── */
+    // Compute weak + strong topic arrays
+    const weakTopics = Object.entries(topicMastery)
+      .filter(([, v]) => (v as TopicAccum).total > 0 && ((v as TopicAccum).correct / (v as TopicAccum).total) < 0.5)
+      .map(([k]) => k);
+    const strongTopics = Object.entries(topicMastery)
+      .filter(([, v]) => (v as TopicAccum).total > 0 && ((v as TopicAccum).correct / (v as TopicAccum).total) >= 0.7)
+      .map(([k]) => k);
+
     const { data: report, error: reportErr } = await supabase
       .from("skill_reports")
       .insert({
@@ -554,10 +562,11 @@ export async function POST(
         student_id: student.id,
         course_id: paper?.course_id ?? null,
         level_determined: level,
-        score: totalScore,
+        estimated_score: totalScore,
         max_score: totalMax,
-        percentage,
-        topic_mastery: topicMastery,
+        topic_mastery_json: topicMastery,
+        weak_topics: weakTopics,
+        strong_topics: strongTopics,
         recommendations_md: recommendationsMd,
       })
       .select("id")
@@ -582,8 +591,10 @@ export async function POST(
       await supabase
         .from("assessment_responses")
         .update({
-          marks_awarded: grade.marks,
-          ai_feedback: feedbackData,
+          is_correct: grade.marks > 0,
+          partial_credit: grade.marks,
+          ai_feedback_md: feedbackData,
+          graded_at: new Date().toISOString(),
         })
         .eq("attempt_id", attemptId)
         .eq("question_id", q.id);
