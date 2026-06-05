@@ -83,18 +83,38 @@ export function TutorClient({ studentName, userEmail, enrollments, weakTopics }:
     }
   }
 
+  const suggestions = primaryEnrollment ? [
+    `Explain ${primaryEnrollment.currentLessonTitle ?? "the current topic"} in simple terms`,
+    `Give me a practice problem for ${primaryEnrollment.courseTitle}`,
+    `What are common mistakes in ${weakTopics[0] ?? primaryEnrollment.courseTitle}?`,
+    `Help me debug my code`,
+  ] : [
+    "Help me understand a concept",
+    "Give me a coding challenge",
+    "Explain like I'm a beginner",
+    "Review my code for issues",
+  ];
+
+  function useSuggestion(text: string) {
+    setInput(text);
+  }
+
   return (
     <div className="flex flex-col h-full max-h-[calc(100vh-3.5rem)] lg:max-h-screen">
       {/* Header */}
       <div className="bg-surface border-b border-border px-6 py-4 shrink-0">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-full bg-brand flex items-center justify-center text-white text-sm font-bold">
-              AI
+            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-brand to-brand/80 flex items-center justify-center text-white text-sm font-bold">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+                <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" />
+              </svg>
             </div>
             <div>
               <p className="text-sm font-semibold text-ink">AI Tutor</p>
-              <p className="text-xs text-ink-muted">Your personal learning assistant</p>
+              <p className="text-xs text-ink-muted">
+                {primaryEnrollment ? `Helping with ${primaryEnrollment.courseTitle}` : "Your personal learning assistant"}
+              </p>
             </div>
           </div>
 
@@ -169,6 +189,20 @@ export function TutorClient({ studentName, userEmail, enrollments, weakTopics }:
           <div ref={messagesEndRef} />
         </div>
       </div>
+
+      {/* Suggestions — show when only welcome message */}
+      {messages.length <= 1 && (
+        <div className="bg-surface border-t border-border px-4 py-3 shrink-0">
+          <div className="max-w-3xl mx-auto flex items-center gap-2 overflow-x-auto scrollbar-none">
+            {suggestions.map((s, i) => (
+              <button key={i} onClick={() => useSuggestion(s)}
+                className="shrink-0 px-3 py-1.5 rounded-xl border border-border bg-surface-soft text-xs font-medium text-ink-secondary hover:border-brand/30 hover:text-brand transition-all">
+                {s}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Input */}
       <div className="bg-surface border-t border-border px-4 py-4 shrink-0">

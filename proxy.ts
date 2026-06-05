@@ -13,6 +13,7 @@ const PUBLIC_PATHS = [
   "/contact",
   "/api/auth/callback",
   "/api/onboard",
+  "/portfolio/",
 ];
 
 export async function proxy(request: NextRequest) {
