@@ -99,6 +99,17 @@ export async function POST(request: Request) {
       studentId = created.id;
     }
 
+    // Send welcome email (non-blocking)
+    if (!existing && user.email) {
+      try {
+        const { sendWelcomeEmail } = await import("@/lib/email/resend");
+        await sendWelcomeEmail(user.email, name || user.email.split("@")[0]);
+      } catch {
+        // Non-blocking — don't fail onboarding if email fails
+        console.warn("[onboard] Welcome email failed — RESEND_API_KEY may not be set");
+      }
+    }
+
     return NextResponse.json({ studentId });
   } catch {
     return NextResponse.json({ error: "Something went wrong" }, { status: 500 });

@@ -1,0 +1,153 @@
+import { Resend } from "resend";
+
+// Initialize Resend — reads RESEND_API_KEY from env automatically
+let resend: Resend | null = null;
+
+export function getResend(): Resend {
+  if (!resend) {
+    const key = process.env["RESEND_API_KEY"];
+    if (!key) throw new Error("RESEND_API_KEY not set");
+    resend = new Resend(key);
+  }
+  return resend;
+}
+
+const FROM = "Square 1 AI <tech@square1ai.com>";
+
+/* ─── Welcome Email ──────────────────────────────────────────────────────── */
+export async function sendWelcomeEmail(to: string, name: string) {
+  const r = getResend();
+  return r.emails.send({
+    from: FROM,
+    to,
+    subject: "Welcome to Square 1 AI",
+    html: `
+      <div style="font-family:system-ui,-apple-system,sans-serif;max-width:520px;margin:0 auto;padding:40px 20px;">
+        <div style="text-align:center;margin-bottom:32px;">
+          <div style="display:inline-block;background:linear-gradient(135deg,#0056CE,#7C3AED);border-radius:12px;padding:12px;margin-bottom:16px;">
+            <span style="color:white;font-weight:900;font-size:18px;">[ S1 ]</span>
+          </div>
+          <h1 style="color:#0F172A;font-size:24px;font-weight:800;margin:0 0 8px;">Welcome, ${name}!</h1>
+          <p style="color:#64748B;font-size:14px;margin:0;">Your journey to a tech career starts now.</p>
+        </div>
+
+        <div style="background:#F8FAFC;border:1px solid #E2E8F0;border-radius:12px;padding:24px;margin-bottom:24px;">
+          <h3 style="color:#0F172A;font-size:16px;font-weight:700;margin:0 0 12px;">What happens next?</h3>
+          <div style="margin-bottom:12px;">
+            <span style="display:inline-block;width:24px;height:24px;background:#0056CE;color:white;border-radius:50%;text-align:center;line-height:24px;font-size:12px;font-weight:700;margin-right:8px;">1</span>
+            <span style="color:#334155;font-size:14px;">Pick a course from our 12 tech subjects</span>
+          </div>
+          <div style="margin-bottom:12px;">
+            <span style="display:inline-block;width:24px;height:24px;background:#0056CE;color:white;border-radius:50%;text-align:center;line-height:24px;font-size:12px;font-weight:700;margin-right:8px;">2</span>
+            <span style="color:#334155;font-size:14px;">Take the free AI-graded skill assessment</span>
+          </div>
+          <div>
+            <span style="display:inline-block;width:24px;height:24px;background:#0056CE;color:white;border-radius:50%;text-align:center;line-height:24px;font-size:12px;font-weight:700;margin-right:8px;">3</span>
+            <span style="color:#334155;font-size:14px;">Get your personalised learning plan</span>
+          </div>
+        </div>
+
+        <div style="text-align:center;margin-bottom:32px;">
+          <a href="https://square1-tutor.vercel.app/dashboard" style="display:inline-block;background:#0056CE;color:white;font-weight:700;font-size:14px;text-decoration:none;padding:12px 32px;border-radius:12px;">
+            Go to Dashboard
+          </a>
+        </div>
+
+        <p style="color:#94A3B8;font-size:12px;text-align:center;">
+          Square 1 AI · tech@square1ai.com
+        </p>
+      </div>
+    `,
+  });
+}
+
+/* ─── Streak Reminder ────────────────────────────────────────────────────── */
+export async function sendStreakReminder(to: string, name: string, streakDays: number, lessonTitle: string) {
+  const r = getResend();
+  return r.emails.send({
+    from: FROM,
+    to,
+    subject: streakDays > 0 ? `Keep your ${streakDays}-day streak alive!` : "Time to learn something new",
+    html: `
+      <div style="font-family:system-ui,-apple-system,sans-serif;max-width:520px;margin:0 auto;padding:40px 20px;">
+        <div style="text-align:center;margin-bottom:32px;">
+          <div style="display:inline-block;background:linear-gradient(135deg,#0056CE,#7C3AED);border-radius:12px;padding:12px;margin-bottom:16px;">
+            <span style="color:white;font-weight:900;font-size:18px;">[ S1 ]</span>
+          </div>
+          <h1 style="color:#0F172A;font-size:24px;font-weight:800;margin:0 0 8px;">
+            ${streakDays > 0 ? `${streakDays}-day streak!` : "Hey " + name + "!"}
+          </h1>
+          <p style="color:#64748B;font-size:14px;margin:0;">
+            ${streakDays > 0 ? "Don't break it — one lesson keeps it going." : "Your next lesson is waiting for you."}
+          </p>
+        </div>
+
+        <div style="background:#F8FAFC;border:1px solid #E2E8F0;border-radius:12px;padding:20px;margin-bottom:24px;">
+          <p style="color:#94A3B8;font-size:11px;text-transform:uppercase;letter-spacing:1px;font-weight:700;margin:0 0 8px;">Next up</p>
+          <p style="color:#0F172A;font-size:16px;font-weight:700;margin:0;">${lessonTitle}</p>
+        </div>
+
+        <div style="text-align:center;margin-bottom:32px;">
+          <a href="https://square1-tutor.vercel.app/dashboard" style="display:inline-block;background:#0056CE;color:white;font-weight:700;font-size:14px;text-decoration:none;padding:12px 32px;border-radius:12px;">
+            Continue Learning
+          </a>
+        </div>
+
+        <p style="color:#94A3B8;font-size:11px;text-align:center;">
+          <a href="https://square1-tutor.vercel.app/settings" style="color:#94A3B8;">Unsubscribe</a> · Square 1 AI
+        </p>
+      </div>
+    `,
+  });
+}
+
+/* ─── Weekly Progress Digest ─────────────────────────────────────────────── */
+export async function sendWeeklyDigest(to: string, name: string, stats: {
+  lessonsCompleted: number;
+  streak: number;
+  projectsDone: number;
+  overallPct: number;
+}) {
+  const r = getResend();
+  return r.emails.send({
+    from: FROM,
+    to,
+    subject: `Your weekly progress: ${stats.lessonsCompleted} lessons this week`,
+    html: `
+      <div style="font-family:system-ui,-apple-system,sans-serif;max-width:520px;margin:0 auto;padding:40px 20px;">
+        <div style="text-align:center;margin-bottom:32px;">
+          <div style="display:inline-block;background:linear-gradient(135deg,#0056CE,#7C3AED);border-radius:12px;padding:12px;margin-bottom:16px;">
+            <span style="color:white;font-weight:900;font-size:18px;">[ S1 ]</span>
+          </div>
+          <h1 style="color:#0F172A;font-size:24px;font-weight:800;margin:0 0 8px;">Weekly Progress</h1>
+          <p style="color:#64748B;font-size:14px;margin:0;">Here's how you did this week, ${name}.</p>
+        </div>
+
+        <div style="display:flex;gap:12px;margin-bottom:24px;">
+          <div style="flex:1;background:#F8FAFC;border:1px solid #E2E8F0;border-radius:12px;padding:16px;text-align:center;">
+            <p style="color:#0F172A;font-size:24px;font-weight:900;margin:0;">${stats.lessonsCompleted}</p>
+            <p style="color:#64748B;font-size:11px;text-transform:uppercase;letter-spacing:1px;margin:4px 0 0;">Lessons</p>
+          </div>
+          <div style="flex:1;background:#F8FAFC;border:1px solid #E2E8F0;border-radius:12px;padding:16px;text-align:center;">
+            <p style="color:#0F172A;font-size:24px;font-weight:900;margin:0;">${stats.streak}</p>
+            <p style="color:#64748B;font-size:11px;text-transform:uppercase;letter-spacing:1px;margin:4px 0 0;">Day Streak</p>
+          </div>
+          <div style="flex:1;background:#F8FAFC;border:1px solid #E2E8F0;border-radius:12px;padding:16px;text-align:center;">
+            <p style="color:#0056CE;font-size:24px;font-weight:900;margin:0;">${stats.overallPct}%</p>
+            <p style="color:#64748B;font-size:11px;text-transform:uppercase;letter-spacing:1px;margin:4px 0 0;">Complete</p>
+          </div>
+        </div>
+
+        <div style="text-align:center;margin-bottom:32px;">
+          <a href="https://square1-tutor.vercel.app/progress" style="display:inline-block;background:#0056CE;color:white;font-weight:700;font-size:14px;text-decoration:none;padding:12px 32px;border-radius:12px;">
+            View Full Progress
+          </a>
+        </div>
+
+        <p style="color:#94A3B8;font-size:11px;text-align:center;">
+          <a href="https://square1-tutor.vercel.app/settings" style="color:#94A3B8;">Unsubscribe</a> · Square 1 AI
+        </p>
+      </div>
+    `,
+  });
+}

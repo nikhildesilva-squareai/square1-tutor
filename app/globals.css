@@ -50,6 +50,26 @@
   --shadow-card-hover: 0 4px 24px rgb(0 86 206 / 0.12);
 }
 
+/* ─── Dark Mode Overrides ──────────────────────────────────────────────────── */
+.dark {
+  --color-surface:          #0D1117;
+  --color-surface-soft:     #010409;
+  --color-surface-alt:      #161B22;
+  --color-surface-tint:     #0D2240;
+  --color-surface-tint-soft:#091729;
+  --color-border:           #30363D;
+  --color-border-mid:       #484F58;
+  --color-ink:              #E6EDF3;
+  --color-ink-secondary:    #8B949E;
+  --color-ink-muted:        #6E7681;
+  --color-success-bg:       #0D2818;
+  --color-error-bg:         #2D1117;
+  --color-warning-bg:       #2D2407;
+  --shadow-card:            0 1px 3px rgb(0 0 0 / 0.3);
+  --shadow-card-hover:      0 4px 24px rgb(0 86 206 / 0.2);
+  color-scheme: dark;
+}
+
 /* ─── Base ──────────────────────────────────────────────────────────────────── */
 *, *::before, *::after { box-sizing: border-box; }
 

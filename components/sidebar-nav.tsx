@@ -15,6 +15,7 @@ import {
 import { cn } from "@/lib/utils";
 import { createClient } from "@/lib/supabase/client";
 import { Logo } from "@/components/ui/logo";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 const nav = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -74,8 +75,9 @@ export function SidebarNav({ userEmail }: SidebarNavProps) {
 
       {/* User footer */}
       <div className="px-3 py-4 border-t border-border">
-        <div className="px-4 py-2 mb-1">
+        <div className="px-4 py-2 mb-1 flex items-center justify-between">
           <p className="text-xs text-ink-muted truncate">{userEmail}</p>
+          <ThemeToggle />
         </div>
         <button
           onClick={handleSignOut}
