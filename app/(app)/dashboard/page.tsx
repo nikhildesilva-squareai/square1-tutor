@@ -34,13 +34,31 @@ interface EnrollmentRow {
   target_completion_date: string | null;
   current_lesson_id: string | null;
   course: { id: string; slug: string; title: string; icon: string; total_lessons: number } | null;
-  current_lesson: { id: string; title: string; estimated_minutes: number } | null;
+  current_lesson: { id: string; title: string; estimated_minutes: number; module_id: string } | null;
 }
 
-interface ProjectRow {
+interface ModuleRow {
   id: string;
-  status: string;
-  project: { id: string; title: string; difficulty: string } | null;
+  title: string;
+  order_index: number;
+  week_number: number;
+  course_id: string;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════ */
+/*  PROGRESS RING (SVG)                                                      */
+/* ═══════════════════════════════════════════════════════════════════════════ */
+function ProgressRing({ pct, size = 56, stroke = 4, color = "#0056CE" }: { pct: number; size?: number; stroke?: number; color?: string }) {
+  const r = (size - stroke * 2) / 2;
+  const circ = 2 * Math.PI * r;
+  const offset = circ * (1 - Math.min(pct, 1));
+  return (
+    <svg width={size} height={size} className="-rotate-90">
+      <circle cx={size/2} cy={size/2} r={r} fill="none" stroke="#E2E8F0" strokeWidth={stroke} />
+      <circle cx={size/2} cy={size/2} r={r} fill="none" stroke={color} strokeWidth={stroke}
+        strokeLinecap="round" strokeDasharray={circ} strokeDashoffset={offset} style={{ transition: "stroke-dashoffset 1s ease" }} />
+    </svg>
+  );
 }
 
 export default async function DashboardPage() {
@@ -58,41 +76,32 @@ export default async function DashboardPage() {
     .from("student_enrollments")
     .select(`id, status, assessment_level, target_completion_date, current_lesson_id,
       course:courses(id, slug, title, icon, total_lessons),
-      current_lesson:lessons!student_enrollments_current_lesson_id_fkey(id, title, estimated_minutes)`)
+      current_lesson:lessons!student_enrollments_current_lesson_id_fkey(id, title, estimated_minutes, module_id)`)
     .eq("student_id", student?.id ?? "")
     .eq("status", "active")
     .order("enrolled_at", { ascending: false }) as { data: EnrollmentRow[] | null };
-
-  const { data: projects } = await supabase
-    .from("student_projects")
-    .select(`id, status, project:projects(id, title, difficulty)`)
-    .eq("student_id", student?.id ?? "")
-    .order("updated_at", { ascending: false })
-    .limit(3) as { data: ProjectRow[] | null };
 
   const name = student?.name ?? user.email?.split("@")[0] ?? "there";
   const firstName = name.split(" ")[0];
   const greeting = getGreeting();
   const activeEnrollments = enrollments ?? [];
-  const todayEnrollment = activeEnrollments[0] ?? null;
-
-  // Find the student's preferred course
+  const primaryEnrollment = activeEnrollments[0] ?? null;
   const preferredCourse = COURSES.find(c => c.title.toLowerCase().includes((student?.subject_interest ?? "").toLowerCase()));
 
-  // ── EMPTY STATE ──────────────────────────────────────────────────
+  /* ═══════════════════════════════════════════════════════════════════════ */
+  /*  PRE-ENROLLMENT DASHBOARD — Onboarding funnel                         */
+  /* ═══════════════════════════════════════════════════════════════════════ */
   if (activeEnrollments.length === 0) {
     return (
       <div className="min-h-full px-4 sm:px-6 py-8 max-w-6xl mx-auto">
 
-        {/* Hero greeting — gradient banner */}
+        {/* Hero greeting */}
         <div className="relative rounded-2xl overflow-hidden mb-8 p-8 sm:p-10"
           style={{ background: "linear-gradient(135deg, #0056CE 0%, #4F46E5 50%, #7C3AED 100%)" }}>
-          {/* Decorative circles */}
           <div className="absolute top-0 right-0 w-64 h-64 rounded-full opacity-20"
             style={{ background: "radial-gradient(circle, white 0%, transparent 70%)", transform: "translate(30%, -30%)" }} />
           <div className="absolute bottom-0 left-0 w-48 h-48 rounded-full opacity-10"
             style={{ background: "radial-gradient(circle, white 0%, transparent 70%)", transform: "translate(-30%, 30%)" }} />
-
           <div className="relative">
             <p className="text-white/60 text-sm font-medium mb-1">{greeting}</p>
             <h1 className="text-3xl sm:text-4xl font-black text-white tracking-tight mb-3">
@@ -104,10 +113,9 @@ export default async function DashboardPage() {
           </div>
         </div>
 
-        {/* 3-column action grid */}
+        {/* 3-step funnel */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mb-10">
-          {/* Step 1 — Pick a course */}
-          <div className="relative bg-surface rounded-2xl border border-border p-6 hover:shadow-card-hover transition-shadow group">
+          <div className="relative bg-surface rounded-2xl border border-border p-6 hover:shadow-card transition-shadow group">
             <div className="flex items-center gap-3 mb-4">
               <span className="w-8 h-8 rounded-full bg-brand text-white flex items-center justify-center text-sm font-bold">1</span>
               <span className="text-[10px] tracking-widest uppercase font-bold text-ink-muted">Step one</span>
@@ -117,13 +125,12 @@ export default async function DashboardPage() {
               12 subjects. Each one leads to a real career with a real salary.
             </p>
             <Link href="/courses"
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold text-white bg-brand hover:bg-brand-dark transition-all">
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold text-white bg-brand hover:bg-brand/90 transition-all">
               Browse courses
               <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M6 3l5 5-5 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
             </Link>
           </div>
 
-          {/* Step 2 — Take the assessment */}
           <div className="bg-surface rounded-2xl border border-border p-6">
             <div className="flex items-center gap-3 mb-4">
               <span className="w-8 h-8 rounded-full bg-surface-alt text-ink-muted flex items-center justify-center text-sm font-bold">2</span>
@@ -131,15 +138,14 @@ export default async function DashboardPage() {
             </div>
             <h3 className="text-lg font-bold text-ink mb-2">Take the assessment</h3>
             <p className="text-sm text-ink-muted mb-5 leading-relaxed">
-              20 questions. MCQ + short answer + code. AI grades everything in 30 minutes.
+              20 questions. MCQ + short answer + code. AI grades instantly.
             </p>
             <span className="text-xs text-ink-muted flex items-center gap-2">
-              <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="currentColor" strokeWidth="1.5"/><path d="M8 5v3l2 2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>
-              ~30 minutes · Free forever
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" /></svg>
+              ~30 minutes
             </span>
           </div>
 
-          {/* Step 3 — Get your report */}
           <div className="bg-surface rounded-2xl border border-border p-6">
             <div className="flex items-center gap-3 mb-4">
               <span className="w-8 h-8 rounded-full bg-surface-alt text-ink-muted flex items-center justify-center text-sm font-bold">3</span>
@@ -147,29 +153,29 @@ export default async function DashboardPage() {
             </div>
             <h3 className="text-lg font-bold text-ink mb-2">Get your skill report</h3>
             <p className="text-sm text-ink-muted mb-5 leading-relaxed">
-              See your strengths, gaps, and a personalised AI recommendation for what to learn first.
+              See your strengths, gaps, and a personalised learning plan.
             </p>
             <span className="text-xs text-ink-muted flex items-center gap-2">
-              <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M8 1v14M1 8h14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 20V10" /><path d="M12 20V4" /><path d="M6 20v-6" /></svg>
               Topic-by-topic breakdown
             </span>
           </div>
         </div>
 
-        {/* Recommended for you (if we know their interest) */}
+        {/* Recommended course */}
         {preferredCourse && (
           <div className="mb-10">
-            <p className="text-[11px] font-semibold text-ink-muted uppercase tracking-widest mb-4">
-              Recommended for you
-            </p>
+            <p className="text-[11px] font-semibold text-ink-muted uppercase tracking-widest mb-4">Recommended for you</p>
             <Link href={`/courses/${preferredCourse.slug}`}
-              className="group flex items-center justify-between bg-surface rounded-2xl border border-border p-6 hover:shadow-card-hover transition-shadow">
+              className="group flex items-center justify-between bg-surface rounded-2xl border border-border p-6 hover:shadow-card hover:border-brand/20 transition-all">
               <div className="flex items-center gap-5">
-                <div className="w-12 h-1.5 rounded-full shrink-0" style={{ background: preferredCourse.color }} />
+                <div className="w-12 h-12 rounded-xl flex items-center justify-center" style={{ background: `${preferredCourse.color}12` }}>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={preferredCourse.color} strokeWidth="2" strokeLinecap="round">
+                    <path d="M4 19.5A2.5 2.5 0 016.5 17H20" /><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z" />
+                  </svg>
+                </div>
                 <div>
-                  <h3 className="text-lg font-bold text-ink group-hover:text-brand transition-colors">
-                    {preferredCourse.title}
-                  </h3>
+                  <h3 className="text-lg font-bold text-ink group-hover:text-brand transition-colors">{preferredCourse.title}</h3>
                   <p className="text-sm text-ink-muted mt-0.5">
                     {preferredCourse.role} · <span style={{ color: preferredCourse.color }} className="font-semibold">{preferredCourse.salary}</span>
                   </p>
@@ -183,35 +189,18 @@ export default async function DashboardPage() {
           </div>
         )}
 
-        {/* Quick stats */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-10">
-          {[
-            { value: "12", label: "courses available", color: "#0056CE" },
-            { value: "45 min", label: "per day", color: "#6366f1" },
-            { value: "$0", label: "to start", color: "#10B981" },
-            { value: "12", label: "projects per course", color: "#F59E0B" },
-          ].map((s, i) => (
-            <div key={i} className="rounded-xl p-4 text-center bg-surface border border-border">
-              <p className="text-xl font-black text-ink mb-0.5">{s.value}</p>
-              <p className="text-[10px] text-ink-muted uppercase tracking-wider font-medium">{s.label}</p>
-            </div>
-          ))}
-        </div>
-
-        {/* All courses — compact grid */}
+        {/* All courses grid */}
         <div>
           <div className="flex items-center justify-between mb-4">
             <p className="text-[11px] font-semibold text-ink-muted uppercase tracking-widest">All courses</p>
-            <Link href="/courses" className="text-xs text-brand hover:underline font-semibold">View all →</Link>
+            <Link href="/courses" className="text-xs text-brand hover:underline font-semibold">View all</Link>
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
             {COURSES.map((course) => (
               <Link key={course.slug} href={`/courses/${course.slug}`}
-                className="group bg-surface rounded-xl border border-border p-4 hover:shadow-card-hover hover:border-brand/30 transition-all">
+                className="group bg-surface rounded-xl border border-border p-4 hover:shadow-card hover:border-brand/20 transition-all">
                 <div className="w-8 h-1 rounded-full mb-3" style={{ background: course.color }} />
-                <p className="text-sm font-semibold text-ink mb-1 group-hover:text-brand transition-colors leading-snug">
-                  {course.title}
-                </p>
+                <p className="text-sm font-semibold text-ink mb-1 group-hover:text-brand transition-colors leading-snug">{course.title}</p>
                 <p className="text-[10px] text-ink-muted">{course.role}</p>
                 <p className="text-[10px] font-semibold mt-1" style={{ color: course.color }}>{course.salary}</p>
               </Link>
@@ -222,138 +211,413 @@ export default async function DashboardPage() {
     );
   }
 
-  // ── ACTIVE STUDENT DASHBOARD ─────────────────────────────────────
-  const courseColor = todayEnrollment?.course?.slug ? COURSE_COLORS[todayEnrollment.course.slug] ?? "#0056CE" : "#0056CE";
+  /* ═══════════════════════════════════════════════════════════════════════ */
+  /*  POST-ENROLLMENT DASHBOARD — Daily learning hub                       */
+  /* ═══════════════════════════════════════════════════════════════════════ */
+  const courseColor = primaryEnrollment?.course?.slug ? COURSE_COLORS[primaryEnrollment.course.slug] ?? "#0056CE" : "#0056CE";
+  const courseSlug = primaryEnrollment?.course?.slug ?? "";
+  const courseTitle = primaryEnrollment?.course?.title ?? "Your Course";
+  const totalLessons = primaryEnrollment?.course?.total_lessons ?? 40;
+  const currentLesson = primaryEnrollment?.current_lesson;
+  const level = primaryEnrollment?.assessment_level ?? "beginner";
+
+  // Fetch lesson completion count for this enrollment
+  const { count: completedLessonCount } = await supabase
+    .from("lesson_completions")
+    .select("id", { count: "exact", head: true })
+    .eq("student_id", student?.id ?? "")
+    .eq("enrollment_id", primaryEnrollment?.id ?? "");
+
+  const lessonsCompleted = completedLessonCount ?? 0;
+  const progressPct = totalLessons > 0 ? lessonsCompleted / totalLessons : 0;
+
+  // Fetch modules for the course roadmap
+  const { data: modules } = await supabase
+    .from("modules")
+    .select("id, title, order_index, week_number, course_id")
+    .eq("course_id", primaryEnrollment?.course?.id ?? "")
+    .order("order_index", { ascending: true }) as { data: ModuleRow[] | null };
+
+  // Fetch completed lesson IDs for this course
+  const { data: completedLessons } = await supabase
+    .from("lesson_completions")
+    .select("lesson_id")
+    .eq("student_id", student?.id ?? "");
+
+  const completedLessonIds = new Set((completedLessons ?? []).map(l => l.lesson_id));
+
+  // Fetch lessons per module for roadmap
+  const { data: allLessons } = await supabase
+    .from("lessons")
+    .select("id, module_id, title, order_index")
+    .eq("course_id", primaryEnrollment?.course?.id ?? "")
+    .order("order_index", { ascending: true });
+
+  // Group lessons by module
+  const lessonsByModule = new Map<string, { id: string; title: string; completed: boolean }[]>();
+  for (const l of allLessons ?? []) {
+    const list = lessonsByModule.get(l.module_id) ?? [];
+    list.push({ id: l.id, title: l.title, completed: completedLessonIds.has(l.id) });
+    lessonsByModule.set(l.module_id, list);
+  }
+
+  // Weekly streak — last 7 days
+  const now = new Date();
+  const weekDays = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+  const today = now.getDay(); // 0=Sun
+  const streakData: { day: string; active: boolean }[] = [];
+
+  // Fetch completions in last 7 days
+  const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000).toISOString();
+  const { data: recentCompletions } = await supabase
+    .from("lesson_completions")
+    .select("completed_at")
+    .eq("student_id", student?.id ?? "")
+    .gte("completed_at", sevenDaysAgo);
+
+  const activeDays = new Set((recentCompletions ?? []).map(c => new Date(c.completed_at).getDay()));
+  // Build Mon-Sun streak
+  for (let i = 1; i <= 7; i++) {
+    const dayNum = i === 7 ? 0 : i; // Mon=1...Sat=6, Sun=0
+    streakData.push({ day: weekDays[i - 1], active: activeDays.has(dayNum) });
+  }
+
+  // Projects stats
+  const { data: projectSubmissions } = await supabase
+    .from("project_submissions")
+    .select("id, score")
+    .eq("student_id", student?.id ?? "")
+    .not("score", "is", null);
+
+  const projectsDone = (projectSubmissions ?? []).length;
+
+  // Next project
+  const { data: nextProject } = await supabase
+    .from("projects")
+    .select("id, title, difficulty")
+    .eq("course_id", primaryEnrollment?.course?.id ?? "")
+    .order("order_index", { ascending: true })
+    .limit(1)
+    .maybeSingle();
 
   return (
     <div className="min-h-full px-4 sm:px-6 py-8 max-w-6xl mx-auto">
 
-      {/* Hero greeting — gradient banner */}
-      <div className="relative rounded-2xl overflow-hidden mb-8 p-8 sm:p-10"
-        style={{ background: `linear-gradient(135deg, ${courseColor} 0%, ${courseColor}cc 50%, ${courseColor}99 100%)` }}>
-        <div className="absolute top-0 right-0 w-64 h-64 rounded-full opacity-20"
+      {/* ── Hero: Continue Learning (THE primary action) ──────────────── */}
+      <div className="relative rounded-2xl overflow-hidden mb-6 p-6 sm:p-8"
+        style={{ background: `linear-gradient(135deg, ${courseColor} 0%, ${courseColor}cc 60%, ${courseColor}99 100%)` }}>
+        {/* Decorative */}
+        <div className="absolute top-0 right-0 w-56 h-56 rounded-full opacity-15"
           style={{ background: "radial-gradient(circle, white 0%, transparent 70%)", transform: "translate(30%, -30%)" }} />
 
-        <div className="relative flex items-start justify-between">
-          <div>
-            <p className="text-white/60 text-sm font-medium mb-1">{greeting}</p>
-            <h1 className="text-3xl sm:text-4xl font-black text-white tracking-tight mb-2">
-              {firstName}&apos;s Dashboard
-            </h1>
-            <p className="text-white/70 text-sm">
-              {todayEnrollment?.course?.title} · {todayEnrollment?.assessment_level ?? "In progress"}
-            </p>
-          </div>
-          {/* Streak */}
-          <div className="flex items-center gap-2 bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-              <path d="M12 2C6 8 2 12 2 16a10 10 0 0020 0c0-4-4-8-10-14z" fill="#FBBF24"/>
-            </svg>
-            <span className="text-sm font-bold text-white">Active</span>
-          </div>
-        </div>
-      </div>
+        <div className="relative flex flex-col sm:flex-row sm:items-center gap-6">
+          {/* Left: Greeting + lesson info */}
+          <div className="flex-1">
+            <p className="text-white/50 text-sm font-medium mb-1">{greeting}, {firstName}</p>
 
-      {/* Today's session */}
-      {todayEnrollment && (
-        <div className="bg-surface rounded-2xl border border-border shadow-card p-6 mb-8"
-          style={{ borderLeft: `4px solid ${courseColor}` }}>
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-[10px] font-bold text-ink-muted uppercase tracking-widest mb-1">Today&apos;s Session</p>
-              <h3 className="text-lg font-bold text-ink mb-1">
-                {todayEnrollment.current_lesson?.title ?? "Start your next lesson"}
-              </h3>
-              <p className="text-sm text-ink-muted">
-                {todayEnrollment.course?.title} · {todayEnrollment.current_lesson?.estimated_minutes ?? 45} min
-              </p>
-            </div>
-            <Link href={`/courses/${todayEnrollment.course?.slug}`}
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold text-white bg-brand hover:bg-brand-dark transition-all shrink-0">
-              Continue
-              <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M6 3l5 5-5 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
-            </Link>
-          </div>
-        </div>
-      )}
-
-      {/* Progress stats */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
-        {[
-          { value: `${activeEnrollments.length}`, label: "Active courses" },
-          { value: `${(projects ?? []).filter(p => p.status === "submitted" || p.status === "reviewed").length}/${(projects ?? []).length || 0}`, label: "Projects done" },
-          { value: "—", label: "Portfolio score" },
-          { value: `${todayEnrollment?.assessment_level?.charAt(0).toUpperCase() ?? "—"}${todayEnrollment?.assessment_level?.slice(1) ?? ""}`, label: "Your level" },
-        ].map((s, i) => (
-          <div key={i} className="rounded-xl p-4 text-center bg-surface border border-border">
-            <p className="text-xl font-black text-ink mb-0.5">{s.value}</p>
-            <p className="text-[10px] text-ink-muted uppercase tracking-wider font-medium">{s.label}</p>
-          </div>
-        ))}
-      </div>
-
-      {/* Enrolled courses */}
-      {activeEnrollments.length > 0 && (
-        <div className="mb-8">
-          <div className="flex items-center justify-between mb-4">
-            <p className="text-[11px] font-semibold text-ink-muted uppercase tracking-widest">My Courses</p>
-            <Link href="/courses" className="text-xs text-brand hover:underline font-semibold">Browse more →</Link>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {activeEnrollments.map((e) => {
-              const color = e.course?.slug ? COURSE_COLORS[e.course.slug] ?? "#0056CE" : "#0056CE";
-              return (
-                <Link key={e.id} href={`/courses/${e.course?.slug}`}
-                  className="group bg-surface rounded-xl border border-border p-5 hover:shadow-card-hover transition-shadow">
-                  <div className="w-10 h-1 rounded-full mb-4" style={{ background: color }} />
-                  <h3 className="text-sm font-bold text-ink mb-2 group-hover:text-brand transition-colors">
-                    {e.course?.title}
-                  </h3>
-                  <div className="flex items-center justify-between text-xs text-ink-muted mb-3">
-                    <span>{e.assessment_level ?? "—"}</span>
-                    <span>{e.course?.total_lessons} lessons</span>
-                  </div>
-                  <div className="w-full bg-surface-alt rounded-full h-1.5">
-                    <div className="h-1.5 rounded-full" style={{ width: "20%", background: color }} />
-                  </div>
-                </Link>
-              );
-            })}
-          </div>
-        </div>
-      )}
-
-      {/* Recent projects */}
-      {projects && projects.length > 0 && (
-        <div>
-          <div className="flex items-center justify-between mb-4">
-            <p className="text-[11px] font-semibold text-ink-muted uppercase tracking-widest">Recent Projects</p>
-            <Link href="/projects" className="text-xs text-brand hover:underline font-semibold">View all →</Link>
-          </div>
-          <div className="space-y-2">
-            {projects.map((p) => {
-              const statusColors: Record<string, string> = {
-                submitted: "bg-success-bg text-success",
-                reviewed: "bg-success-bg text-success",
-                in_progress: "bg-warning-bg text-warning",
-                not_started: "bg-surface-alt text-ink-muted",
-              };
-              const cls = statusColors[p.status] ?? "bg-surface-alt text-ink-muted";
-              return (
-                <div key={p.id} className="bg-surface rounded-xl border border-border p-4 flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-semibold text-ink">{p.project?.title ?? "Project"}</p>
-                    <p className="text-xs text-ink-muted capitalize">{p.project?.difficulty}</p>
-                  </div>
-                  <span className={`text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full ${cls}`}>
-                    {p.status.replace("_", " ")}
+            {currentLesson ? (
+              <>
+                <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight mb-1">
+                  Continue Learning
+                </h1>
+                <p className="text-white/80 text-sm mb-4">
+                  {currentLesson.title}
+                </p>
+                <div className="flex items-center gap-3 flex-wrap">
+                  <Link href={`/learn/${currentLesson.id}`}
+                    className="inline-flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-bold bg-white text-ink hover:bg-white/90 transition-all shadow-lg">
+                    Resume Lesson
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polygon points="5 3 19 12 5 21 5 3" /></svg>
+                  </Link>
+                  <span className="text-white/60 text-xs flex items-center gap-1.5">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" /></svg>
+                    {currentLesson.estimated_minutes} min
                   </span>
                 </div>
-              );
-            })}
+              </>
+            ) : (
+              <>
+                <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight mb-1">
+                  {courseTitle}
+                </h1>
+                <p className="text-white/70 text-sm mb-4">
+                  Level: {level.charAt(0).toUpperCase() + level.slice(1)}
+                </p>
+                <Link href={`/courses/${courseSlug}`}
+                  className="inline-flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-bold bg-white text-ink hover:bg-white/90 transition-all shadow-lg">
+                  Go to Course
+                  <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M6 3l5 5-5 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                </Link>
+              </>
+            )}
+          </div>
+
+          {/* Right: Progress ring */}
+          <div className="flex flex-col items-center shrink-0">
+            <div className="relative">
+              <ProgressRing pct={progressPct} size={80} stroke={5} color="white" />
+              <div className="absolute inset-0 flex flex-col items-center justify-center">
+                <span className="text-lg font-black text-white">{Math.round(progressPct * 100)}%</span>
+              </div>
+            </div>
+            <p className="text-white/60 text-[10px] uppercase tracking-wider font-bold mt-2">
+              {lessonsCompleted}/{totalLessons} lessons
+            </p>
           </div>
         </div>
-      )}
+      </div>
+
+      {/* ── Stats row ─────────────────────────────────────────────────── */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+        <div className="bg-surface rounded-xl border border-border p-4 flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-surface-tint flex items-center justify-center shrink-0">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0056CE" strokeWidth="2" strokeLinecap="round">
+              <path d="M4 19.5A2.5 2.5 0 016.5 17H20" /><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z" />
+            </svg>
+          </div>
+          <div>
+            <p className="text-lg font-black text-ink">{lessonsCompleted}</p>
+            <p className="text-[10px] text-ink-muted uppercase tracking-wider">Lessons Done</p>
+          </div>
+        </div>
+
+        <div className="bg-surface rounded-xl border border-border p-4 flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-emerald-50 flex items-center justify-center shrink-0">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#059669" strokeWidth="2" strokeLinecap="round">
+              <path d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
+            </svg>
+          </div>
+          <div>
+            <p className="text-lg font-black text-ink">{projectsDone}</p>
+            <p className="text-[10px] text-ink-muted uppercase tracking-wider">Projects</p>
+          </div>
+        </div>
+
+        <div className="bg-surface rounded-xl border border-border p-4 flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0" style={{ background: `${courseColor}10` }}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={courseColor} strokeWidth="2" strokeLinecap="round">
+              <path d="M18 20V10" /><path d="M12 20V4" /><path d="M6 20v-6" />
+            </svg>
+          </div>
+          <div>
+            <p className="text-lg font-black text-ink capitalize">{level}</p>
+            <p className="text-[10px] text-ink-muted uppercase tracking-wider">Your Level</p>
+          </div>
+        </div>
+
+        <div className="bg-surface rounded-xl border border-border p-4 flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-amber-50 flex items-center justify-center shrink-0">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#D97706" strokeWidth="2" strokeLinecap="round">
+              <path d="M12 2C6 8 2 12 2 16a10 10 0 0020 0c0-4-4-8-10-14z" />
+            </svg>
+          </div>
+          <div>
+            <p className="text-lg font-black text-ink">{activeDays.size}</p>
+            <p className="text-[10px] text-ink-muted uppercase tracking-wider">Days Active</p>
+          </div>
+        </div>
+      </div>
+
+      {/* ── Two column layout ──────────────────────────────────────────── */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+        {/* Left column — Course roadmap (2/3 width) */}
+        <div className="lg:col-span-2 space-y-6">
+
+          {/* Weekly streak */}
+          <div className="bg-surface rounded-xl border border-border p-5">
+            <p className="text-[10px] font-bold text-ink-muted uppercase tracking-widest mb-4">This Week</p>
+            <div className="flex items-center justify-between gap-2">
+              {streakData.map((d, i) => {
+                const isToday = (today === 0 ? 6 : today - 1) === i;
+                return (
+                  <div key={d.day} className="flex flex-col items-center gap-2">
+                    <span className="text-[10px] text-ink-muted font-medium">{d.day}</span>
+                    <div className={[
+                      "w-9 h-9 rounded-xl flex items-center justify-center transition-all",
+                      d.active
+                        ? "bg-brand text-white"
+                        : isToday
+                        ? "bg-surface-tint border-2 border-brand/30"
+                        : "bg-surface-alt",
+                    ].join(" ")}>
+                      {d.active ? (
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><polyline points="20 6 9 17 4 12" /></svg>
+                      ) : isToday ? (
+                        <div className="w-2 h-2 rounded-full bg-brand" />
+                      ) : null}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Module roadmap */}
+          <div className="bg-surface rounded-xl border border-border p-5">
+            <div className="flex items-center justify-between mb-5">
+              <p className="text-[10px] font-bold text-ink-muted uppercase tracking-widest">Course Roadmap</p>
+              <Link href={`/courses/${courseSlug}`} className="text-xs text-brand font-semibold hover:underline">View course</Link>
+            </div>
+
+            <div className="space-y-3">
+              {(modules ?? []).map((mod) => {
+                const modLessons = lessonsByModule.get(mod.id) ?? [];
+                const modCompleted = modLessons.filter(l => l.completed).length;
+                const modTotal = modLessons.length;
+                const modPct = modTotal > 0 ? modCompleted / modTotal : 0;
+                const isCurrentModule = currentLesson && currentLesson.module_id === mod.id;
+                const isDone = modPct === 1;
+
+                return (
+                  <div key={mod.id} className={[
+                    "flex items-center gap-4 px-4 py-3 rounded-xl border transition-all",
+                    isCurrentModule
+                      ? "border-brand/30 bg-surface-tint"
+                      : isDone
+                      ? "border-emerald-200 bg-emerald-50/50"
+                      : "border-border",
+                  ].join(" ")}>
+                    {/* Module number */}
+                    <div className={[
+                      "w-9 h-9 rounded-xl flex items-center justify-center text-sm font-bold shrink-0",
+                      isDone
+                        ? "bg-emerald-100 text-emerald-600"
+                        : isCurrentModule
+                        ? "bg-brand text-white"
+                        : "bg-surface-alt text-ink-muted",
+                    ].join(" ")}>
+                      {isDone ? (
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><polyline points="20 6 9 17 4 12" /></svg>
+                      ) : mod.week_number}
+                    </div>
+
+                    {/* Module info */}
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2">
+                        <p className={[
+                          "text-sm font-semibold truncate",
+                          isCurrentModule ? "text-brand" : isDone ? "text-emerald-700" : "text-ink",
+                        ].join(" ")}>
+                          {mod.title}
+                        </p>
+                        {isCurrentModule && (
+                          <span className="text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-brand/10 text-brand border border-brand/20">
+                            Current
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-[10px] text-ink-muted mt-0.5">
+                        Week {mod.week_number} · {modCompleted}/{modTotal} lessons
+                      </p>
+                    </div>
+
+                    {/* Progress bar */}
+                    <div className="w-20 shrink-0">
+                      <div className="w-full h-1.5 rounded-full bg-surface-alt overflow-hidden">
+                        <div className="h-full rounded-full transition-all duration-500" style={{
+                          width: `${modPct * 100}%`,
+                          background: isDone ? "#059669" : isCurrentModule ? courseColor : "#CBD5E1",
+                        }} />
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+
+        {/* Right column — Quick actions (1/3 width) */}
+        <div className="space-y-4">
+
+          {/* Quick actions */}
+          <div className="bg-surface rounded-xl border border-border p-5">
+            <p className="text-[10px] font-bold text-ink-muted uppercase tracking-widest mb-4">Quick Actions</p>
+            <div className="space-y-2">
+              {currentLesson && (
+                <Link href={`/learn/${currentLesson.id}`}
+                  className="flex items-center gap-3 px-4 py-3 rounded-xl border border-brand/20 bg-surface-tint hover:bg-brand/5 transition-all group">
+                  <div className="w-8 h-8 rounded-lg bg-brand flex items-center justify-center shrink-0">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5"><polygon points="5 3 19 12 5 21 5 3" /></svg>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-semibold text-ink truncate">Continue Lesson</p>
+                    <p className="text-[10px] text-ink-muted truncate">{currentLesson.title}</p>
+                  </div>
+                  <svg width="14" height="14" viewBox="0 0 16 16" fill="none" className="text-ink-muted group-hover:text-brand transition-colors"><path d="M6 3l5 5-5 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /></svg>
+                </Link>
+              )}
+
+              {nextProject && (
+                <Link href={`/projects/${nextProject.id}`}
+                  className="flex items-center gap-3 px-4 py-3 rounded-xl border border-border hover:border-brand/20 hover:bg-surface-soft transition-all group">
+                  <div className="w-8 h-8 rounded-lg bg-surface-alt flex items-center justify-center shrink-0">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#0056CE" strokeWidth="2" strokeLinecap="round">
+                      <path d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
+                    </svg>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-semibold text-ink truncate">Next Project</p>
+                    <p className="text-[10px] text-ink-muted truncate">{nextProject.title}</p>
+                  </div>
+                  <svg width="14" height="14" viewBox="0 0 16 16" fill="none" className="text-ink-muted group-hover:text-brand transition-colors"><path d="M6 3l5 5-5 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /></svg>
+                </Link>
+              )}
+
+              <Link href="/tutor"
+                className="flex items-center gap-3 px-4 py-3 rounded-xl border border-border hover:border-brand/20 hover:bg-surface-soft transition-all group">
+                <div className="w-8 h-8 rounded-lg bg-surface-alt flex items-center justify-center shrink-0">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#0056CE" strokeWidth="2" strokeLinecap="round">
+                    <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" />
+                  </svg>
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-semibold text-ink">AI Tutor</p>
+                  <p className="text-[10px] text-ink-muted">Get help with any topic</p>
+                </div>
+                <svg width="14" height="14" viewBox="0 0 16 16" fill="none" className="text-ink-muted group-hover:text-brand transition-colors"><path d="M6 3l5 5-5 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /></svg>
+              </Link>
+
+              <Link href="/portfolio"
+                className="flex items-center gap-3 px-4 py-3 rounded-xl border border-border hover:border-brand/20 hover:bg-surface-soft transition-all group">
+                <div className="w-8 h-8 rounded-lg bg-surface-alt flex items-center justify-center shrink-0">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#0056CE" strokeWidth="2" strokeLinecap="round">
+                    <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" /><circle cx="12" cy="7" r="4" />
+                  </svg>
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-semibold text-ink">Portfolio</p>
+                  <p className="text-[10px] text-ink-muted">{projectsDone} project{projectsDone !== 1 ? "s" : ""} deployed</p>
+                </div>
+                <svg width="14" height="14" viewBox="0 0 16 16" fill="none" className="text-ink-muted group-hover:text-brand transition-colors"><path d="M6 3l5 5-5 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /></svg>
+              </Link>
+            </div>
+          </div>
+
+          {/* Other enrolled courses */}
+          {activeEnrollments.length > 1 && (
+            <div className="bg-surface rounded-xl border border-border p-5">
+              <p className="text-[10px] font-bold text-ink-muted uppercase tracking-widest mb-4">Other Courses</p>
+              <div className="space-y-2">
+                {activeEnrollments.slice(1).map((e) => {
+                  const color = e.course?.slug ? COURSE_COLORS[e.course.slug] ?? "#0056CE" : "#0056CE";
+                  return (
+                    <Link key={e.id} href={`/courses/${e.course?.slug}`}
+                      className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-surface-soft transition-all group">
+                      <div className="w-2 h-8 rounded-full shrink-0" style={{ background: color }} />
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-semibold text-ink truncate group-hover:text-brand transition-colors">{e.course?.title}</p>
+                        <p className="text-[10px] text-ink-muted capitalize">{e.assessment_level ?? "—"}</p>
+                      </div>
+                    </Link>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   );
 }
