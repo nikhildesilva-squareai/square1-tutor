@@ -134,7 +134,7 @@ export default async function PortfolioPage() {
             <div className="text-center">
               <div className="w-16 h-16 rounded-2xl bg-brand/10 flex items-center justify-center mx-auto mb-4">
                 <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#0056CE" strokeWidth="2" strokeLinecap="round">
-                  <path d="M12 5v14M5 12h14" />
+                  <path d="M12 20h9" /><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
                 </svg>
               </div>
               <h3 className="text-lg font-bold text-ink mb-2">Your portfolio starts here</h3>
@@ -215,7 +215,7 @@ export default async function PortfolioPage() {
           <div className="flex-1">
             <h2 className="text-lg font-bold text-ink">{student.name ?? student.email}</h2>
             <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold mt-1 ${career.color} ${career.bg}`}>
-              <span>🎯</span> {career.label}
+  {career.label}
             </div>
           </div>
 
@@ -276,7 +276,7 @@ export default async function PortfolioPage() {
             <section key={courseId}>
               <div className="flex items-center gap-3 mb-4">
                 <div className="w-8 h-8 rounded-lg flex items-center justify-center text-sm" style={{ background: `${course.color}15` }}>
-                  {course.icon || "📚"}
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={course.color} strokeWidth="2" strokeLinecap="round"><path d="M4 19.5A2.5 2.5 0 016.5 17H20" /><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z" /></svg>
                 </div>
                 <h3 className="text-sm font-bold text-ink uppercase tracking-wider">{course.title}</h3>
                 <span className="text-xs text-ink-muted">{items.length} project{items.length > 1 ? "s" : ""}</span>

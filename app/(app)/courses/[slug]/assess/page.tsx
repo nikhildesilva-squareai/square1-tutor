@@ -294,12 +294,12 @@ export default function AssessPage({ params }: PageProps) {
             {/* Stats row */}
             <div className="grid grid-cols-3 gap-3 mb-8 anim-fade-up delay-3">
               {[
-                { icon: "📝", label: "Questions", value: "20" },
-                { icon: "⏱", label: "Duration", value: "~30m" },
-                { icon: "⚡", label: "Grading", value: "AI" },
+                { svg: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0056CE" strokeWidth="2" strokeLinecap="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" /><polyline points="14 2 14 8 20 8" /><line x1="16" y1="13" x2="8" y2="13" /><line x1="16" y1="17" x2="8" y2="17" /></svg>, label: "Questions", value: "20" },
+                { svg: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0056CE" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" /></svg>, label: "Duration", value: "~30m" },
+                { svg: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0056CE" strokeWidth="2" strokeLinecap="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" /></svg>, label: "Grading", value: "AI" },
               ].map((s) => (
                 <div key={s.label} className="text-center bg-surface-soft rounded-xl p-3 border border-border">
-                  <span className="text-lg">{s.icon}</span>
+                  <div className="flex justify-center mb-1">{s.svg}</div>
                   <p className="text-sm font-bold text-ink mt-1">{s.value}</p>
                   <p className="text-[10px] text-ink-muted uppercase tracking-wider">{s.label}</p>
                 </div>

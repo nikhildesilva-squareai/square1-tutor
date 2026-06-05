@@ -133,25 +133,31 @@ export default async function ProjectsPage() {
         </div>
 
         {/* Stats strip */}
-        <div className="flex items-center gap-6 mt-4 px-5 py-3 bg-surface rounded-xl border border-border">
-          <div className="flex items-center gap-2">
-            <span className="text-lg">📁</span>
+        <div className="flex items-center gap-6 mt-4 px-5 py-3.5 bg-surface rounded-xl border border-border">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-lg bg-surface-tint flex items-center justify-center">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0056CE" strokeWidth="2" strokeLinecap="round"><path d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" /></svg>
+            </div>
             <div>
               <p className="text-sm font-bold text-ink">{totalProjects}</p>
               <p className="text-[10px] text-ink-muted uppercase tracking-wider">Total Projects</p>
             </div>
           </div>
           <div className="w-px h-8 bg-border" />
-          <div className="flex items-center gap-2">
-            <span className="text-lg">✅</span>
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-lg bg-emerald-50 flex items-center justify-center">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#059669" strokeWidth="2.5" strokeLinecap="round"><polyline points="20 6 9 17 4 12" /></svg>
+            </div>
             <div>
               <p className="text-sm font-bold text-ink">{completedProjects}</p>
               <p className="text-[10px] text-ink-muted uppercase tracking-wider">Completed</p>
             </div>
           </div>
           <div className="w-px h-8 bg-border" />
-          <div className="flex items-center gap-2">
-            <span className="text-lg">🎯</span>
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-lg bg-surface-tint flex items-center justify-center">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0056CE" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" /></svg>
+            </div>
             <div>
               <p className="text-sm font-bold text-ink">{enrolledIds.size}</p>
               <p className="text-[10px] text-ink-muted uppercase tracking-wider">Courses Active</p>
@@ -172,8 +178,10 @@ export default async function ProjectsPage() {
             <section key={course.id}>
               {/* Course header */}
               <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 rounded-xl flex items-center justify-center text-lg" style={{ background: `${course.color}15` }}>
-                  {course.icon || "📚"}
+                <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: `${course.color}12` }}>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={course.color} strokeWidth="2" strokeLinecap="round">
+                    <path d="M4 19.5A2.5 2.5 0 016.5 17H20" /><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z" />
+                  </svg>
                 </div>
                 <div className="flex-1">
                   <div className="flex items-center gap-2">

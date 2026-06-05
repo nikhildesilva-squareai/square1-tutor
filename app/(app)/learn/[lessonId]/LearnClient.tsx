@@ -133,7 +133,7 @@ function renderTheory(md: string): string {
 
     // Blockquotes → tip cards
     .replace(/^&gt; (.+)$/gm, `<div class="flex gap-3 my-4 px-4 py-3 rounded-xl bg-amber-50 border border-amber-200">
-      <span class="text-lg shrink-0">💡</span>
+      <svg class="shrink-0 mt-0.5" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#D97706" stroke-width="2" stroke-linecap="round"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M12 2v1"/><path d="M12 7a4 4 0 014 4c0 1.5-.8 2.8-2 3.4V16H10v-1.6C8.8 13.8 8 12.5 8 11a4 4 0 014-4z"/></svg>
       <p class="text-sm text-amber-800 leading-relaxed">$1</p>
     </div>`)
 
@@ -165,7 +165,7 @@ function renderTheory(md: string): string {
 // ─── Tab button ────────────────────────────────────────────────────────────
 
 function TabButton({ active, onClick, icon, label, badge }: {
-  active: boolean; onClick: () => void; icon: string; label: string; badge?: string;
+  active: boolean; onClick: () => void; icon: React.ReactNode; label: string; badge?: string;
 }) {
   return (
     <button
@@ -177,7 +177,7 @@ function TabButton({ active, onClick, icon, label, badge }: {
           : "text-ink-muted hover:text-ink hover:bg-surface-alt"
       )}
     >
-      <span>{icon}</span>
+      {icon}
       <span>{label}</span>
       {badge && (
         <span className={cn(
@@ -359,9 +359,9 @@ export function LearnClient({
 
           {/* Tabs */}
           <div className="flex items-center gap-2 bg-surface-soft rounded-2xl p-1.5">
-            <TabButton active={activeTab === "theory"} onClick={() => switchTab("theory")} icon="📖" label="Theory" />
-            <TabButton active={activeTab === "practice"} onClick={() => switchTab("practice")} icon="⚡" label="Practice" badge={String(exercises.length)} />
-            <TabButton active={activeTab === "quiz"} onClick={() => switchTab("quiz")} icon="✅" label="Results"
+            <TabButton active={activeTab === "theory"} onClick={() => switchTab("theory")} icon={<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M4 19.5A2.5 2.5 0 016.5 17H20" /><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z" /></svg>} label="Theory" />
+            <TabButton active={activeTab === "practice"} onClick={() => switchTab("practice")} icon={<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" /></svg>} label="Practice" badge={String(exercises.length)} />
+            <TabButton active={activeTab === "quiz"} onClick={() => switchTab("quiz")} icon={<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M22 11.08V12a10 10 0 11-5.93-9.14" /><polyline points="22 4 12 14.01 9 11.01" /></svg>} label="Results"
               badge={results ? `${totalScore}/${maxScore}` : undefined} />
           </div>
         </div>
@@ -377,7 +377,8 @@ export function LearnClient({
             {lesson.learning_objectives && lesson.learning_objectives.length > 0 && (
               <div className="mb-8 p-5 rounded-2xl bg-surface border border-border shadow-card anim-fade-up">
                 <p className="text-[10px] font-bold text-ink-muted uppercase tracking-widest mb-3 flex items-center gap-2">
-                  <span>🎯</span> Learning Objectives
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="10" /><circle cx="12" cy="12" r="6" /><circle cx="12" cy="12" r="2" /></svg>
+                  Learning Objectives
                 </p>
                 <div className="space-y-2">
                   {lesson.learning_objectives.map((obj, i) => (
@@ -399,7 +400,9 @@ export function LearnClient({
               />
             ) : (
               <div className="bg-surface border border-border rounded-2xl p-10 text-center anim-fade-up">
-                <span className="text-4xl mb-4 block">📚</span>
+                <div className="w-14 h-14 rounded-2xl bg-surface-tint flex items-center justify-center mx-auto mb-4">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#0056CE" strokeWidth="1.5" strokeLinecap="round"><path d="M4 19.5A2.5 2.5 0 016.5 17H20" /><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z" /></svg>
+                </div>
                 <p className="text-sm text-ink-muted">Lesson content is being prepared. Check back soon!</p>
               </div>
             )}
@@ -411,7 +414,8 @@ export function LearnClient({
                   onClick={() => switchTab("practice")}
                   className="inline-flex items-center gap-2 h-12 px-8 rounded-xl bg-brand text-white font-bold text-sm transition-all hover:bg-brand/90 hover:shadow-lg hover:shadow-brand/20 hover:-translate-y-0.5"
                 >
-                  <span>⚡</span> Start Practice
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" /></svg>
+                  Start Practice
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="9 18 15 12 9 6" /></svg>
                 </button>
               </div>
@@ -586,7 +590,9 @@ export function LearnClient({
 
         {activeTab === "practice" && exercises.length === 0 && (
           <div className="bg-surface border border-border rounded-2xl p-10 text-center anim-fade-up">
-            <span className="text-4xl mb-4 block">✨</span>
+            <div className="w-14 h-14 rounded-2xl bg-emerald-50 flex items-center justify-center mx-auto mb-4">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#059669" strokeWidth="2" strokeLinecap="round"><path d="M22 11.08V12a10 10 0 11-5.93-9.14" /><polyline points="22 4 12 14.01 9 11.01" /></svg>
+            </div>
             <p className="text-sm text-ink-muted">No exercises for this lesson. Read the theory and mark complete!</p>
           </div>
         )}
@@ -644,13 +650,16 @@ export function LearnClient({
               </div>
             ) : (
               <div className="bg-surface border border-border rounded-2xl p-10 text-center">
-                <span className="text-4xl mb-4 block">📊</span>
+                <div className="w-14 h-14 rounded-2xl bg-surface-tint flex items-center justify-center mx-auto mb-4">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#0056CE" strokeWidth="1.5" strokeLinecap="round"><path d="M18 20V10" /><path d="M12 20V4" /><path d="M6 20v-6" /></svg>
+                </div>
                 <p className="text-sm text-ink-muted mb-4">Complete the practice exercises to see your results here.</p>
                 <button
                   onClick={() => switchTab("practice")}
                   className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-brand text-white text-sm font-bold hover:bg-brand/90 transition-all"
                 >
-                  <span>⚡</span> Go to Practice
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" /></svg>
+                  Go to Practice
                 </button>
               </div>
             )}
