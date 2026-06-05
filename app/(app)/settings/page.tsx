@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import Link from "next/link";
+import { SettingsClient } from "./SettingsClient";
 
 export default async function SettingsPage() {
   const supabase = await createClient();
@@ -12,92 +13,44 @@ export default async function SettingsPage() {
     .eq("user_id", user.id)
     .maybeSingle();
 
+  // Get enrollment info
+  const { data: enrollments } = await supabase
+    .from("student_enrollments")
+    .select("id, assessment_level, enrolled_at, course:courses(title)")
+    .eq("student_id", student?.id ?? "")
+    .eq("status", "active");
+
+  const enrollmentList = (enrollments ?? []) as unknown as Array<{
+    id: string; assessment_level: string | null; enrolled_at: string;
+    course: { title: string } | null;
+  }>;
+
   const joinedDate = student?.created_at
-    ? new Date(student.created_at).toLocaleDateString("en-AU", {
-        year: "numeric", month: "long", day: "numeric",
-      })
+    ? new Date(student.created_at).toLocaleDateString("en-AU", { year: "numeric", month: "long", day: "numeric" })
     : "—";
 
   return (
-    <div className="px-6 py-8 max-w-2xl mx-auto space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-ink">Settings</h1>
-        <p className="text-ink-muted mt-1 text-sm">Manage your account preferences.</p>
+    <div className="px-4 sm:px-6 py-8 max-w-2xl mx-auto">
+      {/* Header */}
+      <div className="flex items-center gap-3 mb-8">
+        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-brand to-brand/80 flex items-center justify-center">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round">
+            <circle cx="12" cy="12" r="3" /><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 01-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z" />
+          </svg>
+        </div>
+        <div>
+          <h1 className="text-2xl font-black text-ink">Settings</h1>
+          <p className="text-sm text-ink-muted">Manage your account and preferences</p>
+        </div>
       </div>
 
-      {/* Profile */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Profile</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="flex items-center gap-4">
-            <div className="w-14 h-14 rounded-full bg-brand flex items-center justify-center text-xl font-bold text-white">
-              {(student?.name?.[0] ?? user.email?.[0] ?? "U").toUpperCase()}
-            </div>
-            <div>
-              <p className="text-sm font-semibold text-ink">
-                {student?.name ?? "Not set"}
-              </p>
-              <p className="text-xs text-ink-muted">{user.email}</p>
-              <p className="text-xs text-ink-muted mt-0.5">Member since {joinedDate}</p>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 gap-4 pt-2">
-            <div>
-              <label className="block text-xs font-semibold text-ink-muted uppercase tracking-wide mb-1.5">
-                Display name
-              </label>
-              <input
-                type="text"
-                defaultValue={student?.name ?? ""}
-                disabled
-                placeholder="Coming soon — name editing"
-                className="w-full h-10 px-3.5 rounded-[var(--radius-md)] border border-border bg-surface-alt text-ink-muted text-sm"
-              />
-              <p className="text-xs text-ink-muted mt-1">Name editing coming soon.</p>
-            </div>
-
-            <div>
-              <label className="block text-xs font-semibold text-ink-muted uppercase tracking-wide mb-1.5">
-                Email address
-              </label>
-              <input
-                type="email"
-                value={user.email ?? ""}
-                disabled
-                className="w-full h-10 px-3.5 rounded-[var(--radius-md)] border border-border bg-surface-alt text-ink-muted text-sm"
-              />
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Notifications (placeholder) */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Notifications</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className="text-sm text-ink-muted">Notification preferences coming soon.</p>
-        </CardContent>
-      </Card>
-
-      {/* Danger zone */}
-      <Card className="border-error/20">
-        <CardHeader>
-          <CardTitle className="text-error">Account</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className="text-sm text-ink-muted mb-4">
-            To delete your account or export your data, please contact{" "}
-            <a href="mailto:support@square1.ai" className="text-brand hover:underline">
-              support@square1.ai
-            </a>.
-          </p>
-        </CardContent>
-      </Card>
+      <SettingsClient
+        studentId={student?.id ?? ""}
+        studentName={student?.name ?? ""}
+        userEmail={user.email ?? ""}
+        joinedDate={joinedDate}
+        enrollments={enrollmentList}
+      />
     </div>
   );
 }

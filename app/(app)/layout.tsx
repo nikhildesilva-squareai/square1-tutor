@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { SidebarNav } from "@/components/sidebar-nav";
 import { MobileNav } from "@/components/MobileNav";
+import { BottomNav } from "@/components/BottomNav";
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
   const supabase = await createClient();
@@ -21,9 +22,12 @@ export default async function AppLayout({ children }: { children: React.ReactNod
         {/* Mobile/tablet header + slide-over drawer (hidden on lg+) */}
         <MobileNav userEmail={user.email ?? ""} />
 
-        <main className="flex-1 overflow-y-auto">
+        <main className="flex-1 overflow-y-auto pb-20 lg:pb-0">
           {children}
         </main>
+
+        {/* Mobile bottom tab bar — hidden on desktop */}
+        <BottomNav />
       </div>
     </div>
   );
