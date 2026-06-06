@@ -150,7 +150,7 @@ export default function TermsPage() {
             </section>
 
             <section>
-              <h2 className="text-xl font-bold text-ink mb-3">8. Changes to these Terms</h2>
+              <h2 className="text-xl font-bold text-ink mb-3">13. Changes to these Terms</h2>
               <p>
                 We may update these Terms from time to time. We will notify you by email of any
                 material changes at least 14 days before they take effect. Continued use of the
@@ -159,7 +159,58 @@ export default function TermsPage() {
             </section>
 
             <section>
-              <h2 className="text-xl font-bold text-ink mb-3">9. Governing law</h2>
+              <h2 className="text-xl font-bold text-ink mb-3">9. Payments and refunds</h2>
+              <p>
+                Paid plans are billed monthly or as a one-time upfront payment as selected at
+                checkout. All prices are in USD unless stated otherwise.
+              </p>
+              <p className="mt-3">
+                <strong>Refund policy:</strong> If you are unsatisfied with the Service, you may
+                request a full refund within 14 days of your first payment. After 14 days, refunds
+                are provided at our discretion on a pro-rata basis for unused months. Contact{" "}
+                <a href="mailto:tech@square1ai.com" className="text-brand hover:underline">
+                  tech@square1ai.com
+                </a>{" "}
+                to request a refund.
+              </p>
+              <p className="mt-3">
+                <strong>Cancellation:</strong> You may cancel your plan at any time. Access continues
+                until the end of your current billing period. No partial-month refunds are given for
+                cancellations.
+              </p>
+            </section>
+
+            <section>
+              <h2 className="text-xl font-bold text-ink mb-3">10. AI-generated content</h2>
+              <p>
+                Parts of the Service use artificial intelligence (Claude by Anthropic) to grade
+                exercises, provide feedback, and generate learning recommendations. AI-generated
+                content may occasionally contain errors or inaccuracies.
+              </p>
+              <p className="mt-3">
+                We do not guarantee the accuracy or completeness of AI-generated feedback. Students
+                should use AI feedback as a learning aid, not as a definitive assessment of their
+                abilities. Your assessment responses and code submissions are processed by the
+                Anthropic API but are <strong>not</strong> used to train AI models.
+              </p>
+            </section>
+
+            <section>
+              <h2 className="text-xl font-bold text-ink mb-3">11. Certificates</h2>
+              <p>
+                Certificates of completion are issued to students who complete a course&apos;s
+                curriculum. Certificates are verified by Square 1 AI and represent completion of
+                the coursework, not a formal academic qualification or professional certification.
+              </p>
+              <p className="mt-3">
+                Square 1 AI certificates are not accredited by any educational institution or
+                professional body. They serve as evidence of skill development and project
+                completion.
+              </p>
+            </section>
+
+            <section>
+              <h2 className="text-xl font-bold text-ink mb-3">12. Governing law</h2>
               <p>
                 These Terms are governed by the laws of England and Wales. Any disputes shall be
                 subject to the exclusive jurisdiction of the courts of England and Wales, unless
@@ -168,7 +219,7 @@ export default function TermsPage() {
             </section>
 
             <section>
-              <h2 className="text-xl font-bold text-ink mb-3">10. Contact</h2>
+              <h2 className="text-xl font-bold text-ink mb-3">14. Contact</h2>
               <p>
                 For questions about these Terms:{" "}
                 <a href="mailto:tech@square1ai.com" className="text-brand hover:underline">
