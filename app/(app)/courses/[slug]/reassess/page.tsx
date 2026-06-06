@@ -5,6 +5,22 @@ import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { CodeEditor } from "@/components/ui/code-editor";
 
+function renderInlineMd(text: string): React.ReactNode[] {
+  const parts: React.ReactNode[] = [];
+  const regex = /(\*\*(.+?)\*\*|\*(.+?)\*|`(.+?)`)/g;
+  let lastIdx = 0;
+  let match: RegExpExecArray | null;
+  while ((match = regex.exec(text)) !== null) {
+    if (match.index > lastIdx) parts.push(text.slice(lastIdx, match.index));
+    if (match[2]) parts.push(<strong key={match.index} className="font-bold">{match[2]}</strong>);
+    else if (match[3]) parts.push(<em key={match.index}>{match[3]}</em>);
+    else if (match[4]) parts.push(<code key={match.index} className="px-1.5 py-0.5 rounded bg-surface-alt text-sm font-mono text-brand">{match[4]}</code>);
+    lastIdx = match.index + match[0].length;
+  }
+  if (lastIdx < text.length) parts.push(text.slice(lastIdx));
+  return parts.length > 0 ? parts : [text];
+}
+
 interface PageProps {
   params: Promise<{ slug: string }>;
 }
@@ -282,7 +298,7 @@ export default function ReassessPage({ params }: PageProps) {
             <span className="text-[10px] text-ink-muted ml-auto">{currentQ.marks} marks</span>
           </div>
 
-          <h2 className="text-lg font-semibold text-ink leading-relaxed mb-6 whitespace-pre-wrap">{currentQ.stem_md}</h2>
+          <h2 className="text-lg font-semibold text-ink leading-relaxed mb-6 whitespace-pre-wrap">{renderInlineMd(currentQ.stem_md)}</h2>
 
           {/* MCQ */}
           {currentQ.type === "mcq" && currentQ.options && (

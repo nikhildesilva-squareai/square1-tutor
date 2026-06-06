@@ -16,6 +16,48 @@ type Phase = "welcome" | "question" | "review" | "submitting";
 /* ═══════════════════════════════════════════════════════════════════════════ */
 /*  CSS-ONLY ANIMATIONS (injected once)                                      */
 /* ═══════════════════════════════════════════════════════════════════════════ */
+/* ═══════════════════════════════════════════════════════════════════════════ */
+/*  INLINE MARKDOWN → JSX  (handles **bold**, *italic*, `code`, "quotes")   */
+/* ═══════════════════════════════════════════════════════════════════════════ */
+function renderInlineMd(text: string): React.ReactNode[] {
+  // Split on **bold**, *italic*, and `code` patterns
+  const parts: React.ReactNode[] = [];
+  const regex = /(\*\*(.+?)\*\*|\*(.+?)\*|`(.+?)`)/g;
+  let lastIdx = 0;
+  let match: RegExpExecArray | null;
+
+  while ((match = regex.exec(text)) !== null) {
+    // Push text before the match
+    if (match.index > lastIdx) {
+      parts.push(text.slice(lastIdx, match.index));
+    }
+
+    if (match[2]) {
+      // **bold** → <strong>
+      parts.push(<strong key={match.index} className="font-bold">{match[2]}</strong>);
+    } else if (match[3]) {
+      // *italic* → <em>
+      parts.push(<em key={match.index}>{match[3]}</em>);
+    } else if (match[4]) {
+      // `code` → <code>
+      parts.push(
+        <code key={match.index} className="px-1.5 py-0.5 rounded bg-surface-alt text-sm font-mono text-brand">
+          {match[4]}
+        </code>
+      );
+    }
+
+    lastIdx = match.index + match[0].length;
+  }
+
+  // Push remaining text
+  if (lastIdx < text.length) {
+    parts.push(text.slice(lastIdx));
+  }
+
+  return parts.length > 0 ? parts : [text];
+}
+
 const ANIM_STYLES = `
 @keyframes slideInRight  { from { opacity:0; transform:translateX(60px) }  to { opacity:1; transform:translateX(0) } }
 @keyframes slideInLeft   { from { opacity:0; transform:translateX(-60px) } to { opacity:1; transform:translateX(0) } }
@@ -506,7 +548,7 @@ export default function AssessPage({ params }: PageProps) {
 
             {/* Question stem */}
             <h2 className="text-lg sm:text-xl font-semibold text-ink leading-relaxed mb-8 whitespace-pre-wrap">
-              {currentQ.stem_md}
+              {renderInlineMd(currentQ.stem_md)}
             </h2>
 
             {/* ─── MCQ: Big tappable cards ──────────────────────────────── */}
