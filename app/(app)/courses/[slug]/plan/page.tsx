@@ -58,15 +58,6 @@ const PLANS: Plan[] = [
   },
 ];
 
-const FEATURES = [
-  { icon: "book", text: "Full course curriculum (40 lessons)" },
-  { icon: "code", text: "10-12 real deployable projects" },
-  { icon: "ai", text: "AI code grading on every submission" },
-  { icon: "chat", text: "Nova — 24/7 AI tutor" },
-  { icon: "chart", text: "Skill reports & progress tracking" },
-  { icon: "award", text: "Certificate of completion" },
-  { icon: "github", text: "GitHub portfolio" },
-];
 
 const FAQS = [
   {
@@ -103,18 +94,6 @@ const FAQS = [
   },
 ];
 
-function FeatureIcon({ name }: { name: string }) {
-  const icons: Record<string, React.ReactNode> = {
-    book: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" /><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" /></svg>,
-    code: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="16 18 22 12 16 6" /><polyline points="8 6 2 12 8 18" /></svg>,
-    ai: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="3" /><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" /></svg>,
-    chat: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" /></svg>,
-    chart: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="20" x2="18" y2="10" /><line x1="12" y1="20" x2="12" y2="4" /><line x1="6" y1="20" x2="6" y2="14" /></svg>,
-    award: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="8" r="7" /><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88" /></svg>,
-    github: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22" /></svg>,
-  };
-  return <span className="text-brand">{icons[name] ?? null}</span>;
-}
 
 export default function PlanPage({ params }: PageProps) {
   const { slug } = use(params);
@@ -317,12 +296,12 @@ export default function PlanPage({ params }: PageProps) {
       </section>
 
       {/* ═══════════════════════════════════════════════════════════════ */}
-      {/*  WHAT'S INCLUDED                                               */}
+      {/*  WHAT'S INCLUDED — BENTO GRID                                  */}
       {/* ═══════════════════════════════════════════════════════════════ */}
-      <section className="py-12 sm:py-16 px-4 sm:px-6">
-        <div className="max-w-3xl mx-auto">
-          <div className="text-center mb-8">
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-brand/20 bg-surface-tint mb-3">
+      <section className="py-16 sm:py-20 px-4 sm:px-6">
+        <div className="max-w-4xl mx-auto">
+          <div className="text-center mb-12">
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-brand/20 bg-surface-tint mb-4">
               <span className="text-[10px] tracking-[0.2em] uppercase font-bold text-brand">
                 What&apos;s Included
               </span>
@@ -330,28 +309,97 @@ export default function PlanPage({ params }: PageProps) {
             <h2 className="text-2xl sm:text-3xl font-black text-ink">
               Everything you need to master it
             </h2>
+            <p className="text-sm text-ink-muted mt-2 max-w-md mx-auto">
+              Every plan includes the complete learning toolkit — no add-ons, no tiers.
+            </p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            {FEATURES.map((f) => (
-              <div key={f.text} className="flex items-center gap-3 rounded-xl border border-border bg-surface px-5 py-4 shadow-card">
-                <div className="w-8 h-8 rounded-lg bg-surface-tint flex items-center justify-center shrink-0">
-                  <FeatureIcon name={f.icon} />
+          {/* Bento grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-6 gap-3 sm:gap-4">
+            {/* Hero card — spans 4 cols */}
+            <div className="sm:col-span-4 relative overflow-hidden rounded-2xl border border-border bg-gradient-to-br from-brand/[0.04] to-transparent p-6 sm:p-8 group">
+              <div className="absolute top-0 right-0 w-40 h-40 bg-brand/[0.03] rounded-full blur-3xl -translate-y-1/2 translate-x-1/4" />
+              <div className="relative">
+                <div className="w-12 h-12 rounded-2xl bg-brand/10 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#0056CE" strokeWidth="2"><polyline points="16 18 22 12 16 6" /><polyline points="8 6 2 12 8 18" /></svg>
                 </div>
-                <span className="text-sm font-medium text-ink-secondary">{f.text}</span>
+                <h3 className="text-lg font-bold text-ink mb-1.5">10-12 Real, Deployable Projects</h3>
+                <p className="text-sm text-ink-muted leading-relaxed max-w-md">
+                  Build production-grade applications that live on your GitHub. Not toy exercises — real apps that prove your skills to employers.
+                </p>
               </div>
-            ))}
+            </div>
+
+            {/* Tall card — spans 2 cols, 2 rows */}
+            <div className="sm:col-span-2 sm:row-span-2 relative overflow-hidden rounded-2xl border border-border bg-gradient-to-b from-surface to-surface-soft p-6 flex flex-col group">
+              <div className="absolute bottom-0 left-0 w-32 h-32 bg-success/[0.06] rounded-full blur-3xl translate-y-1/3 -translate-x-1/4" />
+              <div className="relative flex-1 flex flex-col">
+                <div className="w-12 h-12 rounded-2xl bg-success/10 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#19A65F" strokeWidth="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" /></svg>
+                </div>
+                <h3 className="text-lg font-bold text-ink mb-1.5">Nova AI Tutor</h3>
+                <p className="text-sm text-ink-muted leading-relaxed mb-6">
+                  24/7 personal tutor that knows your code, your progress, and your weak spots. Ask anything, anytime.
+                </p>
+                <div className="mt-auto flex items-center gap-2">
+                  <span className="w-2 h-2 rounded-full bg-success animate-pulse" />
+                  <span className="text-xs font-semibold text-success">Always online</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Medium cards row — two cards, each 2 cols */}
+            <div className="sm:col-span-2 rounded-2xl border border-border bg-surface p-5 sm:p-6 group hover:border-brand/20 transition-colors">
+              <div className="w-10 h-10 rounded-xl bg-brand/10 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform duration-300">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0056CE" strokeWidth="2"><circle cx="12" cy="12" r="3" /><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" /></svg>
+              </div>
+              <h3 className="text-sm font-bold text-ink mb-1">AI Code Grading</h3>
+              <p className="text-xs text-ink-muted leading-relaxed">Instant, line-by-line feedback on every submission.</p>
+            </div>
+
+            <div className="sm:col-span-2 rounded-2xl border border-border bg-surface p-5 sm:p-6 group hover:border-brand/20 transition-colors">
+              <div className="w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform duration-300">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" strokeWidth="2"><line x1="18" y1="20" x2="18" y2="10" /><line x1="12" y1="20" x2="12" y2="4" /><line x1="6" y1="20" x2="6" y2="14" /></svg>
+              </div>
+              <h3 className="text-sm font-bold text-ink mb-1">Skill Reports & Progress</h3>
+              <p className="text-xs text-ink-muted leading-relaxed">See exactly where you stand across every topic.</p>
+            </div>
+
+            {/* Bottom row — three compact cards */}
+            <div className="sm:col-span-2 rounded-2xl border border-border bg-surface p-5 sm:p-6 group hover:border-brand/20 transition-colors">
+              <div className="w-10 h-10 rounded-xl bg-violet-500/10 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform duration-300">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#8B5CF6" strokeWidth="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" /><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" /></svg>
+              </div>
+              <h3 className="text-sm font-bold text-ink mb-1">40 Lessons</h3>
+              <p className="text-xs text-ink-muted leading-relaxed">Full curriculum from foundations to advanced.</p>
+            </div>
+
+            <div className="sm:col-span-2 rounded-2xl border border-border bg-surface p-5 sm:p-6 group hover:border-brand/20 transition-colors">
+              <div className="w-10 h-10 rounded-xl bg-rose-500/10 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform duration-300">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#F43F5E" strokeWidth="2"><circle cx="12" cy="8" r="7" /><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88" /></svg>
+              </div>
+              <h3 className="text-sm font-bold text-ink mb-1">Certificate</h3>
+              <p className="text-xs text-ink-muted leading-relaxed">Verified credential for LinkedIn and your resume.</p>
+            </div>
+
+            <div className="sm:col-span-2 rounded-2xl border border-border bg-surface p-5 sm:p-6 group hover:border-brand/20 transition-colors">
+              <div className="w-10 h-10 rounded-xl bg-ink/5 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform duration-300">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-ink"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22" /></svg>
+              </div>
+              <h3 className="text-sm font-bold text-ink mb-1">GitHub Portfolio</h3>
+              <p className="text-xs text-ink-muted leading-relaxed">Ship your projects straight to GitHub.</p>
+            </div>
           </div>
         </div>
       </section>
 
       {/* ═══════════════════════════════════════════════════════════════ */}
-      {/*  COMPARISON — BOOTCAMP vs SQUARE 1                             */}
+      {/*  COMPARISON — UNIFIED TABLE                                    */}
       {/* ═══════════════════════════════════════════════════════════════ */}
-      <section className="py-12 sm:py-16 px-4 sm:px-6">
+      <section className="py-16 sm:py-20 px-4 sm:px-6">
         <div className="max-w-3xl mx-auto">
-          <div className="text-center mb-10">
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-brand/20 bg-surface-tint mb-3">
+          <div className="text-center mb-12">
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-brand/20 bg-surface-tint mb-4">
               <span className="text-[10px] tracking-[0.2em] uppercase font-bold text-brand">
                 Compare
               </span>
@@ -364,62 +412,58 @@ export default function PlanPage({ params }: PageProps) {
             </p>
           </div>
 
-          <div className="grid grid-cols-2 gap-4 sm:gap-6">
-            {/* Bootcamp column */}
-            <div className="rounded-2xl border border-border bg-surface p-5 sm:p-6">
-              <div className="flex items-center gap-2 mb-5">
-                <div className="w-8 h-8 rounded-lg bg-red-50 flex items-center justify-center">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#EF4444" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
-                </div>
-                <h3 className="text-sm sm:text-base font-bold text-ink">Bootcamp</h3>
+          {/* Table-style comparison */}
+          <div className="rounded-2xl border border-border overflow-hidden shadow-card">
+            {/* Header row */}
+            <div className="grid grid-cols-[1fr_1fr_1fr] items-end border-b border-border">
+              <div className="p-4 sm:p-5" />
+              <div className="p-4 sm:p-5 text-center border-l border-border">
+                <span className="text-xs font-bold text-ink-muted uppercase tracking-wider">Bootcamp</span>
               </div>
-              <div className="space-y-4">
-                {[
-                  { label: "Cost", value: "$10,000 — $20,000", bad: true },
-                  { label: "Schedule", value: "Fixed, rigid", bad: true },
-                  { label: "AI Tutor", value: "None", bad: true },
-                  { label: "Code Review", value: "Weeks later", bad: true },
-                  { label: "Projects", value: "2-3 guided", bad: false },
-                  { label: "Personalised", value: "One-size-fits-all", bad: true },
-                  { label: "Certificate", value: "Yes", bad: false },
-                  { label: "Self-paced", value: "No", bad: true },
-                ].map((row) => (
-                  <div key={row.label} className="flex items-start justify-between gap-2">
-                    <span className="text-xs text-ink-muted">{row.label}</span>
-                    <span className={cn("text-xs font-medium text-right", row.bad ? "text-red-400" : "text-ink-secondary")}>
-                      {row.value}
-                    </span>
-                  </div>
-                ))}
+              <div className="p-4 sm:p-5 text-center border-l border-brand/20 bg-brand/[0.03] relative">
+                <div className="absolute top-0 inset-x-0 h-0.5 bg-brand" />
+                <span className="text-xs font-bold text-brand uppercase tracking-wider">Square 1</span>
               </div>
             </div>
 
-            {/* Square 1 column */}
-            <div className="rounded-2xl border-2 border-brand bg-surface p-5 sm:p-6 ring-1 ring-brand/10 shadow-card-hover">
-              <div className="flex items-center gap-2 mb-5">
-                <div className="w-8 h-8 rounded-lg bg-brand/10 flex items-center justify-center">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0056CE" strokeWidth="2.5"><polyline points="20 6 9 17 4 12" /></svg>
+            {/* Data rows */}
+            {[
+              { label: "Cost", bootcamp: "$10,000 — $20,000", sq1: "From $15.9/mo", bootcampBad: true },
+              { label: "Schedule", bootcamp: "Fixed, rigid", sq1: "Your pace, your time", bootcampBad: true },
+              { label: "AI Tutor", bootcamp: "None", sq1: "24/7 — always on", bootcampBad: true },
+              { label: "Code Review", bootcamp: "Weeks later", sq1: "Instant, every submission", bootcampBad: true },
+              { label: "Projects", bootcamp: "2-3 guided", sq1: "10-12 real, deployed", bootcampBad: false },
+              { label: "Personalised", bootcamp: "One-size-fits-all", sq1: "AI-adapted to your level", bootcampBad: true },
+              { label: "Certificate", bootcamp: "Yes", sq1: "Yes, verified", bootcampBad: false },
+              { label: "Self-paced", bootcamp: "No", sq1: "100%", bootcampBad: true },
+            ].map((row, i) => (
+              <div key={row.label} className={cn(
+                "grid grid-cols-[1fr_1fr_1fr] items-center",
+                i % 2 === 0 ? "bg-surface" : "bg-surface-soft/50",
+                i < 7 && "border-b border-border/60"
+              )}>
+                <div className="p-4 sm:px-5">
+                  <span className="text-sm font-semibold text-ink">{row.label}</span>
                 </div>
-                <h3 className="text-sm sm:text-base font-bold text-brand">Square 1</h3>
+                <div className="p-4 sm:px-5 text-center border-l border-border/60">
+                  <span className={cn("text-sm", row.bootcampBad ? "text-ink-muted" : "text-ink-secondary font-medium")}>
+                    {row.bootcamp}
+                  </span>
+                </div>
+                <div className="p-4 sm:px-5 text-center border-l border-brand/10 bg-brand/[0.02]">
+                  <span className="text-sm font-semibold text-brand">{row.sq1}</span>
+                </div>
               </div>
-              <div className="space-y-4">
-                {[
-                  { label: "Cost", value: "From $15.9/mo" },
-                  { label: "Schedule", value: "Your pace, your time" },
-                  { label: "AI Tutor", value: "24/7 — always on" },
-                  { label: "Code Review", value: "Instant, every submission" },
-                  { label: "Projects", value: "10-12 real, deployed" },
-                  { label: "Personalised", value: "AI-adapted to your level" },
-                  { label: "Certificate", value: "Yes, verified" },
-                  { label: "Self-paced", value: "100%" },
-                ].map((row) => (
-                  <div key={row.label} className="flex items-start justify-between gap-2">
-                    <span className="text-xs text-ink-muted">{row.label}</span>
-                    <span className="text-xs font-semibold text-brand text-right">{row.value}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
+            ))}
+          </div>
+
+          {/* Bottom verdict */}
+          <div className="mt-6 flex items-center justify-center gap-3">
+            <div className="h-px flex-1 bg-gradient-to-r from-transparent to-border" />
+            <p className="text-xs font-bold text-ink-muted uppercase tracking-wider px-2">
+              Same outcome, 99% less cost
+            </p>
+            <div className="h-px flex-1 bg-gradient-to-l from-transparent to-border" />
           </div>
         </div>
       </section>
