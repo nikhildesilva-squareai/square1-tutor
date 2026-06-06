@@ -49,7 +49,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Attempt already submitted" }, { status: 400 });
     }
 
-    // Upsert response
+    // Upsert response — no updated_at column exists, removed it
     const { error } = await supabase
       .from("assessment_responses")
       .upsert({
@@ -58,14 +58,13 @@ export async function POST(request: Request) {
         selected_option: selectedOption ?? null,
         response_text: responseText ?? null,
         code_response: codeResponse ?? null,
-        updated_at: new Date().toISOString(),
       }, {
         onConflict: "attempt_id,question_id",
       });
 
     if (error) {
-      console.error("[assess/response]", error);
-      return NextResponse.json({ error: "Failed to save response" }, { status: 500 });
+      console.error("[assess/response] upsert error:", JSON.stringify(error));
+      return NextResponse.json({ error: "Failed to save response", detail: error.message }, { status: 500 });
     }
 
     return NextResponse.json({ ok: true });

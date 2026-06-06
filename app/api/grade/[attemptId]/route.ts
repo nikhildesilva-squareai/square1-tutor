@@ -293,7 +293,7 @@ export async function POST(
       if (existingReport) {
         const { data: questionResults } = await supabase
           .from("assessment_responses")
-          .select("question_id, selected_option, response_text, code_response, marks_awarded, ai_feedback")
+          .select("question_id, selected_option, response_text, code_response, partial_credit, ai_feedback_md")
           .eq("attempt_id", attemptId);
 
         const { data: questions } = await supabase
@@ -307,13 +307,13 @@ export async function POST(
           selected_option: string | null;
           response_text: string | null;
           code_response: string | null;
-          marks_awarded: number | null;
-          ai_feedback: string | null;
+          partial_credit: number | null;
+          ai_feedback_md: string | null;
         }) => [r.question_id, r]));
 
         const qResults: QuestionResult[] = (questions ?? []).map((q) => {
           const r = qResultMap.get(q.id);
-          const awarded = r?.marks_awarded ?? 0;
+          const awarded = r?.partial_credit ?? 0;
           const studentAnswer = q.type === "mcq"
             ? r?.selected_option ?? null
             : q.type === "code"
@@ -325,14 +325,14 @@ export async function POST(
           let topicUnderstanding = null;
           let improvedCode = null;
           try {
-            if (r?.ai_feedback) {
-              const parsed = JSON.parse(r.ai_feedback);
+            if (r?.ai_feedback_md) {
+              const parsed = JSON.parse(r.ai_feedback_md);
               if (parsed.breakdown) breakdown = parsed.breakdown;
               if (parsed.topicUnderstanding) topicUnderstanding = parsed.topicUnderstanding;
               if (parsed.improvedCode) improvedCode = parsed.improvedCode;
             }
           } catch {
-            // ai_feedback is plain text
+            // ai_feedback_md is plain text
           }
 
           return {
@@ -343,9 +343,9 @@ export async function POST(
             topicTag: q.topic_tags?.[0] ?? "General",
             marksAwarded: awarded,
             marksTotal: q.marks,
-            feedback: typeof r?.ai_feedback === "string" && !r.ai_feedback.startsWith("{")
-              ? r.ai_feedback
-              : breakdown ? null : r?.ai_feedback ?? null,
+            feedback: typeof r?.ai_feedback_md === "string" && !r.ai_feedback_md.startsWith("{")
+              ? r.ai_feedback_md
+              : breakdown ? null : r?.ai_feedback_md ?? null,
             correct: awarded >= q.marks,
             correctAnswer: q.correct_answer ?? q.mark_scheme_md ?? null,
             studentAnswer,
@@ -358,15 +358,15 @@ export async function POST(
         // Parse feedback from stored JSON for existing results
         for (const qr of qResults) {
           const r = qResultMap.get(qr.id);
-          if (r?.ai_feedback) {
+          if (r?.ai_feedback_md) {
             try {
-              const parsed = JSON.parse(r.ai_feedback);
+              const parsed = JSON.parse(r.ai_feedback_md);
               if (parsed.feedback) qr.feedback = parsed.feedback;
               if (parsed.breakdown) qr.breakdown = parsed.breakdown;
               if (parsed.topicUnderstanding) qr.topicUnderstanding = parsed.topicUnderstanding;
               if (parsed.improvedCode) qr.improvedCode = parsed.improvedCode;
             } catch {
-              qr.feedback = r.ai_feedback;
+              qr.feedback = r.ai_feedback_md;
             }
           }
         }
