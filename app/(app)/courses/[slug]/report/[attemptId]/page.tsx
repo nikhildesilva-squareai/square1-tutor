@@ -78,6 +78,81 @@ function useCountUp(target: number, duration: number = 1500, enabled: boolean = 
   return value;
 }
 
+/* ── Big Score Ring ────────────────────────────────────────────────────── */
+function ScoreRing({ percentage, level, animate }: { percentage: number; level: string; animate: boolean }) {
+  const [progress, setProgress] = useState(0);
+  const displayScore = useCountUp(percentage, 2000, animate);
+
+  useEffect(() => {
+    if (!animate) return;
+    const start = Date.now();
+    const duration = 2000;
+    const step = () => {
+      const elapsed = Date.now() - start;
+      const t = Math.min(elapsed / duration, 1);
+      setProgress(1 - Math.pow(1 - t, 3));
+      if (t < 1) requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
+  }, [animate]);
+
+  const size = 200;
+  const strokeWidth = 12;
+  const r = (size - strokeWidth) / 2;
+  const circ = 2 * Math.PI * r;
+  const offset = circ * (1 - (percentage / 100) * progress);
+  const color = percentage >= 70 ? "#19A65F" : percentage >= 40 ? "#E5B217" : "#D93636";
+  const bgColor = percentage >= 70 ? "rgba(25,166,95,0.1)" : percentage >= 40 ? "rgba(229,178,23,0.1)" : "rgba(217,54,54,0.1)";
+
+  return (
+    <div className="relative" style={{ width: size, height: size }}>
+      <svg width={size} height={size} className="-rotate-90">
+        <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="#E8EEF5" strokeWidth={strokeWidth} />
+        <circle
+          cx={size / 2} cy={size / 2} r={r} fill="none"
+          stroke={color} strokeWidth={strokeWidth} strokeLinecap="round"
+          strokeDasharray={circ} strokeDashoffset={offset}
+          className="transition-none"
+        />
+      </svg>
+      <div className="absolute inset-0 flex flex-col items-center justify-center">
+        <span className="text-5xl font-black tabular-nums text-ink">{displayScore}</span>
+        <span className="text-xs text-ink-muted font-semibold mt-0.5">out of 100</span>
+      </div>
+    </div>
+  );
+}
+
+/* ── Mini Score Ring (for type breakdown) ──────────────────────────────── */
+function MiniRing({ score, max, label, color }: { score: number; max: number; label: string; color: string }) {
+  const pct = max > 0 ? (score / max) * 100 : 0;
+  const size = 72;
+  const sw = 6;
+  const r = (size - sw) / 2;
+  const circ = 2 * Math.PI * r;
+  const offset = circ * (1 - pct / 100);
+
+  return (
+    <div className="flex flex-col items-center gap-2">
+      <div className="relative" style={{ width: size, height: size }}>
+        <svg width={size} height={size} className="-rotate-90">
+          <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="#E8EEF5" strokeWidth={sw} />
+          <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke={color} strokeWidth={sw} strokeLinecap="round"
+            strokeDasharray={circ} strokeDashoffset={offset}
+            className="transition-all duration-1000 ease-out" />
+        </svg>
+        <span className="absolute inset-0 flex items-center justify-center text-sm font-bold tabular-nums text-ink">
+          {Math.round(pct)}%
+        </span>
+      </div>
+      <div className="text-center">
+        <p className="text-xs font-semibold text-ink">{score}/{max}</p>
+        <p className="text-[10px] text-ink-muted">{label}</p>
+      </div>
+    </div>
+  );
+}
+
 /* ── Radar chart (SVG) ─────────────────────────────────────────────────── */
 function RadarChart({ topics, animate }: { topics: TopicMastery[]; animate: boolean }) {
   const N = topics.length;
@@ -187,6 +262,23 @@ function RadarChart({ topics, animate }: { topics: TopicMastery[]; animate: bool
   );
 }
 
+/* ── Horizontal comparison bar ─────────────────────────────────────────── */
+function ComparisonBar({ topic, percentage, rank }: { topic: string; percentage: number; rank: "strength" | "gap" }) {
+  const color = rank === "strength" ? "#19A65F" : "#D93636";
+  const bg = rank === "strength" ? "rgba(25,166,95,0.1)" : "rgba(217,54,54,0.1)";
+  return (
+    <div className="flex items-center gap-3">
+      <span className="text-sm font-semibold text-ink w-32 sm:w-40 truncate text-right">{topic}</span>
+      <div className="flex-1 h-6 rounded-full overflow-hidden" style={{ background: bg }}>
+        <div className="h-full rounded-full transition-all duration-1000 ease-out flex items-center justify-end pr-2"
+          style={{ width: `${Math.max(percentage, 8)}%`, background: color }}>
+          <span className="text-[10px] font-bold text-white">{percentage}%</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 /* ═══════════════════════════════════════════════════════════════════════ */
 /*  MAIN COMPONENT                                                        */
 /* ═══════════════════════════════════════════════════════════════════════ */
@@ -204,7 +296,6 @@ export default function ReportPage({ params }: PageProps) {
     let cancelled = false;
 
     async function grade() {
-      // Animate steps progressively
       for (let i = 0; i < GRADING_STEPS.length; i++) {
         if (cancelled) return;
         await new Promise((r) => setTimeout(r, GRADING_STEPS[i].duration));
@@ -219,7 +310,6 @@ export default function ReportPage({ params }: PageProps) {
         const data = await res.json();
         if (!res.ok) throw new Error(data.error ?? "Grading failed");
         setCompletedSteps(GRADING_STEPS.length);
-        // Small delay to show the final step completing
         await new Promise((r) => setTimeout(r, 500));
         if (!cancelled) setReport(data);
       } catch (err) {
@@ -232,9 +322,6 @@ export default function ReportPage({ params }: PageProps) {
 
     return () => { cancelled = true; };
   }, [attemptId]);
-
-  // Score count-up
-  const displayScore = useCountUp(report?.percentage ?? 0, 2000, !!report);
 
   /* ═══════════════════════════════════════════════════════════════════ */
   /*  ERROR STATE                                                       */
@@ -280,14 +367,9 @@ export default function ReportPage({ params }: PageProps) {
             <h2 className="text-xl font-bold text-ink">Analysing your answers...</h2>
             <p className="text-sm text-ink-muted mt-1">This usually takes 15-30 seconds.</p>
           </div>
-
-          {/* Progress bar */}
           <div className="w-full bg-surface-alt rounded-full h-1.5 mb-6">
-            <div className="h-1.5 rounded-full bg-brand transition-all duration-700"
-              style={{ width: `${progressPct}%` }} />
+            <div className="h-1.5 rounded-full bg-brand transition-all duration-700" style={{ width: `${progressPct}%` }} />
           </div>
-
-          {/* Steps */}
           <div className="space-y-3">
             {GRADING_STEPS.map((step, i) => {
               const done = i < completedSteps;
@@ -296,19 +378,11 @@ export default function ReportPage({ params }: PageProps) {
                 <div key={step.label} className="flex items-center gap-3">
                   <div className={cn(
                     "w-6 h-6 rounded-full flex items-center justify-center shrink-0 text-xs transition-all",
-                    done ? "bg-success text-white" :
-                    active ? "bg-surface-tint border-2 border-brand animate-pulse" :
-                    "bg-surface-alt"
+                    done ? "bg-success text-white" : active ? "bg-surface-tint border-2 border-brand animate-pulse" : "bg-surface-alt"
                   )}>
-                    {done && (
-                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
-                        <polyline points="20 6 9 17 4 12" />
-                      </svg>
-                    )}
+                    {done && <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><polyline points="20 6 9 17 4 12" /></svg>}
                   </div>
-                  <span className={cn("text-sm transition-colors", done ? "text-ink" : "text-ink-muted")}>
-                    {step.label}
-                  </span>
+                  <span className={cn("text-sm transition-colors", done ? "text-ink" : "text-ink-muted")}>{step.label}</span>
                 </div>
               );
             })}
@@ -319,97 +393,242 @@ export default function ReportPage({ params }: PageProps) {
   }
 
   /* ═══════════════════════════════════════════════════════════════════ */
-  /*  THE REPORT                                                        */
+  /*  THE REPORT — VISUALS FIRST                                        */
   /* ═══════════════════════════════════════════════════════════════════ */
   const sortedTopics = [...report.topicMastery].sort((a, b) => a.percentage - b.percentage);
   const strengths = [...report.topicMastery].sort((a, b) => b.percentage - a.percentage).slice(0, 3);
   const gaps = sortedTopics.slice(0, 3);
 
   const levelConfig = {
-    beginner: { label: "BEGINNER", bg: "bg-error-bg", text: "text-error", border: "border-error/30" },
-    intermediate: { label: "INTERMEDIATE", bg: "bg-warning-bg", text: "text-warning", border: "border-warning/30" },
-    advanced: { label: "ADVANCED", bg: "bg-success-bg", text: "text-success", border: "border-success/30" },
+    beginner: { label: "BEGINNER", bg: "bg-error-bg", text: "text-error", border: "border-error/30", desc: "You're just getting started — there's a lot to learn." },
+    intermediate: { label: "INTERMEDIATE", bg: "bg-warning-bg", text: "text-warning", border: "border-warning/30", desc: "Solid foundation — but key gaps remain." },
+    advanced: { label: "ADVANCED", bg: "bg-success-bg", text: "text-success", border: "border-success/30", desc: "Strong skills — time to master the edges." },
   };
   const lc = levelConfig[report.level];
+
+  // Question type counts
+  const totalQs = report.questionResults.length;
+  const correctQs = report.questionResults.filter(q => q.correct).length;
+  const incorrectQs = totalQs - correctQs;
 
   return (
     <div ref={reportRef}>
       {/* ═══════════════════════════════════════════════════════════════ */}
-      {/*  SECTION 1 — SCORE                                            */}
+      {/*  SECTION 1 — SCORE HERO + RING                                */}
       {/* ═══════════════════════════════════════════════════════════════ */}
-      <section className="py-16 sm:py-20 px-4 sm:px-6">
-        <div className="relative max-w-3xl mx-auto text-center">
-          {/* Pill eyebrow */}
+      <section className="py-12 sm:py-16 px-4 sm:px-6">
+        <div className="max-w-3xl mx-auto text-center">
+          {/* Eyebrow */}
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-brand/20 bg-surface-tint mb-8">
             <span className="w-1.5 h-1.5 rounded-full bg-brand animate-pulse" />
-            <span className="text-[10px] tracking-[0.2em] uppercase font-bold text-brand">
-              Your Skill Report
-            </span>
+            <span className="text-[10px] tracking-[0.2em] uppercase font-bold text-brand">Your Skill Report</span>
           </div>
 
-          <p className="text-ink-muted text-sm uppercase tracking-wider mb-4">Your Score</p>
-
-          {/* Big animated score */}
-          <div className="mb-4">
-            <span className="text-7xl sm:text-8xl font-black tabular-nums text-ink animate-score-pop">
-              {displayScore}
-            </span>
-            <span className="text-2xl sm:text-3xl font-bold text-ink-muted ml-2">/ 100</span>
+          {/* Score Ring */}
+          <div className="flex justify-center mb-5">
+            <ScoreRing percentage={report.percentage} level={report.level} animate={true} />
           </div>
 
           {/* Level badge */}
-          <div className={cn("inline-flex items-center px-5 py-2 rounded-full border text-sm font-bold tracking-wider", lc.bg, lc.text, lc.border)}>
+          <div className={cn("inline-flex items-center px-5 py-2 rounded-full border text-sm font-bold tracking-wider mb-3", lc.bg, lc.text, lc.border)}>
             {lc.label}
           </div>
+          <p className="text-sm text-ink-muted max-w-xs mx-auto">{lc.desc}</p>
 
-          {/* Score breakdown by type */}
-          <div className="mt-8 flex items-center justify-center gap-6 sm:gap-10 flex-wrap">
-            {report.mcqMax != null && report.mcqMax > 0 && (
-              <div className="text-center">
-                <p className="text-2xl font-bold text-ink tabular-nums">{report.mcqScore ?? 0}/{report.mcqMax}</p>
-                <p className="text-xs text-ink-muted mt-0.5">MCQ</p>
-              </div>
-            )}
-            {report.shortMax != null && report.shortMax > 0 && (
-              <>
-                <div className="w-px h-10 bg-border" />
-                <div className="text-center">
-                  <p className="text-2xl font-bold text-ink tabular-nums">{report.shortScore ?? 0}/{report.shortMax}</p>
-                  <p className="text-xs text-ink-muted mt-0.5">Short Answer</p>
-                </div>
-              </>
-            )}
-            {report.codeMax != null && report.codeMax > 0 && (
-              <>
-                <div className="w-px h-10 bg-border" />
-                <div className="text-center">
-                  <p className="text-2xl font-bold text-ink tabular-nums">{report.codeScore ?? 0}/{report.codeMax}</p>
-                  <p className="text-xs text-ink-muted mt-0.5">Code</p>
-                </div>
-              </>
-            )}
+          {/* Quick stats row */}
+          <div className="mt-8 grid grid-cols-3 gap-4 max-w-sm mx-auto">
+            <div className="bg-surface border border-border rounded-xl p-3 text-center">
+              <p className="text-xl font-bold text-ink tabular-nums">{totalQs}</p>
+              <p className="text-[10px] text-ink-muted uppercase tracking-wider">Questions</p>
+            </div>
+            <div className="bg-success-bg/50 border border-success/20 rounded-xl p-3 text-center">
+              <p className="text-xl font-bold text-success tabular-nums">{correctQs}</p>
+              <p className="text-[10px] text-success uppercase tracking-wider">Correct</p>
+            </div>
+            <div className="bg-error-bg/50 border border-error/20 rounded-xl p-3 text-center">
+              <p className="text-xl font-bold text-error tabular-nums">{incorrectQs}</p>
+              <p className="text-[10px] text-error uppercase tracking-wider">Incorrect</p>
+            </div>
           </div>
         </div>
       </section>
 
       {/* ═══════════════════════════════════════════════════════════════ */}
-      {/*  SECTION 2 — TOPIC MASTERY                                    */}
+      {/*  SECTION 2 — RADAR + SCORE BY TYPE (side by side)             */}
       {/* ═══════════════════════════════════════════════════════════════ */}
-      {report.topicMastery.length > 0 && (
-        <section className="py-16 sm:py-20 px-4 sm:px-6">
-          <div className="max-w-3xl mx-auto">
-            <div className="text-center mb-10">
-              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-brand/20 bg-surface-tint mb-4">
-                <span className="text-[10px] tracking-[0.2em] uppercase font-bold text-brand">
-                  Topic Mastery
-                </span>
-              </div>
-              <h2 className="text-2xl sm:text-3xl font-black text-ink">
-                Where you stand
-              </h2>
+      {report.topicMastery.length >= 3 && (
+        <section className="pb-12 sm:pb-16 px-4 sm:px-6">
+          <div className="max-w-4xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Radar */}
+            <div className="rounded-2xl border border-border p-5 sm:p-6 bg-surface shadow-card">
+              <h3 className="text-sm font-bold text-ink mb-1">Skill Radar</h3>
+              <p className="text-xs text-ink-muted mb-3">Your coverage across all topics</p>
+              <RadarChart topics={report.topicMastery} animate={true} />
             </div>
 
-            <div className="space-y-4">
+            {/* Score by Type + Accuracy */}
+            <div className="space-y-6">
+              {/* Score by Type */}
+              <div className="rounded-2xl border border-border p-5 sm:p-6 bg-surface shadow-card">
+                <h3 className="text-sm font-bold text-ink mb-1">Score by Question Type</h3>
+                <p className="text-xs text-ink-muted mb-5">How you performed across formats</p>
+                <div className="flex items-center justify-around">
+                  {report.mcqMax != null && report.mcqMax > 0 && (
+                    <MiniRing score={report.mcqScore ?? 0} max={report.mcqMax} label="MCQ" color="#3B82F6" />
+                  )}
+                  {report.shortMax != null && report.shortMax > 0 && (
+                    <MiniRing score={report.shortScore ?? 0} max={report.shortMax} label="Short Answer" color="#F59E0B" />
+                  )}
+                  {report.codeMax != null && report.codeMax > 0 && (
+                    <MiniRing score={report.codeScore ?? 0} max={report.codeMax} label="Code" color="#8B5CF6" />
+                  )}
+                </div>
+              </div>
+
+              {/* Accuracy meter */}
+              <div className="rounded-2xl border border-border p-5 sm:p-6 bg-surface shadow-card">
+                <h3 className="text-sm font-bold text-ink mb-1">Overall Accuracy</h3>
+                <p className="text-xs text-ink-muted mb-4">Questions answered correctly</p>
+                <div className="flex items-center gap-4">
+                  <div className="flex-1">
+                    <div className="w-full h-4 rounded-full bg-surface-alt overflow-hidden flex">
+                      <div className="h-full bg-success rounded-l-full transition-all duration-1000"
+                        style={{ width: `${totalQs > 0 ? (correctQs / totalQs) * 100 : 0}%` }} />
+                      <div className="h-full bg-error rounded-r-full transition-all duration-1000"
+                        style={{ width: `${totalQs > 0 ? (incorrectQs / totalQs) * 100 : 0}%` }} />
+                    </div>
+                    <div className="flex items-center justify-between mt-2">
+                      <span className="flex items-center gap-1.5 text-xs text-success font-semibold">
+                        <span className="w-2 h-2 rounded-full bg-success" />
+                        {correctQs} correct
+                      </span>
+                      <span className="flex items-center gap-1.5 text-xs text-error font-semibold">
+                        <span className="w-2 h-2 rounded-full bg-error" />
+                        {incorrectQs} incorrect
+                      </span>
+                    </div>
+                  </div>
+                  <div className="text-right shrink-0">
+                    <p className="text-3xl font-black tabular-nums text-ink">
+                      {totalQs > 0 ? Math.round((correctQs / totalQs) * 100) : 0}%
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* ═══════════════════════════════════════════════════════════════ */}
+      {/*  SECTION 3 — STRENGTHS vs GAPS (visual bars)                  */}
+      {/* ═══════════════════════════════════════════════════════════════ */}
+      <section className="pb-12 sm:pb-16 px-4 sm:px-6">
+        <div className="max-w-3xl mx-auto">
+          <div className="text-center mb-8">
+            <h2 className="text-xl sm:text-2xl font-black text-ink">Your Strengths & Gaps</h2>
+            <p className="text-sm text-ink-muted mt-1">What to celebrate and where to focus</p>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            {/* Strengths */}
+            <div className="rounded-2xl border border-success/20 bg-success-bg/20 p-5">
+              <div className="flex items-center gap-2 mb-4">
+                <div className="w-7 h-7 rounded-full bg-success/20 flex items-center justify-center">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#19A65F" strokeWidth="2.5"><polyline points="20 6 9 17 4 12" /></svg>
+                </div>
+                <h3 className="text-sm font-bold text-success uppercase tracking-wider">Top Strengths</h3>
+              </div>
+              <div className="space-y-3">
+                {strengths.map((t) => (
+                  <div key={t.topic}>
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="text-sm font-medium text-ink">{t.topic}</span>
+                      <span className="text-xs font-bold text-success tabular-nums">{t.percentage}%</span>
+                    </div>
+                    <div className="w-full h-2 rounded-full overflow-hidden bg-success/10">
+                      <div className="h-full rounded-full bg-success transition-all duration-1000" style={{ width: `${t.percentage}%` }} />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Gaps */}
+            <div className="rounded-2xl border border-error/20 bg-error-bg/20 p-5">
+              <div className="flex items-center gap-2 mb-4">
+                <div className="w-7 h-7 rounded-full bg-error/20 flex items-center justify-center">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#D93636" strokeWidth="2.5">
+                    <circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="12" /><line x1="12" y1="16" x2="12.01" y2="16" />
+                  </svg>
+                </div>
+                <h3 className="text-sm font-bold text-error uppercase tracking-wider">Gaps to Close</h3>
+              </div>
+              <div className="space-y-3">
+                {gaps.map((t) => (
+                  <div key={t.topic}>
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="text-sm font-medium text-ink">{t.topic}</span>
+                      <span className="text-xs font-bold text-error tabular-nums">{t.percentage}%</span>
+                    </div>
+                    <div className="w-full h-2 rounded-full overflow-hidden bg-error/10">
+                      <div className="h-full rounded-full bg-error transition-all duration-1000" style={{ width: `${t.percentage}%` }} />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════════════════════════ */}
+      {/*  SECTION 4 — FIRST CTA (conversion point)                    */}
+      {/* ═══════════════════════════════════════════════════════════════ */}
+      <section className="pb-12 sm:pb-16 px-4 sm:px-6">
+        <div className="max-w-lg mx-auto">
+          <div className="rounded-2xl border-2 border-brand/30 bg-surface-tint p-6 sm:p-8 text-center shadow-card">
+            <div className="w-14 h-14 rounded-2xl bg-brand flex items-center justify-center mx-auto mb-4">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
+                <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+              </svg>
+            </div>
+            <h2 className="text-xl sm:text-2xl font-black text-ink mb-2">
+              Ready to close these gaps?
+            </h2>
+            <p className="text-sm text-ink-muted mb-6 max-w-sm mx-auto">
+              Your personalised learning plan targets exactly what you need.
+              {report.level === "beginner" ? " Start building from the foundation up." :
+               report.level === "intermediate" ? " Bridge the gaps to reach advanced level." :
+               " Master the final edges to become an expert."}
+            </p>
+            <Link
+              href={`/courses/${slug}/plan?reportId=${report.reportId}`}
+              className="inline-flex items-center gap-2 h-14 px-10 rounded-xl bg-brand text-white font-bold text-base hover:bg-brand/90 hover:shadow-lg hover:shadow-brand/25 hover:-translate-y-0.5 active:translate-y-0 transition-all"
+            >
+              Choose your plan
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                <path d="M5 12h14" /><polyline points="12 5 19 12 12 19" />
+              </svg>
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════════════════════════ */}
+      {/*  SECTION 5 — TOPIC MASTERY BARS (detail)                      */}
+      {/* ═══════════════════════════════════════════════════════════════ */}
+      {report.topicMastery.length > 0 && (
+        <section className="py-12 sm:py-16 px-4 sm:px-6">
+          <div className="max-w-3xl mx-auto">
+            <div className="text-center mb-8">
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-brand/20 bg-surface-tint mb-3">
+                <span className="text-[10px] tracking-[0.2em] uppercase font-bold text-brand">Topic Mastery</span>
+              </div>
+              <h2 className="text-xl sm:text-2xl font-black text-ink">Full Topic Breakdown</h2>
+            </div>
+
+            <div className="space-y-3">
               {sortedTopics.map((t) => {
                 const color = t.percentage >= 70 ? "#19A65F" : t.percentage >= 40 ? "#E5B217" : "#D93636";
                 const bgColor = t.percentage >= 70 ? "rgba(25,166,95,0.1)" : t.percentage >= 40 ? "rgba(229,178,23,0.1)" : "rgba(217,54,54,0.1)";
@@ -419,14 +638,13 @@ export default function ReportPage({ params }: PageProps) {
                       <div className="flex items-center gap-2">
                         <span className="text-sm font-semibold text-ink">{t.topic}</span>
                         {t.questionCount != null && (
-                          <span className="text-[10px] text-ink-muted">{t.questionCount} question{t.questionCount !== 1 ? "s" : ""}</span>
+                          <span className="text-[10px] text-ink-muted">{t.questionCount} Q{t.questionCount !== 1 ? "s" : ""}</span>
                         )}
                       </div>
                       <span className="text-sm font-bold tabular-nums" style={{ color }}>{t.percentage}%</span>
                     </div>
                     <div className="w-full h-3 rounded-full overflow-hidden" style={{ background: bgColor }}>
-                      <div className="h-full rounded-full transition-all duration-1000"
-                        style={{ width: `${t.percentage}%`, background: color }} />
+                      <div className="h-full rounded-full transition-all duration-1000" style={{ width: `${t.percentage}%`, background: color }} />
                     </div>
                   </div>
                 );
@@ -437,82 +655,15 @@ export default function ReportPage({ params }: PageProps) {
       )}
 
       {/* ═══════════════════════════════════════════════════════════════ */}
-      {/*  SECTION 3 — RADAR CHART                                      */}
+      {/*  SECTION 6 — QUESTION BREAKDOWN                               */}
       {/* ═══════════════════════════════════════════════════════════════ */}
-      {report.topicMastery.length >= 3 && (
-        <section className="pb-16 sm:pb-20 px-4 sm:px-6">
-          <div className="max-w-lg mx-auto rounded-2xl border border-border p-6 sm:p-8 bg-surface shadow-card">
-            <h3 className="text-center text-sm font-semibold text-ink-secondary mb-4">Skill Radar</h3>
-            <RadarChart topics={report.topicMastery} animate={true} />
-          </div>
-        </section>
-      )}
-
-      {/* ═══════════════════════════════════════════════════════════════ */}
-      {/*  SECTION 4 — STRENGTHS & GAPS                                 */}
-      {/* ═══════════════════════════════════════════════════════════════ */}
-      <section className="py-16 sm:py-20 px-4 sm:px-6">
-        <div className="max-w-3xl mx-auto grid grid-cols-1 sm:grid-cols-2 gap-6">
-          {/* Strengths */}
-          <div className="rounded-2xl border border-success/20 bg-success-bg/30 p-6">
-            <div className="flex items-center gap-2 mb-5">
-              <div className="w-8 h-8 rounded-full bg-success-bg flex items-center justify-center">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#19A65F" strokeWidth="2.5">
-                  <polyline points="20 6 9 17 4 12" />
-                </svg>
-              </div>
-              <h3 className="text-sm font-bold text-success uppercase tracking-wider">Strengths</h3>
-            </div>
-            <div className="space-y-4">
-              {strengths.map((t) => (
-                <div key={t.topic}>
-                  <div className="flex items-center justify-between mb-0.5">
-                    <span className="text-sm font-semibold text-ink">{t.topic}</span>
-                    <span className="text-xs font-bold text-success">{t.percentage}%</span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Gaps */}
-          <div className="rounded-2xl border border-error/20 bg-error-bg/30 p-6">
-            <div className="flex items-center gap-2 mb-5">
-              <div className="w-8 h-8 rounded-full bg-error-bg flex items-center justify-center">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#D93636" strokeWidth="2.5">
-                  <circle cx="12" cy="12" r="10" /><line x1="15" y1="9" x2="9" y2="15" /><line x1="9" y1="9" x2="15" y2="15" />
-                </svg>
-              </div>
-              <h3 className="text-sm font-bold text-error uppercase tracking-wider">Gaps to Close</h3>
-            </div>
-            <div className="space-y-4">
-              {gaps.map((t) => (
-                <div key={t.topic}>
-                  <div className="flex items-center justify-between mb-0.5">
-                    <span className="text-sm font-semibold text-ink">{t.topic}</span>
-                    <span className="text-xs font-bold text-error">{t.percentage}%</span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ═══════════════════════════════════════════════════════════════ */}
-      {/*  SECTION 5 — QUESTION BREAKDOWN                               */}
-      {/* ═══════════════════════════════════════════════════════════════ */}
-      <section className="py-16 sm:py-20 px-4 sm:px-6">
+      <section className="py-12 sm:py-16 px-4 sm:px-6">
         <div className="max-w-3xl mx-auto">
-          <div className="text-center mb-10">
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-brand/20 bg-surface-tint mb-4">
-              <span className="text-[10px] tracking-[0.2em] uppercase font-bold text-brand">
-                Question Breakdown
-              </span>
+          <div className="text-center mb-8">
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-brand/20 bg-surface-tint mb-3">
+              <span className="text-[10px] tracking-[0.2em] uppercase font-bold text-brand">Question Breakdown</span>
             </div>
-            <h2 className="text-2xl sm:text-3xl font-black text-ink">
-              Every question reviewed
-            </h2>
+            <h2 className="text-xl sm:text-2xl font-black text-ink">Every question reviewed</h2>
           </div>
 
           <div className="space-y-3">
@@ -523,7 +674,6 @@ export default function ReportPage({ params }: PageProps) {
 
               return (
                 <div key={q.id} className="rounded-xl border border-border bg-surface overflow-hidden transition-all shadow-card">
-                  {/* Header (always visible) */}
                   <button
                     onClick={() => setExpandedQ(isExpanded ? null : q.id)}
                     className="w-full flex items-center gap-3 p-4 text-left hover:bg-surface-soft transition-colors"
@@ -553,16 +703,12 @@ export default function ReportPage({ params }: PageProps) {
                     </svg>
                   </button>
 
-                  {/* Expanded details */}
                   {isExpanded && (
-                    <div className="border-t border-border p-4 space-y-4 animate-step-in">
-                      {/* Full question */}
+                    <div className="border-t border-border p-4 space-y-4">
                       <div>
                         <p className="text-[10px] uppercase tracking-wider text-ink-muted mb-1">Question</p>
                         <p className="text-sm text-ink-secondary whitespace-pre-wrap">{q.stem}</p>
                       </div>
-
-                      {/* Student's answer */}
                       {q.studentAnswer && (
                         <div>
                           <p className="text-[10px] uppercase tracking-wider text-ink-muted mb-1">Your Answer</p>
@@ -575,8 +721,6 @@ export default function ReportPage({ params }: PageProps) {
                           )}
                         </div>
                       )}
-
-                      {/* Correct answer / mark scheme */}
                       {q.correctAnswer && (
                         <div>
                           <p className="text-[10px] uppercase tracking-wider text-ink-muted mb-1">
@@ -585,16 +729,12 @@ export default function ReportPage({ params }: PageProps) {
                           <p className="text-sm text-success">{q.correctAnswer}</p>
                         </div>
                       )}
-
-                      {/* AI Feedback */}
                       {q.feedback && (
                         <div className="rounded-lg bg-surface-tint border border-brand/20 p-3">
                           <p className="text-[10px] uppercase tracking-wider text-brand mb-1">AI Feedback</p>
                           <p className="text-sm text-ink-secondary">{q.feedback}</p>
                         </div>
                       )}
-
-                      {/* Grading breakdown */}
                       {q.breakdown && q.breakdown.length > 0 && (
                         <div>
                           <p className="text-[10px] uppercase tracking-wider text-ink-muted mb-2">Grading Breakdown</p>
@@ -614,8 +754,6 @@ export default function ReportPage({ params }: PageProps) {
                           </div>
                         </div>
                       )}
-
-                      {/* Improved code suggestion */}
                       {q.improvedCode && (
                         <div>
                           <p className="text-[10px] uppercase tracking-wider text-ink-muted mb-1">Improved Code</p>
@@ -634,10 +772,10 @@ export default function ReportPage({ params }: PageProps) {
       </section>
 
       {/* ═══════════════════════════════════════════════════════════════ */}
-      {/*  SECTION 6 — AI RECOMMENDATIONS                               */}
+      {/*  SECTION 7 — AI RECOMMENDATIONS                               */}
       {/* ═══════════════════════════════════════════════════════════════ */}
       {report.recommendationsMd && (
-        <section className="py-16 sm:py-20 px-4 sm:px-6">
+        <section className="py-12 sm:py-16 px-4 sm:px-6">
           <div className="max-w-3xl mx-auto">
             <div className="rounded-2xl border border-brand/20 bg-surface-tint p-6 sm:p-8 shadow-card">
               <div className="flex items-start gap-4">
@@ -646,9 +784,7 @@ export default function ReportPage({ params }: PageProps) {
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-brand/20 bg-surface mb-3">
-                    <span className="text-[10px] tracking-[0.2em] uppercase font-bold text-brand">
-                      AI Recommendation
-                    </span>
+                    <span className="text-[10px] tracking-[0.2em] uppercase font-bold text-brand">AI Recommendation</span>
                   </div>
                   <div className="text-sm sm:text-base text-ink-secondary leading-relaxed space-y-3">
                     {report.recommendationsMd.split("\n").map((line, i) => {
@@ -672,19 +808,19 @@ export default function ReportPage({ params }: PageProps) {
       )}
 
       {/* ═══════════════════════════════════════════════════════════════ */}
-      {/*  SECTION 7 — CTA                                              */}
+      {/*  SECTION 8 — BOTTOM CTA                                       */}
       {/* ═══════════════════════════════════════════════════════════════ */}
-      <section className="py-16 sm:py-24 px-4 sm:px-6">
+      <section className="py-12 sm:py-20 px-4 sm:px-6">
         <div className="max-w-lg mx-auto text-center">
           <h2 className="text-2xl sm:text-3xl font-black text-ink mb-3">
-            Ready to close these gaps?
+            Start learning today
           </h2>
           <p className="text-ink-muted text-sm mb-8">
-            Choose a learning plan tailored to your skill level and schedule.
+            Your personalised plan is waiting. Every lesson targets your weak spots.
           </p>
           <Link
             href={`/courses/${slug}/plan?reportId=${report.reportId}`}
-            className="inline-flex items-center gap-2 h-14 px-10 rounded-xl bg-brand text-white font-bold text-base hover:bg-brand-dark transition-all"
+            className="inline-flex items-center gap-2 h-14 px-10 rounded-xl bg-brand text-white font-bold text-base hover:bg-brand/90 hover:shadow-lg hover:shadow-brand/25 hover:-translate-y-0.5 transition-all"
           >
             Choose your plan
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
