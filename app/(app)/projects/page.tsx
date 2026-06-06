@@ -79,7 +79,7 @@ export default async function ProjectsPage() {
           </div>
         </div>
 
-        {/* ── "What you'll build" — Featured capstones grid ──── */}
+        {/* ── "What you'll build" — Featured capstones ────────── */}
         <div className="mb-8">
           <h2 className="text-lg font-black text-ink mb-1">What you&apos;ll build</h2>
           <p className="text-sm text-ink-muted mb-5">The capstone project from each course — this is what you ship by the end.</p>
@@ -87,47 +87,44 @@ export default async function ProjectsPage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {capstones.map((cap) => (
               <Link key={cap.id} href={`/courses/${cap.courseSlug}`}
-                className="group bg-surface rounded-2xl border border-border overflow-hidden hover:shadow-lg hover:border-brand/20 transition-all">
-                {/* Gradient header — unique color per course */}
-                <div className="h-24 relative" style={{ background: `linear-gradient(135deg, ${cap.courseColor}22 0%, ${cap.courseColor}08 100%)` }}>
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="w-12 h-12 rounded-xl flex items-center justify-center" style={{ background: `${cap.courseColor}20`, border: `1px solid ${cap.courseColor}30` }}>
-                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={cap.courseColor} strokeWidth="2" strokeLinecap="round">
-                        <path d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
-                      </svg>
-                    </div>
-                  </div>
-                  {/* Course label */}
-                  <div className="absolute top-3 left-3">
-                    <span className="px-2 py-0.5 rounded-md text-[9px] font-bold uppercase tracking-wider" style={{ background: `${cap.courseColor}15`, color: cap.courseColor, border: `1px solid ${cap.courseColor}25` }}>
+                className="group relative bg-[#0A0A0A] rounded-2xl overflow-hidden hover:scale-[1.02] transition-all duration-300">
+                {/* Top accent line */}
+                <div className="h-1" style={{ background: cap.courseColor }} />
+
+                <div className="p-5">
+                  {/* Course + count row */}
+                  <div className="flex items-center justify-between mb-4">
+                    <span className="text-[9px] font-bold uppercase tracking-widest" style={{ color: cap.courseColor }}>
                       {cap.courseTitle}
                     </span>
-                  </div>
-                  {/* Project count */}
-                  <div className="absolute top-3 right-3">
-                    <span className="text-[10px] font-bold text-ink-muted bg-surface/80 backdrop-blur-sm px-2 py-0.5 rounded-md border border-border">
+                    <span className="text-[10px] text-slate-500 font-medium">
                       {cap.projectCount} projects
                     </span>
                   </div>
-                </div>
 
-                {/* Content */}
-                <div className="p-4">
-                  <h3 className="text-sm font-bold text-ink mb-1 group-hover:text-brand transition-colors">{cap.title}</h3>
-                  <p className="text-xs text-ink-muted line-clamp-2 mb-3 leading-relaxed">
+                  {/* Title */}
+                  <h3 className="text-base font-bold text-white mb-2 group-hover:text-white/90 transition-colors leading-snug">
+                    {cap.title}
+                  </h3>
+
+                  {/* Brief */}
+                  <p className="text-xs text-slate-400 line-clamp-2 mb-4 leading-relaxed">
                     {cap.description_md.replace(/[#*`]/g, "").slice(0, 120)}
                   </p>
 
                   {/* Tech stack */}
-                  <div className="flex items-center gap-1.5 flex-wrap mb-3">
+                  <div className="flex items-center gap-1.5 flex-wrap mb-4">
                     {cap.tech_stack.slice(0, 3).map((t: string) => (
-                      <span key={t} className="px-2 py-0.5 rounded-md text-[10px] font-semibold bg-surface-alt text-ink-secondary border border-border">{t}</span>
+                      <span key={t} className="px-2 py-0.5 rounded-md text-[10px] font-medium bg-white/5 text-slate-300 border border-white/10">{t}</span>
                     ))}
+                    {cap.tech_stack.length > 3 && (
+                      <span className="text-[10px] text-slate-500">+{cap.tech_stack.length - 3}</span>
+                    )}
                   </div>
 
                   {/* Footer */}
-                  <div className="flex items-center justify-between pt-3 border-t border-border">
-                    <div className="flex items-center gap-3 text-[11px] text-ink-muted">
+                  <div className="flex items-center justify-between pt-3 border-t border-white/8">
+                    <div className="flex items-center gap-3 text-[11px] text-slate-500">
                       <span className="flex items-center gap-1">
                         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" /></svg>
                         {cap.estimated_hours}h
@@ -137,7 +134,10 @@ export default async function ProjectsPage() {
                         {cap.difficulty}
                       </span>
                     </div>
-                    <span className="text-xs font-semibold text-brand group-hover:underline">Start free</span>
+                    <span className="text-xs font-semibold group-hover:underline" style={{ color: cap.courseColor }}>
+                      Start free
+                      <svg width="10" height="10" viewBox="0 0 16 16" fill="none" className="inline ml-1"><path d="M6 3l5 5-5 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /></svg>
+                    </span>
                   </div>
                 </div>
               </Link>
