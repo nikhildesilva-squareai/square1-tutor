@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { CodeEditor } from "@/components/ui/code-editor";
 import { cn } from "@/lib/utils";
+import { SaveNoteButton } from "@/components/SaveNoteButton";
 
 // ─── Types ─────────────────────────────────────────────────────────────────
 
@@ -366,15 +367,25 @@ export function LearnClient({
                 <div className="bg-surface rounded-2xl border border-border p-5 sm:p-7 shadow-card"
                   dangerouslySetInnerHTML={{ __html: card.content ?? "" }} />
 
-                {/* "Didn't understand?" AI assist */}
-                <div className="mt-4 flex justify-center">
+                {/* Actions: Ask Nova + Save */}
+                <div className="mt-4 flex items-center justify-center gap-3">
                   <Link href={`/tutor?topic=${encodeURIComponent(card.title)}`}
                     className="flex items-center gap-2 px-4 py-2 rounded-xl border border-border text-xs font-medium text-ink-muted hover:text-brand hover:border-brand/30 hover:bg-surface transition-all">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
                       <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" />
                     </svg>
-                    Didn't understand? Ask Nova
+                    Ask Nova
                   </Link>
+                  <SaveNoteButton
+                    content={card.rawContent ?? card.title}
+                    type="highlight"
+                    variant="inline"
+                    lessonId={lesson.id}
+                    lessonTitle={lesson.title}
+                    moduleTitle={module?.title}
+                    courseId={lesson.course_id}
+                    sectionTitle={card.title}
+                  />
                 </div>
               </div>
             )}

@@ -11,6 +11,7 @@ import {
   MessageSquare,
   Settings,
   LogOut,
+  Bookmark,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { createClient } from "@/lib/supabase/client";
@@ -23,6 +24,7 @@ const nav = [
   { href: "/projects", label: "My Projects", icon: FolderKanban },
   { href: "/portfolio", label: "Portfolio", icon: Award },
   { href: "/progress", label: "Progress", icon: BarChart3 },
+  { href: "/notes", label: "Study Hub", icon: Bookmark },
   { href: "/tutor", label: "Nova", icon: MessageSquare },
   { href: "/settings", label: "Settings", icon: Settings },
 ];
