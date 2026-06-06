@@ -17,6 +17,7 @@ interface Plan {
   daily: string;
   daysPerWeek: number;
   projects: number;
+  perDay: string;
   isFeatured?: boolean;
 }
 
@@ -25,32 +26,35 @@ const PLANS: Plan[] = [
     months: 3,
     label: "3-MONTH",
     sublabel: "INTENSIVE",
-    monthlyPrice: 29,
-    upfrontPrice: 78,
+    monthlyPrice: 29.9,
+    upfrontPrice: 80,
     daily: "2 hrs/day",
     daysPerWeek: 5,
     projects: 8,
+    perDay: "1.00",
   },
   {
     months: 6,
     label: "6-MONTH",
-    sublabel: "RECOMMENDED",
-    monthlyPrice: 19,
-    upfrontPrice: 103,
+    sublabel: "MOST POPULAR",
+    monthlyPrice: 19.9,
+    upfrontPrice: 107,
     daily: "1 hr/day",
     daysPerWeek: 5,
     projects: 10,
+    perDay: "0.66",
     isFeatured: true,
   },
   {
     months: 9,
     label: "9-MONTH",
     sublabel: "STEADY",
-    monthlyPrice: 14,
-    upfrontPrice: 113,
+    monthlyPrice: 15.9,
+    upfrontPrice: 129,
     daily: "45 min/day",
     daysPerWeek: 5,
     projects: 12,
+    perDay: "0.53",
   },
 ];
 
@@ -62,6 +66,29 @@ const FEATURES = [
   { icon: "chart", text: "Skill reports & progress tracking" },
   { icon: "award", text: "Certificate of completion" },
   { icon: "github", text: "GitHub portfolio" },
+];
+
+const FAQS = [
+  {
+    q: "What if I fall behind my schedule?",
+    a: "No stress. You keep full access to everything for as long as your plan is active. The schedule is a guide, not a deadline.",
+  },
+  {
+    q: "Can I switch plans later?",
+    a: "Yes. Upgrade or extend at any time. You only pay the difference.",
+  },
+  {
+    q: "Is this another video course?",
+    a: "No. Every lesson is interactive with inline exercises. Every project is AI code-reviewed. And Nova, your AI tutor, is available 24/7 to answer questions.",
+  },
+  {
+    q: "Do I need prior experience?",
+    a: "That depends on the course. Your assessment results determine your starting point. We meet you where you are.",
+  },
+  {
+    q: "What happens after my plan ends?",
+    a: "Your portfolio, certificate, and project code are yours forever. You can also re-enrol or take another course at any time.",
+  },
 ];
 
 function FeatureIcon({ name }: { name: string }) {
@@ -86,31 +113,39 @@ export default function PlanPage({ params }: PageProps) {
   const [showModal, setShowModal] = useState(false);
   const [email, setEmail] = useState("");
   const [emailSubmitted, setEmailSubmitted] = useState(false);
+  const [openFaq, setOpenFaq] = useState<number | null>(null);
 
   return (
     <div>
       {/* ═══════════════════════════════════════════════════════════════ */}
       {/*  HERO                                                          */}
       {/* ═══════════════════════════════════════════════════════════════ */}
-      <section className="pt-16 sm:pt-20 pb-8 px-4 sm:px-6">
+      <section className="pt-14 sm:pt-20 pb-6 px-4 sm:px-6">
         <div className="max-w-4xl mx-auto text-center">
-          {/* Pill eyebrow */}
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-brand/20 bg-surface-tint mb-6">
             <span className="w-1.5 h-1.5 rounded-full bg-success animate-pulse" />
             <span className="text-[10px] tracking-[0.2em] uppercase font-bold text-brand">
-              Choose Your Plan
+              Your plan is ready
             </span>
           </div>
 
           <h1 className="text-3xl sm:text-5xl font-black text-ink mb-3 leading-tight">
-            Start closing the gaps
+            Invest in yourself
           </h1>
-          <p className="text-ink-muted text-sm sm:text-base max-w-md mx-auto mb-10">
-            All plans cover the same curriculum, with the same AI-graded projects and tutor access. Just pick your pace.
+          <p className="text-ink-muted text-sm sm:text-base max-w-lg mx-auto mb-4">
+            Every plan includes the full curriculum, AI-graded projects, Nova AI tutor, and a certificate.
+            Just pick your pace.
+          </p>
+
+          {/* Value anchor */}
+          <p className="text-xs text-ink-muted mb-10">
+            Coding bootcamps charge <span className="line-through">$10,000+</span>.
+            University CS degrees cost <span className="line-through">$40,000+</span>.
+            <span className="text-brand font-bold"> Start here for less than a coffee a day.</span>
           </p>
 
           {/* ── Billing toggle ──────────────────────────────────────────── */}
-          <div className="inline-flex items-center gap-1 p-1 rounded-full border border-border bg-surface-alt mb-12">
+          <div className="inline-flex items-center gap-1 p-1 rounded-full border border-border bg-surface-alt mb-10">
             <button
               onClick={() => setBillingCycle("monthly")}
               className={cn(
@@ -148,7 +183,7 @@ export default function PlanPage({ params }: PageProps) {
       {/* ═══════════════════════════════════════════════════════════════ */}
       {/*  PLAN CARDS                                                    */}
       {/* ═══════════════════════════════════════════════════════════════ */}
-      <section className="px-4 sm:px-6 pb-16 sm:pb-20">
+      <section className="px-4 sm:px-6 pb-12 sm:pb-16">
         <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-5">
           {PLANS.map((plan) => {
             const price = billingCycle === "monthly" ? plan.monthlyPrice : plan.upfrontPrice;
@@ -161,29 +196,29 @@ export default function PlanPage({ params }: PageProps) {
               <div
                 key={plan.months}
                 className={cn(
-                  "relative rounded-2xl border p-6 sm:p-8 transition-all bg-surface",
+                  "relative rounded-2xl border p-6 sm:p-8 transition-all bg-surface flex flex-col",
                   plan.isFeatured
-                    ? "border-brand shadow-card-hover"
+                    ? "border-brand shadow-card-hover ring-1 ring-brand/20"
                     : "border-border shadow-card hover:shadow-card-hover"
                 )}
               >
                 {/* Featured badge */}
                 {plan.isFeatured && (
                   <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                    <span className="px-4 py-1 rounded-full bg-brand text-white text-[10px] font-bold uppercase tracking-wider shadow-card-hover">
-                      Recommended
+                    <span className="px-4 py-1 rounded-full bg-brand text-white text-[10px] font-bold uppercase tracking-wider shadow-lg shadow-brand/25">
+                      Most Popular
                     </span>
                   </div>
                 )}
 
                 {/* Plan name */}
-                <div className="mb-6">
+                <div className="mb-5">
                   <h3 className="text-lg font-black text-ink">{plan.label}</h3>
                   <p className="text-xs text-ink-muted font-semibold uppercase tracking-wider">{plan.sublabel}</p>
                 </div>
 
                 {/* Price */}
-                <div className="mb-6">
+                <div className="mb-2">
                   <div className="flex items-baseline gap-1">
                     <span className="text-4xl font-black text-ink">${price}</span>
                     <span className="text-sm text-ink-muted">{priceLabel}</span>
@@ -191,8 +226,15 @@ export default function PlanPage({ params }: PageProps) {
                   <p className="text-xs text-ink-muted mt-1">{altPrice}</p>
                 </div>
 
+                {/* Per-day callout */}
+                <div className="mb-6">
+                  <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-success-bg/50 border border-success/20 text-[10px] font-bold text-success">
+                    ${plan.perDay}/day
+                  </span>
+                </div>
+
                 {/* Details */}
-                <div className="space-y-3 mb-8">
+                <div className="space-y-3 mb-8 flex-1">
                   <div className="flex items-center gap-3">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" strokeWidth="2">
                       <circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" />
@@ -211,33 +253,61 @@ export default function PlanPage({ params }: PageProps) {
                     </svg>
                     <span className="text-sm text-ink-secondary">{plan.projects} projects</span>
                   </div>
+                  <div className="flex items-center gap-3">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#19A65F" strokeWidth="2.5">
+                      <polyline points="20 6 9 17 4 12" />
+                    </svg>
+                    <span className="text-sm text-ink-secondary">Full AI tutor access</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#19A65F" strokeWidth="2.5">
+                      <polyline points="20 6 9 17 4 12" />
+                    </svg>
+                    <span className="text-sm text-ink-secondary">Certificate included</span>
+                  </div>
                 </div>
 
                 {/* CTA button */}
                 <button
                   onClick={() => setShowModal(true)}
                   className={cn(
-                    "w-full h-12 rounded-xl font-bold text-sm transition-all",
+                    "w-full h-13 py-3.5 rounded-xl font-bold text-sm transition-all",
                     plan.isFeatured
-                      ? "bg-brand text-white hover:bg-brand-dark"
+                      ? "bg-brand text-white hover:bg-brand/90 hover:shadow-lg hover:shadow-brand/25 hover:-translate-y-0.5 active:translate-y-0"
                       : "bg-surface border border-border text-ink hover:bg-surface-alt"
                   )}
                 >
-                  Start Now
+                  {plan.isFeatured ? "Start Now — Best Value" : "Start Now"}
                 </button>
               </div>
             );
           })}
+        </div>
+
+        {/* Trust signals under cards */}
+        <div className="max-w-5xl mx-auto mt-6 flex items-center justify-center gap-6 sm:gap-10 flex-wrap">
+          <div className="flex items-center gap-2 text-xs text-ink-muted">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#19A65F" strokeWidth="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /></svg>
+            30-day money-back guarantee
+          </div>
+          <div className="flex items-center gap-2 text-xs text-ink-muted">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#0056CE" strokeWidth="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2" /><path d="M7 11V7a5 5 0 0110 0v4" /></svg>
+            Secure payment via Stripe
+          </div>
+          <div className="flex items-center gap-2 text-xs text-ink-muted">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#0056CE" strokeWidth="2"><circle cx="12" cy="12" r="10" /><line x1="2" y1="12" x2="22" y2="12" /><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z" /></svg>
+            Cancel anytime
+          </div>
         </div>
       </section>
 
       {/* ═══════════════════════════════════════════════════════════════ */}
       {/*  WHAT'S INCLUDED                                               */}
       {/* ═══════════════════════════════════════════════════════════════ */}
-      <section className="py-16 sm:py-20 px-4 sm:px-6">
+      <section className="py-12 sm:py-16 px-4 sm:px-6">
         <div className="max-w-3xl mx-auto">
-          <div className="text-center mb-10">
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-brand/20 bg-surface-tint mb-4">
+          <div className="text-center mb-8">
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-brand/20 bg-surface-tint mb-3">
               <span className="text-[10px] tracking-[0.2em] uppercase font-bold text-brand">
                 What&apos;s Included
               </span>
@@ -247,7 +317,7 @@ export default function PlanPage({ params }: PageProps) {
             </h2>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {FEATURES.map((f) => (
               <div key={f.text} className="flex items-center gap-3 rounded-xl border border-border bg-surface px-5 py-4 shadow-card">
                 <div className="w-8 h-8 rounded-lg bg-surface-tint flex items-center justify-center shrink-0">
@@ -261,9 +331,81 @@ export default function PlanPage({ params }: PageProps) {
       </section>
 
       {/* ═══════════════════════════════════════════════════════════════ */}
-      {/*  GUARANTEE                                                     */}
+      {/*  COMPARISON — WHY THIS IS BETTER                               */}
       {/* ═══════════════════════════════════════════════════════════════ */}
       <section className="py-12 sm:py-16 px-4 sm:px-6">
+        <div className="max-w-3xl mx-auto">
+          <div className="text-center mb-8">
+            <h2 className="text-xl sm:text-2xl font-black text-ink">How we compare</h2>
+          </div>
+
+          <div className="rounded-2xl border border-border overflow-hidden bg-surface shadow-card">
+            <div className="grid grid-cols-4 text-center text-[10px] sm:text-xs font-bold uppercase tracking-wider bg-surface-alt">
+              <div className="px-3 py-3 text-ink-muted text-left">Feature</div>
+              <div className="px-3 py-3 text-ink-muted">Bootcamp</div>
+              <div className="px-3 py-3 text-ink-muted">YouTube</div>
+              <div className="px-3 py-3 text-brand">Square 1</div>
+            </div>
+            {[
+              ["Price", "$10,000+", "Free", "$19.9/mo"],
+              ["AI Tutor", "No", "No", "24/7"],
+              ["Projects", "2-3", "0", "10-12"],
+              ["AI Grading", "No", "No", "Every submission"],
+              ["Certificate", "Yes", "No", "Yes"],
+              ["Personalised", "No", "No", "AI-adapted"],
+              ["Self-paced", "No", "Yes", "Yes"],
+            ].map(([feature, bootcamp, youtube, s1], i) => (
+              <div key={feature} className={cn("grid grid-cols-4 text-sm", i % 2 === 0 ? "bg-surface" : "bg-surface-soft")}>
+                <div className="px-3 sm:px-4 py-3 font-medium text-ink text-xs sm:text-sm">{feature}</div>
+                <div className="px-3 py-3 text-center text-xs text-ink-muted">{bootcamp}</div>
+                <div className="px-3 py-3 text-center text-xs text-ink-muted">{youtube}</div>
+                <div className="px-3 py-3 text-center text-xs font-semibold text-brand">{s1}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════════════════════════ */}
+      {/*  FAQ                                                           */}
+      {/* ═══════════════════════════════════════════════════════════════ */}
+      <section className="py-12 sm:py-16 px-4 sm:px-6">
+        <div className="max-w-2xl mx-auto">
+          <div className="text-center mb-8">
+            <h2 className="text-xl sm:text-2xl font-black text-ink">Questions?</h2>
+          </div>
+
+          <div className="space-y-2">
+            {FAQS.map((faq, i) => {
+              const isOpen = openFaq === i;
+              return (
+                <div key={i} className="rounded-xl border border-border bg-surface overflow-hidden shadow-card">
+                  <button
+                    onClick={() => setOpenFaq(isOpen ? null : i)}
+                    className="w-full flex items-center justify-between gap-4 px-5 py-4 text-left hover:bg-surface-soft transition-colors"
+                  >
+                    <span className="text-sm font-semibold text-ink">{faq.q}</span>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
+                      className={cn("text-ink-muted shrink-0 transition-transform", isOpen && "rotate-180")}>
+                      <polyline points="6 9 12 15 18 9" />
+                    </svg>
+                  </button>
+                  {isOpen && (
+                    <div className="px-5 pb-4 -mt-1">
+                      <p className="text-sm text-ink-muted leading-relaxed">{faq.a}</p>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════════════════════════ */}
+      {/*  GUARANTEE                                                     */}
+      {/* ═══════════════════════════════════════════════════════════════ */}
+      <section className="py-10 sm:py-14 px-4 sm:px-6">
         <div className="max-w-lg mx-auto text-center">
           <div className="w-16 h-16 rounded-2xl bg-success-bg flex items-center justify-center mx-auto mb-4">
             <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#19A65F" strokeWidth="2">
@@ -271,7 +413,35 @@ export default function PlanPage({ params }: PageProps) {
             </svg>
           </div>
           <h3 className="text-lg font-bold text-ink mb-2">30-day money-back guarantee</h3>
-          <p className="text-sm text-ink-muted">No questions asked. If it&apos;s not for you, you get a full refund.</p>
+          <p className="text-sm text-ink-muted">
+            Try it risk-free. If you don&apos;t feel the progress within 30 days, we&apos;ll refund every cent.
+            No forms. No questions. No hassle.
+          </p>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════════════════════════ */}
+      {/*  FINAL CTA                                                     */}
+      {/* ═══════════════════════════════════════════════════════════════ */}
+      <section className="py-12 sm:py-16 px-4 sm:px-6">
+        <div className="max-w-lg mx-auto text-center">
+          <h2 className="text-2xl sm:text-3xl font-black text-ink mb-3">
+            Your gaps won&apos;t close themselves
+          </h2>
+          <p className="text-sm text-ink-muted mb-6 max-w-sm mx-auto">
+            You took the assessment. You saw where you stand. Now do something about it.
+          </p>
+          <button
+            onClick={() => {
+              window.scrollTo({ top: 0, behavior: "smooth" });
+            }}
+            className="inline-flex items-center gap-2 h-14 px-10 rounded-xl bg-brand text-white font-bold text-base hover:bg-brand/90 hover:shadow-lg hover:shadow-brand/25 hover:-translate-y-0.5 active:translate-y-0 transition-all"
+          >
+            Pick your plan
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+              <path d="M12 19V5" /><polyline points="5 12 12 5 19 12" />
+            </svg>
+          </button>
         </div>
       </section>
 
@@ -288,9 +458,9 @@ export default function PlanPage({ params }: PageProps) {
               </svg>
             </div>
 
-            <h3 className="text-xl font-bold text-ink mb-2">Coming soon</h3>
+            <h3 className="text-xl font-bold text-ink mb-2">Payments launching soon</h3>
             <p className="text-sm text-ink-muted mb-6">
-              Payments are launching shortly. Enter your email to be first in line.
+              We&apos;re finalising Stripe integration. Drop your email and we&apos;ll let you know the moment it&apos;s live.
             </p>
 
             {emailSubmitted ? (
@@ -315,7 +485,7 @@ export default function PlanPage({ params }: PageProps) {
                   onClick={() => {
                     if (email.includes("@")) setEmailSubmitted(true);
                   }}
-                  className="h-11 px-5 rounded-xl bg-brand text-white font-semibold text-sm shrink-0 hover:bg-brand-dark transition-colors"
+                  className="h-11 px-5 rounded-xl bg-brand text-white font-semibold text-sm shrink-0 hover:bg-brand/90 transition-colors"
                 >
                   Notify me
                 </button>
