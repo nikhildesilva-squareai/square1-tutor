@@ -24,131 +24,158 @@ export default async function ProjectsPage() {
   const { data: enrollments } = await supabase.from("student_enrollments").select("course_id").eq("student_id", student?.id ?? "").eq("status", "active");
   const enrolledCourseIds = (enrollments ?? []).map((e) => e.course_id);
 
-  /* ── NOT ENROLLED — Show project showcase to get them excited ────── */
+  /* ── NOT ENROLLED — Showcase that sells the dream ───────────────── */
   if (enrolledCourseIds.length === 0) {
-    // Fetch ALL courses + a sample of projects to showcase
     const { data: allCourses } = await supabase.from("courses").select("id, slug, title, color").eq("status", "active").order("title") as { data: CourseRow[] | null };
     const { data: allProjects } = await supabase.from("projects").select("id, title, description_md, difficulty, estimated_hours, tech_stack, requirements, course_id, order_index").order("order_index", { ascending: true }) as { data: ProjectRow[] | null };
 
     const allCourseList = allCourses ?? [];
     const allProjectList = allProjects ?? [];
-
-    // Group by course
-    const previewGrouped = new Map<string, ProjectRow[]>();
-    for (const p of allProjectList) { const l = previewGrouped.get(p.course_id) ?? []; l.push(p); previewGrouped.set(p.course_id, l); }
-
-    // Pick 2 most interesting projects per course (1 beginner, 1 advanced)
-    function pickShowcase(projects: ProjectRow[]): ProjectRow[] {
-      const beginner = projects.find(p => p.difficulty === "beginner");
-      const advanced = projects.find(p => p.difficulty === "advanced") ?? projects[projects.length - 1];
-      const capstone = projects[projects.length - 1];
-      const picks = [beginner, advanced ?? capstone].filter((p): p is ProjectRow => !!p);
-      // Deduplicate
-      const seen = new Set<string>();
-      return picks.filter(p => { if (seen.has(p.id)) return false; seen.add(p.id); return true; });
-    }
-
     const totalProjectCount = allProjectList.length;
+
+    // Group by course and get capstone (last project)
+    const byCourse = new Map<string, ProjectRow[]>();
+    for (const p of allProjectList) { const l = byCourse.get(p.course_id) ?? []; l.push(p); byCourse.set(p.course_id, l); }
+
+    // Get capstones (the most impressive project per course)
+    const capstones: (ProjectRow & { courseTitle: string; courseColor: string; courseSlug: string; projectCount: number })[] = [];
+    for (const course of allCourseList) {
+      const projects = byCourse.get(course.id) ?? [];
+      const capstone = projects[projects.length - 1];
+      if (capstone) {
+        capstones.push({ ...capstone, courseTitle: course.title, courseColor: course.color, courseSlug: course.slug, projectCount: projects.length });
+      }
+    }
 
     return (
       <div className="px-4 sm:px-6 py-8 max-w-5xl mx-auto">
-        {/* Header */}
-        <div className="mb-6">
-          <h1 className="text-2xl font-black text-ink">Projects</h1>
-          <p className="text-sm text-ink-muted mt-1">{totalProjectCount} real-world projects across {allCourseList.length} courses. AI-reviewed. Portfolio-ready.</p>
-        </div>
-
-        {/* Hero CTA */}
-        <div className="bg-[#0A0A0A] rounded-2xl p-6 sm:p-8 mb-8 relative overflow-hidden">
+        {/* ── Hero ──────────────────────────────────────────────── */}
+        <div className="relative rounded-2xl overflow-hidden mb-8" style={{ background: "linear-gradient(135deg, #0F172A 0%, #1E293B 50%, #0F172A 100%)" }}>
           <div className="absolute inset-0 opacity-[0.04]" style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23fff' fill-rule='evenodd'%3E%3Cpath d='M0 0h1v40H0V0zm39 0h1v40h-1V0zM0 0h40v1H0V0zm0 39h40v1H0v-1z'/%3E%3C/g%3E%3C/svg%3E\")" }} />
-          <div className="relative flex flex-col sm:flex-row items-start sm:items-center gap-5">
-            <div className="flex-1">
-              <h2 className="text-lg font-bold text-white mb-1">Build projects that get you hired</h2>
-              <p className="text-sm text-slate-400 leading-relaxed">
-                Every course includes 10-12 progressively harder projects. Submit your code, get AI-reviewed line-by-line, and ship to your portfolio.
-              </p>
+          <div className="relative p-8 sm:p-10">
+            <p className="text-[10px] font-bold text-slate-500 uppercase tracking-[0.2em] mb-3">Project Lab</p>
+            <h1 className="text-3xl sm:text-4xl font-black text-white tracking-tight mb-3">
+              Build what companies<br />actually hire for.
+            </h1>
+            <p className="text-sm text-slate-400 leading-relaxed max-w-lg mb-6">
+              {totalProjectCount} real projects across {allCourseList.length} tech disciplines. From your first API to a production SaaS — every project is AI code-reviewed and ships to your portfolio.
+            </p>
+            <div className="flex items-center gap-4 flex-wrap">
+              <Link href="/courses" className="h-11 px-6 rounded-xl bg-white text-ink font-bold text-sm hover:bg-white/90 transition-all inline-flex items-center gap-2">
+                Start Free Assessment
+                <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M6 3l5 5-5 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /></svg>
+              </Link>
+              <div className="flex items-center gap-5 text-sm text-slate-500">
+                <span className="flex items-center gap-1.5">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M22 11.08V12a10 10 0 11-5.93-9.14" /><polyline points="22 4 12 14.01 9 11.01" /></svg>
+                  AI code review
+                </span>
+                <span className="flex items-center gap-1.5">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" /><circle cx="12" cy="7" r="4" /></svg>
+                  Portfolio-ready
+                </span>
+              </div>
             </div>
-            <Link href="/courses" className="shrink-0 h-10 px-6 rounded-xl bg-white text-ink font-bold text-sm hover:bg-white/90 transition-all inline-flex items-center gap-2">
-              Pick a Course
-              <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M6 3l5 5-5 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /></svg>
-            </Link>
           </div>
         </div>
 
-        {/* Project showcase per course */}
-        {allCourseList.map((course) => {
-          const courseProjects = previewGrouped.get(course.id) ?? [];
-          if (courseProjects.length === 0) return null;
-          const showcase = pickShowcase(courseProjects);
-          const totalForCourse = courseProjects.length;
+        {/* ── "What you'll build" — Featured capstones grid ──── */}
+        <div className="mb-8">
+          <h2 className="text-lg font-black text-ink mb-1">What you&apos;ll build</h2>
+          <p className="text-sm text-ink-muted mb-5">The capstone project from each course — this is what you ship by the end.</p>
 
-          return (
-            <div key={course.id} className="mb-6">
-              {/* Course header */}
-              <div className="flex items-center gap-2 mb-3 pb-2 border-b border-border">
-                <div className="w-4 h-4 rounded flex items-center justify-center" style={{ background: course.color }}>
-                  <svg width="8" height="8" viewBox="0 0 24 24" fill="white" stroke="none"><path d="M4 19.5A2.5 2.5 0 016.5 17H20V2H6.5A2.5 2.5 0 014 4.5v15z" /></svg>
-                </div>
-                <span className="text-sm font-semibold text-ink">{course.title}</span>
-                <span className="text-xs text-ink-muted">{totalForCourse} projects</span>
-                <div className="flex-1" />
-                <Link href={`/courses/${course.slug}`} className="text-xs text-brand font-semibold hover:underline">
-                  View course
-                </Link>
-              </div>
-
-              {/* Featured project cards */}
-              <div className="border border-border rounded-xl overflow-hidden divide-y divide-border">
-                {showcase.map((project) => {
-                  const diffColor = DIFF_DOT[project.difficulty] ?? "#F59E0B";
-                  return (
-                    <div key={project.id} className="flex items-start gap-4 px-5 py-4 bg-surface hover:bg-surface-soft transition-colors">
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 mb-1">
-                          <h3 className="text-sm font-semibold text-ink">{project.title}</h3>
-                          <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-surface-alt text-ink-muted border border-border capitalize">
-                            {project.difficulty}
-                          </span>
-                        </div>
-                        <p className="text-xs text-ink-muted line-clamp-2 mb-2.5 max-w-xl">
-                          {project.description_md.replace(/[#*`]/g, "").slice(0, 160)}
-                        </p>
-                        <div className="flex items-center gap-4 text-[11px] text-ink-muted">
-                          <span className="flex items-center gap-1.5">
-                            <span className="w-3 h-3 rounded-full" style={{ background: diffColor }} />
-                            {project.tech_stack[0]}
-                          </span>
-                          {project.tech_stack.slice(1, 3).map((t: string) => (
-                            <span key={t} className="hidden sm:inline">{t}</span>
-                          ))}
-                          <span className="flex items-center gap-1">
-                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" /></svg>
-                            {project.estimated_hours}h
-                          </span>
-                        </div>
-                      </div>
-                      {/* Lock indicator */}
-                      <div className="shrink-0 flex flex-col items-center gap-1 mt-1">
-                        <div className="w-8 h-8 rounded-lg bg-surface-alt flex items-center justify-center">
-                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" strokeWidth="2"><rect x="3" y="11" width="18" height="11" rx="2" /><path d="M7 11V7a5 5 0 0110 0v4" /></svg>
-                        </div>
-                        <span className="text-[8px] text-ink-muted font-medium">Enrol</span>
-                      </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {capstones.map((cap) => (
+              <Link key={cap.id} href={`/courses/${cap.courseSlug}`}
+                className="group bg-surface rounded-2xl border border-border overflow-hidden hover:shadow-lg hover:border-brand/20 transition-all">
+                {/* Gradient header — unique color per course */}
+                <div className="h-24 relative" style={{ background: `linear-gradient(135deg, ${cap.courseColor}22 0%, ${cap.courseColor}08 100%)` }}>
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="w-12 h-12 rounded-xl flex items-center justify-center" style={{ background: `${cap.courseColor}20`, border: `1px solid ${cap.courseColor}30` }}>
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={cap.courseColor} strokeWidth="2" strokeLinecap="round">
+                        <path d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
+                      </svg>
                     </div>
-                  );
-                })}
-                {/* "See all X projects" link */}
-                {totalForCourse > 2 && (
-                  <Link href={`/courses/${course.slug}`}
-                    className="flex items-center justify-center gap-2 px-5 py-3 bg-surface-soft text-xs font-semibold text-brand hover:text-brand/80 transition-colors">
-                    See all {totalForCourse} projects
-                    <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M6 3l5 5-5 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /></svg>
-                  </Link>
-                )}
+                  </div>
+                  {/* Course label */}
+                  <div className="absolute top-3 left-3">
+                    <span className="px-2 py-0.5 rounded-md text-[9px] font-bold uppercase tracking-wider" style={{ background: `${cap.courseColor}15`, color: cap.courseColor, border: `1px solid ${cap.courseColor}25` }}>
+                      {cap.courseTitle}
+                    </span>
+                  </div>
+                  {/* Project count */}
+                  <div className="absolute top-3 right-3">
+                    <span className="text-[10px] font-bold text-ink-muted bg-surface/80 backdrop-blur-sm px-2 py-0.5 rounded-md border border-border">
+                      {cap.projectCount} projects
+                    </span>
+                  </div>
+                </div>
+
+                {/* Content */}
+                <div className="p-4">
+                  <h3 className="text-sm font-bold text-ink mb-1 group-hover:text-brand transition-colors">{cap.title}</h3>
+                  <p className="text-xs text-ink-muted line-clamp-2 mb-3 leading-relaxed">
+                    {cap.description_md.replace(/[#*`]/g, "").slice(0, 120)}
+                  </p>
+
+                  {/* Tech stack */}
+                  <div className="flex items-center gap-1.5 flex-wrap mb-3">
+                    {cap.tech_stack.slice(0, 3).map((t: string) => (
+                      <span key={t} className="px-2 py-0.5 rounded-md text-[10px] font-semibold bg-surface-alt text-ink-secondary border border-border">{t}</span>
+                    ))}
+                  </div>
+
+                  {/* Footer */}
+                  <div className="flex items-center justify-between pt-3 border-t border-border">
+                    <div className="flex items-center gap-3 text-[11px] text-ink-muted">
+                      <span className="flex items-center gap-1">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" /></svg>
+                        {cap.estimated_hours}h
+                      </span>
+                      <span className="capitalize flex items-center gap-1">
+                        <span className="w-2 h-2 rounded-full" style={{ background: DIFF_DOT[cap.difficulty] ?? "#F59E0B" }} />
+                        {cap.difficulty}
+                      </span>
+                    </div>
+                    <span className="text-xs font-semibold text-brand group-hover:underline">Start free</span>
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </div>
+
+        {/* ── Journey: Beginner → Advanced progression ──────── */}
+        <div className="bg-surface rounded-2xl border border-border p-6 sm:p-8 mb-8">
+          <h2 className="text-lg font-black text-ink mb-1">Your progression</h2>
+          <p className="text-sm text-ink-muted mb-6">Every course follows the same proven path.</p>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            {[
+              { phase: "Foundation", count: "3-4 projects", desc: "Build core skills. REST APIs, basic UIs, data pipelines.", color: "#22C55E", icon: "M12 2L2 7l10 5 10-5-10-5z" },
+              { phase: "Intermediate", count: "4-5 projects", desc: "Real complexity. Auth, real-time, testing, deployment.", color: "#F59E0B", icon: "M13 2L3 14h9l-1 8 10-12h-9l1-8z" },
+              { phase: "Capstone", count: "2-3 projects", desc: "Production-grade. The project that gets you hired.", color: "#EF4444", icon: "M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" },
+            ].map((phase) => (
+              <div key={phase.phase} className="text-center p-5 rounded-xl border border-border">
+                <div className="w-10 h-10 rounded-xl mx-auto mb-3 flex items-center justify-center" style={{ background: `${phase.color}15` }}>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={phase.color} strokeWidth="2" strokeLinecap="round"><path d={phase.icon} /></svg>
+                </div>
+                <p className="text-sm font-bold text-ink mb-0.5">{phase.phase}</p>
+                <p className="text-[10px] font-bold uppercase tracking-wider mb-2" style={{ color: phase.color }}>{phase.count}</p>
+                <p className="text-xs text-ink-muted leading-relaxed">{phase.desc}</p>
               </div>
-            </div>
-          );
-        })}
+            ))}
+          </div>
+        </div>
+
+        {/* ── Bottom CTA ───────────────────────────────────── */}
+        <div className="text-center py-6">
+          <p className="text-sm text-ink-muted mb-4">Take a free assessment to unlock your personalised project roadmap.</p>
+          <Link href="/courses" className="h-12 px-8 rounded-xl bg-brand text-white font-bold text-sm hover:bg-brand/90 hover:shadow-lg hover:shadow-brand/20 transition-all inline-flex items-center gap-2">
+            Get Started Free
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M6 3l5 5-5 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /></svg>
+          </Link>
+        </div>
       </div>
     );
   }
