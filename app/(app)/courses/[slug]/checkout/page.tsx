@@ -292,6 +292,32 @@ export default function CheckoutPage({ params }: { params: Promise<{ slug: strin
                 </div>
               )}
 
+              {/* ── Dev bypass — remove when Stripe is live ──────────── */}
+              {!processing && (
+                <button
+                  onClick={async () => {
+                    setProcessing(true);
+                    setError("");
+                    try {
+                      if (reportId) {
+                        await fetch("/api/plan/enroll", {
+                          method: "POST",
+                          headers: { "Content-Type": "application/json" },
+                          body: JSON.stringify({ reportId, planMonths: months }),
+                        });
+                      }
+                      router.push(`/courses/${slug}/checkout/success?months=${months}&billing=${billing}`);
+                    } catch {
+                      setError("Enrollment failed");
+                      setProcessing(false);
+                    }
+                  }}
+                  className="w-full mt-3 py-3 rounded-xl border-2 border-dashed border-amber-300 bg-amber-50 text-amber-700 text-sm font-semibold hover:bg-amber-100 transition-colors"
+                >
+                  ⚡ Skip payment (dev mode) — enrol & go to course
+                </button>
+              )}
+
               {/* Trust signals */}
               <div className="flex items-center justify-center gap-4 mt-4 flex-wrap">
                 <span className="flex items-center gap-1 text-[10px] text-ink-muted">
