@@ -60,9 +60,18 @@ export default async function LearnPage({ params }: PageProps) {
   // Get exercises for this lesson
   const { data: exercises } = await supabase
     .from("exercises")
-    .select("id, lesson_id, order_index, type, title, prompt_md, starter_code, solution_code, test_cases, marks, language, options, correct_answer")
+    .select("id, lesson_id, order_index, type, title, prompt_md, starter_code, marks, language, options, correct_answer")
     .eq("lesson_id", lessonId)
     .order("order_index", { ascending: true });
+
+  // Strip sensitive fields before sending to client:
+  // - MCQ: keep correct_answer (needed for instant inline quiz feedback — answers are in the options anyway)
+  // - Short answer / Code: STRIP correct_answer (would leak the model answer / solution)
+  // - solution_code: NEVER sent (not even queried above)
+  const safeExercises = (exercises ?? []).map((ex) => ({
+    ...ex,
+    correct_answer: ex.type === "mcq" ? ex.correct_answer : null,
+  }));
 
   // Check if already completed
   const { data: completion } = await supabase
@@ -77,7 +86,7 @@ export default async function LearnPage({ params }: PageProps) {
       lesson={lesson}
       module={module}
       course={course}
-      exercises={exercises ?? []}
+      exercises={safeExercises}
       lessonPosition={lessonIndex + 1}
       totalLessonsInModule={totalLessonsInModule}
       nextLessonId={nextLesson?.id ?? null}
