@@ -20,8 +20,8 @@ export function CookieConsent() {
     <div className="fixed bottom-0 left-0 right-0 z-50 p-4 bg-surface border-t border-border shadow-[0_4px_24px_rgb(0_86_206_/_0.12)]">
       <div className="max-w-5xl mx-auto flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <p className="text-sm text-ink-secondary">
-          🍪 We use <strong>essential cookies only</strong> to keep you signed in. No tracking, no
-          ads, no third-party data sharing. GDPR compliant.{" "}
+          We use <strong>essential cookies only</strong> to keep you signed in. No tracking, no
+          ads, no third-party data sharing.{" "}
           <Link href="/privacy" className="text-brand underline">
             Privacy Policy
           </Link>
