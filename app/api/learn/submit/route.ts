@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { callAI } from "@/lib/ai/budget";
+import { rateLimitAI } from "@/lib/rate-limit";
 
 const exerciseSchema = z.object({
   exerciseId: z.string(),
@@ -37,6 +38,10 @@ export async function POST(request: Request) {
     if (!student) {
       return NextResponse.json({ error: "Student not found" }, { status: 404 });
     }
+
+    // Rate limit: 15 AI requests per minute
+    const rl = rateLimitAI(student.id);
+    if (!rl.success) return rl.response;
 
     // Get exercise data from DB
     const exerciseIds = submissions.map((s) => s.exerciseId);

@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 import { z } from "zod";
+import { rateLimitAI } from "@/lib/rate-limit";
 
 const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
@@ -38,6 +39,10 @@ export async function POST(request: Request) {
     if (!student) {
       return NextResponse.json({ error: "Student not found" }, { status: 404 });
     }
+
+    // Rate limit: 15 AI requests per minute
+    const rl = rateLimitAI(student.id);
+    if (!rl.success) return rl.response;
 
     // 4. Fetch the project details
     const { data: project } = await supabase

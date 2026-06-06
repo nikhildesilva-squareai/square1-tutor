@@ -28,10 +28,15 @@ export function SettingsClient({ studentId, studentName, userEmail, joinedDate, 
     if (!name.trim() || name === studentName) return;
     setSaving(true);
     try {
-      const supabase = createClient();
-      await supabase.from("students").update({ name: name.trim() }).eq("id", studentId);
-      setSaved(true);
-      setTimeout(() => setSaved(false), 2000);
+      const res = await fetch("/api/settings/update-name", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name: name.trim() }),
+      });
+      if (res.ok) {
+        setSaved(true);
+        setTimeout(() => setSaved(false), 2000);
+      }
     } catch {
       // silent
     } finally {
