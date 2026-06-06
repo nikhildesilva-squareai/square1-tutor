@@ -17,13 +17,14 @@ const contextSchema = z.object({
 const schema = z.object({
   messages: z.array(messageSchema).min(1).max(50),
   context: contextSchema,
+  conversationId: z.string().optional(),
 });
 
 function buildSystemPrompt(
   studentName: string,
   context?: { courseTitle: string; currentLessonTitle: string | null; weakTopics: string[] },
 ): string {
-  let prompt = `You are the Square1 AI Tutor for ${studentName}.`;
+  let prompt = `You are Nova, the AI tutor for ${studentName} on Square 1 AI.`;
 
   if (context) {
     prompt += `\nThey are studying ${context.courseTitle}`;
@@ -68,7 +69,7 @@ export async function POST(request: Request) {
     }
 
     const body = await request.json();
-    const { messages, context } = schema.parse(body);
+    const { messages, context, conversationId } = schema.parse(body);
 
     // Get student for budget tracking
     const { data: student } = await supabase
@@ -92,6 +93,38 @@ export async function POST(request: Request) {
       })),
       max_tokens: 1024,
     });
+
+    // Save messages to conversation (non-blocking)
+    if (conversationId) {
+      const lastUserMsg = messages[messages.length - 1];
+      try {
+        // Save user message
+        await supabase.from("tutor_messages").insert({
+          conversation_id: conversationId,
+          student_id: student.id,
+          role: "user",
+          content: lastUserMsg.content,
+        });
+        // Save assistant reply
+        await supabase.from("tutor_messages").insert({
+          conversation_id: conversationId,
+          student_id: student.id,
+          role: "assistant",
+          content: result.text,
+        });
+        // Update conversation metadata
+        const title = messages.length <= 2
+          ? lastUserMsg.content.slice(0, 60) + (lastUserMsg.content.length > 60 ? "..." : "")
+          : undefined;
+        await supabase.from("tutor_conversations").update({
+          message_count: messages.length + 1,
+          last_message_at: new Date().toISOString(),
+          ...(title ? { title } : {}),
+        }).eq("id", conversationId);
+      } catch {
+        // Non-blocking — don't fail the chat if saving fails
+      }
+    }
 
     return NextResponse.json({ reply: result.text });
   } catch (err) {
