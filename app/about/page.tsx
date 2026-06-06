@@ -106,7 +106,7 @@ const AI_FEATURES = [
   },
   {
     title: "AI that adapts in real time",
-    desc: "Struggling with RAG systems? Your AI tutor adjusts. Breezing through APIs? It accelerates. Every session is personalised.",
+    desc: "Struggling with RAG systems? Nova adjusts. Breezing through APIs? It accelerates. Every session is personalised.",
     accent: "#10B981",
   },
   {
@@ -351,7 +351,7 @@ function BeyondLearningCards() {
     { label: "Research Lab", sub: "Open source + papers" },
     { label: "Career Tools", sub: "Interview prep + scoring" },
     { label: "Startup Club", sub: "Mentors + investors" },
-    { label: "AI Tutor 24/7", sub: "Knows your code" },
+    { label: "Nova 24/7", sub: "Knows your code" },
   ];
   return (
     <div ref={ref} className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-4">
@@ -448,7 +448,7 @@ function MissionContent() {
           transition: "opacity 0.7s ease-out, transform 0.7s ease-out",
           transitionDelay: "300ms",
         }}>
-          We believe every person on earth should have access to a personal AI tutor that
+          We believe every person on earth should have access to a personal AI tutor like Nova that
           grades their code, a curriculum that adapts to their level, and a portfolio that
           proves they&apos;re ready — regardless of where they went to school or how much
           they can afford.

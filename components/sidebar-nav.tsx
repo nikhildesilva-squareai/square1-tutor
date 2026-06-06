@@ -23,7 +23,7 @@ const nav = [
   { href: "/projects", label: "My Projects", icon: FolderKanban },
   { href: "/portfolio", label: "Portfolio", icon: Award },
   { href: "/progress", label: "Progress", icon: BarChart3 },
-  { href: "/tutor", label: "AI Tutor", icon: MessageSquare },
+  { href: "/tutor", label: "Nova", icon: MessageSquare },
   { href: "/settings", label: "Settings", icon: Settings },
 ];
 

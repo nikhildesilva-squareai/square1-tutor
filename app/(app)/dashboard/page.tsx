@@ -573,8 +573,8 @@ export default async function DashboardPage() {
                   </svg>
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-semibold text-ink">AI Tutor</p>
-                  <p className="text-[10px] text-ink-muted">Get help with any topic</p>
+                  <p className="text-sm font-semibold text-ink">Nova</p>
+                  <p className="text-[10px] text-ink-muted">Your AI learning companion</p>
                 </div>
                 <svg width="14" height="14" viewBox="0 0 16 16" fill="none" className="text-ink-muted group-hover:text-brand transition-colors"><path d="M6 3l5 5-5 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /></svg>
               </Link>

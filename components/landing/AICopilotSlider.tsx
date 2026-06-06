@@ -58,7 +58,7 @@ function TutorVisual({ accent }: { accent: string }) {
         <div className="w-8 h-8 rounded-full flex items-center justify-center text-[10px] font-black text-white"
           style={{ background: `linear-gradient(135deg, ${accent}, ${accent}cc)` }}>S1</div>
         <div className="flex-1">
-          <p className="text-xs font-bold text-white leading-tight">Square 1 AI Tutor</p>
+          <p className="text-xs font-bold text-white leading-tight">Nova</p>
           <p className="text-[10px] text-emerald-400 flex items-center gap-1 mt-0.5">
             <span className="w-1 h-1 rounded-full bg-emerald-400 animate-pulse" />
             Watching your code
@@ -230,8 +230,8 @@ const FEATURES = [
   },
   {
     n:        "02",
-    eyebrow:  "Personal AI Tutor",
-    headline: "Your AI tutor knows your code.",
+    eyebrow:  "Meet Nova",
+    headline: "Nova knows your code.",
     tagline:  "Not generic advice. Specific feedback on your actual work, 24/7.",
     accent:   "#A78BFA",
     facts:    ["Context-aware", "Available anytime", "Adapts to your style"],

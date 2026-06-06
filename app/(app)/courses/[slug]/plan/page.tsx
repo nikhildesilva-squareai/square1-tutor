@@ -58,7 +58,7 @@ const FEATURES = [
   { icon: "book", text: "Full course curriculum (40 lessons)" },
   { icon: "code", text: "10-12 real deployable projects" },
   { icon: "ai", text: "AI code grading on every submission" },
-  { icon: "chat", text: "24/7 AI tutor" },
+  { icon: "chat", text: "Nova — 24/7 AI tutor" },
   { icon: "chart", text: "Skill reports & progress tracking" },
   { icon: "award", text: "Certificate of completion" },
   { icon: "github", text: "GitHub portfolio" },

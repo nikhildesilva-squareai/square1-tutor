@@ -127,7 +127,7 @@ export default async function Home() {
               Traditional education gives you theory and hopes you figure out the rest.
               Bootcamps rush you through and hand you a certificate.{" "}
               <span className="text-white font-semibold">We give you 12 deployed projects,
-              an AI tutor that knows your code, and a skill report that proves you&apos;re
+              Nova — an AI tutor that knows your code — and a skill report that proves you&apos;re
               ready.</span> That&apos;s the difference.
             </p>
           </div>

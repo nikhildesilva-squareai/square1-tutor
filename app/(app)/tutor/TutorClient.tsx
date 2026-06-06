@@ -168,7 +168,7 @@ export function TutorClient({ studentName, userEmail, enrollments, weakTopics }:
                 </svg>
               </div>
               <div>
-                <p className="text-sm font-bold text-ink">AI Tutor</p>
+                <p className="text-sm font-bold text-ink">Nova</p>
                 <p className="text-[10px] text-ink-muted">
                   {selectedEnrollment ? `${selectedEnrollment.courseTitle}${selectedEnrollment.currentLessonTitle ? ` · ${selectedEnrollment.currentLessonTitle}` : ""}` : "Your personal learning assistant"}
                 </p>

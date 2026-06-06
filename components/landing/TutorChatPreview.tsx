@@ -72,7 +72,7 @@ export function TutorChatPreview() {
       <div className="max-w-3xl mx-auto">
         <div className="text-center mb-8 sm:mb-10">
           <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-ink">
-            Your AI tutor knows your code
+            Meet Nova — your AI tutor
           </h2>
           <p className="mt-3 text-ink-muted text-lg">
             Not generic advice. Specific feedback on your actual work.
@@ -92,7 +92,7 @@ export function TutorChatPreview() {
               S1
             </div>
             <div>
-              <p className="text-sm font-semibold text-white">Square 1 AI Tutor</p>
+              <p className="text-sm font-semibold text-white">Nova</p>
               <p className="text-xs text-emerald-400 flex items-center gap-1">
                 <span
                   className="w-1.5 h-1.5 rounded-full bg-emerald-400 inline-block"
