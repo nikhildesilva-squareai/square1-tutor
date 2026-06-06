@@ -1,213 +1,257 @@
 import { createClient } from "@/lib/supabase/server";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { Badge } from "@/components/ui/badge";
 import { SubmissionForm, ScoreDisplay } from "./SubmissionForm";
 import type { Project, ProjectSubmission } from "@/types/database";
 
-function difficultyVariant(difficulty: string): "success" | "warning" | "error" {
-  if (difficulty === "advanced") return "error";
-  if (difficulty === "intermediate") return "warning";
-  return "success";
-}
+interface Milestone { title?: string; description?: string; [key: string]: unknown }
+interface PageProps { params: Promise<{ projectId: string }> }
 
-interface Milestone {
-  title?: string;
-  description?: string;
-  [key: string]: unknown;
-}
-
-interface PageProps {
-  params: Promise<{ projectId: string }>;
-}
+const DIFF_COLORS: Record<string, { text: string; bg: string; border: string; dot: string }> = {
+  beginner:     { text: "text-emerald-600", bg: "bg-emerald-50", border: "border-emerald-200", dot: "#22C55E" },
+  intermediate: { text: "text-amber-600",   bg: "bg-amber-50",   border: "border-amber-200",   dot: "#F59E0B" },
+  advanced:     { text: "text-red-600",     bg: "bg-red-50",     border: "border-red-200",     dot: "#EF4444" },
+};
 
 export default async function ProjectBriefPage({ params }: PageProps) {
   const { projectId } = await params;
   const supabase = await createClient();
-
-  // Auth
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return null;
 
-  // Fetch project
-  const { data: project } = await supabase
-    .from("projects")
-    .select("*")
-    .eq("id", projectId)
-    .maybeSingle() as { data: Project | null };
-
+  const { data: project } = await supabase.from("projects").select("*").eq("id", projectId).maybeSingle() as { data: Project | null };
   if (!project) notFound();
 
-  // Fetch the course for context (project order, total count)
-  const { data: course } = await supabase
-    .from("courses")
-    .select("id, title, slug, color, total_projects")
-    .eq("id", project.course_id)
-    .maybeSingle();
+  const { data: course } = await supabase.from("courses").select("id, title, slug, color, total_projects").eq("id", project.course_id).maybeSingle();
+  const { data: student } = await supabase.from("students").select("id").eq("user_id", user.id).maybeSingle();
 
-  // Get the student
-  const { data: student } = await supabase
-    .from("students")
-    .select("id")
-    .eq("user_id", user.id)
-    .maybeSingle();
-
-  // Check for existing submission
   let submission: ProjectSubmission | null = null;
   if (student) {
-    const { data } = await supabase
-      .from("project_submissions")
-      .select("*")
-      .eq("student_id", student.id)
-      .eq("project_id", projectId)
-      .maybeSingle() as { data: ProjectSubmission | null };
+    const { data } = await supabase.from("project_submissions").select("*").eq("student_id", student.id).eq("project_id", projectId).maybeSingle() as { data: ProjectSubmission | null };
     submission = data;
   }
 
   const milestones = (project.milestone_checkpoints ?? []) as Milestone[];
   const requirements = project.requirements ?? [];
   const techStack = project.tech_stack ?? [];
+  const dc = DIFF_COLORS[project.difficulty] ?? DIFF_COLORS.intermediate;
+  const courseColor = course?.color ?? "#0056CE";
+  const hasResult = submission && submission.score !== null;
 
   return (
-    <div className="pb-24">
-      <div className="px-6 py-8 max-w-4xl mx-auto">
-        {/* Back link */}
-        <Link href="/projects" className="text-sm text-brand hover:underline mb-6 inline-block">
-          ← Back to projects
-        </Link>
+    <div className="min-h-full bg-surface-soft">
+      {/* ── Dark hero header — Vercel deployment style ──────────────── */}
+      <div className="bg-[#0A0A0A] border-b border-white/10">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
+          {/* Breadcrumb */}
+          <div className="flex items-center gap-2 text-sm mb-4">
+            <Link href="/projects" className="text-slate-400 hover:text-white transition-colors">Projects</Link>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#475569" strokeWidth="2"><polyline points="9 18 15 12 9 6" /></svg>
+            <span className="text-slate-400">{course?.title}</span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#475569" strokeWidth="2"><polyline points="9 18 15 12 9 6" /></svg>
+            <span className="text-white font-medium">{project.title}</span>
+          </div>
 
-        {/* Header */}
-        <div className="flex items-start gap-5 mb-2">
-          <div
-            className="w-16 h-1.5 rounded-full mt-4 shrink-0"
-            style={{ background: course?.color ?? "#0056CE" }}
-          />
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-3 text-xs text-ink-muted mb-2">
-              <span>
-                Project {project.order_index + 1} of {course?.total_projects ?? "?"}
-              </span>
-              <span className="text-border-mid">·</span>
-              <Badge variant={difficultyVariant(project.difficulty)}>
-                {project.difficulty.charAt(0).toUpperCase() + project.difficulty.slice(1)}
-              </Badge>
-            </div>
-            <h1 className="text-2xl font-bold text-ink mb-3">{project.title}</h1>
-            <p className="text-sm text-ink-muted leading-relaxed max-w-2xl">
-              {project.description_md.replace(/[#*`]/g, "").substring(0, 300)}
-            </p>
-
-            {/* Meta */}
-            <div className="flex items-center gap-5 mt-4 text-sm text-ink-muted flex-wrap">
-              {techStack.length > 0 && (
-                <span>
-                  <span className="font-semibold text-ink text-xs uppercase tracking-wider">Tech Stack:</span>{" "}
-                  {techStack.join(" · ")}
+          {/* Title row */}
+          <div className="flex flex-col sm:flex-row sm:items-center gap-4 mb-5">
+            <div className="flex-1">
+              <div className="flex items-center gap-3 mb-2">
+                <h1 className="text-xl sm:text-2xl font-bold text-white">{project.title}</h1>
+                <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${dc.bg} ${dc.text} ${dc.border} border`}>
+                  {project.difficulty}
                 </span>
-              )}
-              {project.estimated_hours > 0 && (
-                <>
-                  <span className="text-border-mid">·</span>
-                  <span>
-                    <span className="font-semibold text-ink text-xs uppercase tracking-wider">Estimated:</span>{" "}
-                    {project.estimated_hours} hours
+                {hasResult && (
+                  <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                    Submitted
                   </span>
-                </>
-              )}
+                )}
+              </div>
+              <p className="text-sm text-slate-400 leading-relaxed max-w-2xl">
+                {project.description_md.replace(/[#*`]/g, "").substring(0, 200)}
+              </p>
             </div>
+          </div>
+
+          {/* Meta cards — Vercel deployment info style */}
+          <div className="flex items-center gap-6 text-sm flex-wrap">
+            <div className="flex items-center gap-2 text-slate-400">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                <circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" />
+              </svg>
+              <span>{project.estimated_hours} hours</span>
+            </div>
+            <div className="flex items-center gap-2 text-slate-400">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                <path d="M4 19.5A2.5 2.5 0 016.5 17H20" /><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z" />
+              </svg>
+              <span>Project {project.order_index + 1} of {course?.total_projects ?? "?"}</span>
+            </div>
+            {hasResult && (
+              <div className="flex items-center gap-2 text-emerald-400">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="20 6 9 17 4 12" /></svg>
+                <span className="font-semibold">{submission!.score}/{submission!.max_score}</span>
+              </div>
+            )}
           </div>
         </div>
       </div>
 
-      <div className="max-w-4xl mx-auto px-6 space-y-10">
-        {/* Requirements */}
-        {requirements.length > 0 && (
-          <section>
-            <div className="border-t border-border pt-8">
-              <h2 className="text-sm font-bold text-ink uppercase tracking-wider mb-4">Requirements</h2>
-              <ul className="space-y-2">
-                {requirements.map((req, i) => (
-                  <li key={i} className="flex items-start gap-3 text-sm text-ink">
-                    <span className="text-success mt-0.5 shrink-0 font-bold">{"✓"}</span>
-                    {req}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </section>
-        )}
+      {/* ── Content ────────────────────────────────────────────────── */}
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
-        {/* Milestones */}
-        {milestones.length > 0 && (
-          <section>
-            <div className="border-t border-border pt-8">
-              <h2 className="text-sm font-bold text-ink uppercase tracking-wider mb-1">
-                Milestones
-              </h2>
-              <p className="text-xs text-ink-muted mb-5">{milestones.length} checkpoints</p>
-              <div className="border border-border rounded-xl overflow-hidden divide-y divide-border">
-                {milestones.map((ms, i) => (
-                  <div key={i} className="px-5 py-4 bg-surface flex items-start gap-4">
-                    <div className="w-7 h-7 rounded-full bg-surface-tint flex items-center justify-center text-xs font-bold text-brand shrink-0 mt-0.5">
-                      {i + 1}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-semibold text-ink">{ms.title ?? `Milestone ${i + 1}`}</p>
-                      {ms.description && (
-                        <p className="text-xs text-ink-muted mt-0.5">{ms.description}</p>
-                      )}
-                    </div>
+          {/* Left column — main content (2/3) */}
+          <div className="lg:col-span-2 space-y-6">
+
+            {/* Tech Stack */}
+            <div className="bg-surface rounded-xl border border-border p-5">
+              <h2 className="text-[10px] font-bold text-ink-muted uppercase tracking-widest mb-4">Tech Stack</h2>
+              <div className="flex flex-wrap gap-2">
+                {techStack.map((tech) => (
+                  <div key={tech} className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-surface-soft border border-border">
+                    <span className="w-2.5 h-2.5 rounded-full" style={{ background: courseColor }} />
+                    <span className="text-sm font-medium text-ink">{tech}</span>
                   </div>
                 ))}
               </div>
             </div>
-          </section>
-        )}
 
-        {/* Starter Kit */}
-        <section>
-          <div className="border-t border-border pt-8">
-            <h2 className="text-sm font-bold text-ink uppercase tracking-wider mb-4">Starter Kit</h2>
-            <a
-              href={`https://github.com/square1ai/starter-${project.title.toLowerCase().replace(/\s+/g, "-")}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 text-sm text-brand font-semibold hover:underline"
-            >
-              Clone from GitHub
-              <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
-                <path d="M6 3l5 5-5 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
-            </a>
-            <p className="text-xs text-ink-muted mt-1">
-              github.com/square1ai/starter-{project.title.toLowerCase().replace(/\s+/g, "-")}
-            </p>
-          </div>
-        </section>
-
-        {/* Submission Section */}
-        <section>
-          <div className="border-t border-border pt-8">
-            <h2 className="text-sm font-bold text-ink uppercase tracking-wider mb-5">
-              Submit Your Project
-            </h2>
-
-            {submission && submission.score !== null ? (
-              <ScoreDisplay
-                result={{
-                  score: submission.score,
-                  max_score: submission.max_score,
-                  breakdown: submission.breakdown ?? [],
-                  overall_feedback: submission.overall_feedback ?? "",
-                  strengths: submission.strengths ?? [],
-                  improvements: submission.improvements ?? [],
-                }}
-              />
-            ) : (
-              <SubmissionForm projectId={projectId} />
+            {/* Requirements — checklist style */}
+            {requirements.length > 0 && (
+              <div className="bg-surface rounded-xl border border-border p-5">
+                <h2 className="text-[10px] font-bold text-ink-muted uppercase tracking-widest mb-4">Requirements</h2>
+                <div className="space-y-2">
+                  {requirements.map((req, i) => (
+                    <div key={i} className="flex items-start gap-3 px-3 py-2 rounded-lg hover:bg-surface-soft transition-colors">
+                      <div className="w-5 h-5 rounded border border-border flex items-center justify-center shrink-0 mt-0.5">
+                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" strokeWidth="3"><polyline points="20 6 9 17 4 12" /></svg>
+                      </div>
+                      <span className="text-sm text-ink leading-relaxed">{req}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
             )}
+
+            {/* Milestones — timeline style */}
+            {milestones.length > 0 && (
+              <div className="bg-surface rounded-xl border border-border p-5">
+                <h2 className="text-[10px] font-bold text-ink-muted uppercase tracking-widest mb-4">
+                  Milestones
+                  <span className="ml-2 px-1.5 py-0.5 rounded bg-surface-alt text-ink-muted text-[10px] font-bold">{milestones.length}</span>
+                </h2>
+                <div className="relative">
+                  {/* Timeline line */}
+                  <div className="absolute left-[11px] top-3 bottom-3 w-px bg-border" />
+                  <div className="space-y-4">
+                    {milestones.map((ms, i) => (
+                      <div key={i} className="flex items-start gap-4 relative">
+                        <div className="w-6 h-6 rounded-full bg-surface border-2 border-border flex items-center justify-center z-10 shrink-0">
+                          <span className="text-[9px] font-bold text-ink-muted">{i + 1}</span>
+                        </div>
+                        <div className="flex-1 pb-1">
+                          <p className="text-sm font-semibold text-ink">{ms.title ?? `Milestone ${i + 1}`}</p>
+                          {ms.description && <p className="text-xs text-ink-muted mt-0.5 leading-relaxed">{ms.description}</p>}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Submission / Score */}
+            <div className="bg-surface rounded-xl border border-border p-5">
+              <h2 className="text-[10px] font-bold text-ink-muted uppercase tracking-widest mb-5">
+                {hasResult ? "Submission Result" : "Submit Your Project"}
+              </h2>
+              {hasResult ? (
+                <ScoreDisplay
+                  result={{
+                    score: submission!.score!,
+                    max_score: submission!.max_score,
+                    breakdown: submission!.breakdown ?? [],
+                    overall_feedback: submission!.overall_feedback ?? "",
+                    strengths: submission!.strengths ?? [],
+                    improvements: submission!.improvements ?? [],
+                  }}
+                />
+              ) : (
+                <SubmissionForm projectId={projectId} />
+              )}
+            </div>
           </div>
-        </section>
+
+          {/* Right column — sidebar (1/3) */}
+          <div className="space-y-4">
+
+            {/* About — GitHub repo sidebar style */}
+            <div className="bg-surface rounded-xl border border-border p-5">
+              <h3 className="text-[10px] font-bold text-ink-muted uppercase tracking-widest mb-3">About</h3>
+              <p className="text-sm text-ink-secondary leading-relaxed mb-4">
+                {project.description_md.replace(/[#*`]/g, "").substring(0, 200)}
+              </p>
+              <div className="space-y-3 text-sm">
+                <div className="flex items-center gap-2 text-ink-secondary">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                    <circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" />
+                  </svg>
+                  <span>{project.estimated_hours} hours estimated</span>
+                </div>
+                <div className="flex items-center gap-2 text-ink-secondary">
+                  <span className="w-3.5 h-3.5 rounded-full" style={{ background: dc.dot }} />
+                  <span className="capitalize">{project.difficulty}</span>
+                </div>
+                <div className="flex items-center gap-2 text-ink-secondary">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                    <path d="M22 11.08V12a10 10 0 11-5.93-9.14" /><polyline points="22 4 12 14.01 9 11.01" />
+                  </svg>
+                  <span>{requirements.length} requirements</span>
+                </div>
+                <div className="flex items-center gap-2 text-ink-secondary">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                    <path d="M18 20V10" /><path d="M12 20V4" /><path d="M6 20v-6" />
+                  </svg>
+                  <span>{milestones.length} milestones</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Starter kit */}
+            <div className="bg-surface rounded-xl border border-border p-5">
+              <h3 className="text-[10px] font-bold text-ink-muted uppercase tracking-widest mb-3">Resources</h3>
+              <a href={`https://github.com/square1ai/starter-${project.title.toLowerCase().replace(/\s+/g, "-")}`}
+                target="_blank" rel="noopener noreferrer"
+                className="flex items-center gap-3 px-3 py-2.5 rounded-lg border border-border hover:border-brand/30 hover:bg-surface-soft transition-all group">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" className="text-ink-secondary group-hover:text-ink transition-colors">
+                  <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.44 9.8 8.21 11.39.6.11.82-.26.82-.58 0-.29-.01-1.04-.02-2.05-3.34.73-4.04-1.61-4.04-1.61C4.42 17.92 3.63 17.5 3.63 17.5c-1.09-.74.08-.73.08-.73 1.21.09 1.85 1.24 1.85 1.24 1.07 1.84 2.81 1.31 3.49 1 .11-.78.42-1.31.76-1.61-2.66-.3-5.47-1.33-5.47-5.92 0-1.31.47-2.38 1.24-3.22-.13-.3-.54-1.52.12-3.17 0 0 1-.32 3.3 1.23A11.5 11.5 0 0112 5.8c1.02.01 2.04.14 3 .4 2.29-1.55 3.3-1.23 3.3-1.23.66 1.65.25 2.87.12 3.17.77.84 1.24 1.91 1.24 3.22 0 4.6-2.81 5.62-5.49 5.92.43.37.82 1.1.82 2.21 0 1.6-.02 2.89-.02 3.28 0 .32.22.7.83.58A12 12 0 0024 12c0-6.63-5.37-12-12-12z"/>
+                </svg>
+                <div className="flex-1">
+                  <p className="text-sm font-medium text-ink group-hover:text-brand transition-colors">Starter Template</p>
+                  <p className="text-[10px] text-ink-muted font-mono">Clone and start building</p>
+                </div>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" strokeWidth="2" className="group-hover:stroke-brand transition-colors"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6" /><polyline points="15 3 21 3 21 9" /><line x1="10" y1="14" x2="21" y2="3" /></svg>
+              </a>
+            </div>
+
+            {/* Course context */}
+            <div className="bg-surface rounded-xl border border-border p-5">
+              <h3 className="text-[10px] font-bold text-ink-muted uppercase tracking-widest mb-3">Course</h3>
+              <Link href={`/courses/${course?.slug}`}
+                className="flex items-center gap-3 px-3 py-2.5 rounded-lg border border-border hover:border-brand/30 hover:bg-surface-soft transition-all group">
+                <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: `${courseColor}15` }}>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={courseColor} strokeWidth="2" strokeLinecap="round">
+                    <path d="M4 19.5A2.5 2.5 0 016.5 17H20" /><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z" />
+                  </svg>
+                </div>
+                <div className="flex-1">
+                  <p className="text-sm font-medium text-ink group-hover:text-brand transition-colors">{course?.title}</p>
+                  <p className="text-[10px] text-ink-muted">View course</p>
+                </div>
+              </Link>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
