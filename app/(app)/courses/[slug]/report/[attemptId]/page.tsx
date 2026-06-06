@@ -16,6 +16,25 @@ interface TopicMastery {
   questionCount?: number;
 }
 
+/* Known abbreviations that should stay uppercase */
+const UPPER_TOKENS = new Set(["cnn", "ai", "ml", "api", "apis", "llm", "llms", "sql", "ci", "cd", "bfs", "dfs", "yolo", "pid", "owasp", "cia", "dos", "admet", "tcp", "ip", "http", "css", "html", "jwt", "ssh", "tls", "ssl", "dns", "ui", "ux"]);
+
+/** Turn a slug like "edge-detection" → "Edge Detection", "cnn" → "CNN", "ci_cd" → "CI/CD" */
+function formatTopicName(slug: string): string {
+  return slug
+    .replace(/_/g, " ")
+    .replace(/-/g, " ")
+    .split(" ")
+    .map((w) => {
+      const lower = w.toLowerCase();
+      if (UPPER_TOKENS.has(lower)) return lower.toUpperCase();
+      return w.charAt(0).toUpperCase() + w.slice(1).toLowerCase();
+    })
+    .join(" ")
+    .replace(/\bCi Cd\b/g, "CI/CD")
+    .replace(/\bCia Triad\b/g, "CIA Triad");
+}
+
 interface QuestionResult {
   id: string;
   number: number;
@@ -253,7 +272,7 @@ function RadarChart({ topics, animate }: { topics: TopicMastery[]; animate: bool
             onMouseLeave={() => setHoverIdx(null)}
             style={{ transition: "fill 0.2s", cursor: "pointer" }}
           >
-            {t.topic}
+            {formatTopicName(t.topic)}
           </text>
         );
       })}
@@ -543,7 +562,7 @@ export default function ReportPage({ params }: PageProps) {
                 {strengths.map((t) => (
                   <div key={t.topic}>
                     <div className="flex items-center justify-between mb-1">
-                      <span className="text-sm font-medium text-ink">{t.topic}</span>
+                      <span className="text-sm font-medium text-ink">{formatTopicName(t.topic)}</span>
                       <span className="text-xs font-bold text-success tabular-nums">{t.percentage}%</span>
                     </div>
                     <div className="w-full h-2 rounded-full overflow-hidden bg-success/10">
@@ -568,7 +587,7 @@ export default function ReportPage({ params }: PageProps) {
                 {gaps.map((t) => (
                   <div key={t.topic}>
                     <div className="flex items-center justify-between mb-1">
-                      <span className="text-sm font-medium text-ink">{t.topic}</span>
+                      <span className="text-sm font-medium text-ink">{formatTopicName(t.topic)}</span>
                       <span className="text-xs font-bold text-error tabular-nums">{t.percentage}%</span>
                     </div>
                     <div className="w-full h-2 rounded-full overflow-hidden bg-error/10">
@@ -636,7 +655,7 @@ export default function ReportPage({ params }: PageProps) {
                   <div key={t.topic} className="rounded-xl border border-border bg-surface p-4 shadow-card">
                     <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center gap-2">
-                        <span className="text-sm font-semibold text-ink">{t.topic}</span>
+                        <span className="text-sm font-semibold text-ink">{formatTopicName(t.topic)}</span>
                         {t.questionCount != null && (
                           <span className="text-[10px] text-ink-muted">{t.questionCount} Q{t.questionCount !== 1 ? "s" : ""}</span>
                         )}
@@ -692,7 +711,7 @@ export default function ReportPage({ params }: PageProps) {
                       <div className="flex items-center gap-2 mb-0.5">
                         <span className="text-sm font-semibold text-ink">Q{q.number}</span>
                         <span className={cn("px-1.5 py-0.5 rounded text-[9px] font-bold uppercase", typeColor)}>{typeBadge}</span>
-                        <span className="text-[10px] text-ink-muted">{q.topicTag}</span>
+                        <span className="text-[10px] text-ink-muted">{formatTopicName(q.topicTag)}</span>
                       </div>
                       <p className="text-xs text-ink-muted truncate">{q.stem.slice(0, 100)}</p>
                     </div>

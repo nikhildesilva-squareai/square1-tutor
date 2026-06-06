@@ -382,7 +382,7 @@ export async function POST(
           score: existingAttempt.score,
           maxScore: existingAttempt.max_score,
           percentage: existingAttempt.percentage,
-          topicMastery: existingReport.topic_mastery ?? [],
+          topicMastery: existingReport.topic_mastery_json ?? [],
           recommendationsMd: existingReport.recommendations_md ?? "",
           questionResults: qResults,
         });
@@ -553,11 +553,11 @@ export async function POST(
 
     /* ── Save skill report ─────────────────────────────────────────────── */
     // Compute weak + strong topic arrays
-    const weakTopics = Object.entries(topicMastery)
-      .filter(([, v]) => (v as TopicAccum).total > 0 && ((v as TopicAccum).correct / (v as TopicAccum).total) < 0.5)
+    const weakTopics = Object.entries(topicAccum)
+      .filter(([, v]) => v.total > 0 && (v.correct / v.total) < 0.5)
       .map(([k]) => k);
-    const strongTopics = Object.entries(topicMastery)
-      .filter(([, v]) => (v as TopicAccum).total > 0 && ((v as TopicAccum).correct / (v as TopicAccum).total) >= 0.7)
+    const strongTopics = Object.entries(topicAccum)
+      .filter(([, v]) => v.total > 0 && (v.correct / v.total) >= 0.7)
       .map(([k]) => k);
 
     const { data: report, error: reportErr } = await supabase
