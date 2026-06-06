@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, use } from "react";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 
 interface PageProps {
@@ -109,11 +109,13 @@ export default function PlanPage({ params }: PageProps) {
   const searchParams = useSearchParams();
   const reportId = searchParams.get("reportId") ?? "";
 
+  const router = useRouter();
   const [billingCycle, setBillingCycle] = useState<"monthly" | "upfront">("monthly");
-  const [showModal, setShowModal] = useState(false);
-  const [email, setEmail] = useState("");
-  const [emailSubmitted, setEmailSubmitted] = useState(false);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
+
+  function goToCheckout(months: number) {
+    router.push(`/courses/${slug}/checkout?months=${months}&billing=${billingCycle}`);
+  }
 
   return (
     <div>
@@ -269,7 +271,7 @@ export default function PlanPage({ params }: PageProps) {
 
                 {/* CTA button */}
                 <button
-                  onClick={() => setShowModal(true)}
+                  onClick={() => goToCheckout(plan.months)}
                   className={cn(
                     "w-full h-13 py-3.5 rounded-xl font-bold text-sm transition-all",
                     plan.isFeatured
@@ -445,62 +447,6 @@ export default function PlanPage({ params }: PageProps) {
         </div>
       </section>
 
-      {/* ═══════════════════════════════════════════════════════════════ */}
-      {/*  COMING SOON MODAL                                             */}
-      {/* ═══════════════════════════════════════════════════════════════ */}
-      {showModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4"
-          style={{ background: "rgba(15,23,42,0.5)", backdropFilter: "blur(4px)" }}>
-          <div className="max-w-md w-full bg-surface rounded-2xl border border-border p-8 text-center shadow-card-hover">
-            <div className="w-14 h-14 rounded-2xl bg-surface-tint flex items-center justify-center mx-auto mb-5">
-              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#0056CE" strokeWidth="2">
-                <circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" />
-              </svg>
-            </div>
-
-            <h3 className="text-xl font-bold text-ink mb-2">Payments launching soon</h3>
-            <p className="text-sm text-ink-muted mb-6">
-              We&apos;re finalising Stripe integration. Drop your email and we&apos;ll let you know the moment it&apos;s live.
-            </p>
-
-            {emailSubmitted ? (
-              <div className="rounded-xl bg-success-bg border border-success/20 p-4">
-                <div className="flex items-center justify-center gap-2 text-success text-sm font-semibold">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
-                    <polyline points="20 6 9 17 4 12" />
-                  </svg>
-                  You&apos;re on the list! We&apos;ll notify you.
-                </div>
-              </div>
-            ) : (
-              <div className="flex gap-2">
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="you@email.com"
-                  className="flex-1 h-11 px-4 rounded-xl border border-border bg-surface text-ink text-sm placeholder:text-ink-muted focus:outline-none focus:ring-2 focus:ring-brand focus:border-brand transition-colors"
-                />
-                <button
-                  onClick={() => {
-                    if (email.includes("@")) setEmailSubmitted(true);
-                  }}
-                  className="h-11 px-5 rounded-xl bg-brand text-white font-semibold text-sm shrink-0 hover:bg-brand/90 transition-colors"
-                >
-                  Notify me
-                </button>
-              </div>
-            )}
-
-            <button
-              onClick={() => setShowModal(false)}
-              className="mt-6 text-xs text-ink-muted hover:text-ink-secondary transition-colors"
-            >
-              Close
-            </button>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
