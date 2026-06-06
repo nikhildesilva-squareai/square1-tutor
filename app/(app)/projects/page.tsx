@@ -24,24 +24,131 @@ export default async function ProjectsPage() {
   const { data: enrollments } = await supabase.from("student_enrollments").select("course_id").eq("student_id", student?.id ?? "").eq("status", "active");
   const enrolledCourseIds = (enrollments ?? []).map((e) => e.course_id);
 
-  /* ── NOT ENROLLED ──────────────────────────────────────────────────── */
+  /* ── NOT ENROLLED — Show project showcase to get them excited ────── */
   if (enrolledCourseIds.length === 0) {
+    // Fetch ALL courses + a sample of projects to showcase
+    const { data: allCourses } = await supabase.from("courses").select("id, slug, title, color").eq("status", "active").order("title") as { data: CourseRow[] | null };
+    const { data: allProjects } = await supabase.from("projects").select("id, title, description_md, difficulty, estimated_hours, tech_stack, requirements, course_id, order_index").order("order_index", { ascending: true }) as { data: ProjectRow[] | null };
+
+    const allCourseList = allCourses ?? [];
+    const allProjectList = allProjects ?? [];
+
+    // Group by course
+    const previewGrouped = new Map<string, ProjectRow[]>();
+    for (const p of allProjectList) { const l = previewGrouped.get(p.course_id) ?? []; l.push(p); previewGrouped.set(p.course_id, l); }
+
+    // Pick 2 most interesting projects per course (1 beginner, 1 advanced)
+    function pickShowcase(projects: ProjectRow[]): ProjectRow[] {
+      const beginner = projects.find(p => p.difficulty === "beginner");
+      const advanced = projects.find(p => p.difficulty === "advanced") ?? projects[projects.length - 1];
+      const capstone = projects[projects.length - 1];
+      const picks = [beginner, advanced ?? capstone].filter((p): p is ProjectRow => !!p);
+      // Deduplicate
+      const seen = new Set<string>();
+      return picks.filter(p => { if (seen.has(p.id)) return false; seen.add(p.id); return true; });
+    }
+
+    const totalProjectCount = allProjectList.length;
+
     return (
       <div className="px-4 sm:px-6 py-8 max-w-5xl mx-auto">
+        {/* Header */}
         <div className="mb-6">
           <h1 className="text-2xl font-black text-ink">Projects</h1>
-          <p className="text-sm text-ink-muted mt-1">Build real-world projects, get AI code review, ship to your portfolio.</p>
+          <p className="text-sm text-ink-muted mt-1">{totalProjectCount} real-world projects across {allCourseList.length} courses. AI-reviewed. Portfolio-ready.</p>
         </div>
-        <div className="bg-surface rounded-xl border border-border p-12 text-center">
-          <div className="w-14 h-14 rounded-2xl bg-surface-alt flex items-center justify-center mx-auto mb-4">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" strokeWidth="1.5" strokeLinecap="round"><path d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" /></svg>
+
+        {/* Hero CTA */}
+        <div className="bg-[#0A0A0A] rounded-2xl p-6 sm:p-8 mb-8 relative overflow-hidden">
+          <div className="absolute inset-0 opacity-[0.04]" style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23fff' fill-rule='evenodd'%3E%3Cpath d='M0 0h1v40H0V0zm39 0h1v40h-1V0zM0 0h40v1H0V0zm0 39h40v1H0v-1z'/%3E%3C/g%3E%3C/svg%3E\")" }} />
+          <div className="relative flex flex-col sm:flex-row items-start sm:items-center gap-5">
+            <div className="flex-1">
+              <h2 className="text-lg font-bold text-white mb-1">Build projects that get you hired</h2>
+              <p className="text-sm text-slate-400 leading-relaxed">
+                Every course includes 10-12 progressively harder projects. Submit your code, get AI-reviewed line-by-line, and ship to your portfolio.
+              </p>
+            </div>
+            <Link href="/courses" className="shrink-0 h-10 px-6 rounded-xl bg-white text-ink font-bold text-sm hover:bg-white/90 transition-all inline-flex items-center gap-2">
+              Pick a Course
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M6 3l5 5-5 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /></svg>
+            </Link>
           </div>
-          <h3 className="text-base font-bold text-ink mb-1">No projects yet</h3>
-          <p className="text-sm text-ink-muted mb-5 max-w-xs mx-auto">Enrol in a course to unlock your project roadmap.</p>
-          <Link href="/courses" className="inline-flex items-center gap-2 h-9 px-5 rounded-lg bg-brand text-white text-sm font-semibold hover:bg-brand/90 transition-all">
-            Browse Courses
-          </Link>
         </div>
+
+        {/* Project showcase per course */}
+        {allCourseList.map((course) => {
+          const courseProjects = previewGrouped.get(course.id) ?? [];
+          if (courseProjects.length === 0) return null;
+          const showcase = pickShowcase(courseProjects);
+          const totalForCourse = courseProjects.length;
+
+          return (
+            <div key={course.id} className="mb-6">
+              {/* Course header */}
+              <div className="flex items-center gap-2 mb-3 pb-2 border-b border-border">
+                <div className="w-4 h-4 rounded flex items-center justify-center" style={{ background: course.color }}>
+                  <svg width="8" height="8" viewBox="0 0 24 24" fill="white" stroke="none"><path d="M4 19.5A2.5 2.5 0 016.5 17H20V2H6.5A2.5 2.5 0 014 4.5v15z" /></svg>
+                </div>
+                <span className="text-sm font-semibold text-ink">{course.title}</span>
+                <span className="text-xs text-ink-muted">{totalForCourse} projects</span>
+                <div className="flex-1" />
+                <Link href={`/courses/${course.slug}`} className="text-xs text-brand font-semibold hover:underline">
+                  View course
+                </Link>
+              </div>
+
+              {/* Featured project cards */}
+              <div className="border border-border rounded-xl overflow-hidden divide-y divide-border">
+                {showcase.map((project) => {
+                  const diffColor = DIFF_DOT[project.difficulty] ?? "#F59E0B";
+                  return (
+                    <div key={project.id} className="flex items-start gap-4 px-5 py-4 bg-surface hover:bg-surface-soft transition-colors">
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-1">
+                          <h3 className="text-sm font-semibold text-ink">{project.title}</h3>
+                          <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-surface-alt text-ink-muted border border-border capitalize">
+                            {project.difficulty}
+                          </span>
+                        </div>
+                        <p className="text-xs text-ink-muted line-clamp-2 mb-2.5 max-w-xl">
+                          {project.description_md.replace(/[#*`]/g, "").slice(0, 160)}
+                        </p>
+                        <div className="flex items-center gap-4 text-[11px] text-ink-muted">
+                          <span className="flex items-center gap-1.5">
+                            <span className="w-3 h-3 rounded-full" style={{ background: diffColor }} />
+                            {project.tech_stack[0]}
+                          </span>
+                          {project.tech_stack.slice(1, 3).map((t: string) => (
+                            <span key={t} className="hidden sm:inline">{t}</span>
+                          ))}
+                          <span className="flex items-center gap-1">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" /></svg>
+                            {project.estimated_hours}h
+                          </span>
+                        </div>
+                      </div>
+                      {/* Lock indicator */}
+                      <div className="shrink-0 flex flex-col items-center gap-1 mt-1">
+                        <div className="w-8 h-8 rounded-lg bg-surface-alt flex items-center justify-center">
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" strokeWidth="2"><rect x="3" y="11" width="18" height="11" rx="2" /><path d="M7 11V7a5 5 0 0110 0v4" /></svg>
+                        </div>
+                        <span className="text-[8px] text-ink-muted font-medium">Enrol</span>
+                      </div>
+                    </div>
+                  );
+                })}
+                {/* "See all X projects" link */}
+                {totalForCourse > 2 && (
+                  <Link href={`/courses/${course.slug}`}
+                    className="flex items-center justify-center gap-2 px-5 py-3 bg-surface-soft text-xs font-semibold text-brand hover:text-brand/80 transition-colors">
+                    See all {totalForCourse} projects
+                    <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M6 3l5 5-5 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /></svg>
+                  </Link>
+                )}
+              </div>
+            </div>
+          );
+        })}
       </div>
     );
   }
