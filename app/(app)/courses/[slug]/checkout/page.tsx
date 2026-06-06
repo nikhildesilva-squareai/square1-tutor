@@ -251,7 +251,7 @@ export default function CheckoutPage({ params }: { params: Promise<{ slug: strin
                     I agree to the{" "}
                     <span className="text-brand font-medium">Terms of Service</span> and{" "}
                     <span className="text-brand font-medium">Privacy Policy</span>.
-                    I understand I can cancel anytime within 30 days for a full refund.
+                    I understand I can cancel my subscription at any time.
                   </span>
                 </label>
               </div>
@@ -300,7 +300,7 @@ export default function CheckoutPage({ params }: { params: Promise<{ slug: strin
                 </span>
                 <span className="flex items-center gap-1 text-[10px] text-ink-muted">
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#0056CE" strokeWidth="2"><polyline points="20 6 9 17 4 12" /></svg>
-                  30-day guarantee
+                  Full access from day one
                 </span>
                 <span className="flex items-center gap-1 text-[10px] text-ink-muted">
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#0056CE" strokeWidth="2"><circle cx="12" cy="12" r="10" /><line x1="2" y1="12" x2="22" y2="12" /></svg>

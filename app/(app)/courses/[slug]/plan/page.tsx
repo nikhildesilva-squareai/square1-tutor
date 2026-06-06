@@ -71,23 +71,35 @@ const FEATURES = [
 const FAQS = [
   {
     q: "What if I fall behind my schedule?",
-    a: "No stress. You keep full access to everything for as long as your plan is active. The schedule is a guide, not a deadline.",
+    a: "Life happens — we get it. Your plan gives you full access for the entire duration, and the schedule is a guide, not a deadline. If you miss a few days, you pick right up where you left off. Nova, your AI tutor, will adjust your study recommendations based on your actual pace. Many students study in bursts and still finish ahead of schedule.",
   },
   {
-    q: "Can I switch plans later?",
-    a: "Yes. Upgrade or extend at any time. You only pay the difference.",
+    q: "Can I switch plans or take multiple courses?",
+    a: "Absolutely. You can upgrade or extend your current plan at any time and you only pay the difference. You can also enrol in multiple courses simultaneously — each one gets its own dashboard, progress tracker, and project portfolio. Many students pair complementary courses like Full Stack + AI, or Data Science + Machine Learning.",
   },
   {
-    q: "Is this another video course?",
-    a: "No. Every lesson is interactive with inline exercises. Every project is AI code-reviewed. And Nova, your AI tutor, is available 24/7 to answer questions.",
+    q: "Is this another video course I'll never finish?",
+    a: "Not even close. There are no passive videos here. Every lesson is interactive — you read, you code, you solve inline exercises in real time. Every project you build is reviewed by AI that gives you line-by-line feedback on your code, just like a senior developer would. And if you get stuck at 2am, Nova is there to unblock you. The completion rate for students who start their first lesson is significantly higher than traditional video platforms because the format keeps you engaged.",
   },
   {
-    q: "Do I need prior experience?",
-    a: "That depends on the course. Your assessment results determine your starting point. We meet you where you are.",
+    q: "Do I need prior coding experience?",
+    a: "It depends on the course you choose, but the short answer is: we meet you where you are. Before you enrol, you take a 30-minute diagnostic assessment. Our AI analyses your answers across multiple skill dimensions and determines your exact starting point — beginner, intermediate, or advanced. Your curriculum is then tailored to your level so you are never bored repeating things you know, and never lost on concepts you haven't seen yet.",
+  },
+  {
+    q: "What exactly does the AI tutor do?",
+    a: "Nova is your personal learning companion, available 24 hours a day, 7 days a week. Ask it to explain a concept in simpler terms, debug your code, quiz you on a topic, or walk you through a project step by step. It knows your course material, your current progress, and where your skill gaps are — so its answers are specific to you, not generic. Think of it as having a patient, knowledgeable mentor on call at all times.",
+  },
+  {
+    q: "What do I get at the end?",
+    a: "You walk away with three things that are yours forever. First, a verified certificate of completion you can add to your LinkedIn and resume. Second, a portfolio of 10-12 real, deployed projects hosted on your GitHub — not toy exercises, but production-quality applications that demonstrate your skills to employers. Third, a detailed skill report showing your strengths across every topic in the curriculum. Your code, your projects, and your certificate never expire.",
   },
   {
     q: "What happens after my plan ends?",
-    a: "Your portfolio, certificate, and project code are yours forever. You can also re-enrol or take another course at any time.",
+    a: "Your portfolio, certificate, project code, and skill reports are yours to keep permanently. If you want to continue learning, you can re-enrol in the same course to revisit material, or start a completely new course in a different subject. Many graduates go on to take a second or third course to broaden their skillset across multiple domains.",
+  },
+  {
+    q: "How is this different from a bootcamp?",
+    a: "Bootcamps cost $10,000-20,000, run on a fixed schedule that doesn't adapt to you, and typically offer limited 1-on-1 support. Square 1 gives you a fully personalised, AI-driven experience at a fraction of the cost. You learn at your own pace with an AI tutor available around the clock. Your projects get instant, detailed code reviews — not a grade three weeks later. And because the curriculum adapts to your diagnostic assessment, you skip what you already know and focus on what actually matters for your growth.",
   },
 ];
 
@@ -290,16 +302,16 @@ export default function PlanPage({ params }: PageProps) {
         {/* Trust signals under cards */}
         <div className="max-w-5xl mx-auto mt-6 flex items-center justify-center gap-6 sm:gap-10 flex-wrap">
           <div className="flex items-center gap-2 text-xs text-ink-muted">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#19A65F" strokeWidth="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /></svg>
-            30-day money-back guarantee
-          </div>
-          <div className="flex items-center gap-2 text-xs text-ink-muted">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#0056CE" strokeWidth="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2" /><path d="M7 11V7a5 5 0 0110 0v4" /></svg>
             Secure payment via Stripe
           </div>
           <div className="flex items-center gap-2 text-xs text-ink-muted">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#0056CE" strokeWidth="2"><circle cx="12" cy="12" r="10" /><line x1="2" y1="12" x2="22" y2="12" /><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z" /></svg>
             Cancel anytime
+          </div>
+          <div className="flex items-center gap-2 text-xs text-ink-muted">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#19A65F" strokeWidth="2"><polyline points="20 6 9 17 4 12" /></svg>
+            Full access from day one
           </div>
         </div>
       </section>
@@ -334,37 +346,80 @@ export default function PlanPage({ params }: PageProps) {
       </section>
 
       {/* ═══════════════════════════════════════════════════════════════ */}
-      {/*  COMPARISON — WHY THIS IS BETTER                               */}
+      {/*  COMPARISON — BOOTCAMP vs SQUARE 1                             */}
       {/* ═══════════════════════════════════════════════════════════════ */}
       <section className="py-12 sm:py-16 px-4 sm:px-6">
         <div className="max-w-3xl mx-auto">
-          <div className="text-center mb-8">
-            <h2 className="text-xl sm:text-2xl font-black text-ink">How we compare</h2>
+          <div className="text-center mb-10">
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-brand/20 bg-surface-tint mb-3">
+              <span className="text-[10px] tracking-[0.2em] uppercase font-bold text-brand">
+                Compare
+              </span>
+            </div>
+            <h2 className="text-2xl sm:text-3xl font-black text-ink">
+              Bootcamp vs Square 1
+            </h2>
+            <p className="text-sm text-ink-muted mt-2 max-w-md mx-auto">
+              Same skills. Fraction of the cost. Better tools.
+            </p>
           </div>
 
-          <div className="rounded-2xl border border-border overflow-hidden bg-surface shadow-card">
-            <div className="grid grid-cols-4 text-center text-[10px] sm:text-xs font-bold uppercase tracking-wider bg-surface-alt">
-              <div className="px-3 py-3 text-ink-muted text-left">Feature</div>
-              <div className="px-3 py-3 text-ink-muted">Bootcamp</div>
-              <div className="px-3 py-3 text-ink-muted">YouTube</div>
-              <div className="px-3 py-3 text-brand">Square 1</div>
-            </div>
-            {[
-              ["Price", "$10,000+", "Free", "$19.9/mo"],
-              ["AI Tutor", "No", "No", "24/7"],
-              ["Projects", "2-3", "0", "10-12"],
-              ["AI Grading", "No", "No", "Every submission"],
-              ["Certificate", "Yes", "No", "Yes"],
-              ["Personalised", "No", "No", "AI-adapted"],
-              ["Self-paced", "No", "Yes", "Yes"],
-            ].map(([feature, bootcamp, youtube, s1], i) => (
-              <div key={feature} className={cn("grid grid-cols-4 text-sm", i % 2 === 0 ? "bg-surface" : "bg-surface-soft")}>
-                <div className="px-3 sm:px-4 py-3 font-medium text-ink text-xs sm:text-sm">{feature}</div>
-                <div className="px-3 py-3 text-center text-xs text-ink-muted">{bootcamp}</div>
-                <div className="px-3 py-3 text-center text-xs text-ink-muted">{youtube}</div>
-                <div className="px-3 py-3 text-center text-xs font-semibold text-brand">{s1}</div>
+          <div className="grid grid-cols-2 gap-4 sm:gap-6">
+            {/* Bootcamp column */}
+            <div className="rounded-2xl border border-border bg-surface p-5 sm:p-6">
+              <div className="flex items-center gap-2 mb-5">
+                <div className="w-8 h-8 rounded-lg bg-red-50 flex items-center justify-center">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#EF4444" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
+                </div>
+                <h3 className="text-sm sm:text-base font-bold text-ink">Bootcamp</h3>
               </div>
-            ))}
+              <div className="space-y-4">
+                {[
+                  { label: "Cost", value: "$10,000 — $20,000", bad: true },
+                  { label: "Schedule", value: "Fixed, rigid", bad: true },
+                  { label: "AI Tutor", value: "None", bad: true },
+                  { label: "Code Review", value: "Weeks later", bad: true },
+                  { label: "Projects", value: "2-3 guided", bad: false },
+                  { label: "Personalised", value: "One-size-fits-all", bad: true },
+                  { label: "Certificate", value: "Yes", bad: false },
+                  { label: "Self-paced", value: "No", bad: true },
+                ].map((row) => (
+                  <div key={row.label} className="flex items-start justify-between gap-2">
+                    <span className="text-xs text-ink-muted">{row.label}</span>
+                    <span className={cn("text-xs font-medium text-right", row.bad ? "text-red-400" : "text-ink-secondary")}>
+                      {row.value}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Square 1 column */}
+            <div className="rounded-2xl border-2 border-brand bg-surface p-5 sm:p-6 ring-1 ring-brand/10 shadow-card-hover">
+              <div className="flex items-center gap-2 mb-5">
+                <div className="w-8 h-8 rounded-lg bg-brand/10 flex items-center justify-center">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0056CE" strokeWidth="2.5"><polyline points="20 6 9 17 4 12" /></svg>
+                </div>
+                <h3 className="text-sm sm:text-base font-bold text-brand">Square 1</h3>
+              </div>
+              <div className="space-y-4">
+                {[
+                  { label: "Cost", value: "From $15.9/mo" },
+                  { label: "Schedule", value: "Your pace, your time" },
+                  { label: "AI Tutor", value: "24/7 — always on" },
+                  { label: "Code Review", value: "Instant, every submission" },
+                  { label: "Projects", value: "10-12 real, deployed" },
+                  { label: "Personalised", value: "AI-adapted to your level" },
+                  { label: "Certificate", value: "Yes, verified" },
+                  { label: "Self-paced", value: "100%" },
+                ].map((row) => (
+                  <div key={row.label} className="flex items-start justify-between gap-2">
+                    <span className="text-xs text-ink-muted">{row.label}</span>
+                    <span className="text-xs font-semibold text-brand text-right">{row.value}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -402,24 +457,6 @@ export default function PlanPage({ params }: PageProps) {
               );
             })}
           </div>
-        </div>
-      </section>
-
-      {/* ═══════════════════════════════════════════════════════════════ */}
-      {/*  GUARANTEE                                                     */}
-      {/* ═══════════════════════════════════════════════════════════════ */}
-      <section className="py-10 sm:py-14 px-4 sm:px-6">
-        <div className="max-w-lg mx-auto text-center">
-          <div className="w-16 h-16 rounded-2xl bg-success-bg flex items-center justify-center mx-auto mb-4">
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#19A65F" strokeWidth="2">
-              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-            </svg>
-          </div>
-          <h3 className="text-lg font-bold text-ink mb-2">30-day money-back guarantee</h3>
-          <p className="text-sm text-ink-muted">
-            Try it risk-free. If you don&apos;t feel the progress within 30 days, we&apos;ll refund every cent.
-            No forms. No questions. No hassle.
-          </p>
         </div>
       </section>
 
