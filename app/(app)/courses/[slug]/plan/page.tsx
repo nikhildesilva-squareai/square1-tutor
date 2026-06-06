@@ -114,7 +114,8 @@ export default function PlanPage({ params }: PageProps) {
   const [openFaq, setOpenFaq] = useState<number | null>(null);
 
   function goToCheckout(months: number) {
-    router.push(`/courses/${slug}/checkout?months=${months}&billing=${billingCycle}`);
+    const rp = reportId ? `&reportId=${reportId}` : "";
+    router.push(`/courses/${slug}/checkout?months=${months}&billing=${billingCycle}${rp}`);
   }
 
   return (

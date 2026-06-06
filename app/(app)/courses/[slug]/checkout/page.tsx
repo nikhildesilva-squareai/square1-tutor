@@ -38,6 +38,7 @@ export default function CheckoutPage({ params }: { params: Promise<{ slug: strin
 
   const months = parseInt(searchParams.get("months") ?? "6", 10);
   const billing = (searchParams.get("billing") ?? "monthly") as "monthly" | "upfront";
+  const reportId = searchParams.get("reportId") ?? "";
 
   const plan = PLAN_MAP[months] ?? PLAN_MAP[6];
 
@@ -82,20 +83,46 @@ export default function CheckoutPage({ params }: { params: Promise<{ slug: strin
     return digits;
   }
 
-  /* ─── "Payment" handler — stub for Stripe ─────────────────────────────────── */
+  const [error, setError] = useState("");
+
+  /* ─── Payment + Enrollment handler ────────────────────────────────────────── */
   async function handlePayment() {
     if (!cardName || !cardNumber || !expiry || !cvc || !agreed) return;
     setProcessing(true);
+    setError("");
 
-    // ── TODO: Replace with real Stripe Checkout ──
-    // 1. POST /api/checkout { slug, months, billing }
-    // 2. Server creates Stripe checkout session
-    // 3. Redirect to Stripe hosted page OR confirm with Stripe Elements
-    // 4. Webhook confirms payment → create enrollment
-    // For now: simulate 2s processing then redirect to success
-    await new Promise((r) => setTimeout(r, 2000));
+    try {
+      // ── TODO: Replace card processing with real Stripe Checkout ──
+      // 1. POST /api/checkout { slug, months, billing }
+      // 2. Server creates Stripe checkout session
+      // 3. Confirm payment with Stripe Elements
+      // For now: simulate 1.5s card processing
+      await new Promise((r) => setTimeout(r, 1500));
 
-    router.push(`/courses/${slug}/checkout/success?months=${months}&billing=${billing}`);
+      // ── Create enrollment in Supabase ──
+      // When Stripe is live, move this to the Stripe webhook handler
+      // so enrollment only happens after confirmed payment
+      if (reportId) {
+        const res = await fetch("/api/plan/enroll", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ reportId, planMonths: months }),
+        });
+
+        if (!res.ok) {
+          const data = await res.json().catch(() => ({}));
+          console.error("[checkout] enroll error:", data);
+          // Don't block checkout on enrollment failure — log and continue
+          // The user can be enrolled manually or via a retry mechanism
+        }
+      }
+
+      router.push(`/courses/${slug}/checkout/success?months=${months}&billing=${billing}`);
+    } catch (err) {
+      console.error("[checkout] payment error:", err);
+      setError("Something went wrong. Please try again.");
+      setProcessing(false);
+    }
   }
 
   const isFormValid = cardName.length > 2 && cardNumber.replace(/\s/g, "").length === 16 && expiry.length === 5 && cvc.length >= 3 && agreed;
@@ -257,6 +284,13 @@ export default function CheckoutPage({ params }: { params: Promise<{ slug: strin
                   </>
                 )}
               </button>
+
+              {/* Error message */}
+              {error && (
+                <div className="mt-3 px-4 py-3 rounded-xl bg-red-50 border border-red-200 text-sm text-red-700 text-center">
+                  {error}
+                </div>
+              )}
 
               {/* Trust signals */}
               <div className="flex items-center justify-center gap-4 mt-4 flex-wrap">
