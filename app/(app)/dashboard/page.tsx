@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import Link from "next/link";
+import { CourseSwitcher } from "@/components/CourseSwitcher";
 
 // ─── Course career mapping ────────────────────────────────────────────────────
 const COURSES = [
@@ -61,7 +62,12 @@ function ProgressRing({ pct, size = 56, stroke = 4, color = "#0056CE" }: { pct: 
   );
 }
 
-export default async function DashboardPage() {
+interface DashboardProps {
+  searchParams: Promise<{ course?: string }>;
+}
+
+export default async function DashboardPage({ searchParams }: DashboardProps) {
+  const { course: courseParam } = await searchParams;
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return null;
@@ -85,7 +91,14 @@ export default async function DashboardPage() {
   const firstName = name.split(" ")[0];
   const greeting = getGreeting();
   const activeEnrollments = enrollments ?? [];
-  const primaryEnrollment = activeEnrollments[0] ?? null;
+
+  // Course switcher: if ?course=slug param is present, use that enrollment as primary
+  let primaryEnrollment = activeEnrollments[0] ?? null;
+  if (courseParam && activeEnrollments.length > 1) {
+    const match = activeEnrollments.find(e => e.course?.slug === courseParam);
+    if (match) primaryEnrollment = match;
+  }
+
   const preferredCourse = COURSES.find(c => c.title.toLowerCase().includes((student?.subject_interest ?? "").toLowerCase()));
 
   /* ═══════════════════════════════════════════════════════════════════════ */
@@ -309,6 +322,20 @@ export default async function DashboardPage() {
         {/* Decorative */}
         <div className="absolute top-0 right-0 w-56 h-56 rounded-full opacity-15"
           style={{ background: "radial-gradient(circle, white 0%, transparent 70%)", transform: "translate(30%, -30%)" }} />
+
+        {/* Course switcher tabs — only when 2+ enrolled */}
+        {activeEnrollments.length > 1 && (
+          <div className="relative mb-5">
+            <CourseSwitcher
+              courses={activeEnrollments.map(e => ({
+                slug: e.course?.slug ?? "",
+                title: e.course?.title ?? "Course",
+                color: e.course?.slug ? COURSE_COLORS[e.course.slug] ?? "#0056CE" : "#0056CE",
+              }))}
+              activeSlug={courseSlug}
+            />
+          </div>
+        )}
 
         <div className="relative flex flex-col sm:flex-row sm:items-center gap-6">
           {/* Left: Greeting + lesson info */}
@@ -565,6 +592,20 @@ export default async function DashboardPage() {
                 </Link>
               )}
 
+              <Link href={`/courses/${courseSlug}/reassess`}
+                className="flex items-center gap-3 px-4 py-3 rounded-xl border border-border hover:border-brand/20 hover:bg-surface-soft transition-all group">
+                <div className="w-8 h-8 rounded-lg bg-surface-alt flex items-center justify-center shrink-0">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#0056CE" strokeWidth="2" strokeLinecap="round">
+                    <path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z" /><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z" />
+                  </svg>
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-semibold text-ink">Re-Assessment</p>
+                  <p className="text-[10px] text-ink-muted">Test your progress</p>
+                </div>
+                <svg width="14" height="14" viewBox="0 0 16 16" fill="none" className="text-ink-muted group-hover:text-brand transition-colors"><path d="M6 3l5 5-5 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /></svg>
+              </Link>
+
               <Link href="/tutor"
                 className="flex items-center gap-3 px-4 py-3 rounded-xl border border-border hover:border-brand/20 hover:bg-surface-soft transition-all group">
                 <div className="w-8 h-8 rounded-lg bg-surface-alt flex items-center justify-center shrink-0">
@@ -595,11 +636,13 @@ export default async function DashboardPage() {
             </div>
           </div>
 
-          {/* Other enrolled courses */}
-          {activeEnrollments.length > 1 && (
-            <div className="bg-surface rounded-xl border border-border p-5">
-              <p className="text-[10px] font-bold text-ink-muted uppercase tracking-widest mb-4">Other Courses</p>
-              <div className="space-y-2">
+          {/* My courses + Add course */}
+          <div className="bg-surface rounded-xl border border-border p-5">
+            <p className="text-[10px] font-bold text-ink-muted uppercase tracking-widest mb-4">
+              {activeEnrollments.length > 1 ? "My Courses" : "Explore"}
+            </p>
+            {activeEnrollments.length > 1 && (
+              <div className="space-y-2 mb-3">
                 {activeEnrollments.slice(1).map((e) => {
                   const color = e.course?.slug ? COURSE_COLORS[e.course.slug] ?? "#0056CE" : "#0056CE";
                   return (
@@ -614,8 +657,21 @@ export default async function DashboardPage() {
                   );
                 })}
               </div>
-            </div>
-          )}
+            )}
+            <Link href="/courses"
+              className="flex items-center gap-3 px-3 py-2.5 rounded-lg border border-dashed border-brand/30 hover:bg-surface-tint hover:border-brand/50 transition-all group">
+              <div className="w-8 h-8 rounded-lg bg-brand/10 flex items-center justify-center shrink-0">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#0056CE" strokeWidth="2.5" strokeLinecap="round">
+                  <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
+                </svg>
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-semibold text-brand">Add Another Course</p>
+                <p className="text-[10px] text-ink-muted">Explore 12 career paths</p>
+              </div>
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="none" className="text-ink-muted group-hover:text-brand transition-colors"><path d="M6 3l5 5-5 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /></svg>
+            </Link>
+          </div>
         </div>
       </div>
     </div>

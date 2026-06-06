@@ -179,6 +179,13 @@ export default async function CourseDetailPage({ params }: PageProps) {
                 <div className="w-20 h-1.5 rounded-full bg-white/10 mt-2 overflow-hidden">
                   <div className="h-full rounded-full" style={{ width: `${progressPct}%`, background: course.color }} />
                 </div>
+                <Link href={`/courses/${slug}/reassess`}
+                  className="mt-3 text-[11px] text-slate-400 hover:text-white font-medium transition-colors flex items-center gap-1">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                    <path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z" /><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z" />
+                  </svg>
+                  Re-assess
+                </Link>
               </div>
             ) : (
               <Link href={`/courses/${slug}/assess`}
@@ -277,12 +284,22 @@ export default async function CourseDetailPage({ params }: PageProps) {
           <div className="space-y-4">
             {/* Quick actions */}
             {isEnrolled && currentLessonId && (
-              <div className="bg-surface rounded-xl border border-border p-5">
+              <div className="bg-surface rounded-xl border border-border p-5 space-y-3">
                 <Link href={`/learn/${currentLessonId}`}
                   className="w-full h-11 rounded-xl bg-brand text-white text-sm font-bold flex items-center justify-center gap-2 hover:bg-brand/90 transition-all">
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polygon points="5 3 19 12 5 21 5 3" /></svg>
                   Continue Learning
                 </Link>
+                <Link href={`/courses/${slug}/reassess`}
+                  className="w-full h-10 rounded-xl border border-border text-ink-secondary text-sm font-semibold flex items-center justify-center gap-2 hover:bg-surface-soft hover:border-brand/20 transition-all">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                    <path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z" /><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z" />
+                  </svg>
+                  Re-Assess My Skills
+                </Link>
+                <p className="text-[10px] text-ink-muted text-center leading-relaxed">
+                  5 questions, ~10 min. See how much you&apos;ve improved.
+                </p>
               </div>
             )}
 

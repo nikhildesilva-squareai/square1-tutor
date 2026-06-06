@@ -61,17 +61,17 @@ export default async function ProjectsPage() {
               {totalProjectCount} real projects across {allCourseList.length} tech disciplines. From your first API to a production SaaS — every project is AI code-reviewed and ships to your portfolio.
             </p>
             <div className="flex items-center gap-4 flex-wrap">
-              <Link href="/courses" className="h-11 px-6 rounded-xl bg-white text-ink font-bold text-sm hover:bg-white/90 transition-all inline-flex items-center gap-2">
+              <Link href="/courses" className="h-11 px-6 rounded-xl bg-white text-[#0F172A] font-bold text-sm hover:bg-white/90 transition-all inline-flex items-center gap-2">
                 Start Free Assessment
                 <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M6 3l5 5-5 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /></svg>
               </Link>
-              <div className="flex items-center gap-5 text-sm text-slate-500">
+              <div className="flex items-center gap-5 text-sm text-slate-400">
                 <span className="flex items-center gap-1.5">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M22 11.08V12a10 10 0 11-5.93-9.14" /><polyline points="22 4 12 14.01 9 11.01" /></svg>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round"><path d="M22 11.08V12a10 10 0 11-5.93-9.14" /><polyline points="22 4 12 14.01 9 11.01" /></svg>
                   AI code review
                 </span>
                 <span className="flex items-center gap-1.5">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" /><circle cx="12" cy="7" r="4" /></svg>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" /><circle cx="12" cy="7" r="4" /></svg>
                   Portfolio-ready
                 </span>
               </div>
@@ -87,7 +87,7 @@ export default async function ProjectsPage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {capstones.map((cap) => (
               <Link key={cap.id} href={`/courses/${cap.courseSlug}`}
-                className="group relative bg-[#0A0A0A] rounded-2xl overflow-hidden hover:scale-[1.02] transition-all duration-300">
+                className="group relative bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden hover:shadow-md hover:scale-[1.01] transition-all duration-300">
                 {/* Top accent line */}
                 <div className="h-1" style={{ background: cap.courseColor }} />
 
@@ -97,34 +97,34 @@ export default async function ProjectsPage() {
                     <span className="text-[9px] font-bold uppercase tracking-widest" style={{ color: cap.courseColor }}>
                       {cap.courseTitle}
                     </span>
-                    <span className="text-[10px] text-slate-500 font-medium">
+                    <span className="text-[10px] text-gray-400 font-medium">
                       {cap.projectCount} projects
                     </span>
                   </div>
 
                   {/* Title */}
-                  <h3 className="text-base font-bold text-white mb-2 group-hover:text-white/90 transition-colors leading-snug">
+                  <h3 className="text-base font-bold text-gray-900 mb-2 group-hover:text-brand transition-colors leading-snug">
                     {cap.title}
                   </h3>
 
                   {/* Brief */}
-                  <p className="text-xs text-slate-400 line-clamp-2 mb-4 leading-relaxed">
+                  <p className="text-xs text-gray-500 line-clamp-2 mb-4 leading-relaxed">
                     {cap.description_md.replace(/[#*`]/g, "").slice(0, 120)}
                   </p>
 
                   {/* Tech stack */}
                   <div className="flex items-center gap-1.5 flex-wrap mb-4">
                     {cap.tech_stack.slice(0, 3).map((t: string) => (
-                      <span key={t} className="px-2 py-0.5 rounded-md text-[10px] font-medium bg-white/5 text-slate-300 border border-white/10">{t}</span>
+                      <span key={t} className="px-2 py-0.5 rounded-md text-[10px] font-medium bg-gray-50 text-gray-600 border border-gray-200">{t}</span>
                     ))}
                     {cap.tech_stack.length > 3 && (
-                      <span className="text-[10px] text-slate-500">+{cap.tech_stack.length - 3}</span>
+                      <span className="text-[10px] text-gray-400">+{cap.tech_stack.length - 3}</span>
                     )}
                   </div>
 
                   {/* Footer */}
-                  <div className="flex items-center justify-between pt-3 border-t border-white/8">
-                    <div className="flex items-center gap-3 text-[11px] text-slate-500">
+                  <div className="flex items-center justify-between pt-3 border-t border-gray-100">
+                    <div className="flex items-center gap-3 text-[11px] text-gray-400">
                       <span className="flex items-center gap-1">
                         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" /></svg>
                         {cap.estimated_hours}h
