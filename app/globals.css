@@ -111,6 +111,36 @@ body {
 ::-webkit-scrollbar-thumb { background: var(--color-border-mid); border-radius: 9999px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--color-brand); }
 
+/* ─── Lesson content typography ────────────────────────────────────────────── */
+.lesson-content {
+  font-size: 1rem;
+  line-height: 1.8;
+  color: var(--color-ink-secondary);
+}
+.lesson-content .lc-para {
+  font-size: 1rem;
+  line-height: 1.8;
+  color: var(--color-ink-secondary);
+  margin-bottom: 1rem;
+}
+.lesson-content .lc-para:last-child {
+  margin-bottom: 0;
+}
+.lesson-content li {
+  font-size: 1rem;
+  line-height: 1.8;
+  color: var(--color-ink-secondary);
+}
+.lesson-content strong {
+  color: var(--color-ink);
+}
+.lesson-content h3 {
+  font-size: 1.125rem;
+}
+.lesson-content h4 {
+  font-size: 1rem;
+}
+
 /* ─── Landing page animations ───────────────────────────────────────────────── */
 @keyframes blob-float-1 {
   0%, 100% { transform: translate(0, 0) scale(1); }

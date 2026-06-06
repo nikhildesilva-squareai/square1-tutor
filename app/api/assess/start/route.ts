@@ -90,7 +90,19 @@ export async function POST(request: Request) {
     }
 
     // Strip correct_answer and mark_scheme from response (don't leak answers)
-    const safeQuestions = questions.map(({ correct_answer: _ca, mark_scheme_md: _ms, ...q }) => q);
+    // Shuffle MCQ options so the correct answer isn't always in the same position
+    const safeQuestions = questions.map(({ correct_answer: _ca, mark_scheme_md: _ms, ...q }) => {
+      if (q.type === "mcq" && Array.isArray(q.options) && q.options.length > 1) {
+        // Fisher-Yates shuffle
+        const shuffled = [...q.options];
+        for (let i = shuffled.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+        }
+        return { ...q, options: shuffled };
+      }
+      return q;
+    });
 
     return NextResponse.json({
       attemptId: attempt.id,

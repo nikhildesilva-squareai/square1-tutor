@@ -300,15 +300,21 @@ export default function CheckoutPage({ params }: { params: Promise<{ slug: strin
                     setError("");
                     try {
                       if (reportId) {
-                        await fetch("/api/plan/enroll", {
+                        const res = await fetch("/api/plan/enroll", {
                           method: "POST",
                           headers: { "Content-Type": "application/json" },
                           body: JSON.stringify({ reportId, planMonths: months }),
                         });
+                        if (!res.ok) {
+                          const d = await res.json().catch(() => ({}));
+                          throw new Error(d.error ?? `Enrollment failed (${res.status})`);
+                        }
+                      } else {
+                        throw new Error("No report ID — go back to the assessment first");
                       }
                       router.push(`/courses/${slug}/checkout/success?months=${months}&billing=${billing}`);
-                    } catch {
-                      setError("Enrollment failed");
+                    } catch (e) {
+                      setError(e instanceof Error ? e.message : "Enrollment failed");
                       setProcessing(false);
                     }
                   }}

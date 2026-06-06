@@ -64,31 +64,31 @@ function renderSection(md: string): string {
     .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
     .replace(/```(\w+)?\n([\s\S]*?)```/g, (_m, lang, code) => {
       const language = lang ?? "text";
-      return `<div class="relative rounded-xl overflow-hidden my-4 border border-white/10 shadow-lg">
-        <div class="flex items-center gap-2 px-4 py-2" style="background:#161B22">
+      return `<div class="relative rounded-xl overflow-hidden my-6 border border-white/10 shadow-lg">
+        <div class="flex items-center gap-2 px-4 py-2.5" style="background:#161B22">
           <div class="flex gap-1.5"><div class="w-2.5 h-2.5 rounded-full bg-[#FF5F57]"></div><div class="w-2.5 h-2.5 rounded-full bg-[#FEBC2E]"></div><div class="w-2.5 h-2.5 rounded-full bg-[#28C840]"></div></div>
           <span class="text-[10px] font-bold tracking-widest uppercase text-slate-500 ml-2">${language}</span>
         </div>
-        <pre class="p-4 overflow-x-auto text-[13px] leading-relaxed font-mono" style="background:#0D1117;color:#E6EDF3"><code>${code.trim()}</code></pre>
+        <pre class="p-5 overflow-x-auto text-[13px] leading-[1.75] font-mono" style="background:#0D1117;color:#E6EDF3"><code>${code.trim()}</code></pre>
       </div>`;
     })
     .replace(/`([^`]+)`/g, '<code class="px-1.5 py-0.5 rounded-md text-[13px] font-mono bg-brand/8 text-brand border border-brand/15">$1</code>')
-    .replace(/^#### (.+)$/gm, '<h4 class="text-base font-bold text-ink mt-5 mb-2 flex items-center gap-2"><span class="w-1 h-5 rounded-full bg-brand/30"></span>$1</h4>')
-    .replace(/^### (.+)$/gm, '<h3 class="text-lg font-bold text-ink mt-6 mb-3 flex items-center gap-2"><span class="w-1.5 h-6 rounded-full bg-brand"></span>$1</h3>')
+    .replace(/^#### (.+)$/gm, '<h4 class="text-base font-bold text-ink mt-6 mb-2 flex items-center gap-2"><span class="w-1 h-5 rounded-full bg-brand/30"></span>$1</h4>')
+    .replace(/^### (.+)$/gm, '<h3 class="text-lg font-extrabold text-ink mt-8 mb-3 flex items-center gap-2"><span class="w-1.5 h-6 rounded-full bg-brand"></span>$1</h3>')
     .replace(/\*\*\*(.+?)\*\*\*/g, "<strong><em>$1</em></strong>")
-    .replace(/\*\*(.+?)\*\*/g, '<strong class="text-ink">$1</strong>')
+    .replace(/\*\*(.+?)\*\*/g, '<strong class="text-ink font-semibold">$1</strong>')
     .replace(/\*(.+?)\*/g, "<em>$1</em>")
-    .replace(/^&gt; (.+)$/gm, `<div class="flex gap-3 my-4 px-4 py-3 rounded-xl bg-amber-50 border border-amber-200 dark:bg-amber-950/30 dark:border-amber-800">
-      <svg class="shrink-0 mt-0.5" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#D97706" stroke-width="2" stroke-linecap="round"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M12 2v1"/><path d="M12 7a4 4 0 014 4c0 1.5-.8 2.8-2 3.4V16H10v-1.6C8.8 13.8 8 12.5 8 11a4 4 0 014-4z"/></svg>
-      <p class="text-sm text-amber-800 dark:text-amber-200 leading-relaxed">$1</p>
+    .replace(/^&gt; (.+)$/gm, `<div class="flex gap-3 my-5 px-5 py-4 rounded-xl bg-amber-50 border border-amber-200 dark:bg-amber-950/30 dark:border-amber-800">
+      <svg class="shrink-0 mt-0.5" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#D97706" stroke-width="2" stroke-linecap="round"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M12 2v1"/><path d="M12 7a4 4 0 014 4c0 1.5-.8 2.8-2 3.4V16H10v-1.6C8.8 13.8 8 12.5 8 11a4 4 0 014-4z"/></svg>
+      <p class="text-sm text-amber-800 dark:text-amber-200 leading-relaxed font-medium">$1</p>
     </div>`)
-    .replace(/^- (.+)$/gm, '<li class="flex items-start gap-2.5 text-sm text-ink-secondary leading-relaxed py-0.5"><span class="w-1.5 h-1.5 rounded-full bg-brand mt-2 shrink-0"></span><span>$1</span></li>')
-    .replace(/^\d+\. (.+)$/gm, '<li class="flex items-start gap-2.5 text-sm text-ink-secondary leading-relaxed py-0.5"><span class="w-5 h-5 rounded-full bg-surface-tint text-brand text-[10px] font-bold flex items-center justify-center mt-0.5 shrink-0">·</span><span>$1</span></li>')
+    .replace(/^- (.+)$/gm, '<li class="flex items-start gap-3 leading-relaxed py-1"><span class="w-1.5 h-1.5 rounded-full bg-brand mt-[9px] shrink-0"></span><span>$1</span></li>')
+    .replace(/^\d+\. (.+)$/gm, '<li class="flex items-start gap-3 leading-relaxed py-1"><span class="w-6 h-6 rounded-lg bg-surface-tint text-brand text-[11px] font-bold flex items-center justify-center mt-0.5 shrink-0">·</span><span>$1</span></li>')
     .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" class="text-brand hover:underline font-medium" target="_blank" rel="noopener">$1</a>')
-    .replace(/\n\n/g, '</p><p class="text-sm text-ink-secondary leading-relaxed mb-3">')
+    .replace(/\n\n/g, '</p><p class="lc-para">')
     .replace(/\n/g, "<br />");
-  html = `<p class="text-sm text-ink-secondary leading-relaxed mb-3">${html}</p>`;
-  html = html.replace(/<p class="text-sm text-ink-secondary leading-relaxed mb-3"><\/p>/g, "");
+  html = `<p class="lc-para">${html}</p>`;
+  html = html.replace(/<p class="lc-para"><\/p>/g, "");
   return html;
 }
 
@@ -355,22 +355,25 @@ export function LearnClient({
             {/* ═══ THEORY CARD ═══ */}
             {card.type === "theory" && (
               <div className="card-fade-up">
-                {/* Section label */}
-                <div className="flex items-center gap-2 mb-5">
-                  <span className="w-8 h-8 rounded-xl bg-brand/10 text-brand flex items-center justify-center text-sm font-black shrink-0">
+                {/* Section header */}
+                <div className="flex items-center gap-3 mb-6">
+                  <span className="w-10 h-10 rounded-2xl bg-brand text-white flex items-center justify-center text-sm font-black shrink-0 shadow-md shadow-brand/20">
                     {cards.slice(0, currentCard + 1).filter(c => c.type === "theory").length}
                   </span>
-                  <h2 className="text-lg font-bold text-ink">{card.title}</h2>
+                  <div>
+                    <p className="text-[10px] text-ink-muted font-semibold uppercase tracking-wider">Section</p>
+                    <h2 className="text-xl font-black text-ink leading-tight">{card.title}</h2>
+                  </div>
                 </div>
 
-                {/* Rendered content */}
-                <div className="bg-surface rounded-2xl border border-border p-5 sm:p-7 shadow-card"
+                {/* Rendered content — larger text for readability */}
+                <div className="bg-surface rounded-2xl border border-border p-6 sm:p-8 shadow-card lesson-content"
                   dangerouslySetInnerHTML={{ __html: card.content ?? "" }} />
 
                 {/* Actions: Ask Nova + Save */}
-                <div className="mt-4 flex items-center justify-center gap-3">
+                <div className="mt-5 flex items-center justify-center gap-3">
                   <Link href={`/tutor?topic=${encodeURIComponent(card.title)}`}
-                    className="flex items-center gap-2 px-4 py-2 rounded-xl border border-border text-xs font-medium text-ink-muted hover:text-brand hover:border-brand/30 hover:bg-surface transition-all">
+                    className="flex items-center gap-2 px-5 py-2.5 rounded-xl border border-brand/20 bg-surface-tint text-xs font-semibold text-brand hover:bg-brand hover:text-white transition-all">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
                       <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" />
                     </svg>

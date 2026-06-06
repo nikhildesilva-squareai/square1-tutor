@@ -52,13 +52,14 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Not enrolled in this course" }, { status: 403 });
     }
 
-    // Upsert lesson completion
+    // Upsert lesson completion (enrollment_id is required by the table)
     const { error: completionError } = await supabase
       .from("lesson_completions")
       .upsert(
         {
           student_id: student.id,
           lesson_id: lessonId,
+          enrollment_id: enrollment.id,
           completed_at: new Date().toISOString(),
         },
         { onConflict: "student_id,lesson_id" }
