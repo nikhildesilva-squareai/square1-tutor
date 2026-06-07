@@ -1,6 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
-import Anthropic from "@anthropic-ai/sdk";
+import { callAI } from "@/lib/ai/budget";
 import { z } from "zod";
 import { rateLimitAI } from "@/lib/rate-limit";
 
@@ -12,8 +12,6 @@ const schema = z.object({
   liveUrl: z.string().url("Invalid live URL").optional(),
   description: z.string().max(2000).optional(),
 });
-
-const MODEL = "claude-sonnet-4-5";
 
 export async function POST(request: Request) {
   try {
@@ -67,19 +65,17 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Not enrolled in this course" }, { status: 403 });
     }
 
-    // 6. Trigger AI review
+    // 6. Trigger AI review (budget-checked via callAI)
     const reviewPrompt = buildReviewPrompt(project, githubUrl, description);
-    const anthropic = new Anthropic();
 
-    const response = await anthropic.messages.create({
-      model: MODEL,
+    const aiResult = await callAI(student.id, {
+      system: "You are a senior engineer reviewing a student project submission. Always respond with valid JSON only, no markdown fences or extra text.",
       max_tokens: 1024,
       temperature: 0,
-      system: "You are a senior engineer reviewing a student project submission. Always respond with valid JSON only, no markdown fences or extra text.",
       messages: [{ role: "user", content: reviewPrompt }],
     });
 
-    const responseText = response.content[0].type === "text" ? response.content[0].text : "{}";
+    const responseText = aiResult.text || "{}";
 
     let review: {
       score: number;

@@ -1,6 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
-import Anthropic from "@anthropic-ai/sdk";
+import { callAI } from "@/lib/ai/budget";
 import { rateLimitAI } from "@/lib/rate-limit";
 
 const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -50,7 +50,7 @@ interface QuestionResult {
 
 /* ── Grade short answer questions with Claude ──────────────────────────── */
 async function gradeShortAnswer(
-  anthropic: Anthropic,
+  studentId: string,
   question: Question,
   answer: string,
   subject: string
@@ -60,8 +60,7 @@ async function gradeShortAnswer(
   breakdown: Array<{ criterion: string; awarded: number; reasoning: string }>;
   topicUnderstanding: string;
 }> {
-  const message = await anthropic.messages.create({
-    model: "claude-sonnet-4-5",
+  const result = await callAI(studentId, {
     max_tokens: 1024,
     messages: [{
       role: "user",
@@ -91,10 +90,8 @@ Return JSON only:
     }],
   });
 
-  const text = message.content[0].type === "text" ? message.content[0].text : "";
-
   try {
-    const jsonMatch = text.match(/\{[\s\S]*\}/);
+    const jsonMatch = result.text.match(/\{[\s\S]*\}/);
     if (!jsonMatch) throw new Error("No JSON");
     const parsed = JSON.parse(jsonMatch[0]);
     return {
@@ -116,7 +113,7 @@ Return JSON only:
 
 /* ── Grade code questions with Claude ──────────────────────────────────── */
 async function gradeCode(
-  anthropic: Anthropic,
+  studentId: string,
   question: Question,
   code: string,
   subject: string
@@ -129,8 +126,7 @@ async function gradeCode(
 }> {
   const language = question.language ?? "Python";
 
-  const message = await anthropic.messages.create({
-    model: "claude-sonnet-4-5",
+  const result = await callAI(studentId, {
     max_tokens: 2048,
     messages: [{
       role: "user",
@@ -169,10 +165,8 @@ Return JSON only:
     }],
   });
 
-  const text = message.content[0].type === "text" ? message.content[0].text : "";
-
   try {
-    const jsonMatch = text.match(/\{[\s\S]*\}/);
+    const jsonMatch = result.text.match(/\{[\s\S]*\}/);
     if (!jsonMatch) throw new Error("No JSON");
     const parsed = JSON.parse(jsonMatch[0]);
     const marks = Math.min(Math.max(0, Math.round(parsed.marks_awarded ?? 0)), question.marks);
@@ -208,7 +202,7 @@ Return JSON only:
 
 /* ── Generate AI recommendations ───────────────────────────────────────── */
 async function generateRecommendations(
-  anthropic: Anthropic,
+  studentId: string,
   level: string,
   topicMastery: Array<{ topic: string; percentage: number }>,
   subject: string
@@ -217,8 +211,7 @@ async function generateRecommendations(
   const weakTopics = sorted.slice(0, 3).map((t) => `${t.topic} (${t.percentage}%)`).join(", ");
   const strongTopics = [...sorted].reverse().slice(0, 3).map((t) => `${t.topic} (${t.percentage}%)`).join(", ");
 
-  const message = await anthropic.messages.create({
-    model: "claude-sonnet-4-5",
+  const result = await callAI(studentId, {
     max_tokens: 800,
     messages: [{
       role: "user",
@@ -237,7 +230,7 @@ Keep it concise, specific, encouraging, and actionable. Max 200 words. Do NOT us
     }],
   });
 
-  return message.content[0].type === "text" ? message.content[0].text : "";
+  return result.text;
 }
 
 /* ═══════════════════════════════════════════════════════════════════════ */
@@ -429,7 +422,6 @@ export async function POST(
     }
 
     /* ── Grade all questions ───────────────────────────────────────────── */
-    const anthropic = new Anthropic();
     const allGrades: Record<string, {
       marks: number;
       feedback: string;
@@ -458,7 +450,7 @@ export async function POST(
     for (const q of shortAnswerQs) {
       const resp = responseMap.get(q.id);
       const answer = resp?.response_text ?? "";
-      const result = await gradeShortAnswer(anthropic, q, answer, subject);
+      const result = await gradeShortAnswer(student.id, q, answer, subject);
       allGrades[q.id] = {
         marks: result.marks,
         feedback: result.feedback,
@@ -473,7 +465,7 @@ export async function POST(
     for (const q of codeQs) {
       const resp = responseMap.get(q.id);
       const code = resp?.code_response ?? "";
-      const result = await gradeCode(anthropic, q, code, subject);
+      const result = await gradeCode(student.id, q, code, subject);
       allGrades[q.id] = {
         marks: result.marks,
         feedback: result.feedback,
@@ -549,7 +541,7 @@ export async function POST(
     }));
 
     /* ── Generate AI recommendations ───────────────────────────────────── */
-    const recommendationsMd = await generateRecommendations(anthropic, level, topicMastery, subject);
+    const recommendationsMd = await generateRecommendations(student.id, level, topicMastery, subject);
 
     /* ── Save skill report ─────────────────────────────────────────────── */
     // Compute weak + strong topic arrays
