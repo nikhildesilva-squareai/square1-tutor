@@ -18,10 +18,10 @@ import { createClient } from "@/lib/supabase/server";
 // ═══════════════════════════════════════════════════════════════════════════════
 
 /** Amount ring-fenced per student per month from their subscription */
-export const AI_ALLOCATION_USD = 2.0;
+export const AI_ALLOCATION_USD = 1.2;
 
 /** Fallback budget for students without a wallet (free tier / dev testing) */
-const FALLBACK_BUDGET_USD = 2.0;
+const FALLBACK_BUDGET_USD = 1.2;
 
 // Claude Sonnet 4.5 pricing (per token)
 const INPUT_COST_PER_TOKEN = 3 / 1_000_000; // $0.000003
