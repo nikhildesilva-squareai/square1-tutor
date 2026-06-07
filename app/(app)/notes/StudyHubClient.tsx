@@ -9,6 +9,7 @@ interface Note {
   course_title: string | null; section_title: string | null;
   flashcard_answer: string | null; next_review_at: string | null;
   review_count: number; is_pinned: boolean; tags: string[];
+  image_url: string | null;
   created_at: string; updated_at: string;
 }
 
@@ -69,7 +70,7 @@ export function StudyHubClient({ initialNotes, stats }: Props) {
       });
       if (res.ok) {
         const data = await res.json();
-        setNotes(prev => [{ id: data.noteId, type: "note", title: newNoteTitle || "Quick note", content: newNoteContent, color: "blue", lesson_id: null, lesson_title: null, module_title: null, course_title: null, section_title: null, flashcard_answer: null, next_review_at: null, review_count: 0, is_pinned: false, tags: [], created_at: new Date().toISOString(), updated_at: new Date().toISOString() }, ...prev]);
+        setNotes(prev => [{ id: data.noteId, type: "note", title: newNoteTitle || "Quick note", content: newNoteContent, color: "blue", lesson_id: null, lesson_title: null, module_title: null, course_title: null, section_title: null, flashcard_answer: null, next_review_at: null, review_count: 0, is_pinned: false, tags: [], image_url: null, created_at: new Date().toISOString(), updated_at: new Date().toISOString() }, ...prev]);
         setNewNoteContent("");
         setNewNoteTitle("");
         setShowNewNote(false);
@@ -254,6 +255,13 @@ export function StudyHubClient({ initialNotes, stats }: Props) {
 
                 {/* Title */}
                 {note.title && <p className="text-sm font-semibold text-ink mb-1 line-clamp-1">{note.title}</p>}
+
+                {/* Image */}
+                {note.image_url && (
+                  <div className="rounded-lg overflow-hidden border border-border mb-2 bg-surface-soft">
+                    <img src={note.image_url} alt="Note attachment" className="w-full h-28 object-cover" />
+                  </div>
+                )}
 
                 {/* Content */}
                 <p className="text-xs text-ink-secondary leading-relaxed line-clamp-4 mb-3 whitespace-pre-wrap">

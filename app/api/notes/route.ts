@@ -7,6 +7,7 @@ const createSchema = z.object({
   title: z.string().optional(),
   content: z.string().min(1),
   color: z.string().optional(),
+  imageUrl: z.string().url().optional(),
   lessonId: z.string().optional(),
   lessonTitle: z.string().optional(),
   moduleTitle: z.string().optional(),
@@ -77,6 +78,7 @@ export async function POST(request: Request) {
       section_title: parsed.sectionTitle ?? null,
       conversation_id: parsed.conversationId ?? null,
       flashcard_answer: parsed.flashcardAnswer ?? null,
+      image_url: parsed.imageUrl ?? null,
       tags: parsed.tags ?? [],
       next_review_at: parsed.type === "flashcard" ? new Date(Date.now() + 86400000).toISOString() : null,
     })

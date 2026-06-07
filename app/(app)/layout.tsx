@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { SidebarNav } from "@/components/sidebar-nav";
 import { MobileNav } from "@/components/MobileNav";
 import { BottomNav } from "@/components/BottomNav";
+import { QuickNotePanel } from "@/components/QuickNotePanel";
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
   const supabase = await createClient();
@@ -29,6 +30,9 @@ export default async function AppLayout({ children }: { children: React.ReactNod
         {/* Mobile bottom tab bar — hidden on desktop */}
         <BottomNav />
       </div>
+
+      {/* Floating quick-note panel — available everywhere */}
+      <QuickNotePanel />
     </div>
   );
 }
