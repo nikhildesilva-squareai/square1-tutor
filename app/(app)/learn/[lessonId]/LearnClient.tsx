@@ -58,20 +58,80 @@ const STYLES = `
 
 // ─── Rich markdown renderer ───────────────────────────────────────────────
 
+function renderMarkdownTable(tableBlock: string): string {
+  const rows = tableBlock.trim().split("\n").filter(r => r.trim());
+  if (rows.length < 2) return tableBlock;
+
+  // Parse cells from a pipe-delimited row
+  const parseCells = (row: string) =>
+    row.split("|").map(c => c.trim()).filter((_, i, a) => i > 0 && i < a.length - 1);
+
+  // Detect separator row (|---|---|)
+  const isSeparator = (row: string) => /^\|[\s:-]+\|/.test(row.trim()) && row.includes("-");
+
+  const headerCells = parseCells(rows[0]);
+  const hasSeparator = rows.length > 1 && isSeparator(rows[1]);
+  const dataRows = hasSeparator ? rows.slice(2) : rows.slice(1);
+
+  let tableHtml = `<div class="my-6 overflow-x-auto rounded-xl border border-border shadow-card">`;
+  tableHtml += `<table class="w-full text-sm border-collapse">`;
+
+  // Header
+  if (hasSeparator && headerCells.length > 0) {
+    tableHtml += `<thead><tr class="bg-brand/5 border-b-2 border-brand/15">`;
+    for (const cell of headerCells) {
+      tableHtml += `<th class="px-4 py-3 text-left text-xs font-bold text-ink uppercase tracking-wider">${cell}</th>`;
+    }
+    tableHtml += `</tr></thead>`;
+  }
+
+  // Body
+  tableHtml += `<tbody>`;
+  for (let i = 0; i < dataRows.length; i++) {
+    const cells = parseCells(dataRows[i]);
+    const stripe = i % 2 === 0 ? "bg-surface" : "bg-surface-soft/50";
+    tableHtml += `<tr class="${stripe} border-b border-border/50 last:border-0">`;
+    for (let j = 0; j < cells.length; j++) {
+      const isFirstCol = j === 0;
+      tableHtml += `<td class="px-4 py-3 ${isFirstCol ? "font-semibold text-ink" : "text-ink-secondary"}">${cells[j]}</td>`;
+    }
+    tableHtml += `</tr>`;
+  }
+  tableHtml += `</tbody></table></div>`;
+  return tableHtml;
+}
+
 function renderSection(md: string): string {
   if (!md) return "";
-  let html = md
-    .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
-    .replace(/```(\w+)?\n([\s\S]*?)```/g, (_m, lang, code) => {
-      const language = lang ?? "text";
-      return `<div class="relative rounded-xl overflow-hidden my-6 border border-white/10 shadow-lg">
+
+  // ── Step 1: Extract fenced code blocks to protect them ──
+  const codeBlocks: string[] = [];
+  let processed = md.replace(/```(\w+)?\n([\s\S]*?)```/g, (_m, lang, code) => {
+    const language = lang ?? "text";
+    const block = `<div class="relative rounded-xl overflow-hidden my-6 border border-white/10 shadow-lg">
         <div class="flex items-center gap-2 px-4 py-2.5" style="background:#161B22">
           <div class="flex gap-1.5"><div class="w-2.5 h-2.5 rounded-full bg-[#FF5F57]"></div><div class="w-2.5 h-2.5 rounded-full bg-[#FEBC2E]"></div><div class="w-2.5 h-2.5 rounded-full bg-[#28C840]"></div></div>
           <span class="text-[10px] font-bold tracking-widest uppercase text-slate-500 ml-2">${language}</span>
         </div>
         <pre class="p-5 overflow-x-auto text-[13px] leading-[1.75] font-mono" style="background:#0D1117;color:#E6EDF3"><code>${code.trim()}</code></pre>
       </div>`;
-    })
+    codeBlocks.push(block);
+    return `\x00CODE${codeBlocks.length - 1}\x00`;
+  });
+
+  // ── Step 2: Extract markdown tables ──
+  const tableBlocks: string[] = [];
+  processed = processed.replace(/((?:^\|.+\|\s*\n){2,})/gm, (tableMatch) => {
+    tableBlocks.push(renderMarkdownTable(tableMatch));
+    return `\x00TABLE${tableBlocks.length - 1}\x00`;
+  });
+
+  // ── Step 3: Escape HTML ──
+  processed = processed
+    .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+
+  // ── Step 4: Inline + block formatting ──
+  let html = processed
     .replace(/`([^`]+)`/g, '<code class="px-1.5 py-0.5 rounded-md text-[13px] font-mono bg-brand/8 text-brand border border-brand/15">$1</code>')
     .replace(/^#### (.+)$/gm, '<h4 class="text-base font-bold text-ink mt-6 mb-2 flex items-center gap-2"><span class="w-1 h-5 rounded-full bg-brand/30"></span>$1</h4>')
     .replace(/^### (.+)$/gm, '<h3 class="text-lg font-extrabold text-ink mt-8 mb-3 flex items-center gap-2"><span class="w-1.5 h-6 rounded-full bg-brand"></span>$1</h3>')
@@ -89,6 +149,15 @@ function renderSection(md: string): string {
     .replace(/\n/g, "<br />");
   html = `<p class="lc-para">${html}</p>`;
   html = html.replace(/<p class="lc-para"><\/p>/g, "");
+
+  // ── Step 5: Restore code blocks and tables ──
+  for (let i = 0; i < codeBlocks.length; i++) {
+    html = html.replace(`\x00CODE${i}\x00`, codeBlocks[i]);
+  }
+  for (let i = 0; i < tableBlocks.length; i++) {
+    html = html.replace(`\x00TABLE${i}\x00`, tableBlocks[i]);
+  }
+
   return html;
 }
 
