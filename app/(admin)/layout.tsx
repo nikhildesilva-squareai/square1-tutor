@@ -3,6 +3,8 @@ import { createClient } from "@/lib/supabase/server";
 import { isAdminEmail } from "@/lib/supabase/admin";
 import { AdminSidebar } from "./AdminSidebar";
 
+export const dynamic = "force-dynamic";
+
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   // Admin panel is LOCAL ONLY — blocked in production
   if (process.env.NODE_ENV === "production") redirect("/dashboard");
