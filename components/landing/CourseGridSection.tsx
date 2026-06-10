@@ -28,12 +28,12 @@ const META: Record<string, CourseMeta> = {
   "machine-learning":        { role: "ML Engineer",            salary: "$140–220k", enrolled: 1247, projects: ["House Price Predictor", "Image Classifier", "Fraud Detector"] },
   "artificial-intelligence": { role: "AI Engineer",            salary: "$130–200k", enrolled:  892, projects: ["Pathfinding Visualiser", "Game AI", "Decision Engine"] },
   "cybersecurity":           { role: "Cybersecurity Engineer",  salary: "$110–180k", enrolled: 1108, projects: ["Vulnerability Scanner", "Password Auditor", "Secure Auth"] },
-  "computer-vision":         { role: "Computer Vision Engineer", salary: "$120–180k", enrolled: 624, projects: ["Face Detection", "OCR App", "Object Tracker"] },
+  "computer-vision":         { role: "CV Engineer",            salary: "$120–180k", enrolled:  624, projects: ["Face Detection", "OCR App", "Object Tracker"] },
   "game-development":        { role: "Game Developer",         salary: "$80–150k",  enrolled:  738, projects: ["2D Platformer", "AI Enemy System", "Multiplayer Game"] },
   "fullstack-development":   { role: "Full Stack Engineer",    salary: "$100–160k", enrolled: 1672, projects: ["SaaS App", "Real-time Chat", "Payment System"] },
-  "drone-technology":        { role: "Drone / Robotics Engineer", salary: "$115–185k", enrolled: 542, projects: ["Autonomous Flight", "Aerial Vision AI", "Swarm Controller"] },
+  "drone-technology":        { role: "Drone Engineer",         salary: "$115–185k", enrolled:  542, projects: ["Autonomous Flight", "Aerial Vision AI", "Swarm Controller"] },
   "data-science":            { role: "Data Scientist",         salary: "$115–185k", enrolled: 1156, projects: ["Cohort Analysis", "A/B Test Lab", "Sales Forecaster"] },
-  "llm-agent-architect":     { role: "LLM Agent Architect",    salary: "$150–250k", enrolled:  896, projects: ["Tool-use Agent", "Multi-agent System", "Autonomous Workflow"] },
+  "llm-agent-architect":     { role: "Agent Architect",        salary: "$150–250k", enrolled:  896, projects: ["Tool-use Agent", "Multi-agent System", "Autonomous Workflow"] },
   "ai-product-management":   { role: "AI Product Manager",     salary: "$140–220k", enrolled:  734, projects: ["AI Product Spec", "Go-to-Market Plan", "User Research Report"] },
   "devops-engineering":      { role: "DevOps Engineer",        salary: "$120–190k", enrolled: 1324, projects: ["CI/CD Pipeline", "K8s Deployment", "Monitoring Stack"] },
   "default":                 { role: "Software Engineer",      salary: "$90–150k",  enrolled:  500, projects: ["Starter Project", "Mid-level Project", "Capstone"] },
@@ -43,11 +43,77 @@ function getMeta(slug: string): CourseMeta {
   return META[slug] ?? META.default;
 }
 
-// Highest enrollment for relative popularity bar
 const MAX_ENROLLED = Math.max(...Object.values(META).map((m) => m.enrolled));
 
-// ─── Single course card — matches TimelineSection card design ─────────────────
-function CourseCard({
+// ─── Mobile card — compact tile ──────────────────────────────────────────────
+function MobileCourseCard({
+  course,
+  index,
+  isVisible,
+}: {
+  course: Course;
+  index: number;
+  isVisible: boolean;
+}) {
+  const meta = getMeta(course.slug);
+  const href = course.status !== "active" ? "#" : `/courses/${course.slug}`;
+
+  return (
+    <Link
+      href={href}
+      className="relative group rounded-2xl p-4 transition-all duration-500 will-change-transform border overflow-hidden block"
+      style={{
+        background: `linear-gradient(135deg, ${course.color}10 0%, #FFFFFF 60%, ${course.color}06 100%)`,
+        borderColor: `${course.color}25`,
+        boxShadow: `0 4px 16px ${course.color}10`,
+        opacity: isVisible ? 1 : 0,
+        transform: isVisible ? "translateY(0)" : "translateY(20px)",
+        transitionDelay: `${index * 60}ms`,
+      }}
+    >
+      {/* Top row: title + salary */}
+      <div className="flex items-start justify-between gap-2 mb-2">
+        <h3 className="text-sm font-black text-slate-900 leading-tight" style={{ letterSpacing: "-0.01em" }}>
+          {course.title}
+        </h3>
+        <span
+          className="text-[8px] font-black tracking-wider uppercase px-1.5 py-0.5 rounded-full shrink-0 mt-0.5"
+          style={{ background: `${course.color}15`, color: course.color }}
+        >
+          {meta.salary}
+        </span>
+      </div>
+
+      {/* Description — single line */}
+      <p className="text-[11px] text-slate-500 leading-snug mb-3 line-clamp-1">
+        {course.description}
+      </p>
+
+      {/* Bottom: role + stats */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-1.5">
+          <svg width="10" height="10" viewBox="0 0 12 12" fill="none" className="shrink-0">
+            <path d="M2 6h7M6 3l3 3-3 3" stroke={course.color} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+          <span className="text-[10px] font-bold" style={{ color: course.color }}>
+            {meta.role}
+          </span>
+        </div>
+        <div className="flex items-center gap-2 text-[9px] text-slate-400">
+          <span><span className="font-bold text-slate-600">{course.total_lessons}</span> lessons</span>
+          <span className="w-0.5 h-0.5 rounded-full bg-slate-300" />
+          <span><span className="font-bold text-slate-600">{course.total_projects}</span> projects</span>
+        </div>
+      </div>
+
+      {/* Thin accent line at bottom */}
+      <div className="absolute bottom-0 left-0 right-0 h-0.5" style={{ background: `linear-gradient(90deg, ${course.color}40, ${course.color}10)` }} />
+    </Link>
+  );
+}
+
+// ─── Desktop card — full rich card ───────────────────────────────────────────
+function DesktopCourseCard({
   course,
   index,
   isVisible,
@@ -101,7 +167,7 @@ function CourseCard({
         </span>
       </div>
 
-      {/* Course title — big bold */}
+      {/* Course title */}
       <h3 className="relative text-2xl lg:text-3xl font-black text-slate-900 leading-tight mb-2"
         style={{ letterSpacing: "-0.02em" }}>
         {course.title}
@@ -128,7 +194,7 @@ function CourseCard({
         ))}
       </div>
 
-      {/* Schedule line — lessons · projects */}
+      {/* Schedule line */}
       <div className="relative flex items-center gap-3 mb-4 text-[10px] text-slate-500">
         <span><span className="font-bold text-slate-700 tabular-nums">{course.total_lessons}</span> lessons</span>
         <span className="w-0.5 h-0.5 rounded-full bg-slate-300" />
@@ -151,7 +217,6 @@ function CourseCard({
             <span className="tabular-nums">{meta.enrolled.toLocaleString()}</span> enrolled
           </span>
         </div>
-        {/* Popularity bar */}
         <div className="h-1 rounded-full overflow-hidden" style={{ background: `${course.color}15` }}>
           <div
             className="h-full rounded-full transition-all duration-700"
@@ -176,7 +241,7 @@ export function CourseGridSection({ courses }: { courses: Course[] }) {
     if (!sectionRef.current) return;
     const obs = new IntersectionObserver(
       ([entry]) => { if (entry.isIntersecting) { setVisible(true); obs.disconnect(); } },
-      { threshold: 0.15 }
+      { threshold: 0.05 }
     );
     obs.observe(sectionRef.current);
     return () => obs.disconnect();
@@ -185,7 +250,7 @@ export function CourseGridSection({ courses }: { courses: Course[] }) {
   return (
     <section
       ref={sectionRef}
-      className="relative overflow-hidden py-20 sm:py-28 lg:py-32 px-4 sm:px-6 lg:px-8"
+      className="relative overflow-hidden py-14 sm:py-28 lg:py-32 px-4 sm:px-6 lg:px-8"
       style={{
         background: `
           radial-gradient(ellipse 900px 500px at 20% 20%, rgba(0,86,206,0.08), transparent 60%),
@@ -195,20 +260,20 @@ export function CourseGridSection({ courses }: { courses: Course[] }) {
         `,
       }}
     >
-      {/* Drifting accent blobs */}
-      <div className="pointer-events-none absolute top-0 left-1/4 w-[500px] h-[500px] rounded-full opacity-30 animate-blob-1"
+      {/* Drifting accent blobs — hidden on mobile for performance */}
+      <div className="hidden sm:block pointer-events-none absolute top-0 left-1/4 w-[500px] h-[500px] rounded-full opacity-30 animate-blob-1"
         style={{ background: "radial-gradient(circle, rgba(0,86,206,0.15) 0%, transparent 70%)", filter: "blur(80px)" }} />
-      <div className="pointer-events-none absolute bottom-0 right-1/4 w-[600px] h-[500px] rounded-full opacity-25 animate-blob-2"
+      <div className="hidden sm:block pointer-events-none absolute bottom-0 right-1/4 w-[600px] h-[500px] rounded-full opacity-25 animate-blob-2"
         style={{ background: "radial-gradient(circle, rgba(167,139,250,0.12) 0%, transparent 70%)", filter: "blur(90px)" }} />
 
       <div className="relative max-w-6xl mx-auto">
-        {/* Heading */}
-        <div className="text-center mb-12 sm:mb-16">
+        {/* Heading — tighter on mobile */}
+        <div className="text-center mb-8 sm:mb-16">
           <span className="text-[10px] sm:text-[11px] tracking-[0.35em] uppercase text-slate-500 font-bold">
             The Curriculum
           </span>
-          <h2 className="mt-4 font-black tracking-tight text-slate-900 leading-[0.95]"
-            style={{ fontSize: "clamp(36px, 6vw, 80px)" }}>
+          <h2 className="mt-3 sm:mt-4 font-black tracking-tight text-slate-900 leading-[0.95]"
+            style={{ fontSize: "clamp(28px, 6vw, 80px)" }}>
             12 subjects.
             <br />
             <span style={{
@@ -220,27 +285,34 @@ export function CourseGridSection({ courses }: { courses: Course[] }) {
               One path to hired.
             </span>
           </h2>
-          <p className="mt-4 text-sm sm:text-base text-slate-600 max-w-xl mx-auto">
+          <p className="mt-3 sm:mt-4 text-xs sm:text-base text-slate-600 max-w-xl mx-auto">
             Every course built around a real career outcome — with the salary to prove it.
           </p>
         </div>
 
-        {/* 8 course cards — same grid as timeline (3 cols on lg) */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 lg:gap-5">
+        {/* ── MOBILE: Compact 2-col grid (visible only on small screens) ──── */}
+        <div className="grid grid-cols-1 gap-2.5 sm:hidden">
           {courses.map((course, i) => (
-            <CourseCard key={course.id} course={course} index={i} isVisible={visible} />
+            <MobileCourseCard key={course.id} course={course} index={i} isVisible={visible} />
+          ))}
+        </div>
+
+        {/* ── DESKTOP: Full rich card grid (hidden on small screens) ──────── */}
+        <div className="hidden sm:grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 lg:gap-5">
+          {courses.map((course, i) => (
+            <DesktopCourseCard key={course.id} course={course} index={i} isVisible={visible} />
           ))}
         </div>
 
         {/* Bottom callout */}
-        <div className="mt-14 sm:mt-20 flex flex-col items-center gap-4">
-          <p className="text-sm text-slate-500 text-center max-w-md">
+        <div className="mt-10 sm:mt-20 flex flex-col items-center gap-3 sm:gap-4">
+          <p className="text-xs sm:text-sm text-slate-500 text-center max-w-md">
             Not sure which track is right for you?{" "}
             <span className="font-semibold text-slate-700">The assessment shows you in 30 minutes.</span>
           </p>
           <Link
             href="/signup"
-            className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full text-white font-bold text-sm shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all"
+            className="inline-flex items-center gap-2 px-6 sm:px-7 py-3 sm:py-3.5 rounded-full text-white font-bold text-sm shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all"
             style={{
               background: "linear-gradient(135deg, #0056CE 0%, #4F46E5 100%)",
               boxShadow: "0 12px 32px rgba(0,86,206,0.30)",
