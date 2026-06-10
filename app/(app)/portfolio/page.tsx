@@ -53,8 +53,17 @@ export default async function PortfolioPage() {
 
   if (!student) return null;
 
-  // Fetch submissions
+  // Fetch submissions — only portfolio-worthy projects (score >= 70)
   const { data: submissions } = await supabase
+    .from("project_submissions")
+    .select("*")
+    .eq("student_id", student.id)
+    .not("score", "is", null)
+    .eq("in_portfolio", true)
+    .order("submitted_at", { ascending: false }) as { data: ProjectSubmission[] | null };
+
+  // Also fetch ALL scored submissions for stats (including non-portfolio)
+  const { data: allScoredSubmissions } = await supabase
     .from("project_submissions")
     .select("*")
     .eq("student_id", student.id)
@@ -62,6 +71,7 @@ export default async function PortfolioPage() {
     .order("submitted_at", { ascending: false }) as { data: ProjectSubmission[] | null };
 
   const allSubmissions = submissions ?? [];
+  const allForStats = allScoredSubmissions ?? [];
   const projectIds = allSubmissions.map((s) => s.project_id);
 
   const { data: projects } = await supabase
@@ -86,10 +96,12 @@ export default async function PortfolioPage() {
     return acc;
   }, []);
 
-  // Stats
-  const scores = allSubmissions.map((s) => s.score).filter((s): s is number => s !== null);
+  // Stats — use ALL scored submissions (not just portfolio) for career metrics
+  const scores = allForStats.map((s) => s.score).filter((s): s is number => s !== null);
   const avgScore = scores.length > 0 ? Math.round(scores.reduce((a, b) => a + b, 0) / scores.length) : 0;
   const highScore = scores.length > 0 ? Math.max(...scores) : 0;
+  const portfolioCount = allSubmissions.length;
+  const totalScored = allForStats.length;
 
   const { data: enrollments } = await supabase
     .from("student_enrollments")
@@ -104,7 +116,7 @@ export default async function PortfolioPage() {
     .in("course_id", enrolledCourseIds.length > 0 ? enrolledCourseIds : ["__none__"]);
 
   const total = totalProjects ?? 0;
-  const deployed = scores.length;
+  const deployed = totalScored;
   const readinessPct = total > 0 ? Math.round((deployed / total) * 100) : 0;
   const career = getCareerLevel(avgScore);
 
@@ -222,7 +234,7 @@ export default async function PortfolioPage() {
                 {career.label}
               </div>
               <p className="text-slate-400 text-xs mt-2">
-                {deployed} project{deployed !== 1 ? "s" : ""} shipped · {[...new Set(enriched.map(e => e.course?.title))].filter(Boolean).join(", ")}
+                {portfolioCount} project{portfolioCount !== 1 ? "s" : ""} in portfolio · {deployed} total submitted · {[...new Set(enriched.map(e => e.course?.title))].filter(Boolean).join(", ")}
               </p>
             </div>
 
@@ -353,6 +365,11 @@ export default async function PortfolioPage() {
                     ].join(" ")}>
                       {item.project.difficulty}
                     </span>
+                    {(item.submission.attempt_number ?? 1) > 1 && (
+                      <span className="px-2 py-0.5 rounded-md text-[10px] font-bold bg-surface-alt text-ink-muted border border-border">
+                        {item.submission.attempt_number} attempts
+                      </span>
+                    )}
                   </div>
 
                   {/* Links row */}

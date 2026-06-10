@@ -7,6 +7,10 @@ import type { Project, ProjectSubmission } from "@/types/database";
 interface Milestone { title?: string; description?: string; [key: string]: unknown }
 interface PageProps { params: Promise<{ projectId: string }> }
 
+function toSlug(title: string) {
+  return title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+}
+
 const DIFF_COLORS: Record<string, { text: string; bg: string; border: string; dot: string }> = {
   beginner:     { text: "text-emerald-600", bg: "bg-emerald-50", border: "border-emerald-200", dot: "#22C55E" },
   intermediate: { text: "text-amber-600",   bg: "bg-amber-50",   border: "border-amber-200",   dot: "#F59E0B" },
@@ -174,6 +178,14 @@ export default async function ProjectBriefPage({ params }: PageProps) {
                     overall_feedback: submission!.overall_feedback ?? "",
                     strengths: submission!.strengths ?? [],
                     improvements: submission!.improvements ?? [],
+                    code_comments: ((submission as unknown as Record<string, unknown>).code_comments ?? []) as { file: string; line?: number; comment: string; severity: "info" | "warning" | "error"; snippet?: { startLine: number; lines: { num: number; text: string; highlighted: boolean }[] }; githubUrl?: string }[],
+                    attempt_number: submission!.attempt_number ?? 1,
+                    in_portfolio: submission!.in_portfolio ?? false,
+                    submission_history: ((submission as unknown as Record<string, unknown>).submission_history ?? []) as { attempt: number; score: number; max_score: number; breakdown: { criterion: string; score: number; max: number; feedback: string }[]; submitted_at: string }[],
+                    previous_attempt: (() => {
+                      const hist = ((submission as unknown as Record<string, unknown>).submission_history ?? []) as { attempt: number; score: number; max_score: number; breakdown: { criterion: string; score: number; max: number; feedback: string }[]; submitted_at: string }[];
+                      return hist.length > 0 ? hist[hist.length - 1] : null;
+                    })(),
                   }}
                 />
               ) : (
@@ -217,21 +229,48 @@ export default async function ProjectBriefPage({ params }: PageProps) {
               </div>
             </div>
 
-            {/* Starter kit */}
+            {/* Getting Started — Starter Template */}
             <div className="bg-surface rounded-xl border border-border p-5">
-              <h3 className="text-[10px] font-bold text-ink-muted uppercase tracking-widest mb-3">Resources</h3>
-              <a href={`https://github.com/square1ai/starter-${project.title.toLowerCase().replace(/\s+/g, "-")}`}
+              <h3 className="text-[10px] font-bold text-ink-muted uppercase tracking-widest mb-3">Getting Started</h3>
+
+              {/* Use Template button */}
+              <a href={`https://github.com/nikhildesilva-squareai/starter-${toSlug(project.title)}/generate`}
                 target="_blank" rel="noopener noreferrer"
-                className="flex items-center gap-3 px-3 py-2.5 rounded-lg border border-border hover:border-brand/30 hover:bg-surface-soft transition-all group">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" className="text-ink-secondary group-hover:text-ink transition-colors">
+                className="flex items-center gap-3 px-3 py-3 rounded-lg bg-[#0A0A0A] hover:bg-[#1a1a1a] transition-all group mb-3">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="#fff" className="shrink-0">
                   <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.44 9.8 8.21 11.39.6.11.82-.26.82-.58 0-.29-.01-1.04-.02-2.05-3.34.73-4.04-1.61-4.04-1.61C4.42 17.92 3.63 17.5 3.63 17.5c-1.09-.74.08-.73.08-.73 1.21.09 1.85 1.24 1.85 1.24 1.07 1.84 2.81 1.31 3.49 1 .11-.78.42-1.31.76-1.61-2.66-.3-5.47-1.33-5.47-5.92 0-1.31.47-2.38 1.24-3.22-.13-.3-.54-1.52.12-3.17 0 0 1-.32 3.3 1.23A11.5 11.5 0 0112 5.8c1.02.01 2.04.14 3 .4 2.29-1.55 3.3-1.23 3.3-1.23.66 1.65.25 2.87.12 3.17.77.84 1.24 1.91 1.24 3.22 0 4.6-2.81 5.62-5.49 5.92.43.37.82 1.1.82 2.21 0 1.6-.02 2.89-.02 3.28 0 .32.22.7.83.58A12 12 0 0024 12c0-6.63-5.37-12-12-12z"/>
                 </svg>
                 <div className="flex-1">
-                  <p className="text-sm font-medium text-ink group-hover:text-brand transition-colors">Starter Template</p>
-                  <p className="text-[10px] text-ink-muted font-mono">Clone and start building</p>
+                  <p className="text-sm font-semibold text-white">Use this template</p>
+                  <p className="text-[10px] text-slate-400">Creates a new repo from our starter</p>
                 </div>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" strokeWidth="2" className="group-hover:stroke-brand transition-colors"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6" /><polyline points="15 3 21 3 21 9" /><line x1="10" y1="14" x2="21" y2="3" /></svg>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#64748B" strokeWidth="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6" /><polyline points="15 3 21 3 21 9" /><line x1="10" y1="14" x2="21" y2="3" /></svg>
               </a>
+
+              {/* Clone command */}
+              <div className="rounded-lg bg-slate-950 px-3 py-2.5 mb-3">
+                <p className="text-[9px] text-slate-500 uppercase tracking-wider font-bold mb-1">Or clone directly</p>
+                <code className="text-[11px] text-slate-300 font-mono break-all select-all">
+                  git clone https://github.com/nikhildesilva-squareai/starter-{toSlug(project.title)}.git
+                </code>
+              </div>
+
+              {/* Steps */}
+              <div className="space-y-2">
+                {[
+                  { step: "1", text: "Clone the starter template above" },
+                  { step: "2", text: "Build the project following the requirements" },
+                  { step: "3", text: "Push to your own public GitHub repo" },
+                  { step: "4", text: "Submit the repo URL below for AI review" },
+                ].map((s) => (
+                  <div key={s.step} className="flex items-start gap-2.5">
+                    <span className="w-5 h-5 rounded-full bg-surface-alt flex items-center justify-center text-[10px] font-bold text-ink-muted shrink-0">
+                      {s.step}
+                    </span>
+                    <span className="text-xs text-ink-secondary leading-relaxed">{s.text}</span>
+                  </div>
+                ))}
+              </div>
             </div>
 
             {/* Course context */}

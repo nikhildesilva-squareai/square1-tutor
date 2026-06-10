@@ -40,13 +40,14 @@ export default async function PublicPortfolioPage({ params }: PageProps) {
 
   if (!student) notFound();
 
-  // Fetch submissions with scores
+  // Fetch only portfolio-worthy submissions (score 70+ auto-added)
   const { data: submissions } = await supabase
     .from("project_submissions")
     .select("*")
     .eq("student_id", student.id)
+    .eq("in_portfolio", true)
     .not("score", "is", null)
-    .order("submitted_at", { ascending: false }) as { data: ProjectSubmission[] | null };
+    .order("score", { ascending: false }) as { data: ProjectSubmission[] | null };
 
   const allSubs = submissions ?? [];
   const projectIds = allSubs.map(s => s.project_id);
@@ -163,8 +164,21 @@ export default async function PublicPortfolioPage({ params }: PageProps) {
                         <h3 className="text-sm font-bold text-ink mb-2">{proj.title}</h3>
                         <div className="flex items-center gap-1.5 flex-wrap mb-2">
                           {proj.tech_stack.map((t: string) => (
-                            <span key={t} className="px-2 py-0.5 rounded-md bg-surface-alt text-[10px] font-semibold text-ink-secondary">{t}</span>
+                            <span key={t} className="px-2 py-0.5 rounded-md bg-surface-alt text-[10px] font-semibold text-ink-secondary border border-border">{t}</span>
                           ))}
+                          <span className={[
+                            "px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider border",
+                            proj.difficulty === "beginner" ? "bg-emerald-50 text-emerald-600 border-emerald-200" :
+                            proj.difficulty === "advanced" ? "bg-red-50 text-red-600 border-red-200" :
+                            "bg-amber-50 text-amber-600 border-amber-200",
+                          ].join(" ")}>
+                            {proj.difficulty}
+                          </span>
+                          {(sub.attempt_number ?? 1) > 1 && (
+                            <span className="px-2 py-0.5 rounded-md text-[10px] font-bold bg-surface-alt text-ink-muted border border-border">
+                              {sub.attempt_number} attempts
+                            </span>
+                          )}
                         </div>
                         <div className="flex items-center gap-4 text-xs">
                           <a href={sub.github_url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 text-ink-muted hover:text-ink">

@@ -119,8 +119,20 @@ export interface ProjectSubmission {
   overall_feedback: string | null;
   strengths: string[] | null;
   improvements: string[] | null;
+  code_comments: CodeComment[] | null;
+  submission_history: SubmissionHistoryEntry[] | null;
+  attempt_number: number;
+  in_portfolio: boolean;
   submitted_at: string;
   reviewed_at: string | null;
+}
+
+export interface SubmissionHistoryEntry {
+  attempt: number;
+  score: number;
+  max_score: number;
+  breakdown: ScoreBreakdown[];
+  submitted_at: string;
 }
 
 export interface ScoreBreakdown {
@@ -128,4 +140,16 @@ export interface ScoreBreakdown {
   score: number;
   max: number;
   feedback: string;
+}
+
+export interface CodeComment {
+  file: string;
+  line?: number;
+  comment: string;
+  severity: "info" | "warning" | "error";
+  snippet?: {
+    startLine: number;
+    lines: { num: number; text: string; highlighted: boolean }[];
+  };
+  githubUrl?: string;
 }

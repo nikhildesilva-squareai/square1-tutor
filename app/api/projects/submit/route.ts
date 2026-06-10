@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { callAI } from "@/lib/ai/budget";
 import { z } from "zod";
 import { rateLimitAI } from "@/lib/rate-limit";
+import { fetchRepo, formatRepoForReview, enrichCodeComments, type RepoAnalysis } from "@/lib/github/fetch-repo";
 
 const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
@@ -65,26 +66,24 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Not enrolled in this course" }, { status: 403 });
     }
 
-    // 6. Trigger AI review (budget-checked via callAI)
-    const reviewPrompt = buildReviewPrompt(project, githubUrl, description);
+    // ═══════════════════════════════════════════════════════════════════════════
+    // 6. FETCH ACTUAL CODE FROM GITHUB
+    // ═══════════════════════════════════════════════════════════════════════════
+    const repoAnalysis = await fetchRepo(githubUrl);
+
+    // 7. Build the AI review prompt with real code
+    const reviewPrompt = buildReviewPrompt(project, githubUrl, repoAnalysis, description);
 
     const aiResult = await callAI(student.id, {
-      system: "You are a senior engineer reviewing a student project submission. Always respond with valid JSON only, no markdown fences or extra text.",
-      max_tokens: 1024,
+      system: SYSTEM_PROMPT,
+      max_tokens: 2048, // More tokens for detailed code feedback
       temperature: 0,
       messages: [{ role: "user", content: reviewPrompt }],
     });
 
     const responseText = aiResult.text || "{}";
 
-    let review: {
-      score: number;
-      max_score: number;
-      breakdown: { criterion: string; score: number; max: number; feedback: string }[];
-      overall_feedback: string;
-      strengths: string[];
-      improvements: string[];
-    };
+    let review: ReviewResult;
 
     try {
       review = JSON.parse(responseText);
@@ -94,19 +93,60 @@ export async function POST(request: Request) {
         score: 50,
         max_score: 100,
         breakdown: [
-          { criterion: "Completeness", score: 15, max: 30, feedback: "Unable to fully evaluate." },
-          { criterion: "Code Quality", score: 13, max: 25, feedback: "Unable to fully evaluate." },
-          { criterion: "Error Handling", score: 10, max: 20, feedback: "Unable to fully evaluate." },
+          { criterion: "Completeness", score: 15, max: 25, feedback: "Unable to fully evaluate." },
+          { criterion: "Code Quality", score: 10, max: 25, feedback: "Unable to fully evaluate." },
+          { criterion: "Error Handling", score: 8, max: 15, feedback: "Unable to fully evaluate." },
+          { criterion: "Testing", score: 5, max: 10, feedback: "Unable to fully evaluate." },
           { criterion: "Documentation", score: 7, max: 15, feedback: "Unable to fully evaluate." },
           { criterion: "Best Practices", score: 5, max: 10, feedback: "Unable to fully evaluate." },
         ],
         overall_feedback: "Submission received. The AI reviewer encountered an issue parsing the evaluation. Please try resubmitting.",
         strengths: ["Project submitted successfully"],
         improvements: ["Consider adding more detail in the notes field"],
+        code_comments: [],
       };
     }
 
-    // 7. Upsert into project_submissions
+    // ═══════════════════════════════════════════════════════════════════════════
+    // 8. ENRICH CODE COMMENTS WITH ACTUAL SNIPPETS
+    // ═══════════════════════════════════════════════════════════════════════════
+    const enrichedComments = enrichCodeComments(
+      review.code_comments ?? [],
+      repoAnalysis,
+    );
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // 9. RE-SUBMISSION TRACKING — build history from previous attempt
+    // ═══════════════════════════════════════════════════════════════════════════
+    const { data: existingSubmission } = await supabase
+      .from("project_submissions")
+      .select("score, max_score, breakdown, attempt_number, submission_history, submitted_at")
+      .eq("student_id", student.id)
+      .eq("project_id", projectId)
+      .maybeSingle();
+
+    let attemptNumber = 1;
+    let submissionHistory: { attempt: number; score: number; max_score: number; breakdown: unknown[]; submitted_at: string }[] = [];
+
+    if (existingSubmission && existingSubmission.score !== null) {
+      const prevHistory = (existingSubmission.submission_history ?? []) as typeof submissionHistory;
+      submissionHistory = [
+        ...prevHistory,
+        {
+          attempt: existingSubmission.attempt_number ?? prevHistory.length + 1,
+          score: existingSubmission.score,
+          max_score: existingSubmission.max_score,
+          breakdown: existingSubmission.breakdown ?? [],
+          submitted_at: existingSubmission.submitted_at,
+        },
+      ];
+      attemptNumber = (existingSubmission.attempt_number ?? submissionHistory.length) + 1;
+    }
+
+    // Auto-portfolio: score >= 70 → show in portfolio
+    const inPortfolio = review.score >= 70;
+
+    // 10. Upsert into project_submissions
     const { data: submission, error: upsertError } = await supabase
       .from("project_submissions")
       .upsert(
@@ -122,6 +162,10 @@ export async function POST(request: Request) {
           overall_feedback: review.overall_feedback,
           strengths: review.strengths,
           improvements: review.improvements,
+          code_comments: enrichedComments,
+          submission_history: submissionHistory,
+          attempt_number: attemptNumber,
+          in_portfolio: inPortfolio,
           submitted_at: new Date().toISOString(),
           reviewed_at: new Date().toISOString(),
         },
@@ -135,14 +179,19 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Failed to save submission" }, { status: 500 });
     }
 
-    // 8. Also update student_projects status if it exists
+    // 11. Also update student_projects status if it exists
     await supabase
       .from("student_projects")
       .update({ status: "submitted", updated_at: new Date().toISOString() })
       .eq("student_id", student.id)
       .eq("project_id", projectId);
 
-    // 9. Return result
+    // Build previous attempt for diff display
+    const previousAttempt = submissionHistory.length > 0
+      ? submissionHistory[submissionHistory.length - 1]
+      : null;
+
+    // 12. Return result with enriched comments + history
     return NextResponse.json({
       submissionId: submission.id,
       score: review.score,
@@ -151,6 +200,17 @@ export async function POST(request: Request) {
       overall_feedback: review.overall_feedback,
       strengths: review.strengths,
       improvements: review.improvements,
+      code_comments: enrichedComments,
+      attempt_number: attemptNumber,
+      in_portfolio: inPortfolio,
+      previous_attempt: previousAttempt,
+      repo_stats: {
+        totalFiles: repoAnalysis.totalFiles,
+        filesReviewed: repoAnalysis.files.length,
+        detectedStack: repoAnalysis.detectedStack,
+        hasReadme: repoAnalysis.hasReadme,
+        hasTests: repoAnalysis.hasTests,
+      },
     });
   } catch (err) {
     if (err instanceof z.ZodError) {
@@ -161,44 +221,98 @@ export async function POST(request: Request) {
   }
 }
 
+// ─── Types ───────────────────────────────────────────────────────────────────
+
+interface ReviewResult {
+  score: number;
+  max_score: number;
+  breakdown: { criterion: string; score: number; max: number; feedback: string }[];
+  overall_feedback: string;
+  strengths: string[];
+  improvements: string[];
+  code_comments: { file: string; line?: number; comment: string; severity: "info" | "warning" | "error" }[];
+}
+
+// ─── System prompt ───────────────────────────────────────────────────────────
+
+const SYSTEM_PROMPT = `You are a senior software engineer at a top tech company, reviewing a student's project submission. You have access to their actual source code from GitHub.
+
+Your review must be:
+- HONEST: If the code is bad, say so. Don't inflate scores.
+- SPECIFIC: Reference actual files and code patterns you see.
+- ACTIONABLE: Every criticism must include what to do instead.
+- ENCOURAGING: Acknowledge genuine strengths.
+
+Score strictly but fairly. A beginner project with clean, working code can score 80+.
+An advanced project with sloppy code should score lower.
+
+Always respond with valid JSON only — no markdown fences, no extra text.`;
+
+// ─── Build the review prompt with real code ──────────────────────────────────
+
 function buildReviewPrompt(
-  project: { title: string; description_md: string; tech_stack: string[]; requirements: string[] },
+  project: { title: string; description_md: string; difficulty: string; tech_stack: string[]; requirements: string[] },
   githubUrl: string,
+  repo: RepoAnalysis,
   description?: string,
 ): string {
-  return `You are a senior engineer reviewing a student project submission.
+  const repoContext = formatRepoForReview(repo);
+  const codeAvailable = !repo.error && repo.files.length > 0;
 
-Project: ${project.title}
-Requirements: ${(project.requirements ?? []).join(", ")}
-Tech Stack: ${(project.tech_stack ?? []).join(", ")}
-GitHub URL: ${githubUrl}
-${description ? `Student Notes: ${description}` : ""}
+  return `# Project Review Request
 
-Since you cannot access the GitHub URL directly, evaluate based on:
-1. The project requirements - are they likely met based on the description?
-2. The tech stack - is it appropriate?
-3. The student's notes about their implementation
+## Project Brief
+**Title:** ${project.title}
+**Difficulty:** ${project.difficulty}
+**Required Tech Stack:** ${(project.tech_stack ?? []).join(", ")}
+**Requirements:**
+${(project.requirements ?? []).map((r, i) => `${i + 1}. ${r}`).join("\n")}
+
+## Student Submission
+**GitHub:** ${githubUrl}
+${description ? `**Student Notes:** ${description}` : ""}
+
+${repoContext}
+
+---
+
+## Your Task
+
+${codeAvailable
+    ? `You have the student's actual source code above. Review it thoroughly.
+
+For each criterion, reference SPECIFIC files and code patterns.
+In code_comments, point to specific files (and line numbers if possible) with actionable feedback.`
+    : `The repo could not be fetched (${repo.error}). Review based on what's available.
+Be transparent that you couldn't read the code — score conservatively.`
+}
 
 Score out of 100:
-- Completeness (requirements met): /30
-- Code Quality (inferred from description): /25
-- Error Handling & Edge Cases: /20
-- Documentation: /15
-- Best Practices: /10
+- **Completeness** (requirements met, features working): /25
+- **Code Quality** (clean code, naming, structure, DRY): /25
+- **Error Handling** (edge cases, validation, graceful failures): /15
+- **Testing** (has tests, test quality, coverage): /10
+- **Documentation** (README, code comments, types): /15
+- **Best Practices** (security, performance, accessibility): /10
 
-Return JSON (no markdown fences):
+Return this exact JSON structure (no markdown fences):
 {
-  "score": <number>,
+  "score": <total_number>,
   "max_score": 100,
   "breakdown": [
-    { "criterion": "Completeness", "score": <number>, "max": 30, "feedback": "..." },
+    { "criterion": "Completeness", "score": <number>, "max": 25, "feedback": "Specific feedback referencing actual code..." },
     { "criterion": "Code Quality", "score": <number>, "max": 25, "feedback": "..." },
-    { "criterion": "Error Handling", "score": <number>, "max": 20, "feedback": "..." },
+    { "criterion": "Error Handling", "score": <number>, "max": 15, "feedback": "..." },
+    { "criterion": "Testing", "score": <number>, "max": 10, "feedback": "..." },
     { "criterion": "Documentation", "score": <number>, "max": 15, "feedback": "..." },
     { "criterion": "Best Practices", "score": <number>, "max": 10, "feedback": "..." }
   ],
-  "overall_feedback": "2-3 sentences of specific, actionable feedback",
-  "strengths": ["strength 1", "strength 2"],
-  "improvements": ["improvement 1", "improvement 2"]
+  "overall_feedback": "3-4 sentences of specific, actionable feedback. Reference files by name.",
+  "strengths": ["Specific strength 1 referencing code", "Specific strength 2"],
+  "improvements": ["Specific improvement 1 with what to change", "Specific improvement 2"],
+  "code_comments": [
+    { "file": "src/app.ts", "line": 42, "comment": "This fetch call has no error handling — wrap in try/catch", "severity": "error" },
+    { "file": "src/utils.ts", "comment": "Good use of TypeScript generics here", "severity": "info" }
+  ]
 }`;
 }
