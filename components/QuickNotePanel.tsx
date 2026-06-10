@@ -257,8 +257,16 @@ export function QuickNotePanel() {
         <div className="flex-1 overflow-y-auto p-5 space-y-4">
           {/* Title */}
           <input
+            type="text"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                e.preventDefault();
+                textareaRef.current?.focus();
+              }
+              e.stopPropagation();
+            }}
             placeholder="Note title (optional)"
             className="w-full text-sm font-semibold text-ink placeholder:text-ink-muted bg-transparent focus:outline-none"
           />

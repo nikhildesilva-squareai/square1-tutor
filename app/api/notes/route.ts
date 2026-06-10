@@ -90,6 +90,36 @@ export async function POST(request: Request) {
   return NextResponse.json({ noteId: note.id });
 }
 
+// PATCH — Update a note's title and/or content
+export async function PATCH(request: Request) {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+  const { data: student } = await supabase.from("students").select("id").eq("user_id", user.id).maybeSingle();
+  if (!student) return NextResponse.json({ error: "Student not found" }, { status: 404 });
+
+  const body = await request.json();
+  const { id, title, content } = body as { id?: string; title?: string | null; content?: string };
+
+  if (!id) return NextResponse.json({ error: "Missing note ID" }, { status: 400 });
+  if (!content?.trim()) return NextResponse.json({ error: "Content is required" }, { status: 400 });
+
+  const { error } = await supabase
+    .from("study_notes")
+    .update({
+      title: title ?? null,
+      content: content.trim(),
+      updated_at: new Date().toISOString(),
+    })
+    .eq("id", id)
+    .eq("student_id", student.id);
+
+  if (error) return NextResponse.json({ error: "Failed to update note" }, { status: 500 });
+
+  return NextResponse.json({ ok: true });
+}
+
 // DELETE — Delete a note
 export async function DELETE(request: Request) {
   const supabase = await createClient();

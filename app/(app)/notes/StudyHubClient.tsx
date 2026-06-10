@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { cn } from "@/lib/utils";
 
 interface Note {
@@ -51,6 +51,15 @@ export function StudyHubClient({ initialNotes, stats }: Props) {
   const [flashcardIdx, setFlashcardIdx] = useState(0);
   const [showAnswer, setShowAnswer] = useState(false);
 
+  // ── View/Edit note state ──────────────────────────────
+  const [viewingNote, setViewingNote] = useState<Note | null>(null);
+  const [editTitle, setEditTitle] = useState("");
+  const [editContent, setEditContent] = useState("");
+  const [isEditing, setIsEditing] = useState(false);
+  const [saving, setSaving] = useState(false);
+
+  const newNoteTextareaRef = useRef<HTMLTextAreaElement>(null);
+
   const filtered = notes.filter(n => {
     if (filter !== "all" && n.type !== filter) return false;
     if (search && !n.content.toLowerCase().includes(search.toLowerCase()) && !(n.title ?? "").toLowerCase().includes(search.toLowerCase())) return false;
@@ -82,7 +91,45 @@ export function StudyHubClient({ initialNotes, stats }: Props) {
     try {
       await fetch(`/api/notes?id=${noteId}`, { method: "DELETE" });
       setNotes(prev => prev.filter(n => n.id !== noteId));
+      if (viewingNote?.id === noteId) setViewingNote(null);
     } catch { /* ignore */ }
+  }
+
+  // ── Open note detail ─────────────────────────────────
+  function openNote(note: Note) {
+    setViewingNote(note);
+    setEditTitle(note.title ?? "");
+    setEditContent(note.content);
+    setIsEditing(false);
+  }
+
+  // ── Save edited note ─────────────────────────────────
+  async function saveEdit() {
+    if (!viewingNote) return;
+    setSaving(true);
+    try {
+      const res = await fetch("/api/notes", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          id: viewingNote.id,
+          title: editTitle.trim() || null,
+          content: editContent.trim(),
+        }),
+      });
+      if (res.ok) {
+        setNotes(prev =>
+          prev.map(n =>
+            n.id === viewingNote.id
+              ? { ...n, title: editTitle.trim() || null, content: editContent.trim(), updated_at: new Date().toISOString() }
+              : n
+          )
+        );
+        setViewingNote(prev => prev ? { ...prev, title: editTitle.trim() || null, content: editContent.trim() } : null);
+        setIsEditing(false);
+      }
+    } catch { /* ignore */ }
+    finally { setSaving(false); }
   }
 
   const FILTERS: { id: Filter; label: string; count: number }[] = [
@@ -130,10 +177,28 @@ export function StudyHubClient({ initialNotes, stats }: Props) {
       {/* New note form */}
       {showNewNote && (
         <div className="bg-surface rounded-xl border border-border p-5 mb-6 shadow-card">
-          <input value={newNoteTitle} onChange={e => setNewNoteTitle(e.target.value)} placeholder="Note title (optional)"
-            className="w-full text-sm font-semibold text-ink placeholder:text-ink-muted bg-transparent focus:outline-none mb-3" />
-          <textarea value={newNoteContent} onChange={e => setNewNoteContent(e.target.value)} placeholder="Write your note..."
-            rows={4} className="w-full text-sm text-ink placeholder:text-ink-muted bg-surface-soft rounded-xl border border-border px-4 py-3 focus:outline-none focus:border-brand resize-none mb-3" />
+          <input
+            type="text"
+            value={newNoteTitle}
+            onChange={e => setNewNoteTitle(e.target.value)}
+            onKeyDown={e => {
+              if (e.key === "Enter") {
+                e.preventDefault();
+                newNoteTextareaRef.current?.focus();
+              }
+              e.stopPropagation();
+            }}
+            placeholder="Note title (optional)"
+            className="w-full text-sm font-semibold text-ink placeholder:text-ink-muted bg-transparent focus:outline-none mb-3"
+          />
+          <textarea
+            ref={newNoteTextareaRef}
+            value={newNoteContent}
+            onChange={e => setNewNoteContent(e.target.value)}
+            placeholder="Write your note..."
+            rows={4}
+            className="w-full text-sm text-ink placeholder:text-ink-muted bg-surface-soft rounded-xl border border-border px-4 py-3 focus:outline-none focus:border-brand resize-none mb-3"
+          />
           <div className="flex items-center gap-2 justify-end">
             <button onClick={() => setShowNewNote(false)} className="h-8 px-4 rounded-lg border border-border text-xs font-semibold text-ink-muted hover:bg-surface-alt transition-all">Cancel</button>
             <button onClick={createNote} disabled={!newNoteContent.trim()} className="h-8 px-4 rounded-lg bg-brand text-white text-xs font-bold disabled:opacity-40 hover:bg-brand/90 transition-all">Save Note</button>
@@ -197,6 +262,133 @@ export function StudyHubClient({ initialNotes, stats }: Props) {
         </div>
       )}
 
+      {/* ── Note Detail / Edit Modal ─────────────────────── */}
+      {viewingNote && (
+        <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm flex items-center justify-center p-4" onClick={() => setViewingNote(null)}>
+          <div className="bg-surface rounded-2xl border border-border shadow-2xl max-w-lg w-full max-h-[85vh] flex flex-col" onClick={e => e.stopPropagation()}>
+            {/* Modal header */}
+            <div className="flex items-center justify-between px-6 py-4 border-b border-border shrink-0">
+              <div className="flex items-center gap-2">
+                {(() => {
+                  const config = TYPE_CONFIG[viewingNote.type] ?? TYPE_CONFIG.note;
+                  return (
+                    <>
+                      <div className={cn("w-7 h-7 rounded-lg flex items-center justify-center", config.bg)}>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" className={config.color}><path d={config.icon} /></svg>
+                      </div>
+                      <span className={cn("text-xs font-bold uppercase tracking-wider", config.color)}>{config.label}</span>
+                    </>
+                  );
+                })()}
+                <span className="text-[10px] text-ink-muted ml-2">{timeAgo(viewingNote.created_at)}</span>
+              </div>
+              <div className="flex items-center gap-1">
+                {!isEditing && (
+                  <button
+                    onClick={() => setIsEditing(true)}
+                    className="h-8 px-3 rounded-lg text-xs font-semibold text-brand hover:bg-brand/5 transition-all flex items-center gap-1.5"
+                  >
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                      <path d="M12 20h9" /><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z" />
+                    </svg>
+                    Edit
+                  </button>
+                )}
+                <button
+                  onClick={() => setViewingNote(null)}
+                  className="w-8 h-8 rounded-lg hover:bg-surface-alt flex items-center justify-center text-ink-muted hover:text-ink transition-colors"
+                >
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            {/* Modal body */}
+            <div className="flex-1 overflow-y-auto px-6 py-5 space-y-4">
+              {isEditing ? (
+                <>
+                  <input
+                    type="text"
+                    value={editTitle}
+                    onChange={e => setEditTitle(e.target.value)}
+                    onKeyDown={e => { if (e.key === "Enter") e.preventDefault(); e.stopPropagation(); }}
+                    placeholder="Note title (optional)"
+                    className="w-full text-lg font-bold text-ink placeholder:text-ink-muted bg-transparent focus:outline-none"
+                  />
+                  <textarea
+                    value={editContent}
+                    onChange={e => setEditContent(e.target.value)}
+                    rows={10}
+                    className="w-full text-sm text-ink placeholder:text-ink-muted bg-surface-soft rounded-xl border border-border px-4 py-3 focus:outline-none focus:border-brand resize-none leading-relaxed"
+                  />
+                </>
+              ) : (
+                <>
+                  {viewingNote.title && (
+                    <h3 className="text-lg font-bold text-ink">{viewingNote.title}</h3>
+                  )}
+
+                  {/* Image */}
+                  {viewingNote.image_url && (
+                    <div className="rounded-xl overflow-hidden border border-border bg-surface-soft">
+                      <img src={viewingNote.image_url} alt="Note attachment" className="w-full max-h-[300px] object-contain" />
+                    </div>
+                  )}
+
+                  <p className="text-sm text-ink leading-relaxed whitespace-pre-wrap">{viewingNote.content}</p>
+                </>
+              )}
+
+              {/* Context info */}
+              {(viewingNote.course_title || viewingNote.lesson_title) && (
+                <div className="flex items-center gap-2 text-[10px] text-ink-muted pt-2 border-t border-border">
+                  {viewingNote.course_title && <span>{viewingNote.course_title}</span>}
+                  {viewingNote.lesson_title && <><span>·</span><span>{viewingNote.lesson_title}</span></>}
+                </div>
+              )}
+            </div>
+
+            {/* Modal footer (edit mode) */}
+            {isEditing && (
+              <div className="px-6 py-4 border-t border-border shrink-0 flex items-center gap-2 justify-end">
+                <button
+                  onClick={() => {
+                    setEditTitle(viewingNote.title ?? "");
+                    setEditContent(viewingNote.content);
+                    setIsEditing(false);
+                  }}
+                  className="h-9 px-4 rounded-xl border border-border text-xs font-semibold text-ink-muted hover:bg-surface-alt transition-all"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={saveEdit}
+                  disabled={saving || !editContent.trim()}
+                  className="h-9 px-5 rounded-xl bg-brand text-white text-xs font-bold hover:bg-brand/90 disabled:opacity-40 transition-all flex items-center gap-1.5"
+                >
+                  {saving ? (
+                    <>
+                      <svg className="animate-spin" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 12a9 9 0 11-6.219-8.56" /></svg>
+                      Saving...
+                    </>
+                  ) : (
+                    <>
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                        <path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z" />
+                        <polyline points="17 21 17 13 7 13 7 21" /><polyline points="7 3 7 8 15 8" />
+                      </svg>
+                      Save Changes
+                    </>
+                  )}
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
       {/* Filters + search */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 mb-6">
         <div className="flex items-center gap-1 overflow-x-auto scrollbar-none">
@@ -237,10 +429,16 @@ export function StudyHubClient({ initialNotes, stats }: Props) {
           {filtered.map(note => {
             const config = TYPE_CONFIG[note.type] ?? TYPE_CONFIG.note;
             return (
-              <div key={note.id} className="bg-surface rounded-xl border border-border p-4 hover:shadow-card transition-all group relative">
+              <div
+                key={note.id}
+                onClick={() => openNote(note)}
+                className="bg-surface rounded-xl border border-border p-4 hover:shadow-card hover:border-brand/20 transition-all group relative cursor-pointer"
+              >
                 {/* Delete button */}
-                <button onClick={() => deleteNote(note.id)}
-                  className="absolute top-3 right-3 w-6 h-6 rounded-md bg-surface-alt flex items-center justify-center text-ink-muted hover:text-red-500 hover:bg-red-50 transition-all opacity-0 group-hover:opacity-100">
+                <button
+                  onClick={e => { e.stopPropagation(); deleteNote(note.id); }}
+                  className="absolute top-3 right-3 w-6 h-6 rounded-md bg-surface-alt flex items-center justify-center text-ink-muted hover:text-red-500 hover:bg-red-50 transition-all opacity-0 group-hover:opacity-100"
+                >
                   <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
                 </button>
 
