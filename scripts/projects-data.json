@@ -1,0 +1,5137 @@
+[
+  {
+    "id": "bb412de7-5508-492f-a080-253cfabd1937",
+    "title": "AI Product Spec Document",
+    "description_md": "Write a complete product requirements document for an AI-powered feature.",
+    "tech_stack": [
+      "Notion",
+      "User Research",
+      "PRD"
+    ],
+    "difficulty": "beginner",
+    "estimated_hours": 8,
+    "requirements": [
+      "Complete all milestones",
+      "Deploy to GitHub",
+      "Write README",
+      "Pass AI code review"
+    ],
+    "milestone_checkpoints": [
+      {
+        "desc": "Clone starter, set up environment, plan approach",
+        "step": 1,
+        "title": "Setup & Planning"
+      },
+      {
+        "desc": "Build the main functionality",
+        "step": 2,
+        "title": "Core Implementation"
+      },
+      {
+        "desc": "Add error handling, edge cases, tests",
+        "step": 3,
+        "title": "Testing & Polish"
+      },
+      {
+        "desc": "Deploy to GitHub, write docs, submit",
+        "step": 4,
+        "title": "Deploy & Document"
+      }
+    ],
+    "order_index": 1,
+    "course_title": "AI Product Management"
+  },
+  {
+    "id": "a18df635-017d-4af6-adb8-c0af6b52e8c7",
+    "title": "Competitive Analysis Report",
+    "description_md": "Analyse 5 AI products in a market and identify gaps and opportunities.",
+    "tech_stack": [
+      "Research",
+      "Analysis",
+      "Presentation"
+    ],
+    "difficulty": "beginner",
+    "estimated_hours": 8,
+    "requirements": [
+      "Complete all milestones",
+      "Deploy to GitHub",
+      "Write README",
+      "Pass AI code review"
+    ],
+    "milestone_checkpoints": [
+      {
+        "desc": "Clone starter, set up environment, plan approach",
+        "step": 1,
+        "title": "Setup & Planning"
+      },
+      {
+        "desc": "Build the main functionality",
+        "step": 2,
+        "title": "Core Implementation"
+      },
+      {
+        "desc": "Add error handling, edge cases, tests",
+        "step": 3,
+        "title": "Testing & Polish"
+      },
+      {
+        "desc": "Deploy to GitHub, write docs, submit",
+        "step": 4,
+        "title": "Deploy & Document"
+      }
+    ],
+    "order_index": 2,
+    "course_title": "AI Product Management"
+  },
+  {
+    "id": "d5d03686-67d0-4943-ade0-1684ca44b2af",
+    "title": "User Research Plan",
+    "description_md": "Design a user research plan with interview scripts and survey questions.",
+    "tech_stack": [
+      "User Interviews",
+      "Surveys",
+      "Personas"
+    ],
+    "difficulty": "beginner",
+    "estimated_hours": 6,
+    "requirements": [
+      "Complete all milestones",
+      "Deploy to GitHub",
+      "Write README",
+      "Pass AI code review"
+    ],
+    "milestone_checkpoints": [
+      {
+        "desc": "Clone starter, set up environment, plan approach",
+        "step": 1,
+        "title": "Setup & Planning"
+      },
+      {
+        "desc": "Build the main functionality",
+        "step": 2,
+        "title": "Core Implementation"
+      },
+      {
+        "desc": "Add error handling, edge cases, tests",
+        "step": 3,
+        "title": "Testing & Polish"
+      },
+      {
+        "desc": "Deploy to GitHub, write docs, submit",
+        "step": 4,
+        "title": "Deploy & Document"
+      }
+    ],
+    "order_index": 3,
+    "course_title": "AI Product Management"
+  },
+  {
+    "id": "a9b0f31e-8358-484d-b1ff-4584fac0854d",
+    "title": "AI Ethics Review Framework",
+    "description_md": "Create a framework for evaluating AI products for bias and ethical risks.",
+    "tech_stack": [
+      "Ethics",
+      "Bias Analysis",
+      "Documentation"
+    ],
+    "difficulty": "intermediate",
+    "estimated_hours": 12,
+    "requirements": [
+      "Complete all milestones",
+      "Deploy to GitHub",
+      "Write README",
+      "Pass AI code review"
+    ],
+    "milestone_checkpoints": [
+      {
+        "desc": "Clone starter, set up environment, plan approach",
+        "step": 1,
+        "title": "Setup & Planning"
+      },
+      {
+        "desc": "Build the main functionality",
+        "step": 2,
+        "title": "Core Implementation"
+      },
+      {
+        "desc": "Add error handling, edge cases, tests",
+        "step": 3,
+        "title": "Testing & Polish"
+      },
+      {
+        "desc": "Deploy to GitHub, write docs, submit",
+        "step": 4,
+        "title": "Deploy & Document"
+      }
+    ],
+    "order_index": 4,
+    "course_title": "AI Product Management"
+  },
+  {
+    "id": "19252f48-62e8-4aa7-b9a5-aa97735c044b",
+    "title": "Go-to-Market Strategy",
+    "description_md": "Develop a complete go-to-market strategy for an AI product launch.",
+    "tech_stack": [
+      "GTM",
+      "Pricing",
+      "Positioning"
+    ],
+    "difficulty": "intermediate",
+    "estimated_hours": 14,
+    "requirements": [
+      "Complete all milestones",
+      "Deploy to GitHub",
+      "Write README",
+      "Pass AI code review"
+    ],
+    "milestone_checkpoints": [
+      {
+        "desc": "Clone starter, set up environment, plan approach",
+        "step": 1,
+        "title": "Setup & Planning"
+      },
+      {
+        "desc": "Build the main functionality",
+        "step": 2,
+        "title": "Core Implementation"
+      },
+      {
+        "desc": "Add error handling, edge cases, tests",
+        "step": 3,
+        "title": "Testing & Polish"
+      },
+      {
+        "desc": "Deploy to GitHub, write docs, submit",
+        "step": 4,
+        "title": "Deploy & Document"
+      }
+    ],
+    "order_index": 5,
+    "course_title": "AI Product Management"
+  },
+  {
+    "id": "f5c71daf-fea3-484d-88d7-e9cc4c46d91d",
+    "title": "Product Roadmap",
+    "description_md": "Build a 12-month product roadmap with quarterly OKRs and feature prioritisation.",
+    "tech_stack": [
+      "Roadmapping",
+      "Prioritisation",
+      "OKRs"
+    ],
+    "difficulty": "intermediate",
+    "estimated_hours": 12,
+    "requirements": [
+      "Complete all milestones",
+      "Deploy to GitHub",
+      "Write README",
+      "Pass AI code review"
+    ],
+    "milestone_checkpoints": [
+      {
+        "desc": "Clone starter, set up environment, plan approach",
+        "step": 1,
+        "title": "Setup & Planning"
+      },
+      {
+        "desc": "Build the main functionality",
+        "step": 2,
+        "title": "Core Implementation"
+      },
+      {
+        "desc": "Add error handling, edge cases, tests",
+        "step": 3,
+        "title": "Testing & Polish"
+      },
+      {
+        "desc": "Deploy to GitHub, write docs, submit",
+        "step": 4,
+        "title": "Deploy & Document"
+      }
+    ],
+    "order_index": 6,
+    "course_title": "AI Product Management"
+  },
+  {
+    "id": "0079ceca-930e-42d4-b149-6a41475fc49e",
+    "title": "Stakeholder Presentation",
+    "description_md": "Create and deliver a board-level presentation on AI product strategy.",
+    "tech_stack": [
+      "Presentation",
+      "Data",
+      "Storytelling"
+    ],
+    "difficulty": "intermediate",
+    "estimated_hours": 10,
+    "requirements": [
+      "Complete all milestones",
+      "Deploy to GitHub",
+      "Write README",
+      "Pass AI code review"
+    ],
+    "milestone_checkpoints": [
+      {
+        "desc": "Clone starter, set up environment, plan approach",
+        "step": 1,
+        "title": "Setup & Planning"
+      },
+      {
+        "desc": "Build the main functionality",
+        "step": 2,
+        "title": "Core Implementation"
+      },
+      {
+        "desc": "Add error handling, edge cases, tests",
+        "step": 3,
+        "title": "Testing & Polish"
+      },
+      {
+        "desc": "Deploy to GitHub, write docs, submit",
+        "step": 4,
+        "title": "Deploy & Document"
+      }
+    ],
+    "order_index": 7,
+    "course_title": "AI Product Management"
+  },
+  {
+    "id": "eb19e705-ecd4-41d1-9eec-e97df7bdedb6",
+    "title": "AI Metrics Dashboard Design",
+    "description_md": "Design a product analytics dashboard with AI-specific metrics and KPIs.",
+    "tech_stack": [
+      "Analytics",
+      "KPIs",
+      "Figma"
+    ],
+    "difficulty": "intermediate",
+    "estimated_hours": 12,
+    "requirements": [
+      "Complete all milestones",
+      "Deploy to GitHub",
+      "Write README",
+      "Pass AI code review"
+    ],
+    "milestone_checkpoints": [
+      {
+        "desc": "Clone starter, set up environment, plan approach",
+        "step": 1,
+        "title": "Setup & Planning"
+      },
+      {
+        "desc": "Build the main functionality",
+        "step": 2,
+        "title": "Core Implementation"
+      },
+      {
+        "desc": "Add error handling, edge cases, tests",
+        "step": 3,
+        "title": "Testing & Polish"
+      },
+      {
+        "desc": "Deploy to GitHub, write docs, submit",
+        "step": 4,
+        "title": "Deploy & Document"
+      }
+    ],
+    "order_index": 8,
+    "course_title": "AI Product Management"
+  },
+  {
+    "id": "b2342430-905b-4a5a-89bd-efd04e53c9d9",
+    "title": "Build vs Buy Analysis",
+    "description_md": "Create a comprehensive build vs buy framework for AI capabilities.",
+    "tech_stack": [
+      "Analysis",
+      "Cost Modelling",
+      "Decision Framework"
+    ],
+    "difficulty": "advanced",
+    "estimated_hours": 14,
+    "requirements": [
+      "Complete all milestones",
+      "Deploy to GitHub",
+      "Write README",
+      "Pass AI code review"
+    ],
+    "milestone_checkpoints": [
+      {
+        "desc": "Clone starter, set up environment, plan approach",
+        "step": 1,
+        "title": "Setup & Planning"
+      },
+      {
+        "desc": "Build the main functionality",
+        "step": 2,
+        "title": "Core Implementation"
+      },
+      {
+        "desc": "Add error handling, edge cases, tests",
+        "step": 3,
+        "title": "Testing & Polish"
+      },
+      {
+        "desc": "Deploy to GitHub, write docs, submit",
+        "step": 4,
+        "title": "Deploy & Document"
+      }
+    ],
+    "order_index": 9,
+    "course_title": "AI Product Management"
+  },
+  {
+    "id": "e2105409-ef75-4931-a249-adbfd269ef69",
+    "title": "Full AI Product Launch",
+    "description_md": "Plan and execute a complete AI product launch with retrospective analysis.",
+    "tech_stack": [
+      "End-to-End",
+      "Launch",
+      "Retrospective"
+    ],
+    "difficulty": "advanced",
+    "estimated_hours": 25,
+    "requirements": [
+      "Complete all milestones",
+      "Deploy to GitHub",
+      "Write README",
+      "Pass AI code review"
+    ],
+    "milestone_checkpoints": [
+      {
+        "desc": "Clone starter, set up environment, plan approach",
+        "step": 1,
+        "title": "Setup & Planning"
+      },
+      {
+        "desc": "Build the main functionality",
+        "step": 2,
+        "title": "Core Implementation"
+      },
+      {
+        "desc": "Add error handling, edge cases, tests",
+        "step": 3,
+        "title": "Testing & Polish"
+      },
+      {
+        "desc": "Deploy to GitHub, write docs, submit",
+        "step": 4,
+        "title": "Deploy & Document"
+      }
+    ],
+    "order_index": 10,
+    "course_title": "AI Product Management"
+  },
+  {
+    "id": "df699450-c3e3-4e7b-bd65-2ca1939127c6",
+    "title": "Pathfinding Visualiser",
+    "description_md": "Build an interactive grid where users watch BFS, DFS, and A* find the shortest path.",
+    "tech_stack": [
+      "Python",
+      "Pygame",
+      "BFS/DFS/A*"
+    ],
+    "difficulty": "beginner",
+    "estimated_hours": 8,
+    "requirements": [
+      "Complete all milestones",
+      "Deploy to GitHub",
+      "Write README",
+      "Pass AI code review"
+    ],
+    "milestone_checkpoints": [
+      {
+        "desc": "Clone starter, set up environment, plan approach",
+        "step": 1,
+        "title": "Setup & Planning"
+      },
+      {
+        "desc": "Build the main functionality",
+        "step": 2,
+        "title": "Core Implementation"
+      },
+      {
+        "desc": "Add error handling, edge cases, tests",
+        "step": 3,
+        "title": "Testing & Polish"
+      },
+      {
+        "desc": "Deploy to GitHub, write docs, submit",
+        "step": 4,
+        "title": "Deploy & Document"
+      }
+    ],
+    "order_index": 1,
+    "course_title": "Artificial Intelligence"
+  },
+  {
+    "id": "ce8a0d77-7e61-4e4f-ab81-8bab72a33273",
+    "title": "8-Puzzle Solver",
+    "description_md": "Solve the classic 8-puzzle using A* with Manhattan distance heuristic.",
+    "tech_stack": [
+      "Python",
+      "Heuristic Search"
+    ],
+    "difficulty": "beginner",
+    "estimated_hours": 8,
+    "requirements": [
+      "Complete all milestones",
+      "Deploy to GitHub",
+      "Write README",
+      "Pass AI code review"
+    ],
+    "milestone_checkpoints": [
+      {
+        "desc": "Clone starter, set up environment, plan approach",
+        "step": 1,
+        "title": "Setup & Planning"
+      },
+      {
+        "desc": "Build the main functionality",
+        "step": 2,
+        "title": "Core Implementation"
+      },
+      {
+        "desc": "Add error handling, edge cases, tests",
+        "step": 3,
+        "title": "Testing & Polish"
+      },
+      {
+        "desc": "Deploy to GitHub, write docs, submit",
+        "step": 4,
+        "title": "Deploy & Document"
+      }
+    ],
+    "order_index": 2,
+    "course_title": "Artificial Intelligence"
+  },
+  {
+    "id": "a04db023-8a3b-44e7-881e-03ed9b9bc94d",
+    "title": "Tic-Tac-Toe AI",
+    "description_md": "Build an unbeatable Tic-Tac-Toe AI using the minimax algorithm.",
+    "tech_stack": [
+      "Python",
+      "Minimax"
+    ],
+    "difficulty": "beginner",
+    "estimated_hours": 6,
+    "requirements": [
+      "Complete all milestones",
+      "Deploy to GitHub",
+      "Write README",
+      "Pass AI code review"
+    ],
+    "milestone_checkpoints": [
+      {
+        "desc": "Clone starter, set up environment, plan approach",
+        "step": 1,
+        "title": "Setup & Planning"
+      },
+      {
+        "desc": "Build the main functionality",
+        "step": 2,
+        "title": "Core Implementation"
+      },
+      {
+        "desc": "Add error handling, edge cases, tests",
+        "step": 3,
+        "title": "Testing & Polish"
+      },
+      {
+        "desc": "Deploy to GitHub, write docs, submit",
+        "step": 4,
+        "title": "Deploy & Document"
+      }
+    ],
+    "order_index": 3,
+    "course_title": "Artificial Intelligence"
+  },
+  {
+    "id": "662a992c-b762-4856-8d7a-d6dcc14dc33a",
+    "title": "Connect 4 with AI",
+    "description_md": "Create a Connect 4 game with an AI opponent using alpha-beta pruning.",
+    "tech_stack": [
+      "Python",
+      "Alpha-Beta Pruning"
+    ],
+    "difficulty": "intermediate",
+    "estimated_hours": 12,
+    "requirements": [
+      "Complete all milestones",
+      "Deploy to GitHub",
+      "Write README",
+      "Pass AI code review"
+    ],
+    "milestone_checkpoints": [
+      {
+        "desc": "Clone starter, set up environment, plan approach",
+        "step": 1,
+        "title": "Setup & Planning"
+      },
+      {
+        "desc": "Build the main functionality",
+        "step": 2,
+        "title": "Core Implementation"
+      },
+      {
+        "desc": "Add error handling, edge cases, tests",
+        "step": 3,
+        "title": "Testing & Polish"
+      },
+      {
+        "desc": "Deploy to GitHub, write docs, submit",
+        "step": 4,
+        "title": "Deploy & Document"
+      }
+    ],
+    "order_index": 4,
+    "course_title": "Artificial Intelligence"
+  },
+  {
+    "id": "96cebe19-a2ab-4370-bb03-bdfa897968d1",
+    "title": "Sudoku Solver & Generator",
+    "description_md": "Build a constraint satisfaction solver that generates and solves Sudoku puzzles.",
+    "tech_stack": [
+      "Python",
+      "CSP",
+      "Backtracking"
+    ],
+    "difficulty": "intermediate",
+    "estimated_hours": 12,
+    "requirements": [
+      "Complete all milestones",
+      "Deploy to GitHub",
+      "Write README",
+      "Pass AI code review"
+    ],
+    "milestone_checkpoints": [
+      {
+        "desc": "Clone starter, set up environment, plan approach",
+        "step": 1,
+        "title": "Setup & Planning"
+      },
+      {
+        "desc": "Build the main functionality",
+        "step": 2,
+        "title": "Core Implementation"
+      },
+      {
+        "desc": "Add error handling, edge cases, tests",
+        "step": 3,
+        "title": "Testing & Polish"
+      },
+      {
+        "desc": "Deploy to GitHub, write docs, submit",
+        "step": 4,
+        "title": "Deploy & Document"
+      }
+    ],
+    "order_index": 5,
+    "course_title": "Artificial Intelligence"
+  },
+  {
+    "id": "f7cd97b1-cacc-4935-8b51-51a9cc8ab2d2",
+    "title": "Knowledge Graph Builder",
+    "description_md": "Extract entities and relationships from text to build a queryable knowledge graph.",
+    "tech_stack": [
+      "Python",
+      "spaCy",
+      "NetworkX"
+    ],
+    "difficulty": "intermediate",
+    "estimated_hours": 14,
+    "requirements": [
+      "Complete all milestones",
+      "Deploy to GitHub",
+      "Write README",
+      "Pass AI code review"
+    ],
+    "milestone_checkpoints": [
+      {
+        "desc": "Clone starter, set up environment, plan approach",
+        "step": 1,
+        "title": "Setup & Planning"
+      },
+      {
+        "desc": "Build the main functionality",
+        "step": 2,
+        "title": "Core Implementation"
+      },
+      {
+        "desc": "Add error handling, edge cases, tests",
+        "step": 3,
+        "title": "Testing & Polish"
+      },
+      {
+        "desc": "Deploy to GitHub, write docs, submit",
+        "step": 4,
+        "title": "Deploy & Document"
+      }
+    ],
+    "order_index": 6,
+    "course_title": "Artificial Intelligence"
+  },
+  {
+    "id": "0d6b2cc1-7260-4a0e-9e3b-34b410d6fdbd",
+    "title": "Smart Calendar Scheduler",
+    "description_md": "Build an AI scheduler that optimises meeting times using constraint satisfaction.",
+    "tech_stack": [
+      "Python",
+      "Planning",
+      "Flask"
+    ],
+    "difficulty": "intermediate",
+    "estimated_hours": 14,
+    "requirements": [
+      "Complete all milestones",
+      "Deploy to GitHub",
+      "Write README",
+      "Pass AI code review"
+    ],
+    "milestone_checkpoints": [
+      {
+        "desc": "Clone starter, set up environment, plan approach",
+        "step": 1,
+        "title": "Setup & Planning"
+      },
+      {
+        "desc": "Build the main functionality",
+        "step": 2,
+        "title": "Core Implementation"
+      },
+      {
+        "desc": "Add error handling, edge cases, tests",
+        "step": 3,
+        "title": "Testing & Polish"
+      },
+      {
+        "desc": "Deploy to GitHub, write docs, submit",
+        "step": 4,
+        "title": "Deploy & Document"
+      }
+    ],
+    "order_index": 7,
+    "course_title": "Artificial Intelligence"
+  },
+  {
+    "id": "06eecc5c-5768-49d4-8add-642097bd5ecc",
+    "title": "Bayesian Network Analyser",
+    "description_md": "Model real-world uncertainty with Bayesian networks and perform probabilistic inference.",
+    "tech_stack": [
+      "Python",
+      "pgmpy",
+      "Probability"
+    ],
+    "difficulty": "intermediate",
+    "estimated_hours": 12,
+    "requirements": [
+      "Complete all milestones",
+      "Deploy to GitHub",
+      "Write README",
+      "Pass AI code review"
+    ],
+    "milestone_checkpoints": [
+      {
+        "desc": "Clone starter, set up environment, plan approach",
+        "step": 1,
+        "title": "Setup & Planning"
+      },
+      {
+        "desc": "Build the main functionality",
+        "step": 2,
+        "title": "Core Implementation"
+      },
+      {
+        "desc": "Add error handling, edge cases, tests",
+        "step": 3,
+        "title": "Testing & Polish"
+      },
+      {
+        "desc": "Deploy to GitHub, write docs, submit",
+        "step": 4,
+        "title": "Deploy & Document"
+      }
+    ],
+    "order_index": 8,
+    "course_title": "Artificial Intelligence"
+  },
+  {
+    "id": "08cd0133-34cf-467a-a05c-d38a963e4f48",
+    "title": "Self-Driving Car Sim (2D)",
+    "description_md": "Train an agent to navigate a 2D road using Q-learning and neural networks.",
+    "tech_stack": [
+      "Python",
+      "Reinforcement Learning",
+      "Pygame"
+    ],
+    "difficulty": "advanced",
+    "estimated_hours": 20,
+    "requirements": [
+      "Complete all milestones",
+      "Deploy to GitHub",
+      "Write README",
+      "Pass AI code review"
+    ],
+    "milestone_checkpoints": [
+      {
+        "desc": "Clone starter, set up environment, plan approach",
+        "step": 1,
+        "title": "Setup & Planning"
+      },
+      {
+        "desc": "Build the main functionality",
+        "step": 2,
+        "title": "Core Implementation"
+      },
+      {
+        "desc": "Add error handling, edge cases, tests",
+        "step": 3,
+        "title": "Testing & Polish"
+      },
+      {
+        "desc": "Deploy to GitHub, write docs, submit",
+        "step": 4,
+        "title": "Deploy & Document"
+      }
+    ],
+    "order_index": 9,
+    "course_title": "Artificial Intelligence"
+  },
+  {
+    "id": "842b7534-df57-4f53-ac21-a882c090f189",
+    "title": "AI Chess Engine",
+    "description_md": "Build a chess engine combining minimax search with a neural network evaluation function.",
+    "tech_stack": [
+      "Python",
+      "Minimax",
+      "Neural Network"
+    ],
+    "difficulty": "advanced",
+    "estimated_hours": 22,
+    "requirements": [
+      "Complete all milestones",
+      "Deploy to GitHub",
+      "Write README",
+      "Pass AI code review"
+    ],
+    "milestone_checkpoints": [
+      {
+        "desc": "Clone starter, set up environment, plan approach",
+        "step": 1,
+        "title": "Setup & Planning"
+      },
+      {
+        "desc": "Build the main functionality",
+        "step": 2,
+        "title": "Core Implementation"
+      },
+      {
+        "desc": "Add error handling, edge cases, tests",
+        "step": 3,
+        "title": "Testing & Polish"
+      },
+      {
+        "desc": "Deploy to GitHub, write docs, submit",
+        "step": 4,
+        "title": "Deploy & Document"
+      }
+    ],
+    "order_index": 10,
+    "course_title": "Artificial Intelligence"
+  },
+  {
+    "id": "d083177a-f017-4fe1-891c-8166765f1d1d",
+    "title": "Face Detection App",
+    "description_md": "Build a real-time face detection application using webcam feed.",
+    "tech_stack": [
+      "Python",
+      "OpenCV",
+      "Haar Cascades"
+    ],
+    "difficulty": "beginner",
+    "estimated_hours": 8,
+    "requirements": [
+      "Complete all milestones",
+      "Deploy to GitHub",
+      "Write README",
+      "Pass AI code review"
+    ],
+    "milestone_checkpoints": [
+      {
+        "desc": "Clone starter, set up environment, plan approach",
+        "step": 1,
+        "title": "Setup & Planning"
+      },
+      {
+        "desc": "Build the main functionality",
+        "step": 2,
+        "title": "Core Implementation"
+      },
+      {
+        "desc": "Add error handling, edge cases, tests",
+        "step": 3,
+        "title": "Testing & Polish"
+      },
+      {
+        "desc": "Deploy to GitHub, write docs, submit",
+        "step": 4,
+        "title": "Deploy & Document"
+      }
+    ],
+    "order_index": 1,
+    "course_title": "Computer Vision"
+  },
+  {
+    "id": "82bd4b0d-a893-4d5b-89b4-f61a7501efff",
+    "title": "OCR Receipt Scanner",
+    "description_md": "Extract text from receipt images using OCR with preprocessing.",
+    "tech_stack": [
+      "Python",
+      "Tesseract",
+      "OpenCV"
+    ],
+    "difficulty": "beginner",
+    "estimated_hours": 10,
+    "requirements": [
+      "Complete all milestones",
+      "Deploy to GitHub",
+      "Write README",
+      "Pass AI code review"
+    ],
+    "milestone_checkpoints": [
+      {
+        "desc": "Clone starter, set up environment, plan approach",
+        "step": 1,
+        "title": "Setup & Planning"
+      },
+      {
+        "desc": "Build the main functionality",
+        "step": 2,
+        "title": "Core Implementation"
+      },
+      {
+        "desc": "Add error handling, edge cases, tests",
+        "step": 3,
+        "title": "Testing & Polish"
+      },
+      {
+        "desc": "Deploy to GitHub, write docs, submit",
+        "step": 4,
+        "title": "Deploy & Document"
+      }
+    ],
+    "order_index": 2,
+    "course_title": "Computer Vision"
+  },
+  {
+    "id": "9895eb71-0468-4d23-af5f-099a5f7ed309",
+    "title": "Real-time Object Counter",
+    "description_md": "Count objects in real-time video using YOLO object detection.",
+    "tech_stack": [
+      "Python",
+      "OpenCV",
+      "YOLO"
+    ],
+    "difficulty": "beginner",
+    "estimated_hours": 10,
+    "requirements": [
+      "Complete all milestones",
+      "Deploy to GitHub",
+      "Write README",
+      "Pass AI code review"
+    ],
+    "milestone_checkpoints": [
+      {
+        "desc": "Clone starter, set up environment, plan approach",
+        "step": 1,
+        "title": "Setup & Planning"
+      },
+      {
+        "desc": "Build the main functionality",
+        "step": 2,
+        "title": "Core Implementation"
+      },
+      {
+        "desc": "Add error handling, edge cases, tests",
+        "step": 3,
+        "title": "Testing & Polish"
+      },
+      {
+        "desc": "Deploy to GitHub, write docs, submit",
+        "step": 4,
+        "title": "Deploy & Document"
+      }
+    ],
+    "order_index": 3,
+    "course_title": "Computer Vision"
+  },
+  {
+    "id": "24f310ca-12f5-496b-a5f4-341374f95172",
+    "title": "Image Classifier (Custom)",
+    "description_md": "Train a custom image classifier on your own dataset with transfer learning.",
+    "tech_stack": [
+      "Python",
+      "PyTorch",
+      "Transfer Learning"
+    ],
+    "difficulty": "intermediate",
+    "estimated_hours": 14,
+    "requirements": [
+      "Complete all milestones",
+      "Deploy to GitHub",
+      "Write README",
+      "Pass AI code review"
+    ],
+    "milestone_checkpoints": [
+      {
+        "desc": "Clone starter, set up environment, plan approach",
+        "step": 1,
+        "title": "Setup & Planning"
+      },
+      {
+        "desc": "Build the main functionality",
+        "step": 2,
+        "title": "Core Implementation"
+      },
+      {
+        "desc": "Add error handling, edge cases, tests",
+        "step": 3,
+        "title": "Testing & Polish"
+      },
+      {
+        "desc": "Deploy to GitHub, write docs, submit",
+        "step": 4,
+        "title": "Deploy & Document"
+      }
+    ],
+    "order_index": 4,
+    "course_title": "Computer Vision"
+  },
+  {
+    "id": "701df235-62aa-4dae-a9da-84595cada88e",
+    "title": "Document Scanner",
+    "description_md": "Build a mobile-style document scanner with edge detection and perspective correction.",
+    "tech_stack": [
+      "Python",
+      "OpenCV",
+      "Perspective Transform"
+    ],
+    "difficulty": "intermediate",
+    "estimated_hours": 12,
+    "requirements": [
+      "Complete all milestones",
+      "Deploy to GitHub",
+      "Write README",
+      "Pass AI code review"
+    ],
+    "milestone_checkpoints": [
+      {
+        "desc": "Clone starter, set up environment, plan approach",
+        "step": 1,
+        "title": "Setup & Planning"
+      },
+      {
+        "desc": "Build the main functionality",
+        "step": 2,
+        "title": "Core Implementation"
+      },
+      {
+        "desc": "Add error handling, edge cases, tests",
+        "step": 3,
+        "title": "Testing & Polish"
+      },
+      {
+        "desc": "Deploy to GitHub, write docs, submit",
+        "step": 4,
+        "title": "Deploy & Document"
+      }
+    ],
+    "order_index": 5,
+    "course_title": "Computer Vision"
+  },
+  {
+    "id": "a8869f4a-2868-42ef-ba8c-62c264270e40",
+    "title": "Pose Estimation Fitness Tracker",
+    "description_md": "Track body poses in real-time and count exercise repetitions.",
+    "tech_stack": [
+      "Python",
+      "MediaPipe",
+      "OpenCV"
+    ],
+    "difficulty": "intermediate",
+    "estimated_hours": 14,
+    "requirements": [
+      "Complete all milestones",
+      "Deploy to GitHub",
+      "Write README",
+      "Pass AI code review"
+    ],
+    "milestone_checkpoints": [
+      {
+        "desc": "Clone starter, set up environment, plan approach",
+        "step": 1,
+        "title": "Setup & Planning"
+      },
+      {
+        "desc": "Build the main functionality",
+        "step": 2,
+        "title": "Core Implementation"
+      },
+      {
+        "desc": "Add error handling, edge cases, tests",
+        "step": 3,
+        "title": "Testing & Polish"
+      },
+      {
+        "desc": "Deploy to GitHub, write docs, submit",
+        "step": 4,
+        "title": "Deploy & Document"
+      }
+    ],
+    "order_index": 6,
+    "course_title": "Computer Vision"
+  },
+  {
+    "id": "ff95850a-8e7b-4dc7-a509-7fe8caa3615c",
+    "title": "Face Recognition System",
+    "description_md": "Build a face recognition attendance system using deep learning embeddings.",
+    "tech_stack": [
+      "Python",
+      "FaceNet",
+      "dlib"
+    ],
+    "difficulty": "intermediate",
+    "estimated_hours": 16,
+    "requirements": [
+      "Complete all milestones",
+      "Deploy to GitHub",
+      "Write README",
+      "Pass AI code review"
+    ],
+    "milestone_checkpoints": [
+      {
+        "desc": "Clone starter, set up environment, plan approach",
+        "step": 1,
+        "title": "Setup & Planning"
+      },
+      {
+        "desc": "Build the main functionality",
+        "step": 2,
+        "title": "Core Implementation"
+      },
+      {
+        "desc": "Add error handling, edge cases, tests",
+        "step": 3,
+        "title": "Testing & Polish"
+      },
+      {
+        "desc": "Deploy to GitHub, write docs, submit",
+        "step": 4,
+        "title": "Deploy & Document"
+      }
+    ],
+    "order_index": 7,
+    "course_title": "Computer Vision"
+  },
+  {
+    "id": "0c3502d4-fab1-4417-b4b2-ced2c4039ca5",
+    "title": "License Plate Reader",
+    "description_md": "Detect and read license plates from video using detection + OCR pipeline.",
+    "tech_stack": [
+      "Python",
+      "YOLO",
+      "Tesseract"
+    ],
+    "difficulty": "advanced",
+    "estimated_hours": 18,
+    "requirements": [
+      "Complete all milestones",
+      "Deploy to GitHub",
+      "Write README",
+      "Pass AI code review"
+    ],
+    "milestone_checkpoints": [
+      {
+        "desc": "Clone starter, set up environment, plan approach",
+        "step": 1,
+        "title": "Setup & Planning"
+      },
+      {
+        "desc": "Build the main functionality",
+        "step": 2,
+        "title": "Core Implementation"
+      },
+      {
+        "desc": "Add error handling, edge cases, tests",
+        "step": 3,
+        "title": "Testing & Polish"
+      },
+      {
+        "desc": "Deploy to GitHub, write docs, submit",
+        "step": 4,
+        "title": "Deploy & Document"
+      }
+    ],
+    "order_index": 8,
+    "course_title": "Computer Vision"
+  },
+  {
+    "id": "f6a3d571-e14e-4497-a5b1-f76524966966",
+    "title": "Video Style Transfer",
+    "description_md": "Apply artistic style transfer to real-time video frames.",
+    "tech_stack": [
+      "Python",
+      "PyTorch",
+      "Neural Style"
+    ],
+    "difficulty": "advanced",
+    "estimated_hours": 20,
+    "requirements": [
+      "Complete all milestones",
+      "Deploy to GitHub",
+      "Write README",
+      "Pass AI code review"
+    ],
+    "milestone_checkpoints": [
+      {
+        "desc": "Clone starter, set up environment, plan approach",
+        "step": 1,
+        "title": "Setup & Planning"
+      },
+      {
+        "desc": "Build the main functionality",
+        "step": 2,
+        "title": "Core Implementation"
+      },
+      {
+        "desc": "Add error handling, edge cases, tests",
+        "step": 3,
+        "title": "Testing & Polish"
+      },
+      {
+        "desc": "Deploy to GitHub, write docs, submit",
+        "step": 4,
+        "title": "Deploy & Document"
+      }
+    ],
+    "order_index": 9,
+    "course_title": "Computer Vision"
+  },
+  {
+    "id": "b31313c2-7d11-4d04-ad97-ac100cacb92d",
+    "title": "AI Image Generation App",
+    "description_md": "Build an image generation interface using Stable Diffusion with custom prompts.",
+    "tech_stack": [
+      "Python",
+      "Stable Diffusion",
+      "Gradio"
+    ],
+    "difficulty": "advanced",
+    "estimated_hours": 18,
+    "requirements": [
+      "Complete all milestones",
+      "Deploy to GitHub",
+      "Write README",
+      "Pass AI code review"
+    ],
+    "milestone_checkpoints": [
+      {
+        "desc": "Clone starter, set up environment, plan approach",
+        "step": 1,
+        "title": "Setup & Planning"
+      },
+      {
+        "desc": "Build the main functionality",
+        "step": 2,
+        "title": "Core Implementation"
+      },
+      {
+        "desc": "Add error handling, edge cases, tests",
+        "step": 3,
+        "title": "Testing & Polish"
+      },
+      {
+        "desc": "Deploy to GitHub, write docs, submit",
+        "step": 4,
+        "title": "Deploy & Document"
+      }
+    ],
+    "order_index": 10,
+    "course_title": "Computer Vision"
+  },
+  {
+    "id": "d91778b4-cb3d-4b97-a5f7-f2d966688eff",
+    "title": "Password Strength Analyser",
+    "description_md": "Build a tool that evaluates password strength and generates secure passwords.",
+    "tech_stack": [
+      "Python",
+      "Cryptography"
+    ],
+    "difficulty": "beginner",
+    "estimated_hours": 6,
+    "requirements": [
+      "Complete all milestones",
+      "Deploy to GitHub",
+      "Write README",
+      "Pass AI code review"
+    ],
+    "milestone_checkpoints": [
+      {
+        "desc": "Clone starter, set up environment, plan approach",
+        "step": 1,
+        "title": "Setup & Planning"
+      },
+      {
+        "desc": "Build the main functionality",
+        "step": 2,
+        "title": "Core Implementation"
+      },
+      {
+        "desc": "Add error handling, edge cases, tests",
+        "step": 3,
+        "title": "Testing & Polish"
+      },
+      {
+        "desc": "Deploy to GitHub, write docs, submit",
+        "step": 4,
+        "title": "Deploy & Document"
+      }
+    ],
+    "order_index": 1,
+    "course_title": "Cybersecurity"
+  },
+  {
+    "id": "167efdb6-b1ee-46cb-a9f8-3a0010b5a6d5",
+    "title": "Caesar/AES Encryption Tool",
+    "description_md": "Implement classical and modern encryption algorithms with a CLI interface.",
+    "tech_stack": [
+      "Python",
+      "Cryptography",
+      "AES"
+    ],
+    "difficulty": "beginner",
+    "estimated_hours": 8,
+    "requirements": [
+      "Complete all milestones",
+      "Deploy to GitHub",
+      "Write README",
+      "Pass AI code review"
+    ],
+    "milestone_checkpoints": [
+      {
+        "desc": "Clone starter, set up environment, plan approach",
+        "step": 1,
+        "title": "Setup & Planning"
+      },
+      {
+        "desc": "Build the main functionality",
+        "step": 2,
+        "title": "Core Implementation"
+      },
+      {
+        "desc": "Add error handling, edge cases, tests",
+        "step": 3,
+        "title": "Testing & Polish"
+      },
+      {
+        "desc": "Deploy to GitHub, write docs, submit",
+        "step": 4,
+        "title": "Deploy & Document"
+      }
+    ],
+    "order_index": 2,
+    "course_title": "Cybersecurity"
+  },
+  {
+    "id": "1241bf19-ee87-496d-b4f7-02d46648a2da",
+    "title": "Port Scanner",
+    "description_md": "Build a TCP port scanner that identifies open services on target hosts.",
+    "tech_stack": [
+      "Python",
+      "Socket",
+      "Networking"
+    ],
+    "difficulty": "beginner",
+    "estimated_hours": 8,
+    "requirements": [
+      "Complete all milestones",
+      "Deploy to GitHub",
+      "Write README",
+      "Pass AI code review"
+    ],
+    "milestone_checkpoints": [
+      {
+        "desc": "Clone starter, set up environment, plan approach",
+        "step": 1,
+        "title": "Setup & Planning"
+      },
+      {
+        "desc": "Build the main functionality",
+        "step": 2,
+        "title": "Core Implementation"
+      },
+      {
+        "desc": "Add error handling, edge cases, tests",
+        "step": 3,
+        "title": "Testing & Polish"
+      },
+      {
+        "desc": "Deploy to GitHub, write docs, submit",
+        "step": 4,
+        "title": "Deploy & Document"
+      }
+    ],
+    "order_index": 3,
+    "course_title": "Cybersecurity"
+  },
+  {
+    "id": "a567b019-f789-45a7-b2ab-7dba05e11250",
+    "title": "SQL Injection Lab",
+    "description_md": "Create a vulnerable web app and a scanner that detects SQL injection flaws.",
+    "tech_stack": [
+      "Python",
+      "Flask",
+      "SQLite"
+    ],
+    "difficulty": "intermediate",
+    "estimated_hours": 12,
+    "requirements": [
+      "Complete all milestones",
+      "Deploy to GitHub",
+      "Write README",
+      "Pass AI code review"
+    ],
+    "milestone_checkpoints": [
+      {
+        "desc": "Clone starter, set up environment, plan approach",
+        "step": 1,
+        "title": "Setup & Planning"
+      },
+      {
+        "desc": "Build the main functionality",
+        "step": 2,
+        "title": "Core Implementation"
+      },
+      {
+        "desc": "Add error handling, edge cases, tests",
+        "step": 3,
+        "title": "Testing & Polish"
+      },
+      {
+        "desc": "Deploy to GitHub, write docs, submit",
+        "step": 4,
+        "title": "Deploy & Document"
+      }
+    ],
+    "order_index": 4,
+    "course_title": "Cybersecurity"
+  },
+  {
+    "id": "4caec994-a7c9-43bf-9aaf-e520c67a8c42",
+    "title": "XSS Detection Lab",
+    "description_md": "Build a web app demonstrating XSS vulnerabilities and implement prevention.",
+    "tech_stack": [
+      "Python",
+      "Flask",
+      "JavaScript"
+    ],
+    "difficulty": "intermediate",
+    "estimated_hours": 12,
+    "requirements": [
+      "Complete all milestones",
+      "Deploy to GitHub",
+      "Write README",
+      "Pass AI code review"
+    ],
+    "milestone_checkpoints": [
+      {
+        "desc": "Clone starter, set up environment, plan approach",
+        "step": 1,
+        "title": "Setup & Planning"
+      },
+      {
+        "desc": "Build the main functionality",
+        "step": 2,
+        "title": "Core Implementation"
+      },
+      {
+        "desc": "Add error handling, edge cases, tests",
+        "step": 3,
+        "title": "Testing & Polish"
+      },
+      {
+        "desc": "Deploy to GitHub, write docs, submit",
+        "step": 4,
+        "title": "Deploy & Document"
+      }
+    ],
+    "order_index": 5,
+    "course_title": "Cybersecurity"
+  },
+  {
+    "id": "779d8168-642b-4c3e-a5d3-7c4b19797c69",
+    "title": "JWT Auth System",
+    "description_md": "Build a complete authentication system with JWT tokens and role-based access.",
+    "tech_stack": [
+      "Python",
+      "Flask",
+      "JWT",
+      "OAuth"
+    ],
+    "difficulty": "intermediate",
+    "estimated_hours": 14,
+    "requirements": [
+      "Complete all milestones",
+      "Deploy to GitHub",
+      "Write README",
+      "Pass AI code review"
+    ],
+    "milestone_checkpoints": [
+      {
+        "desc": "Clone starter, set up environment, plan approach",
+        "step": 1,
+        "title": "Setup & Planning"
+      },
+      {
+        "desc": "Build the main functionality",
+        "step": 2,
+        "title": "Core Implementation"
+      },
+      {
+        "desc": "Add error handling, edge cases, tests",
+        "step": 3,
+        "title": "Testing & Polish"
+      },
+      {
+        "desc": "Deploy to GitHub, write docs, submit",
+        "step": 4,
+        "title": "Deploy & Document"
+      }
+    ],
+    "order_index": 6,
+    "course_title": "Cybersecurity"
+  },
+  {
+    "id": "e138cc80-d97e-46aa-8fa7-c12e06143719",
+    "title": "Secure File Vault",
+    "description_md": "Create an encrypted file storage system with secure key derivation.",
+    "tech_stack": [
+      "Python",
+      "AES",
+      "Argon2"
+    ],
+    "difficulty": "intermediate",
+    "estimated_hours": 12,
+    "requirements": [
+      "Complete all milestones",
+      "Deploy to GitHub",
+      "Write README",
+      "Pass AI code review"
+    ],
+    "milestone_checkpoints": [
+      {
+        "desc": "Clone starter, set up environment, plan approach",
+        "step": 1,
+        "title": "Setup & Planning"
+      },
+      {
+        "desc": "Build the main functionality",
+        "step": 2,
+        "title": "Core Implementation"
+      },
+      {
+        "desc": "Add error handling, edge cases, tests",
+        "step": 3,
+        "title": "Testing & Polish"
+      },
+      {
+        "desc": "Deploy to GitHub, write docs, submit",
+        "step": 4,
+        "title": "Deploy & Document"
+      }
+    ],
+    "order_index": 7,
+    "course_title": "Cybersecurity"
+  },
+  {
+    "id": "4e283a56-300c-4ba3-bed5-2d0d95e48714",
+    "title": "Network Packet Analyser",
+    "description_md": "Capture and analyse network traffic to detect suspicious patterns.",
+    "tech_stack": [
+      "Python",
+      "Scapy",
+      "Wireshark"
+    ],
+    "difficulty": "intermediate",
+    "estimated_hours": 14,
+    "requirements": [
+      "Complete all milestones",
+      "Deploy to GitHub",
+      "Write README",
+      "Pass AI code review"
+    ],
+    "milestone_checkpoints": [
+      {
+        "desc": "Clone starter, set up environment, plan approach",
+        "step": 1,
+        "title": "Setup & Planning"
+      },
+      {
+        "desc": "Build the main functionality",
+        "step": 2,
+        "title": "Core Implementation"
+      },
+      {
+        "desc": "Add error handling, edge cases, tests",
+        "step": 3,
+        "title": "Testing & Polish"
+      },
+      {
+        "desc": "Deploy to GitHub, write docs, submit",
+        "step": 4,
+        "title": "Deploy & Document"
+      }
+    ],
+    "order_index": 8,
+    "course_title": "Cybersecurity"
+  },
+  {
+    "id": "5e978148-e55c-4a90-b323-e7c37e23474a",
+    "title": "OWASP Vulnerability Scanner",
+    "description_md": "Build an automated web vulnerability scanner checking OWASP Top 10.",
+    "tech_stack": [
+      "Python",
+      "Requests",
+      "BeautifulSoup"
+    ],
+    "difficulty": "advanced",
+    "estimated_hours": 20,
+    "requirements": [
+      "Complete all milestones",
+      "Deploy to GitHub",
+      "Write README",
+      "Pass AI code review"
+    ],
+    "milestone_checkpoints": [
+      {
+        "desc": "Clone starter, set up environment, plan approach",
+        "step": 1,
+        "title": "Setup & Planning"
+      },
+      {
+        "desc": "Build the main functionality",
+        "step": 2,
+        "title": "Core Implementation"
+      },
+      {
+        "desc": "Add error handling, edge cases, tests",
+        "step": 3,
+        "title": "Testing & Polish"
+      },
+      {
+        "desc": "Deploy to GitHub, write docs, submit",
+        "step": 4,
+        "title": "Deploy & Document"
+      }
+    ],
+    "order_index": 9,
+    "course_title": "Cybersecurity"
+  },
+  {
+    "id": "37982ba9-eff5-46f9-9792-dd6a4877ee2c",
+    "title": "Incident Response Simulator",
+    "description_md": "Simulate security incidents and practice detection, containment, and recovery.",
+    "tech_stack": [
+      "Python",
+      "Flask",
+      "Docker"
+    ],
+    "difficulty": "advanced",
+    "estimated_hours": 22,
+    "requirements": [
+      "Complete all milestones",
+      "Deploy to GitHub",
+      "Write README",
+      "Pass AI code review"
+    ],
+    "milestone_checkpoints": [
+      {
+        "desc": "Clone starter, set up environment, plan approach",
+        "step": 1,
+        "title": "Setup & Planning"
+      },
+      {
+        "desc": "Build the main functionality",
+        "step": 2,
+        "title": "Core Implementation"
+      },
+      {
+        "desc": "Add error handling, edge cases, tests",
+        "step": 3,
+        "title": "Testing & Polish"
+      },
+      {
+        "desc": "Deploy to GitHub, write docs, submit",
+        "step": 4,
+        "title": "Deploy & Document"
+      }
+    ],
+    "order_index": 10,
+    "course_title": "Cybersecurity"
+  },
+  {
+    "id": "1f083a88-d44f-4a5a-9204-0a00f5cadfdc",
+    "title": "Exploratory Data Analysis Tool",
+    "description_md": "Build an automated EDA tool that profiles any CSV dataset.",
+    "tech_stack": [
+      "Python",
+      "Pandas",
+      "Matplotlib"
+    ],
+    "difficulty": "beginner",
+    "estimated_hours": 8,
+    "requirements": [
+      "Complete all milestones",
+      "Deploy to GitHub",
+      "Write README",
+      "Pass AI code review"
+    ],
+    "milestone_checkpoints": [
+      {
+        "desc": "Clone starter, set up environment, plan approach",
+        "step": 1,
+        "title": "Setup & Planning"
+      },
+      {
+        "desc": "Build the main functionality",
+        "step": 2,
+        "title": "Core Implementation"
+      },
+      {
+        "desc": "Add error handling, edge cases, tests",
+        "step": 3,
+        "title": "Testing & Polish"
+      },
+      {
+        "desc": "Deploy to GitHub, write docs, submit",
+        "step": 4,
+        "title": "Deploy & Document"
+      }
+    ],
+    "order_index": 1,
+    "course_title": "Data Science"
+  },
+  {
+    "id": "8ea685e8-97dc-46b9-a1f5-289321d753ee",
+    "title": "A/B Test Analyser",
+    "description_md": "Build a statistical A/B test calculator with significance testing.",
+    "tech_stack": [
+      "Python",
+      "SciPy",
+      "Statistics"
+    ],
+    "difficulty": "beginner",
+    "estimated_hours": 8,
+    "requirements": [
+      "Complete all milestones",
+      "Deploy to GitHub",
+      "Write README",
+      "Pass AI code review"
+    ],
+    "milestone_checkpoints": [
+      {
+        "desc": "Clone starter, set up environment, plan approach",
+        "step": 1,
+        "title": "Setup & Planning"
+      },
+      {
+        "desc": "Build the main functionality",
+        "step": 2,
+        "title": "Core Implementation"
+      },
+      {
+        "desc": "Add error handling, edge cases, tests",
+        "step": 3,
+        "title": "Testing & Polish"
+      },
+      {
+        "desc": "Deploy to GitHub, write docs, submit",
+        "step": 4,
+        "title": "Deploy & Document"
+      }
+    ],
+    "order_index": 2,
+    "course_title": "Data Science"
+  },
+  {
+    "id": "29a6cc52-39ea-413f-a9d3-320af7fca735",
+    "title": "Sales Dashboard",
+    "description_md": "Create an interactive sales analytics dashboard with filters and charts.",
+    "tech_stack": [
+      "Python",
+      "Streamlit",
+      "Plotly"
+    ],
+    "difficulty": "beginner",
+    "estimated_hours": 10,
+    "requirements": [
+      "Complete all milestones",
+      "Deploy to GitHub",
+      "Write README",
+      "Pass AI code review"
+    ],
+    "milestone_checkpoints": [
+      {
+        "desc": "Clone starter, set up environment, plan approach",
+        "step": 1,
+        "title": "Setup & Planning"
+      },
+      {
+        "desc": "Build the main functionality",
+        "step": 2,
+        "title": "Core Implementation"
+      },
+      {
+        "desc": "Add error handling, edge cases, tests",
+        "step": 3,
+        "title": "Testing & Polish"
+      },
+      {
+        "desc": "Deploy to GitHub, write docs, submit",
+        "step": 4,
+        "title": "Deploy & Document"
+      }
+    ],
+    "order_index": 3,
+    "course_title": "Data Science"
+  },
+  {
+    "id": "4d612ffb-f0d7-4558-b0c6-7a17f224f3cb",
+    "title": "Customer Churn Predictor",
+    "description_md": "Predict which customers will churn using classification models.",
+    "tech_stack": [
+      "Python",
+      "scikit-learn",
+      "Pandas"
+    ],
+    "difficulty": "intermediate",
+    "estimated_hours": 12,
+    "requirements": [
+      "Complete all milestones",
+      "Deploy to GitHub",
+      "Write README",
+      "Pass AI code review"
+    ],
+    "milestone_checkpoints": [
+      {
+        "desc": "Clone starter, set up environment, plan approach",
+        "step": 1,
+        "title": "Setup & Planning"
+      },
+      {
+        "desc": "Build the main functionality",
+        "step": 2,
+        "title": "Core Implementation"
+      },
+      {
+        "desc": "Add error handling, edge cases, tests",
+        "step": 3,
+        "title": "Testing & Polish"
+      },
+      {
+        "desc": "Deploy to GitHub, write docs, submit",
+        "step": 4,
+        "title": "Deploy & Document"
+      }
+    ],
+    "order_index": 4,
+    "course_title": "Data Science"
+  },
+  {
+    "id": "449c86f6-b7d3-4eca-acdd-4e9df5c1df0b",
+    "title": "Cohort Analysis Tool",
+    "description_md": "Build a cohort analysis tool that tracks user retention over time.",
+    "tech_stack": [
+      "Python",
+      "Pandas",
+      "SQL"
+    ],
+    "difficulty": "intermediate",
+    "estimated_hours": 12,
+    "requirements": [
+      "Complete all milestones",
+      "Deploy to GitHub",
+      "Write README",
+      "Pass AI code review"
+    ],
+    "milestone_checkpoints": [
+      {
+        "desc": "Clone starter, set up environment, plan approach",
+        "step": 1,
+        "title": "Setup & Planning"
+      },
+      {
+        "desc": "Build the main functionality",
+        "step": 2,
+        "title": "Core Implementation"
+      },
+      {
+        "desc": "Add error handling, edge cases, tests",
+        "step": 3,
+        "title": "Testing & Polish"
+      },
+      {
+        "desc": "Deploy to GitHub, write docs, submit",
+        "step": 4,
+        "title": "Deploy & Document"
+      }
+    ],
+    "order_index": 5,
+    "course_title": "Data Science"
+  },
+  {
+    "id": "30f697fa-38a6-4f34-8ce1-daba605eebc5",
+    "title": "Survey Data Analyser",
+    "description_md": "Analyse survey responses with sentiment analysis and topic extraction.",
+    "tech_stack": [
+      "Python",
+      "Pandas",
+      "NLP"
+    ],
+    "difficulty": "intermediate",
+    "estimated_hours": 10,
+    "requirements": [
+      "Complete all milestones",
+      "Deploy to GitHub",
+      "Write README",
+      "Pass AI code review"
+    ],
+    "milestone_checkpoints": [
+      {
+        "desc": "Clone starter, set up environment, plan approach",
+        "step": 1,
+        "title": "Setup & Planning"
+      },
+      {
+        "desc": "Build the main functionality",
+        "step": 2,
+        "title": "Core Implementation"
+      },
+      {
+        "desc": "Add error handling, edge cases, tests",
+        "step": 3,
+        "title": "Testing & Polish"
+      },
+      {
+        "desc": "Deploy to GitHub, write docs, submit",
+        "step": 4,
+        "title": "Deploy & Document"
+      }
+    ],
+    "order_index": 6,
+    "course_title": "Data Science"
+  },
+  {
+    "id": "c84dd705-37fc-4862-b810-a35c7043115a",
+    "title": "Real Estate Price Map",
+    "description_md": "Build an interactive map showing property prices with geographic analysis.",
+    "tech_stack": [
+      "Python",
+      "Folium",
+      "GeoPandas"
+    ],
+    "difficulty": "intermediate",
+    "estimated_hours": 14,
+    "requirements": [
+      "Complete all milestones",
+      "Deploy to GitHub",
+      "Write README",
+      "Pass AI code review"
+    ],
+    "milestone_checkpoints": [
+      {
+        "desc": "Clone starter, set up environment, plan approach",
+        "step": 1,
+        "title": "Setup & Planning"
+      },
+      {
+        "desc": "Build the main functionality",
+        "step": 2,
+        "title": "Core Implementation"
+      },
+      {
+        "desc": "Add error handling, edge cases, tests",
+        "step": 3,
+        "title": "Testing & Polish"
+      },
+      {
+        "desc": "Deploy to GitHub, write docs, submit",
+        "step": 4,
+        "title": "Deploy & Document"
+      }
+    ],
+    "order_index": 7,
+    "course_title": "Data Science"
+  },
+  {
+    "id": "60977d48-7de7-4450-8e71-f9600ad3cf64",
+    "title": "Time Series Forecaster",
+    "description_md": "Forecast business metrics using time series models with confidence intervals.",
+    "tech_stack": [
+      "Python",
+      "Prophet",
+      "ARIMA"
+    ],
+    "difficulty": "intermediate",
+    "estimated_hours": 14,
+    "requirements": [
+      "Complete all milestones",
+      "Deploy to GitHub",
+      "Write README",
+      "Pass AI code review"
+    ],
+    "milestone_checkpoints": [
+      {
+        "desc": "Clone starter, set up environment, plan approach",
+        "step": 1,
+        "title": "Setup & Planning"
+      },
+      {
+        "desc": "Build the main functionality",
+        "step": 2,
+        "title": "Core Implementation"
+      },
+      {
+        "desc": "Add error handling, edge cases, tests",
+        "step": 3,
+        "title": "Testing & Polish"
+      },
+      {
+        "desc": "Deploy to GitHub, write docs, submit",
+        "step": 4,
+        "title": "Deploy & Document"
+      }
+    ],
+    "order_index": 8,
+    "course_title": "Data Science"
+  },
+  {
+    "id": "a3287faf-29d8-4f88-97ee-d7cd63e84264",
+    "title": "Data Pipeline Builder",
+    "description_md": "Build an automated ETL pipeline that ingests, transforms, and loads data.",
+    "tech_stack": [
+      "Python",
+      "Airflow",
+      "PostgreSQL"
+    ],
+    "difficulty": "advanced",
+    "estimated_hours": 18,
+    "requirements": [
+      "Complete all milestones",
+      "Deploy to GitHub",
+      "Write README",
+      "Pass AI code review"
+    ],
+    "milestone_checkpoints": [
+      {
+        "desc": "Clone starter, set up environment, plan approach",
+        "step": 1,
+        "title": "Setup & Planning"
+      },
+      {
+        "desc": "Build the main functionality",
+        "step": 2,
+        "title": "Core Implementation"
+      },
+      {
+        "desc": "Add error handling, edge cases, tests",
+        "step": 3,
+        "title": "Testing & Polish"
+      },
+      {
+        "desc": "Deploy to GitHub, write docs, submit",
+        "step": 4,
+        "title": "Deploy & Document"
+      }
+    ],
+    "order_index": 9,
+    "course_title": "Data Science"
+  },
+  {
+    "id": "6b274411-4932-4a1e-a875-65dcd138f046",
+    "title": "Full Analytics Platform",
+    "description_md": "Build an end-to-end analytics platform with data modelling and dashboards.",
+    "tech_stack": [
+      "Python",
+      "dbt",
+      "Streamlit",
+      "PostgreSQL"
+    ],
+    "difficulty": "advanced",
+    "estimated_hours": 22,
+    "requirements": [
+      "Complete all milestones",
+      "Deploy to GitHub",
+      "Write README",
+      "Pass AI code review"
+    ],
+    "milestone_checkpoints": [
+      {
+        "desc": "Clone starter, set up environment, plan approach",
+        "step": 1,
+        "title": "Setup & Planning"
+      },
+      {
+        "desc": "Build the main functionality",
+        "step": 2,
+        "title": "Core Implementation"
+      },
+      {
+        "desc": "Add error handling, edge cases, tests",
+        "step": 3,
+        "title": "Testing & Polish"
+      },
+      {
+        "desc": "Deploy to GitHub, write docs, submit",
+        "step": 4,
+        "title": "Deploy & Document"
+      }
+    ],
+    "order_index": 10,
+    "course_title": "Data Science"
+  },
+  {
+    "id": "a5f19a6e-a320-4650-a4b4-1da46507208b",
+    "title": "CI/CD Pipeline",
+    "description_md": "Build a complete CI/CD pipeline with automated testing and deployment.",
+    "tech_stack": [
+      "GitHub Actions",
+      "Docker",
+      "Node.js"
+    ],
+    "difficulty": "beginner",
+    "estimated_hours": 8,
+    "requirements": [
+      "Complete all milestones",
+      "Deploy to GitHub",
+      "Write README",
+      "Pass AI code review"
+    ],
+    "milestone_checkpoints": [
+      {
+        "desc": "Clone starter, set up environment, plan approach",
+        "step": 1,
+        "title": "Setup & Planning"
+      },
+      {
+        "desc": "Build the main functionality",
+        "step": 2,
+        "title": "Core Implementation"
+      },
+      {
+        "desc": "Add error handling, edge cases, tests",
+        "step": 3,
+        "title": "Testing & Polish"
+      },
+      {
+        "desc": "Deploy to GitHub, write docs, submit",
+        "step": 4,
+        "title": "Deploy & Document"
+      }
+    ],
+    "order_index": 1,
+    "course_title": "DevOps Engineering"
+  },
+  {
+    "id": "d643ca43-87b8-4ca5-b622-b2689f9772d8",
+    "title": "Docker Multi-Container App",
+    "description_md": "Containerise a multi-service application with Docker Compose.",
+    "tech_stack": [
+      "Docker",
+      "Docker Compose",
+      "Nginx"
+    ],
+    "difficulty": "beginner",
+    "estimated_hours": 10,
+    "requirements": [
+      "Complete all milestones",
+      "Deploy to GitHub",
+      "Write README",
+      "Pass AI code review"
+    ],
+    "milestone_checkpoints": [
+      {
+        "desc": "Clone starter, set up environment, plan approach",
+        "step": 1,
+        "title": "Setup & Planning"
+      },
+      {
+        "desc": "Build the main functionality",
+        "step": 2,
+        "title": "Core Implementation"
+      },
+      {
+        "desc": "Add error handling, edge cases, tests",
+        "step": 3,
+        "title": "Testing & Polish"
+      },
+      {
+        "desc": "Deploy to GitHub, write docs, submit",
+        "step": 4,
+        "title": "Deploy & Document"
+      }
+    ],
+    "order_index": 2,
+    "course_title": "DevOps Engineering"
+  },
+  {
+    "id": "29ecdeaa-4e95-4560-b30b-14826491bf15",
+    "title": "Infrastructure as Code",
+    "description_md": "Provision cloud infrastructure using Terraform with version control.",
+    "tech_stack": [
+      "Terraform",
+      "AWS",
+      "CLI"
+    ],
+    "difficulty": "beginner",
+    "estimated_hours": 10,
+    "requirements": [
+      "Complete all milestones",
+      "Deploy to GitHub",
+      "Write README",
+      "Pass AI code review"
+    ],
+    "milestone_checkpoints": [
+      {
+        "desc": "Clone starter, set up environment, plan approach",
+        "step": 1,
+        "title": "Setup & Planning"
+      },
+      {
+        "desc": "Build the main functionality",
+        "step": 2,
+        "title": "Core Implementation"
+      },
+      {
+        "desc": "Add error handling, edge cases, tests",
+        "step": 3,
+        "title": "Testing & Polish"
+      },
+      {
+        "desc": "Deploy to GitHub, write docs, submit",
+        "step": 4,
+        "title": "Deploy & Document"
+      }
+    ],
+    "order_index": 3,
+    "course_title": "DevOps Engineering"
+  },
+  {
+    "id": "0f24fa0e-03b3-4967-b922-ed21d26274c8",
+    "title": "Kubernetes Deployment",
+    "description_md": "Deploy and scale a web application on Kubernetes with rolling updates.",
+    "tech_stack": [
+      "Kubernetes",
+      "Docker",
+      "Helm"
+    ],
+    "difficulty": "intermediate",
+    "estimated_hours": 14,
+    "requirements": [
+      "Complete all milestones",
+      "Deploy to GitHub",
+      "Write README",
+      "Pass AI code review"
+    ],
+    "milestone_checkpoints": [
+      {
+        "desc": "Clone starter, set up environment, plan approach",
+        "step": 1,
+        "title": "Setup & Planning"
+      },
+      {
+        "desc": "Build the main functionality",
+        "step": 2,
+        "title": "Core Implementation"
+      },
+      {
+        "desc": "Add error handling, edge cases, tests",
+        "step": 3,
+        "title": "Testing & Polish"
+      },
+      {
+        "desc": "Deploy to GitHub, write docs, submit",
+        "step": 4,
+        "title": "Deploy & Document"
+      }
+    ],
+    "order_index": 4,
+    "course_title": "DevOps Engineering"
+  },
+  {
+    "id": "906579c3-9ddc-4150-bf0c-ecd4c35295eb",
+    "title": "Monitoring Stack",
+    "description_md": "Build a complete monitoring and alerting stack for a web service.",
+    "tech_stack": [
+      "Prometheus",
+      "Grafana",
+      "Docker"
+    ],
+    "difficulty": "intermediate",
+    "estimated_hours": 14,
+    "requirements": [
+      "Complete all milestones",
+      "Deploy to GitHub",
+      "Write README",
+      "Pass AI code review"
+    ],
+    "milestone_checkpoints": [
+      {
+        "desc": "Clone starter, set up environment, plan approach",
+        "step": 1,
+        "title": "Setup & Planning"
+      },
+      {
+        "desc": "Build the main functionality",
+        "step": 2,
+        "title": "Core Implementation"
+      },
+      {
+        "desc": "Add error handling, edge cases, tests",
+        "step": 3,
+        "title": "Testing & Polish"
+      },
+      {
+        "desc": "Deploy to GitHub, write docs, submit",
+        "step": 4,
+        "title": "Deploy & Document"
+      }
+    ],
+    "order_index": 5,
+    "course_title": "DevOps Engineering"
+  },
+  {
+    "id": "cdfc5afc-3c15-4fe6-9abc-29e75357a1e0",
+    "title": "Log Aggregation System",
+    "description_md": "Centralise logs from multiple services with search and visualisation.",
+    "tech_stack": [
+      "ELK Stack",
+      "Docker",
+      "Filebeat"
+    ],
+    "difficulty": "intermediate",
+    "estimated_hours": 12,
+    "requirements": [
+      "Complete all milestones",
+      "Deploy to GitHub",
+      "Write README",
+      "Pass AI code review"
+    ],
+    "milestone_checkpoints": [
+      {
+        "desc": "Clone starter, set up environment, plan approach",
+        "step": 1,
+        "title": "Setup & Planning"
+      },
+      {
+        "desc": "Build the main functionality",
+        "step": 2,
+        "title": "Core Implementation"
+      },
+      {
+        "desc": "Add error handling, edge cases, tests",
+        "step": 3,
+        "title": "Testing & Polish"
+      },
+      {
+        "desc": "Deploy to GitHub, write docs, submit",
+        "step": 4,
+        "title": "Deploy & Document"
+      }
+    ],
+    "order_index": 6,
+    "course_title": "DevOps Engineering"
+  },
+  {
+    "id": "63f1b0da-831e-4e65-8b61-e394602d8b35",
+    "title": "GitOps Workflow",
+    "description_md": "Implement GitOps with automated sync between Git repos and clusters.",
+    "tech_stack": [
+      "ArgoCD",
+      "Kubernetes",
+      "Git"
+    ],
+    "difficulty": "intermediate",
+    "estimated_hours": 14,
+    "requirements": [
+      "Complete all milestones",
+      "Deploy to GitHub",
+      "Write README",
+      "Pass AI code review"
+    ],
+    "milestone_checkpoints": [
+      {
+        "desc": "Clone starter, set up environment, plan approach",
+        "step": 1,
+        "title": "Setup & Planning"
+      },
+      {
+        "desc": "Build the main functionality",
+        "step": 2,
+        "title": "Core Implementation"
+      },
+      {
+        "desc": "Add error handling, edge cases, tests",
+        "step": 3,
+        "title": "Testing & Polish"
+      },
+      {
+        "desc": "Deploy to GitHub, write docs, submit",
+        "step": 4,
+        "title": "Deploy & Document"
+      }
+    ],
+    "order_index": 7,
+    "course_title": "DevOps Engineering"
+  },
+  {
+    "id": "83602567-fce1-4bc3-96a1-e9e97091dacb",
+    "title": "Secrets Management",
+    "description_md": "Set up secure secrets management with rotation and access policies.",
+    "tech_stack": [
+      "Vault",
+      "Docker",
+      "Terraform"
+    ],
+    "difficulty": "intermediate",
+    "estimated_hours": 10,
+    "requirements": [
+      "Complete all milestones",
+      "Deploy to GitHub",
+      "Write README",
+      "Pass AI code review"
+    ],
+    "milestone_checkpoints": [
+      {
+        "desc": "Clone starter, set up environment, plan approach",
+        "step": 1,
+        "title": "Setup & Planning"
+      },
+      {
+        "desc": "Build the main functionality",
+        "step": 2,
+        "title": "Core Implementation"
+      },
+      {
+        "desc": "Add error handling, edge cases, tests",
+        "step": 3,
+        "title": "Testing & Polish"
+      },
+      {
+        "desc": "Deploy to GitHub, write docs, submit",
+        "step": 4,
+        "title": "Deploy & Document"
+      }
+    ],
+    "order_index": 8,
+    "course_title": "DevOps Engineering"
+  },
+  {
+    "id": "8ef9fbd0-36b0-4828-9409-7640cd6e22c3",
+    "title": "Blue-Green Deployment",
+    "description_md": "Implement zero-downtime deployments with blue-green strategy.",
+    "tech_stack": [
+      "AWS",
+      "Terraform",
+      "Docker"
+    ],
+    "difficulty": "advanced",
+    "estimated_hours": 18,
+    "requirements": [
+      "Complete all milestones",
+      "Deploy to GitHub",
+      "Write README",
+      "Pass AI code review"
+    ],
+    "milestone_checkpoints": [
+      {
+        "desc": "Clone starter, set up environment, plan approach",
+        "step": 1,
+        "title": "Setup & Planning"
+      },
+      {
+        "desc": "Build the main functionality",
+        "step": 2,
+        "title": "Core Implementation"
+      },
+      {
+        "desc": "Add error handling, edge cases, tests",
+        "step": 3,
+        "title": "Testing & Polish"
+      },
+      {
+        "desc": "Deploy to GitHub, write docs, submit",
+        "step": 4,
+        "title": "Deploy & Document"
+      }
+    ],
+    "order_index": 9,
+    "course_title": "DevOps Engineering"
+  },
+  {
+    "id": "5dd1616f-b4a0-4be8-aacc-7f78871c1bbc",
+    "title": "Full Platform Engineering",
+    "description_md": "Build a complete internal developer platform with self-service deployment.",
+    "tech_stack": [
+      "Kubernetes",
+      "Terraform",
+      "ArgoCD",
+      "Prometheus"
+    ],
+    "difficulty": "advanced",
+    "estimated_hours": 25,
+    "requirements": [
+      "Complete all milestones",
+      "Deploy to GitHub",
+      "Write README",
+      "Pass AI code review"
+    ],
+    "milestone_checkpoints": [
+      {
+        "desc": "Clone starter, set up environment, plan approach",
+        "step": 1,
+        "title": "Setup & Planning"
+      },
+      {
+        "desc": "Build the main functionality",
+        "step": 2,
+        "title": "Core Implementation"
+      },
+      {
+        "desc": "Add error handling, edge cases, tests",
+        "step": 3,
+        "title": "Testing & Polish"
+      },
+      {
+        "desc": "Deploy to GitHub, write docs, submit",
+        "step": 4,
+        "title": "Deploy & Document"
+      }
+    ],
+    "order_index": 10,
+    "course_title": "DevOps Engineering"
+  },
+  {
+    "id": "3a585121-cdd0-4ecb-8a5d-cb4f5b383c9e",
+    "title": "Flight Controller Sim",
+    "description_md": "Simulate a drone flight controller with PID tuning and visualisation.",
+    "tech_stack": [
+      "Python",
+      "PID Control",
+      "Matplotlib"
+    ],
+    "difficulty": "beginner",
+    "estimated_hours": 8,
+    "requirements": [
+      "Complete all milestones",
+      "Deploy to GitHub",
+      "Write README",
+      "Pass AI code review"
+    ],
+    "milestone_checkpoints": [
+      {
+        "desc": "Clone starter, set up environment, plan approach",
+        "step": 1,
+        "title": "Setup & Planning"
+      },
+      {
+        "desc": "Build the main functionality",
+        "step": 2,
+        "title": "Core Implementation"
+      },
+      {
+        "desc": "Add error handling, edge cases, tests",
+        "step": 3,
+        "title": "Testing & Polish"
+      },
+      {
+        "desc": "Deploy to GitHub, write docs, submit",
+        "step": 4,
+        "title": "Deploy & Document"
+      }
+    ],
+    "order_index": 1,
+    "course_title": "Drone Technology"
+  },
+  {
+    "id": "bb27a3c1-088a-4aee-9b72-73a46e36f34e",
+    "title": "GPS Waypoint Navigator",
+    "description_md": "Program autonomous waypoint navigation for a simulated drone.",
+    "tech_stack": [
+      "Python",
+      "GPS",
+      "DroneKit"
+    ],
+    "difficulty": "beginner",
+    "estimated_hours": 10,
+    "requirements": [
+      "Complete all milestones",
+      "Deploy to GitHub",
+      "Write README",
+      "Pass AI code review"
+    ],
+    "milestone_checkpoints": [
+      {
+        "desc": "Clone starter, set up environment, plan approach",
+        "step": 1,
+        "title": "Setup & Planning"
+      },
+      {
+        "desc": "Build the main functionality",
+        "step": 2,
+        "title": "Core Implementation"
+      },
+      {
+        "desc": "Add error handling, edge cases, tests",
+        "step": 3,
+        "title": "Testing & Polish"
+      },
+      {
+        "desc": "Deploy to GitHub, write docs, submit",
+        "step": 4,
+        "title": "Deploy & Document"
+      }
+    ],
+    "order_index": 2,
+    "course_title": "Drone Technology"
+  },
+  {
+    "id": "ca82eb10-9c1b-4669-8a5a-1a3a58f37ad8",
+    "title": "Altitude Hold System",
+    "description_md": "Implement altitude hold using barometric pressure sensor data.",
+    "tech_stack": [
+      "Python",
+      "PID",
+      "Sensors"
+    ],
+    "difficulty": "beginner",
+    "estimated_hours": 8,
+    "requirements": [
+      "Complete all milestones",
+      "Deploy to GitHub",
+      "Write README",
+      "Pass AI code review"
+    ],
+    "milestone_checkpoints": [
+      {
+        "desc": "Clone starter, set up environment, plan approach",
+        "step": 1,
+        "title": "Setup & Planning"
+      },
+      {
+        "desc": "Build the main functionality",
+        "step": 2,
+        "title": "Core Implementation"
+      },
+      {
+        "desc": "Add error handling, edge cases, tests",
+        "step": 3,
+        "title": "Testing & Polish"
+      },
+      {
+        "desc": "Deploy to GitHub, write docs, submit",
+        "step": 4,
+        "title": "Deploy & Document"
+      }
+    ],
+    "order_index": 3,
+    "course_title": "Drone Technology"
+  },
+  {
+    "id": "e9120e9f-6cad-44d3-9f0a-01523004cf01",
+    "title": "Obstacle Avoidance System",
+    "description_md": "Build an obstacle detection and avoidance system using sensors and CV.",
+    "tech_stack": [
+      "Python",
+      "OpenCV",
+      "Ultrasonic"
+    ],
+    "difficulty": "intermediate",
+    "estimated_hours": 14,
+    "requirements": [
+      "Complete all milestones",
+      "Deploy to GitHub",
+      "Write README",
+      "Pass AI code review"
+    ],
+    "milestone_checkpoints": [
+      {
+        "desc": "Clone starter, set up environment, plan approach",
+        "step": 1,
+        "title": "Setup & Planning"
+      },
+      {
+        "desc": "Build the main functionality",
+        "step": 2,
+        "title": "Core Implementation"
+      },
+      {
+        "desc": "Add error handling, edge cases, tests",
+        "step": 3,
+        "title": "Testing & Polish"
+      },
+      {
+        "desc": "Deploy to GitHub, write docs, submit",
+        "step": 4,
+        "title": "Deploy & Document"
+      }
+    ],
+    "order_index": 4,
+    "course_title": "Drone Technology"
+  },
+  {
+    "id": "74aada4d-ba4a-4495-993f-fa422d8b8dec",
+    "title": "Aerial Photo Mapper",
+    "description_md": "Create orthomosaic maps from overlapping aerial photographs.",
+    "tech_stack": [
+      "Python",
+      "OpenCV",
+      "Stitching"
+    ],
+    "difficulty": "intermediate",
+    "estimated_hours": 14,
+    "requirements": [
+      "Complete all milestones",
+      "Deploy to GitHub",
+      "Write README",
+      "Pass AI code review"
+    ],
+    "milestone_checkpoints": [
+      {
+        "desc": "Clone starter, set up environment, plan approach",
+        "step": 1,
+        "title": "Setup & Planning"
+      },
+      {
+        "desc": "Build the main functionality",
+        "step": 2,
+        "title": "Core Implementation"
+      },
+      {
+        "desc": "Add error handling, edge cases, tests",
+        "step": 3,
+        "title": "Testing & Polish"
+      },
+      {
+        "desc": "Deploy to GitHub, write docs, submit",
+        "step": 4,
+        "title": "Deploy & Document"
+      }
+    ],
+    "order_index": 5,
+    "course_title": "Drone Technology"
+  },
+  {
+    "id": "8b2291ef-d919-49c3-876a-f26e81c78437",
+    "title": "Object Tracking Drone",
+    "description_md": "Build a drone that autonomously tracks and follows a moving target.",
+    "tech_stack": [
+      "Python",
+      "OpenCV",
+      "PID",
+      "Tracking"
+    ],
+    "difficulty": "intermediate",
+    "estimated_hours": 16,
+    "requirements": [
+      "Complete all milestones",
+      "Deploy to GitHub",
+      "Write README",
+      "Pass AI code review"
+    ],
+    "milestone_checkpoints": [
+      {
+        "desc": "Clone starter, set up environment, plan approach",
+        "step": 1,
+        "title": "Setup & Planning"
+      },
+      {
+        "desc": "Build the main functionality",
+        "step": 2,
+        "title": "Core Implementation"
+      },
+      {
+        "desc": "Add error handling, edge cases, tests",
+        "step": 3,
+        "title": "Testing & Polish"
+      },
+      {
+        "desc": "Deploy to GitHub, write docs, submit",
+        "step": 4,
+        "title": "Deploy & Document"
+      }
+    ],
+    "order_index": 6,
+    "course_title": "Drone Technology"
+  },
+  {
+    "id": "71714840-21fa-44d4-9948-be19e55a3d24",
+    "title": "Autonomous Landing System",
+    "description_md": "Implement precision landing using visual markers and computer vision.",
+    "tech_stack": [
+      "Python",
+      "ArUco Markers",
+      "OpenCV"
+    ],
+    "difficulty": "intermediate",
+    "estimated_hours": 14,
+    "requirements": [
+      "Complete all milestones",
+      "Deploy to GitHub",
+      "Write README",
+      "Pass AI code review"
+    ],
+    "milestone_checkpoints": [
+      {
+        "desc": "Clone starter, set up environment, plan approach",
+        "step": 1,
+        "title": "Setup & Planning"
+      },
+      {
+        "desc": "Build the main functionality",
+        "step": 2,
+        "title": "Core Implementation"
+      },
+      {
+        "desc": "Add error handling, edge cases, tests",
+        "step": 3,
+        "title": "Testing & Polish"
+      },
+      {
+        "desc": "Deploy to GitHub, write docs, submit",
+        "step": 4,
+        "title": "Deploy & Document"
+      }
+    ],
+    "order_index": 7,
+    "course_title": "Drone Technology"
+  },
+  {
+    "id": "cc6de57d-85a5-47c6-8c52-8a334b58a7c4",
+    "title": "Swarm Coordination",
+    "description_md": "Coordinate multiple drones to perform collaborative tasks.",
+    "tech_stack": [
+      "Python",
+      "Multi-Agent",
+      "Communication"
+    ],
+    "difficulty": "advanced",
+    "estimated_hours": 20,
+    "requirements": [
+      "Complete all milestones",
+      "Deploy to GitHub",
+      "Write README",
+      "Pass AI code review"
+    ],
+    "milestone_checkpoints": [
+      {
+        "desc": "Clone starter, set up environment, plan approach",
+        "step": 1,
+        "title": "Setup & Planning"
+      },
+      {
+        "desc": "Build the main functionality",
+        "step": 2,
+        "title": "Core Implementation"
+      },
+      {
+        "desc": "Add error handling, edge cases, tests",
+        "step": 3,
+        "title": "Testing & Polish"
+      },
+      {
+        "desc": "Deploy to GitHub, write docs, submit",
+        "step": 4,
+        "title": "Deploy & Document"
+      }
+    ],
+    "order_index": 8,
+    "course_title": "Drone Technology"
+  },
+  {
+    "id": "775db5f4-9035-4d37-b3fd-bf95024fa39a",
+    "title": "Delivery Route Planner",
+    "description_md": "Optimise multi-stop delivery routes considering wind and battery constraints.",
+    "tech_stack": [
+      "Python",
+      "A*",
+      "Optimisation"
+    ],
+    "difficulty": "advanced",
+    "estimated_hours": 18,
+    "requirements": [
+      "Complete all milestones",
+      "Deploy to GitHub",
+      "Write README",
+      "Pass AI code review"
+    ],
+    "milestone_checkpoints": [
+      {
+        "desc": "Clone starter, set up environment, plan approach",
+        "step": 1,
+        "title": "Setup & Planning"
+      },
+      {
+        "desc": "Build the main functionality",
+        "step": 2,
+        "title": "Core Implementation"
+      },
+      {
+        "desc": "Add error handling, edge cases, tests",
+        "step": 3,
+        "title": "Testing & Polish"
+      },
+      {
+        "desc": "Deploy to GitHub, write docs, submit",
+        "step": 4,
+        "title": "Deploy & Document"
+      }
+    ],
+    "order_index": 9,
+    "course_title": "Drone Technology"
+  },
+  {
+    "id": "7238c4d7-3704-4244-a417-d819a630042d",
+    "title": "Full Autonomous Mission",
+    "description_md": "Build a complete autonomous mission: takeoff, navigate, survey, and land.",
+    "tech_stack": [
+      "Python",
+      "ROS",
+      "OpenCV",
+      "PID"
+    ],
+    "difficulty": "advanced",
+    "estimated_hours": 25,
+    "requirements": [
+      "Complete all milestones",
+      "Deploy to GitHub",
+      "Write README",
+      "Pass AI code review"
+    ],
+    "milestone_checkpoints": [
+      {
+        "desc": "Clone starter, set up environment, plan approach",
+        "step": 1,
+        "title": "Setup & Planning"
+      },
+      {
+        "desc": "Build the main functionality",
+        "step": 2,
+        "title": "Core Implementation"
+      },
+      {
+        "desc": "Add error handling, edge cases, tests",
+        "step": 3,
+        "title": "Testing & Polish"
+      },
+      {
+        "desc": "Deploy to GitHub, write docs, submit",
+        "step": 4,
+        "title": "Deploy & Document"
+      }
+    ],
+    "order_index": 10,
+    "course_title": "Drone Technology"
+  },
+  {
+    "id": "1dbc4403-127c-4526-9e32-b04f46289f3e",
+    "title": "REST API with CRUD",
+    "description_md": "Build a complete REST API with create, read, update, delete operations.",
+    "tech_stack": [
+      "Node.js",
+      "Express",
+      "PostgreSQL"
+    ],
+    "difficulty": "beginner",
+    "estimated_hours": 8,
+    "requirements": [
+      "Complete all milestones",
+      "Deploy to GitHub",
+      "Write README",
+      "Pass AI code review"
+    ],
+    "milestone_checkpoints": [
+      {
+        "desc": "Clone starter, set up environment, plan approach",
+        "step": 1,
+        "title": "Setup & Planning"
+      },
+      {
+        "desc": "Build the main functionality",
+        "step": 2,
+        "title": "Core Implementation"
+      },
+      {
+        "desc": "Add error handling, edge cases, tests",
+        "step": 3,
+        "title": "Testing & Polish"
+      },
+      {
+        "desc": "Deploy to GitHub, write docs, submit",
+        "step": 4,
+        "title": "Deploy & Document"
+      }
+    ],
+    "order_index": 1,
+    "course_title": "Full Stack Development"
+  },
+  {
+    "id": "19bc7deb-63cd-41b0-832a-a5d60bb33c7c",
+    "title": "Auth System (JWT + OAuth)",
+    "description_md": "Build authentication with JWT tokens, OAuth social login, and RBAC.",
+    "tech_stack": [
+      "Node.js",
+      "JWT",
+      "OAuth",
+      "Supabase"
+    ],
+    "difficulty": "beginner",
+    "estimated_hours": 10,
+    "requirements": [
+      "Complete all milestones",
+      "Deploy to GitHub",
+      "Write README",
+      "Pass AI code review"
+    ],
+    "milestone_checkpoints": [
+      {
+        "desc": "Clone starter, set up environment, plan approach",
+        "step": 1,
+        "title": "Setup & Planning"
+      },
+      {
+        "desc": "Build the main functionality",
+        "step": 2,
+        "title": "Core Implementation"
+      },
+      {
+        "desc": "Add error handling, edge cases, tests",
+        "step": 3,
+        "title": "Testing & Polish"
+      },
+      {
+        "desc": "Deploy to GitHub, write docs, submit",
+        "step": 4,
+        "title": "Deploy & Document"
+      }
+    ],
+    "order_index": 2,
+    "course_title": "Full Stack Development"
+  },
+  {
+    "id": "3af2ef76-8802-4348-866e-de98b7d5c9e3",
+    "title": "Blog Platform with CMS",
+    "description_md": "Build a full blog platform with admin CMS and markdown rendering.",
+    "tech_stack": [
+      "Next.js",
+      "Supabase",
+      "Markdown"
+    ],
+    "difficulty": "beginner",
+    "estimated_hours": 12,
+    "requirements": [
+      "Complete all milestones",
+      "Deploy to GitHub",
+      "Write README",
+      "Pass AI code review"
+    ],
+    "milestone_checkpoints": [
+      {
+        "desc": "Clone starter, set up environment, plan approach",
+        "step": 1,
+        "title": "Setup & Planning"
+      },
+      {
+        "desc": "Build the main functionality",
+        "step": 2,
+        "title": "Core Implementation"
+      },
+      {
+        "desc": "Add error handling, edge cases, tests",
+        "step": 3,
+        "title": "Testing & Polish"
+      },
+      {
+        "desc": "Deploy to GitHub, write docs, submit",
+        "step": 4,
+        "title": "Deploy & Document"
+      }
+    ],
+    "order_index": 3,
+    "course_title": "Full Stack Development"
+  },
+  {
+    "id": "2b13ceab-c7e0-4758-ae92-5e10dbb49322",
+    "title": "Real-time Chat App",
+    "description_md": "Build a real-time chat application with rooms, typing indicators, and presence.",
+    "tech_stack": [
+      "Next.js",
+      "WebSockets",
+      "Redis"
+    ],
+    "difficulty": "intermediate",
+    "estimated_hours": 14,
+    "requirements": [
+      "Complete all milestones",
+      "Deploy to GitHub",
+      "Write README",
+      "Pass AI code review"
+    ],
+    "milestone_checkpoints": [
+      {
+        "desc": "Clone starter, set up environment, plan approach",
+        "step": 1,
+        "title": "Setup & Planning"
+      },
+      {
+        "desc": "Build the main functionality",
+        "step": 2,
+        "title": "Core Implementation"
+      },
+      {
+        "desc": "Add error handling, edge cases, tests",
+        "step": 3,
+        "title": "Testing & Polish"
+      },
+      {
+        "desc": "Deploy to GitHub, write docs, submit",
+        "step": 4,
+        "title": "Deploy & Document"
+      }
+    ],
+    "order_index": 4,
+    "course_title": "Full Stack Development"
+  },
+  {
+    "id": "2fa0f62d-1433-4813-b90b-74303d22e33e",
+    "title": "E-commerce Store",
+    "description_md": "Build a complete e-commerce store with cart, checkout, and payment processing.",
+    "tech_stack": [
+      "Next.js",
+      "Stripe",
+      "Supabase"
+    ],
+    "difficulty": "intermediate",
+    "estimated_hours": 18,
+    "requirements": [
+      "Complete all milestones",
+      "Deploy to GitHub",
+      "Write README",
+      "Pass AI code review"
+    ],
+    "milestone_checkpoints": [
+      {
+        "desc": "Clone starter, set up environment, plan approach",
+        "step": 1,
+        "title": "Setup & Planning"
+      },
+      {
+        "desc": "Build the main functionality",
+        "step": 2,
+        "title": "Core Implementation"
+      },
+      {
+        "desc": "Add error handling, edge cases, tests",
+        "step": 3,
+        "title": "Testing & Polish"
+      },
+      {
+        "desc": "Deploy to GitHub, write docs, submit",
+        "step": 4,
+        "title": "Deploy & Document"
+      }
+    ],
+    "order_index": 5,
+    "course_title": "Full Stack Development"
+  },
+  {
+    "id": "e2a74b88-47b0-4685-ab89-4d916bc9f7e2",
+    "title": "File Storage Service",
+    "description_md": "Build a file upload and storage service with presigned URLs and access control.",
+    "tech_stack": [
+      "Node.js",
+      "S3",
+      "Express"
+    ],
+    "difficulty": "intermediate",
+    "estimated_hours": 12,
+    "requirements": [
+      "Complete all milestones",
+      "Deploy to GitHub",
+      "Write README",
+      "Pass AI code review"
+    ],
+    "milestone_checkpoints": [
+      {
+        "desc": "Clone starter, set up environment, plan approach",
+        "step": 1,
+        "title": "Setup & Planning"
+      },
+      {
+        "desc": "Build the main functionality",
+        "step": 2,
+        "title": "Core Implementation"
+      },
+      {
+        "desc": "Add error handling, edge cases, tests",
+        "step": 3,
+        "title": "Testing & Polish"
+      },
+      {
+        "desc": "Deploy to GitHub, write docs, submit",
+        "step": 4,
+        "title": "Deploy & Document"
+      }
+    ],
+    "order_index": 6,
+    "course_title": "Full Stack Development"
+  },
+  {
+    "id": "b4a9718f-c2eb-4ec3-9c74-27bc08109b41",
+    "title": "Social Feed with Notifications",
+    "description_md": "Build a social media feed with likes, comments, and push notifications.",
+    "tech_stack": [
+      "Next.js",
+      "Supabase",
+      "Realtime"
+    ],
+    "difficulty": "intermediate",
+    "estimated_hours": 16,
+    "requirements": [
+      "Complete all milestones",
+      "Deploy to GitHub",
+      "Write README",
+      "Pass AI code review"
+    ],
+    "milestone_checkpoints": [
+      {
+        "desc": "Clone starter, set up environment, plan approach",
+        "step": 1,
+        "title": "Setup & Planning"
+      },
+      {
+        "desc": "Build the main functionality",
+        "step": 2,
+        "title": "Core Implementation"
+      },
+      {
+        "desc": "Add error handling, edge cases, tests",
+        "step": 3,
+        "title": "Testing & Polish"
+      },
+      {
+        "desc": "Deploy to GitHub, write docs, submit",
+        "step": 4,
+        "title": "Deploy & Document"
+      }
+    ],
+    "order_index": 7,
+    "course_title": "Full Stack Development"
+  },
+  {
+    "id": "52b4e6f1-c5dd-4fef-9842-72fa9931de05",
+    "title": "Multi-tenant SaaS",
+    "description_md": "Build a multi-tenant SaaS with organisation management and row-level security.",
+    "tech_stack": [
+      "Next.js",
+      "Supabase",
+      "RLS"
+    ],
+    "difficulty": "intermediate",
+    "estimated_hours": 18,
+    "requirements": [
+      "Complete all milestones",
+      "Deploy to GitHub",
+      "Write README",
+      "Pass AI code review"
+    ],
+    "milestone_checkpoints": [
+      {
+        "desc": "Clone starter, set up environment, plan approach",
+        "step": 1,
+        "title": "Setup & Planning"
+      },
+      {
+        "desc": "Build the main functionality",
+        "step": 2,
+        "title": "Core Implementation"
+      },
+      {
+        "desc": "Add error handling, edge cases, tests",
+        "step": 3,
+        "title": "Testing & Polish"
+      },
+      {
+        "desc": "Deploy to GitHub, write docs, submit",
+        "step": 4,
+        "title": "Deploy & Document"
+      }
+    ],
+    "order_index": 8,
+    "course_title": "Full Stack Development"
+  },
+  {
+    "id": "7605fc4a-3fa0-49fe-876a-a1ba6485dbb9",
+    "title": "Analytics Dashboard",
+    "description_md": "Build a real-time analytics dashboard with charts, filters, and data streaming.",
+    "tech_stack": [
+      "Next.js",
+      "D3.js",
+      "PostgreSQL"
+    ],
+    "difficulty": "advanced",
+    "estimated_hours": 18,
+    "requirements": [
+      "Complete all milestones",
+      "Deploy to GitHub",
+      "Write README",
+      "Pass AI code review"
+    ],
+    "milestone_checkpoints": [
+      {
+        "desc": "Clone starter, set up environment, plan approach",
+        "step": 1,
+        "title": "Setup & Planning"
+      },
+      {
+        "desc": "Build the main functionality",
+        "step": 2,
+        "title": "Core Implementation"
+      },
+      {
+        "desc": "Add error handling, edge cases, tests",
+        "step": 3,
+        "title": "Testing & Polish"
+      },
+      {
+        "desc": "Deploy to GitHub, write docs, submit",
+        "step": 4,
+        "title": "Deploy & Document"
+      }
+    ],
+    "order_index": 9,
+    "course_title": "Full Stack Development"
+  },
+  {
+    "id": "bc4c0e1f-25ec-4aa0-8504-2a0d785df19b",
+    "title": "Microservices API Gateway",
+    "description_md": "Build 3 microservices with an API gateway, message queue, and service discovery.",
+    "tech_stack": [
+      "Node.js",
+      "Docker",
+      "Redis",
+      "RabbitMQ"
+    ],
+    "difficulty": "advanced",
+    "estimated_hours": 20,
+    "requirements": [
+      "Complete all milestones",
+      "Deploy to GitHub",
+      "Write README",
+      "Pass AI code review"
+    ],
+    "milestone_checkpoints": [
+      {
+        "desc": "Clone starter, set up environment, plan approach",
+        "step": 1,
+        "title": "Setup & Planning"
+      },
+      {
+        "desc": "Build the main functionality",
+        "step": 2,
+        "title": "Core Implementation"
+      },
+      {
+        "desc": "Add error handling, edge cases, tests",
+        "step": 3,
+        "title": "Testing & Polish"
+      },
+      {
+        "desc": "Deploy to GitHub, write docs, submit",
+        "step": 4,
+        "title": "Deploy & Document"
+      }
+    ],
+    "order_index": 10,
+    "course_title": "Full Stack Development"
+  },
+  {
+    "id": "f106ffa6-c41d-4167-a925-ee8fb60e1baa",
+    "title": "Mobile App (React Native)",
+    "description_md": "Build a cross-platform mobile app connected to your backend.",
+    "tech_stack": [
+      "React Native",
+      "Expo",
+      "Supabase"
+    ],
+    "difficulty": "advanced",
+    "estimated_hours": 20,
+    "requirements": [
+      "Complete all milestones",
+      "Deploy to GitHub",
+      "Write README",
+      "Pass AI code review"
+    ],
+    "milestone_checkpoints": [
+      {
+        "desc": "Clone starter, set up environment, plan approach",
+        "step": 1,
+        "title": "Setup & Planning"
+      },
+      {
+        "desc": "Build the main functionality",
+        "step": 2,
+        "title": "Core Implementation"
+      },
+      {
+        "desc": "Add error handling, edge cases, tests",
+        "step": 3,
+        "title": "Testing & Polish"
+      },
+      {
+        "desc": "Deploy to GitHub, write docs, submit",
+        "step": 4,
+        "title": "Deploy & Document"
+      }
+    ],
+    "order_index": 11,
+    "course_title": "Full Stack Development"
+  },
+  {
+    "id": "984a209e-3026-4bb4-9635-49c89f446f34",
+    "title": "Production SaaS (Capstone)",
+    "description_md": "Build and deploy a complete production SaaS with auth, billing, and usage limits.",
+    "tech_stack": [
+      "Next.js",
+      "Supabase",
+      "Stripe",
+      "Docker"
+    ],
+    "difficulty": "advanced",
+    "estimated_hours": 30,
+    "requirements": [
+      "Complete all milestones",
+      "Deploy to GitHub",
+      "Write README",
+      "Pass AI code review"
+    ],
+    "milestone_checkpoints": [
+      {
+        "desc": "Clone starter, set up environment, plan approach",
+        "step": 1,
+        "title": "Setup & Planning"
+      },
+      {
+        "desc": "Build the main functionality",
+        "step": 2,
+        "title": "Core Implementation"
+      },
+      {
+        "desc": "Add error handling, edge cases, tests",
+        "step": 3,
+        "title": "Testing & Polish"
+      },
+      {
+        "desc": "Deploy to GitHub, write docs, submit",
+        "step": 4,
+        "title": "Deploy & Document"
+      }
+    ],
+    "order_index": 12,
+    "course_title": "Full Stack Development"
+  },
+  {
+    "id": "641baebe-cfe7-47f7-9fea-91a2bc2c62cd",
+    "title": "Snake Game",
+    "description_md": "Build the classic Snake game with scoring and increasing difficulty.",
+    "tech_stack": [
+      "Python",
+      "Pygame"
+    ],
+    "difficulty": "beginner",
+    "estimated_hours": 6,
+    "requirements": [
+      "Complete all milestones",
+      "Deploy to GitHub",
+      "Write README",
+      "Pass AI code review"
+    ],
+    "milestone_checkpoints": [
+      {
+        "desc": "Clone starter, set up environment, plan approach",
+        "step": 1,
+        "title": "Setup & Planning"
+      },
+      {
+        "desc": "Build the main functionality",
+        "step": 2,
+        "title": "Core Implementation"
+      },
+      {
+        "desc": "Add error handling, edge cases, tests",
+        "step": 3,
+        "title": "Testing & Polish"
+      },
+      {
+        "desc": "Deploy to GitHub, write docs, submit",
+        "step": 4,
+        "title": "Deploy & Document"
+      }
+    ],
+    "order_index": 1,
+    "course_title": "Game Development"
+  },
+  {
+    "id": "315cd37c-0b90-4bb6-9399-895d28e87a89",
+    "title": "Breakout / Brick Breaker",
+    "description_md": "Build a Breakout game with collision detection and power-ups.",
+    "tech_stack": [
+      "Python",
+      "Pygame",
+      "Physics"
+    ],
+    "difficulty": "beginner",
+    "estimated_hours": 8,
+    "requirements": [
+      "Complete all milestones",
+      "Deploy to GitHub",
+      "Write README",
+      "Pass AI code review"
+    ],
+    "milestone_checkpoints": [
+      {
+        "desc": "Clone starter, set up environment, plan approach",
+        "step": 1,
+        "title": "Setup & Planning"
+      },
+      {
+        "desc": "Build the main functionality",
+        "step": 2,
+        "title": "Core Implementation"
+      },
+      {
+        "desc": "Add error handling, edge cases, tests",
+        "step": 3,
+        "title": "Testing & Polish"
+      },
+      {
+        "desc": "Deploy to GitHub, write docs, submit",
+        "step": 4,
+        "title": "Deploy & Document"
+      }
+    ],
+    "order_index": 2,
+    "course_title": "Game Development"
+  },
+  {
+    "id": "f22619fd-742f-49eb-9091-74b15a48fad1",
+    "title": "2D Platformer",
+    "description_md": "Build a side-scrolling platformer with physics, jumping, and enemies.",
+    "tech_stack": [
+      "Python",
+      "Pygame",
+      "Tilemap"
+    ],
+    "difficulty": "beginner",
+    "estimated_hours": 12,
+    "requirements": [
+      "Complete all milestones",
+      "Deploy to GitHub",
+      "Write README",
+      "Pass AI code review"
+    ],
+    "milestone_checkpoints": [
+      {
+        "desc": "Clone starter, set up environment, plan approach",
+        "step": 1,
+        "title": "Setup & Planning"
+      },
+      {
+        "desc": "Build the main functionality",
+        "step": 2,
+        "title": "Core Implementation"
+      },
+      {
+        "desc": "Add error handling, edge cases, tests",
+        "step": 3,
+        "title": "Testing & Polish"
+      },
+      {
+        "desc": "Deploy to GitHub, write docs, submit",
+        "step": 4,
+        "title": "Deploy & Document"
+      }
+    ],
+    "order_index": 3,
+    "course_title": "Game Development"
+  },
+  {
+    "id": "422e5dac-de61-4810-bcec-e6a0d2c5b890",
+    "title": "Top-Down Shooter",
+    "description_md": "Build a top-down shooter with waves of enemies and weapon upgrades.",
+    "tech_stack": [
+      "Python",
+      "Pygame",
+      "Particles"
+    ],
+    "difficulty": "intermediate",
+    "estimated_hours": 14,
+    "requirements": [
+      "Complete all milestones",
+      "Deploy to GitHub",
+      "Write README",
+      "Pass AI code review"
+    ],
+    "milestone_checkpoints": [
+      {
+        "desc": "Clone starter, set up environment, plan approach",
+        "step": 1,
+        "title": "Setup & Planning"
+      },
+      {
+        "desc": "Build the main functionality",
+        "step": 2,
+        "title": "Core Implementation"
+      },
+      {
+        "desc": "Add error handling, edge cases, tests",
+        "step": 3,
+        "title": "Testing & Polish"
+      },
+      {
+        "desc": "Deploy to GitHub, write docs, submit",
+        "step": 4,
+        "title": "Deploy & Document"
+      }
+    ],
+    "order_index": 4,
+    "course_title": "Game Development"
+  },
+  {
+    "id": "3104e28d-79bb-4a1b-8ad4-5fd2b4a4d706",
+    "title": "Inventory & Crafting System",
+    "description_md": "Build an RPG-style inventory and crafting system with drag-and-drop.",
+    "tech_stack": [
+      "Python",
+      "Pygame",
+      "JSON"
+    ],
+    "difficulty": "intermediate",
+    "estimated_hours": 12,
+    "requirements": [
+      "Complete all milestones",
+      "Deploy to GitHub",
+      "Write README",
+      "Pass AI code review"
+    ],
+    "milestone_checkpoints": [
+      {
+        "desc": "Clone starter, set up environment, plan approach",
+        "step": 1,
+        "title": "Setup & Planning"
+      },
+      {
+        "desc": "Build the main functionality",
+        "step": 2,
+        "title": "Core Implementation"
+      },
+      {
+        "desc": "Add error handling, edge cases, tests",
+        "step": 3,
+        "title": "Testing & Polish"
+      },
+      {
+        "desc": "Deploy to GitHub, write docs, submit",
+        "step": 4,
+        "title": "Deploy & Document"
+      }
+    ],
+    "order_index": 5,
+    "course_title": "Game Development"
+  },
+  {
+    "id": "4f134af0-06fa-4d89-8a84-21d28e91364e",
+    "title": "AI Enemy with State Machine",
+    "description_md": "Create intelligent enemies using finite state machines and pathfinding.",
+    "tech_stack": [
+      "Python",
+      "Pygame",
+      "FSM"
+    ],
+    "difficulty": "intermediate",
+    "estimated_hours": 14,
+    "requirements": [
+      "Complete all milestones",
+      "Deploy to GitHub",
+      "Write README",
+      "Pass AI code review"
+    ],
+    "milestone_checkpoints": [
+      {
+        "desc": "Clone starter, set up environment, plan approach",
+        "step": 1,
+        "title": "Setup & Planning"
+      },
+      {
+        "desc": "Build the main functionality",
+        "step": 2,
+        "title": "Core Implementation"
+      },
+      {
+        "desc": "Add error handling, edge cases, tests",
+        "step": 3,
+        "title": "Testing & Polish"
+      },
+      {
+        "desc": "Deploy to GitHub, write docs, submit",
+        "step": 4,
+        "title": "Deploy & Document"
+      }
+    ],
+    "order_index": 6,
+    "course_title": "Game Development"
+  },
+  {
+    "id": "52d7fa93-fff5-4068-a39e-3fa8332559d2",
+    "title": "Tower Defence Game",
+    "description_md": "Build a tower defence game with pathfinding enemies and upgradeable towers.",
+    "tech_stack": [
+      "Python",
+      "Pygame",
+      "A*"
+    ],
+    "difficulty": "intermediate",
+    "estimated_hours": 16,
+    "requirements": [
+      "Complete all milestones",
+      "Deploy to GitHub",
+      "Write README",
+      "Pass AI code review"
+    ],
+    "milestone_checkpoints": [
+      {
+        "desc": "Clone starter, set up environment, plan approach",
+        "step": 1,
+        "title": "Setup & Planning"
+      },
+      {
+        "desc": "Build the main functionality",
+        "step": 2,
+        "title": "Core Implementation"
+      },
+      {
+        "desc": "Add error handling, edge cases, tests",
+        "step": 3,
+        "title": "Testing & Polish"
+      },
+      {
+        "desc": "Deploy to GitHub, write docs, submit",
+        "step": 4,
+        "title": "Deploy & Document"
+      }
+    ],
+    "order_index": 7,
+    "course_title": "Game Development"
+  },
+  {
+    "id": "f60116f3-bfa2-44fb-b3e5-008891d8c903",
+    "title": "Multiplayer Pong",
+    "description_md": "Build real-time multiplayer Pong with networking and lag compensation.",
+    "tech_stack": [
+      "Python",
+      "Pygame",
+      "WebSockets"
+    ],
+    "difficulty": "intermediate",
+    "estimated_hours": 14,
+    "requirements": [
+      "Complete all milestones",
+      "Deploy to GitHub",
+      "Write README",
+      "Pass AI code review"
+    ],
+    "milestone_checkpoints": [
+      {
+        "desc": "Clone starter, set up environment, plan approach",
+        "step": 1,
+        "title": "Setup & Planning"
+      },
+      {
+        "desc": "Build the main functionality",
+        "step": 2,
+        "title": "Core Implementation"
+      },
+      {
+        "desc": "Add error handling, edge cases, tests",
+        "step": 3,
+        "title": "Testing & Polish"
+      },
+      {
+        "desc": "Deploy to GitHub, write docs, submit",
+        "step": 4,
+        "title": "Deploy & Document"
+      }
+    ],
+    "order_index": 8,
+    "course_title": "Game Development"
+  },
+  {
+    "id": "08adbfca-0ace-4aaf-8fe3-db44a2e9e2f5",
+    "title": "Procedural Dungeon Generator",
+    "description_md": "Generate random dungeons using BSP trees and cellular automata.",
+    "tech_stack": [
+      "Python",
+      "Pygame",
+      "Algorithms"
+    ],
+    "difficulty": "advanced",
+    "estimated_hours": 18,
+    "requirements": [
+      "Complete all milestones",
+      "Deploy to GitHub",
+      "Write README",
+      "Pass AI code review"
+    ],
+    "milestone_checkpoints": [
+      {
+        "desc": "Clone starter, set up environment, plan approach",
+        "step": 1,
+        "title": "Setup & Planning"
+      },
+      {
+        "desc": "Build the main functionality",
+        "step": 2,
+        "title": "Core Implementation"
+      },
+      {
+        "desc": "Add error handling, edge cases, tests",
+        "step": 3,
+        "title": "Testing & Polish"
+      },
+      {
+        "desc": "Deploy to GitHub, write docs, submit",
+        "step": 4,
+        "title": "Deploy & Document"
+      }
+    ],
+    "order_index": 9,
+    "course_title": "Game Development"
+  },
+  {
+    "id": "bd7ab8c7-a0a8-4519-9e30-487f92f0cb40",
+    "title": "Full Indie Game (Published)",
+    "description_md": "Design, build, and publish a complete game to itch.io with a store page.",
+    "tech_stack": [
+      "Python",
+      "Pygame",
+      "itch.io"
+    ],
+    "difficulty": "advanced",
+    "estimated_hours": 30,
+    "requirements": [
+      "Complete all milestones",
+      "Deploy to GitHub",
+      "Write README",
+      "Pass AI code review"
+    ],
+    "milestone_checkpoints": [
+      {
+        "desc": "Clone starter, set up environment, plan approach",
+        "step": 1,
+        "title": "Setup & Planning"
+      },
+      {
+        "desc": "Build the main functionality",
+        "step": 2,
+        "title": "Core Implementation"
+      },
+      {
+        "desc": "Add error handling, edge cases, tests",
+        "step": 3,
+        "title": "Testing & Polish"
+      },
+      {
+        "desc": "Deploy to GitHub, write docs, submit",
+        "step": 4,
+        "title": "Deploy & Document"
+      }
+    ],
+    "order_index": 10,
+    "course_title": "Game Development"
+  },
+  {
+    "id": "188595d6-b5a9-4367-b702-1e4026301058",
+    "title": "AI-Powered Chatbot",
+    "description_md": "Build a conversational chatbot with memory, personality, and streaming responses. Your first real AI product.",
+    "tech_stack": [
+      "Python or JavaScript",
+      "Anthropic SDK",
+      "Next.js or Flask"
+    ],
+    "difficulty": "beginner",
+    "estimated_hours": 8,
+    "requirements": [
+      "Multi-turn conversation with history",
+      "Custom system prompt / persona",
+      "Streaming responses",
+      "Simple web UI"
+    ],
+    "milestone_checkpoints": [
+      {
+        "desc": "Send and receive a single message",
+        "step": 1,
+        "title": "Basic API connection"
+      },
+      {
+        "desc": "Maintain multi-turn context",
+        "step": 2,
+        "title": "Conversation history"
+      },
+      {
+        "desc": "Stream tokens to the browser in real-time",
+        "step": 3,
+        "title": "Streaming UI"
+      },
+      {
+        "desc": "Add a custom system prompt and personality",
+        "step": 4,
+        "title": "Persona"
+      }
+    ],
+    "order_index": 1,
+    "course_title": "Generative AI"
+  },
+  {
+    "id": "73db95fc-d6d0-4f40-b8c8-d4400ea53946",
+    "title": "Smart Document Q&A (RAG)",
+    "description_md": "Build a system that lets users upload a PDF or paste text and ask questions about it using RAG.",
+    "tech_stack": [
+      "Python",
+      "Anthropic SDK",
+      "pgvector or Chroma",
+      "Next.js"
+    ],
+    "difficulty": "beginner",
+    "estimated_hours": 10,
+    "requirements": [
+      "Document upload and chunking",
+      "Embedding generation",
+      "Vector similarity search",
+      "Context-injected Q&A"
+    ],
+    "milestone_checkpoints": [
+      {
+        "desc": "Parse and chunk a PDF",
+        "step": 1,
+        "title": "Document ingestion"
+      },
+      {
+        "desc": "Generate and store embeddings",
+        "step": 2,
+        "title": "Embeddings"
+      },
+      {
+        "desc": "Find relevant chunks for a query",
+        "step": 3,
+        "title": "Retrieval"
+      },
+      {
+        "desc": "Inject context and generate an answer",
+        "step": 4,
+        "title": "Generation"
+      }
+    ],
+    "order_index": 2,
+    "course_title": "Generative AI"
+  },
+  {
+    "id": "0900178d-acdd-4269-9adf-ecf15c8f2edd",
+    "title": "Prompt Engineering Toolkit",
+    "description_md": "Build a web app for testing, comparing, and saving prompts. Your personal prompt lab.",
+    "tech_stack": [
+      "Next.js",
+      "Anthropic SDK",
+      "Supabase"
+    ],
+    "difficulty": "beginner",
+    "estimated_hours": 6,
+    "requirements": [
+      "Side-by-side prompt comparison",
+      "Temperature and model controls",
+      "Save and version prompts",
+      "Export results"
+    ],
+    "milestone_checkpoints": [
+      {
+        "desc": "Input + output UI",
+        "step": 1,
+        "title": "Single prompt runner"
+      },
+      {
+        "desc": "Run two prompts simultaneously",
+        "step": 2,
+        "title": "Side-by-side compare"
+      },
+      {
+        "desc": "Adjust temperature, max tokens, model",
+        "step": 3,
+        "title": "Parameter controls"
+      },
+      {
+        "desc": "Save and retrieve prompts from DB",
+        "step": 4,
+        "title": "Prompt library"
+      }
+    ],
+    "order_index": 3,
+    "course_title": "Generative AI"
+  },
+  {
+    "id": "3fd8d5a0-6276-4d66-a669-bd2a40eb6811",
+    "title": "AI Code Review Assistant",
+    "description_md": "An AI tool that reviews code, explains bugs, suggests improvements, and answers coding questions.",
+    "tech_stack": [
+      "Next.js",
+      "Anthropic SDK",
+      "Monaco Editor",
+      "Supabase"
+    ],
+    "difficulty": "intermediate",
+    "estimated_hours": 12,
+    "requirements": [
+      "Code editor with syntax highlighting",
+      "AI-powered code review",
+      "Explain code in plain English",
+      "Suggest refactors and fixes"
+    ],
+    "milestone_checkpoints": [
+      {
+        "desc": "Integrate Monaco editor",
+        "step": 1,
+        "title": "Code editor"
+      },
+      {
+        "desc": "Build structured code review prompt",
+        "step": 2,
+        "title": "Review prompt"
+      },
+      {
+        "desc": "Display AI suggestions alongside code",
+        "step": 3,
+        "title": "Inline feedback"
+      },
+      {
+        "desc": "Ask follow-up questions about the review",
+        "step": 4,
+        "title": "Chat follow-up"
+      }
+    ],
+    "order_index": 4,
+    "course_title": "Generative AI"
+  },
+  {
+    "id": "588c9d21-7fd5-4731-8c3d-37e1ef95fa8a",
+    "title": "AI Research Agent",
+    "description_md": "Build an autonomous agent that researches a topic, browses the web, and produces a structured report.",
+    "tech_stack": [
+      "Python",
+      "Anthropic SDK",
+      "Tavily or SerpAPI",
+      "LangChain (optional)"
+    ],
+    "difficulty": "intermediate",
+    "estimated_hours": 15,
+    "requirements": [
+      "Web search tool integration",
+      "Multi-step reasoning loop",
+      "Source citation",
+      "Structured report output"
+    ],
+    "milestone_checkpoints": [
+      {
+        "desc": "Integrate a search API as a tool",
+        "step": 1,
+        "title": "Web search tool"
+      },
+      {
+        "desc": "Implement think-act-observe loop",
+        "step": 2,
+        "title": "Agent loop"
+      },
+      {
+        "desc": "Combine results from multiple searches",
+        "step": 3,
+        "title": "Multi-source synthesis"
+      },
+      {
+        "desc": "Output a formatted, cited report",
+        "step": 4,
+        "title": "Report generation"
+      }
+    ],
+    "order_index": 5,
+    "course_title": "Generative AI"
+  },
+  {
+    "id": "78d95f1a-96ab-49a4-a61b-724a7cced41c",
+    "title": "Personalised Learning Assistant",
+    "description_md": "An AI tutor that assesses what a student knows, adapts explanations to their level, and tracks progress.",
+    "tech_stack": [
+      "Next.js",
+      "Anthropic SDK",
+      "Supabase"
+    ],
+    "difficulty": "intermediate",
+    "estimated_hours": 14,
+    "requirements": [
+      "Initial skill assessment",
+      "Adaptive explanations by level",
+      "Quiz generation",
+      "Progress tracking"
+    ],
+    "milestone_checkpoints": [
+      {
+        "desc": "Ask questions to gauge knowledge level",
+        "step": 1,
+        "title": "Assessment flow"
+      },
+      {
+        "desc": "Adjust explanation depth to student level",
+        "step": 2,
+        "title": "Adaptive content"
+      },
+      {
+        "desc": "Generate and grade custom quizzes",
+        "step": 3,
+        "title": "Quiz generation"
+      },
+      {
+        "desc": "Track topics mastered over time",
+        "step": 4,
+        "title": "Progress dashboard"
+      }
+    ],
+    "order_index": 6,
+    "course_title": "Generative AI"
+  },
+  {
+    "id": "209dae78-2356-4afb-aeb5-e265cbc83fef",
+    "title": "RAG-Powered Knowledge Base",
+    "description_md": "Build a company knowledge base where employees can ask questions and get accurate, sourced answers.",
+    "tech_stack": [
+      "Next.js",
+      "Supabase + pgvector",
+      "Anthropic SDK",
+      "PDF/DOCX parser"
+    ],
+    "difficulty": "intermediate",
+    "estimated_hours": 16,
+    "requirements": [
+      "Multi-document ingestion",
+      "Hybrid search (keyword + semantic)",
+      "Source attribution",
+      "Admin upload interface"
+    ],
+    "milestone_checkpoints": [
+      {
+        "desc": "Upload and process multiple document types",
+        "step": 1,
+        "title": "Ingestion pipeline"
+      },
+      {
+        "desc": "Combine keyword and semantic search",
+        "step": 2,
+        "title": "Hybrid search"
+      },
+      {
+        "desc": "Display source documents with each answer",
+        "step": 3,
+        "title": "Cited answers"
+      },
+      {
+        "desc": "Manage document uploads and deletions",
+        "step": 4,
+        "title": "Admin panel"
+      }
+    ],
+    "order_index": 7,
+    "course_title": "Generative AI"
+  },
+  {
+    "id": "7696a3e4-fda0-4060-866c-2f925c7528d5",
+    "title": "AI Content Generation Platform",
+    "description_md": "Build a platform that generates blog posts, social media content, and email copy from a brief.",
+    "tech_stack": [
+      "Next.js",
+      "Anthropic SDK",
+      "Supabase",
+      "Vercel"
+    ],
+    "difficulty": "intermediate",
+    "estimated_hours": 12,
+    "requirements": [
+      "Content brief input",
+      "Multiple output formats",
+      "Tone and style controls",
+      "Save and export content"
+    ],
+    "milestone_checkpoints": [
+      {
+        "desc": "Turn a brief into a full draft",
+        "step": 1,
+        "title": "Brief-to-content"
+      },
+      {
+        "desc": "Generate blog, tweet thread, and email from same brief",
+        "step": 2,
+        "title": "Format variants"
+      },
+      {
+        "desc": "Professional, casual, witty style options",
+        "step": 3,
+        "title": "Tone controls"
+      },
+      {
+        "desc": "Save, edit, and export generated content",
+        "step": 4,
+        "title": "Content library"
+      }
+    ],
+    "order_index": 8,
+    "course_title": "Generative AI"
+  },
+  {
+    "id": "c4c4a497-abce-4fe2-9dda-59b730c4bd6b",
+    "title": "AI-Powered SaaS Starter",
+    "description_md": "Build a production-ready SaaS with AI features: auth, billing, usage tracking, and rate limiting.",
+    "tech_stack": [
+      "Next.js",
+      "Supabase",
+      "Anthropic SDK",
+      "Stripe"
+    ],
+    "difficulty": "advanced",
+    "estimated_hours": 25,
+    "requirements": [
+      "Authentication with Supabase Auth",
+      "Stripe billing integration",
+      "Per-user AI usage tracking",
+      "Rate limiting by subscription tier"
+    ],
+    "milestone_checkpoints": [
+      {
+        "desc": "Signup, login, and profile setup",
+        "step": 1,
+        "title": "Auth + onboarding"
+      },
+      {
+        "desc": "Main AI capability of the app",
+        "step": 2,
+        "title": "Core AI feature"
+      },
+      {
+        "desc": "Track and limit API calls per user",
+        "step": 3,
+        "title": "Usage metering"
+      },
+      {
+        "desc": "Stripe subscriptions and upgrade flow",
+        "step": 4,
+        "title": "Billing"
+      }
+    ],
+    "order_index": 9,
+    "course_title": "Generative AI"
+  },
+  {
+    "id": "ab1f363e-2496-4167-a4ee-43ea5829a350",
+    "title": "Multi-Agent AI System",
+    "description_md": "Build a system of specialised AI agents that collaborate to complete complex, multi-step tasks autonomously.",
+    "tech_stack": [
+      "Python",
+      "Anthropic SDK",
+      "Redis or Supabase",
+      "FastAPI"
+    ],
+    "difficulty": "advanced",
+    "estimated_hours": 20,
+    "requirements": [
+      "Orchestrator agent",
+      "3+ specialised sub-agents",
+      "Agent communication protocol",
+      "Human approval checkpoints"
+    ],
+    "milestone_checkpoints": [
+      {
+        "desc": "Design orchestrator and specialist agents",
+        "step": 1,
+        "title": "Agent architecture"
+      },
+      {
+        "desc": "Implement message passing between agents",
+        "step": 2,
+        "title": "Communication layer"
+      },
+      {
+        "desc": "Each agent has its own tools and capabilities",
+        "step": 3,
+        "title": "Specialised tools"
+      },
+      {
+        "desc": "Complete a complex task using all agents",
+        "step": 4,
+        "title": "End-to-end task"
+      }
+    ],
+    "order_index": 10,
+    "course_title": "Generative AI"
+  },
+  {
+    "id": "da9bf4e9-4276-4234-a480-82092deb6072",
+    "title": "Tool-Using Chatbot",
+    "description_md": "Build a chatbot that can call external tools like web search and calculator.",
+    "tech_stack": [
+      "Python",
+      "Anthropic SDK",
+      "Function Calling"
+    ],
+    "difficulty": "beginner",
+    "estimated_hours": 8,
+    "requirements": [
+      "Complete all milestones",
+      "Deploy to GitHub",
+      "Write README",
+      "Pass AI code review"
+    ],
+    "milestone_checkpoints": [
+      {
+        "desc": "Clone starter, set up environment, plan approach",
+        "step": 1,
+        "title": "Setup & Planning"
+      },
+      {
+        "desc": "Build the main functionality",
+        "step": 2,
+        "title": "Core Implementation"
+      },
+      {
+        "desc": "Add error handling, edge cases, tests",
+        "step": 3,
+        "title": "Testing & Polish"
+      },
+      {
+        "desc": "Deploy to GitHub, write docs, submit",
+        "step": 4,
+        "title": "Deploy & Document"
+      }
+    ],
+    "order_index": 1,
+    "course_title": "LLM Agent Architect"
+  },
+  {
+    "id": "c4e3c37f-8952-4b3f-8a8d-f74f929c054a",
+    "title": "Code Executor Agent",
+    "description_md": "Build an agent that writes and executes Python code to answer questions.",
+    "tech_stack": [
+      "Python",
+      "Anthropic SDK",
+      "Subprocess"
+    ],
+    "difficulty": "beginner",
+    "estimated_hours": 10,
+    "requirements": [
+      "Complete all milestones",
+      "Deploy to GitHub",
+      "Write README",
+      "Pass AI code review"
+    ],
+    "milestone_checkpoints": [
+      {
+        "desc": "Clone starter, set up environment, plan approach",
+        "step": 1,
+        "title": "Setup & Planning"
+      },
+      {
+        "desc": "Build the main functionality",
+        "step": 2,
+        "title": "Core Implementation"
+      },
+      {
+        "desc": "Add error handling, edge cases, tests",
+        "step": 3,
+        "title": "Testing & Polish"
+      },
+      {
+        "desc": "Deploy to GitHub, write docs, submit",
+        "step": 4,
+        "title": "Deploy & Document"
+      }
+    ],
+    "order_index": 2,
+    "course_title": "LLM Agent Architect"
+  },
+  {
+    "id": "79851078-811d-4890-be2f-aced94955f14",
+    "title": "Web Research Agent",
+    "description_md": "Build an agent that searches the web and synthesises research reports.",
+    "tech_stack": [
+      "Python",
+      "Anthropic SDK",
+      "Tavily"
+    ],
+    "difficulty": "beginner",
+    "estimated_hours": 10,
+    "requirements": [
+      "Complete all milestones",
+      "Deploy to GitHub",
+      "Write README",
+      "Pass AI code review"
+    ],
+    "milestone_checkpoints": [
+      {
+        "desc": "Clone starter, set up environment, plan approach",
+        "step": 1,
+        "title": "Setup & Planning"
+      },
+      {
+        "desc": "Build the main functionality",
+        "step": 2,
+        "title": "Core Implementation"
+      },
+      {
+        "desc": "Add error handling, edge cases, tests",
+        "step": 3,
+        "title": "Testing & Polish"
+      },
+      {
+        "desc": "Deploy to GitHub, write docs, submit",
+        "step": 4,
+        "title": "Deploy & Document"
+      }
+    ],
+    "order_index": 3,
+    "course_title": "LLM Agent Architect"
+  },
+  {
+    "id": "e9550771-085a-4aa6-a907-82e67bf7f1af",
+    "title": "Multi-Step Reasoning Agent",
+    "description_md": "Implement the ReAct pattern for complex multi-step reasoning tasks.",
+    "tech_stack": [
+      "Python",
+      "Anthropic SDK",
+      "ReAct"
+    ],
+    "difficulty": "intermediate",
+    "estimated_hours": 14,
+    "requirements": [
+      "Complete all milestones",
+      "Deploy to GitHub",
+      "Write README",
+      "Pass AI code review"
+    ],
+    "milestone_checkpoints": [
+      {
+        "desc": "Clone starter, set up environment, plan approach",
+        "step": 1,
+        "title": "Setup & Planning"
+      },
+      {
+        "desc": "Build the main functionality",
+        "step": 2,
+        "title": "Core Implementation"
+      },
+      {
+        "desc": "Add error handling, edge cases, tests",
+        "step": 3,
+        "title": "Testing & Polish"
+      },
+      {
+        "desc": "Deploy to GitHub, write docs, submit",
+        "step": 4,
+        "title": "Deploy & Document"
+      }
+    ],
+    "order_index": 4,
+    "course_title": "LLM Agent Architect"
+  },
+  {
+    "id": "6611f605-9992-4a8e-b0d1-be39cf179f61",
+    "title": "Agent with Memory",
+    "description_md": "Build an agent with short-term and long-term memory using embeddings.",
+    "tech_stack": [
+      "Python",
+      "Anthropic SDK",
+      "Vector DB"
+    ],
+    "difficulty": "intermediate",
+    "estimated_hours": 14,
+    "requirements": [
+      "Complete all milestones",
+      "Deploy to GitHub",
+      "Write README",
+      "Pass AI code review"
+    ],
+    "milestone_checkpoints": [
+      {
+        "desc": "Clone starter, set up environment, plan approach",
+        "step": 1,
+        "title": "Setup & Planning"
+      },
+      {
+        "desc": "Build the main functionality",
+        "step": 2,
+        "title": "Core Implementation"
+      },
+      {
+        "desc": "Add error handling, edge cases, tests",
+        "step": 3,
+        "title": "Testing & Polish"
+      },
+      {
+        "desc": "Deploy to GitHub, write docs, submit",
+        "step": 4,
+        "title": "Deploy & Document"
+      }
+    ],
+    "order_index": 5,
+    "course_title": "LLM Agent Architect"
+  },
+  {
+    "id": "9609b720-fff3-4d34-924e-b32e38f6d04b",
+    "title": "Multi-Agent Debate",
+    "description_md": "Build a system where multiple AI agents debate and reach consensus.",
+    "tech_stack": [
+      "Python",
+      "Anthropic SDK"
+    ],
+    "difficulty": "intermediate",
+    "estimated_hours": 16,
+    "requirements": [
+      "Complete all milestones",
+      "Deploy to GitHub",
+      "Write README",
+      "Pass AI code review"
+    ],
+    "milestone_checkpoints": [
+      {
+        "desc": "Clone starter, set up environment, plan approach",
+        "step": 1,
+        "title": "Setup & Planning"
+      },
+      {
+        "desc": "Build the main functionality",
+        "step": 2,
+        "title": "Core Implementation"
+      },
+      {
+        "desc": "Add error handling, edge cases, tests",
+        "step": 3,
+        "title": "Testing & Polish"
+      },
+      {
+        "desc": "Deploy to GitHub, write docs, submit",
+        "step": 4,
+        "title": "Deploy & Document"
+      }
+    ],
+    "order_index": 6,
+    "course_title": "LLM Agent Architect"
+  },
+  {
+    "id": "e39af1c5-6fe7-4e03-b6c5-ce9409e25cc6",
+    "title": "Autonomous Task Planner",
+    "description_md": "Build an agent that decomposes complex tasks into executable sub-tasks.",
+    "tech_stack": [
+      "Python",
+      "Anthropic SDK",
+      "DAG"
+    ],
+    "difficulty": "intermediate",
+    "estimated_hours": 16,
+    "requirements": [
+      "Complete all milestones",
+      "Deploy to GitHub",
+      "Write README",
+      "Pass AI code review"
+    ],
+    "milestone_checkpoints": [
+      {
+        "desc": "Clone starter, set up environment, plan approach",
+        "step": 1,
+        "title": "Setup & Planning"
+      },
+      {
+        "desc": "Build the main functionality",
+        "step": 2,
+        "title": "Core Implementation"
+      },
+      {
+        "desc": "Add error handling, edge cases, tests",
+        "step": 3,
+        "title": "Testing & Polish"
+      },
+      {
+        "desc": "Deploy to GitHub, write docs, submit",
+        "step": 4,
+        "title": "Deploy & Document"
+      }
+    ],
+    "order_index": 7,
+    "course_title": "LLM Agent Architect"
+  },
+  {
+    "id": "866da5d5-9be6-46d9-a3db-85b873a81ee9",
+    "title": "Human-in-the-Loop Agent",
+    "description_md": "Build an autonomous agent with approval checkpoints for critical actions.",
+    "tech_stack": [
+      "Python",
+      "Anthropic SDK",
+      "Flask"
+    ],
+    "difficulty": "advanced",
+    "estimated_hours": 18,
+    "requirements": [
+      "Complete all milestones",
+      "Deploy to GitHub",
+      "Write README",
+      "Pass AI code review"
+    ],
+    "milestone_checkpoints": [
+      {
+        "desc": "Clone starter, set up environment, plan approach",
+        "step": 1,
+        "title": "Setup & Planning"
+      },
+      {
+        "desc": "Build the main functionality",
+        "step": 2,
+        "title": "Core Implementation"
+      },
+      {
+        "desc": "Add error handling, edge cases, tests",
+        "step": 3,
+        "title": "Testing & Polish"
+      },
+      {
+        "desc": "Deploy to GitHub, write docs, submit",
+        "step": 4,
+        "title": "Deploy & Document"
+      }
+    ],
+    "order_index": 8,
+    "course_title": "LLM Agent Architect"
+  },
+  {
+    "id": "99fa8f08-847c-460f-96cc-b53c49b9266d",
+    "title": "Agent Evaluation Framework",
+    "description_md": "Build a testing framework that evaluates agent reliability and accuracy.",
+    "tech_stack": [
+      "Python",
+      "Anthropic SDK",
+      "Pytest"
+    ],
+    "difficulty": "advanced",
+    "estimated_hours": 18,
+    "requirements": [
+      "Complete all milestones",
+      "Deploy to GitHub",
+      "Write README",
+      "Pass AI code review"
+    ],
+    "milestone_checkpoints": [
+      {
+        "desc": "Clone starter, set up environment, plan approach",
+        "step": 1,
+        "title": "Setup & Planning"
+      },
+      {
+        "desc": "Build the main functionality",
+        "step": 2,
+        "title": "Core Implementation"
+      },
+      {
+        "desc": "Add error handling, edge cases, tests",
+        "step": 3,
+        "title": "Testing & Polish"
+      },
+      {
+        "desc": "Deploy to GitHub, write docs, submit",
+        "step": 4,
+        "title": "Deploy & Document"
+      }
+    ],
+    "order_index": 9,
+    "course_title": "LLM Agent Architect"
+  },
+  {
+    "id": "de41651a-7651-4d08-a7f8-b7c1908a5f72",
+    "title": "Production Multi-Agent System",
+    "description_md": "Build a production system with orchestrator + specialist agents communicating via message queue.",
+    "tech_stack": [
+      "Python",
+      "Anthropic SDK",
+      "Redis",
+      "FastAPI"
+    ],
+    "difficulty": "advanced",
+    "estimated_hours": 25,
+    "requirements": [
+      "Complete all milestones",
+      "Deploy to GitHub",
+      "Write README",
+      "Pass AI code review"
+    ],
+    "milestone_checkpoints": [
+      {
+        "desc": "Clone starter, set up environment, plan approach",
+        "step": 1,
+        "title": "Setup & Planning"
+      },
+      {
+        "desc": "Build the main functionality",
+        "step": 2,
+        "title": "Core Implementation"
+      },
+      {
+        "desc": "Add error handling, edge cases, tests",
+        "step": 3,
+        "title": "Testing & Polish"
+      },
+      {
+        "desc": "Deploy to GitHub, write docs, submit",
+        "step": 4,
+        "title": "Deploy & Document"
+      }
+    ],
+    "order_index": 10,
+    "course_title": "LLM Agent Architect"
+  },
+  {
+    "id": "baeb20e8-c775-4019-b873-f5509f2920eb",
+    "title": "House Price Predictor",
+    "description_md": "Build a regression model to predict house prices from features like size, location, and bedrooms.",
+    "tech_stack": [
+      "Python",
+      "scikit-learn",
+      "Pandas"
+    ],
+    "difficulty": "beginner",
+    "estimated_hours": 8,
+    "requirements": [
+      "Complete all milestones",
+      "Deploy to GitHub",
+      "Write README",
+      "Pass AI code review"
+    ],
+    "milestone_checkpoints": [
+      {
+        "desc": "Clone starter, set up environment, plan approach",
+        "step": 1,
+        "title": "Setup & Planning"
+      },
+      {
+        "desc": "Build the main functionality",
+        "step": 2,
+        "title": "Core Implementation"
+      },
+      {
+        "desc": "Add error handling, edge cases, tests",
+        "step": 3,
+        "title": "Testing & Polish"
+      },
+      {
+        "desc": "Deploy to GitHub, write docs, submit",
+        "step": 4,
+        "title": "Deploy & Document"
+      }
+    ],
+    "order_index": 1,
+    "course_title": "Machine Learning"
+  },
+  {
+    "id": "cf8d0a53-9efb-4b97-ab72-a1045ec1aed5",
+    "title": "Email Spam Classifier",
+    "description_md": "Train a text classifier to distinguish spam from legitimate emails using NLP features.",
+    "tech_stack": [
+      "Python",
+      "scikit-learn",
+      "NLP"
+    ],
+    "difficulty": "beginner",
+    "estimated_hours": 8,
+    "requirements": [
+      "Complete all milestones",
+      "Deploy to GitHub",
+      "Write README",
+      "Pass AI code review"
+    ],
+    "milestone_checkpoints": [
+      {
+        "desc": "Clone starter, set up environment, plan approach",
+        "step": 1,
+        "title": "Setup & Planning"
+      },
+      {
+        "desc": "Build the main functionality",
+        "step": 2,
+        "title": "Core Implementation"
+      },
+      {
+        "desc": "Add error handling, edge cases, tests",
+        "step": 3,
+        "title": "Testing & Polish"
+      },
+      {
+        "desc": "Deploy to GitHub, write docs, submit",
+        "step": 4,
+        "title": "Deploy & Document"
+      }
+    ],
+    "order_index": 2,
+    "course_title": "Machine Learning"
+  },
+  {
+    "id": "3c9cc981-0791-4c94-81ce-256ac3be670c",
+    "title": "Customer Segmentation Dashboard",
+    "description_md": "Cluster customers by behaviour and build an interactive dashboard to explore segments.",
+    "tech_stack": [
+      "Python",
+      "K-means",
+      "Streamlit"
+    ],
+    "difficulty": "beginner",
+    "estimated_hours": 10,
+    "requirements": [
+      "Complete all milestones",
+      "Deploy to GitHub",
+      "Write README",
+      "Pass AI code review"
+    ],
+    "milestone_checkpoints": [
+      {
+        "desc": "Clone starter, set up environment, plan approach",
+        "step": 1,
+        "title": "Setup & Planning"
+      },
+      {
+        "desc": "Build the main functionality",
+        "step": 2,
+        "title": "Core Implementation"
+      },
+      {
+        "desc": "Add error handling, edge cases, tests",
+        "step": 3,
+        "title": "Testing & Polish"
+      },
+      {
+        "desc": "Deploy to GitHub, write docs, submit",
+        "step": 4,
+        "title": "Deploy & Document"
+      }
+    ],
+    "order_index": 3,
+    "course_title": "Machine Learning"
+  },
+  {
+    "id": "c33fb544-0e66-4ea1-b777-77804e744111",
+    "title": "Movie Recommendation Engine",
+    "description_md": "Build a recommendation system using collaborative filtering and deploy as a web service.",
+    "tech_stack": [
+      "Python",
+      "Collaborative Filtering",
+      "Flask"
+    ],
+    "difficulty": "intermediate",
+    "estimated_hours": 12,
+    "requirements": [
+      "Complete all milestones",
+      "Deploy to GitHub",
+      "Write README",
+      "Pass AI code review"
+    ],
+    "milestone_checkpoints": [
+      {
+        "desc": "Clone starter, set up environment, plan approach",
+        "step": 1,
+        "title": "Setup & Planning"
+      },
+      {
+        "desc": "Build the main functionality",
+        "step": 2,
+        "title": "Core Implementation"
+      },
+      {
+        "desc": "Add error handling, edge cases, tests",
+        "step": 3,
+        "title": "Testing & Polish"
+      },
+      {
+        "desc": "Deploy to GitHub, write docs, submit",
+        "step": 4,
+        "title": "Deploy & Document"
+      }
+    ],
+    "order_index": 4,
+    "course_title": "Machine Learning"
+  },
+  {
+    "id": "eb939403-03ce-441d-a291-d1e911b43b4e",
+    "title": "Fraud Detection System",
+    "description_md": "Detect fraudulent transactions in real-time using gradient boosting and anomaly detection.",
+    "tech_stack": [
+      "Python",
+      "XGBoost",
+      "FastAPI"
+    ],
+    "difficulty": "intermediate",
+    "estimated_hours": 14,
+    "requirements": [
+      "Complete all milestones",
+      "Deploy to GitHub",
+      "Write README",
+      "Pass AI code review"
+    ],
+    "milestone_checkpoints": [
+      {
+        "desc": "Clone starter, set up environment, plan approach",
+        "step": 1,
+        "title": "Setup & Planning"
+      },
+      {
+        "desc": "Build the main functionality",
+        "step": 2,
+        "title": "Core Implementation"
+      },
+      {
+        "desc": "Add error handling, edge cases, tests",
+        "step": 3,
+        "title": "Testing & Polish"
+      },
+      {
+        "desc": "Deploy to GitHub, write docs, submit",
+        "step": 4,
+        "title": "Deploy & Document"
+      }
+    ],
+    "order_index": 5,
+    "course_title": "Machine Learning"
+  },
+  {
+    "id": "f57ff9bf-8655-4b1d-86c8-e01e0c4de78f",
+    "title": "Stock Price Forecaster",
+    "description_md": "Build a time series forecasting model for stock prices using deep learning.",
+    "tech_stack": [
+      "Python",
+      "LSTM",
+      "PyTorch"
+    ],
+    "difficulty": "intermediate",
+    "estimated_hours": 14,
+    "requirements": [
+      "Complete all milestones",
+      "Deploy to GitHub",
+      "Write README",
+      "Pass AI code review"
+    ],
+    "milestone_checkpoints": [
+      {
+        "desc": "Clone starter, set up environment, plan approach",
+        "step": 1,
+        "title": "Setup & Planning"
+      },
+      {
+        "desc": "Build the main functionality",
+        "step": 2,
+        "title": "Core Implementation"
+      },
+      {
+        "desc": "Add error handling, edge cases, tests",
+        "step": 3,
+        "title": "Testing & Polish"
+      },
+      {
+        "desc": "Deploy to GitHub, write docs, submit",
+        "step": 4,
+        "title": "Deploy & Document"
+      }
+    ],
+    "order_index": 6,
+    "course_title": "Machine Learning"
+  },
+  {
+    "id": "920d8cdb-e4ce-4e95-8191-b7b79ea2847d",
+    "title": "Image Classifier (CNN)",
+    "description_md": "Train a convolutional neural network to classify images with transfer learning.",
+    "tech_stack": [
+      "Python",
+      "PyTorch",
+      "CNN"
+    ],
+    "difficulty": "intermediate",
+    "estimated_hours": 12,
+    "requirements": [
+      "Complete all milestones",
+      "Deploy to GitHub",
+      "Write README",
+      "Pass AI code review"
+    ],
+    "milestone_checkpoints": [
+      {
+        "desc": "Clone starter, set up environment, plan approach",
+        "step": 1,
+        "title": "Setup & Planning"
+      },
+      {
+        "desc": "Build the main functionality",
+        "step": 2,
+        "title": "Core Implementation"
+      },
+      {
+        "desc": "Add error handling, edge cases, tests",
+        "step": 3,
+        "title": "Testing & Polish"
+      },
+      {
+        "desc": "Deploy to GitHub, write docs, submit",
+        "step": 4,
+        "title": "Deploy & Document"
+      }
+    ],
+    "order_index": 7,
+    "course_title": "Machine Learning"
+  },
+  {
+    "id": "062076c2-4580-4be5-84a7-4f224fa71e7e",
+    "title": "Sentiment Analysis API",
+    "description_md": "Build a sentiment analysis API using a pre-trained transformer model.",
+    "tech_stack": [
+      "Python",
+      "Hugging Face",
+      "FastAPI"
+    ],
+    "difficulty": "intermediate",
+    "estimated_hours": 10,
+    "requirements": [
+      "Complete all milestones",
+      "Deploy to GitHub",
+      "Write README",
+      "Pass AI code review"
+    ],
+    "milestone_checkpoints": [
+      {
+        "desc": "Clone starter, set up environment, plan approach",
+        "step": 1,
+        "title": "Setup & Planning"
+      },
+      {
+        "desc": "Build the main functionality",
+        "step": 2,
+        "title": "Core Implementation"
+      },
+      {
+        "desc": "Add error handling, edge cases, tests",
+        "step": 3,
+        "title": "Testing & Polish"
+      },
+      {
+        "desc": "Deploy to GitHub, write docs, submit",
+        "step": 4,
+        "title": "Deploy & Document"
+      }
+    ],
+    "order_index": 8,
+    "course_title": "Machine Learning"
+  },
+  {
+    "id": "197f66ca-7af6-44a6-83a5-12ed20758efb",
+    "title": "AutoML Pipeline Builder",
+    "description_md": "Create an automated ML pipeline that tunes hyperparameters and tracks experiments.",
+    "tech_stack": [
+      "Python",
+      "Optuna",
+      "MLflow"
+    ],
+    "difficulty": "advanced",
+    "estimated_hours": 18,
+    "requirements": [
+      "Complete all milestones",
+      "Deploy to GitHub",
+      "Write README",
+      "Pass AI code review"
+    ],
+    "milestone_checkpoints": [
+      {
+        "desc": "Clone starter, set up environment, plan approach",
+        "step": 1,
+        "title": "Setup & Planning"
+      },
+      {
+        "desc": "Build the main functionality",
+        "step": 2,
+        "title": "Core Implementation"
+      },
+      {
+        "desc": "Add error handling, edge cases, tests",
+        "step": 3,
+        "title": "Testing & Polish"
+      },
+      {
+        "desc": "Deploy to GitHub, write docs, submit",
+        "step": 4,
+        "title": "Deploy & Document"
+      }
+    ],
+    "order_index": 9,
+    "course_title": "Machine Learning"
+  },
+  {
+    "id": "f66db72c-39fa-4ba6-aa6c-11610ceae3bf",
+    "title": "End-to-End ML Platform",
+    "description_md": "Build a production ML platform with model versioning, serving, and monitoring.",
+    "tech_stack": [
+      "Python",
+      "MLflow",
+      "Docker",
+      "FastAPI"
+    ],
+    "difficulty": "advanced",
+    "estimated_hours": 25,
+    "requirements": [
+      "Complete all milestones",
+      "Deploy to GitHub",
+      "Write README",
+      "Pass AI code review"
+    ],
+    "milestone_checkpoints": [
+      {
+        "desc": "Clone starter, set up environment, plan approach",
+        "step": 1,
+        "title": "Setup & Planning"
+      },
+      {
+        "desc": "Build the main functionality",
+        "step": 2,
+        "title": "Core Implementation"
+      },
+      {
+        "desc": "Add error handling, edge cases, tests",
+        "step": 3,
+        "title": "Testing & Polish"
+      },
+      {
+        "desc": "Deploy to GitHub, write docs, submit",
+        "step": 4,
+        "title": "Deploy & Document"
+      }
+    ],
+    "order_index": 10,
+    "course_title": "Machine Learning"
+  }
+]
