@@ -115,6 +115,12 @@ export default async function ProjectBriefPage({ params }: PageProps) {
           {/* Left column — main content (2/3) */}
           <div className="lg:col-span-2 space-y-6">
 
+            {/* About — full description */}
+            <div className="bg-surface rounded-xl border border-border p-5">
+              <h2 className="text-[10px] font-bold text-ink-muted uppercase tracking-widest mb-4">About This Project</h2>
+              <RichContent content={project.description_md} className="text-sm text-ink-secondary leading-relaxed" />
+            </div>
+
             {/* Tech Stack */}
             <div className="bg-surface rounded-xl border border-border p-5">
               <h2 className="text-[10px] font-bold text-ink-muted uppercase tracking-widest mb-4">Tech Stack</h2>
@@ -205,10 +211,9 @@ export default async function ProjectBriefPage({ params }: PageProps) {
           {/* Right column — sidebar (1/3) */}
           <div className="space-y-4">
 
-            {/* About — GitHub repo sidebar style */}
+            {/* Quick info — GitHub repo sidebar style */}
             <div className="bg-surface rounded-xl border border-border p-5">
-              <h3 className="text-[10px] font-bold text-ink-muted uppercase tracking-widest mb-3">About</h3>
-              <RichContent content={project.description_md} className="text-sm text-ink-secondary leading-relaxed mb-4" />
+              <h3 className="text-[10px] font-bold text-ink-muted uppercase tracking-widest mb-3">Quick Info</h3>
               <div className="space-y-3 text-sm">
                 <div className="flex items-center gap-2 text-ink-secondary">
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
