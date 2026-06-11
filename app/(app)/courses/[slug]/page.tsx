@@ -4,6 +4,8 @@ import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import type { Course, Module, Lesson, Project } from "@/types/database";
 
+export const revalidate = 120;
+
 function levelVariant(level: string): "success" | "warning" | "error" {
   if (level === "advanced") return "success";
   if (level === "intermediate") return "warning";

@@ -21,30 +21,23 @@ export default async function CoursesPage() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
-  const { data: courses } = await supabase
-    .from("courses")
-    .select("*")
-    .order("title", { ascending: true }) as { data: Course[] | null };
+  // Fetch courses and student in parallel
+  const [{ data: courses }, studentResult] = await Promise.all([
+    supabase.from("courses").select("*").order("title", { ascending: true }) as unknown as Promise<{ data: Course[] | null }>,
+    user ? supabase.from("students").select("id").eq("user_id", user.id).maybeSingle() : Promise.resolve({ data: null }),
+  ]);
 
-  // Fetch enrolled course IDs for this student
   const enrolledCourseIds = new Set<string>();
-  if (user) {
-    const { data: student } = await supabase
-      .from("students")
-      .select("id")
-      .eq("user_id", user.id)
-      .maybeSingle();
+  const student = studentResult.data;
+  if (student) {
+    const { data: enrollments } = await supabase
+      .from("student_enrollments")
+      .select("course_id")
+      .eq("student_id", student.id)
+      .eq("status", "active");
 
-    if (student) {
-      const { data: enrollments } = await supabase
-        .from("student_enrollments")
-        .select("course_id")
-        .eq("student_id", student.id)
-        .eq("status", "active");
-
-      for (const e of enrollments ?? []) {
-        enrolledCourseIds.add(e.course_id);
-      }
+    for (const e of enrollments ?? []) {
+      enrolledCourseIds.add(e.course_id);
     }
   }
 

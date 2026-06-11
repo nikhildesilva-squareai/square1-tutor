@@ -4,6 +4,8 @@ import Link from "next/link";
 import { SubmissionForm, ScoreDisplay } from "./SubmissionForm";
 import type { Project, ProjectSubmission } from "@/types/database";
 
+export const revalidate = 120;
+
 interface Milestone { title?: string; description?: string; [key: string]: unknown }
 interface PageProps { params: Promise<{ projectId: string }> }
 

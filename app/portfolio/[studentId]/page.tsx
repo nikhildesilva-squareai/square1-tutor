@@ -5,6 +5,8 @@ import { Logo } from "@/components/ui/logo";
 import type { ProjectSubmission } from "@/types/database";
 import type { Metadata } from "next";
 
+export const revalidate = 300;
+
 interface PageProps {
   params: Promise<{ studentId: string }>;
 }

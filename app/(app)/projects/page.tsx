@@ -26,8 +26,10 @@ export default async function ProjectsPage() {
 
   /* ── NOT ENROLLED — Showcase that sells the dream ───────────────── */
   if (enrolledCourseIds.length === 0) {
-    const { data: allCourses } = await supabase.from("courses").select("id, slug, title, color").eq("status", "active").order("title") as { data: CourseRow[] | null };
-    const { data: allProjects } = await supabase.from("projects").select("id, title, description_md, difficulty, estimated_hours, tech_stack, requirements, course_id, order_index").order("order_index", { ascending: true }) as { data: ProjectRow[] | null };
+    const [{ data: allCourses }, { data: allProjects }] = await Promise.all([
+      supabase.from("courses").select("id, slug, title, color").eq("status", "active").order("title") as unknown as Promise<{ data: CourseRow[] | null }>,
+      supabase.from("projects").select("id, title, description_md, difficulty, estimated_hours, tech_stack, requirements, course_id, order_index").order("order_index", { ascending: true }) as unknown as Promise<{ data: ProjectRow[] | null }>,
+    ]);
 
     const allCourseList = allCourses ?? [];
     const allProjectList = allProjects ?? [];
@@ -181,10 +183,12 @@ export default async function ProjectsPage() {
   }
 
   /* ── ENROLLED ──────────────────────────────────────────────────────── */
-  const { data: courses } = await supabase.from("courses").select("id, slug, title, color").in("id", enrolledCourseIds).order("title") as { data: CourseRow[] | null };
-  const { data: projects } = await supabase.from("projects").select("id, title, description_md, difficulty, estimated_hours, tech_stack, requirements, course_id, order_index").in("course_id", enrolledCourseIds).order("order_index", { ascending: true }) as { data: ProjectRow[] | null };
-  const { data: submissions } = await supabase.from("project_submissions").select("project_id, score, max_score").eq("student_id", student?.id ?? "") as { data: SubmissionRow[] | null };
-  const { data: completions } = await supabase.from("lesson_completions").select("lesson_id, lessons!inner(course_id)").eq("student_id", student?.id ?? "");
+  const [{ data: courses }, { data: projects }, { data: submissions }, { data: completions }] = await Promise.all([
+    supabase.from("courses").select("id, slug, title, color").in("id", enrolledCourseIds).order("title") as unknown as Promise<{ data: CourseRow[] | null }>,
+    supabase.from("projects").select("id, title, description_md, difficulty, estimated_hours, tech_stack, requirements, course_id, order_index").in("course_id", enrolledCourseIds).order("order_index", { ascending: true }) as unknown as Promise<{ data: ProjectRow[] | null }>,
+    supabase.from("project_submissions").select("project_id, score, max_score").eq("student_id", student?.id ?? "") as unknown as Promise<{ data: SubmissionRow[] | null }>,
+    supabase.from("lesson_completions").select("lesson_id, lessons!inner(course_id)").eq("student_id", student?.id ?? ""),
+  ]);
 
   const completionsByCourse = new Map<string, number>();
   for (const c of completions ?? []) {

@@ -234,37 +234,35 @@ export default async function DashboardPage({ searchParams }: DashboardProps) {
   const currentLesson = primaryEnrollment?.current_lesson;
   const level = primaryEnrollment?.assessment_level ?? "beginner";
 
-  // Fetch lesson completion count for this enrollment
-  const { count: completedLessonCount } = await supabase
-    .from("lesson_completions")
-    .select("id", { count: "exact", head: true })
-    .eq("student_id", student?.id ?? "")
-    .eq("enrollment_id", primaryEnrollment?.id ?? "");
+  // Fire all independent queries in parallel
+  const studentId = student?.id ?? "";
+  const courseId = primaryEnrollment?.course?.id ?? "";
+  const enrollmentId = primaryEnrollment?.id ?? "";
+  const now = new Date();
+  const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000).toISOString();
+
+  const [
+    { count: completedLessonCount },
+    { data: modules },
+    { data: completedLessons },
+    { data: allLessons },
+    { data: recentCompletions },
+    { data: projectSubmissions },
+    { data: nextProject },
+  ] = await Promise.all([
+    supabase.from("lesson_completions").select("id", { count: "exact", head: true }).eq("student_id", studentId).eq("enrollment_id", enrollmentId),
+    supabase.from("modules").select("id, title, order_index, week_number, course_id").eq("course_id", courseId).order("order_index", { ascending: true }) as unknown as Promise<{ data: ModuleRow[] | null }>,
+    supabase.from("lesson_completions").select("lesson_id").eq("student_id", studentId),
+    supabase.from("lessons").select("id, module_id, title, order_index").eq("course_id", courseId).order("order_index", { ascending: true }),
+    supabase.from("lesson_completions").select("completed_at").eq("student_id", studentId).gte("completed_at", sevenDaysAgo),
+    supabase.from("project_submissions").select("id, score").eq("student_id", studentId).not("score", "is", null),
+    supabase.from("projects").select("id, title, difficulty").eq("course_id", courseId).order("order_index", { ascending: true }).limit(1).maybeSingle(),
+  ]);
 
   const lessonsCompleted = completedLessonCount ?? 0;
   const progressPct = totalLessons > 0 ? lessonsCompleted / totalLessons : 0;
 
-  // Fetch modules for the course roadmap
-  const { data: modules } = await supabase
-    .from("modules")
-    .select("id, title, order_index, week_number, course_id")
-    .eq("course_id", primaryEnrollment?.course?.id ?? "")
-    .order("order_index", { ascending: true }) as { data: ModuleRow[] | null };
-
-  // Fetch completed lesson IDs for this course
-  const { data: completedLessons } = await supabase
-    .from("lesson_completions")
-    .select("lesson_id")
-    .eq("student_id", student?.id ?? "");
-
   const completedLessonIds = new Set((completedLessons ?? []).map(l => l.lesson_id));
-
-  // Fetch lessons per module for roadmap
-  const { data: allLessons } = await supabase
-    .from("lessons")
-    .select("id, module_id, title, order_index")
-    .eq("course_id", primaryEnrollment?.course?.id ?? "")
-    .order("order_index", { ascending: true });
 
   // Group lessons by module
   const lessonsByModule = new Map<string, { id: string; title: string; completed: boolean }[]>();
@@ -274,44 +272,17 @@ export default async function DashboardPage({ searchParams }: DashboardProps) {
     lessonsByModule.set(l.module_id, list);
   }
 
-  // Weekly streak — last 7 days
-  const now = new Date();
+  // Weekly streak
   const weekDays = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
-  const today = now.getDay(); // 0=Sun
+  const today = now.getDay();
   const streakData: { day: string; active: boolean }[] = [];
-
-  // Fetch completions in last 7 days
-  const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000).toISOString();
-  const { data: recentCompletions } = await supabase
-    .from("lesson_completions")
-    .select("completed_at")
-    .eq("student_id", student?.id ?? "")
-    .gte("completed_at", sevenDaysAgo);
-
   const activeDays = new Set((recentCompletions ?? []).map(c => new Date(c.completed_at).getDay()));
-  // Build Mon-Sun streak
   for (let i = 1; i <= 7; i++) {
-    const dayNum = i === 7 ? 0 : i; // Mon=1...Sat=6, Sun=0
+    const dayNum = i === 7 ? 0 : i;
     streakData.push({ day: weekDays[i - 1], active: activeDays.has(dayNum) });
   }
 
-  // Projects stats
-  const { data: projectSubmissions } = await supabase
-    .from("project_submissions")
-    .select("id, score")
-    .eq("student_id", student?.id ?? "")
-    .not("score", "is", null);
-
   const projectsDone = (projectSubmissions ?? []).length;
-
-  // Next project
-  const { data: nextProject } = await supabase
-    .from("projects")
-    .select("id, title, difficulty")
-    .eq("course_id", primaryEnrollment?.course?.id ?? "")
-    .order("order_index", { ascending: true })
-    .limit(1)
-    .maybeSingle();
 
   return (
     <div className="min-h-full px-4 sm:px-6 py-8 max-w-6xl mx-auto">
