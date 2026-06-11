@@ -10,10 +10,10 @@ export default async function NotesPage() {
   const { data: student } = await supabase.from("students").select("id, name").eq("user_id", user.id).maybeSingle();
   if (!student) redirect("/dashboard");
 
-  // Fetch all notes
-  const { data: notes } = await supabase
+  // Fetch notes + total count
+  const { data: notes, count: totalCount } = await supabase
     .from("study_notes")
-    .select("*")
+    .select("*", { count: "exact" })
     .eq("student_id", student.id)
     .order("is_pinned", { ascending: false })
     .order("created_at", { ascending: false })
@@ -33,6 +33,7 @@ export default async function NotesPage() {
     <StudyHubClient
       initialNotes={allNotes}
       stats={{ total: allNotes.length, highlights, codeSnippets, flashcards, dueFlashcards, userNotes, novaSaves, summaries }}
+      totalCount={totalCount ?? allNotes.length}
     />
   );
 }

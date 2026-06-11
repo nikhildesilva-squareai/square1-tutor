@@ -33,21 +33,23 @@ export async function GET(request: Request) {
   const lessonId = url.searchParams.get("lessonId");
   const limit = parseInt(url.searchParams.get("limit") ?? "50");
 
+  const offset = parseInt(url.searchParams.get("offset") ?? "0");
+
   let query = supabase
     .from("study_notes")
-    .select("*")
+    .select("*", { count: "exact" })
     .eq("student_id", student.id)
     .order("is_pinned", { ascending: false })
     .order("created_at", { ascending: false })
-    .limit(limit);
+    .range(offset, offset + limit - 1);
 
   if (type) query = query.eq("type", type);
   if (lessonId) query = query.eq("lesson_id", lessonId);
 
-  const { data: notes, error } = await query;
+  const { data: notes, count, error } = await query;
   if (error) return NextResponse.json({ error: "Failed to fetch notes" }, { status: 500 });
 
-  return NextResponse.json({ notes: notes ?? [] });
+  return NextResponse.json({ notes: notes ?? [], total: count ?? 0 });
 }
 
 // POST — Create a note
@@ -100,18 +102,23 @@ export async function PATCH(request: Request) {
   if (!student) return NextResponse.json({ error: "Student not found" }, { status: 404 });
 
   const body = await request.json();
-  const { id, title, content } = body as { id?: string; title?: string | null; content?: string };
+  const { id, title, content, imageUrl } = body as { id?: string; title?: string | null; content?: string; imageUrl?: string | null };
 
   if (!id) return NextResponse.json({ error: "Missing note ID" }, { status: 400 });
   if (!content?.trim()) return NextResponse.json({ error: "Content is required" }, { status: 400 });
 
+  const updates: Record<string, unknown> = {
+    title: title ?? null,
+    content: content.trim(),
+    updated_at: new Date().toISOString(),
+  };
+  if (imageUrl !== undefined) {
+    updates.image_url = imageUrl;
+  }
+
   const { error } = await supabase
     .from("study_notes")
-    .update({
-      title: title ?? null,
-      content: content.trim(),
-      updated_at: new Date().toISOString(),
-    })
+    .update(updates)
     .eq("id", id)
     .eq("student_id", student.id);
 
