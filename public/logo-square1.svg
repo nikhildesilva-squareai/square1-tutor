@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 200" role="img" aria-label="Square 1 Ai">
+  <title>Square 1 Ai</title>
+  <!-- Logo mark: open-top-right square frame with internal accent -->
+  <g stroke="#2563EB" stroke-width="14" fill="none" stroke-linecap="square">
+    <!-- left side -->
+    <line x1="30" y1="30" x2="30" y2="170"/>
+    <!-- bottom side -->
+    <line x1="30" y1="170" x2="170" y2="170"/>
+    <!-- top stub -->
+    <line x1="30" y1="30" x2="80" y2="30"/>
+  </g>
+  <!-- Internal accent square -->
+  <rect x="80" y="60" width="40" height="40" fill="#F59E0B"/>
+  <!-- Wordmark -->
+  <text x="210" y="138"
+        font-family="'Helvetica Neue', Helvetica, Arial, sans-serif"
+        font-weight="700"
+        font-size="110"
+        fill="#2563EB"
+        letter-spacing="-3">Square1 Ai</text>
+</svg>

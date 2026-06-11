@@ -6,6 +6,16 @@ interface PageProps {
   params: Promise<{ courseSlug: string }>;
 }
 
+function generateVerificationId(enrollmentId: string, studentId: string): string {
+  const raw = `${enrollmentId}-${studentId}`;
+  let hash = 0;
+  for (let i = 0; i < raw.length; i++) {
+    hash = ((hash << 5) - hash + raw.charCodeAt(i)) | 0;
+  }
+  const hex = Math.abs(hash).toString(16).toUpperCase().padStart(8, "0");
+  return `SQ1-${hex.slice(0, 4)}-${hex.slice(4, 8)}`;
+}
+
 export default async function CertificatePage({ params }: PageProps) {
   const { courseSlug } = await params;
   const supabase = await createClient();
@@ -20,7 +30,6 @@ export default async function CertificatePage({ params }: PageProps) {
 
   if (!student) redirect("/dashboard");
 
-  // Get course
   const { data: course } = await supabase
     .from("courses")
     .select("id, slug, title, color, total_lessons")
@@ -29,7 +38,6 @@ export default async function CertificatePage({ params }: PageProps) {
 
   if (!course) notFound();
 
-  // Check enrollment
   const { data: enrollment } = await supabase
     .from("student_enrollments")
     .select("id, assessment_level, enrolled_at")
@@ -40,7 +48,6 @@ export default async function CertificatePage({ params }: PageProps) {
 
   if (!enrollment) redirect(`/courses/${courseSlug}`);
 
-  // Check completion — count lessons done
   const { count: completedCount } = await supabase
     .from("lesson_completions")
     .select("id", { count: "exact", head: true })
@@ -51,7 +58,6 @@ export default async function CertificatePage({ params }: PageProps) {
   const total = course.total_lessons ?? 40;
   const pct = total > 0 ? Math.round((completed / total) * 100) : 0;
 
-  // Get assessment score
   const { data: attempt } = await supabase
     .from("assessment_attempts")
     .select("score, max_score, percentage")
@@ -62,7 +68,6 @@ export default async function CertificatePage({ params }: PageProps) {
     .limit(1)
     .maybeSingle();
 
-  // Get project count
   const { count: projectCount } = await supabase
     .from("project_submissions")
     .select("id", { count: "exact", head: true })
@@ -72,6 +77,7 @@ export default async function CertificatePage({ params }: PageProps) {
   const displayName = student.name ?? student.email?.split("@")[0] ?? "Student";
   const enrollDate = new Date(enrollment.enrolled_at).toLocaleDateString("en-AU", { year: "numeric", month: "long", day: "numeric" });
   const today = new Date().toLocaleDateString("en-AU", { year: "numeric", month: "long", day: "numeric" });
+  const verificationId = generateVerificationId(enrollment.id, student.id);
 
   return (
     <CertificateView
@@ -87,6 +93,7 @@ export default async function CertificatePage({ params }: PageProps) {
       enrollDate={enrollDate}
       issueDate={today}
       courseSlug={courseSlug}
+      verificationId={verificationId}
     />
   );
 }

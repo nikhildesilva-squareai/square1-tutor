@@ -15,6 +15,7 @@ interface Props {
   enrollDate: string;
   issueDate: string;
   courseSlug: string;
+  verificationId: string;
 }
 
 export function CertificateView(props: Props) {
@@ -24,115 +25,167 @@ export function CertificateView(props: Props) {
     window.print();
   }
 
+  const levelLabel =
+    props.level === "advanced" ? "Advanced" :
+    props.level === "intermediate" ? "Intermediate" :
+    "Foundational";
+
   return (
-    <div className="min-h-full bg-surface-soft px-4 py-8">
+    <div className="min-h-full bg-surface-soft px-4 py-8 print:bg-white print:p-0">
       {/* Controls — hidden when printing */}
-      <div className="max-w-4xl mx-auto mb-6 flex items-center justify-between print:hidden">
-        <button onClick={() => router.back()}
-          className="text-sm text-ink-muted hover:text-brand transition-colors flex items-center gap-1">
+      <div className="max-w-[900px] mx-auto mb-6 flex items-center justify-between print:hidden">
+        <button
+          onClick={() => router.back()}
+          className="text-sm text-ink-muted hover:text-brand transition-colors flex items-center gap-1.5"
+        >
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M19 12H5" /><polyline points="12 19 5 12 12 5" /></svg>
           Back
         </button>
-        <button onClick={handlePrint}
-          className="h-10 px-6 rounded-xl bg-brand text-white font-semibold text-sm hover:bg-brand/90 transition-all flex items-center gap-2">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-            <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" y1="15" x2="12" y2="3" />
-          </svg>
-          Download PDF
-        </button>
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => {
+              const url = `${window.location.origin}/certificate/${props.courseSlug}`;
+              navigator.clipboard.writeText(url);
+            }}
+            className="h-10 px-5 rounded-xl border border-border text-ink text-sm font-semibold hover:bg-surface-alt transition-all flex items-center gap-2"
+          >
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71" /><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71" /></svg>
+            Share
+          </button>
+          <button
+            onClick={handlePrint}
+            className="h-10 px-6 rounded-xl bg-brand text-white font-semibold text-sm hover:bg-brand/90 transition-all flex items-center gap-2"
+          >
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+              <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" y1="15" x2="12" y2="3" />
+            </svg>
+            Download PDF
+          </button>
+        </div>
       </div>
 
-      {/* Certificate — optimized for print */}
-      <div className="max-w-4xl mx-auto bg-surface rounded-2xl border border-border shadow-card overflow-hidden print:shadow-none print:border-none print:rounded-none">
-        {/* Top accent bar */}
-        <div className="h-2" style={{ background: `linear-gradient(90deg, ${props.courseColor}, #7C3AED)` }} />
+      {/* Certificate — landscape, print-optimized */}
+      <div className="max-w-[900px] mx-auto aspect-[1.414/1] bg-surface rounded-2xl border border-border shadow-card overflow-hidden print:shadow-none print:border-none print:rounded-none print:max-w-none print:aspect-auto">
+        <div className="relative w-full h-full flex flex-col">
 
-        <div className="p-10 sm:p-16">
-          {/* Header */}
-          <div className="text-center mb-12">
-            {/* Logo mark */}
-            <div className="flex items-center justify-center gap-2 mb-6">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-brand to-brand/80 flex items-center justify-center">
-                <span className="text-white font-black text-sm">[ ]</span>
+          {/* Decorative border frame */}
+          <div className="absolute inset-3 sm:inset-5 border border-border-mid/40 rounded-lg pointer-events-none print:inset-4" />
+          <div className="absolute inset-4 sm:inset-6 border border-border/30 rounded-md pointer-events-none print:inset-5" />
+
+          {/* Top accent stripe */}
+          <div className="h-1.5 flex-shrink-0">
+            <div className="h-full" style={{ background: `linear-gradient(90deg, ${props.courseColor}, ${props.courseColor}88, #7C3AED)` }} />
+          </div>
+
+          {/* Main content */}
+          <div className="flex-1 flex flex-col justify-between px-8 sm:px-16 py-6 sm:py-10 print:px-12 print:py-8">
+
+            {/* Top section: Logo + Title */}
+            <div className="text-center">
+              {/* Square 1 AI logo */}
+              <div className="flex items-center justify-center mb-5">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src="/logo-square1.png" alt="Square 1 AI" className="h-10 sm:h-12 w-auto" />
               </div>
-              <span className="text-lg font-black text-ink tracking-tight">Square 1 AI</span>
+
+              {/* Decorative divider */}
+              <div className="flex items-center justify-center gap-3 mb-4">
+                <div className="h-px w-16 sm:w-24" style={{ background: `linear-gradient(90deg, transparent, ${props.courseColor}60)` }} />
+                <svg width="12" height="12" viewBox="0 0 24 24" fill={props.courseColor} opacity="0.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26" /></svg>
+                <div className="h-px w-16 sm:w-24" style={{ background: `linear-gradient(270deg, transparent, ${props.courseColor}60)` }} />
+              </div>
+
+              <h2 className="text-[10px] sm:text-xs font-bold text-ink-muted uppercase tracking-[0.35em] mb-6">Certificate of Completion</h2>
             </div>
 
-            <p className="text-[10px] font-bold text-ink-muted uppercase tracking-[0.3em] mb-4">Certificate of Completion</p>
+            {/* Middle section: Student + Course */}
+            <div className="text-center flex-1 flex flex-col justify-center -mt-4">
+              <p className="text-xs sm:text-sm text-ink-muted mb-2">This is to certify that</p>
 
-            <h1 className="text-3xl sm:text-4xl font-black text-ink mb-2">
-              {props.courseTitle}
-            </h1>
+              <h1 className="text-2xl sm:text-4xl font-black text-ink mb-1.5 tracking-tight">
+                {props.studentName}
+              </h1>
 
-            <div className="w-16 h-0.5 mx-auto rounded-full my-6" style={{ background: props.courseColor }} />
+              <p className="text-xs sm:text-sm text-ink-muted mb-5">has successfully completed</p>
 
-            <p className="text-sm text-ink-muted mb-1">This certifies that</p>
-            <p className="text-2xl sm:text-3xl font-black text-ink mb-1">{props.studentName}</p>
-            <p className="text-sm text-ink-muted">
-              has successfully completed the {props.courseTitle} programme at Square 1 AI
-            </p>
-          </div>
+              <div className="inline-block mx-auto mb-5">
+                <h2 className="text-lg sm:text-2xl font-bold mb-2" style={{ color: props.courseColor }}>
+                  {props.courseTitle}
+                </h2>
+                <div className="w-12 h-0.5 mx-auto rounded-full" style={{ background: props.courseColor }} />
+              </div>
 
-          {/* Stats grid */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-12">
-            <div className="text-center p-4 rounded-xl border border-border">
-              <p className="text-2xl font-black text-ink">{props.completionPct}%</p>
-              <p className="text-[10px] text-ink-muted uppercase tracking-wider font-bold">Completion</p>
+              {/* Achievement summary */}
+              <p className="text-xs sm:text-sm text-ink-muted max-w-lg mx-auto leading-relaxed">
+                an online programme offered by Square 1 AI, with a verified assessment score
+                of <span className="font-bold text-ink">{props.assessmentScore ?? "—"}%</span> at
+                the <span className="font-bold text-ink">{levelLabel}</span> level,
+                completing <span className="font-bold text-ink">{props.lessonsCompleted} lessons</span> and <span className="font-bold text-ink">{props.projectsCompleted} projects</span>.
+              </p>
             </div>
-            <div className="text-center p-4 rounded-xl border border-border">
-              <p className="text-2xl font-black text-ink">{props.lessonsCompleted}/{props.totalLessons}</p>
-              <p className="text-[10px] text-ink-muted uppercase tracking-wider font-bold">Lessons</p>
-            </div>
-            <div className="text-center p-4 rounded-xl border border-border">
-              <p className="text-2xl font-black text-ink">{props.assessmentScore ?? "—"}%</p>
-              <p className="text-[10px] text-ink-muted uppercase tracking-wider font-bold">Assessment</p>
-            </div>
-            <div className="text-center p-4 rounded-xl border border-border">
-              <p className="text-2xl font-black text-ink">{props.projectsCompleted}</p>
-              <p className="text-[10px] text-ink-muted uppercase tracking-wider font-bold">Projects</p>
-            </div>
-          </div>
 
-          {/* Level badge */}
-          <div className="text-center mb-12">
-            <span className={[
-              "inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold border capitalize",
-              props.level === "advanced" ? "bg-emerald-50 text-emerald-600 border-emerald-200" :
-              props.level === "intermediate" ? "bg-amber-50 text-amber-600 border-amber-200" :
-              "bg-blue-50 text-blue-600 border-blue-200",
-            ].join(" ")}>
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M22 11.08V12a10 10 0 11-5.93-9.14" /><polyline points="22 4 12 14.01 9 11.01" /></svg>
-              {props.level} Level Certified
-            </span>
-          </div>
-
-          {/* Footer */}
-          <div className="flex items-end justify-between border-t border-border pt-8">
+            {/* Bottom section: Signatures + Meta */}
             <div>
-              <p className="text-xs text-ink-muted">Enrolled: {props.enrollDate}</p>
-              <p className="text-xs text-ink-muted">Issued: {props.issueDate}</p>
+              {/* Signature row */}
+              <div className="flex items-end justify-between mb-6 px-2 sm:px-8">
+                <div className="text-center">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src="/signature-founder.png" alt="Nikhil De Silva signature" className="h-8 sm:h-10 w-auto mx-auto mb-0.5 opacity-85" />
+                  <div className="w-28 sm:w-36 border-b border-ink/20 mb-1.5" />
+                  <p className="text-[10px] sm:text-xs font-bold text-ink">Nikhil De Silva</p>
+                  <p className="text-[9px] sm:text-[10px] text-ink-muted">Founder, Square 1 AI</p>
+                </div>
+
+                {/* Date */}
+                <div className="text-center">
+                  <p className="text-[10px] sm:text-xs text-ink-muted mb-0.5">Date of Issue</p>
+                  <p className="text-xs sm:text-sm font-bold text-ink">{props.issueDate}</p>
+                </div>
+
+                <div className="text-center">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src="/logo-square1.png" alt="Square 1 AI" className="h-6 sm:h-8 w-auto mx-auto mb-1" />
+                  <div className="w-28 sm:w-36 border-b border-ink/20 mb-1.5" />
+                  <p className="text-[10px] sm:text-xs font-bold text-ink">Square 1 AI</p>
+                  <p className="text-[9px] sm:text-[10px] text-ink-muted">AI-Powered Education</p>
+                </div>
+              </div>
+
+              {/* Verification footer */}
+              <div className="flex items-center justify-between border-t border-border pt-3 px-1">
+                <div className="flex items-center gap-2">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-ink-muted"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /></svg>
+                  <span className="text-[9px] sm:text-[10px] text-ink-muted font-mono">
+                    Credential ID: {props.verificationId}
+                  </span>
+                </div>
+                <span className="text-[9px] sm:text-[10px] text-ink-muted">
+                  Verify at <span className="font-semibold">square1ai.com/verify</span>
+                </span>
+              </div>
             </div>
-            <div className="text-right">
-              <div className="w-32 h-px bg-ink mb-2" />
-              <p className="text-xs font-bold text-ink">Square 1 AI</p>
-              <p className="text-[10px] text-ink-muted">AI-Powered Education</p>
-            </div>
+          </div>
+
+          {/* Bottom accent stripe */}
+          <div className="h-1.5 flex-shrink-0">
+            <div className="h-full" style={{ background: `linear-gradient(90deg, #7C3AED, ${props.courseColor}88, ${props.courseColor})` }} />
           </div>
         </div>
-
-        {/* Bottom accent */}
-        <div className="h-2" style={{ background: `linear-gradient(90deg, ${props.courseColor}, #7C3AED)` }} />
       </div>
 
       {/* Print styles */}
       <style>{`
         @media print {
-          body { background: white !important; }
+          body { background: white !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
           .print\\:hidden { display: none !important; }
           .print\\:shadow-none { box-shadow: none !important; }
           .print\\:border-none { border: none !important; }
           .print\\:rounded-none { border-radius: 0 !important; }
-          @page { margin: 0.5in; size: landscape; }
+          .print\\:bg-white { background: white !important; }
+          .print\\:p-0 { padding: 0 !important; }
+          .print\\:max-w-none { max-width: none !important; }
+          .print\\:aspect-auto { aspect-ratio: auto !important; }
+          @page { margin: 0.4in; size: landscape; }
         }
       `}</style>
     </div>
