@@ -122,7 +122,7 @@ export function HeroSection() {
       </nav>
 
       {/* ── HERO BODY ─────────────────────────────────────────────────── */}
-      <div className="relative z-10 flex-1 flex items-center max-w-7xl mx-auto w-full px-6 sm:px-8">
+      <div className="relative z-10 flex-1 flex flex-col lg:flex-row items-center max-w-7xl mx-auto w-full px-6 sm:px-8">
 
         {/* LEFT — Text */}
         <div className="w-full lg:w-[45%] flex flex-col justify-center py-8 lg:py-0">

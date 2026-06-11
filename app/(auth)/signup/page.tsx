@@ -695,7 +695,7 @@ export default function SignupPage() {
                   onChange={(e) => handleDigitChange(i, e.target.value)}
                   onKeyDown={(e) => handleKeyDown(i, e)}
                   onFocus={(e) => e.target.select()}
-                  className="w-12 h-14 rounded-xl text-center text-xl font-bold text-white transition-all focus:outline-none focus:ring-2 focus:ring-brand/30 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-10 h-12 sm:w-12 sm:h-14 rounded-xl text-center text-lg sm:text-xl font-bold text-white transition-all focus:outline-none focus:ring-2 focus:ring-brand/30 disabled:opacity-50 disabled:cursor-not-allowed"
                   style={{
                     background: digit ? "rgba(0,86,206,0.05)" : "#161B22",
                     border: digit

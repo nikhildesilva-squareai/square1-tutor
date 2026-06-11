@@ -2,6 +2,16 @@ import { createClient } from "@/lib/supabase/server";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import type { Course } from "@/types/database";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Courses",
+  description: "Explore 12 AI-powered tech courses. From web development to cybersecurity — personalised learning plans, real projects, and AI tutoring.",
+  openGraph: {
+    title: "Courses — Square 1 AI",
+    description: "Explore 12 AI-powered tech courses with personalised learning, real projects, and AI tutoring.",
+  },
+};
 
 function levelVariant(level: string): "success" | "warning" | "error" | "muted" {
   if (level === "advanced") return "success";
@@ -55,7 +65,7 @@ export default async function CoursesPage() {
           <p className="text-ink-muted">No courses available yet. Check back soon.</p>
         </div>
       ) : (
-        <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-5">
           {courses.map((course) => {
             const isComingSoon = course.status === "coming_soon";
             const isEnrolled = enrolledCourseIds.has(course.id);

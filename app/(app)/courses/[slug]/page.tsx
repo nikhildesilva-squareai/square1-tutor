@@ -2,9 +2,29 @@ import { createClient } from "@/lib/supabase/server";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
+import type { Metadata } from "next";
 import type { Course, Module, Lesson, Project } from "@/types/database";
 
 export const revalidate = 120;
+
+interface PageProps {
+  params: Promise<{ slug: string }>;
+}
+
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const { slug } = await params;
+  const supabase = await createClient();
+  const { data: course } = await supabase.from("courses").select("title, description, color").eq("slug", slug).maybeSingle();
+  if (!course) return { title: "Course Not Found" };
+  return {
+    title: course.title,
+    description: course.description ?? `Learn ${course.title} with AI-powered personalised lessons, real projects, and an AI tutor.`,
+    openGraph: {
+      title: `${course.title} — Square 1 AI`,
+      description: course.description ?? `Master ${course.title} with 40 lessons, 10 projects, and AI-powered tutoring.`,
+    },
+  };
+}
 
 function levelVariant(level: string): "success" | "warning" | "error" {
   if (level === "advanced") return "success";
@@ -16,10 +36,6 @@ function difficultyVariant(difficulty: string): "success" | "warning" | "error" 
   if (difficulty === "advanced") return "error";
   if (difficulty === "intermediate") return "warning";
   return "success";
-}
-
-interface PageProps {
-  params: Promise<{ slug: string }>;
 }
 
 export default async function CourseDetailPage({ params }: PageProps) {
@@ -157,7 +173,7 @@ export default async function CourseDetailPage({ params }: PageProps) {
                 </span>
               </div>
               <p className="text-sm text-slate-400 leading-relaxed max-w-2xl mb-4">{course.description}</p>
-              <div className="flex items-center gap-5 text-sm text-slate-500">
+              <div className="flex items-center flex-wrap gap-3 sm:gap-5 text-sm text-slate-500">
                 <span className="flex items-center gap-1.5">
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 19.5A2.5 2.5 0 016.5 17H20" /><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z" /></svg>
                   {course.total_modules} modules
@@ -366,7 +382,7 @@ export default async function CourseDetailPage({ params }: PageProps) {
 
       {/* Sticky CTA — only for non-enrolled */}
       {!isEnrolled && (
-      <div className="fixed bottom-0 left-0 right-0 bg-surface border-t border-border px-6 py-4 flex items-center justify-between print:hidden z-30">
+      <div className="fixed bottom-0 left-0 right-0 bg-surface border-t border-border px-4 sm:px-6 py-3 sm:py-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 print:hidden z-30">
         <div>
           <p className="text-sm font-semibold text-ink">{course.title}</p>
           <p className="text-xs text-ink-muted">20 questions · ~30 minutes</p>

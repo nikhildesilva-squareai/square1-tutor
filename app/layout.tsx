@@ -8,19 +8,42 @@ import { GoogleAnalytics } from "@/components/GoogleAnalytics";
 const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
 const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"] });
 
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://square1-tutor.vercel.app";
+
 export const metadata: Metadata = {
-  title: "Square 1 AI — Learn it. Build it. Ship it.",
+  metadataBase: new URL(siteUrl),
+  title: {
+    default: "Square 1 AI — Learn it. Build it. Ship it.",
+    template: "%s | Square 1 AI",
+  },
   description:
     "Get assessed. Get a personalised learning plan. Build 10–12 real deployed projects. Land the job or start your company. AI-powered tech education.",
   keywords: [
-    "AI tutor",
-    "learn to code",
-    "tech education",
-    "AI assessment",
-    "coding projects",
-    "personalised learning",
-    "Square 1 AI",
+    "AI tutor", "learn to code", "tech education", "AI assessment",
+    "coding projects", "personalised learning", "Square 1 AI",
+    "online courses", "AI-powered education", "project-based learning",
   ],
+  authors: [{ name: "Square 1 AI" }],
+  creator: "Square 1 AI",
+  publisher: "Square 1 AI",
+  openGraph: {
+    type: "website",
+    locale: "en_AU",
+    siteName: "Square 1 AI",
+    title: "Square 1 AI — Learn it. Build it. Ship it.",
+    description: "AI-powered tech education. Get assessed, get a personalised learning plan, build real projects, and earn industry-recognised credentials.",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Square 1 AI — Learn it. Build it. Ship it.",
+    description: "AI-powered tech education. Get assessed, get a personalised learning plan, build real projects.",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: { index: true, follow: true, "max-video-preview": -1, "max-image-preview": "large", "max-snippet": -1 },
+  },
+  icons: { icon: "/favicon.ico" },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

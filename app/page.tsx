@@ -252,8 +252,8 @@ export default async function Home() {
                     )},
                   ].map((s) => (
                     <a key={s.label} href={s.href} target="_blank" rel="noopener noreferrer"
-                      className="w-9 h-9 rounded-full border border-white/[0.08] flex items-center justify-center text-slate-500 hover:text-white hover:border-white/25 transition-colors"
-                      aria-label={s.label} style={{ minHeight: "unset" }}>
+                      className="w-11 h-11 rounded-full border border-white/[0.08] flex items-center justify-center text-slate-500 hover:text-white hover:border-white/25 transition-colors"
+                      aria-label={s.label}>
                       {s.icon}
                     </a>
                   ))}

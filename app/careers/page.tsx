@@ -1,5 +1,15 @@
 import Link from "next/link";
 import { Logo } from "@/components/ui/logo";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Careers",
+  description: "Join the Square 1 AI team. Help us build the future of AI-powered tech education.",
+  openGraph: {
+    title: "Careers — Square 1 AI",
+    description: "Join the Square 1 AI team. Help us build the future of AI-powered tech education.",
+  },
+};
 
 export default function CareersPage() {
   return (

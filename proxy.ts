@@ -14,6 +14,7 @@ const PUBLIC_PATHS = [
   "/api/auth/callback",
   "/api/onboard",
   "/portfolio/",
+  "/verify",
 ];
 
 export async function proxy(request: NextRequest) {
