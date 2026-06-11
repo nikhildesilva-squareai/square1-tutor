@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import Link from "next/link";
 import type { ProjectSubmission } from "@/types/database";
+import { SharePortfolioButton } from "@/components/SharePortfolioButton";
 
 /* ─── Types ─────────────────────────────────────────────────────────────── */
 interface ProjectWithSubmission {
@@ -265,6 +266,12 @@ export default async function PortfolioPage() {
                 ].join(" ")}>{lvl}</span>
               ))}
             </div>
+          </div>
+
+          {/* Share portfolio */}
+          <div className="mt-4 flex items-center justify-between">
+            <p className="text-[10px] text-slate-500 uppercase tracking-widest font-bold">Share your portfolio</p>
+            <SharePortfolioButton url={`${process.env.NEXT_PUBLIC_SITE_URL ?? "https://square1-tutor.vercel.app"}/portfolio/${student.id}`} />
           </div>
         </div>
       </div>

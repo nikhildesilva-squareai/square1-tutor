@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { SubmissionForm, ScoreDisplay } from "./SubmissionForm";
+import { RichContent } from "@/components/ui/rich-content";
 import type { Project, ProjectSubmission } from "@/types/database";
 
 interface Milestone { title?: string; description?: string; [key: string]: unknown }
@@ -9,6 +10,13 @@ interface PageProps { params: Promise<{ projectId: string }> }
 
 function toSlug(title: string) {
   return title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+}
+
+function extractSummary(md: string, maxLen = 200): string {
+  const lines = md.split("\n").map(l => l.trim()).filter(Boolean);
+  const body = lines.filter(l => !l.startsWith("#")).join(" ").replace(/[*`]/g, "");
+  if (body.length <= maxLen) return body;
+  return body.substring(0, maxLen).replace(/\s\S*$/, "") + "…";
 }
 
 const DIFF_COLORS: Record<string, { text: string; bg: string; border: string; dot: string }> = {
@@ -71,7 +79,7 @@ export default async function ProjectBriefPage({ params }: PageProps) {
                 )}
               </div>
               <p className="text-sm text-slate-400 leading-relaxed max-w-2xl">
-                {project.description_md.replace(/[#*`]/g, "").substring(0, 200)}
+                {extractSummary(project.description_md)}
               </p>
             </div>
           </div>
@@ -200,9 +208,7 @@ export default async function ProjectBriefPage({ params }: PageProps) {
             {/* About — GitHub repo sidebar style */}
             <div className="bg-surface rounded-xl border border-border p-5">
               <h3 className="text-[10px] font-bold text-ink-muted uppercase tracking-widest mb-3">About</h3>
-              <p className="text-sm text-ink-secondary leading-relaxed mb-4">
-                {project.description_md.replace(/[#*`]/g, "").substring(0, 200)}
-              </p>
+              <RichContent content={project.description_md} className="text-sm text-ink-secondary leading-relaxed mb-4" />
               <div className="space-y-3 text-sm">
                 <div className="flex items-center gap-2 text-ink-secondary">
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
