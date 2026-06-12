@@ -19,31 +19,28 @@ type Course = {
 type CourseMeta = {
   role:     string;
   salary:   string;
-  enrolled: number;
   projects: string[];
 };
 
 const META: Record<string, CourseMeta> = {
-  "generative-ai":           { role: "AI Engineer",            salary: "$130–200k", enrolled: 1842, projects: ["AI Chatbot", "RAG Pipeline", "Research Agent"] },
-  "machine-learning":        { role: "ML Engineer",            salary: "$140–220k", enrolled: 1247, projects: ["House Price Predictor", "Image Classifier", "Fraud Detector"] },
-  "artificial-intelligence": { role: "AI Engineer",            salary: "$130–200k", enrolled:  892, projects: ["Pathfinding Visualiser", "Game AI", "Decision Engine"] },
-  "cybersecurity":           { role: "Cybersecurity Engineer",  salary: "$110–180k", enrolled: 1108, projects: ["Vulnerability Scanner", "Password Auditor", "Secure Auth"] },
-  "computer-vision":         { role: "CV Engineer",            salary: "$120–180k", enrolled:  624, projects: ["Face Detection", "OCR App", "Object Tracker"] },
-  "game-development":        { role: "Game Developer",         salary: "$80–150k",  enrolled:  738, projects: ["2D Platformer", "AI Enemy System", "Multiplayer Game"] },
-  "fullstack-development":   { role: "Full Stack Engineer",    salary: "$100–160k", enrolled: 1672, projects: ["SaaS App", "Real-time Chat", "Payment System"] },
-  "drone-technology":        { role: "Drone Engineer",         salary: "$115–185k", enrolled:  542, projects: ["Autonomous Flight", "Aerial Vision AI", "Swarm Controller"] },
-  "data-science":            { role: "Data Scientist",         salary: "$115–185k", enrolled: 1156, projects: ["Cohort Analysis", "A/B Test Lab", "Sales Forecaster"] },
-  "llm-agent-architect":     { role: "Agent Architect",        salary: "$150–250k", enrolled:  896, projects: ["Tool-use Agent", "Multi-agent System", "Autonomous Workflow"] },
-  "ai-product-management":   { role: "AI Product Manager",     salary: "$140–220k", enrolled:  734, projects: ["AI Product Spec", "Go-to-Market Plan", "User Research Report"] },
-  "devops-engineering":      { role: "DevOps Engineer",        salary: "$120–190k", enrolled: 1324, projects: ["CI/CD Pipeline", "K8s Deployment", "Monitoring Stack"] },
-  "default":                 { role: "Software Engineer",      salary: "$90–150k",  enrolled:  500, projects: ["Starter Project", "Mid-level Project", "Capstone"] },
+  "generative-ai":           { role: "AI Engineer",            salary: "$130–200k", projects: ["AI Chatbot", "RAG Pipeline", "Research Agent"] },
+  "machine-learning":        { role: "ML Engineer",            salary: "$140–220k", projects: ["House Price Predictor", "Image Classifier", "Fraud Detector"] },
+  "artificial-intelligence": { role: "AI Engineer",            salary: "$130–200k", projects: ["Pathfinding Visualiser", "Game AI", "Decision Engine"] },
+  "cybersecurity":           { role: "Cybersecurity Engineer",  salary: "$110–180k", projects: ["Vulnerability Scanner", "Password Auditor", "Secure Auth"] },
+  "computer-vision":         { role: "CV Engineer",            salary: "$120–180k", projects: ["Face Detection", "OCR App", "Object Tracker"] },
+  "game-development":        { role: "Game Developer",         salary: "$80–150k",  projects: ["2D Platformer", "AI Enemy System", "Multiplayer Game"] },
+  "fullstack-development":   { role: "Full Stack Engineer",    salary: "$100–160k", projects: ["SaaS App", "Real-time Chat", "Payment System"] },
+  "drone-technology":        { role: "Drone Engineer",         salary: "$115–185k", projects: ["Autonomous Flight", "Aerial Vision AI", "Swarm Controller"] },
+  "data-science":            { role: "Data Scientist",         salary: "$115–185k", projects: ["Cohort Analysis", "A/B Test Lab", "Sales Forecaster"] },
+  "llm-agent-architect":     { role: "Agent Architect",        salary: "$150–250k", projects: ["Tool-use Agent", "Multi-agent System", "Autonomous Workflow"] },
+  "ai-product-management":   { role: "AI Product Manager",     salary: "$140–220k", projects: ["AI Product Spec", "Go-to-Market Plan", "User Research Report"] },
+  "devops-engineering":      { role: "DevOps Engineer",        salary: "$120–190k", projects: ["CI/CD Pipeline", "K8s Deployment", "Monitoring Stack"] },
+  "default":                 { role: "Software Engineer",      salary: "$90–150k",  projects: ["Starter Project", "Mid-level Project", "Capstone"] },
 };
 
 function getMeta(slug: string): CourseMeta {
   return META[slug] ?? META.default;
 }
-
-const MAX_ENROLLED = Math.max(...Object.values(META).map((m) => m.enrolled));
 
 // ─── Mobile card — compact tile ──────────────────────────────────────────────
 function MobileCourseCard({
@@ -125,7 +122,6 @@ function DesktopCourseCard({
   const meta = getMeta(course.slug);
   const isLocked = course.status !== "active" || course.slug === "#";
   const href = isLocked ? "#" : `/courses/${course.slug}`;
-  const popularity = Math.round((meta.enrolled / MAX_ENROLLED) * 100);
 
   return (
     <Link
@@ -214,14 +210,14 @@ function DesktopCourseCard({
           </div>
           <span className="text-[10px] text-slate-500 font-semibold flex items-center gap-1">
             <span className="w-1 h-1 rounded-full bg-emerald-400" />
-            <span className="tabular-nums">{meta.enrolled.toLocaleString()}</span> enrolled
+            AI-graded track
           </span>
         </div>
         <div className="h-1 rounded-full overflow-hidden" style={{ background: `${course.color}15` }}>
           <div
             className="h-full rounded-full transition-all duration-700"
             style={{
-              width: isVisible ? `${popularity}%` : "0%",
+              width: isVisible ? "100%" : "0%",
               background: `linear-gradient(90deg, ${course.color}, ${course.color}cc)`,
               transitionDelay: `${index * 90 + 400}ms`,
             }}

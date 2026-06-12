@@ -1,291 +1,166 @@
-"use client";
-
-import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// Social Proof — rotating transformation stories + embedded stats
-// Replaces both StatsSection + TransformationStories
+// Honest Proof — founder note + founding student offer.
+// Deliberately contains ZERO testimonials: Square 1 is new and we don't invent
+// social proof. Real student stories go here once real students earn them —
+// with verifiable portfolios attached.
 // ═══════════════════════════════════════════════════════════════════════════════
 
-const ROTATION_MS = 5000;
-
-type Story = {
-  name:      string;
-  age:       number;
-  initials:  string;
-  avatarBg:  string;
-  before:    string;
-  after:     string;
-  course:    string;
-  plan:      string;
-  quote:     string;
-  stat:      { value: string; label: string };
-  accent:    string;
-};
-
-const STORIES: Story[] = [
+const FOUNDING_PERKS = [
   {
-    name: "Priya S.", age: 27, initials: "PS", avatarBg: "#7C3AED",
-    before: "Accountant with zero coding experience",
-    after:  "AI Engineer at a Series B startup",
-    course: "Generative AI", plan: "6-month plan",
-    quote: "6 months ago I couldn't write a Python function. I just deployed my 10th project and got 3 interview calls in one week. The AI grading was the difference — I knew exactly what to fix.",
-    stat: { value: "3", label: "offers received" },
-    accent: "#7C3AED",
+    title: "Founding pricing, locked",
+    desc:  "Whatever you pay now is your price for life — it never goes up on you.",
+    accent: "#3388FF",
   },
   {
-    name: "James O.", age: 19, initials: "JO", avatarBg: "#0056CE",
-    before: "CS student, lots of theory, zero shipped code",
-    after:  "Launched his own AI startup in month 4",
-    course: "Full Stack + Gen AI", plan: "9-month plan",
-    quote: "University taught me theory. Square 1 taught me to build. By month 3 I had 6 real projects. By month 4 I had my first paying customer.",
-    stat: { value: "12", label: "projects shipped" },
-    accent: "#0056CE",
+    title: "A direct line to the founder",
+    desc:  "Feedback, stuck points, ideas — they land in my inbox, not a ticket queue.",
+    accent: "#A78BFA",
   },
   {
-    name: "Marcus T.", age: 34, initials: "MT", avatarBg: "#10B981",
-    before: "DevOps engineer wanting to move into AI",
-    after:  "Senior AI Engineer, 40% salary increase",
-    course: "Machine Learning", plan: "3-month plan",
-    quote: "I'd tried Udemy, Coursera, YouTube. Nothing stuck because there was no feedback. Square 1 AI grades your actual code. That changes everything.",
-    stat: { value: "40%", label: "salary increase" },
+    title: "Shape the platform",
+    desc:  "Early students decide what gets built next. Your gaps set the roadmap.",
     accent: "#10B981",
-  },
-  {
-    name: "Aisha K.", age: 23, initials: "AK", avatarBg: "#EC4899",
-    before: "Marketing grad, self-taught Python basics",
-    after:  "Data Scientist at a healthcare startup",
-    course: "Data Science", plan: "6-month plan",
-    quote: "I went from Pandas tutorials to building a real cohort analysis tool that my company actually uses. The AI tutor caught mistakes I didn't even know I was making.",
-    stat: { value: "Week 22", label: "first offer" },
-    accent: "#EC4899",
-  },
-  {
-    name: "Chen W.", age: 28, initials: "CW", avatarBg: "#F59E0B",
-    before: "Junior developer, 2 years experience",
-    after:  "LLM Agent Architect at a top AI lab",
-    course: "LLM Agent Architect", plan: "3-month plan",
-    quote: "I needed to level up fast. The multi-agent project alone got me through 3 technical interviews. The interviewers were more impressed by my repo than my resume.",
-    stat: { value: "$185k", label: "new salary" },
-    accent: "#F59E0B",
   },
 ];
 
 export function SocialProofSection() {
-  const sectionRef = useRef<HTMLDivElement>(null);
-  const [activeIdx, setActiveIdx] = useState(0);
-  const [isPaused, setIsPaused]   = useState(false);
-  const [progress, setProgress]   = useState(0);
-  const [isVisible, setIsVisible] = useState(false);
-  const startRef = useRef<number>(0);
-  const rafRef   = useRef<number>(0);
-
-  // Trigger on enter view
-  useEffect(() => {
-    if (!sectionRef.current) return;
-    const obs = new IntersectionObserver(
-      ([entry]) => { if (entry.isIntersecting) { setIsVisible(true); obs.disconnect(); } },
-      { threshold: 0.2 }
-    );
-    obs.observe(sectionRef.current);
-    return () => obs.disconnect();
-  }, []);
-
-  // Auto-rotate
-  useEffect(() => {
-    if (isPaused || !isVisible) return;
-    startRef.current = performance.now();
-    setProgress(0);
-    function tick(now: number) {
-      const elapsed = now - startRef.current;
-      const pct = Math.min(1, elapsed / ROTATION_MS);
-      setProgress(pct);
-      if (pct < 1) rafRef.current = requestAnimationFrame(tick);
-      else setActiveIdx((i) => (i + 1) % STORIES.length);
-    }
-    rafRef.current = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(rafRef.current);
-  }, [activeIdx, isPaused, isVisible]);
-
-  const story = STORIES[activeIdx];
-
   return (
     <section
-      ref={sectionRef}
       className="relative overflow-hidden py-20 sm:py-28 lg:py-32 px-4 sm:px-6 lg:px-8"
       style={{
         background: `
-          radial-gradient(ellipse 900px 500px at 20% 30%, ${story.accent}10, transparent 60%),
+          radial-gradient(ellipse 900px 500px at 20% 30%, rgba(0,86,206,0.08), transparent 60%),
           radial-gradient(ellipse 800px 500px at 80% 70%, rgba(167,139,250,0.06), transparent 60%),
           linear-gradient(180deg, #F8FAFC 0%, #FFFFFF 50%, #F4F8FF 100%)
         `,
-        transition: "background 1s ease",
       }}
-      onMouseEnter={() => setIsPaused(true)}
-      onMouseLeave={() => setIsPaused(false)}
     >
-      {/* Drifting blob — colour matches active story */}
-      <div className="pointer-events-none absolute top-0 left-1/4 w-[500px] h-[500px] rounded-full opacity-25 animate-blob-1 transition-all duration-1000"
-        style={{ background: `radial-gradient(circle, ${story.accent}30 0%, transparent 70%)`, filter: "blur(90px)" }} />
+      {/* Drifting blob */}
+      <div className="pointer-events-none absolute top-0 left-1/4 w-[500px] h-[500px] rounded-full opacity-25 animate-blob-1"
+        style={{ background: "radial-gradient(circle, rgba(0,86,206,0.18) 0%, transparent 70%)", filter: "blur(90px)" }} />
 
       <div className="relative max-w-6xl mx-auto">
         {/* Heading */}
         <div className="text-center mb-12 sm:mb-16">
           <span className="text-[10px] sm:text-[11px] tracking-[0.35em] uppercase text-slate-500 font-bold">
-            Real Results
+            Straight Talk
           </span>
           <h2 className="mt-4 font-black tracking-tight text-slate-900 leading-[0.95]"
             style={{ fontSize: "clamp(36px, 6vw, 80px)" }}>
-            Real learners.{" "}
+            No fake testimonials.{" "}
             <span style={{
               background: "linear-gradient(135deg, #3388FF 0%, #A78BFA 50%, #10B981 100%)",
               WebkitBackgroundClip: "text",
               WebkitTextFillColor: "transparent",
               backgroundClip: "text",
             }}>
-              Real outcomes.
+              Just the product.
             </span>
           </h2>
           <p className="mt-4 text-sm sm:text-base text-slate-600 max-w-lg mx-auto">
-            They didn&apos;t watch tutorials. They built things. Here&apos;s what happened.
+            Square 1 is brand new. We could invent glowing reviews — plenty of
+            landing pages do. Here&apos;s our deal with you instead.
           </p>
         </div>
 
-        {/* Main story card — side-by-side on desktop */}
-        <div
-          className="relative rounded-3xl border overflow-hidden transition-all duration-500"
-          style={{
-            background: `
-              linear-gradient(135deg, ${story.accent}08 0%, #FFFFFF 50%, ${story.accent}04 100%),
-              radial-gradient(circle at top right, ${story.accent}08, transparent 60%)
-            `,
-            borderColor: `${story.accent}25`,
-            boxShadow: `0 16px 48px ${story.accent}15, 0 0 0 1px ${story.accent}08 inset`,
-          }}
-        >
-          {/* Decorative blob */}
-          <div className="absolute -top-16 -right-16 w-48 h-48 rounded-full pointer-events-none opacity-40"
-            style={{ background: `radial-gradient(circle, ${story.accent}25 0%, transparent 70%)`, filter: "blur(24px)" }} />
+        {/* Founder note + founding offer — side by side */}
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-6 lg:gap-8 items-stretch">
 
-          <div className="relative grid grid-cols-1 lg:grid-cols-[1fr_340px] gap-0">
+          {/* LEFT — founder note */}
+          <div
+            className="relative rounded-3xl border overflow-hidden p-8 sm:p-10 lg:p-12"
+            style={{
+              background: `
+                linear-gradient(135deg, rgba(0,86,206,0.06) 0%, #FFFFFF 50%, rgba(0,86,206,0.03) 100%),
+                radial-gradient(circle at top right, rgba(0,86,206,0.06), transparent 60%)
+              `,
+              borderColor: "rgba(0,86,206,0.18)",
+              boxShadow: "0 16px 48px rgba(0,86,206,0.10), 0 0 0 1px rgba(0,86,206,0.05) inset",
+            }}
+          >
+            <p className="text-[10px] tracking-[0.3em] uppercase font-bold text-slate-400 mb-6">
+              A note from the founder
+            </p>
 
-            {/* LEFT — story content */}
-            <div key={`story-${activeIdx}`} className="p-8 sm:p-10 lg:p-12 animate-step-in">
-              {/* Avatar + name */}
-              <div className="flex items-center gap-4 mb-6">
-                <div className="w-14 h-14 rounded-full flex items-center justify-center text-lg font-black text-white shrink-0"
-                  style={{ background: `linear-gradient(135deg, ${story.avatarBg}, ${story.avatarBg}cc)` }}>
-                  {story.initials}
-                </div>
-                <div>
-                  <h3 className="text-xl font-black text-slate-900">{story.name} <span className="text-slate-400 font-medium">{story.age}</span></h3>
-                  <div className="flex gap-0.5 mt-0.5">
-                    {[...Array(5)].map((_, i) => (
-                      <span key={i} className="text-amber-400 text-xs">★</span>
-                    ))}
-                  </div>
-                </div>
-              </div>
-
-              {/* Before → After */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
-                <div className="rounded-xl p-4 bg-slate-50 border border-slate-100">
-                  <p className="text-[10px] tracking-widest uppercase font-bold text-slate-400 mb-1">Before</p>
-                  <p className="text-sm font-semibold text-slate-700">{story.before}</p>
-                </div>
-                <div className="rounded-xl p-4 border"
-                  style={{ background: `${story.accent}08`, borderColor: `${story.accent}20` }}>
-                  <p className="text-[10px] tracking-widest uppercase font-bold mb-1" style={{ color: story.accent }}>After</p>
-                  <p className="text-sm font-bold text-slate-900">{story.after}</p>
-                </div>
-              </div>
-
-              {/* Quote */}
-              <blockquote className="text-base sm:text-lg text-slate-700 leading-relaxed italic mb-6 border-l-4 pl-5"
-                style={{ borderColor: `${story.accent}40` }}>
-                &ldquo;{story.quote}&rdquo;
-              </blockquote>
-
-              {/* Course + plan pill */}
-              <div className="flex flex-wrap items-center gap-2">
-                <span className="text-[10px] font-bold tracking-widest uppercase px-3 py-1.5 rounded-full border"
-                  style={{ background: `${story.accent}10`, borderColor: `${story.accent}30`, color: story.accent }}>
-                  {story.plan} · {story.course}
-                </span>
-              </div>
-            </div>
-
-            {/* RIGHT — big stat + navigation */}
-            <div
-              className="relative flex flex-col items-center justify-center p-8 sm:p-10 lg:border-l"
-              style={{
-                borderColor: `${story.accent}15`,
-                background: `linear-gradient(180deg, ${story.accent}06, ${story.accent}02)`,
-              }}
-            >
-              <div key={`stat-${activeIdx}`} className="text-center animate-mockup-in">
-                {/* Big number */}
-                <div
-                  className="font-black tabular-nums leading-none select-none mb-2"
-                  style={{
-                    fontSize: "clamp(64px, 10vw, 96px)",
-                    letterSpacing: "-0.04em",
-                    background: `linear-gradient(180deg, ${story.accent} 0%, ${story.accent}88 100%)`,
-                    WebkitBackgroundClip: "text",
-                    WebkitTextFillColor: "transparent",
-                    backgroundClip: "text",
-                    filter: `drop-shadow(0 0 24px ${story.accent}40)`,
-                  }}
-                >
-                  {story.stat.value}
-                </div>
-                <p className="text-sm font-bold text-slate-700 mb-1">{story.stat.label}</p>
-                <p className="text-xs text-slate-500">{story.name.split(".")[0]}&apos;s result</p>
-              </div>
-
-              {/* Navigation dots */}
-              <div className="mt-8 flex items-center gap-2">
-                {STORIES.map((s, i) => {
-                  const active = i === activeIdx;
-                  return (
-                    <button
-                      key={i}
-                      onClick={() => { setActiveIdx(i); setProgress(0); }}
-                      className="transition-all rounded-full"
-                      aria-label={`Show ${s.name}'s story`}
-                      style={{
-                        width:  active ? 28 : 8,
-                        height: 8,
-                        background: active ? s.accent : "rgba(148,168,200,0.25)",
-                        boxShadow: active ? `0 0 12px ${s.accent}` : "none",
-                        minHeight: "unset",
-                      }}
-                    />
-                  );
-                })}
-              </div>
-
-              {/* Progress bar */}
-              <div className="mt-3 w-24 h-0.5 rounded-full overflow-hidden bg-slate-200">
-                <div className="h-full rounded-full"
-                  style={{
-                    width: `${progress * 100}%`,
-                    background: story.accent,
-                    transition: progress === 0 ? "none" : "width 0.05s linear",
-                  }} />
-              </div>
-
-              {/* Status */}
-              <p className="mt-2 text-[9px] tracking-widest uppercase text-slate-400 tabular-nums">
-                {String(activeIdx + 1).padStart(2, "0")} / {String(STORIES.length).padStart(2, "0")}
-                {isPaused && <span className="ml-2 text-amber-500 font-bold">Paused</span>}
+            <div className="space-y-4 text-sm sm:text-base text-slate-700 leading-relaxed">
+              <p>
+                I built Square 1 because of the thing that kept killing my own learning:
+                <span className="font-semibold text-slate-900"> nobody ever looked at my work.</span>{" "}
+                Courses gave me videos. Tutorials gave me copy-paste. Nothing told me
+                whether <em>my</em> code was good, or what to fix.
+              </p>
+              <p>
+                So every claim on this page is about what the product does — an AI that
+                grades your assessment, reviews every line of code you submit, and tutors
+                you on <em>your</em> gaps. You can verify all of it in the free assessment
+                before paying a cent.
+              </p>
+              <p>
+                Student success stories will appear here when real students earn them —
+                with their public portfolios attached so you can check the receipts.
+                Until then, the product has to speak for itself.{" "}
+                <span className="font-semibold text-slate-900">I think it does.</span>
               </p>
             </div>
+
+            <div className="mt-8 pt-6 border-t border-slate-200/70 flex items-center gap-4">
+              <div className="w-12 h-12 rounded-full flex items-center justify-center text-base font-black text-white shrink-0"
+                style={{ background: "linear-gradient(135deg, #0056CE, #7C3AED)" }}>
+                ND
+              </div>
+              <div>
+                <p className="text-sm font-black text-slate-900">Nikhil De Silva</p>
+                <p className="text-xs text-slate-500">Founder, Square 1 AI</p>
+              </div>
+            </div>
+          </div>
+
+          {/* RIGHT — founding student offer */}
+          <div
+            className="relative rounded-3xl border overflow-hidden p-8 flex flex-col"
+            style={{
+              background: "linear-gradient(180deg, #0B1626 0%, #050B14 100%)",
+              borderColor: "rgba(255,255,255,0.10)",
+              boxShadow: "0 16px 48px rgba(5,11,20,0.35)",
+            }}
+          >
+            <div className="absolute -top-16 -right-16 w-48 h-48 rounded-full pointer-events-none opacity-40"
+              style={{ background: "radial-gradient(circle, rgba(51,136,255,0.35) 0%, transparent 70%)", filter: "blur(24px)" }} />
+
+            <p className="relative text-[10px] tracking-[0.3em] uppercase font-bold text-slate-500 mb-2">
+              Founding students
+            </p>
+            <h3 className="relative text-2xl font-black text-white leading-tight mb-6">
+              Get in before the
+              <br />
+              success stories do.
+            </h3>
+
+            <div className="relative space-y-5 flex-1">
+              {FOUNDING_PERKS.map((p) => (
+                <div key={p.title} className="flex gap-3">
+                  <div className="w-6 h-6 rounded-full flex items-center justify-center shrink-0 mt-0.5"
+                    style={{ background: `${p.accent}18`, border: `1px solid ${p.accent}35` }}>
+                    <span className="text-[10px] font-black" style={{ color: p.accent }}>✓</span>
+                  </div>
+                  <div>
+                    <p className="text-sm font-bold text-white">{p.title}</p>
+                    <p className="text-xs text-slate-400 leading-relaxed mt-0.5">{p.desc}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <p className="relative mt-8 text-[11px] text-slate-500 leading-relaxed">
+              Being early is a trade: you get more access and a locked price; we get the
+              feedback that makes this the best place to learn. Fair?
+            </p>
           </div>
         </div>
 
-        {/* Bottom — embedded stats row (replaces StatsSection) */}
+        {/* Bottom — factual stats row */}
         <div className="mt-12 sm:mt-16 grid grid-cols-2 sm:grid-cols-4 gap-6 max-w-3xl mx-auto text-center">
           {[
             { value: "12",   label: "projects per student" },
@@ -313,7 +188,7 @@ export function SocialProofSection() {
               boxShadow: "0 12px 32px rgba(0,86,206,0.30)",
             }}
           >
-            Join them — take the assessment →
+            Take the free assessment →
           </Link>
           <p className="text-xs text-slate-500">Free · 30 minutes · No credit card</p>
         </div>

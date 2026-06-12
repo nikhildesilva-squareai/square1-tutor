@@ -334,7 +334,7 @@ export function AICopilotSlider() {
             </span>
           </h2>
           <p className="mt-3 text-sm sm:text-base text-slate-400 max-w-lg mx-auto">
-            Why our students land offers in 6 months, not 3 years.
+            Built to get you job-ready in months, not years.
           </p>
         </div>
 

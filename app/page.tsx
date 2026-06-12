@@ -117,10 +117,10 @@ export default async function Home() {
             </h2>
 
             <p className="text-base sm:text-lg text-slate-400 leading-relaxed mb-8 max-w-2xl mx-auto">
-              Square1 Ai is the world&apos;s first AI-powered learn-to-launch platform.
+              Square1 Ai is an AI-powered learn-to-launch platform.
               We don&apos;t just teach you — we assess your level, personalise your path,
               grade every line of code you write, and walk you from day one to a deployed
-              portfolio and a real job offer.
+              portfolio you can put in front of any employer.
             </p>
 
             <p className="text-sm sm:text-base text-slate-500 leading-relaxed max-w-2xl mx-auto">
@@ -229,8 +229,8 @@ export default async function Home() {
               <div>
                 <Logo variant="light" size="md" />
                 <p className="mt-4 text-xs text-slate-500 leading-relaxed max-w-xs">
-                  The world&apos;s first AI-powered learn-to-launch platform.
-                  From assessment to job offer.
+                  The AI-powered learn-to-launch platform.
+                  From assessment to deployed portfolio.
                 </p>
                 {/* Social links */}
                 <div className="mt-5 flex items-center gap-3">
@@ -259,9 +259,8 @@ export default async function Home() {
                   ))}
                 </div>
                 <div className="mt-5 flex items-center gap-2">
-                  <span className="text-[9px] tracking-widest uppercase text-slate-600 font-bold px-2 py-1 rounded border border-white/[0.08]">GDPR</span>
-                  <span className="text-[9px] tracking-widest uppercase text-slate-600 font-bold px-2 py-1 rounded border border-white/[0.08]">SOC 2</span>
-                  <span className="text-[9px] tracking-widest uppercase text-slate-600 font-bold px-2 py-1 rounded border border-white/[0.08]">Essential 8</span>
+                  <span className="text-[9px] tracking-widest uppercase text-slate-600 font-bold px-2 py-1 rounded border border-white/[0.08]">GDPR Compliant</span>
+                  <span className="text-[9px] tracking-widest uppercase text-slate-600 font-bold px-2 py-1 rounded border border-white/[0.08]">SSL Encrypted</span>
                 </div>
               </div>
 

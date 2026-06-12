@@ -27,36 +27,27 @@ const HEADLINE_ROLES: { label: string; gradient: string }[] = [
   { label: "Full Stack Engineer",    gradient: "linear-gradient(135deg, #10B981 0%, #06B6D4 50%, #3388FF 100%)" },
 ];
 
-// ─── Live ticker stats (rotate every 3.5s) ────────────────────────────────────
-const TICKER_STATS = [
-  { label: "active learners right now",              value: 1247, color: "#10B981" },
-  { label: "students placed this month",              value: 47,   color: "#3388FF" },
-  { label: "average weeks to first offer",            value: 24,   color: "#A78BFA" },
-  { label: "average portfolio score / 100",           value: 91,   color: "#FBBF24" },
-];
-
-// ─── Outcome cards ────────────────────────────────────────────────────────────
+// ─── Outcome cards — deliverables the platform actually ships, not claimed results
 const OUTCOMES = [
   {
     target:    12,
     suffix:    "",
     label:     "real projects deployed",
-    sub:       "Every project shipped to GitHub. All running live.",
+    sub:       "Every project shipped to GitHub with a live URL. Public, verifiable, yours.",
     accent:    "#3388FF",
   },
   {
-    target:    94,
-    suffix:    "/100",
-    label:     "portfolio score",
-    sub:       "AI-verified by Claude. Recruiters trust it.",
+    target:    100,
+    suffix:    "%",
+    label:     "of your code reviewed",
+    sub:       "Every submission read line-by-line by Claude — strengths, fixes, and a score.",
     accent:    "#A78BFA",
   },
   {
     target:    24,
-    suffix:    "",
-    prefix:    "Week ",
-    label:     "first job offer",
-    sub:       "Average across 2,000+ Square 1 students.",
+    suffix:    "/7",
+    label:     "AI tutor at your side",
+    sub:       "Nova knows your code, your weak topics, and your current lesson.",
     accent:    "#10B981",
   },
 ];
@@ -159,21 +150,8 @@ function OutcomeCard({
       <div className="absolute -top-12 -right-12 w-32 h-32 rounded-full pointer-events-none opacity-50"
         style={{ background: `radial-gradient(circle, ${outcome.accent}30 0%, transparent 70%)`, filter: "blur(16px)" }} />
 
-      {/* Live dot */}
-      <div className="relative z-10 absolute top-5 right-5 flex items-center gap-1.5">
-        <div className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: outcome.accent }} />
-        <span className="text-[9px] tracking-widest uppercase font-bold" style={{ color: outcome.accent }}>
-          Live
-        </span>
-      </div>
-
       {/* Number */}
       <div className="relative z-10 mt-4 mb-4 flex items-baseline gap-0.5 leading-none">
-        {outcome.prefix && (
-          <span className="text-2xl lg:text-3xl font-semibold text-slate-400 tabular-nums">
-            {outcome.prefix}
-          </span>
-        )}
         <span
           className="font-black tabular-nums tracking-tight"
           style={{
@@ -202,29 +180,6 @@ function OutcomeCard({
         className="absolute inset-0 rounded-3xl pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-500"
         style={{ boxShadow: `0 16px 48px ${outcome.accent}35, 0 0 0 1px ${outcome.accent}40 inset` }}
       />
-    </div>
-  );
-}
-
-// ─── Live ticker ──────────────────────────────────────────────────────────────
-function LiveTicker() {
-  const [idx, setIdx] = useState(0);
-  useEffect(() => {
-    const t = setInterval(() => setIdx((i) => (i + 1) % TICKER_STATS.length), 3500);
-    return () => clearInterval(t);
-  }, []);
-  const stat = TICKER_STATS[idx];
-  return (
-    <div className="inline-flex items-center gap-3 px-4 py-2.5 rounded-full border bg-white"
-      style={{ borderColor: "rgba(15,28,49,0.08)", boxShadow: "0 4px 16px rgba(15,28,49,0.05)" }}>
-      <span className="relative flex items-center justify-center">
-        <span className="absolute w-2.5 h-2.5 rounded-full animate-ping" style={{ background: stat.color, opacity: 0.5 }} />
-        <span className="w-2 h-2 rounded-full" style={{ background: stat.color }} />
-      </span>
-      <span key={idx} className="animate-fade-in-up text-xs sm:text-sm text-slate-600">
-        <span className="font-bold tabular-nums text-slate-900">{stat.value.toLocaleString()}</span>{" "}
-        <span className="text-slate-500">{stat.label}</span>
-      </span>
     </div>
   );
 }
@@ -347,15 +302,15 @@ function MockupHired() {
     <div className="rounded-lg p-3 border border-emerald-500/25 space-y-2"
       style={{ background: "linear-gradient(135deg, rgba(16,185,129,0.08), rgba(16,185,129,0.02))" }}>
       <div className="flex items-center justify-between">
-        <p className="text-[8px] text-emerald-400 font-bold tracking-widest">OFFER LETTER</p>
-        <p className="text-[8px] text-slate-500">received</p>
+        <p className="text-[8px] text-emerald-400 font-bold tracking-widest">THE GOAL</p>
+        <p className="text-[8px] text-slate-500">interview-ready</p>
       </div>
       <p className="text-base font-black text-white leading-none mt-1">AI Engineer</p>
-      <p className="text-[10px] text-slate-400">£95,000 base · Stripe</p>
+      <p className="text-[10px] text-slate-400">$130–200k market range</p>
       <div className="space-y-1 pt-2 border-t border-white/8">
         {[
-          { l: "Portfolio score", v: "94 / 100" },
-          { l: "Offers received", v: "3" },
+          { l: "Projects live", v: "12" },
+          { l: "Portfolio", v: "verified" },
         ].map((r) => (
           <div key={r.l} className="flex justify-between text-[8px]">
             <span className="text-slate-500">{r.l}</span>
@@ -491,13 +446,13 @@ export function JourneyHook() {
             <RoleMarquee />
           </div>
 
-          {/* "This is you in 6 months" sub-headline */}
+          {/* "What you walk away with" sub-headline */}
           <div className="text-center mb-8">
             <h3 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900">
-              This is you in 6 months.
+              What you walk away with.
             </h3>
             <p className="text-sm text-slate-500 mt-2">
-              Real numbers from real students.
+              Deliverables, not promises. All public and verifiable.
             </p>
           </div>
 
@@ -779,25 +734,15 @@ export function JourneyHook() {
             30 minutes to find out where you stand. Zero pressure. Free forever.
           </p>
 
-          {/* Live ticker + cohort */}
-          <div className="flex flex-col items-center gap-4 mb-10">
-            <LiveTicker />
-            <p className="text-xs text-slate-500 flex items-center gap-2">
-              <span className="w-1 h-1 rounded-full bg-amber-500 animate-pulse" />
-              Next cohort starts <span className="font-bold text-amber-600">Monday</span> · spots filling
-            </p>
-          </div>
-
-          {/* Live "viewing now" micro-pill — drives urgency */}
-          <div className="flex justify-center mb-4">
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-emerald-500/30 bg-emerald-50">
-              <span className="relative flex items-center justify-center">
-                <span className="absolute w-2 h-2 rounded-full bg-emerald-500 opacity-40 animate-cta-live" />
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-              </span>
-              <span className="text-[10px] sm:text-[11px] font-bold text-emerald-700 tracking-wide">
-                12 people taking the assessment right now
-              </span>
+          {/* What you get, stated plainly */}
+          <div className="flex justify-center mb-10">
+            <div className="inline-flex flex-wrap items-center justify-center gap-x-3 gap-y-2 px-5 py-2.5 rounded-full border bg-white text-xs sm:text-sm text-slate-600"
+              style={{ borderColor: "rgba(15,28,49,0.08)", boxShadow: "0 4px 16px rgba(15,28,49,0.05)" }}>
+              <span className="font-semibold text-slate-900">20 questions</span>
+              <span className="text-slate-300">·</span>
+              <span className="font-semibold text-slate-900">AI-graded</span>
+              <span className="text-slate-300">·</span>
+              <span className="font-semibold text-slate-900">Instant skill report</span>
             </div>
           </div>
 

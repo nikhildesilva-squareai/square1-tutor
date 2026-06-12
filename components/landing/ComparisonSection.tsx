@@ -31,15 +31,15 @@ const COMPARISONS: Comparison[] = [
     newLabel:  "free assessment",
   },
   {
-    category:  "Time to first offer",
+    category:  "Time to job-ready",
     oldValue:  "3 years",
     oldNumber: 3,
     oldSuffix: " years",
-    oldLabel:  "self-taught average",
+    oldLabel:  "wandering tutorials alone",
     newValue:  "6 months",
     newNumber: 6,
     newSuffix: " months",
-    newLabel:  "Square 1 average",
+    newLabel:  "one focused track",
   },
   {
     category:  "Real projects deployed",

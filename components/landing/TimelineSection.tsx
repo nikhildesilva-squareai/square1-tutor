@@ -78,10 +78,10 @@ const MONTHS: Month[] = [
   },
   {
     n: "Month 6", title: "Interview Ready",
-    blurb: "Portfolio complete. Offers incoming.",
+    blurb: "Portfolio complete. Proof in hand.",
     projects: ["Portfolio Polish", "Mock Interviews"],
     weeks: ["Week 1–2 · Polish", "Week 3–4 · Interview"],
-    badge: "Job offer secured",
+    badge: "Portfolio verified",
     accent: "#10B981",
     isFinal: true,
     milestone: "Hired",
