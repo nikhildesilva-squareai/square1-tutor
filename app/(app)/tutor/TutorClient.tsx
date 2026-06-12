@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 interface Message { role: "user" | "assistant"; content: string }
 interface Conversation { id: string; title: string; mode: string; message_count: number; last_message_at: string; created_at: string }
 interface EnrollmentContext { enrollmentId: string; courseTitle: string; courseSlug: string; currentLessonTitle: string | null }
-interface TutorClientProps { studentName: string; userEmail: string; enrollments: EnrollmentContext[]; weakTopics: string[] }
+interface TutorClientProps { studentName: string; userEmail: string; enrollments: EnrollmentContext[]; weakTopics: string[]; lessonObjectives?: string[]; lessonContentSummary?: string }
 
 // ─── Render markdown in AI responses ──────────────────────────────────────
 function renderMessage(text: string): string {
@@ -44,7 +44,7 @@ const MODES = [
 type Mode = typeof MODES[number]["id"];
 
 // ═══════════════════════════════════════════════════════════════════════════
-export function TutorClient({ studentName, userEmail, enrollments, weakTopics }: TutorClientProps) {
+export function TutorClient({ studentName, userEmail, enrollments, weakTopics, lessonObjectives, lessonContentSummary }: TutorClientProps) {
   const primaryEnrollment = enrollments[0] ?? null;
   const [mode, setMode] = useState<Mode>("learn");
   const [messages, setMessages] = useState<Message[]>([]);
@@ -151,6 +151,8 @@ export function TutorClient({ studentName, userEmail, enrollments, weakTopics }:
             courseTitle: selectedEnrollment.courseTitle,
             currentLessonTitle: selectedEnrollment.currentLessonTitle,
             weakTopics,
+            lessonObjectives: lessonObjectives ?? [],
+            lessonContentSummary: lessonContentSummary ?? "",
           } : undefined,
           conversationId: convId,
         }),

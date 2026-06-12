@@ -664,6 +664,31 @@ export function LearnClient({
                   </div>
                 )}
 
+                {/* Comprehension check gate */}
+                {!completed && exercises.length > 0 && (() => {
+                  const mcqExercises = exercises.filter(e => e.type === "mcq");
+                  const nonMcqExercises = exercises.filter(e => e.type !== "mcq");
+                  const mcqsDone = mcqExercises.every(e => quizAnswered[e.id]);
+                  const nonMcqsDone = nonMcqExercises.length === 0 || !!results;
+                  const allDone = mcqsDone && nonMcqsDone;
+
+                  if (!allDone) {
+                    const remaining: string[] = [];
+                    if (!mcqsDone) remaining.push(`${mcqExercises.filter(e => !quizAnswered[e.id]).length} quiz question${mcqExercises.filter(e => !quizAnswered[e.id]).length > 1 ? "s" : ""}`);
+                    if (!nonMcqsDone) remaining.push(`${nonMcqExercises.length} exercise${nonMcqExercises.length > 1 ? "s" : ""}`);
+                    return (
+                      <div className="bg-amber-50 border border-amber-200 rounded-xl px-4 py-3 mb-4 max-w-sm mx-auto">
+                        <p className="text-xs font-semibold text-amber-800 flex items-center gap-2">
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" /><line x1="12" y1="9" x2="12" y2="13" /><line x1="12" y1="17" x2="12.01" y2="17" /></svg>
+                          Complete {remaining.join(" and ")} first
+                        </p>
+                        <p className="text-[10px] text-amber-700 mt-1">Answer all exercises to unlock lesson completion.</p>
+                      </div>
+                    );
+                  }
+                  return null;
+                })()}
+
                 {/* Actions */}
                 <div className="flex items-center justify-center gap-3 flex-wrap">
                   {!completed && !results && exercises.filter(e => e.type !== "mcq").length > 0 && (
@@ -671,7 +696,11 @@ export function LearnClient({
                       Submit Exercises
                     </Button>
                   )}
-                  {!completed && (results || exercises.filter(e => e.type !== "mcq").length === 0) && (
+                  {!completed && (() => {
+                    const mcqsDone = exercises.filter(e => e.type === "mcq").every(e => quizAnswered[e.id]);
+                    const nonMcqsDone = exercises.filter(e => e.type !== "mcq").length === 0 || !!results;
+                    return mcqsDone && nonMcqsDone;
+                  })() && (
                     <Button onClick={handleComplete} loading={completing} disabled={completing} className="rounded-xl">
                       Mark Complete
                     </Button>

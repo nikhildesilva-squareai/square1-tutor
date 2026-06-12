@@ -13,6 +13,8 @@ const contextSchema = z.object({
   courseTitle: z.string(),
   currentLessonTitle: z.string().nullable(),
   weakTopics: z.array(z.string()),
+  lessonObjectives: z.array(z.string()).optional(),
+  lessonContentSummary: z.string().optional(),
 }).optional();
 
 const schema = z.object({
@@ -23,7 +25,7 @@ const schema = z.object({
 
 function buildSystemPrompt(
   studentName: string,
-  context?: { courseTitle: string; currentLessonTitle: string | null; weakTopics: string[] },
+  context?: { courseTitle: string; currentLessonTitle: string | null; weakTopics: string[]; lessonObjectives?: string[]; lessonContentSummary?: string },
 ): string {
   let prompt = `You are Nova, the AI tutor for ${studentName} on Square 1 AI.`;
 
@@ -34,7 +36,13 @@ function buildSystemPrompt(
     }
     prompt += ".";
     if (context.weakTopics.length > 0) {
-      prompt += `\nTheir assessment showed weaknesses in: ${context.weakTopics.join(", ")}.`;
+      prompt += `\nTheir assessment showed weaknesses in: ${context.weakTopics.join(", ")}. Proactively connect explanations to these weak areas when relevant.`;
+    }
+    if (context.lessonObjectives && context.lessonObjectives.length > 0) {
+      prompt += `\n\nCurrent lesson learning objectives:\n${context.lessonObjectives.map((o, i) => `${i + 1}. ${o}`).join("\n")}`;
+    }
+    if (context.lessonContentSummary) {
+      prompt += `\n\nCurrent lesson content (reference this when the student asks about their lesson):\n${context.lessonContentSummary}`;
     }
   }
 

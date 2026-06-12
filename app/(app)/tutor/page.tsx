@@ -43,6 +43,24 @@ export default async function TutorPage() {
     };
   });
 
+  // Load current lesson's learning objectives + content summary for AI context
+  const primaryEnrollment = enrollments?.[0];
+  const currentLessonId = primaryEnrollment?.current_lesson_id;
+  let lessonObjectives: string[] = [];
+  let lessonContentSummary = "";
+  if (currentLessonId) {
+    const { data: lessonData } = await supabase
+      .from("lessons")
+      .select("learning_objectives, theory_md")
+      .eq("id", currentLessonId)
+      .maybeSingle();
+    if (lessonData) {
+      lessonObjectives = (lessonData.learning_objectives as string[]) ?? [];
+      const theory = (lessonData.theory_md as string) ?? "";
+      lessonContentSummary = theory.length > 1500 ? theory.slice(0, 1500) + "..." : theory;
+    }
+  }
+
   // Get assessment weak topics (from latest graded attempt)
   const { data: assessmentAttempts } = await supabase
     .from("assessment_attempts")
@@ -68,6 +86,8 @@ export default async function TutorPage() {
       userEmail={user.email ?? ""}
       enrollments={enrollmentContexts}
       weakTopics={weakTopics}
+      lessonObjectives={lessonObjectives}
+      lessonContentSummary={lessonContentSummary}
     />
   );
 }

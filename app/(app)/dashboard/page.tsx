@@ -1,6 +1,8 @@
 import { createClient } from "@/lib/supabase/server";
 import Link from "next/link";
 import { CourseSwitcher } from "@/components/CourseSwitcher";
+import { ActivityHeatmap } from "@/components/ActivityHeatmap";
+import { computeStreak } from "@/lib/streaks";
 
 // ─── Course career mapping ────────────────────────────────────────────────────
 const COURSES = [
@@ -240,6 +242,7 @@ export default async function DashboardPage({ searchParams }: DashboardProps) {
   const enrollmentId = primaryEnrollment?.id ?? "";
   const now = new Date();
   const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000).toISOString();
+  const ninetyDaysAgo = new Date(now.getTime() - 90 * 24 * 60 * 60 * 1000).toISOString();
 
   const [
     { count: completedLessonCount },
@@ -249,6 +252,7 @@ export default async function DashboardPage({ searchParams }: DashboardProps) {
     { data: recentCompletions },
     { data: projectSubmissions },
     { data: nextProject },
+    { data: allCompletionDates },
   ] = await Promise.all([
     supabase.from("lesson_completions").select("id", { count: "exact", head: true }).eq("student_id", studentId).eq("enrollment_id", enrollmentId),
     supabase.from("modules").select("id, title, order_index, week_number, course_id").eq("course_id", courseId).order("order_index", { ascending: true }) as unknown as Promise<{ data: ModuleRow[] | null }>,
@@ -257,6 +261,7 @@ export default async function DashboardPage({ searchParams }: DashboardProps) {
     supabase.from("lesson_completions").select("completed_at").eq("student_id", studentId).gte("completed_at", sevenDaysAgo),
     supabase.from("project_submissions").select("id, score").eq("student_id", studentId).not("score", "is", null),
     supabase.from("projects").select("id, title, difficulty").eq("course_id", courseId).order("order_index", { ascending: true }).limit(1).maybeSingle(),
+    supabase.from("lesson_completions").select("completed_at").eq("student_id", studentId).gte("completed_at", ninetyDaysAgo),
   ]);
 
   const lessonsCompleted = completedLessonCount ?? 0;
@@ -283,6 +288,10 @@ export default async function DashboardPage({ searchParams }: DashboardProps) {
   }
 
   const projectsDone = (projectSubmissions ?? []).length;
+
+  // Streak computation
+  const streakInfo = computeStreak((allCompletionDates ?? []).map(c => c.completed_at));
+  const heatmapDates = (allCompletionDates ?? []).map(c => c.completed_at);
 
   return (
     <div className="min-h-full px-4 sm:px-6 py-8 max-w-6xl mx-auto">
@@ -404,14 +413,12 @@ export default async function DashboardPage({ searchParams }: DashboardProps) {
         </div>
 
         <div className="bg-surface rounded-xl border border-border p-4 flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-amber-50 flex items-center justify-center shrink-0">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#D97706" strokeWidth="2" strokeLinecap="round">
-              <path d="M12 2C6 8 2 12 2 16a10 10 0 0020 0c0-4-4-8-10-14z" />
-            </svg>
+          <div className="w-10 h-10 rounded-xl bg-amber-50 flex items-center justify-center shrink-0 text-lg">
+            🔥
           </div>
           <div>
-            <p className="text-lg font-black text-ink">{activeDays.size}</p>
-            <p className="text-[10px] text-ink-muted uppercase tracking-wider">Days Active</p>
+            <p className="text-lg font-black text-ink">{streakInfo.current}</p>
+            <p className="text-[10px] text-ink-muted uppercase tracking-wider">Day Streak</p>
           </div>
         </div>
       </div>
@@ -422,9 +429,28 @@ export default async function DashboardPage({ searchParams }: DashboardProps) {
         {/* Left column — Course roadmap (2/3 width) */}
         <div className="lg:col-span-2 space-y-6">
 
-          {/* Weekly streak */}
+          {/* Streak + Daily Goal */}
           <div className="bg-surface rounded-xl border border-border p-5">
-            <p className="text-[10px] font-bold text-ink-muted uppercase tracking-widest mb-4">This Week</p>
+            <div className="flex items-center justify-between mb-4">
+              <p className="text-[10px] font-bold text-ink-muted uppercase tracking-widest">This Week</p>
+              <div className="flex items-center gap-2">
+                {streakInfo.current > 0 && (
+                  <span className="flex items-center gap-1 text-xs font-bold text-amber-600 bg-amber-50 px-2.5 py-1 rounded-full">
+                    🔥 {streakInfo.current} day streak
+                  </span>
+                )}
+                {streakInfo.todayDone ? (
+                  <span className="flex items-center gap-1 text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-1 rounded-full">
+                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><polyline points="20 6 9 17 4 12" /></svg>
+                    Goal hit
+                  </span>
+                ) : (
+                  <span className="text-[10px] font-semibold text-ink-muted bg-surface-alt px-2 py-1 rounded-full">
+                    1 lesson to go
+                  </span>
+                )}
+              </div>
+            </div>
             <div className="flex items-center justify-between gap-2">
               {streakData.map((d, i) => {
                 const isToday = (today === 0 ? 6 : today - 1) === i;
@@ -449,6 +475,15 @@ export default async function DashboardPage({ searchParams }: DashboardProps) {
                 );
               })}
             </div>
+            {streakInfo.longest > 1 && (
+              <p className="text-[10px] text-ink-muted mt-3 text-right">Best streak: {streakInfo.longest} days</p>
+            )}
+          </div>
+
+          {/* Activity heatmap */}
+          <div className="bg-surface rounded-xl border border-border p-5">
+            <p className="text-[10px] font-bold text-ink-muted uppercase tracking-widest mb-4">Activity — Last 13 Weeks</p>
+            <ActivityHeatmap activeDates={heatmapDates} weeks={13} />
           </div>
 
           {/* Module roadmap */}
