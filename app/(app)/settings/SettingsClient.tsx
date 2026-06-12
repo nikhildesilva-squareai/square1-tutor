@@ -15,14 +15,36 @@ interface Props {
     enrolled_at: string;
     course: { title: string } | null;
   }>;
+  emailOptOut: boolean;
 }
 
-export function SettingsClient({ studentId, studentName, userEmail, joinedDate, enrollments }: Props) {
+export function SettingsClient({ studentId, studentName, userEmail, joinedDate, enrollments, emailOptOut }: Props) {
   const router = useRouter();
   const [name, setName] = useState(studentName);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [signingOut, setSigningOut] = useState(false);
+  const [emailsOn, setEmailsOn] = useState(!emailOptOut);
+  const [togglingEmails, setTogglingEmails] = useState(false);
+
+  async function handleToggleEmails() {
+    if (togglingEmails) return;
+    const next = !emailsOn;
+    setEmailsOn(next);
+    setTogglingEmails(true);
+    try {
+      const res = await fetch("/api/settings/email-prefs", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ optOut: !next }),
+      });
+      if (!res.ok) setEmailsOn(!next); // revert on failure
+    } catch {
+      setEmailsOn(!next);
+    } finally {
+      setTogglingEmails(false);
+    }
+  }
 
   async function handleSaveName() {
     if (!name.trim() || name === studentName) return;
@@ -135,28 +157,23 @@ export function SettingsClient({ studentId, studentName, userEmail, joinedDate, 
       <div className="bg-surface rounded-xl border border-border p-6">
         <p className="text-[10px] font-bold text-ink-muted uppercase tracking-widest mb-4">Preferences</p>
 
-        <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-semibold text-ink">Email Notifications</p>
-              <p className="text-xs text-ink-muted">Weekly progress reports and streak reminders</p>
-            </div>
-            <div className="w-10 h-6 rounded-full bg-brand relative cursor-pointer">
-              <div className="absolute right-0.5 top-0.5 w-5 h-5 rounded-full bg-white shadow-sm transition-all" />
-            </div>
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="text-sm font-semibold text-ink">Email Notifications</p>
+            <p className="text-xs text-ink-muted">Streak reminders, weekly progress reports, and learning nudges</p>
           </div>
-
-          <div className="border-t border-border" />
-
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-semibold text-ink">Learning Reminders</p>
-              <p className="text-xs text-ink-muted">Daily reminder to complete your lesson</p>
-            </div>
-            <div className="w-10 h-6 rounded-full bg-brand relative cursor-pointer">
-              <div className="absolute right-0.5 top-0.5 w-5 h-5 rounded-full bg-white shadow-sm transition-all" />
-            </div>
-          </div>
+          <button
+            type="button"
+            role="switch"
+            aria-checked={emailsOn}
+            onClick={handleToggleEmails}
+            disabled={togglingEmails}
+            className={`w-10 h-6 rounded-full relative transition-colors ${emailsOn ? "bg-brand" : "bg-border"} ${togglingEmails ? "opacity-60" : "cursor-pointer"}`}
+          >
+            <span
+              className={`absolute top-0.5 w-5 h-5 rounded-full bg-white shadow-sm transition-all ${emailsOn ? "right-0.5" : "left-0.5"}`}
+            />
+          </button>
         </div>
       </div>
 

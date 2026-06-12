@@ -1,12 +1,8 @@
 {
   "crons": [
     {
-      "path": "/api/email/streak-reminder",
+      "path": "/api/cron/daily",
       "schedule": "0 7 * * *"
-    },
-    {
-      "path": "/api/email/weekly-digest",
-      "schedule": "0 9 * * 0"
     },
     {
       "path": "/api/cron/sweep-wallets",

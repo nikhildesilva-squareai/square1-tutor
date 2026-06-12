@@ -101,6 +101,45 @@ export async function sendStreakReminder(to: string, name: string, streakDays: n
   });
 }
 
+/* ─── Assessment Nudge — signed up but never took the assessment ─────────── */
+export async function sendAssessmentNudge(to: string, name: string) {
+  const r = getResend();
+  return r.emails.send({
+    from: FROM,
+    to,
+    subject: "Your free skill report is waiting",
+    html: `
+      <div style="font-family:system-ui,-apple-system,sans-serif;max-width:520px;margin:0 auto;padding:40px 20px;">
+        <div style="text-align:center;margin-bottom:32px;">
+          <div style="display:inline-block;background:linear-gradient(135deg,#0056CE,#7C3AED);border-radius:12px;padding:12px;margin-bottom:16px;">
+            <span style="color:white;font-weight:900;font-size:18px;">[ S1 ]</span>
+          </div>
+          <h1 style="color:#0F172A;font-size:24px;font-weight:800;margin:0 0 8px;">Hey ${name} — one step left</h1>
+          <p style="color:#64748B;font-size:14px;margin:0;">You created your account but haven't taken the free assessment yet.</p>
+        </div>
+
+        <div style="background:#F8FAFC;border:1px solid #E2E8F0;border-radius:12px;padding:24px;margin-bottom:24px;">
+          <h3 style="color:#0F172A;font-size:16px;font-weight:700;margin:0 0 8px;">30 minutes. Here's what you get:</h3>
+          <p style="color:#334155;font-size:14px;line-height:1.6;margin:0;">
+            A topic-by-topic skill report graded by AI — your strengths, your gaps,
+            and exactly what stands between you and the role you want. Free, no card needed.
+          </p>
+        </div>
+
+        <div style="text-align:center;margin-bottom:32px;">
+          <a href="https://square1-tutor.vercel.app/courses" style="display:inline-block;background:#0056CE;color:white;font-weight:700;font-size:14px;text-decoration:none;padding:12px 32px;border-radius:12px;">
+            Take the free assessment
+          </a>
+        </div>
+
+        <p style="color:#94A3B8;font-size:11px;text-align:center;">
+          <a href="https://square1-tutor.vercel.app/settings" style="color:#94A3B8;">Unsubscribe</a> · Square 1 AI
+        </p>
+      </div>
+    `,
+  });
+}
+
 /* ─── Weekly Progress Digest ─────────────────────────────────────────────── */
 export async function sendWeeklyDigest(to: string, name: string, stats: {
   lessonsCompleted: number;
