@@ -31,6 +31,12 @@ const INCLUDED = [
   "GitHub portfolio",
 ];
 
+// Card payments are NOT live yet (Stripe pending). In production the card form
+// must never render — visitors would type real card numbers into a simulator.
+// Production shows a founding-spot reservation instead; the form + dev bypass
+// only exist in local dev builds.
+const IS_DEV = process.env.NODE_ENV !== "production";
+
 export default function CheckoutPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = use(params);
   const searchParams = useSearchParams();
@@ -84,6 +90,30 @@ export default function CheckoutPage({ params }: { params: Promise<{ slug: strin
   }
 
   const [error, setError] = useState("");
+
+  /* ─── Founding-spot reservation (production, pre-Stripe) ──────────────────── */
+  const [reserveState, setReserveState] = useState<"idle" | "saving" | "done">("idle");
+  const [reserveError, setReserveError] = useState("");
+
+  async function handleReserve() {
+    setReserveState("saving");
+    setReserveError("");
+    try {
+      const res = await fetch("/api/enroll-interest", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ courseSlug: slug, planMonths: months, billing }),
+      });
+      if (!res.ok) {
+        const d = await res.json().catch(() => ({}));
+        throw new Error(d.error ?? "Could not reserve — please try again");
+      }
+      setReserveState("done");
+    } catch (e) {
+      setReserveError(e instanceof Error ? e.message : "Could not reserve — please try again");
+      setReserveState("idle");
+    }
+  }
 
   /* ─── Payment + Enrollment handler ────────────────────────────────────────── */
   async function handlePayment() {
@@ -149,8 +179,57 @@ export default function CheckoutPage({ params }: { params: Promise<{ slug: strin
             <h1 className="text-2xl sm:text-3xl font-black text-ink mb-1">Checkout</h1>
             <p className="text-sm text-ink-muted mb-8">Complete your enrolment in {courseTitle || "this course"}</p>
 
-            {/* ── Card form ─────────────────────────────────────────────────── */}
+            {/* ── Payment panel ─────────────────────────────────────────────── */}
             <div className="rounded-2xl border border-border bg-surface p-6 sm:p-8 shadow-card">
+              {!IS_DEV ? (
+                /* ── PRODUCTION: card payments not live — founding reservation ── */
+                <div>
+                  <div className="flex items-center gap-2 mb-4">
+                    <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
+                    <span className="text-[10px] font-bold tracking-widest uppercase text-amber-600">
+                      Enrolment opening soon
+                    </span>
+                  </div>
+                  <h2 className="text-lg font-bold text-ink mb-2">Reserve your founding spot</h2>
+                  <p className="text-sm text-ink-muted leading-relaxed mb-6">
+                    We&apos;re putting the final touches on secure card payments. Reserve your
+                    spot now and we&apos;ll email you the moment enrolment opens — with this
+                    founding price (${price.toFixed(2)}{priceLabel}) locked in for you.
+                  </p>
+
+                  {reserveState === "done" ? (
+                    <div className="px-4 py-4 rounded-xl bg-emerald-50 border border-emerald-200 text-sm text-emerald-700 text-center font-medium">
+                      ✓ Spot reserved. We&apos;ll email you as soon as checkout opens.
+                    </div>
+                  ) : (
+                    <button
+                      onClick={handleReserve}
+                      disabled={reserveState === "saving"}
+                      className={cn(
+                        "w-full h-14 rounded-xl font-bold text-base transition-all flex items-center justify-center gap-2",
+                        reserveState === "saving"
+                          ? "bg-border text-ink-muted cursor-not-allowed"
+                          : "bg-brand text-white hover:bg-brand/90 hover:shadow-lg hover:shadow-brand/25 hover:-translate-y-0.5 active:translate-y-0"
+                      )}
+                    >
+                      {reserveState === "saving"
+                        ? "Reserving..."
+                        : `Reserve my spot — $${price.toFixed(2)}${priceLabel} locked`}
+                    </button>
+                  )}
+
+                  {reserveError && (
+                    <div className="mt-3 px-4 py-3 rounded-xl bg-red-50 border border-red-200 text-sm text-red-700 text-center">
+                      {reserveError}
+                    </div>
+                  )}
+
+                  <p className="text-[10px] text-ink-muted text-center mt-4">
+                    No payment taken today · No obligation · Founding pricing never increases
+                  </p>
+                </div>
+              ) : (
+              <>
               <div className="flex items-center justify-between mb-6">
                 <h2 className="text-base font-bold text-ink">Payment details</h2>
                 <div className="flex items-center gap-2">
@@ -339,6 +418,8 @@ export default function CheckoutPage({ params }: { params: Promise<{ slug: strin
                   Cancel anytime
                 </span>
               </div>
+              </>
+              )}
             </div>
           </div>
 
