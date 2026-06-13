@@ -9,6 +9,7 @@ import { SocialProofSection } from "@/components/landing/SocialProofSection";
 import { SkillRadarPreview } from "@/components/landing/SkillRadarPreview";
 import { JourneyHook } from "@/components/landing/JourneyHook";
 import { CourseGridSection } from "@/components/landing/CourseGridSection";
+import { NovaDemo } from "@/components/landing/NovaDemo";
 import { CookieConsent } from "@/components/ui/cookie-consent";
 
 // ─── Server-side data fetch ───────────────────────────────────────────────────
@@ -66,6 +67,9 @@ export default async function Home() {
 
       {/* ── 2. THE HOOK — Why take the course + 5-step journey + red CTA ────── */}
       <JourneyHook />
+
+      {/* ── 2b. Try Nova live — no-login tutor demo (fastest time-to-aha) ───── */}
+      <NovaDemo />
 
       {/* ── 3. Why Square 1 beats everything else (moved up · gradient bg) ──── */}
       <ComparisonSection />
@@ -195,14 +199,14 @@ export default async function Home() {
 
           <div className="flex flex-col sm:flex-row gap-3 justify-center mb-6">
             <Link
-              href="/signup"
+              href="/diagnostic"
               className="group relative inline-flex items-center justify-center gap-3 px-10 py-5 rounded-2xl text-base lg:text-lg font-bold text-white overflow-hidden transition-all hover:-translate-y-0.5"
               style={{
                 background: "linear-gradient(135deg, #DC2626 0%, #EF4444 50%, #F87171 100%)",
                 boxShadow: "0 16px 48px rgba(220,38,38,0.40), 0 0 0 1px rgba(255,255,255,0.10) inset",
               }}
             >
-              <span className="relative z-10">Take the assessment</span>
+              <span className="relative z-10">Get your free skill report</span>
               <span className="relative z-10 text-xl transition-transform group-hover:translate-x-2">→</span>
               <span className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent group-hover:translate-x-full transition-transform duration-1000" />
             </Link>

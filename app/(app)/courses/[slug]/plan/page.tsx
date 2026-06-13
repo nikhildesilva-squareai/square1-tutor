@@ -293,6 +293,26 @@ export default function PlanPage({ params }: PageProps) {
             Full access from day one
           </div>
         </div>
+
+        {/* ── Activity-conditioned money-back guarantee ──────────────────── */}
+        <div className="max-w-2xl mx-auto mt-10">
+          <div className="rounded-2xl border p-6 sm:p-7 flex flex-col sm:flex-row items-center gap-5 text-center sm:text-left"
+            style={{ borderColor: "rgba(25,166,95,0.30)", background: "rgba(25,166,95,0.06)" }}>
+            <div className="w-14 h-14 shrink-0 rounded-2xl flex items-center justify-center" style={{ background: "rgba(25,166,95,0.12)" }}>
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#19A65F" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /><polyline points="9 11 12 14 16 9" />
+              </svg>
+            </div>
+            <div>
+              <p className="text-base font-black text-ink mb-1">The 14-day, do-the-work guarantee</p>
+              <p className="text-sm text-ink-muted leading-relaxed">
+                Complete your first <span className="font-semibold text-ink">5 lessons within 14 days</span> and if Square 1
+                isn&apos;t building real momentum for you, email us for a <span className="font-semibold text-ink">full refund</span> —
+                no forms, no hassle. We only want your money if it&apos;s working.
+              </p>
+            </div>
+          </div>
+        </div>
       </section>
 
       {/* ═══════════════════════════════════════════════════════════════ */}

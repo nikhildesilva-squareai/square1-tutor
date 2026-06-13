@@ -749,7 +749,7 @@ export function JourneyHook() {
           {/* Big CTA — rich red gradient · large · warm and premium */}
           <div className="flex flex-col items-center gap-5">
             <Link
-              href="/signup"
+              href="/diagnostic"
               className="relative group inline-flex items-center gap-4 px-12 sm:px-16 py-6 sm:py-7 rounded-2xl text-lg sm:text-xl lg:text-2xl font-black text-white overflow-hidden tracking-tight hover:-translate-y-0.5 transition-transform duration-300"
               style={{
                 /* Sophisticated 3-stop red: deep red → vibrant red → rose-red */
@@ -759,7 +759,7 @@ export function JourneyHook() {
                 willChange: "transform",
               }}
             >
-              <span className="relative z-10">Take the assessment</span>
+              <span className="relative z-10">Get your free skill report</span>
               <span className="relative z-10 text-2xl sm:text-3xl transition-transform duration-300 group-hover:translate-x-2">→</span>
 
               {/* Subtle auto-shimmer — premium polish, not blinking */}

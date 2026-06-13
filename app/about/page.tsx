@@ -508,14 +508,14 @@ function PromiseContent() {
           transitionDelay: "300ms",
         }}>
         <Link
-          href="/signup"
+          href="/diagnostic"
           className="group relative inline-flex items-center justify-center gap-3 px-10 py-5 rounded-2xl text-base lg:text-lg font-bold text-white overflow-hidden transition-all hover:-translate-y-0.5"
           style={{
             background: "linear-gradient(135deg, #DC2626 0%, #EF4444 50%, #F87171 100%)",
             boxShadow: "0 16px 48px rgba(220,38,38,0.35)",
           }}
         >
-          <span className="relative z-10">Take the assessment</span>
+          <span className="relative z-10">Get your free skill report</span>
           <span className="relative z-10 text-xl transition-transform group-hover:translate-x-2">→</span>
           <span className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent group-hover:translate-x-full transition-transform duration-1000" />
         </Link>

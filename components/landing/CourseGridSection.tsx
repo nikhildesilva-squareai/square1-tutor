@@ -53,7 +53,7 @@ function MobileCourseCard({
   isVisible: boolean;
 }) {
   const meta = getMeta(course.slug);
-  const href = course.status !== "active" ? "#" : `/courses/${course.slug}`;
+  const href = course.status !== "active" ? "#" : `/try/${course.slug}`;
 
   return (
     <Link
@@ -121,7 +121,7 @@ function DesktopCourseCard({
 }) {
   const meta = getMeta(course.slug);
   const isLocked = course.status !== "active" || course.slug === "#";
-  const href = isLocked ? "#" : `/courses/${course.slug}`;
+  const href = isLocked ? "#" : `/try/${course.slug}`;
 
   return (
     <Link
@@ -304,17 +304,17 @@ export function CourseGridSection({ courses }: { courses: Course[] }) {
         <div className="mt-10 sm:mt-20 flex flex-col items-center gap-3 sm:gap-4">
           <p className="text-xs sm:text-sm text-slate-500 text-center max-w-md">
             Not sure which track is right for you?{" "}
-            <span className="font-semibold text-slate-700">The assessment shows you in 30 minutes.</span>
+            <span className="font-semibold text-slate-700">The free 3-minute skill check shows you.</span>
           </p>
           <Link
-            href="/signup"
+            href="/diagnostic"
             className="inline-flex items-center gap-2 px-6 sm:px-7 py-3 sm:py-3.5 rounded-full text-white font-bold text-sm shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all"
             style={{
               background: "linear-gradient(135deg, #0056CE 0%, #4F46E5 100%)",
               boxShadow: "0 12px 32px rgba(0,86,206,0.30)",
             }}
           >
-            Find my track →
+            Get your free skill report →
           </Link>
         </div>
       </div>

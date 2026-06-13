@@ -30,64 +30,22 @@ import Link from "next/link";
 
 const CODE_LENGTH = 6;
 
-const COUNTRIES = [
-  "United States",
-  "United Kingdom",
-  "Australia",
-  "Canada",
-  "India",
-  "Germany",
-  "France",
-  "Japan",
-  "South Korea",
-  "Brazil",
-  "Singapore",
-  "UAE",
-  "Netherlands",
-  "Sweden",
-  "Switzerland",
-  "Ireland",
-  "Israel",
-  "New Zealand",
-  "South Africa",
-  "Nigeria",
-  "Kenya",
-  "Sri Lanka",
-  "Pakistan",
-  "Bangladesh",
-  "Malaysia",
-  "Philippines",
-  "Indonesia",
-  "Vietnam",
-  "Mexico",
-  "Other",
-] as const;
-
-const SUBJECTS = [
-  "Generative AI",
-  "Machine Learning",
-  "Artificial Intelligence",
-  "Cybersecurity",
-  "Data Science",
-  "Full Stack Development",
-  "Game Development",
-  "Computer Vision",
-  "Drone Technology",
-  "LLM Agent Architect",
-  "AI Product Management",
-  "DevOps Engineering",
-] as const;
-
-const EXPERIENCE_LEVELS = [
-  "High School Student",
-  "Undergraduate Student",
-  "Graduate Student",
-  "Career Changer",
-  "Working Professional",
-  "Senior / Manager",
-  "Freelancer / Self-taught",
-  "Other",
-] as const;
+// Maps a diagnostic/course slug (?subject=) to a display subject so the
+// track a visitor picked on the mini-diagnostic carries into their profile.
+const SLUG_TO_SUBJECT: Record<string, string> = {
+  "generative-ai": "Generative AI",
+  "machine-learning": "Machine Learning",
+  "artificial-intelligence": "Artificial Intelligence",
+  "cybersecurity": "Cybersecurity",
+  "data-science": "Data Science",
+  "fullstack-development": "Full Stack Development",
+  "game-development": "Game Development",
+  "computer-vision": "Computer Vision",
+  "drone-technology": "Drone Technology",
+  "llm-agent-architect": "LLM Agent Architect",
+  "ai-product-management": "AI Product Management",
+  "devops-engineering": "DevOps Engineering",
+};
 
 /* ─── Brand SVG icons (inline — no external requests) ─────────────────────── */
 
@@ -130,12 +88,7 @@ function MicrosoftIcon() {
 export default function SignupPage() {
   const router = useRouter();
 
-  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-  const [country, setCountry] = useState("");
-  const [subject, setSubject] = useState("");
-  const [experience, setExperience] = useState("");
-  const [gdprConsent, setGdprConsent] = useState(false);
   const [step, setStep] = useState<"email" | "otp">("email");
   const [digits, setDigits] = useState<string[]>(Array(CODE_LENGTH).fill(""));
   const [loading, setLoading] = useState(false);
@@ -143,6 +96,14 @@ export default function SignupPage() {
   const [resendCountdown, setResendCountdown] = useState(0);
 
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
+
+  // Capture the track the visitor picked on the mini-diagnostic (?subject=slug),
+  // read client-side so we don't need a Suspense boundary for useSearchParams.
+  const subjectRef = useRef<string>("");
+  useEffect(() => {
+    const slug = new URLSearchParams(window.location.search).get("subject");
+    if (slug && SLUG_TO_SUBJECT[slug]) subjectRef.current = SLUG_TO_SUBJECT[slug];
+  }, []);
 
   /* ── Countdown timer ──────────────────────────────────────────────────── */
 
@@ -173,14 +134,8 @@ export default function SignupPage() {
   async function handleSendCode(e: React.FormEvent) {
     e.preventDefault();
 
-    if (!gdprConsent) {
-      setError(
-        "Please accept the Privacy Policy and Terms of Service to continue.",
-      );
-      return;
-    }
-    if (!country || !subject || !experience) {
-      setError("Please fill in all fields.");
+    if (!email.trim()) {
+      setError("Please enter your email address.");
       return;
     }
 
@@ -204,20 +159,14 @@ export default function SignupPage() {
       return;
     }
 
-    // Success — store form data for post-verify onboarding
-    {
-      // Store name + country temporarily for post-verify onboarding
-      if (name.trim()) {
-        localStorage.setItem("sq1_pending_name", name.trim());
-      }
-      if (country) localStorage.setItem("sq1_pending_country", country);
-      if (subject) localStorage.setItem("sq1_pending_subject", subject);
-      if (experience) localStorage.setItem("sq1_pending_experience", experience);
-      setStep("otp");
-      setDigits(Array(CODE_LENGTH).fill(""));
-      setResendCountdown(60);
-      setTimeout(() => inputRefs.current[0]?.focus(), 50);
+    // Carry the diagnostic-picked track through to post-verify onboarding
+    if (subjectRef.current) {
+      localStorage.setItem("sq1_pending_subject", subjectRef.current);
     }
+    setStep("otp");
+    setDigits(Array(CODE_LENGTH).fill(""));
+    setResendCountdown(60);
+    setTimeout(() => inputRefs.current[0]?.focus(), 50);
     setLoading(false);
   }
 
@@ -243,26 +192,17 @@ export default function SignupPage() {
         return;
       }
 
-      // Post-verify: onboard the student with name + country + subject + experience
-      const pendingName = localStorage.getItem("sq1_pending_name");
-      const pendingCountry = localStorage.getItem("sq1_pending_country");
+      // Post-verify: create the student record. Profile details (name, level,
+      // country) are deferred — collected later in the dashboard / Settings.
+      // We only carry the track they picked on the diagnostic, if any.
       const pendingSubject = localStorage.getItem("sq1_pending_subject");
-      const pendingExperience = localStorage.getItem("sq1_pending_experience");
       try {
         await fetch("/api/onboard", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            name: pendingName ?? "",
-            country: pendingCountry ?? "",
-            subject: pendingSubject ?? "",
-            experience: pendingExperience ?? "",
-          }),
+          body: JSON.stringify(pendingSubject ? { subject: pendingSubject } : {}),
         });
-        localStorage.removeItem("sq1_pending_name");
-        localStorage.removeItem("sq1_pending_country");
         localStorage.removeItem("sq1_pending_subject");
-        localStorage.removeItem("sq1_pending_experience");
       } catch {
         // Non-fatal — student record may already exist or will be created lazily
       }
@@ -348,9 +288,6 @@ export default function SignupPage() {
 
   const inputClass =
     "w-full h-11 px-3.5 rounded-lg text-sm text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-brand/50 transition-all";
-
-  const selectClass =
-    "w-full h-11 px-3.5 rounded-lg text-sm text-white focus:outline-none focus:ring-2 focus:ring-brand/50 transition-all appearance-none cursor-pointer [&>option]:bg-[#0D1117] [&>option]:text-white";
 
   const inputStyle: React.CSSProperties = {
     background: "rgba(255,255,255,0.06)",
@@ -458,26 +395,8 @@ export default function SignupPage() {
               <div className="flex-1 h-px bg-white/[0.06]" />
             </div>
 
-            {/* Email signup form */}
+            {/* Email signup form — email only; profile is deferred to post-signup */}
             <form onSubmit={handleSendCode} className="space-y-3">
-              {/* Name */}
-              <div>
-                <label htmlFor="name" className={labelClass}>
-                  Full name
-                </label>
-                <input
-                  id="name"
-                  type="text"
-                  autoComplete="name"
-                  required
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  placeholder="Full name"
-                  className={inputClass}
-                  style={inputStyle}
-                />
-              </div>
-
               {/* Email */}
               <div>
                 <label htmlFor="email" className={labelClass}>
@@ -496,123 +415,18 @@ export default function SignupPage() {
                 />
               </div>
 
-              {/* ── Section divider: About You ─────────────────────────────── */}
-              <div className="pt-2 pb-1">
-                <div className="h-px bg-white/[0.04]" />
-                <p className="text-[10px] font-semibold text-slate-500 uppercase tracking-widest mt-4 mb-0">
-                  About you
-                </p>
-              </div>
-
-              {/* Country */}
-              <div>
-                <label htmlFor="country" className={labelClass}>
-                  Country
-                </label>
-                <select
-                  id="country"
-                  required
-                  value={country}
-                  onChange={(e) => setCountry(e.target.value)}
-                  className={selectClass}
-                  style={inputStyle}
-                >
-                  <option value="" disabled>
-                    Select your country
-                  </option>
-                  {COUNTRIES.map((c) => (
-                    <option key={c} value={c}>
-                      {c}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              {/* Subject interest */}
-              <div>
-                <label htmlFor="subject" className={labelClass}>
-                  What would you like to learn?
-                </label>
-                <select
-                  id="subject"
-                  required
-                  value={subject}
-                  onChange={(e) => setSubject(e.target.value)}
-                  className={selectClass}
-                  style={inputStyle}
-                >
-                  <option value="" disabled>
-                    Select a subject
-                  </option>
-                  {SUBJECTS.map((s) => (
-                    <option key={s} value={s}>
-                      {s}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              {/* Experience level */}
-              <div>
-                <label htmlFor="experience" className={labelClass}>
-                  Your current level
-                </label>
-                <select
-                  id="experience"
-                  required
-                  value={experience}
-                  onChange={(e) => setExperience(e.target.value)}
-                  className={selectClass}
-                  style={inputStyle}
-                >
-                  <option value="" disabled>
-                    Select your level
-                  </option>
-                  {EXPERIENCE_LEVELS.map((l) => (
-                    <option key={l} value={l}>
-                      {l}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              {/* GDPR consent checkbox */}
-              <div className="flex items-start gap-3 pt-2">
-                <input
-                  id="gdpr"
-                  type="checkbox"
-                  required
-                  checked={gdprConsent}
-                  onChange={(e) => {
-                    setGdprConsent(e.target.checked);
-                    if (e.target.checked) setError(null);
-                  }}
-                  className="mt-0.5 h-4 w-4 rounded border-white/20 bg-white/5 text-brand focus:ring-brand shrink-0 accent-[#0056CE]"
-                />
-                <label
-                  htmlFor="gdpr"
-                  className="text-[12px] text-slate-500 leading-relaxed"
-                >
-                  I agree to the{" "}
-                  <Link
-                    href="/privacy"
-                    className="text-brand underline"
-                    target="_blank"
-                  >
-                    Privacy Policy
-                  </Link>{" "}
-                  and{" "}
-                  <Link
-                    href="/terms"
-                    className="text-brand underline"
-                    target="_blank"
-                  >
-                    Terms of Service
-                  </Link>
-                  . I consent to Square1 Ai processing my data to provide the
-                  learning platform as described in the Privacy Policy.
-                </label>
-              </div>
+              {/* Implied-consent note (matches the OAuth path) */}
+              <p className="text-[11px] text-slate-500 leading-relaxed pt-1">
+                By continuing, you agree to our{" "}
+                <Link href="/privacy" className="text-slate-400 underline hover:text-white" target="_blank">
+                  Privacy Policy
+                </Link>{" "}
+                and{" "}
+                <Link href="/terms" className="text-slate-400 underline hover:text-white" target="_blank">
+                  Terms of Service
+                </Link>
+                .
+              </p>
 
               {error && (
                 <div

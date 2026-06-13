@@ -181,14 +181,14 @@ export function SocialProofSection() {
         {/* Bottom CTA */}
         <div className="mt-12 sm:mt-14 flex flex-col items-center gap-4">
           <Link
-            href="/signup"
+            href="/diagnostic"
             className="inline-flex items-center gap-2 px-8 py-4 rounded-full text-white font-bold text-sm shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all"
             style={{
               background: "linear-gradient(135deg, #0056CE 0%, #4F46E5 100%)",
               boxShadow: "0 12px 32px rgba(0,86,206,0.30)",
             }}
           >
-            Take the free assessment →
+            Get your free skill report →
           </Link>
           <p className="text-xs text-slate-500">Free · 30 minutes · No credit card</p>
         </div>

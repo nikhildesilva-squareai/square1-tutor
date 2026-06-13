@@ -97,7 +97,7 @@ export function HeroSection() {
             </Link>
             {/* "GET STARTED •" pill — Lusion style dark pill */}
             <Link
-              href="/signup"
+              href="/diagnostic"
               className="flex items-center gap-2.5 px-4 sm:px-5 py-2.5 rounded-full text-white text-xs font-bold tracking-wide uppercase hover:opacity-80 transition-all"
               style={{
                 background: "rgba(255,255,255,0.08)",
@@ -176,10 +176,10 @@ export function HeroSection() {
           {/* CTA row */}
           <div className="flex flex-col sm:flex-row gap-3">
             <Link
-              href="/signup"
+              href="/diagnostic"
               className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-full bg-white text-brand font-bold text-sm hover:bg-slate-100 transition-all shadow-xl hover:shadow-[0_0_30px_rgba(0,86,206,0.3)] hover:-translate-y-px"
             >
-              Start for free →
+              Get your free skill report →
             </Link>
             <Link
               href="/login"
