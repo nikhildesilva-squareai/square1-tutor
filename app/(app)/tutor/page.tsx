@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import { TutorClient } from "./TutorClient";
+import { getUsageSummary } from "@/lib/ai/budget";
 
 interface EnrollmentContext {
   enrollmentId: string;
@@ -80,6 +81,15 @@ export default async function TutorPage() {
     }
   }
 
+  // AI usage for the subtle budget meter (graceful — never blocks the page)
+  let usagePercent = 0;
+  try {
+    const usage = await getUsageSummary(student.id);
+    usagePercent = usage.percentUsed;
+  } catch {
+    // ignore — meter just won't show
+  }
+
   return (
     <TutorClient
       studentName={student.name ?? user.email?.split("@")[0] ?? "Student"}
@@ -88,6 +98,7 @@ export default async function TutorPage() {
       weakTopics={weakTopics}
       lessonObjectives={lessonObjectives}
       lessonContentSummary={lessonContentSummary}
+      usagePercent={usagePercent}
     />
   );
 }

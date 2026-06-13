@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 interface Message { role: "user" | "assistant"; content: string }
 interface Conversation { id: string; title: string; mode: string; message_count: number; last_message_at: string; created_at: string }
 interface EnrollmentContext { enrollmentId: string; courseTitle: string; courseSlug: string; currentLessonTitle: string | null }
-interface TutorClientProps { studentName: string; userEmail: string; enrollments: EnrollmentContext[]; weakTopics: string[]; lessonObjectives?: string[]; lessonContentSummary?: string }
+interface TutorClientProps { studentName: string; userEmail: string; enrollments: EnrollmentContext[]; weakTopics: string[]; lessonObjectives?: string[]; lessonContentSummary?: string; usagePercent?: number }
 
 // ─── Render markdown in AI responses ──────────────────────────────────────
 function renderMessage(text: string): string {
@@ -39,12 +39,13 @@ const MODES = [
   { id: "debug", label: "Debug", icon: "M12 20h9M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z" },
   { id: "quiz", label: "Quiz", icon: "M9 11l3 3L22 4M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11" },
   { id: "review", label: "Review", icon: "M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8zM14 2v6h6" },
+  { id: "interview", label: "Interview", icon: "M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3zM19 10v2a7 7 0 01-14 0v-2M12 19v4M8 23h8" },
 ] as const;
 
 type Mode = typeof MODES[number]["id"];
 
 // ═══════════════════════════════════════════════════════════════════════════
-export function TutorClient({ studentName, userEmail, enrollments, weakTopics, lessonObjectives, lessonContentSummary }: TutorClientProps) {
+export function TutorClient({ studentName, userEmail, enrollments, weakTopics, lessonObjectives, lessonContentSummary, usagePercent = 0 }: TutorClientProps) {
   const primaryEnrollment = enrollments[0] ?? null;
   const [mode, setMode] = useState<Mode>("learn");
   const [messages, setMessages] = useState<Message[]>([]);
@@ -138,9 +139,13 @@ export function TutorClient({ studentName, userEmail, enrollments, weakTopics, l
     setLoading(true);
 
     try {
+      const interviewDomain = selectedEnrollment?.courseTitle ?? "software engineering";
       const modePrefix = mode === "debug" ? "I need help debugging. " :
         mode === "quiz" ? "Quiz me on this topic. Give me a question to answer: " :
-        mode === "review" ? "Review this code for quality, bugs, and improvements: " : "";
+        mode === "review" ? "Review this code for quality, bugs, and improvements: " :
+        mode === "interview" && messages.length === 0
+          ? `You are a senior technical interviewer for a ${interviewDomain} role. Run a realistic mock interview: ask ONE question at a time, wait for my answer, then give brief constructive feedback and ask the next. Mix conceptual and practical questions and adapt to my level. Begin now with your first question.\n\n`
+          : "";
 
       const res = await fetch("/api/tutor/chat", {
         method: "POST",
@@ -188,6 +193,10 @@ export function TutorClient({ studentName, userEmail, enrollments, weakTopics, l
     if (mode === "review") return [
       { label: "Review my code", text: "Please review this code:\n\n```python\n\n```" },
       { label: "Best practices", text: `Best practices for ${lesson}?` },
+    ];
+    if (mode === "interview") return [
+      { label: `Mock interview: ${course}`, text: `Start a mock interview for a ${course} role` },
+      { label: "Behavioural question", text: "Ask me a behavioural interview question and assess my answer" },
     ];
     return [
       { label: `Explain ${lesson}`, text: `Explain ${lesson} simply with examples` },
@@ -308,6 +317,19 @@ export function TutorClient({ studentName, userEmail, enrollments, weakTopics, l
               </button>
             ))}
           </div>
+
+          {/* Subtle AI usage meter — only surfaces once they're past 70% */}
+          {usagePercent >= 70 && (
+            <div className="max-w-3xl mx-auto mt-2 flex items-center gap-2">
+              <div className="flex-1 h-1 rounded-full bg-surface-alt overflow-hidden">
+                <div className="h-full rounded-full transition-all"
+                  style={{ width: `${Math.min(100, usagePercent)}%`, background: usagePercent >= 100 ? "#D97706" : "#0056CE" }} />
+              </div>
+              <span className="text-[10px] text-ink-muted font-medium shrink-0">
+                {usagePercent >= 100 ? "Lite mode — still here for you" : `${Math.round(usagePercent)}% of monthly AI used`}
+              </span>
+            </div>
+          )}
         </div>
 
         {/* Messages */}
@@ -323,10 +345,10 @@ export function TutorClient({ studentName, userEmail, enrollments, weakTopics, l
                     </svg>
                   </div>
                   <h2 className="text-lg font-bold text-ink mb-1">
-                    {mode === "learn" ? "What do you want to learn?" : mode === "debug" ? "Paste your code or error" : mode === "quiz" ? "Ready to test yourself?" : "Share code for review"}
+                    {mode === "learn" ? "What do you want to learn?" : mode === "debug" ? "Paste your code or error" : mode === "quiz" ? "Ready to test yourself?" : mode === "interview" ? "Practice a real interview" : "Share code for review"}
                   </h2>
                   <p className="text-sm text-ink-muted max-w-sm mx-auto">
-                    {mode === "learn" ? "I'll explain any concept with examples and code." : mode === "debug" ? "Share your code and the error — I'll find the fix." : mode === "quiz" ? "I'll generate practice questions for your weak areas." : "Paste code and I'll review for bugs and improvements."}
+                    {mode === "learn" ? "I'll explain any concept with examples and code." : mode === "debug" ? "Share your code and the error — I'll find the fix." : mode === "quiz" ? "I'll generate practice questions for your weak areas." : mode === "interview" ? "I'll run a realistic mock interview for your target role — one question at a time, with feedback." : "Paste code and I'll review for bugs and improvements."}
                   </p>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-w-lg mx-auto">
@@ -397,7 +419,7 @@ export function TutorClient({ studentName, userEmail, enrollments, weakTopics, l
             <div className="flex gap-2">
               <textarea ref={inputRef} value={input} onChange={e => setInput(e.target.value)}
                 onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); handleSend(e); } }}
-                placeholder={mode === "learn" ? "Ask Nova anything..." : mode === "debug" ? "Paste your code or error..." : mode === "quiz" ? "Name a topic to be quizzed on..." : "Paste code for review..."}
+                placeholder={mode === "learn" ? "Ask Nova anything..." : mode === "debug" ? "Paste your code or error..." : mode === "quiz" ? "Name a topic to be quizzed on..." : mode === "interview" ? "Answer the question, or say 'start'..." : "Paste code for review..."}
                 rows={1} className="flex-1 px-4 py-2.5 rounded-xl border border-border bg-surface-soft text-ink text-sm focus:outline-none focus:ring-2 focus:ring-brand/20 focus:border-brand resize-none"
                 style={{ minHeight: "44px", maxHeight: "160px" }} />
               <button type="submit" disabled={!input.trim() || loading}

@@ -340,10 +340,23 @@ export default async function ProjectsPage() {
                             )}
                             <span>{project.estimated_hours}h</span>
                             <span className="capitalize">{project.difficulty}</span>
-                            <span className="text-ink-muted">
-                              {project.difficulty === "intermediate" ? `Need ${Math.max(0, 10 - lessonsComplete)} more lessons` : `Need ${Math.max(0, 25 - lessonsComplete)} more lessons`}
-                            </span>
                           </div>
+                          {/* Unlock countdown with progress toward the threshold */}
+                          {(() => {
+                            const threshold = project.difficulty === "intermediate" ? 10 : 25;
+                            const remaining = Math.max(0, threshold - lessonsComplete);
+                            const pct = Math.min(100, (lessonsComplete / threshold) * 100);
+                            return (
+                              <div className="mt-2.5 flex items-center gap-2 max-w-xs">
+                                <div className="flex-1 h-1.5 rounded-full bg-surface-alt overflow-hidden">
+                                  <div className="h-full rounded-full bg-brand/60 transition-all" style={{ width: `${pct}%` }} />
+                                </div>
+                                <span className="text-[10px] font-semibold text-ink-muted shrink-0 tabular-nums">
+                                  {remaining} more {remaining === 1 ? "lesson" : "lessons"} to unlock
+                                </span>
+                              </div>
+                            );
+                          })()}
                         </div>
                       </div>
                     )}

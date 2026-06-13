@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { CodeEditor } from "@/components/ui/code-editor";
 import { cn } from "@/lib/utils";
 import { SaveNoteButton } from "@/components/SaveNoteButton";
+import { NovaPanel } from "@/components/NovaPanel";
 
 // ─── Types ─────────────────────────────────────────────────────────────────
 
@@ -252,7 +253,26 @@ export function LearnClient({
   });
   const [quizAnswered, setQuizAnswered] = useState<Record<string, boolean>>({});
   const [quizCorrect, setQuizCorrect] = useState<Record<string, boolean>>({});
+  const [quizAttempts, setQuizAttempts] = useState<Record<string, number>>({});
   const [submitting, setSubmitting] = useState(false);
+
+  // ── Nova in-lesson panel ──
+  const [novaOpen, setNovaOpen] = useState(false);
+  const [novaSeed, setNovaSeed] = useState<{ text: string; nonce: number } | null>(null);
+  const novaNonce = useRef(0);
+  const novaContext = {
+    courseTitle: course?.title ?? "your course",
+    currentLessonTitle: lesson.title,
+    lessonObjectives: lesson.learning_objectives,
+    lessonContentSummary: (lesson.theory_md ?? "").slice(0, 1500),
+  };
+  function openNova(seedText?: string) {
+    if (seedText) {
+      novaNonce.current += 1;
+      setNovaSeed({ text: seedText, nonce: novaNonce.current });
+    }
+    setNovaOpen(true);
+  }
   const [results, setResults] = useState<ExerciseResult[] | null>(null);
   const [completing, setCompleting] = useState(false);
   const [completed, setCompleted] = useState(alreadyCompleted);
@@ -287,11 +307,27 @@ export function LearnClient({
   const minutesPerCard = (lesson.estimated_minutes || 25) / Math.max(cards.length, 1);
   const minutesLeft = Math.max(1, Math.round(cardsRemaining * minutesPerCard));
 
-  // Check inline quiz answer
-  function checkQuizAnswer(exerciseId: string, selected: string, correct: string) {
+  // Inline quiz pick — retry-aware. A wrong answer no longer locks the question;
+  // the student gets a nudge and can try again. After the 2nd miss we reveal the
+  // correct answer and offer "Ask Nova" so the mistake becomes a teaching moment.
+  function handleQuizPick(exerciseId: string, selected: string, correct: string) {
+    if (quizAnswered[exerciseId]) return; // already locked (correct or 2 misses)
+    const isRight = selected.trim().toLowerCase() === correct.trim().toLowerCase();
     setResponses(prev => ({ ...prev, [exerciseId]: { ...prev[exerciseId], selectedOption: selected } }));
-    setQuizAnswered(prev => ({ ...prev, [exerciseId]: true }));
-    setQuizCorrect(prev => ({ ...prev, [exerciseId]: selected.trim().toLowerCase() === correct.trim().toLowerCase() }));
+
+    if (isRight) {
+      setQuizAnswered(prev => ({ ...prev, [exerciseId]: true }));
+      setQuizCorrect(prev => ({ ...prev, [exerciseId]: true }));
+      return;
+    }
+
+    const attempts = (quizAttempts[exerciseId] ?? 0) + 1;
+    setQuizAttempts(prev => ({ ...prev, [exerciseId]: attempts }));
+    if (attempts >= 2) {
+      // Lock after second miss, reveal correct answer
+      setQuizAnswered(prev => ({ ...prev, [exerciseId]: true }));
+      setQuizCorrect(prev => ({ ...prev, [exerciseId]: false }));
+    }
   }
 
   // Submit practice exercises
@@ -363,9 +399,16 @@ export function LearnClient({
               </p>
               <h1 className="text-sm font-bold text-ink truncate">{lesson.title}</h1>
             </div>
-            {/* Time + card counter */}
+            {/* Nova + Time + card counter */}
             <div className="flex items-center gap-3 shrink-0">
-              <span className="text-[10px] text-ink-muted font-medium">{minutesLeft}m left</span>
+              <button onClick={() => openNova()}
+                className="flex items-center gap-1.5 px-3 h-8 rounded-full text-white text-xs font-bold shrink-0 hover:-translate-y-0.5 transition-transform"
+                style={{ background: "linear-gradient(135deg,#0056CE,#7C3AED)" }}
+                title="Ask Nova about this lesson">
+                <span className="w-4 h-4 rounded-full bg-white/25 flex items-center justify-center text-[10px] font-black">N</span>
+                Nova
+              </button>
+              <span className="hidden sm:inline text-[10px] text-ink-muted font-medium">{minutesLeft}m left</span>
               <span className="text-xs font-bold text-ink tabular-nums">{currentCard + 1}/{cards.length}</span>
             </div>
           </div>
@@ -441,13 +484,13 @@ export function LearnClient({
 
                 {/* Actions: Ask Nova + Save */}
                 <div className="mt-5 flex items-center justify-center gap-3">
-                  <Link href={`/tutor?topic=${encodeURIComponent(card.title)}`}
+                  <button onClick={() => openNova(`Explain this section more simply: "${card.title}".`)}
                     className="flex items-center gap-2 px-5 py-2.5 rounded-xl border border-brand/20 bg-surface-tint text-xs font-semibold text-brand hover:bg-brand hover:text-white transition-all">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
                       <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" />
                     </svg>
                     Ask Nova
-                  </Link>
+                  </button>
                   <SaveNoteButton
                     content={card.rawContent ?? card.title}
                     type="highlight"
@@ -467,6 +510,8 @@ export function LearnClient({
               const ex = card.exercise;
               const answered = quizAnswered[ex.id];
               const isCorrect = quizCorrect[ex.id];
+              const attempts = quizAttempts[ex.id] ?? 0;
+              const lastPick = responses[ex.id]?.selectedOption;
               return (
                 <div className="card-scale">
                   <div className="text-center mb-6">
@@ -482,28 +527,31 @@ export function LearnClient({
                     {ex.options && (
                       <div className="grid gap-3">
                         {ex.options.map((opt, i) => {
-                          const sel = responses[ex.id]?.selectedOption === opt;
+                          const isThis = lastPick === opt;
+                          // Reveal correct only once locked
                           const correctOpt = answered && ex.correct_answer?.trim().toLowerCase() === opt.trim().toLowerCase();
-                          const wrongSel = answered && sel && !isCorrect;
+                          // The locked-in wrong final pick
+                          const wrongLocked = answered && isThis && !isCorrect;
+                          // A wrong pick mid-retry (not yet locked)
+                          const wrongTry = !answered && isThis && attempts > 0;
                           return (
                             <button key={i}
-                              onClick={() => !answered && checkQuizAnswer(ex.id, opt, ex.correct_answer ?? "")}
+                              onClick={() => !answered && handleQuizPick(ex.id, opt, ex.correct_answer ?? "")}
                               disabled={!!answered}
                               className={cn(
                                 "w-full text-left px-5 py-4 rounded-xl border-2 transition-all flex items-center gap-4",
                                 correctOpt ? "border-emerald-400 bg-emerald-50" :
-                                wrongSel ? "border-red-400 bg-red-50" :
-                                sel && !answered ? "border-brand bg-surface-tint" :
+                                wrongLocked || wrongTry ? "border-red-400 bg-red-50" :
                                 "border-border bg-surface hover:border-brand/30 hover:scale-[1.01]",
                                 answered ? "cursor-default" : "cursor-pointer"
                               )}>
                               <span className={cn(
                                 "w-9 h-9 rounded-xl flex items-center justify-center text-sm font-bold shrink-0 transition-all",
                                 correctOpt ? "bg-emerald-500 text-white check-pop" :
-                                wrongSel ? "bg-red-500 text-white" :
-                                sel ? "bg-brand text-white" : "bg-surface-alt text-ink-muted"
+                                wrongLocked || wrongTry ? "bg-red-500 text-white" :
+                                "bg-surface-alt text-ink-muted"
                               )}>
-                                {correctOpt ? "✓" : wrongSel ? "✗" : String.fromCharCode(65 + i)}
+                                {correctOpt ? "✓" : wrongLocked || wrongTry ? "✗" : String.fromCharCode(65 + i)}
                               </span>
                               <span className="text-sm text-ink">{opt}</span>
                             </button>
@@ -513,15 +561,33 @@ export function LearnClient({
                     )}
 
                     {/* Feedback */}
-                    {answered && (
-                      <div className={cn(
-                        "mt-5 px-5 py-4 rounded-xl text-sm card-fade-up",
-                        isCorrect ? "bg-emerald-50 border border-emerald-200 text-emerald-700" : "bg-red-50 border border-red-200 text-red-700"
-                      )}>
-                        <p className="font-bold mb-1">{isCorrect ? "Correct!" : "Not quite"}</p>
-                        <p className="text-ink-secondary">
-                          {isCorrect ? "Great recall — you understood this section." : `The correct answer is: ${ex.correct_answer}`}
-                        </p>
+                    {isCorrect && (
+                      <div className="mt-5 px-5 py-4 rounded-xl text-sm bg-emerald-50 border border-emerald-200 text-emerald-700 card-fade-up">
+                        <p className="font-bold mb-1">Correct!</p>
+                        <p className="text-ink-secondary">Great recall — you understood this section.</p>
+                      </div>
+                    )}
+
+                    {/* First miss — nudge, allow retry */}
+                    {!answered && attempts === 1 && (
+                      <div className="mt-5 px-5 py-4 rounded-xl text-sm bg-amber-50 border border-amber-200 text-amber-800 card-fade-up">
+                        <p className="font-bold mb-1">Not quite — take another look.</p>
+                        <p className="text-amber-700/90">Re-read the options and try once more. You&apos;ve got this.</p>
+                      </div>
+                    )}
+
+                    {/* Second miss — reveal + Ask Nova */}
+                    {answered && !isCorrect && (
+                      <div className="mt-5 px-5 py-4 rounded-xl text-sm bg-red-50 border border-red-200 card-fade-up">
+                        <p className="font-bold text-red-700 mb-1">The correct answer is: {ex.correct_answer}</p>
+                        <p className="text-ink-secondary mb-3">Don&apos;t just memorise it — make sure you understand <em>why</em>.</p>
+                        <button
+                          onClick={() => openNova(`I got this quiz question wrong: "${ex.prompt_md}" — the answer is "${ex.correct_answer}". Explain why that's correct and why the other options aren't, simply.`)}
+                          className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-brand text-white text-xs font-bold hover:bg-brand/90 transition-all"
+                        >
+                          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" /></svg>
+                          Ask Nova why
+                        </button>
                       </div>
                     )}
                   </div>
@@ -761,6 +827,9 @@ export function LearnClient({
           {error}
         </div>
       )}
+
+      {/* In-lesson Nova slide-over */}
+      <NovaPanel open={novaOpen} onClose={() => setNovaOpen(false)} context={novaContext} seed={novaSeed} />
     </div>
   );
 }

@@ -253,6 +253,7 @@ export default async function DashboardPage({ searchParams }: DashboardProps) {
     { data: projectSubmissions },
     { data: nextProject },
     { data: allCompletionDates },
+    { count: dueFlashcardCount },
   ] = await Promise.all([
     supabase.from("lesson_completions").select("id", { count: "exact", head: true }).eq("student_id", studentId).eq("enrollment_id", enrollmentId),
     supabase.from("modules").select("id, title, order_index, week_number, course_id").eq("course_id", courseId).order("order_index", { ascending: true }) as unknown as Promise<{ data: ModuleRow[] | null }>,
@@ -262,7 +263,10 @@ export default async function DashboardPage({ searchParams }: DashboardProps) {
     supabase.from("project_submissions").select("id, score").eq("student_id", studentId).not("score", "is", null),
     supabase.from("projects").select("id, title, difficulty").eq("course_id", courseId).order("order_index", { ascending: true }).limit(1).maybeSingle(),
     supabase.from("lesson_completions").select("completed_at").eq("student_id", studentId).gte("completed_at", ninetyDaysAgo),
+    supabase.from("study_notes").select("id", { count: "exact", head: true }).eq("student_id", studentId).eq("type", "flashcard").lte("next_review_at", now.toISOString()),
   ]);
+
+  const dueFlashcards = dueFlashcardCount ?? 0;
 
   const lessonsCompleted = completedLessonCount ?? 0;
   const progressPct = totalLessons > 0 ? lessonsCompleted / totalLessons : 0;
@@ -373,6 +377,26 @@ export default async function DashboardPage({ searchParams }: DashboardProps) {
           </div>
         </div>
       </div>
+
+      {/* ── Day-one welcome — celebrate, don't show a wall of zeros ────── */}
+      {lessonsCompleted === 0 && (
+        <div className="mb-6 rounded-xl border border-brand/20 bg-surface-tint p-5 flex items-center gap-4">
+          <div className="w-11 h-11 rounded-xl bg-brand/10 flex items-center justify-center shrink-0 text-xl">🎉</div>
+          <div className="flex-1">
+            <p className="text-sm font-bold text-ink">Day one — let&apos;s light your first streak.</p>
+            <p className="text-xs text-ink-muted mt-0.5">
+              Finish your first lesson today and your streak, heatmap, and progress all come alive. The hardest part is starting — you&apos;re already here.
+            </p>
+          </div>
+          {currentLesson && (
+            <Link href={`/learn/${currentLesson.id}`}
+              className="hidden sm:inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold text-white shrink-0 hover:-translate-y-0.5 transition-transform"
+              style={{ background: courseColor }}>
+              Start lesson 1 →
+            </Link>
+          )}
+        </div>
+      )}
 
       {/* ── Stats row ─────────────────────────────────────────────────── */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
@@ -568,6 +592,17 @@ export default async function DashboardPage({ searchParams }: DashboardProps) {
           <div className="bg-surface rounded-xl border border-border p-5">
             <p className="text-[10px] font-bold text-ink-muted uppercase tracking-widest mb-4">Quick Actions</p>
             <div className="space-y-2">
+              {dueFlashcards > 0 && (
+                <Link href="/notes?filter=flashcard"
+                  className="flex items-center gap-3 px-4 py-3 rounded-xl border border-amber-200 bg-amber-50 hover:bg-amber-100 transition-all group">
+                  <div className="w-8 h-8 rounded-lg bg-amber-400/20 flex items-center justify-center shrink-0 text-base">🗂️</div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-semibold text-amber-900 truncate">{dueFlashcards} flashcard{dueFlashcards !== 1 ? "s" : ""} due</p>
+                    <p className="text-[10px] text-amber-700/90 truncate">2 minutes of review keeps it stuck</p>
+                  </div>
+                  <svg width="14" height="14" viewBox="0 0 16 16" fill="none" className="text-amber-600"><path d="M6 3l5 5-5 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /></svg>
+                </Link>
+              )}
               {currentLesson && (
                 <Link href={`/learn/${currentLesson.id}`}
                   className="flex items-center gap-3 px-4 py-3 rounded-xl border border-brand/20 bg-surface-tint hover:bg-brand/5 transition-all group">

@@ -23,11 +23,19 @@ export const AI_ALLOCATION_USD = 1.2;
 /** Fallback budget for students without a wallet (free tier / dev testing) */
 const FALLBACK_BUDGET_USD = 1.2;
 
-// Claude Sonnet 4.5 pricing (per token)
-const INPUT_COST_PER_TOKEN = 3 / 1_000_000; // $0.000003
-const OUTPUT_COST_PER_TOKEN = 15 / 1_000_000; // $0.000015
+// Per-token pricing by model
+const PRICING = {
+  "claude-sonnet-4-5": { input: 3 / 1_000_000, output: 15 / 1_000_000 },
+  "claude-haiku-4-5-20251001": { input: 1 / 1_000_000, output: 5 / 1_000_000 },
+} as const;
 
-const MODEL = "claude-sonnet-4-5";
+const MODEL_SONNET = "claude-sonnet-4-5";
+const MODEL_HAIKU = "claude-haiku-4-5-20251001";
+
+// Once a student's wallet is spent we DON'T cut them off — we degrade to the
+// cheaper Haiku model so the tutor keeps working. We only hard-stop past an
+// absolute ceiling so cost can never run unbounded.
+const HARD_CEILING_MULTIPLIER = 2;
 
 export class BudgetExceededError extends Error {
   constructor(spent: number, budget: number) {
@@ -47,9 +55,10 @@ function getMonthKey(): string {
   return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
 }
 
-/** Calculate cost from token counts */
-function calculateCost(inputTokens: number, outputTokens: number): number {
-  return inputTokens * INPUT_COST_PER_TOKEN + outputTokens * OUTPUT_COST_PER_TOKEN;
+/** Calculate cost from token counts for a given model */
+function calculateCost(model: keyof typeof PRICING, inputTokens: number, outputTokens: number): number {
+  const p = PRICING[model] ?? PRICING[MODEL_SONNET];
+  return inputTokens * p.input + outputTokens * p.output;
 }
 
 // ─── Wallet management ───────────────────────────────────────────────────────
@@ -160,11 +169,11 @@ export async function checkBudget(
 async function logUsage(
   studentId: string,
   inputTokens: number,
-  outputTokens: number
+  outputTokens: number,
+  cost: number
 ): Promise<void> {
   const supabase = await createClient();
   const monthKey = getMonthKey();
-  const cost = calculateCost(inputTokens, outputTokens);
 
   // 1. Update api_usage (tracking table)
   const { data: existing } = await supabase
@@ -237,37 +246,44 @@ export async function callAI(
   inputTokens: number;
   outputTokens: number;
   cost: number;
+  model: string;
+  degraded: boolean;
 }> {
-  // 1. Check budget
+  // 1. Check budget and decide the model
   const budgetCheck = await checkBudget(studentId);
-  if (!budgetCheck.ok) {
-    throw new BudgetExceededError(budgetCheck.spent, budgetCheck.budget);
+  const overBudget = !budgetCheck.ok; // spent >= allocated
+
+  // Only hard-stop past the absolute ceiling — otherwise degrade gracefully.
+  if (overBudget && budgetCheck.spent >= budgetCheck.budget * HARD_CEILING_MULTIPLIER) {
+    throw new BudgetExceededError(budgetCheck.spent, budgetCheck.budget * HARD_CEILING_MULTIPLIER);
   }
+
+  const model = overBudget ? MODEL_HAIKU : MODEL_SONNET;
 
   // 2. Make the API call
   const client = new Anthropic();
   const response = await client.messages.create({
-    model: MODEL,
+    model,
     max_tokens: params.max_tokens ?? 1024,
     temperature: params.temperature ?? 0,
     ...(params.system ? { system: params.system } : {}),
     messages: params.messages,
   });
 
-  // 3. Extract usage
+  // 3. Extract usage + cost (priced by the model actually used)
   const inputTokens = response.usage.input_tokens;
   const outputTokens = response.usage.output_tokens;
-  const cost = calculateCost(inputTokens, outputTokens);
+  const cost = calculateCost(model, inputTokens, outputTokens);
 
   // 4. Log usage (non-blocking)
-  logUsage(studentId, inputTokens, outputTokens).catch((err) => {
+  logUsage(studentId, inputTokens, outputTokens, cost).catch((err) => {
     console.error("[budget] Failed to log usage:", err);
   });
 
   // 5. Return
   const text =
     response.content[0].type === "text" ? response.content[0].text : "";
-  return { text, inputTokens, outputTokens, cost };
+  return { text, inputTokens, outputTokens, cost, model, degraded: overBudget };
 }
 
 // ─── Usage summary (for dashboards) ─────────────────────────────────────────

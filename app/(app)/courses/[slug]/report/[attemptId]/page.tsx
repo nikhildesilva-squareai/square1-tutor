@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef, use } from "react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
+import { ShareResultButton } from "@/components/ShareResultButton";
 
 interface PageProps {
   params: Promise<{ slug: string; attemptId: string }>;
@@ -468,6 +469,11 @@ export default function ReportPage({ params }: PageProps) {
               <p className="text-xl font-bold text-error tabular-nums">{incorrectQs}</p>
               <p className="text-[10px] text-error uppercase tracking-wider">Incorrect</p>
             </div>
+          </div>
+
+          {/* Share your result — positive framing, drives the loop to /diagnostic */}
+          <div className="mt-7">
+            <ShareResultButton percentage={report.percentage} level={lc.label} courseTitle={formatTopicName(slug)} />
           </div>
         </div>
       </section>
