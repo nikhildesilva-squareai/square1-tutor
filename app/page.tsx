@@ -7,10 +7,8 @@ import { TimelineSection } from "@/components/landing/TimelineSection";
 import { SocialProofSection } from "@/components/landing/SocialProofSection";
 import { JourneyHook } from "@/components/landing/JourneyHook";
 import { CourseGridSection } from "@/components/landing/CourseGridSection";
-import { NovaDemo } from "@/components/landing/NovaDemo";
 import { InlineDiagnostic } from "@/components/landing/InlineDiagnostic";
 import { CodeReviewSlider } from "@/components/landing/CodeReviewSlider";
-import { AskNovaPill } from "@/components/landing/AskNovaPill";
 import { CookieConsent } from "@/components/ui/cookie-consent";
 
 // ─── Server-side data fetch ───────────────────────────────────────────────────
@@ -66,16 +64,13 @@ export default async function Home() {
       {/* ── 1. Hero (with goal-typer) ───────────────────────────────────────── */}
       <HeroSection />
 
-      {/* ── 2. Try Nova live — promoted directly under hero (fastest aha) ────── */}
-      <NovaDemo />
+      {/* ── 2. THE HOOK — outcome first: "Get hired as an [role]" + journey ──── */}
+      <JourneyHook />
 
       {/* ── 3. Foot-in-the-door: one inline question → curiosity gap ─────────── */}
       <InlineDiagnostic />
 
-      {/* ── 4. THE HOOK — Why take the course + 5-step journey + red CTA ─────── */}
-      <JourneyHook />
-
-      {/* ── 5. Before/After — drag to see Nova review your code ──────────────── */}
+      {/* ── 4. Before/After — drag to see Nova review your code ──────────────── */}
       <CodeReviewSlider />
 
       {/* ── 6. Why Square 1 beats everything else ────────────────────────────── */}
@@ -302,7 +297,6 @@ export default async function Home() {
         </footer>
       </section>
 
-      <AskNovaPill />
       <CookieConsent />
     </main>
   );
