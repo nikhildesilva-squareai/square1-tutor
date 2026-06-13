@@ -47,18 +47,19 @@ function MobileCourseCard({
   course,
   index,
   isVisible,
+  onSelect,
 }: {
   course: Course;
   index: number;
   isVisible: boolean;
+  onSelect: (c: Course) => void;
 }) {
   const meta = getMeta(course.slug);
-  const href = course.status !== "active" ? "#" : `/try/${course.slug}`;
 
   return (
-    <Link
-      href={href}
-      className="relative group rounded-2xl p-4 transition-all duration-500 will-change-transform border overflow-hidden block"
+    <button
+      onClick={() => onSelect(course)}
+      className="relative group rounded-2xl p-4 transition-all duration-500 will-change-transform border overflow-hidden block w-full text-left"
       style={{
         background: `linear-gradient(135deg, ${course.color}10 0%, #FFFFFF 60%, ${course.color}06 100%)`,
         borderColor: `${course.color}25`,
@@ -105,7 +106,7 @@ function MobileCourseCard({
 
       {/* Thin accent line at bottom */}
       <div className="absolute bottom-0 left-0 right-0 h-0.5" style={{ background: `linear-gradient(90deg, ${course.color}40, ${course.color}10)` }} />
-    </Link>
+    </button>
   );
 }
 
@@ -114,20 +115,19 @@ function DesktopCourseCard({
   course,
   index,
   isVisible,
+  onSelect,
 }: {
   course: Course;
   index: number;
   isVisible: boolean;
+  onSelect: (c: Course) => void;
 }) {
   const meta = getMeta(course.slug);
-  const isLocked = course.status !== "active" || course.slug === "#";
-  const href = isLocked ? "#" : `/try/${course.slug}`;
 
   return (
-    <Link
-      href={href}
-      aria-disabled={isLocked}
-      className="relative group rounded-3xl p-6 lg:p-7 transition-all duration-700 will-change-transform border overflow-hidden block"
+    <button
+      onClick={() => onSelect(course)}
+      className="relative group rounded-3xl p-6 lg:p-7 transition-all duration-700 will-change-transform border overflow-hidden block w-full text-left"
       style={{
         background: `
           linear-gradient(135deg, ${course.color}14 0%, #FFFFFF 50%, ${course.color}08 100%),
@@ -152,7 +152,7 @@ function DesktopCourseCard({
             <span className="w-1.5 h-1.5 rounded-full" style={{ background: course.color }} />
           </span>
           <span className="text-[10px] tracking-[0.25em] uppercase font-bold" style={{ color: course.color }}>
-            {isLocked ? "Coming Soon" : "Course"}
+            {course.status !== "active" ? "Coming Soon" : "Course"}
           </span>
         </div>
         <span
@@ -224,13 +224,70 @@ function DesktopCourseCard({
           />
         </div>
       </div>
-    </Link>
+    </button>
+  );
+}
+
+// ─── Inline explorer modal — opens when a course card is clicked ──────────────
+function CourseExplorer({ course, onClose }: { course: Course; onClose: () => void }) {
+  const meta = getMeta(course.slug);
+  return (
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
+      <div className="absolute inset-0 bg-slate-900/50 backdrop-blur-sm" onClick={onClose} />
+      <div className="relative w-full sm:max-w-lg rounded-t-3xl sm:rounded-3xl bg-white shadow-2xl overflow-hidden animate-fade-in-up">
+        {/* Accent header */}
+        <div className="p-6 sm:p-7" style={{ background: `linear-gradient(135deg, ${course.color}14, #fff)` }}>
+          <div className="flex items-start justify-between">
+            <div>
+              <span className="text-2xl">{course.icon}</span>
+              <h3 className="mt-2 text-2xl font-black text-slate-900 leading-tight">{course.title}</h3>
+              <p className="text-sm font-semibold mt-1" style={{ color: course.color }}>
+                {meta.role} · <span style={{ color: "#10B981" }}>{meta.salary}</span>
+              </p>
+            </div>
+            <button onClick={onClose} className="w-8 h-8 rounded-lg hover:bg-black/5 flex items-center justify-center text-slate-400" aria-label="Close">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
+            </button>
+          </div>
+        </div>
+
+        <div className="p-6 sm:p-7 pt-5">
+          <p className="text-sm text-slate-600 leading-relaxed mb-5">{course.description}</p>
+
+          <p className="text-[10px] tracking-widest uppercase font-bold text-slate-400 mb-3">Real projects you&apos;ll ship</p>
+          <div className="space-y-2 mb-6">
+            {meta.projects.map((p, i) => (
+              <div key={p} className="flex items-center gap-2.5 px-3 py-2 rounded-lg border bg-slate-50/60" style={{ borderColor: `${course.color}20` }}>
+                <span className="text-[9px] font-mono font-bold tabular-nums" style={{ color: course.color }}>{String(i + 1).padStart(2, "0")}</span>
+                <span className="text-sm font-semibold text-slate-700">{p}</span>
+              </div>
+            ))}
+            <p className="text-[11px] text-slate-400 pt-1">+ {Math.max(0, course.total_projects - meta.projects.length)} more · {course.total_lessons} lessons</p>
+          </div>
+
+          {/* Two next steps */}
+          <div className="flex flex-col gap-2.5">
+            <Link href={`/try/${course.slug}`}
+              className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl text-white font-bold text-sm hover:-translate-y-0.5 transition-transform"
+              style={{ background: "linear-gradient(135deg,#0056CE,#4F46E5)", boxShadow: "0 12px 32px rgba(0,86,206,0.25)" }}>
+              Preview Lesson 1 — free →
+            </Link>
+            <Link href={`/diagnostic?subject=${course.slug}`}
+              className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-bold text-sm border-2 transition-all hover:bg-slate-50"
+              style={{ borderColor: `${course.color}30`, color: "#334155" }}>
+              Get your free skill report
+            </Link>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }
 
 // ─── Main section ─────────────────────────────────────────────────────────────
 export function CourseGridSection({ courses }: { courses: Course[] }) {
   const sectionRef = useRef<HTMLDivElement>(null);
+  const [selected, setSelected] = useState<Course | null>(null);
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
@@ -289,14 +346,14 @@ export function CourseGridSection({ courses }: { courses: Course[] }) {
         {/* ── MOBILE: Compact 2-col grid (visible only on small screens) ──── */}
         <div className="grid grid-cols-1 gap-2.5 sm:hidden">
           {courses.map((course, i) => (
-            <MobileCourseCard key={course.id} course={course} index={i} isVisible={visible} />
+            <MobileCourseCard key={course.id} course={course} index={i} isVisible={visible} onSelect={setSelected} />
           ))}
         </div>
 
         {/* ── DESKTOP: Full rich card grid (hidden on small screens) ──────── */}
         <div className="hidden sm:grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 lg:gap-5">
           {courses.map((course, i) => (
-            <DesktopCourseCard key={course.id} course={course} index={i} isVisible={visible} />
+            <DesktopCourseCard key={course.id} course={course} index={i} isVisible={visible} onSelect={setSelected} />
           ))}
         </div>
 
@@ -318,6 +375,9 @@ export function CourseGridSection({ courses }: { courses: Course[] }) {
           </Link>
         </div>
       </div>
+
+      {/* Inline explorer */}
+      {selected && <CourseExplorer course={selected} onClose={() => setSelected(null)} />}
     </section>
   );
 }

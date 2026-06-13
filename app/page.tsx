@@ -4,12 +4,13 @@ import { createClient } from "@/lib/supabase/server";
 import { HeroSection } from "@/components/landing/HeroSection";
 import { ComparisonSection } from "@/components/landing/ComparisonSection";
 import { TimelineSection } from "@/components/landing/TimelineSection";
-import { AICopilotSlider } from "@/components/landing/AICopilotSlider";
 import { SocialProofSection } from "@/components/landing/SocialProofSection";
-import { SkillRadarPreview } from "@/components/landing/SkillRadarPreview";
 import { JourneyHook } from "@/components/landing/JourneyHook";
 import { CourseGridSection } from "@/components/landing/CourseGridSection";
 import { NovaDemo } from "@/components/landing/NovaDemo";
+import { InlineDiagnostic } from "@/components/landing/InlineDiagnostic";
+import { CodeReviewSlider } from "@/components/landing/CodeReviewSlider";
+import { AskNovaPill } from "@/components/landing/AskNovaPill";
 import { CookieConsent } from "@/components/ui/cookie-consent";
 
 // ─── Server-side data fetch ───────────────────────────────────────────────────
@@ -62,31 +63,31 @@ export default async function Home() {
   return (
     <main className="overflow-x-hidden">
 
-      {/* ── 1. Hero ──────────────────────────────────────────────────────────── */}
+      {/* ── 1. Hero (with goal-typer) ───────────────────────────────────────── */}
       <HeroSection />
 
-      {/* ── 2. THE HOOK — Why take the course + 5-step journey + red CTA ────── */}
-      <JourneyHook />
-
-      {/* ── 2b. Try Nova live — no-login tutor demo (fastest time-to-aha) ───── */}
+      {/* ── 2. Try Nova live — promoted directly under hero (fastest aha) ────── */}
       <NovaDemo />
 
-      {/* ── 3. Why Square 1 beats everything else (moved up · gradient bg) ──── */}
+      {/* ── 3. Foot-in-the-door: one inline question → curiosity gap ─────────── */}
+      <InlineDiagnostic />
+
+      {/* ── 4. THE HOOK — Why take the course + 5-step journey + red CTA ─────── */}
+      <JourneyHook />
+
+      {/* ── 5. Before/After — drag to see Nova review your code ──────────────── */}
+      <CodeReviewSlider />
+
+      {/* ── 6. Why Square 1 beats everything else ────────────────────────────── */}
       <ComparisonSection />
 
-      {/* ── 4. Courses grid — 12 subjects with career outcomes ───────────────── */}
+      {/* ── 7. Courses — inline explorer (click → preview Lesson 1) ──────────── */}
       <CourseGridSection courses={courses} />
 
-      {/* ── 5. AI Co-pilot Slider — Terminal + Tutor + Portfolio (rotates 5s) ── */}
-      <AICopilotSlider />
-
-      {/* ── 6. Journey Timeline ──────────────────────────────────────────────── */}
+      {/* ── 8. Journey Timeline ──────────────────────────────────────────────── */}
       <TimelineSection />
 
-      {/* ── 7. Skill Radar ───────────────────────────────────────────────────── */}
-      <SkillRadarPreview />
-
-      {/* ── 8. Social Proof — rotating stories + embedded stats ────────────── */}
+      {/* ── 9. Honest proof — founder note + founding offer ──────────────────── */}
       <SocialProofSection />
 
       {/* ── About + Final CTA + Footer ────────────────────────────────────── */}
@@ -301,6 +302,7 @@ export default async function Home() {
         </footer>
       </section>
 
+      <AskNovaPill />
       <CookieConsent />
     </main>
   );

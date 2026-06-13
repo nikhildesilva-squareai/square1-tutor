@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Logo } from "@/components/ui/logo";
 import { getDiagnostic, scoreDiagnostic, type DiagQuestion } from "@/lib/diagnostic";
@@ -39,6 +39,17 @@ export default function DiagnosticPage() {
     setPicked(null);
     setStage("quiz");
   }
+
+  // If arriving with ?subject=slug (e.g. from the hero goal-typer), skip the
+  // picker and start that track immediately. Read client-side to avoid a
+  // Suspense boundary for useSearchParams.
+  useEffect(() => {
+    const slug = new URLSearchParams(window.location.search).get("subject");
+    if (!slug) return;
+    const match = SUBJECTS.find((s) => s.slug === slug);
+    if (match) chooseSubject(match);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   function answer(optIdx: number) {
     setPicked(optIdx);

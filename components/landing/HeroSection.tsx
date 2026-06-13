@@ -4,13 +4,26 @@ import Link from "next/link";
 import { Logo } from "@/components/ui/logo";
 import { ParticleGlobe } from "./ParticleGlobe";
 
+// Goal-typer roles — picking one personalises the CTA + shows the salary
+const GOAL_ROLES = [
+  { label: "AI Engineer", slug: "generative-ai", salary: "$130–200k" },
+  { label: "ML Engineer", slug: "machine-learning", salary: "$140–220k" },
+  { label: "Full Stack Engineer", slug: "fullstack-development", salary: "$100–160k" },
+  { label: "Security Engineer", slug: "cybersecurity", salary: "$110–180k" },
+  { label: "Data Scientist", slug: "data-science", salary: "$115–185k" },
+  { label: "DevOps Engineer", slug: "devops-engineering", salary: "$120–190k" },
+];
+
 export function HeroSection() {
   const [mounted, setMounted] = useState(false);
+  const [goal, setGoal] = useState(0);
   const heroRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  const role = GOAL_ROLES[goal];
 
   return (
     <section
@@ -167,19 +180,44 @@ export function HeroSection() {
           </h1>
 
           {/* Subtext */}
-          <p className="text-sm sm:text-base text-slate-400 leading-relaxed mb-8 sm:mb-10 max-w-sm">
+          <p className="text-sm sm:text-base text-slate-400 leading-relaxed mb-6 max-w-sm">
             Get assessed. Get a personalised plan.
             Build 10–12 real projects.
             Land the job or start your company.
           </p>
 
-          {/* CTA row */}
+          {/* Goal-typer — pick a target role; CTA + salary personalise to it */}
+          <div className="mb-7 max-w-md">
+            <p className="text-xs text-slate-500 mb-2.5 font-medium">I want to become a…</p>
+            <div className="flex flex-wrap gap-2">
+              {GOAL_ROLES.map((r, i) => (
+                <button
+                  key={r.slug}
+                  onClick={() => setGoal(i)}
+                  className="px-3 py-1.5 rounded-full text-xs font-semibold transition-all"
+                  style={
+                    goal === i
+                      ? { background: "linear-gradient(135deg,#3388FF,#6366f1)", color: "#fff", boxShadow: "0 4px 16px rgba(51,136,255,0.35)" }
+                      : { background: "rgba(255,255,255,0.06)", color: "#cbd5e1", border: "1px solid rgba(255,255,255,0.12)" }
+                  }
+                >
+                  {r.label}
+                </button>
+              ))}
+            </div>
+            <p className="mt-3 text-xs text-slate-400">
+              <span className="font-bold text-white">{role.label}</span> roles pay{" "}
+              <span className="font-bold" style={{ color: "#34D399" }}>{role.salary}</span>. See how far you are — free.
+            </p>
+          </div>
+
+          {/* CTA row — primary tailored to the picked role */}
           <div className="flex flex-col sm:flex-row gap-3">
             <Link
-              href="/diagnostic"
+              href={`/diagnostic?subject=${role.slug}`}
               className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-full bg-white text-brand font-bold text-sm hover:bg-slate-100 transition-all shadow-xl hover:shadow-[0_0_30px_rgba(0,86,206,0.3)] hover:-translate-y-px"
             >
-              Get your free skill report →
+              Show me my {role.label} path →
             </Link>
             <Link
               href="/login"
