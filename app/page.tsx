@@ -268,6 +268,7 @@ export default async function Home() {
               <div>
                 <h5 className="text-[10px] tracking-[0.3em] uppercase text-slate-500 font-bold mb-4">Company</h5>
                 <ul className="space-y-2.5">
+                  <li><Link href="/business" className="text-sm text-slate-400 hover:text-white transition-colors">For Teams</Link></li>
                   <li><Link href="/about" className="text-sm text-slate-400 hover:text-white transition-colors">About Us</Link></li>
                   <li><Link href="/careers" className="text-sm text-slate-400 hover:text-white transition-colors">Careers</Link></li>
                   <li><Link href="/contact" className="text-sm text-slate-400 hover:text-white transition-colors">Contact</Link></li>

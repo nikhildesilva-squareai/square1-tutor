@@ -10,6 +10,7 @@ const PUBLIC_PATHS = [
   "/about",
   "/diagnostic",
   "/try",
+  "/business",
   "/careers",
   "/contact",
   "/api/auth/callback",
