@@ -11,7 +11,7 @@ function sanitizeRedirect(next: string | null): string {
   if (!next.startsWith("/") || next.startsWith("//") || next.includes("://")) return "/dashboard";
   // Only allow known paths or paths starting with known prefixes
   const isAllowed = ALLOWED_REDIRECTS.some(p => next === p || next.startsWith(p + "/"));
-  if (!isAllowed && !next.startsWith("/learn/") && !next.startsWith("/courses/") && !next.startsWith("/certificate/")) {
+  if (!isAllowed && !next.startsWith("/learn/") && !next.startsWith("/courses/") && !next.startsWith("/certificate/") && !next.startsWith("/beta")) {
     return "/dashboard";
   }
   return next;
