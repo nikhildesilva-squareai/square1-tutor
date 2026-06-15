@@ -11,7 +11,6 @@ const PUBLIC_PATHS = [
   "/diagnostic",
   "/try",
   "/business",
-  "/beta",
   "/careers",
   "/contact",
   "/api/auth/callback",
