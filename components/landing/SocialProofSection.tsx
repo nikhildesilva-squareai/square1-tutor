@@ -129,9 +129,16 @@ export function SocialProofSection() {
             <div className="absolute -top-16 -right-16 w-48 h-48 rounded-full pointer-events-none opacity-40"
               style={{ background: "radial-gradient(circle, rgba(51,136,255,0.35) 0%, transparent 70%)", filter: "blur(24px)" }} />
 
-            <p className="relative text-[10px] tracking-[0.3em] uppercase font-bold text-slate-500 mb-2">
-              Founding students
-            </p>
+            <div className="relative flex items-center gap-2 mb-2">
+              <p className="text-[10px] tracking-[0.3em] uppercase font-bold text-slate-500">
+                Founding students
+              </p>
+              <span className="inline-flex items-center gap-1.5 text-[9px] font-bold tracking-[0.15em] uppercase px-2 py-0.5 rounded-full"
+                style={{ background: "rgba(52,211,153,0.12)", color: "#34D399", border: "1px solid rgba(52,211,153,0.30)" }}>
+                <span className="w-1.5 h-1.5 rounded-full" style={{ background: "#34D399" }} />
+                Cohort 01 · open now
+              </span>
+            </div>
             <h3 className="relative text-2xl font-black text-white leading-tight mb-6">
               Get in before the
               <br />
@@ -155,7 +162,8 @@ export function SocialProofSection() {
 
             <p className="relative mt-8 text-[11px] text-slate-500 leading-relaxed">
               Being early is a trade: you get more access and a locked price; we get the
-              feedback that makes this the best place to learn. Fair?
+              feedback that makes this the best place to learn. The price only goes up as
+              we grow — founding rates won&apos;t come back. Fair?
             </p>
           </div>
         </div>
