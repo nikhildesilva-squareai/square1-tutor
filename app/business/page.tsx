@@ -109,6 +109,70 @@ export default function BusinessPage() {
         </div>
       </section>
 
+      {/* Pricing */}
+      <section className="max-w-5xl mx-auto px-5 sm:px-6 py-14">
+        <div className="text-center mb-3">
+          <h2 className="text-2xl sm:text-3xl font-black text-slate-900">Simple per-seat pricing</h2>
+          <p className="text-sm text-slate-600 mt-2 max-w-lg mx-auto">
+            From <span className="font-bold text-slate-900">$240/employee a year</span> — versus $10,000+ for a bootcamp. Billed annually, the more seats the lower the rate.
+          </p>
+        </div>
+
+        {/* Founding offer banner */}
+        <div className="max-w-2xl mx-auto mb-9 mt-5 rounded-xl border border-emerald-300 bg-emerald-50 px-5 py-3 text-center">
+          <p className="text-sm font-bold text-emerald-800">
+            🎉 Founding offer — our first corporate customers get <span className="underline">30% off these rates, locked for life.</span>
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          {[
+            { name: "Starter", seats: "1–5 seats", price: 39, yr: 468, blurb: "Small teams getting started", popular: false },
+            { name: "Team", seats: "6–15 seats", price: 32, yr: 384, blurb: "Growing teams upskilling together", popular: true },
+            { name: "Growth", seats: "16–30 seats", price: 26, yr: 312, blurb: "Departments scaling capability", popular: false },
+            { name: "Scale", seats: "31–50 seats", price: 20, yr: 240, blurb: "Best per-seat value for big teams", popular: false },
+          ].map((t) => (
+            <div key={t.name}
+              className="relative rounded-2xl border-2 bg-white p-6 flex flex-col"
+              style={{ borderColor: t.popular ? "#0056CE" : "rgba(15,28,49,0.10)", boxShadow: t.popular ? "0 16px 48px rgba(0,86,206,0.15)" : "0 2px 12px rgba(15,28,49,0.04)" }}>
+              {t.popular && (
+                <span className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full text-[10px] font-black tracking-wider uppercase text-white" style={{ background: "#0056CE" }}>
+                  Most popular
+                </span>
+              )}
+              <p className="text-sm font-bold text-slate-900">{t.name}</p>
+              <p className="text-xs text-slate-500 mb-4">{t.seats}</p>
+              <div className="flex items-baseline gap-1">
+                <span className="text-3xl font-black text-slate-900 tabular-nums">${t.price}</span>
+                <span className="text-xs text-slate-500">/seat/mo</span>
+              </div>
+              <p className="text-[11px] text-slate-400 mb-4">billed annually · ${t.yr}/seat/yr</p>
+              <p className="text-xs text-slate-600 leading-relaxed flex-1">{t.blurb}</p>
+              <a href="#request"
+                className="mt-5 inline-flex items-center justify-center h-10 rounded-xl text-sm font-bold transition-all hover:-translate-y-0.5"
+                style={t.popular
+                  ? { background: "linear-gradient(135deg,#0056CE,#4F46E5)", color: "#fff" }
+                  : { border: "1.5px solid rgba(0,86,206,0.25)", color: "#0056CE" }}>
+                Get started
+              </a>
+            </div>
+          ))}
+        </div>
+
+        {/* 50+ custom strip */}
+        <div className="mt-4 rounded-2xl border border-slate-200 bg-slate-50 px-6 py-4 flex flex-col sm:flex-row items-center justify-between gap-3">
+          <div className="text-center sm:text-left">
+            <p className="text-sm font-bold text-slate-900">More than 50 employees?</p>
+            <p className="text-xs text-slate-600">Custom pricing, volume rates, SSO, and dedicated onboarding.</p>
+          </div>
+          <a href="#request" className="text-sm font-bold text-brand hover:underline whitespace-nowrap">Talk to us →</a>
+        </div>
+
+        <p className="text-center text-[11px] text-slate-400 mt-5">
+          Every plan: full courses · AI tutor · code review · personalised paths · certificates · manager dashboard.
+        </p>
+      </section>
+
       {/* Lead form */}
       <section id="request" className="max-w-xl mx-auto px-5 sm:px-6 pb-20 scroll-mt-6">
         <div className="text-center mb-6">

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-const TEAM_SIZES = ["1–10", "11–50", "51–200", "201–1,000", "1,000+"];
+const TEAM_SIZES = ["1–5", "6–15", "16–30", "31–50", "50+"];
 
 export function BusinessLeadForm() {
   const [name, setName] = useState("");
