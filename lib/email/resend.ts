@@ -14,6 +14,43 @@ export function getResend(): Resend {
 
 const FROM = "Square 1 AI <tech@square1ai.com>";
 
+/* ─── Corporate lead notification (to the founder) ───────────────────────────
+ * Sent from Resend's shared sender so it delivers even before the square1ai.com
+ * domain is verified — provided the recipient is the Resend account's own email.
+ * Switch LEAD_FROM to the verified domain once DNS is set up. */
+const LEAD_FROM = "Square 1 Leads <onboarding@resend.dev>";
+const LEAD_NOTIFY_TO = process.env["LEAD_NOTIFY_EMAIL"] ?? "nikhil.desilva@square1ai.com";
+
+export async function sendBusinessLeadNotification(lead: {
+  name: string;
+  company: string;
+  email: string;
+  teamSize?: string | null;
+  message?: string | null;
+}) {
+  const r = getResend();
+  return r.emails.send({
+    from: LEAD_FROM,
+    to: LEAD_NOTIFY_TO,
+    replyTo: lead.email,
+    subject: `🚀 New team lead: ${lead.company}${lead.teamSize ? ` (${lead.teamSize})` : ""}`,
+    html: `
+      <div style="font-family:system-ui,-apple-system,sans-serif;max-width:520px;margin:0 auto;padding:32px 20px;">
+        <h1 style="color:#0F172A;font-size:20px;font-weight:800;margin:0 0 4px;">New "For Teams" enquiry</h1>
+        <p style="color:#64748B;font-size:13px;margin:0 0 20px;">Someone just requested team pricing on /business.</p>
+        <table style="width:100%;border-collapse:collapse;font-size:14px;">
+          <tr><td style="padding:8px 0;color:#94A3B8;width:110px;">Name</td><td style="padding:8px 0;color:#0F172A;font-weight:600;">${lead.name}</td></tr>
+          <tr><td style="padding:8px 0;color:#94A3B8;">Company</td><td style="padding:8px 0;color:#0F172A;font-weight:600;">${lead.company}</td></tr>
+          <tr><td style="padding:8px 0;color:#94A3B8;">Email</td><td style="padding:8px 0;"><a href="mailto:${lead.email}" style="color:#0056CE;">${lead.email}</a></td></tr>
+          <tr><td style="padding:8px 0;color:#94A3B8;">Team size</td><td style="padding:8px 0;color:#0F172A;font-weight:600;">${lead.teamSize ?? "—"}</td></tr>
+          ${lead.message ? `<tr><td style="padding:8px 0;color:#94A3B8;vertical-align:top;">Message</td><td style="padding:8px 0;color:#334155;">${lead.message}</td></tr>` : ""}
+        </table>
+        <p style="margin-top:20px;font-size:13px;color:#64748B;">Reply directly to this email to reach them.</p>
+      </div>
+    `,
+  });
+}
+
 /* ─── Welcome Email ──────────────────────────────────────────────────────── */
 export async function sendWelcomeEmail(to: string, name: string) {
   const r = getResend();

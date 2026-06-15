@@ -49,6 +49,20 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Could not submit — please try again" }, { status: 500 });
     }
 
+    // Notify the founder (non-blocking — never fail the form if email is down)
+    try {
+      const { sendBusinessLeadNotification } = await import("@/lib/email/resend");
+      await sendBusinessLeadNotification({
+        name: body.name,
+        company: body.company,
+        email: body.email,
+        teamSize: body.teamSize,
+        message: body.message,
+      });
+    } catch (e) {
+      console.warn("[business-lead] notification email failed (RESEND_API_KEY / domain?)", e);
+    }
+
     return NextResponse.json({ ok: true });
   } catch (err) {
     if (err instanceof z.ZodError) {
