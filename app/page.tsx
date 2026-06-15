@@ -7,6 +7,7 @@ import { ComparisonSection } from "@/components/landing/ComparisonSection";
 import { TimelineSection } from "@/components/landing/TimelineSection";
 import { SocialProofSection } from "@/components/landing/SocialProofSection";
 import { JourneyHook } from "@/components/landing/JourneyHook";
+import { ProofBand } from "@/components/landing/ProofBand";
 import { CourseGridSection } from "@/components/landing/CourseGridSection";
 import { InlineDiagnostic } from "@/components/landing/InlineDiagnostic";
 import { CodeReviewSlider } from "@/components/landing/CodeReviewSlider";
@@ -70,6 +71,9 @@ export default async function Home() {
 
       {/* ── 2. THE HOOK — outcome first: "Get hired as an [role]" + journey ──── */}
       <JourneyHook />
+
+      {/* ── 2.5 Proof beat — why proof-based hiring works + what an employer sees */}
+      <ProofBand />
 
       {/* ── 3. Foot-in-the-door: one inline question → curiosity gap ─────────── */}
       <InlineDiagnostic />
