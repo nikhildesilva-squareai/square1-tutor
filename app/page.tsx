@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Logo } from "@/components/ui/logo";
 import { createClient } from "@/lib/supabase/server";
 import { HeroSection } from "@/components/landing/HeroSection";
+import { RealityBand } from "@/components/landing/RealityBand";
 import { ComparisonSection } from "@/components/landing/ComparisonSection";
 import { TimelineSection } from "@/components/landing/TimelineSection";
 import { SocialProofSection } from "@/components/landing/SocialProofSection";
@@ -63,6 +64,9 @@ export default async function Home() {
 
       {/* ── 1. Hero (with goal-typer) ───────────────────────────────────────── */}
       <HeroSection />
+
+      {/* ── 1.5 The 2026 wedge — stakes first: degree ≠ hired, proof = hired ─── */}
+      <RealityBand />
 
       {/* ── 2. THE HOOK — outcome first: "Get hired as an [role]" + journey ──── */}
       <JourneyHook />

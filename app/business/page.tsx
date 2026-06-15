@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { Logo } from "@/components/ui/logo";
 import { BusinessLeadForm } from "@/components/business/BusinessLeadForm";
+import { SeatSelector } from "@/components/business/SeatSelector";
 
 export const metadata: Metadata = {
   title: "For Teams — Upskill Your Staff in AI",
@@ -173,7 +174,12 @@ export default function BusinessPage() {
         </p>
       </section>
 
-      {/* Lead form */}
+      {/* Self-serve: pick seats → start the team free */}
+      <section className="max-w-5xl mx-auto px-5 sm:px-6 pb-6">
+        <SeatSelector />
+      </section>
+
+      {/* Lead form (50+ / questions) */}
       <section id="request" className="max-w-xl mx-auto px-5 sm:px-6 pb-20 scroll-mt-6">
         <div className="text-center mb-6">
           <h2 className="text-2xl sm:text-3xl font-black text-slate-900 mb-2">Tell us about your team</h2>

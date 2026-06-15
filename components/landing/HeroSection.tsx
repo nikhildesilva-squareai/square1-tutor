@@ -150,7 +150,7 @@ export function HeroSection() {
           {/* Tag line */}
           <div className="mb-6 sm:mb-8">
             <span className="text-[10px] sm:text-xs font-bold tracking-[0.25em] uppercase text-brand border border-brand/30 bg-brand/10 px-3 py-1.5 rounded-full">
-              AI Powered Learn to Launch Platform
+              Proof, not promises
             </span>
           </div>
 
@@ -187,10 +187,10 @@ export function HeroSection() {
           </h1>
 
           {/* Subtext */}
-          <p className="text-sm sm:text-base text-slate-400 leading-relaxed mb-6 max-w-sm">
-            Get assessed. Get a personalised plan.
-            Build 10–12 real projects.
-            Land the job or start your company.
+          <p className="text-sm sm:text-base text-slate-400 leading-relaxed mb-6 max-w-md">
+            A degree alone won&apos;t get you hired in 2026 — deployed, code-reviewed
+            projects will. Get assessed, get a personalised plan, and build 10–12 real
+            projects you can put in front of any employer.
           </p>
 
           {/* Goal-typer — pick a target role; CTA + salary personalise to it */}
@@ -235,13 +235,18 @@ export function HeroSection() {
             </Link>
           </div>
 
+          {/* CTA reassurance */}
+          <p className="mt-3 text-xs text-slate-500">
+            Free · No credit card · No commitment — just signal.
+          </p>
+
           {/* Mini trust bar */}
           <div className="mt-8 flex items-center gap-4 text-[10px] text-slate-600 uppercase tracking-widest">
             <span>12 Subjects</span>
             <span className="w-1 h-1 rounded-full bg-slate-700" />
             <span>10–12 Projects</span>
             <span className="w-1 h-1 rounded-full bg-slate-700" />
-            <span>AI Graded</span>
+            <span>Public Proof</span>
           </div>
         </div>
 
