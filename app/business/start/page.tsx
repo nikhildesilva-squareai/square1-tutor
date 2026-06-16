@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Logo } from "@/components/ui/logo";
 import { createClient } from "@/lib/supabase/client";
 import { tierName, seatRate } from "@/lib/org";
+import { TeamSignIn } from "@/components/business/TeamSignIn";
 
 export default function StartTeamPage() {
   const [seats, setSeats] = useState(5);
@@ -19,15 +20,6 @@ export default function StartTeamPage() {
     if (!isNaN(s) && s >= 1 && s <= 50) setSeats(s);
     createClient().auth.getUser().then(({ data }) => setLoggedIn(!!data.user));
   }, []);
-
-  async function signIn() {
-    const supabase = createClient();
-    const next = encodeURIComponent(`/business/start?seats=${seats}`);
-    await supabase.auth.signInWithOAuth({
-      provider: "google",
-      options: { redirectTo: `${window.location.origin}/api/auth/callback?next=${next}` },
-    });
-  }
 
   async function createTeam(e: React.FormEvent) {
     e.preventDefault();
@@ -67,14 +59,9 @@ export default function StartTeamPage() {
           {loggedIn === null ? (
             <div className="text-center text-slate-400 text-sm py-8">Loading…</div>
           ) : !loggedIn ? (
-            <div className="rounded-2xl border border-slate-200 bg-white p-6 text-center shadow-sm">
-              <p className="text-sm text-slate-600 mb-5">First, sign in — you&apos;ll be the team&apos;s manager.</p>
-              <button onClick={signIn}
-                className="w-full h-12 rounded-xl text-white font-bold text-sm inline-flex items-center justify-center gap-2 hover:-translate-y-0.5 transition-transform"
-                style={{ background: "linear-gradient(135deg,#0056CE,#4F46E5)" }}>
-                <svg width="18" height="18" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 01-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#fff" opacity=".95"/></svg>
-                Continue with Google
-              </button>
+            <div>
+              <p className="text-sm text-slate-600 mb-4 text-center">First, sign in — you&apos;ll be the team&apos;s manager.</p>
+              <TeamSignIn next={`/business/start?seats=${seats}`} onAuthed={() => setLoggedIn(true)} />
             </div>
           ) : (
             <form onSubmit={createTeam} className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm space-y-4">

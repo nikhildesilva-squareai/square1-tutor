@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { Logo } from "@/components/ui/logo";
 import { createClient } from "@/lib/supabase/client";
+import { TeamSignIn } from "@/components/business/TeamSignIn";
 
 const SUBJECTS = [
   { slug: "generative-ai", title: "Generative AI", icon: "🤖", color: "#6366f1" },
@@ -54,15 +55,6 @@ export default function JoinTeamPage() {
     });
   }, []);
 
-  async function signIn() {
-    const supabase = createClient();
-    const next = encodeURIComponent(`/business/join?code=${code}`);
-    await supabase.auth.signInWithOAuth({
-      provider: "google",
-      options: { redirectTo: `${window.location.origin}/api/auth/callback?next=${next}` },
-    });
-  }
-
   return (
     <div className="min-h-screen flex flex-col" style={{ background: "linear-gradient(180deg,#F8FAFC 0%,#FFFFFF 45%)" }}>
       <header className="flex items-center px-5 sm:px-10 py-5">
@@ -82,13 +74,8 @@ export default function JoinTeamPage() {
         {stage === "signin" && (
           <div className="w-full max-w-md text-center">
             <h1 className="text-3xl font-black text-slate-900 mb-2">You&apos;re invited to learn 🎓</h1>
-            <p className="text-sm text-slate-600 mb-6">Your team has a Square 1 seat for you. Sign in to claim it.</p>
-            <button onClick={signIn}
-              className="w-full h-12 rounded-xl text-white font-bold text-sm inline-flex items-center justify-center gap-2 hover:-translate-y-0.5 transition-transform"
-              style={{ background: "linear-gradient(135deg,#0056CE,#4F46E5)" }}>
-              <svg width="18" height="18" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 01-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#fff" opacity=".95"/></svg>
-              Continue with Google
-            </button>
+            <p className="text-sm text-slate-600 mb-6">Your team has a Square 1 Ai seat for you. Sign in to claim it.</p>
+            <TeamSignIn next={`/business/join?code=${code}`} onAuthed={() => setStage("pick")} />
           </div>
         )}
 
