@@ -7,9 +7,9 @@ import { SeatSelector } from "@/components/business/SeatSelector";
 export const metadata: Metadata = {
   title: "For Teams — Upskill Your Staff in AI",
   description:
-    "Train your team in AI, cloud, security and data with an AI tutor that grades real code. Personalised per employee, measurable progress, verifiable certificates. Request team pricing.",
+    "Buy seats, invite your staff, track everyone from one dashboard. An AI tutor that grades real code, a personalised path per employee, verifiable certificates. Free during early access.",
   openGraph: {
-    title: "Square 1 AI for Teams — Upskill your staff for the AI era",
+    title: "Square 1 Ai for Teams — Upskill your staff for the AI era",
     description:
       "AI-powered upskilling for your team: personalised paths, real projects, manager-visible progress, verifiable certificates.",
   },
@@ -43,9 +43,9 @@ const VALUE_PROPS = [
 ];
 
 const STEPS = [
-  { n: "1", title: "Assess your team", desc: "Each employee takes a skill check — you see the baseline across your whole team." },
-  { n: "2", title: "Personalised paths", desc: "Everyone gets a tailored track in AI, cloud, security or data — built for their level and role." },
-  { n: "3", title: "Track + prove it", desc: "A manager dashboard shows progress, scores and certificates. Export it for L&D reporting." },
+  { n: "1", title: "Pick your seats", desc: "Choose how many people. Start free during early access — no card needed today." },
+  { n: "2", title: "Invite your team", desc: "Share a link or invite by email. Each person gets a personalised path for their level and role." },
+  { n: "3", title: "Track + prove it", desc: "A manager dashboard shows progress, scores and certificates across your whole team." },
 ];
 
 export default function BusinessPage() {
@@ -59,10 +59,10 @@ export default function BusinessPage() {
         </Link>
       </header>
 
-      {/* Hero */}
-      <section className="max-w-4xl mx-auto px-5 sm:px-6 pt-10 sm:pt-16 pb-12 text-center">
+      {/* Hero — single primary action: start your team */}
+      <section className="max-w-4xl mx-auto px-5 sm:px-6 pt-10 sm:pt-16 pb-10 text-center">
         <span className="text-[10px] sm:text-[11px] tracking-[0.35em] uppercase text-slate-500 font-bold">
-          Square 1 for Teams
+          Square 1 Ai for Teams
         </span>
         <h1 className="mt-4 mb-4 font-black tracking-tight text-slate-900 leading-[1.0]"
           style={{ fontSize: "clamp(34px,6vw,64px)" }}>
@@ -74,15 +74,32 @@ export default function BusinessPage() {
         <p className="text-base sm:text-lg text-slate-600 max-w-xl mx-auto mb-8">
           An AI tutor that grades your staff&apos;s real code, builds each person a personalised path, and gives you the dashboard to prove they actually upskilled.
         </p>
-        <a href="#request"
-          className="inline-flex items-center gap-2 px-7 py-4 rounded-xl text-white font-bold text-sm hover:-translate-y-0.5 transition-transform"
-          style={{ background: "linear-gradient(135deg,#0056CE,#4F46E5)", boxShadow: "0 12px 32px rgba(0,86,206,0.30)" }}>
-          Request team pricing →
-        </a>
+        <div className="flex flex-col sm:flex-row gap-3 justify-center items-center">
+          <a href="#start"
+            className="inline-flex items-center gap-2 px-7 py-4 rounded-xl text-white font-bold text-sm hover:-translate-y-0.5 transition-transform"
+            style={{ background: "linear-gradient(135deg,#0056CE,#4F46E5)", boxShadow: "0 12px 32px rgba(0,86,206,0.30)" }}>
+            Start your team →
+          </a>
+          <a href="#request" className="text-sm font-semibold text-slate-500 hover:text-slate-900 transition-colors">
+            50+ seats? Talk to us →
+          </a>
+        </div>
+        <p className="mt-4 text-xs text-slate-400">Free during early access · set up in 2 minutes · no card today</p>
+      </section>
+
+      {/* PRIMARY ACTION — pick seats & start (self-serve) */}
+      <section id="start" className="max-w-5xl mx-auto px-5 sm:px-6 pb-10 scroll-mt-6">
+        <div className="text-center mb-6">
+          <h2 className="text-2xl sm:text-3xl font-black text-slate-900">Build your team in 2 minutes</h2>
+          <p className="text-sm text-slate-600 mt-2 max-w-md mx-auto">
+            Pick your seats, start free, invite your staff — then track everyone from one dashboard.
+          </p>
+        </div>
+        <SeatSelector />
       </section>
 
       {/* Value props */}
-      <section className="max-w-4xl mx-auto px-5 sm:px-6 pb-4">
+      <section className="max-w-4xl mx-auto px-5 sm:px-6 py-10">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {VALUE_PROPS.map((v) => (
             <div key={v.title} className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
@@ -97,7 +114,7 @@ export default function BusinessPage() {
       </section>
 
       {/* How it works */}
-      <section className="max-w-4xl mx-auto px-5 sm:px-6 py-14">
+      <section className="max-w-4xl mx-auto px-5 sm:px-6 py-12">
         <h2 className="text-center text-2xl sm:text-3xl font-black text-slate-900 mb-10">How it works</h2>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
           {STEPS.map((s) => (
@@ -110,12 +127,12 @@ export default function BusinessPage() {
         </div>
       </section>
 
-      {/* Pricing */}
-      <section className="max-w-5xl mx-auto px-5 sm:px-6 py-14">
+      {/* Pricing — reference only; CTAs jump to the seat selector */}
+      <section className="max-w-5xl mx-auto px-5 sm:px-6 py-12">
         <div className="text-center mb-3">
           <h2 className="text-2xl sm:text-3xl font-black text-slate-900">Simple per-seat pricing</h2>
           <p className="text-sm text-slate-600 mt-2 max-w-lg mx-auto">
-            From <span className="font-bold text-slate-900">$240/employee a year</span> — versus $10,000+ for a bootcamp. Billed annually, the more seats the lower the rate.
+            <span className="font-bold text-emerald-700">Free during early access.</span> Below is what it&apos;ll cost when billing launches — billed monthly or annually, the more seats the lower the rate. (vs $10,000+ for a bootcamp.)
           </p>
         </div>
 
@@ -147,14 +164,14 @@ export default function BusinessPage() {
                 <span className="text-3xl font-black text-slate-900 tabular-nums">${t.price}</span>
                 <span className="text-xs text-slate-500">/seat/mo</span>
               </div>
-              <p className="text-[11px] text-slate-400 mb-4">billed annually · ${t.yr}/seat/yr</p>
+              <p className="text-[11px] text-slate-400 mb-4">annual · ${t.yr}/seat/yr · free for now</p>
               <p className="text-xs text-slate-600 leading-relaxed flex-1">{t.blurb}</p>
-              <a href="#request"
+              <a href="#start"
                 className="mt-5 inline-flex items-center justify-center h-10 rounded-xl text-sm font-bold transition-all hover:-translate-y-0.5"
                 style={t.popular
                   ? { background: "linear-gradient(135deg,#0056CE,#4F46E5)", color: "#fff" }
                   : { border: "1.5px solid rgba(0,86,206,0.25)", color: "#0056CE" }}>
-                Get started
+                Choose this size
               </a>
             </div>
           ))}
@@ -174,16 +191,13 @@ export default function BusinessPage() {
         </p>
       </section>
 
-      {/* Self-serve: pick seats → start the team free */}
-      <section className="max-w-5xl mx-auto px-5 sm:px-6 pb-6">
-        <SeatSelector />
-      </section>
-
-      {/* Lead form (50+ / questions) */}
+      {/* Lead form — ONLY for 50+ seats / questions */}
       <section id="request" className="max-w-xl mx-auto px-5 sm:px-6 pb-20 scroll-mt-6">
         <div className="text-center mb-6">
-          <h2 className="text-2xl sm:text-3xl font-black text-slate-900 mb-2">Tell us about your team</h2>
-          <p className="text-sm text-slate-600">We&apos;ll reply with per-seat pricing and a pilot offer to trial it with your staff.</p>
+          <h2 className="text-2xl sm:text-3xl font-black text-slate-900 mb-2">Need 50+ seats, or have questions?</h2>
+          <p className="text-sm text-slate-600">
+            Tell us about your team and we&apos;ll set you up with custom pricing, SSO and onboarding. For smaller teams, just <a href="#start" className="text-brand font-semibold hover:underline">start above</a> — it&apos;s instant.
+          </p>
         </div>
         <BusinessLeadForm />
       </section>
