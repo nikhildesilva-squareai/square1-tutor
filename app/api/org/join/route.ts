@@ -53,6 +53,13 @@ export async function POST(request: Request) {
       }
     }
 
+    // Mark any pending email invite for this person as accepted (best-effort)
+    if (user.email) {
+      await admin.from("org_invites")
+        .update({ status: "accepted", accepted_at: new Date().toISOString() })
+        .eq("org_id", org.id).eq("status", "pending").ilike("email", user.email);
+    }
+
     // Free enrollment in the chosen track (mirror B2C: beginner, first lesson)
     const { data: course } = await admin.from("courses").select("id").eq("slug", courseSlug).maybeSingle();
     if (!course) return NextResponse.json({ error: "Course not found" }, { status: 404 });
@@ -64,11 +71,12 @@ export async function POST(request: Request) {
       .from("student_enrollments").select("id").eq("student_id", student.id).eq("course_id", course.id).maybeSingle();
 
     if (existingEnr) {
-      await supabase.from("student_enrollments").update({ status: "active", current_lesson_id: firstLesson?.id ?? null }).eq("id", existingEnr.id);
+      await supabase.from("student_enrollments").update({ status: "active", org_id: org.id, current_lesson_id: firstLesson?.id ?? null }).eq("id", existingEnr.id);
     } else {
       const { error: enrErr } = await supabase.from("student_enrollments").insert({
         student_id: student.id,
         course_id: course.id,
+        org_id: org.id,
         assessment_level: "beginner",
         current_lesson_id: firstLesson?.id ?? null,
         plan_months: 3,

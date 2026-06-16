@@ -227,3 +227,69 @@ export async function sendWeeklyDigest(to: string, name: string, stats: {
     `,
   });
 }
+
+/* ─── Team invite (B2B) — a manager adds a worker to their team ──────────── */
+export async function sendTeamInvite(to: string, teamName: string, inviteUrl: string) {
+  const r = getResend();
+  return r.emails.send({
+    from: FROM,
+    to,
+    subject: `${teamName} invited you to upskill on Square 1 AI`,
+    html: `
+      <div style="font-family:system-ui,-apple-system,sans-serif;max-width:520px;margin:0 auto;padding:40px 20px;">
+        <div style="text-align:center;margin-bottom:32px;">
+          <div style="display:inline-block;background:linear-gradient(135deg,#0056CE,#7C3AED);border-radius:12px;padding:12px;margin-bottom:16px;">
+            <span style="color:white;font-weight:900;font-size:18px;">[ S1 ]</span>
+          </div>
+          <h1 style="color:#0F172A;font-size:24px;font-weight:800;margin:0 0 8px;">${teamName} added you to their team</h1>
+          <p style="color:#64748B;font-size:14px;margin:0;">You've got a free seat on Square 1 AI — an AI tutor that grades your real code.</p>
+        </div>
+
+        <div style="background:#F8FAFC;border:1px solid #E2E8F0;border-radius:12px;padding:24px;margin-bottom:24px;">
+          <p style="color:#334155;font-size:14px;line-height:1.6;margin:0;">
+            Pick your track, take a quick skill check, then start building real, deployable projects —
+            with an AI tutor reviewing every line. Your work is yours to keep; your manager just sees your progress.
+          </p>
+        </div>
+
+        <div style="text-align:center;margin-bottom:32px;">
+          <a href="${inviteUrl}" style="display:inline-block;background:#0056CE;color:white;font-weight:700;font-size:14px;text-decoration:none;padding:12px 32px;border-radius:12px;">
+            Claim your seat
+          </a>
+        </div>
+
+        <p style="color:#94A3B8;font-size:12px;text-align:center;">Square 1 AI · tech@square1ai.com</p>
+      </div>
+    `,
+  });
+}
+
+/* ─── Seat-activation nudge (to the manager) — seats bought but sitting idle ── */
+export async function sendSeatActivationNudge(to: string, teamName: string, activated: number, total: number, inviteUrl: string) {
+  const r = getResend();
+  const left = Math.max(0, total - activated);
+  return r.emails.send({
+    from: FROM,
+    to,
+    subject: `${activated}/${total} seats active on ${teamName} — ${left} still to go`,
+    html: `
+      <div style="font-family:system-ui,-apple-system,sans-serif;max-width:520px;margin:0 auto;padding:40px 20px;">
+        <div style="text-align:center;margin-bottom:32px;">
+          <div style="display:inline-block;background:linear-gradient(135deg,#0056CE,#7C3AED);border-radius:12px;padding:12px;margin-bottom:16px;">
+            <span style="color:white;font-weight:900;font-size:18px;">[ S1 ]</span>
+          </div>
+          <h1 style="color:#0F172A;font-size:24px;font-weight:800;margin:0 0 8px;">${left} of your seats are still empty</h1>
+          <p style="color:#64748B;font-size:14px;margin:0;">${activated} of ${total} people on ${teamName} have started. Get the rest going in a click.</p>
+        </div>
+
+        <div style="text-align:center;margin-bottom:32px;">
+          <a href="${inviteUrl}" style="display:inline-block;background:#0056CE;color:white;font-weight:700;font-size:14px;text-decoration:none;padding:12px 32px;border-radius:12px;">
+            Invite the rest of your team
+          </a>
+        </div>
+
+        <p style="color:#94A3B8;font-size:12px;text-align:center;">Square 1 AI · tech@square1ai.com</p>
+      </div>
+    `,
+  });
+}

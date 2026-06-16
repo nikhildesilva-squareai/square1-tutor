@@ -5,6 +5,7 @@ import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { Logo } from "@/components/ui/logo";
 import { CopyInviteLink } from "@/components/business/CopyInviteLink";
+import { BulkInvite } from "@/components/business/BulkInvite";
 
 export const dynamic = "force-dynamic";
 
@@ -35,13 +36,18 @@ export default async function ManagerDashboard() {
   if (!mgr) redirect("/business");
 
   const { data: org } = await admin
-    .from("organizations").select("id, name, seats, join_code").eq("id", mgr.org_id).maybeSingle();
+    .from("organizations")
+    .select("id, name, seats, join_code, plan, status, billing_interval, current_period_end")
+    .eq("id", mgr.org_id).maybeSingle();
   if (!org) redirect("/business");
 
-  // Members (workers)
-  const { data: members } = await admin
-    .from("org_members").select("student_id, created_at").eq("org_id", org.id).eq("role", "member");
+  // Members (workers) + pending invites (each reserves a seat)
+  const [{ data: members }, { data: pendingInvites }] = await Promise.all([
+    admin.from("org_members").select("student_id, created_at").eq("org_id", org.id).eq("role", "member"),
+    admin.from("org_invites").select("email").eq("org_id", org.id).eq("status", "pending"),
+  ]);
   const memberIds = (members ?? []).map((m) => m.student_id);
+  const pendingCount = pendingInvites?.length ?? 0;
 
   let roster: MemberRow[] = [];
   if (memberIds.length > 0) {
@@ -88,6 +94,14 @@ export default async function ManagerDashboard() {
   const activeThisWeek = roster.filter((r) => r.lastActive && new Date(r.lastActive).getTime() >= weekAgo).length;
   const totalLessons = roster.reduce((s, r) => s + r.lessons, 0);
   const seatsUsed = roster.length;
+  const seatsLeft = Math.max(0, org.seats - seatsUsed - pendingCount);
+  const usedPct = org.seats > 0 ? Math.min(100, Math.round((seatsUsed / org.seats) * 100)) : 0;
+  const pendingPct = org.seats > 0 ? Math.min(100 - usedPct, Math.round((pendingCount / org.seats) * 100)) : 0;
+
+  // Billing status
+  const isFree = org.plan === "free_beta" || !org.billing_interval;
+  const billingLabel = isFree ? "Free · early access" : `${org.billing_interval === "annual" ? "Annual" : "Monthly"} plan`;
+  const billingOk = isFree || org.status === "active";
 
   // Invite link (absolute, from request host)
   const h = await headers();
@@ -109,12 +123,18 @@ export default async function ManagerDashboard() {
         <div className="flex items-end justify-between flex-wrap gap-4 mb-6">
           <div>
             <h1 className="text-2xl sm:text-3xl font-black text-slate-900">{org.name}</h1>
-            <p className="text-sm text-slate-500 mt-0.5">{seatsUsed} of {org.seats} seats filled · free during early access</p>
+            <p className="text-sm text-slate-500 mt-0.5">
+              {seatsUsed} of {org.seats} seats filled{pendingCount > 0 ? ` · ${pendingCount} invited` : ""}
+            </p>
           </div>
+          <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-bold border ${billingOk ? "bg-emerald-50 text-emerald-700 border-emerald-200" : "bg-amber-50 text-amber-700 border-amber-200"}`}>
+            <span className={`w-1.5 h-1.5 rounded-full ${billingOk ? "bg-emerald-500" : "bg-amber-500"}`} />
+            {billingLabel}{!isFree && org.status !== "active" ? ` · ${org.status}` : ""}
+          </span>
         </div>
 
         {/* Rollups */}
-        <div className="grid grid-cols-3 gap-3 mb-6">
+        <div className="grid grid-cols-3 gap-3 mb-3">
           {[
             { label: "Seats used", value: `${seatsUsed}/${org.seats}` },
             { label: "Active this week", value: activeThisWeek },
@@ -127,11 +147,34 @@ export default async function ManagerDashboard() {
           ))}
         </div>
 
-        {/* Invite link */}
+        {/* Seat usage meter */}
+        <div className="rounded-xl border border-slate-200 bg-white p-4 mb-6">
+          <div className="flex items-center justify-between mb-2">
+            <p className="text-[11px] font-bold uppercase tracking-wider text-slate-400">Seat usage</p>
+            <p className="text-[11px] text-slate-500">{seatsUsed} active · {pendingCount} invited · {seatsLeft} free</p>
+          </div>
+          <div className="h-2 rounded-full bg-slate-100 overflow-hidden flex">
+            <div className="h-full bg-brand transition-all" style={{ width: `${usedPct}%` }} />
+            <div className="h-full bg-brand/30 transition-all" style={{ width: `${pendingPct}%` }} />
+          </div>
+        </div>
+
+        {/* Invite your team */}
         <div className="rounded-2xl border border-brand/20 bg-brand/[0.04] p-5 mb-6">
           <p className="text-sm font-bold text-slate-900 mb-1">Invite your team</p>
-          <p className="text-xs text-slate-600 mb-3">Share this link — anyone who opens it claims a seat and starts learning. ({Math.max(0, org.seats - seatsUsed)} seats left)</p>
-          <CopyInviteLink url={inviteUrl} />
+          <p className="text-xs text-slate-600 mb-3">
+            Invite by email, or share the link — each person claims a seat and starts learning. ({seatsLeft} seat{seatsLeft !== 1 ? "s" : ""} left)
+          </p>
+          <BulkInvite seatsLeft={seatsLeft} />
+          <div className="mt-4 pt-4 border-t border-brand/10">
+            <p className="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-2">Or share a link</p>
+            <CopyInviteLink url={inviteUrl} />
+          </div>
+          {pendingCount > 0 && (
+            <p className="text-[11px] text-slate-500 mt-3">
+              Pending: {pendingInvites!.slice(0, 5).map((i) => i.email).join(", ")}{pendingCount > 5 ? ` +${pendingCount - 5} more` : ""}
+            </p>
+          )}
         </div>
 
         {/* Roster */}
@@ -142,7 +185,7 @@ export default async function ManagerDashboard() {
           </div>
           {roster.length === 0 ? (
             <div className="px-5 py-12 text-center">
-              <p className="text-sm text-slate-500">No one&apos;s joined yet. Share the invite link above to get your team started.</p>
+              <p className="text-sm text-slate-500">No one&apos;s joined yet. Invite your team above to get them started.</p>
             </div>
           ) : (
             <div className="overflow-x-auto">
@@ -178,7 +221,7 @@ export default async function ManagerDashboard() {
         </div>
 
         <p className="text-[11px] text-slate-400 mt-5 text-center">
-          Workers use the normal Square 1 student experience. You see their progress here, scoped to your team only.
+          Workers use the normal Square 1 Ai student experience. You see their progress here, scoped to your team only.
         </p>
       </main>
     </div>
