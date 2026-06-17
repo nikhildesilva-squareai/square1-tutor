@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { Logo } from "@/components/ui/logo";
 import { BusinessLeadForm } from "@/components/business/BusinessLeadForm";
 import { SeatSelector } from "@/components/business/SeatSelector";
+import { TeamDashboardPreview } from "@/components/business/TeamDashboardPreview";
 
 export const metadata: Metadata = {
   title: "For Teams — Upskill Your Staff in AI",
@@ -59,32 +60,48 @@ export default function BusinessPage() {
         </Link>
       </header>
 
-      {/* Hero — single primary action: start your team */}
-      <section className="max-w-4xl mx-auto px-5 sm:px-6 pt-10 sm:pt-16 pb-10 text-center">
-        <span className="text-[10px] sm:text-[11px] tracking-[0.35em] uppercase text-slate-500 font-bold">
-          Square 1 Ai for Teams
-        </span>
-        <h1 className="mt-4 mb-4 font-black tracking-tight text-slate-900 leading-[1.0]"
-          style={{ fontSize: "clamp(34px,6vw,64px)" }}>
-          Upskill your team for the{" "}
-          <span style={{ background: "linear-gradient(135deg,#0056CE,#7C3AED)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>
-            AI era.
-          </span>
-        </h1>
-        <p className="text-base sm:text-lg text-slate-600 max-w-xl mx-auto mb-8">
-          An AI tutor that grades your staff&apos;s real code, builds each person a personalised path, and gives you the dashboard to prove they actually upskilled.
-        </p>
-        <div className="flex flex-col sm:flex-row gap-3 justify-center items-center">
-          <a href="#start"
-            className="inline-flex items-center gap-2 px-7 py-4 rounded-xl text-white font-bold text-sm hover:-translate-y-0.5 transition-transform"
-            style={{ background: "linear-gradient(135deg,#0056CE,#4F46E5)", boxShadow: "0 12px 32px rgba(0,86,206,0.30)" }}>
-            Start your team →
-          </a>
-          <a href="#request" className="text-sm font-semibold text-slate-500 hover:text-slate-900 transition-colors">
-            50+ seats? Talk to us →
-          </a>
+      {/* Hero — two-column: tight copy + the product (manager dashboard) */}
+      <section className="relative overflow-hidden">
+        {/* Depth: gradient glows */}
+        <div className="pointer-events-none absolute -top-24 -left-24 w-[600px] h-[600px] rounded-full"
+          style={{ background: "radial-gradient(circle, rgba(0,86,206,0.12) 0%, transparent 70%)", filter: "blur(80px)" }} />
+        <div className="pointer-events-none absolute top-10 right-0 translate-x-1/4 w-[600px] h-[600px] rounded-full"
+          style={{ background: "radial-gradient(circle, rgba(124,58,237,0.10) 0%, transparent 70%)", filter: "blur(90px)" }} />
+
+        <div className="relative max-w-6xl mx-auto px-5 sm:px-6 pt-8 sm:pt-14 pb-14 grid lg:grid-cols-2 gap-12 lg:gap-10 items-center">
+          {/* Left — copy */}
+          <div className="text-center lg:text-left">
+            <span className="text-[10px] sm:text-[11px] tracking-[0.35em] uppercase text-slate-500 font-bold">
+              Square 1 Ai for Teams
+            </span>
+            <h1 className="mt-4 mb-5 font-black tracking-tight text-slate-900 leading-[1.02]"
+              style={{ fontSize: "clamp(36px,5vw,58px)", letterSpacing: "-0.02em" }}>
+              Upskill your team for the{" "}
+              <span style={{ background: "linear-gradient(135deg,#0056CE,#7C3AED)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>
+                AI era.
+              </span>
+            </h1>
+            <p className="text-base sm:text-lg text-slate-600 max-w-xl mx-auto lg:mx-0 mb-8 leading-relaxed">
+              An AI tutor that grades your staff&apos;s real code, builds each person a personalised path, and gives you the dashboard to prove they actually upskilled.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-3 justify-center lg:justify-start items-center">
+              <a href="#start"
+                className="inline-flex items-center gap-2 px-7 py-4 rounded-xl text-white font-bold text-sm hover:-translate-y-0.5 transition-transform"
+                style={{ background: "linear-gradient(135deg,#0056CE,#4F46E5)", boxShadow: "0 12px 32px rgba(0,86,206,0.30)" }}>
+                Start your team →
+              </a>
+              <a href="#request" className="text-sm font-semibold text-slate-500 hover:text-slate-900 transition-colors">
+                50+ seats? Talk to us →
+              </a>
+            </div>
+            <p className="mt-4 text-xs text-slate-400">Free during early access · set up in 2 minutes · no card today</p>
+          </div>
+
+          {/* Right — product preview */}
+          <div className="lg:pl-6">
+            <TeamDashboardPreview />
+          </div>
         </div>
-        <p className="mt-4 text-xs text-slate-400">Free during early access · set up in 2 minutes · no card today</p>
       </section>
 
       {/* PRIMARY ACTION — pick seats & start (self-serve) */}
