@@ -116,29 +116,48 @@ export default function BusinessPage() {
       </section>
 
       {/* Value props */}
-      <section className="max-w-4xl mx-auto px-5 sm:px-6 py-10">
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <section className="max-w-5xl mx-auto px-5 sm:px-6 py-14">
+        <div className="text-center mb-10">
+          <span className="text-[10px] sm:text-[11px] tracking-[0.35em] uppercase text-slate-500 font-bold">Why managers choose us</span>
+          <h2 className="mt-3 text-2xl sm:text-3xl font-black text-slate-900">Training you can actually prove.</h2>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 lg:gap-5">
           {VALUE_PROPS.map((v) => (
-            <div key={v.title} className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-              <div className="w-11 h-11 rounded-xl flex items-center justify-center mb-4" style={{ background: `${v.accent}12` }}>
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={v.accent} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d={v.icon} /></svg>
+            <div key={v.title}
+              className="group relative rounded-2xl border border-slate-200 bg-white p-6 lg:p-7 overflow-hidden transition-all duration-300 hover:-translate-y-1"
+              style={{ boxShadow: "0 2px 12px rgba(15,28,49,0.04)" }}>
+              {/* corner accent glow on hover */}
+              <div className="absolute -top-12 -right-12 w-32 h-32 rounded-full pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                style={{ background: `radial-gradient(circle, ${v.accent}22 0%, transparent 70%)`, filter: "blur(16px)" }} />
+              <div className="relative w-12 h-12 rounded-xl flex items-center justify-center mb-4"
+                style={{ background: `linear-gradient(135deg, ${v.accent}, ${v.accent}cc)`, boxShadow: `0 8px 20px ${v.accent}33` }}>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d={v.icon} /></svg>
               </div>
-              <h3 className="text-base font-black text-slate-900 mb-1.5 leading-snug">{v.title}</h3>
-              <p className="text-sm text-slate-600 leading-relaxed">{v.desc}</p>
+              <h3 className="relative text-lg font-black text-slate-900 mb-1.5 leading-snug">{v.title}</h3>
+              <p className="relative text-sm text-slate-600 leading-relaxed">{v.desc}</p>
             </div>
           ))}
         </div>
       </section>
 
       {/* How it works */}
-      <section className="max-w-4xl mx-auto px-5 sm:px-6 py-12">
-        <h2 className="text-center text-2xl sm:text-3xl font-black text-slate-900 mb-10">How it works</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+      <section className="max-w-5xl mx-auto px-5 sm:px-6 py-14">
+        <div className="text-center mb-12">
+          <span className="text-[10px] sm:text-[11px] tracking-[0.35em] uppercase text-slate-500 font-bold">Up and running in minutes</span>
+          <h2 className="mt-3 text-2xl sm:text-3xl font-black text-slate-900">How it works</h2>
+        </div>
+        <div className="relative grid grid-cols-1 sm:grid-cols-3 gap-10 sm:gap-6">
+          {/* Connector line (desktop) — sits behind the badges */}
+          <div className="hidden sm:block absolute top-7 left-[16.66%] right-[16.66%] h-0.5"
+            style={{ background: "linear-gradient(90deg, #0056CE, #7C3AED)" }} />
           {STEPS.map((s) => (
-            <div key={s.n} className="text-center">
-              <div className="w-12 h-12 rounded-2xl bg-brand text-white flex items-center justify-center text-lg font-black mx-auto mb-3">{s.n}</div>
+            <div key={s.n} className="relative text-center">
+              <div className="relative z-10 mx-auto w-14 h-14 rounded-2xl flex items-center justify-center text-xl font-black text-white mb-4"
+                style={{ background: "linear-gradient(135deg,#0056CE,#4F46E5)", boxShadow: "0 10px 24px rgba(0,86,206,0.35), 0 0 0 6px #ffffff" }}>
+                {s.n}
+              </div>
               <h3 className="text-base font-bold text-slate-900 mb-1.5">{s.title}</h3>
-              <p className="text-sm text-slate-600 leading-relaxed">{s.desc}</p>
+              <p className="text-sm text-slate-600 leading-relaxed max-w-[260px] mx-auto">{s.desc}</p>
             </div>
           ))}
         </div>
