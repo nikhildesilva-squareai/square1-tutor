@@ -4,6 +4,8 @@ import { Logo } from "@/components/ui/logo";
 import { BusinessLeadForm } from "@/components/business/BusinessLeadForm";
 import { SeatSelector } from "@/components/business/SeatSelector";
 import { TeamDashboardPreview } from "@/components/business/TeamDashboardPreview";
+import { WhyManagers } from "@/components/business/WhyManagers";
+import { HowItWorks } from "@/components/business/HowItWorks";
 
 export const metadata: Metadata = {
   title: "For Teams — Upskill Your Staff in AI",
@@ -15,39 +17,6 @@ export const metadata: Metadata = {
       "AI-powered upskilling for your team: personalised paths, real projects, manager-visible progress, verifiable certificates.",
   },
 };
-
-const VALUE_PROPS = [
-  {
-    title: "Measurable, not 'they watched a video'",
-    desc: "Every employee is assessed, graded on real code, and tracked. You see who's progressing and who's stalled — proof you can take to leadership.",
-    accent: "#0056CE",
-    icon: "M18 20V10M12 20V4M6 20v-6",
-  },
-  {
-    title: "Personalised to each person's level",
-    desc: "A diagnostic places every employee, then builds them a path from where they actually are — junior to senior, no one bored or lost.",
-    accent: "#7C3AED",
-    icon: "M12 2a10 10 0 100 20 10 10 0 000-20zM12 8v4l3 2",
-  },
-  {
-    title: "Verifiable proof of skill",
-    desc: "Staff finish with deployed projects and AI-verified certificates — real evidence of capability, not a completion checkbox.",
-    accent: "#10B981",
-    icon: "M22 11.08V12a10 10 0 11-5.93-9.14M22 4 12 14.01l-3-3",
-  },
-  {
-    title: "A fraction of bootcamp cost",
-    desc: "AI tutoring + project review at scale, for every employee, at a per-seat price that makes a bootcamp look absurd.",
-    accent: "#F59E0B",
-    icon: "M12 1v22M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6",
-  },
-];
-
-const STEPS = [
-  { n: "1", title: "Pick your seats", desc: "Choose how many people. Start free during early access — no card needed today." },
-  { n: "2", title: "Invite your team", desc: "Share a link or invite by email. Each person gets a personalised path for their level and role." },
-  { n: "3", title: "Track + prove it", desc: "A manager dashboard shows progress, scores and certificates across your whole team." },
-];
 
 export default function BusinessPage() {
   return (
@@ -115,53 +84,11 @@ export default function BusinessPage() {
         <SeatSelector />
       </section>
 
-      {/* Value props */}
-      <section className="max-w-5xl mx-auto px-5 sm:px-6 py-14">
-        <div className="text-center mb-10">
-          <span className="text-[10px] sm:text-[11px] tracking-[0.35em] uppercase text-slate-500 font-bold">Why managers choose us</span>
-          <h2 className="mt-3 text-2xl sm:text-3xl font-black text-slate-900">Training you can actually prove.</h2>
-        </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 lg:gap-5">
-          {VALUE_PROPS.map((v) => (
-            <div key={v.title}
-              className="group relative rounded-2xl border border-slate-200 bg-white p-6 lg:p-7 overflow-hidden transition-all duration-300 hover:-translate-y-1"
-              style={{ boxShadow: "0 2px 12px rgba(15,28,49,0.04)" }}>
-              {/* corner accent glow on hover */}
-              <div className="absolute -top-12 -right-12 w-32 h-32 rounded-full pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-                style={{ background: `radial-gradient(circle, ${v.accent}22 0%, transparent 70%)`, filter: "blur(16px)" }} />
-              <div className="relative w-12 h-12 rounded-xl flex items-center justify-center mb-4"
-                style={{ background: `linear-gradient(135deg, ${v.accent}, ${v.accent}cc)`, boxShadow: `0 8px 20px ${v.accent}33` }}>
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d={v.icon} /></svg>
-              </div>
-              <h3 className="relative text-lg font-black text-slate-900 mb-1.5 leading-snug">{v.title}</h3>
-              <p className="relative text-sm text-slate-600 leading-relaxed">{v.desc}</p>
-            </div>
-          ))}
-        </div>
-      </section>
+      {/* Why managers choose us — interactive (spotlight + reveal) */}
+      <WhyManagers />
 
-      {/* How it works */}
-      <section className="max-w-5xl mx-auto px-5 sm:px-6 py-14">
-        <div className="text-center mb-12">
-          <span className="text-[10px] sm:text-[11px] tracking-[0.35em] uppercase text-slate-500 font-bold">Up and running in minutes</span>
-          <h2 className="mt-3 text-2xl sm:text-3xl font-black text-slate-900">How it works</h2>
-        </div>
-        <div className="relative grid grid-cols-1 sm:grid-cols-3 gap-10 sm:gap-6">
-          {/* Connector line (desktop) — sits behind the badges */}
-          <div className="hidden sm:block absolute top-7 left-[16.66%] right-[16.66%] h-0.5"
-            style={{ background: "linear-gradient(90deg, #0056CE, #7C3AED)" }} />
-          {STEPS.map((s) => (
-            <div key={s.n} className="relative text-center">
-              <div className="relative z-10 mx-auto w-14 h-14 rounded-2xl flex items-center justify-center text-xl font-black text-white mb-4"
-                style={{ background: "linear-gradient(135deg,#0056CE,#4F46E5)", boxShadow: "0 10px 24px rgba(0,86,206,0.35), 0 0 0 6px #ffffff" }}>
-                {s.n}
-              </div>
-              <h3 className="text-base font-bold text-slate-900 mb-1.5">{s.title}</h3>
-              <p className="text-sm text-slate-600 leading-relaxed max-w-[260px] mx-auto">{s.desc}</p>
-            </div>
-          ))}
-        </div>
-      </section>
+      {/* How it works — interactive auto-playing stepper */}
+      <HowItWorks />
 
       {/* Pricing — reference only; CTAs jump to the seat selector */}
       <section className="max-w-5xl mx-auto px-5 sm:px-6 py-12">
