@@ -518,34 +518,7 @@ export function JourneyHook() {
         </div>
       </section>
 
-      {/* ════════════════════════════════════════════════════════════════════════ */}
-      {/* DIVIDER — seamless multi-stop fade from white Zone 1 to dark Zone 2 */}
-      {/* ════════════════════════════════════════════════════════════════════════ */}
-      <div
-        className="relative py-32 sm:py-40 px-4 overflow-hidden"
-        style={{
-          background:
-            "linear-gradient(180deg, #F8FAFC 0%, #E2E8F5 18%, #94A8C8 38%, #3E5070 58%, #15243C 78%, #050B14 100%)",
-        }}
-      >
-        {/* Subtle radial accents to break up the linear banding */}
-        <div className="pointer-events-none absolute top-1/3 left-1/4 w-[400px] h-[200px] rounded-full opacity-30"
-          style={{ background: "radial-gradient(ellipse, rgba(99,102,241,0.18) 0%, transparent 70%)", filter: "blur(40px)" }} />
-        <div className="pointer-events-none absolute bottom-1/3 right-1/4 w-[400px] h-[200px] rounded-full opacity-30"
-          style={{ background: "radial-gradient(ellipse, rgba(0,86,206,0.15) 0%, transparent 70%)", filter: "blur(40px)" }} />
-
-        {/* Centred label */}
-        <div className="relative flex items-center gap-4 max-w-md mx-auto">
-          <div className="flex-1 h-px"
-            style={{ background: "linear-gradient(90deg, transparent, rgba(148,168,200,0.4))" }} />
-          <span className="text-[10px] tracking-[0.3em] uppercase font-semibold whitespace-nowrap text-slate-500"
-            style={{ textShadow: "0 1px 2px rgba(0,0,0,0.2)" }}>
-            How they got there ↓
-          </span>
-          <div className="flex-1 h-px"
-            style={{ background: "linear-gradient(270deg, transparent, rgba(148,168,200,0.4))" }} />
-        </div>
-      </div>
+      {/* Zone 1 (light) → Zone 2 (dark): clean hard edge, no fade */}
 
       {/* ════════════════════════════════════════════════════════════════════════ */}
       {/* ZONE 2 — THE 5 STEPS (How you get there) */}
@@ -713,34 +686,7 @@ export function JourneyHook() {
         </div>
       </section>
 
-      {/* ════════════════════════════════════════════════════════════════════════ */}
-      {/* DIVIDER 2 — seamless multi-stop fade from dark Zone 2 to light Zone 3 */}
-      {/* ════════════════════════════════════════════════════════════════════════ */}
-      <div
-        className="relative py-32 sm:py-40 px-4 overflow-hidden"
-        style={{
-          background:
-            "linear-gradient(180deg, #050B14 0%, #15243C 22%, #3E5070 42%, #94A8C8 62%, #E2E8F5 82%, #F8FAFC 100%)",
-        }}
-      >
-        {/* Subtle radial accents to break up the linear banding */}
-        <div className="pointer-events-none absolute top-1/3 left-1/4 w-[400px] h-[200px] rounded-full opacity-30"
-          style={{ background: "radial-gradient(ellipse, rgba(99,102,241,0.18) 0%, transparent 70%)", filter: "blur(40px)" }} />
-        <div className="pointer-events-none absolute bottom-1/3 right-1/4 w-[400px] h-[200px] rounded-full opacity-30"
-          style={{ background: "radial-gradient(ellipse, rgba(16,185,129,0.18) 0%, transparent 70%)", filter: "blur(40px)" }} />
-
-        {/* Centred label */}
-        <div className="relative flex items-center gap-4 max-w-md mx-auto">
-          <div className="flex-1 h-px"
-            style={{ background: "linear-gradient(90deg, transparent, rgba(148,168,200,0.4))" }} />
-          <span className="text-[10px] tracking-[0.3em] uppercase font-semibold whitespace-nowrap text-slate-400"
-            style={{ textShadow: "0 1px 2px rgba(0,0,0,0.15)" }}>
-            Your move ↓
-          </span>
-          <div className="flex-1 h-px"
-            style={{ background: "linear-gradient(270deg, transparent, rgba(148,168,200,0.4))" }} />
-        </div>
-      </div>
+      {/* Zone 2 (dark) → Zone 3 (light): clean hard edge, no fade */}
 
       {/* ════════════════════════════════════════════════════════════════════════ */}
       {/* ZONE 3 — CLOSING CTA · LIGHT GRADIENT THEME · ALIVE BUTTON */}
