@@ -6,151 +6,39 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { Logo } from "@/components/ui/logo";
 import { CopyInviteLink } from "@/components/business/CopyInviteLink";
 import { BulkInvite } from "@/components/business/BulkInvite";
+import { getOrgStats } from "@/lib/org-stats";
 
 export const dynamic = "force-dynamic";
-
-interface MemberRow {
-  studentId: string;
-  name: string;
-  email: string;
-  track: string;
-  level: string;
-  lessons: number;
-  projects: number;
-  lastActive: string | null;
-}
 
 export default async function ManagerDashboard() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/login");
 
-  const { data: student } = await supabase.from("students").select("id, name").eq("user_id", user.id).maybeSingle();
+  const { data: student } = await supabase.from("students").select("id").eq("user_id", user.id).maybeSingle();
   if (!student) redirect("/business");
 
   const admin = createAdminClient();
-
-  // Am I a manager of an org?
   const { data: mgr } = await admin
     .from("org_members").select("org_id").eq("student_id", student.id).eq("role", "manager").maybeSingle();
   if (!mgr) redirect("/business");
 
-  const { data: org } = await admin
-    .from("organizations")
-    .select("id, name, seats, join_code, plan, status, billing_interval, current_period_end")
-    .eq("id", mgr.org_id).maybeSingle();
-  if (!org) redirect("/business");
+  const stats = await getOrgStats(mgr.org_id);
+  if (!stats) redirect("/business");
 
-  // Members (workers) + pending invites (each reserves a seat)
-  const [{ data: members }, { data: pendingInvites }] = await Promise.all([
-    admin.from("org_members").select("student_id, created_at").eq("org_id", org.id).eq("role", "member"),
-    admin.from("org_invites").select("email").eq("org_id", org.id).eq("status", "pending"),
-  ]);
-  const memberIds = (members ?? []).map((m) => m.student_id);
-  const pendingCount = pendingInvites?.length ?? 0;
+  const {
+    org, roster, pendingCount, pendingEmails, seatsUsed, seatsLeft,
+    activeThisWeek, totalLessons, deployedCount, avgScore,
+    teamReadiness, readinessDelta, membersAssessed, topWeak, topStrong,
+  } = stats;
 
-  let roster: MemberRow[] = [];
-  // Impact + skill-gap aggregates (real data from project_submissions + skill_reports)
-  let deployedCount = 0;            // projects with a live URL
-  let avgScore: number | null = null;   // avg Nova/project score %
-  let teamReadiness: number | null = null; // avg assessment readiness %
-  let membersAssessed = 0;
-  let topWeak: { topic: string; count: number }[] = [];
-  let topStrong: { topic: string; count: number }[] = [];
-
-  if (memberIds.length > 0) {
-    const [{ data: studs }, { data: enrs }, { data: comps }, { data: subs }, { data: reports }] = await Promise.all([
-      admin.from("students").select("id, name, email").in("id", memberIds),
-      admin.from("student_enrollments").select("student_id, assessment_level, course:courses(title)").in("student_id", memberIds).eq("status", "active"),
-      admin.from("lesson_completions").select("student_id, completed_at").in("student_id", memberIds),
-      admin.from("project_submissions").select("student_id, score, max_score, live_url").in("student_id", memberIds),
-      admin.from("skill_reports").select("student_id, weak_topics, strong_topics, estimated_score, max_score").in("student_id", memberIds),
-    ]);
-
-    const studMap = new Map((studs ?? []).map((s) => [s.id, s]));
-    const enrMap = new Map<string, { level: string; track: string }>();
-    for (const e of (enrs ?? []) as unknown as Array<{ student_id: string; assessment_level: string | null; course: { title: string } | null }>) {
-      if (!enrMap.has(e.student_id)) enrMap.set(e.student_id, { level: e.assessment_level ?? "—", track: e.course?.title ?? "—" });
-    }
-    const lessonsByStud = new Map<string, number>();
-    const lastByStud = new Map<string, string>();
-    for (const c of comps ?? []) {
-      lessonsByStud.set(c.student_id, (lessonsByStud.get(c.student_id) ?? 0) + 1);
-      const cur = lastByStud.get(c.student_id);
-      if (!cur || c.completed_at > cur) lastByStud.set(c.student_id, c.completed_at);
-    }
-    const projByStud = new Map<string, number>();
-    const scored: number[] = [];
-    for (const s of (subs ?? []) as Array<{ student_id: string; score: number | null; max_score: number | null; live_url: string | null }>) {
-      projByStud.set(s.student_id, (projByStud.get(s.student_id) ?? 0) + 1);
-      if (s.live_url) deployedCount++;
-      if (s.score != null && s.max_score) scored.push((Number(s.score) / Number(s.max_score)) * 100);
-    }
-    if (scored.length) avgScore = Math.round(scored.reduce((a, b) => a + b, 0) / scored.length);
-
-    // Skill gaps — per-student union of weak/strong topics, then frequency across the team
-    const weakByStud = new Map<string, Set<string>>();
-    const strongByStud = new Map<string, Set<string>>();
-    const readinessByStud = new Map<string, number>();
-    for (const r of (reports ?? []) as Array<{ student_id: string; weak_topics: string[] | null; strong_topics: string[] | null; estimated_score: number | null; max_score: number | null }>) {
-      if (Array.isArray(r.weak_topics) && r.weak_topics.length) {
-        const set = weakByStud.get(r.student_id) ?? new Set<string>();
-        r.weak_topics.forEach((t) => set.add(t));
-        weakByStud.set(r.student_id, set);
-      }
-      if (Array.isArray(r.strong_topics) && r.strong_topics.length) {
-        const set = strongByStud.get(r.student_id) ?? new Set<string>();
-        r.strong_topics.forEach((t) => set.add(t));
-        strongByStud.set(r.student_id, set);
-      }
-      if (r.estimated_score != null && r.max_score) {
-        const pct = (Number(r.estimated_score) / Number(r.max_score)) * 100;
-        readinessByStud.set(r.student_id, Math.max(readinessByStud.get(r.student_id) ?? 0, pct));
-      }
-    }
-    membersAssessed = new Set([...weakByStud.keys(), ...readinessByStud.keys()]).size;
-    if (readinessByStud.size) {
-      teamReadiness = Math.round([...readinessByStud.values()].reduce((a, b) => a + b, 0) / readinessByStud.size);
-    }
-    const tally = (m: Map<string, Set<string>>) => {
-      const freq = new Map<string, number>();
-      for (const set of m.values()) set.forEach((t) => freq.set(t, (freq.get(t) ?? 0) + 1));
-      return [...freq.entries()].map(([topic, count]) => ({ topic, count })).sort((a, b) => b.count - a.count);
-    };
-    topWeak = tally(weakByStud).slice(0, 8);
-    topStrong = tally(strongByStud).slice(0, 6);
-
-    roster = memberIds.map((id) => {
-      const s = studMap.get(id);
-      const enr = enrMap.get(id);
-      return {
-        studentId: id,
-        name: s?.name ?? (s?.email?.split("@")[0] ?? "Member"),
-        email: s?.email ?? "",
-        track: enr?.track ?? "—",
-        level: enr?.level ?? "—",
-        lessons: lessonsByStud.get(id) ?? 0,
-        projects: projByStud.get(id) ?? 0,
-        lastActive: lastByStud.get(id) ?? null,
-      };
-    });
-  }
-
-  // Rollups
-  const weekAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
-  const activeThisWeek = roster.filter((r) => r.lastActive && new Date(r.lastActive).getTime() >= weekAgo).length;
-  const totalLessons = roster.reduce((s, r) => s + r.lessons, 0);
-  const seatsUsed = roster.length;
-  const seatsLeft = Math.max(0, org.seats - seatsUsed - pendingCount);
   const usedPct = org.seats > 0 ? Math.min(100, Math.round((seatsUsed / org.seats) * 100)) : 0;
   const pendingPct = org.seats > 0 ? Math.min(100 - usedPct, Math.round((pendingCount / org.seats) * 100)) : 0;
 
-  // Billing status
   const isFree = org.plan === "free_beta" || !org.billing_interval;
   const billingLabel = isFree ? "Free · early access" : `${org.billing_interval === "annual" ? "Annual" : "Monthly"} plan`;
   const billingOk = isFree || org.status === "active";
 
-  // Invite link (absolute, from request host)
   const h = await headers();
   const host = h.get("host") ?? "square1-tutor.vercel.app";
   const proto = host.includes("localhost") ? "http" : "https";
@@ -174,10 +62,17 @@ export default async function ManagerDashboard() {
               {seatsUsed} of {org.seats} seats filled{pendingCount > 0 ? ` · ${pendingCount} invited` : ""}
             </p>
           </div>
-          <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-bold border ${billingOk ? "bg-emerald-50 text-emerald-700 border-emerald-200" : "bg-amber-50 text-amber-700 border-amber-200"}`}>
-            <span className={`w-1.5 h-1.5 rounded-full ${billingOk ? "bg-emerald-500" : "bg-amber-500"}`} />
-            {billingLabel}{!isFree && org.status !== "active" ? ` · ${org.status}` : ""}
-          </span>
+          <div className="flex items-center gap-3">
+            <Link href="/business/report"
+              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg border border-slate-300 text-slate-700 text-xs font-bold hover:bg-slate-50 transition-colors">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><polyline points="14 2 14 8 20 8" /></svg>
+              Export report
+            </Link>
+            <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-bold border ${billingOk ? "bg-emerald-50 text-emerald-700 border-emerald-200" : "bg-amber-50 text-amber-700 border-amber-200"}`}>
+              <span className={`w-1.5 h-1.5 rounded-full ${billingOk ? "bg-emerald-500" : "bg-amber-500"}`} />
+              {billingLabel}{!isFree && org.status !== "active" ? ` · ${org.status}` : ""}
+            </span>
+          </div>
         </div>
 
         {/* Rollups */}
@@ -212,6 +107,11 @@ export default async function ManagerDashboard() {
               <div className="rounded-xl bg-slate-50 border border-slate-200 p-4 text-center flex flex-col justify-center">
                 <p className="text-4xl font-black text-slate-900 tabular-nums leading-none">{teamReadiness ?? "—"}<span className="text-lg text-slate-400">%</span></p>
                 <p className="text-[11px] text-slate-500 uppercase tracking-wider mt-1.5">Avg readiness</p>
+                {readinessDelta !== 0 && (
+                  <p className="text-[11px] font-bold mt-1" style={{ color: readinessDelta > 0 ? "#059669" : "#DC2626" }}>
+                    {readinessDelta > 0 ? "▲" : "▼"} {Math.abs(readinessDelta)} pts since first check
+                  </p>
+                )}
                 <div className="mt-3 pt-3 border-t border-slate-200 grid grid-cols-2 gap-2 text-center">
                   <div><p className="text-base font-black text-slate-900 tabular-nums">{deployedCount}</p><p className="text-[9px] text-slate-400 uppercase tracking-wide">Deployed</p></div>
                   <div><p className="text-base font-black text-slate-900 tabular-nums">{avgScore != null ? `${avgScore}%` : "—"}</p><p className="text-[9px] text-slate-400 uppercase tracking-wide">Avg score</p></div>
@@ -273,7 +173,7 @@ export default async function ManagerDashboard() {
           </div>
           {pendingCount > 0 && (
             <p className="text-[11px] text-slate-500 mt-3">
-              Pending: {pendingInvites!.slice(0, 5).map((i) => i.email).join(", ")}{pendingCount > 5 ? ` +${pendingCount - 5} more` : ""}
+              Pending: {pendingEmails.slice(0, 5).join(", ")}{pendingCount > 5 ? ` +${pendingCount - 5} more` : ""}
             </p>
           )}
         </div>
