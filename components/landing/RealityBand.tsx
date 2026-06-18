@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import Link from "next/link";
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // The 2026 Reality — the wedge. Sets the stakes BEFORE the outcome hook: a degree
@@ -112,7 +111,7 @@ export function RealityBand() {
   }, []);
 
   return (
-    <section ref={ref} className="relative overflow-hidden py-20 sm:py-28 px-4 sm:px-6 lg:px-8" style={{ background: "#050B14" }}>
+    <section ref={ref} className="relative overflow-hidden py-14 sm:py-16 px-4 sm:px-6 lg:px-8" style={{ background: "#050B14" }}>
       {/* Accent glows */}
       <div
         className="pointer-events-none absolute top-0 right-1/4 w-[600px] h-[600px] rounded-full opacity-[0.10]"
@@ -133,8 +132,8 @@ export function RealityBand() {
 
         {/* Headline */}
         <h2
-          className="mt-5 text-center font-black tracking-tight text-white leading-[0.98] max-w-3xl mx-auto"
-          style={{ fontSize: "clamp(30px, 5vw, 60px)", letterSpacing: "-0.03em" }}
+          className="mt-4 text-center font-black tracking-tight text-white leading-[1.0] max-w-3xl mx-auto"
+          style={{ fontSize: "clamp(26px, 4vw, 46px)", letterSpacing: "-0.03em" }}
         >
           A degree used to be enough.{" "}
           <span
@@ -156,34 +155,17 @@ export function RealityBand() {
         </p>
 
         {/* Interactive stat tiles */}
-        <div className="mt-12 sm:mt-14 grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
+        <div className="mt-9 sm:mt-10 grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
           {STATS.map((s, i) => (
             <StatTile key={s.label} stat={s} visible={visible} delay={i * 130} />
           ))}
         </div>
 
-        {/* Resolution */}
-        <div className="mt-12 sm:mt-14 text-center">
-          <p className="text-base sm:text-lg text-slate-300 leading-relaxed max-w-2xl mx-auto">
-            Square 1 Ai gets you the proof:{" "}
-            <span className="font-bold text-white">
-              10–12 deployed, code-reviewed projects employers can actually click on.
-            </span>
-          </p>
-          <Link
-            href="/diagnostic"
-            className="mt-8 inline-flex items-center gap-2 px-7 py-3.5 rounded-full text-white font-bold text-sm transition-all hover:-translate-y-0.5"
-            style={{
-              background: "linear-gradient(135deg, #0056CE 0%, #4F46E5 100%)",
-              boxShadow: "0 12px 32px rgba(0,86,206,0.30)",
-            }}
-          >
-            Get your free skill report →
-          </Link>
-          <p className="mt-3 text-[11px] text-slate-500 tracking-wide">
-            Free · 30 minutes · No credit card
-          </p>
-        </div>
+        {/* Resolution — slim one-liner (CTAs live in the hook above) */}
+        <p className="mt-9 text-center text-sm sm:text-base text-slate-300 leading-relaxed max-w-2xl mx-auto">
+          Square 1 Ai closes that gap with{" "}
+          <span className="font-bold text-white">10–12 deployed, code-reviewed projects employers can actually click on.</span>
+        </p>
       </div>
     </section>
   );

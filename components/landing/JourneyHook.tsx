@@ -462,6 +462,59 @@ export function JourneyHook() {
               <OutcomeCard key={o.label} outcome={o} isVisible={heroVisible} delay={i * 150} />
             ))}
           </div>
+
+          {/* What an employer actually sees — the tangible proof (folded in from ProofBand) */}
+          <div className="mt-14 lg:mt-20 grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
+            <div className="text-center lg:text-left">
+              <h3 className="text-2xl sm:text-3xl font-bold text-slate-900 leading-tight mb-3">And here&apos;s what an employer sees.</h3>
+              <p className="text-sm sm:text-base text-slate-600 leading-relaxed max-w-md mx-auto lg:mx-0">
+                Not a bullet point that says &ldquo;familiar with Python.&rdquo; A deployed project they can open, an AI review score that vouches for the code, and a credential they can verify in one click.
+              </p>
+            </div>
+
+            <div className="relative rounded-2xl border border-slate-200 overflow-hidden" style={{ background: "linear-gradient(180deg,#0B1626 0%,#070E1A 100%)", boxShadow: "0 24px 64px rgba(15,28,49,0.25)" }}>
+              <div className="flex items-center gap-2 px-4 py-3 border-b border-white/[0.08]">
+                <span className="w-2.5 h-2.5 rounded-full bg-red-400/70" />
+                <span className="w-2.5 h-2.5 rounded-full bg-amber-400/70" />
+                <span className="w-2.5 h-2.5 rounded-full bg-emerald-400/70" />
+                <span className="ml-2 text-[11px] text-slate-500 font-mono truncate">alex-rivera.dev · portfolio</span>
+              </div>
+              <div className="p-4 sm:p-5 space-y-3">
+                <div className="rounded-xl border border-white/10 p-4" style={{ background: "rgba(255,255,255,0.02)" }}>
+                  <div className="flex items-center justify-between gap-2 mb-3">
+                    <span className="text-sm font-bold text-white font-mono">rag-support-agent</span>
+                    <span className="inline-flex items-center gap-1.5 text-[10px] font-semibold px-2 py-0.5 rounded-full text-emerald-300" style={{ background: "rgba(52,211,153,0.12)", border: "1px solid rgba(52,211,153,0.3)" }}>
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" /> live
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between text-[10px] mb-1.5">
+                    <span className="text-slate-400">Nova code review</span>
+                    <span className="font-bold text-emerald-300 tabular-nums">94/100</span>
+                  </div>
+                  <div className="h-1.5 rounded-full bg-white/[0.08] overflow-hidden">
+                    <div className="h-full rounded-full transition-[width] duration-1000 ease-out" style={{ width: heroVisible ? "94%" : "0%", background: "linear-gradient(90deg,#3388FF,#34D399)" }} />
+                  </div>
+                </div>
+                {[{ n: "vision-defect-detector", s: "91" }, { n: "trading-dashboard-api", s: "88" }].map((p) => (
+                  <div key={p.n} className="flex items-center justify-between rounded-lg border border-white/[0.08] px-3.5 py-2.5" style={{ background: "rgba(255,255,255,0.015)" }}>
+                    <span className="text-xs font-mono text-slate-300">{p.n}</span>
+                    <div className="flex items-center gap-2.5 text-[10px]">
+                      <span className="inline-flex items-center gap-1 text-emerald-300/80"><span className="w-1.5 h-1.5 rounded-full bg-emerald-400" /> live</span>
+                      <span className="text-slate-600">·</span>
+                      <span className="text-slate-400 tabular-nums">{p.s}/100</span>
+                    </div>
+                  </div>
+                ))}
+                <div className="flex items-center justify-between pt-1.5">
+                  <span className="inline-flex items-center gap-1.5 text-[10px] font-semibold text-slate-300">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#3388FF" strokeWidth="2.5"><circle cx="12" cy="12" r="9" /><path d="M9 12l2 2 4-4" /></svg>
+                    Verified by Square 1
+                  </span>
+                  <span className="text-[10px] text-slate-600 font-mono">SQ1-7F3A-9C21</span>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 

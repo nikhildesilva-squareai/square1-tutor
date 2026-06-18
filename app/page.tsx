@@ -4,10 +4,8 @@ import { createClient } from "@/lib/supabase/server";
 import { HeroSection } from "@/components/landing/HeroSection";
 import { RealityBand } from "@/components/landing/RealityBand";
 import { ComparisonSection } from "@/components/landing/ComparisonSection";
-import { TimelineSection } from "@/components/landing/TimelineSection";
 import { SocialProofSection } from "@/components/landing/SocialProofSection";
 import { JourneyHook } from "@/components/landing/JourneyHook";
-import { ProofBand } from "@/components/landing/ProofBand";
 import { CourseGridSection } from "@/components/landing/CourseGridSection";
 import { InlineDiagnostic } from "@/components/landing/InlineDiagnostic";
 import { CodeReviewSlider } from "@/components/landing/CodeReviewSlider";
@@ -66,19 +64,16 @@ export default async function Home() {
       {/* ── 1. Hero (with goal-typer) ───────────────────────────────────────── */}
       <HeroSection />
 
-      {/* ── 1.5 THE HOOK — outcome first: "Get hired as an [role]" + journey ─── */}
+      {/* ── 2. THE HOOK — outcome + proof: "Get hired as an [role]" + journey + employer view */}
       <JourneyHook />
 
-      {/* ── 2. The 2026 wedge — the stakes: degree ≠ hired, proof = hired ─────── */}
-      <RealityBand />
-
-      {/* ── 2.5 Proof beat — why proof-based hiring works + what an employer sees */}
-      <ProofBand />
-
-      {/* ── 3. Foot-in-the-door: one inline question → curiosity gap ─────────── */}
+      {/* ── 3. Foot-in-the-door: one inline question → act by screen two ─────── */}
       <InlineDiagnostic />
 
-      {/* ── 4. Before/After — drag to see Nova review your code ──────────────── */}
+      {/* ── 4. The 2026 wedge — slim stakes strip ────────────────────────────── */}
+      <RealityBand />
+
+      {/* ── 5. Before/After — drag to see Nova review your code ──────────────── */}
       <CodeReviewSlider />
 
       {/* ── 6. Why Square 1 beats everything else ────────────────────────────── */}
@@ -87,10 +82,7 @@ export default async function Home() {
       {/* ── 7. Courses — inline explorer (click → preview Lesson 1) ──────────── */}
       <CourseGridSection courses={courses} />
 
-      {/* ── 8. Journey Timeline ──────────────────────────────────────────────── */}
-      <TimelineSection />
-
-      {/* ── 9. Honest proof — founder note + founding offer ──────────────────── */}
+      {/* ── 8. Honest proof — founder note + founding offer ──────────────────── */}
       <SocialProofSection />
 
       {/* ── About + Final CTA + Footer ────────────────────────────────────── */}
