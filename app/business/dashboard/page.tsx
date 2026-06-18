@@ -50,12 +50,21 @@ export default async function ManagerDashboard() {
   const pendingCount = pendingInvites?.length ?? 0;
 
   let roster: MemberRow[] = [];
+  // Impact + skill-gap aggregates (real data from project_submissions + skill_reports)
+  let deployedCount = 0;            // projects with a live URL
+  let avgScore: number | null = null;   // avg Nova/project score %
+  let teamReadiness: number | null = null; // avg assessment readiness %
+  let membersAssessed = 0;
+  let topWeak: { topic: string; count: number }[] = [];
+  let topStrong: { topic: string; count: number }[] = [];
+
   if (memberIds.length > 0) {
-    const [{ data: studs }, { data: enrs }, { data: comps }, { data: subs }] = await Promise.all([
+    const [{ data: studs }, { data: enrs }, { data: comps }, { data: subs }, { data: reports }] = await Promise.all([
       admin.from("students").select("id, name, email").in("id", memberIds),
       admin.from("student_enrollments").select("student_id, assessment_level, course:courses(title)").in("student_id", memberIds).eq("status", "active"),
       admin.from("lesson_completions").select("student_id, completed_at").in("student_id", memberIds),
-      admin.from("project_submissions").select("student_id, score").in("student_id", memberIds).not("score", "is", null),
+      admin.from("project_submissions").select("student_id, score, max_score, live_url").in("student_id", memberIds),
+      admin.from("skill_reports").select("student_id, weak_topics, strong_topics, estimated_score, max_score").in("student_id", memberIds),
     ]);
 
     const studMap = new Map((studs ?? []).map((s) => [s.id, s]));
@@ -71,7 +80,45 @@ export default async function ManagerDashboard() {
       if (!cur || c.completed_at > cur) lastByStud.set(c.student_id, c.completed_at);
     }
     const projByStud = new Map<string, number>();
-    for (const s of subs ?? []) projByStud.set(s.student_id, (projByStud.get(s.student_id) ?? 0) + 1);
+    const scored: number[] = [];
+    for (const s of (subs ?? []) as Array<{ student_id: string; score: number | null; max_score: number | null; live_url: string | null }>) {
+      projByStud.set(s.student_id, (projByStud.get(s.student_id) ?? 0) + 1);
+      if (s.live_url) deployedCount++;
+      if (s.score != null && s.max_score) scored.push((Number(s.score) / Number(s.max_score)) * 100);
+    }
+    if (scored.length) avgScore = Math.round(scored.reduce((a, b) => a + b, 0) / scored.length);
+
+    // Skill gaps — per-student union of weak/strong topics, then frequency across the team
+    const weakByStud = new Map<string, Set<string>>();
+    const strongByStud = new Map<string, Set<string>>();
+    const readinessByStud = new Map<string, number>();
+    for (const r of (reports ?? []) as Array<{ student_id: string; weak_topics: string[] | null; strong_topics: string[] | null; estimated_score: number | null; max_score: number | null }>) {
+      if (Array.isArray(r.weak_topics) && r.weak_topics.length) {
+        const set = weakByStud.get(r.student_id) ?? new Set<string>();
+        r.weak_topics.forEach((t) => set.add(t));
+        weakByStud.set(r.student_id, set);
+      }
+      if (Array.isArray(r.strong_topics) && r.strong_topics.length) {
+        const set = strongByStud.get(r.student_id) ?? new Set<string>();
+        r.strong_topics.forEach((t) => set.add(t));
+        strongByStud.set(r.student_id, set);
+      }
+      if (r.estimated_score != null && r.max_score) {
+        const pct = (Number(r.estimated_score) / Number(r.max_score)) * 100;
+        readinessByStud.set(r.student_id, Math.max(readinessByStud.get(r.student_id) ?? 0, pct));
+      }
+    }
+    membersAssessed = new Set([...weakByStud.keys(), ...readinessByStud.keys()]).size;
+    if (readinessByStud.size) {
+      teamReadiness = Math.round([...readinessByStud.values()].reduce((a, b) => a + b, 0) / readinessByStud.size);
+    }
+    const tally = (m: Map<string, Set<string>>) => {
+      const freq = new Map<string, number>();
+      for (const set of m.values()) set.forEach((t) => freq.set(t, (freq.get(t) ?? 0) + 1));
+      return [...freq.entries()].map(([topic, count]) => ({ topic, count })).sort((a, b) => b.count - a.count);
+    };
+    topWeak = tally(weakByStud).slice(0, 8);
+    topStrong = tally(strongByStud).slice(0, 6);
 
     roster = memberIds.map((id) => {
       const s = studMap.get(id);
@@ -134,17 +181,71 @@ export default async function ManagerDashboard() {
         </div>
 
         {/* Rollups */}
-        <div className="grid grid-cols-3 gap-3 mb-3">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-3">
           {[
             { label: "Seats used", value: `${seatsUsed}/${org.seats}` },
             { label: "Active this week", value: activeThisWeek },
             { label: "Lessons completed", value: totalLessons },
+            { label: "Projects deployed", value: deployedCount },
           ].map((s) => (
             <div key={s.label} className="rounded-xl border border-slate-200 bg-white p-4">
               <p className="text-2xl font-black text-slate-900 tabular-nums">{s.value}</p>
               <p className="text-[10px] text-slate-500 uppercase tracking-wider mt-0.5">{s.label}</p>
             </div>
           ))}
+        </div>
+
+        {/* Team skills & readiness — real skill-gap analytics from assessments */}
+        <div className="rounded-2xl border border-slate-200 bg-white p-5 mb-3">
+          <div className="flex items-center justify-between gap-3 flex-wrap mb-4">
+            <p className="text-sm font-bold text-slate-900">Team skills &amp; readiness</p>
+            {membersAssessed > 0 && <p className="text-[11px] text-slate-400">{membersAssessed} of {seatsUsed} assessed</p>}
+          </div>
+
+          {membersAssessed === 0 ? (
+            <div className="text-center py-6">
+              <p className="text-sm text-slate-500 max-w-md mx-auto">No skill checks yet. Once your team takes the assessment, their biggest skill gaps and a team readiness score map here automatically.</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 lg:grid-cols-[200px_1fr] gap-5">
+              {/* readiness + impact */}
+              <div className="rounded-xl bg-slate-50 border border-slate-200 p-4 text-center flex flex-col justify-center">
+                <p className="text-4xl font-black text-slate-900 tabular-nums leading-none">{teamReadiness ?? "—"}<span className="text-lg text-slate-400">%</span></p>
+                <p className="text-[11px] text-slate-500 uppercase tracking-wider mt-1.5">Avg readiness</p>
+                <div className="mt-3 pt-3 border-t border-slate-200 grid grid-cols-2 gap-2 text-center">
+                  <div><p className="text-base font-black text-slate-900 tabular-nums">{deployedCount}</p><p className="text-[9px] text-slate-400 uppercase tracking-wide">Deployed</p></div>
+                  <div><p className="text-base font-black text-slate-900 tabular-nums">{avgScore != null ? `${avgScore}%` : "—"}</p><p className="text-[9px] text-slate-400 uppercase tracking-wide">Avg score</p></div>
+                </div>
+              </div>
+
+              {/* skill gaps */}
+              <div>
+                <p className="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-2.5">Biggest skill gaps</p>
+                <div className="space-y-2">
+                  {topWeak.map((w) => (
+                    <div key={w.topic} className="flex items-center gap-3">
+                      <span className="text-xs text-slate-700 w-36 sm:w-44 truncate capitalize">{w.topic}</span>
+                      <div className="flex-1 h-1.5 rounded-full bg-slate-100 overflow-hidden">
+                        <div className="h-full rounded-full bg-amber-400" style={{ width: `${Math.round((w.count / membersAssessed) * 100)}%` }} />
+                      </div>
+                      <span className="text-[10px] text-slate-400 tabular-nums w-20 text-right">{w.count}/{membersAssessed} weak</span>
+                    </div>
+                  ))}
+                </div>
+                {topStrong.length > 0 && (
+                  <div className="mt-4">
+                    <p className="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-2">Team strengths</p>
+                    <div className="flex flex-wrap gap-1.5">
+                      {topStrong.map((s) => (
+                        <span key={s.topic} className="text-[11px] px-2 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 capitalize">{s.topic}</span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                <Link href="/courses" className="inline-block mt-4 text-sm font-bold text-brand hover:underline">Browse tracks to recommend →</Link>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Seat usage meter */}
