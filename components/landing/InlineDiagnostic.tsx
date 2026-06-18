@@ -19,7 +19,10 @@ const QUESTION = {
   ],
 };
 
-export function InlineDiagnostic() {
+export function InlineDiagnostic({
+  eyebrow = "Test yourself · 10 seconds",
+  heading = "Where would you land?",
+}: { eyebrow?: string; heading?: string } = {}) {
   const [picked, setPicked] = useState<number | null>(null);
   const answered = picked !== null;
   const gotItRight = answered && QUESTION.options[picked].correct;

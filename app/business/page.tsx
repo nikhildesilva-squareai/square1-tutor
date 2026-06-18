@@ -6,6 +6,10 @@ import { SeatSelector } from "@/components/business/SeatSelector";
 import { TeamDashboardPreview } from "@/components/business/TeamDashboardPreview";
 import { WhyManagers } from "@/components/business/WhyManagers";
 import { HowItWorks } from "@/components/business/HowItWorks";
+import { EmployeeJourney } from "@/components/business/EmployeeJourney";
+import { ROICalculator } from "@/components/business/ROICalculator";
+import { CodeReviewSlider } from "@/components/landing/CodeReviewSlider";
+import { InlineDiagnostic } from "@/components/landing/InlineDiagnostic";
 
 export const metadata: Metadata = {
   title: "For Teams — Upskill Your Staff in AI",
@@ -31,14 +35,12 @@ export default function BusinessPage() {
 
       {/* Hero — two-column: tight copy + the product (manager dashboard) */}
       <section className="relative overflow-hidden">
-        {/* Depth: gradient glows */}
         <div className="pointer-events-none absolute -top-24 -left-24 w-[600px] h-[600px] rounded-full"
           style={{ background: "radial-gradient(circle, rgba(0,86,206,0.12) 0%, transparent 70%)", filter: "blur(80px)" }} />
         <div className="pointer-events-none absolute top-10 right-0 translate-x-1/4 w-[600px] h-[600px] rounded-full"
           style={{ background: "radial-gradient(circle, rgba(124,58,237,0.10) 0%, transparent 70%)", filter: "blur(90px)" }} />
 
         <div className="relative max-w-6xl mx-auto px-5 sm:px-6 pt-8 sm:pt-14 pb-14 grid lg:grid-cols-2 gap-12 lg:gap-10 items-center">
-          {/* Left — copy */}
           <div className="text-center lg:text-left">
             <span className="text-[10px] sm:text-[11px] tracking-[0.35em] uppercase text-slate-500 font-bold">
               Square 1 Ai for Teams
@@ -66,31 +68,24 @@ export default function BusinessPage() {
             <p className="mt-4 text-xs text-slate-400">Free during early access · set up in 2 minutes · no card today</p>
           </div>
 
-          {/* Right — product preview */}
           <div className="lg:pl-6">
             <TeamDashboardPreview />
           </div>
         </div>
       </section>
 
-      {/* PRIMARY ACTION — pick seats & start (self-serve) */}
-      <section id="start" className="max-w-5xl mx-auto px-5 sm:px-6 pb-10 scroll-mt-6">
-        <div className="text-center mb-6">
-          <h2 className="text-2xl sm:text-3xl font-black text-slate-900">Build your team in 2 minutes</h2>
-          <p className="text-sm text-slate-600 mt-2 max-w-md mx-auto">
-            Pick your seats, start free, invite your staff — then track everyone from one dashboard.
-          </p>
-        </div>
-        <SeatSelector />
-      </section>
+      {/* ─── VALUE FIRST: see what your staff do, see the product, try it ─────── */}
 
-      {/* Why managers choose us — interactive (spotlight + reveal) */}
-      <WhyManagers />
+      {/* 1. What your staff actually do — interactive walkthrough */}
+      <EmployeeJourney />
 
-      {/* How it works — interactive auto-playing stepper */}
-      <HowItWorks />
+      {/* 2. Nova in action — drag-to-reveal code review */}
+      <CodeReviewSlider />
 
-      {/* Proof, not completion — machine-validated, deployed, verifiable */}
+      {/* 3. Try it yourself — the real skill check (manager-framed) */}
+      <InlineDiagnostic eyebrow="Try it yourself · 2 minutes" heading="Take the skill check your staff take." />
+
+      {/* 4. Proof, not completion — deployed, reviewed, verifiable */}
       <section className="max-w-5xl mx-auto px-5 sm:px-6 py-14">
         <div className="text-center mb-10">
           <span className="text-[10px] sm:text-[11px] tracking-[0.35em] uppercase text-slate-500 font-bold">Proof, not completion certificates</span>
@@ -120,16 +115,26 @@ export default function BusinessPage() {
         </div>
       </section>
 
-      {/* Pricing — reference only; CTAs jump to the seat selector */}
+      {/* 5. Manager value — bento (visibility / measurable) */}
+      <WhyManagers />
+
+      {/* 6. ROI — quantify the value */}
+      <ROICalculator />
+
+      {/* 7. How you get set up — manager 3-step */}
+      <HowItWorks />
+
+      {/* ─── THE ACTION: pricing + start your team ────────────────────────────── */}
+
+      {/* Pricing — reference; CTAs jump to the seat selector */}
       <section className="max-w-5xl mx-auto px-5 sm:px-6 py-12">
         <div className="text-center mb-3">
           <h2 className="text-2xl sm:text-3xl font-black text-slate-900">Simple per-seat pricing</h2>
           <p className="text-sm text-slate-600 mt-2 max-w-lg mx-auto">
-            <span className="font-bold text-emerald-700">Free during early access.</span> Below is what it&apos;ll cost when billing launches — billed monthly or annually, the more seats the lower the rate. (vs $10,000+ for a bootcamp.)
+            <span className="font-bold text-emerald-700">Free during early access.</span> Below is what it&apos;ll cost when billing launches — billed monthly or annually, the more seats the lower the rate.
           </p>
         </div>
 
-        {/* Founding offer banner */}
         <div className="max-w-2xl mx-auto mb-9 mt-5 rounded-xl border border-emerald-300 bg-emerald-50 px-5 py-3 text-center">
           <p className="text-sm font-bold text-emerald-800">
             🎉 Founding offer — our first corporate customers get <span className="underline">30% off these rates, locked for life.</span>
@@ -170,7 +175,6 @@ export default function BusinessPage() {
           ))}
         </div>
 
-        {/* 50+ custom strip */}
         <div className="mt-4 rounded-2xl border border-slate-200 bg-slate-50 px-6 py-4 flex flex-col sm:flex-row items-center justify-between gap-3">
           <div className="text-center sm:text-left">
             <p className="text-sm font-bold text-slate-900">More than 50 employees?</p>
@@ -182,6 +186,17 @@ export default function BusinessPage() {
         <p className="text-center text-[11px] text-slate-400 mt-5">
           Every plan: full courses · AI tutor · code review · personalised paths · certificates · manager dashboard.
         </p>
+      </section>
+
+      {/* PRIMARY ACTION — pick seats & start */}
+      <section id="start" className="max-w-5xl mx-auto px-5 sm:px-6 pb-12 scroll-mt-6">
+        <div className="text-center mb-6">
+          <h2 className="text-2xl sm:text-3xl font-black text-slate-900">Start your team in 2 minutes</h2>
+          <p className="text-sm text-slate-600 mt-2 max-w-md mx-auto">
+            Pick your seats, start free, invite your staff — then track everyone from one dashboard.
+          </p>
+        </div>
+        <SeatSelector />
       </section>
 
       {/* Enterprise trust — security & SSO (honest: today vs roadmap) */}
