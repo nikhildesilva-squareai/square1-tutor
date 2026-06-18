@@ -66,11 +66,11 @@ export default async function Home() {
       {/* ── 1. Hero (with goal-typer) ───────────────────────────────────────── */}
       <HeroSection />
 
-      {/* ── 1.5 The 2026 wedge — stakes first: degree ≠ hired, proof = hired ─── */}
-      <RealityBand />
-
-      {/* ── 2. THE HOOK — outcome first: "Get hired as an [role]" + journey ──── */}
+      {/* ── 1.5 THE HOOK — outcome first: "Get hired as an [role]" + journey ─── */}
       <JourneyHook />
+
+      {/* ── 2. The 2026 wedge — the stakes: degree ≠ hired, proof = hired ─────── */}
+      <RealityBand />
 
       {/* ── 2.5 Proof beat — why proof-based hiring works + what an employer sees */}
       <ProofBand />
