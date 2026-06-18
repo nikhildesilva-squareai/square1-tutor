@@ -8,7 +8,7 @@ import { WhyManagers } from "@/components/business/WhyManagers";
 import { HowItWorks } from "@/components/business/HowItWorks";
 import { EmployeeJourney } from "@/components/business/EmployeeJourney";
 import { ROICalculator } from "@/components/business/ROICalculator";
-import { CodeReviewSlider } from "@/components/landing/CodeReviewSlider";
+import { NovaCapabilities } from "@/components/business/NovaCapabilities";
 import { InlineDiagnostic } from "@/components/landing/InlineDiagnostic";
 
 export const metadata: Metadata = {
@@ -79,8 +79,8 @@ export default function BusinessPage() {
       {/* 1. What your staff actually do — interactive walkthrough */}
       <EmployeeJourney />
 
-      {/* 2. Nova in action — drag-to-reveal code review */}
-      <CodeReviewSlider />
+      {/* 2. Meet Nova — compact, full-capability (tutor / review / build / adapt) */}
+      <NovaCapabilities />
 
       {/* 3. Try it yourself — the real skill check (manager-framed) */}
       <InlineDiagnostic eyebrow="Try it yourself · 2 minutes" heading="Take the skill check your staff take." />
