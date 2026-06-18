@@ -85,33 +85,37 @@ export default function BusinessPage() {
       {/* 3. Try it yourself — the real skill check (manager-framed) */}
       <InlineDiagnostic eyebrow="Try it yourself · 2 minutes" heading="Take the skill check your staff take." />
 
-      {/* 4. Proof, not completion — deployed, reviewed, verifiable */}
-      <section className="max-w-5xl mx-auto px-5 sm:px-6 py-14">
-        <div className="text-center mb-10">
-          <span className="text-[10px] sm:text-[11px] tracking-[0.35em] uppercase text-slate-500 font-bold">Proof, not completion certificates</span>
-          <h2 className="mt-3 font-black tracking-tight text-slate-900" style={{ fontSize: "clamp(26px,4vw,42px)" }}>
-            They certify your staff <span className="text-slate-400">watched</span>. We prove they can{" "}
-            <span style={{ background: "linear-gradient(135deg,#0056CE,#10B981)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>ship</span>.
-          </h2>
-          <p className="mt-3 text-sm sm:text-base text-slate-600 max-w-xl mx-auto">
-            Every employee finishes with work an employer — or your CTO — can actually open and verify. Not a completion checkbox.
-          </p>
-        </div>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          {[
-            { t: "Deployed to a live URL", d: "Real projects shipped to a public link — run the code, don't take their word for it.", accent: "#0056CE", icon: "M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" },
-            { t: "Every line reviewed by Nova", d: "An AI code review on real submissions — strengths, fixes, and a score that vouches for quality.", accent: "#7C3AED", icon: "M16 18l6-6-6-6M8 6l-6 6 6 6" },
-            { t: "Verifiable certificate", d: "A credential anyone can verify in one click — not a PDF that's trivial to fake.", accent: "#10B981", icon: "M12 15a7 7 0 100-14 7 7 0 000 14zM8.21 13.89 7 23l5-3 5 3-1.21-9.12" },
-          ].map((p) => (
-            <div key={p.t} className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-              <div className="w-11 h-11 rounded-xl flex items-center justify-center mb-4"
-                style={{ background: `linear-gradient(135deg, ${p.accent}, ${p.accent}cc)`, boxShadow: `0 8px 20px ${p.accent}33` }}>
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d={p.icon} /></svg>
+      {/* 4. Proof, not completion — deployed, reviewed, verifiable (BLACK band) */}
+      <section className="relative overflow-hidden py-20 sm:py-24 px-4 sm:px-6 lg:px-8" style={{ background: "#050B14" }}>
+        <div className="pointer-events-none absolute top-0 right-1/4 w-[600px] h-[600px] rounded-full opacity-[0.10]"
+          style={{ background: "radial-gradient(circle,#10B981 0%,transparent 70%)", filter: "blur(110px)" }} />
+        <div className="relative max-w-5xl mx-auto">
+          <div className="text-center mb-10">
+            <span className="text-[10px] sm:text-[11px] tracking-[0.35em] uppercase text-slate-500 font-bold">Proof, not completion certificates</span>
+            <h2 className="mt-3 font-black tracking-tight text-white" style={{ fontSize: "clamp(26px,4vw,42px)" }}>
+              They certify your staff <span className="text-slate-500">watched</span>. We prove they can{" "}
+              <span style={{ background: "linear-gradient(135deg,#3388FF,#10B981)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>ship</span>.
+            </h2>
+            <p className="mt-3 text-sm sm:text-base text-slate-400 max-w-xl mx-auto">
+              Every employee finishes with work an employer — or your CTO — can actually open and verify. Not a completion checkbox.
+            </p>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            {[
+              { t: "Deployed to a live URL", d: "Real projects shipped to a public link — run the code, don't take their word for it.", accent: "#3388FF", icon: "M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" },
+              { t: "Every line reviewed by Nova", d: "An AI code review on real submissions — strengths, fixes, and a score that vouches for quality.", accent: "#A78BFA", icon: "M16 18l6-6-6-6M8 6l-6 6 6 6" },
+              { t: "Verifiable certificate", d: "A credential anyone can verify in one click — not a PDF that's trivial to fake.", accent: "#10B981", icon: "M12 15a7 7 0 100-14 7 7 0 000 14zM8.21 13.89 7 23l5-3 5 3-1.21-9.12" },
+            ].map((p) => (
+              <div key={p.t} className="rounded-2xl border border-white/10 p-6" style={{ background: "rgba(255,255,255,0.03)" }}>
+                <div className="w-11 h-11 rounded-xl flex items-center justify-center mb-4"
+                  style={{ background: `linear-gradient(135deg, ${p.accent}, ${p.accent}cc)`, boxShadow: `0 8px 20px ${p.accent}33` }}>
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d={p.icon} /></svg>
+                </div>
+                <h3 className="text-base font-black text-white mb-1.5">{p.t}</h3>
+                <p className="text-sm text-slate-400 leading-relaxed">{p.d}</p>
               </div>
-              <h3 className="text-base font-black text-slate-900 mb-1.5">{p.t}</h3>
-              <p className="text-sm text-slate-600 leading-relaxed">{p.d}</p>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </section>
 
@@ -199,12 +203,14 @@ export default function BusinessPage() {
         <SeatSelector />
       </section>
 
-      {/* Enterprise trust — security & SSO (honest: today vs roadmap) */}
-      <section className="max-w-5xl mx-auto px-5 sm:px-6 py-12">
-        <div className="rounded-2xl border border-slate-200 bg-white p-6 sm:p-8">
-          <div className="text-center mb-7">
+      {/* Enterprise trust — security & SSO (BLACK band) */}
+      <section className="relative overflow-hidden py-20 sm:py-24 px-4 sm:px-6 lg:px-8" style={{ background: "#050B14" }}>
+        <div className="pointer-events-none absolute bottom-0 left-1/4 w-[600px] h-[600px] rounded-full opacity-[0.10]"
+          style={{ background: "radial-gradient(circle,#3388FF 0%,transparent 70%)", filter: "blur(110px)" }} />
+        <div className="relative max-w-5xl mx-auto">
+          <div className="text-center mb-9">
             <span className="text-[10px] sm:text-[11px] tracking-[0.35em] uppercase text-slate-500 font-bold">Enterprise-ready</span>
-            <h2 className="mt-3 text-2xl sm:text-3xl font-black text-slate-900">Built to clear IT &amp; security.</h2>
+            <h2 className="mt-3 text-2xl sm:text-3xl font-black text-white">Built to clear IT &amp; security.</h2>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
             {[
@@ -212,18 +218,18 @@ export default function BusinessPage() {
               { t: "Your data, handled right", now: "EU-hosted infrastructure. We never train AI models on your team's data.", soon: "SOC 2 on our roadmap.", icon: "M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" },
               { t: "Works with your stack", now: "Manager dashboard + exportable reports today.", soon: "LMS / HRIS completion sync on the roadmap.", icon: "M12 2 2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" },
             ].map((s) => (
-              <div key={s.t}>
-                <div className="w-10 h-10 rounded-xl flex items-center justify-center mb-3 bg-slate-900">
+              <div key={s.t} className="rounded-2xl border border-white/10 p-5" style={{ background: "rgba(255,255,255,0.03)" }}>
+                <div className="w-10 h-10 rounded-xl flex items-center justify-center mb-3 border border-white/15" style={{ background: "rgba(255,255,255,0.06)" }}>
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d={s.icon} /></svg>
                 </div>
-                <p className="text-sm font-black text-slate-900 mb-1">{s.t}</p>
-                <p className="text-xs text-slate-600 leading-relaxed">{s.now}</p>
-                <p className="text-[11px] text-slate-400 mt-1">{s.soon}</p>
+                <p className="text-sm font-black text-white mb-1">{s.t}</p>
+                <p className="text-xs text-slate-300 leading-relaxed">{s.now}</p>
+                <p className="text-[11px] text-slate-500 mt-1">{s.soon}</p>
               </div>
             ))}
           </div>
           <p className="text-center text-xs text-slate-400 mt-6">
-            Need a security review or SSO for your team? <a href="#request" className="text-brand font-semibold hover:underline">Book a demo</a> and we&apos;ll walk you through it.
+            Need a security review or SSO for your team? <a href="#request" className="font-semibold hover:underline" style={{ color: "#3388FF" }}>Book a demo</a> and we&apos;ll walk you through it.
           </p>
         </div>
       </section>

@@ -2,10 +2,9 @@
 
 import { useEffect, useRef, useState } from "react";
 
-// Compact, interactive "Meet Nova" — replaces the full-screen code-review slider.
-// Shows Nova's full value (tutor / reviews code / coaches the build / personalises),
-// not just code-checking. Left = clickable capabilities, right = a compact dark
-// Nova panel that swaps per capability. Auto-rotates; pauses on hover.
+// Compact, interactive "Meet Nova" — full-black section (matches the main page's
+// dark-band rhythm). Shows Nova's full value (tutor / reviews code / coaches the
+// build / personalises), not just code-checking.
 
 const CAPS = [
   { key: "tutor", title: "An AI tutor, 24/7", desc: "Answers questions on your lessons and your own code, right in the Study Hub — any time.", accent: "#3388FF", icon: "M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" },
@@ -84,44 +83,51 @@ export function NovaCapabilities() {
   }, [visible, paused]);
 
   return (
-    <section ref={ref} className="max-w-5xl mx-auto px-5 sm:px-6 py-14">
-      <div className="text-center mb-9">
-        <span className="text-[10px] sm:text-[11px] tracking-[0.35em] uppercase text-slate-500 font-bold">Meet Nova</span>
-        <h2 className="mt-3 text-2xl sm:text-3xl font-black text-slate-900">More than a code checker.</h2>
-        <p className="mt-3 text-sm sm:text-base text-slate-600 max-w-xl mx-auto">
-          Nova tutors every employee, reviews their real code, and coaches them through building deployed projects. They learn it — then prove it by building it.
-        </p>
-      </div>
+    <section ref={ref} className="relative overflow-hidden py-20 sm:py-24 px-4 sm:px-6 lg:px-8" style={{ background: "#050B14" }}>
+      <div className="pointer-events-none absolute top-0 left-1/4 w-[600px] h-[600px] rounded-full opacity-[0.10]"
+        style={{ background: "radial-gradient(circle,#3388FF 0%,transparent 70%)", filter: "blur(110px)" }} />
+      <div className="pointer-events-none absolute bottom-0 right-1/4 w-[600px] h-[600px] rounded-full opacity-[0.10]"
+        style={{ background: "radial-gradient(circle,#A78BFA 0%,transparent 70%)", filter: "blur(110px)" }} />
 
-      <div className="grid lg:grid-cols-2 gap-6 items-stretch" onMouseEnter={() => setPaused(true)} onMouseLeave={() => setPaused(false)}>
-        {/* Capability rows */}
-        <div className="space-y-2.5">
-          {CAPS.map((c, i) => {
-            const on = i === active;
-            return (
-              <button key={c.key} onClick={() => setActive(i)}
-                className="w-full text-left flex items-start gap-3 rounded-xl border p-3.5 transition-all"
-                style={{ borderColor: on ? `${c.accent}55` : "rgba(15,28,49,0.10)", background: on ? `${c.accent}0D` : "#fff", boxShadow: on ? `0 8px 20px ${c.accent}1f` : "none" }}>
-                <span className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0 transition-transform" style={{ background: `linear-gradient(135deg, ${c.accent}, ${c.accent}cc)`, transform: on ? "scale(1.05)" : "scale(1)" }}>
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d={c.icon} /></svg>
-                </span>
-                <span>
-                  <span className="block text-sm font-black text-slate-900 leading-snug">{c.title}</span>
-                  <span className="block text-xs text-slate-600 leading-relaxed mt-0.5">{c.desc}</span>
-                </span>
-              </button>
-            );
-          })}
+      <div className="relative max-w-5xl mx-auto">
+        <div className="text-center mb-9">
+          <span className="text-[10px] sm:text-[11px] tracking-[0.35em] uppercase text-slate-500 font-bold">Meet Nova</span>
+          <h2 className="mt-3 text-2xl sm:text-3xl font-black text-white">More than a code checker.</h2>
+          <p className="mt-3 text-sm sm:text-base text-slate-400 max-w-xl mx-auto">
+            Nova tutors every employee, reviews their real code, and coaches them through building deployed projects. They learn it — then prove it by building it.
+          </p>
         </div>
 
-        {/* Dark Nova panel */}
-        <div className="rounded-2xl border border-white/10 overflow-hidden flex flex-col" style={{ background: "linear-gradient(180deg,#0B1626 0%,#070E1A 100%)", boxShadow: "0 20px 56px rgba(5,11,20,0.4)" }}>
-          <div className="flex items-center gap-2 px-4 py-2.5 border-b border-white/8">
-            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-            <span className="text-[11px] font-bold text-slate-300">Nova</span>
-            <span className="ml-auto text-[10px] text-slate-500">{CAPS[active].title}</span>
+        <div className="grid lg:grid-cols-2 gap-6 items-stretch" onMouseEnter={() => setPaused(true)} onMouseLeave={() => setPaused(false)}>
+          {/* Capability rows */}
+          <div className="space-y-2.5">
+            {CAPS.map((c, i) => {
+              const on = i === active;
+              return (
+                <button key={c.key} onClick={() => setActive(i)}
+                  className="w-full text-left flex items-start gap-3 rounded-xl border p-3.5 transition-all"
+                  style={{ borderColor: on ? `${c.accent}66` : "rgba(255,255,255,0.10)", background: on ? `${c.accent}1a` : "rgba(255,255,255,0.03)", boxShadow: on ? `0 8px 24px ${c.accent}26` : "none" }}>
+                  <span className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0 transition-transform" style={{ background: `linear-gradient(135deg, ${c.accent}, ${c.accent}cc)`, transform: on ? "scale(1.05)" : "scale(1)" }}>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d={c.icon} /></svg>
+                  </span>
+                  <span>
+                    <span className="block text-sm font-black text-white leading-snug">{c.title}</span>
+                    <span className="block text-xs text-slate-400 leading-relaxed mt-0.5">{c.desc}</span>
+                  </span>
+                </button>
+              );
+            })}
           </div>
-          <div key={active} className="flex-1 animate-fade-in-up"><NovaPanel k={CAPS[active].key} /></div>
+
+          {/* Nova panel */}
+          <div className="rounded-2xl border border-white/10 overflow-hidden flex flex-col" style={{ background: "linear-gradient(180deg,#0B1626 0%,#070E1A 100%)", boxShadow: "0 20px 56px rgba(5,11,20,0.4)" }}>
+            <div className="flex items-center gap-2 px-4 py-2.5 border-b border-white/8">
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+              <span className="text-[11px] font-bold text-slate-300">Nova</span>
+              <span className="ml-auto text-[10px] text-slate-500">{CAPS[active].title}</span>
+            </div>
+            <div key={active} className="flex-1 animate-fade-in-up"><NovaPanel k={CAPS[active].key} /></div>
+          </div>
         </div>
       </div>
     </section>
