@@ -15,6 +15,7 @@ const contextSchema = z.object({
   weakTopics: z.array(z.string()),
   lessonObjectives: z.array(z.string()).optional(),
   lessonContentSummary: z.string().optional(),
+  currentWork: z.string().max(4000).optional(),
 }).optional();
 
 const schema = z.object({
@@ -25,7 +26,7 @@ const schema = z.object({
 
 function buildSystemPrompt(
   studentName: string,
-  context?: { courseTitle: string; currentLessonTitle: string | null; weakTopics: string[]; lessonObjectives?: string[]; lessonContentSummary?: string },
+  context?: { courseTitle: string; currentLessonTitle: string | null; weakTopics: string[]; lessonObjectives?: string[]; lessonContentSummary?: string; currentWork?: string },
 ): string {
   let prompt = `You are Nova, the AI tutor for ${studentName} on Square 1 AI.`;
 
@@ -43,6 +44,9 @@ function buildSystemPrompt(
     }
     if (context.lessonContentSummary) {
       prompt += `\n\nCurrent lesson content (reference this when the student asks about their lesson):\n${context.lessonContentSummary}`;
+    }
+    if (context.currentWork) {
+      prompt += `\n\nThe student's current work in this lesson (their own code / answers so far — refer to it directly, point out specific issues, and guide them from where they are):\n${context.currentWork}`;
     }
   }
 

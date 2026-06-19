@@ -29,6 +29,7 @@ interface LearnClientProps {
   lesson: LessonData; module: ModuleData | null; course: CourseData | null;
   exercises: ExerciseData[]; lessonPosition: number; totalLessonsInModule: number;
   nextLessonId: string | null; alreadyCompleted: boolean;
+  weakTopics: string[];
 }
 
 // ─── Card types ────────────────────────────────────────────────────────────
@@ -235,6 +236,7 @@ function parseTheoryIntoCards(theory: string, exercises: ExerciseData[], objecti
 export function LearnClient({
   lesson, module, course, exercises,
   lessonPosition, totalLessonsInModule, nextLessonId, alreadyCompleted,
+  weakTopics,
 }: LearnClientProps) {
   const router = useRouter();
   const styleRef = useRef(false);
@@ -260,11 +262,32 @@ export function LearnClient({
   const [novaOpen, setNovaOpen] = useState(false);
   const [novaSeed, setNovaSeed] = useState<{ text: string; nonce: number } | null>(null);
   const novaNonce = useRef(0);
+  // Snapshot the learner's own code / short answers so Nova can react to what
+  // they've actually written (not just the lesson text). Skips empty fields and
+  // untouched starter code so we don't waste tokens or confuse the model.
+  const currentWork = exercises
+    .filter((ex) => ex.type !== "mcq")
+    .map((ex) => {
+      const r = responses[ex.id];
+      if (!r) return null;
+      const code = (r.codeResponse ?? "").trim();
+      const text = (r.responseText ?? "").trim();
+      const starter = (ex.starter_code ?? "").trim();
+      const body = ex.type === "code" ? (code && code !== starter ? code : "") : text;
+      if (!body) return null;
+      return `Exercise "${ex.title}" (${ex.type}):\n${body.slice(0, 1200)}`;
+    })
+    .filter(Boolean)
+    .join("\n\n---\n\n")
+    .slice(0, 3500);
+
   const novaContext = {
     courseTitle: course?.title ?? "your course",
     currentLessonTitle: lesson.title,
     lessonObjectives: lesson.learning_objectives,
     lessonContentSummary: (lesson.theory_md ?? "").slice(0, 1500),
+    weakTopics,
+    currentWork: currentWork || undefined,
   };
   function openNova(seedText?: string) {
     if (seedText) {

@@ -1,7 +1,7 @@
-// TODO: Add rate limiting with upstash/ratelimit
 import { createClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
 import { z } from "zod";
+import { rateLimit } from "@/lib/rate-limit";
 
 const OnboardSchema = z.object({
   name: z.string().min(1).max(100).optional(),
@@ -22,6 +22,12 @@ export async function POST(request: Request) {
     if (!user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
+
+    // Throttle per user — onboarding triggers a welcome email on first call,
+    // so we cap repeat hits to deter abuse. 10 requests / minute is generous
+    // for legitimate profile edits.
+    const rl = rateLimit(`onboard:${user.id}`, 10, 60_000);
+    if (!rl.success) return rl.response;
 
     // Validate input with Zod
     let body: unknown;

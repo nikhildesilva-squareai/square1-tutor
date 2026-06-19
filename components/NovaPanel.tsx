@@ -13,6 +13,8 @@ export interface NovaContext {
   currentLessonTitle: string | null;
   lessonObjectives?: string[];
   lessonContentSummary?: string;
+  weakTopics?: string[];
+  currentWork?: string;
 }
 
 type Msg = { role: "user" | "assistant"; content: string };
@@ -85,9 +87,10 @@ export function NovaPanel({
           context: {
             courseTitle: context.courseTitle,
             currentLessonTitle: context.currentLessonTitle,
-            weakTopics: [],
+            weakTopics: context.weakTopics ?? [],
             lessonObjectives: context.lessonObjectives,
             lessonContentSummary: context.lessonContentSummary,
+            currentWork: context.currentWork,
           },
         }),
       });

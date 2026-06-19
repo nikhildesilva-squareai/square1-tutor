@@ -26,6 +26,11 @@ export function SettingsClient({ studentId, studentName, userEmail, joinedDate, 
   const [signingOut, setSigningOut] = useState(false);
   const [emailsOn, setEmailsOn] = useState(!emailOptOut);
   const [togglingEmails, setTogglingEmails] = useState(false);
+  const [exporting, setExporting] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [deleteConfirmText, setDeleteConfirmText] = useState("");
+  const [deleting, setDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
 
   async function handleToggleEmails() {
     if (togglingEmails) return;
@@ -71,6 +76,45 @@ export function SettingsClient({ studentId, studentName, userEmail, joinedDate, 
     const supabase = createClient();
     await supabase.auth.signOut();
     router.push("/login");
+  }
+
+  async function handleExport() {
+    if (exporting) return;
+    setExporting(true);
+    try {
+      const res = await fetch("/api/account/export");
+      if (!res.ok) throw new Error("export failed");
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `square1-data-export-${new Date().toISOString().slice(0, 10)}.json`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    } catch {
+      // silent — button re-enables so the user can retry
+    } finally {
+      setExporting(false);
+    }
+  }
+
+  async function handleDeleteAccount() {
+    if (deleting || deleteConfirmText !== "DELETE") return;
+    setDeleting(true);
+    setDeleteError(null);
+    try {
+      const res = await fetch("/api/account/delete", { method: "POST" });
+      if (!res.ok) throw new Error("delete failed");
+      // Account is gone — sign out the local session and return home.
+      const supabase = createClient();
+      await supabase.auth.signOut();
+      router.push("/");
+    } catch {
+      setDeleteError("Something went wrong. Please email tech@square1ai.com and we'll remove your data.");
+      setDeleting(false);
+    }
   }
 
   return (
@@ -194,9 +238,28 @@ export function SettingsClient({ studentId, studentName, userEmail, joinedDate, 
         </div>
       </div>
 
+      {/* ── Privacy & your data ──────────────────────────────────── */}
+      <div className="bg-surface rounded-xl border border-border p-6">
+        <p className="text-[10px] font-bold text-ink-muted uppercase tracking-widest mb-4">Privacy &amp; your data</p>
+        <div className="flex items-center justify-between">
+          <div className="pr-4">
+            <p className="text-sm font-semibold text-ink">Export your data</p>
+            <p className="text-xs text-ink-muted">Download everything we hold about you — profile, progress, notes, and AI chats — as a JSON file.</p>
+          </div>
+          <button
+            onClick={handleExport}
+            disabled={exporting}
+            className="h-9 px-4 shrink-0 rounded-xl border border-border text-ink text-sm font-semibold hover:bg-surface-soft disabled:opacity-50 transition-all"
+          >
+            {exporting ? "Preparing..." : "Export"}
+          </button>
+        </div>
+      </div>
+
       {/* ── Account Actions ──────────────────────────────────────── */}
-      <div className="bg-surface rounded-xl border border-red-200 p-6">
-        <p className="text-[10px] font-bold text-red-500 uppercase tracking-widest mb-4">Account</p>
+      <div className="bg-surface rounded-xl border border-red-200 p-6 space-y-5">
+        <p className="text-[10px] font-bold text-red-500 uppercase tracking-widest">Account</p>
+
         <div className="flex items-center justify-between">
           <div>
             <p className="text-sm font-semibold text-ink">Sign Out</p>
@@ -205,10 +268,61 @@ export function SettingsClient({ studentId, studentName, userEmail, joinedDate, 
           <button
             onClick={handleSignOut}
             disabled={signingOut}
-            className="h-9 px-4 rounded-xl border border-red-200 text-red-600 text-sm font-semibold hover:bg-red-50 disabled:opacity-50 transition-all"
+            className="h-9 px-4 shrink-0 rounded-xl border border-red-200 text-red-600 text-sm font-semibold hover:bg-red-50 disabled:opacity-50 transition-all"
           >
             {signingOut ? "Signing out..." : "Sign Out"}
           </button>
+        </div>
+
+        <div className="border-t border-red-100 pt-5">
+          {!showDeleteConfirm ? (
+            <div className="flex items-center justify-between">
+              <div className="pr-4">
+                <p className="text-sm font-semibold text-ink">Delete account</p>
+                <p className="text-xs text-ink-muted">Permanently erase your account and all your data. This cannot be undone.</p>
+              </div>
+              <button
+                onClick={() => setShowDeleteConfirm(true)}
+                className="h-9 px-4 shrink-0 rounded-xl bg-red-600 text-white text-sm font-semibold hover:bg-red-700 transition-all"
+              >
+                Delete
+              </button>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              <div>
+                <p className="text-sm font-semibold text-ink">Delete account permanently?</p>
+                <p className="text-xs text-ink-muted mt-0.5">
+                  This erases your profile, course progress, notes, certificates, and AI history. It can&apos;t be undone.
+                  Type <span className="font-mono font-bold text-red-600">DELETE</span> to confirm.
+                </p>
+              </div>
+              <input
+                type="text"
+                value={deleteConfirmText}
+                onChange={(e) => setDeleteConfirmText(e.target.value)}
+                placeholder="DELETE"
+                className="w-full h-10 px-3.5 rounded-xl border border-red-200 bg-surface text-ink text-sm focus:outline-none focus:ring-2 focus:ring-red-200 focus:border-red-400 transition-all"
+              />
+              {deleteError && <p className="text-xs text-red-600">{deleteError}</p>}
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={handleDeleteAccount}
+                  disabled={deleting || deleteConfirmText !== "DELETE"}
+                  className="h-9 px-4 rounded-xl bg-red-600 text-white text-sm font-semibold hover:bg-red-700 disabled:opacity-40 disabled:pointer-events-none transition-all"
+                >
+                  {deleting ? "Deleting..." : "Delete my account"}
+                </button>
+                <button
+                  onClick={() => { setShowDeleteConfirm(false); setDeleteConfirmText(""); setDeleteError(null); }}
+                  disabled={deleting}
+                  className="h-9 px-4 rounded-xl border border-border text-ink text-sm font-semibold hover:bg-surface-soft disabled:opacity-50 transition-all"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>

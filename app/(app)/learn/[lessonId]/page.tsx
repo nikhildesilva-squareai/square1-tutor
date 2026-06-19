@@ -81,6 +81,20 @@ export default async function LearnPage({ params }: PageProps) {
     .eq("lesson_id", lessonId)
     .maybeSingle();
 
+  // Pull the learner's most recent assessment weak topics so in-lesson Nova
+  // can connect explanations back to where they're actually struggling.
+  const { data: skillReport } = await supabase
+    .from("skill_reports")
+    .select("weak_topics")
+    .eq("student_id", student.id)
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  const weakTopics = Array.isArray(skillReport?.weak_topics)
+    ? (skillReport.weak_topics as string[])
+    : [];
+
   return (
     <LearnClient
       lesson={lesson}
@@ -91,6 +105,7 @@ export default async function LearnPage({ params }: PageProps) {
       totalLessonsInModule={totalLessonsInModule}
       nextLessonId={nextLesson?.id ?? null}
       alreadyCompleted={!!completion}
+      weakTopics={weakTopics}
     />
   );
 }

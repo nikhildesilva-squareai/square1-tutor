@@ -1,9 +1,34 @@
 import { NextResponse } from "next/server";
 
-// ─── Simple in-memory rate limiter ─────────────────────────────────────────
-// Uses a sliding window counter per IP/user.
-// For production scale, swap with @upstash/ratelimit + Redis.
-// This provides protection without requiring an external service.
+// ─── Rate limiter ───────────────────────────────────────────────────────────
+// Default: in-memory fixed-window counter per IP/user. Zero dependencies, works
+// on a single instance. Good enough for current traffic.
+//
+// CAVEAT: the in-memory store is PER SERVERLESS INSTANCE. On Vercel, concurrent
+// instances each keep their own counter, so the effective limit scales with the
+// instance count. For a hard global limit, move to Upstash Redis:
+//
+//   1. Create an Upstash Redis DB → copy its REST URL + token.
+//   2. Set env vars  UPSTASH_REDIS_REST_URL  and  UPSTASH_REDIS_REST_TOKEN.
+//   3. `npm i @upstash/ratelimit @upstash/redis`
+//   4. Replace the body of `rateLimit` with an `@upstash/ratelimit` call.
+//      NOTE: that API is async, so callers must `await rateLimit(...)`.
+//
+// Until those env vars are present we stay in-memory. If they ARE present but
+// the package hasn't been wired yet, we warn once so the gap is visible.
+const UPSTASH_CONFIGURED = !!(
+  process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN
+);
+let warnedUpstash = false;
+function noteUpstashGap() {
+  if (UPSTASH_CONFIGURED && !warnedUpstash) {
+    warnedUpstash = true;
+    console.warn(
+      "[rate-limit] Upstash env vars detected but distributed limiting isn't wired yet — " +
+        "still using the per-instance in-memory limiter. See lib/rate-limit.ts to activate Redis."
+    );
+  }
+}
 
 interface RateLimitEntry {
   count: number;
@@ -32,6 +57,7 @@ export function rateLimit(
   limit: number = 10,
   windowMs: number = 60000, // 1 minute
 ): { success: true; remaining: number } | { success: false; response: NextResponse } {
+  noteUpstashGap();
   const now = Date.now();
   const entry = store.get(key);
 
