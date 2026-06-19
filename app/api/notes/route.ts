@@ -31,6 +31,7 @@ export async function GET(request: Request) {
   const url = new URL(request.url);
   const type = url.searchParams.get("type");
   const lessonId = url.searchParams.get("lessonId");
+  const search = (url.searchParams.get("search") ?? "").trim();
   const limit = parseInt(url.searchParams.get("limit") ?? "50");
 
   const offset = parseInt(url.searchParams.get("offset") ?? "0");
@@ -45,6 +46,16 @@ export async function GET(request: Request) {
 
   if (type) query = query.eq("type", type);
   if (lessonId) query = query.eq("lesson_id", lessonId);
+  if (url.searchParams.get("due") === "1") {
+    // Flashcards whose next review is now or overdue.
+    query = query.lte("next_review_at", new Date().toISOString());
+  }
+  if (search) {
+    // Search across ALL of the student's notes (not just the loaded page).
+    // Escape PostgREST's `or` delimiters so commas/parens in the query are literal.
+    const safe = search.replace(/[%,()]/g, " ");
+    query = query.or(`content.ilike.%${safe}%,title.ilike.%${safe}%`);
+  }
 
   const { data: notes, count, error } = await query;
   if (error) return NextResponse.json({ error: "Failed to fetch notes" }, { status: 500 });

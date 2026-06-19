@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, useEffect, useMemo } from "react";
 import { cn } from "@/lib/utils";
+import { intervalLabel } from "@/lib/srs";
 
 interface Note {
   id: string; type: string; title: string | null; content: string; color: string;
@@ -13,14 +14,17 @@ interface Note {
   created_at: string; updated_at: string;
 }
 
+interface Stats { total: number; highlights: number; codeSnippets: number; flashcards: number; dueFlashcards: number; userNotes: number; novaSaves: number; summaries: number }
+
 interface Props {
   initialNotes: Note[];
-  stats: { total: number; highlights: number; codeSnippets: number; flashcards: number; dueFlashcards: number; userNotes: number; novaSaves: number; summaries: number };
+  stats: Stats;
   totalCount: number;
 }
 
 type Filter = "all" | "highlight" | "note" | "code_snippet" | "flashcard" | "nova_save" | "auto_summary";
 type Sort = "newest" | "oldest" | "alphabetical" | "course";
+type Grade = "hard" | "good" | "easy";
 
 const PAGE_SIZE = 50;
 
@@ -116,6 +120,7 @@ function ImageAttachment({ preview, existingUrl, onPickFile, onClear, fileRef }:
 
 export function StudyHubClient({ initialNotes, stats, totalCount }: Props) {
   const [notes, setNotes] = useState(initialNotes);
+  const [counts, setCounts] = useState<Stats>(stats);
   const [filter, setFilter] = useState<Filter>("all");
   const [search, setSearch] = useState("");
   const [sort, setSort] = useState<Sort>("newest");
@@ -123,9 +128,16 @@ export function StudyHubClient({ initialNotes, stats, totalCount }: Props) {
   const [newNoteContent, setNewNoteContent] = useState("");
   const [newNoteTitle, setNewNoteTitle] = useState("");
   const [saving, setSaving] = useState(false);
+
+  // ── Flashcard review session ──
   const [flashcardMode, setFlashcardMode] = useState(false);
   const [flashcardIdx, setFlashcardIdx] = useState(0);
   const [showAnswer, setShowAnswer] = useState(false);
+  const [reviewQueue, setReviewQueue] = useState<Note[]>([]);
+  const [reviewLoading, setReviewLoading] = useState(false);
+  const [grading, setGrading] = useState(false);
+  const [sessionStats, setSessionStats] = useState({ hard: 0, good: 0, easy: 0 });
+  const [lastInterval, setLastInterval] = useState<string | null>(null);
 
   // New note image
   const [newImageFile, setNewImageFile] = useState<File | null>(null);
@@ -138,6 +150,10 @@ export function StudyHubClient({ initialNotes, stats, totalCount }: Props) {
   const [editContent, setEditContent] = useState("");
   const [isEditing, setIsEditing] = useState(false);
 
+  // AI flashcard generation (from a note)
+  const [generating, setGenerating] = useState(false);
+  const [genMsg, setGenMsg] = useState<string | null>(null);
+
   // Edit image
   const [editImageUrl, setEditImageUrl] = useState<string | null>(null);
   const [editImageFile, setEditImageFile] = useState<File | null>(null);
@@ -148,28 +164,117 @@ export function StudyHubClient({ initialNotes, stats, totalCount }: Props) {
   const [loadingMore, setLoadingMore] = useState(false);
   const [hasMore, setHasMore] = useState(initialNotes.length < totalCount);
 
+  // Server-side search
+  const [searchResults, setSearchResults] = useState<Note[] | null>(null);
+  const [searching, setSearching] = useState(false);
+
   const newNoteTextareaRef = useRef<HTMLTextAreaElement>(null);
+  const searchActive = search.trim().length >= 2;
 
-  // ── Filter + Sort ───────────────────────────────────
-  const filtered = notes.filter(n => {
-    if (filter !== "all" && n.type !== filter) return false;
-    if (search && !n.content.toLowerCase().includes(search.toLowerCase()) && !(n.title ?? "").toLowerCase().includes(search.toLowerCase())) return false;
-    return true;
-  });
+  // ── Display list (memoized) ─────────────────────────
+  const displayed = useMemo(() => {
+    const base = searchActive
+      ? (searchResults ?? [])
+      : notes.filter(n => filter === "all" || n.type === filter);
+    return [...base].sort((a, b) => {
+      if (a.is_pinned && !b.is_pinned) return -1;
+      if (!a.is_pinned && b.is_pinned) return 1;
+      switch (sort) {
+        case "oldest": return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
+        case "alphabetical": return (a.title ?? a.content).localeCompare(b.title ?? b.content);
+        case "course": return (a.course_title ?? "￿").localeCompare(b.course_title ?? "￿");
+        default: return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+      }
+    });
+  }, [searchActive, searchResults, notes, filter, sort]);
 
-  const sorted = [...filtered].sort((a, b) => {
-    if (a.is_pinned && !b.is_pinned) return -1;
-    if (!a.is_pinned && b.is_pinned) return 1;
-    switch (sort) {
-      case "oldest": return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
-      case "alphabetical": return (a.title ?? a.content).localeCompare(b.title ?? b.content);
-      case "course": return (a.course_title ?? "￿").localeCompare(b.course_title ?? "￿");
-      default: return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+  // ── Debounced server search ─────────────────────────
+  useEffect(() => {
+    const q = search.trim();
+    if (q.length < 2) { setSearchResults(null); setSearching(false); return; }
+    setSearching(true);
+    const t = setTimeout(async () => {
+      try {
+        const params = new URLSearchParams({ search: q, limit: "100" });
+        if (filter !== "all") params.set("type", filter);
+        const res = await fetch(`/api/notes?${params.toString()}`);
+        setSearchResults(res.ok ? ((await res.json()).notes ?? []) : []);
+      } catch {
+        setSearchResults([]);
+      } finally {
+        setSearching(false);
+      }
+    }, 300);
+    return () => clearTimeout(t);
+  }, [search, filter]);
+
+  const currentFlashcard = reviewQueue[flashcardIdx] ?? null;
+  const sessionDone = flashcardMode && !reviewLoading && (reviewQueue.length === 0 || flashcardIdx >= reviewQueue.length);
+  const reviewedTotal = sessionStats.hard + sessionStats.good + sessionStats.easy;
+
+  // ── Review session ──────────────────────────────────
+  async function startReview() {
+    setFlashcardMode(true);
+    setFlashcardIdx(0);
+    setShowAnswer(false);
+    setSessionStats({ hard: 0, good: 0, easy: 0 });
+    setLastInterval(null);
+    setReviewLoading(true);
+    const localDue = () => notes.filter(n => n.type === "flashcard" && n.next_review_at && new Date(n.next_review_at) <= new Date());
+    try {
+      const res = await fetch("/api/notes?type=flashcard&due=1&limit=200");
+      const queue: Note[] = res.ok ? ((await res.json()).notes ?? []) : localDue();
+      setReviewQueue(queue);
+    } catch {
+      setReviewQueue(localDue());
+    } finally {
+      setReviewLoading(false);
     }
-  });
+  }
 
-  const flashcardsDue = notes.filter(n => n.type === "flashcard" && n.next_review_at && new Date(n.next_review_at) <= new Date());
-  const currentFlashcard = flashcardsDue[flashcardIdx] ?? null;
+  const gradeCard = useCallback(async (grade: Grade) => {
+    const card = reviewQueue[flashcardIdx];
+    if (!card || grading) return;
+    setGrading(true);
+    try {
+      const res = await fetch("/api/notes/review", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: card.id, grade }),
+      });
+      if (res.ok) {
+        const d = await res.json();
+        setLastInterval(intervalLabel(d.intervalDays));
+        setNotes(prev => prev.map(n => n.id === card.id ? { ...n, next_review_at: d.nextReviewAt, review_count: d.reviewCount } : n));
+        setCounts(c => ({ ...c, dueFlashcards: Math.max(0, c.dueFlashcards - 1) }));
+        setSessionStats(s => ({ ...s, [grade]: s[grade] + 1 }));
+        setFlashcardIdx(i => i + 1);
+        setShowAnswer(false);
+      }
+    } catch {
+      /* ignore — button re-enables */
+    } finally {
+      setGrading(false);
+    }
+  }, [reviewQueue, flashcardIdx, grading]);
+
+  // ── Keyboard shortcuts (review mode) ────────────────
+  useEffect(() => {
+    if (!flashcardMode) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") { setFlashcardMode(false); return; }
+      if (!currentFlashcard) return;
+      if (!showAnswer) {
+        if (e.key === " " || e.key === "Enter") { e.preventDefault(); setShowAnswer(true); }
+        return;
+      }
+      if (e.key === "1") { e.preventDefault(); gradeCard("hard"); }
+      else if (e.key === "2") { e.preventDefault(); gradeCard("good"); }
+      else if (e.key === "3") { e.preventDefault(); gradeCard("easy"); }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [flashcardMode, showAnswer, currentFlashcard, gradeCard]);
 
   // ── Image paste handlers ────────────────────────────
   const handleNewPaste = useCallback((e: React.ClipboardEvent) => {
@@ -229,6 +334,7 @@ export function StudyHubClient({ initialNotes, stats, totalCount }: Props) {
           review_count: 0, is_pinned: false, tags: [], image_url: imageUrl ?? null,
           created_at: new Date().toISOString(), updated_at: new Date().toISOString(),
         }, ...prev]);
+        setCounts(c => ({ ...c, total: c.total + 1, userNotes: c.userNotes + 1 }));
         setNewNoteContent(""); setNewNoteTitle(""); clearNewImage(); setShowNewNote(false);
       }
     } catch { /* ignore */ }
@@ -236,9 +342,23 @@ export function StudyHubClient({ initialNotes, stats, totalCount }: Props) {
   }
 
   async function deleteNote(noteId: string) {
+    const note = notes.find(n => n.id === noteId);
     try {
       await fetch(`/api/notes?id=${noteId}`, { method: "DELETE" });
       setNotes(prev => prev.filter(n => n.id !== noteId));
+      if (note) {
+        const wasDue = note.type === "flashcard" && !!note.next_review_at && new Date(note.next_review_at) <= new Date();
+        const key: Record<string, keyof Stats> = {
+          highlight: "highlights", note: "userNotes", code_snippet: "codeSnippets",
+          flashcard: "flashcards", nova_save: "novaSaves", auto_summary: "summaries",
+        };
+        setCounts(c => {
+          const next = { ...c, total: Math.max(0, c.total - 1) };
+          const k = key[note.type]; if (k) next[k] = Math.max(0, (next[k] as number) - 1);
+          if (wasDue) next.dueFlashcards = Math.max(0, next.dueFlashcards - 1);
+          return next;
+        });
+      }
       if (viewingNote?.id === noteId) setViewingNote(null);
     } catch { /* ignore */ }
   }
@@ -251,6 +371,7 @@ export function StudyHubClient({ initialNotes, stats, totalCount }: Props) {
     setEditImageFile(null);
     setEditImagePreview(null);
     setIsEditing(false);
+    setGenMsg(null);
   }
 
   async function saveEdit() {
@@ -277,6 +398,37 @@ export function StudyHubClient({ initialNotes, stats, totalCount }: Props) {
     finally { setSaving(false); }
   }
 
+  async function generateFromNote(id: string) {
+    if (generating) return;
+    setGenerating(true);
+    setGenMsg(null);
+    try {
+      const res = await fetch("/api/notes/generate-flashcards", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ sourceNoteId: id, count: 5 }),
+      });
+      const d = await res.json().catch(() => ({}));
+      if (res.ok) {
+        const created: Note[] = d.notes ?? [];
+        setNotes(prev => [...created, ...prev.filter(n => !created.some(c => c.id === n.id))]);
+        setCounts(c => ({
+          ...c,
+          total: c.total + created.length,
+          flashcards: c.flashcards + created.length,
+          dueFlashcards: c.dueFlashcards + created.length,
+        }));
+        setGenMsg(`Created ${created.length} flashcard${created.length === 1 ? "" : "s"} — due now${d.degraded ? " (Haiku)" : ""}`);
+      } else {
+        setGenMsg(d.error ?? "Couldn't generate flashcards");
+      }
+    } catch {
+      setGenMsg("Couldn't generate flashcards — try again");
+    } finally {
+      setGenerating(false);
+    }
+  }
+
   async function loadMore() {
     setLoadingMore(true);
     try {
@@ -295,13 +447,13 @@ export function StudyHubClient({ initialNotes, stats, totalCount }: Props) {
   }
 
   const FILTERS: { id: Filter; label: string; count: number }[] = [
-    { id: "all", label: "All", count: stats.total },
-    { id: "note", label: "Notes", count: stats.userNotes },
-    { id: "highlight", label: "Highlights", count: stats.highlights },
-    { id: "code_snippet", label: "Code", count: stats.codeSnippets },
-    { id: "flashcard", label: "Flashcards", count: stats.flashcards },
-    { id: "nova_save", label: "Nova", count: stats.novaSaves },
-    { id: "auto_summary", label: "Summaries", count: stats.summaries },
+    { id: "all", label: "All", count: counts.total },
+    { id: "note", label: "Notes", count: counts.userNotes },
+    { id: "highlight", label: "Highlights", count: counts.highlights },
+    { id: "code_snippet", label: "Code", count: counts.codeSnippets },
+    { id: "flashcard", label: "Flashcards", count: counts.flashcards },
+    { id: "nova_save", label: "Nova", count: counts.novaSaves },
+    { id: "auto_summary", label: "Summaries", count: counts.summaries },
   ];
 
   return (
@@ -316,16 +468,16 @@ export function StudyHubClient({ initialNotes, stats, totalCount }: Props) {
           </div>
           <div>
             <h1 className="text-2xl font-black text-ink">Study Hub</h1>
-            <p className="text-sm text-ink-muted">{stats.total} saved items{stats.dueFlashcards > 0 ? ` · ${stats.dueFlashcards} flashcards due` : ""}</p>
+            <p className="text-sm text-ink-muted">{counts.total} saved items{counts.dueFlashcards > 0 ? ` · ${counts.dueFlashcards} flashcards due` : ""}</p>
           </div>
         </div>
 
         <div className="flex items-center gap-2">
-          {stats.dueFlashcards > 0 && (
-            <button onClick={() => { setFlashcardMode(true); setFlashcardIdx(0); setShowAnswer(false); }}
+          {counts.dueFlashcards > 0 && (
+            <button onClick={startReview}
               className="h-9 px-4 rounded-xl bg-emerald-600 text-white text-xs font-bold hover:bg-emerald-700 transition-all flex items-center gap-1.5">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><rect x="2" y="4" width="20" height="16" rx="2" /><path d="M12 4v16" /></svg>
-              Review ({stats.dueFlashcards})
+              Review ({counts.dueFlashcards})
             </button>
           )}
           <button onClick={() => setShowNewNote(!showNewNote)}
@@ -366,42 +518,78 @@ export function StudyHubClient({ initialNotes, stats, totalCount }: Props) {
       )}
 
       {/* ── Flashcard review mode ──────────────────────── */}
-      {flashcardMode && currentFlashcard && (
+      {flashcardMode && (
         <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
           <div className="bg-surface rounded-2xl border border-border shadow-lg max-w-lg w-full p-8">
-            <div className="flex items-center justify-between mb-6">
-              <span className="text-xs font-bold text-ink-muted uppercase tracking-widest">Flashcard {flashcardIdx + 1}/{flashcardsDue.length}</span>
-              <button onClick={() => setFlashcardMode(false)} className="w-8 h-8 rounded-lg hover:bg-surface-alt flex items-center justify-center text-ink-muted">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
-              </button>
-            </div>
-            <div className="bg-surface-soft rounded-xl p-5 mb-4 min-h-[100px]">
-              <p className="text-sm font-medium text-ink whitespace-pre-wrap">{currentFlashcard.title ?? currentFlashcard.content}</p>
-              {currentFlashcard.course_title && <p className="text-[10px] text-ink-muted mt-2">{currentFlashcard.course_title} · {currentFlashcard.lesson_title}</p>}
-            </div>
-            {showAnswer ? (
-              <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-5 mb-6">
-                <p className="text-sm text-ink whitespace-pre-wrap">{currentFlashcard.flashcard_answer ?? currentFlashcard.content}</p>
+            {reviewLoading ? (
+              <div className="py-12 flex flex-col items-center gap-3">
+                <svg className="animate-spin text-brand" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 12a9 9 0 11-6.219-8.56" /></svg>
+                <p className="text-sm text-ink-muted">Loading your due cards…</p>
               </div>
-            ) : (
-              <button onClick={() => setShowAnswer(true)} className="w-full h-12 rounded-xl border-2 border-dashed border-border text-sm font-semibold text-ink-muted hover:border-brand/30 hover:text-brand transition-all mb-6">Show Answer</button>
-            )}
-            {showAnswer && (
-              <div className="flex items-center gap-2">
-                <button onClick={() => { setFlashcardIdx(i => Math.min(i + 1, flashcardsDue.length - 1)); setShowAnswer(false); }}
-                  className="flex-1 h-10 rounded-xl bg-red-50 text-red-600 border border-red-200 text-xs font-bold hover:bg-red-100 transition-all">Hard — Review soon</button>
-                <button onClick={() => { setFlashcardIdx(i => Math.min(i + 1, flashcardsDue.length - 1)); setShowAnswer(false); }}
-                  className="flex-1 h-10 rounded-xl bg-amber-50 text-amber-600 border border-amber-200 text-xs font-bold hover:bg-amber-100 transition-all">Good — 3 days</button>
-                <button onClick={() => { setFlashcardIdx(i => Math.min(i + 1, flashcardsDue.length - 1)); setShowAnswer(false); }}
-                  className="flex-1 h-10 rounded-xl bg-emerald-50 text-emerald-600 border border-emerald-200 text-xs font-bold hover:bg-emerald-100 transition-all">Easy — 7 days</button>
+            ) : sessionDone ? (
+              <div className="py-6 text-center">
+                <div className="w-14 h-14 rounded-2xl bg-emerald-50 flex items-center justify-center mx-auto mb-4">
+                  <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#059669" strokeWidth="2" strokeLinecap="round"><polyline points="20 6 9 17 4 12" /></svg>
+                </div>
+                <h3 className="text-lg font-black text-ink mb-1">
+                  {reviewedTotal > 0 ? "Session complete!" : "Nothing due right now"}
+                </h3>
+                <p className="text-sm text-ink-muted mb-5">
+                  {reviewedTotal > 0
+                    ? `You reviewed ${reviewedTotal} card${reviewedTotal === 1 ? "" : "s"}. Nice work.`
+                    : "Come back when cards are due, or generate new ones from your notes."}
+                </p>
+                {reviewedTotal > 0 && (
+                  <div className="flex items-center justify-center gap-2 mb-6">
+                    <span className="px-3 py-1.5 rounded-lg bg-red-50 text-red-600 text-xs font-bold">{sessionStats.hard} Hard</span>
+                    <span className="px-3 py-1.5 rounded-lg bg-amber-50 text-amber-600 text-xs font-bold">{sessionStats.good} Good</span>
+                    <span className="px-3 py-1.5 rounded-lg bg-emerald-50 text-emerald-600 text-xs font-bold">{sessionStats.easy} Easy</span>
+                  </div>
+                )}
+                <button onClick={() => setFlashcardMode(false)} className="h-10 px-6 rounded-xl bg-brand text-white text-sm font-bold hover:bg-brand/90 transition-all">Done</button>
               </div>
-            )}
-            {flashcardIdx >= flashcardsDue.length - 1 && showAnswer && (
-              <div className="text-center mt-4">
-                <p className="text-sm text-ink-muted">All flashcards reviewed!</p>
-                <button onClick={() => setFlashcardMode(false)} className="mt-2 text-sm text-brand font-semibold hover:underline">Close</button>
-              </div>
-            )}
+            ) : currentFlashcard ? (
+              <>
+                <div className="flex items-center justify-between mb-6">
+                  <span className="text-xs font-bold text-ink-muted uppercase tracking-widest">Card {flashcardIdx + 1}/{reviewQueue.length}</span>
+                  <button onClick={() => setFlashcardMode(false)} className="w-8 h-8 rounded-lg hover:bg-surface-alt flex items-center justify-center text-ink-muted">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
+                  </button>
+                </div>
+                <div className="bg-surface-soft rounded-xl p-5 mb-4 min-h-[100px]">
+                  <p className="text-sm font-medium text-ink whitespace-pre-wrap">{currentFlashcard.title ?? currentFlashcard.content}</p>
+                  {currentFlashcard.course_title && <p className="text-[10px] text-ink-muted mt-2">{currentFlashcard.course_title}{currentFlashcard.lesson_title ? ` · ${currentFlashcard.lesson_title}` : ""}</p>}
+                </div>
+                {showAnswer ? (
+                  <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-5 mb-6">
+                    <p className="text-sm text-ink whitespace-pre-wrap">{currentFlashcard.flashcard_answer ?? currentFlashcard.content}</p>
+                  </div>
+                ) : (
+                  <button onClick={() => setShowAnswer(true)} className="w-full h-12 rounded-xl border-2 border-dashed border-border text-sm font-semibold text-ink-muted hover:border-brand/30 hover:text-brand transition-all mb-6">
+                    Show Answer <span className="text-[10px] text-ink-muted ml-1">(Space)</span>
+                  </button>
+                )}
+                {showAnswer && (
+                  <>
+                    <div className="flex items-center gap-2">
+                      <button onClick={() => gradeCard("hard")} disabled={grading}
+                        className="flex-1 h-11 rounded-xl bg-red-50 text-red-600 border border-red-200 text-xs font-bold hover:bg-red-100 disabled:opacity-50 transition-all flex flex-col items-center justify-center leading-tight">
+                        <span>Hard</span><span className="text-[9px] font-medium opacity-70">1 day · press 1</span>
+                      </button>
+                      <button onClick={() => gradeCard("good")} disabled={grading}
+                        className="flex-1 h-11 rounded-xl bg-amber-50 text-amber-600 border border-amber-200 text-xs font-bold hover:bg-amber-100 disabled:opacity-50 transition-all flex flex-col items-center justify-center leading-tight">
+                        <span>Good</span><span className="text-[9px] font-medium opacity-70">press 2</span>
+                      </button>
+                      <button onClick={() => gradeCard("easy")} disabled={grading}
+                        className="flex-1 h-11 rounded-xl bg-emerald-50 text-emerald-600 border border-emerald-200 text-xs font-bold hover:bg-emerald-100 disabled:opacity-50 transition-all flex flex-col items-center justify-center leading-tight">
+                        <span>Easy</span><span className="text-[9px] font-medium opacity-70">press 3</span>
+                      </button>
+                    </div>
+                    {lastInterval && <p className="text-center text-[10px] text-ink-muted mt-3">Last card scheduled for {lastInterval} from now</p>}
+                  </>
+                )}
+              </>
+            ) : null}
           </div>
         </div>
       )}
@@ -470,6 +658,13 @@ export function StudyHubClient({ initialNotes, stats, totalCount }: Props) {
 
                   <p className="text-sm text-ink leading-relaxed whitespace-pre-wrap">{viewingNote.content}</p>
 
+                  {viewingNote.type === "flashcard" && viewingNote.flashcard_answer && (
+                    <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-4">
+                      <p className="text-[10px] font-bold text-emerald-600 uppercase tracking-wider mb-1">Answer</p>
+                      <p className="text-sm text-ink whitespace-pre-wrap">{viewingNote.flashcard_answer}</p>
+                    </div>
+                  )}
+
                   <Tags tags={viewingNote.tags} />
                 </>
               )}
@@ -482,8 +677,8 @@ export function StudyHubClient({ initialNotes, stats, totalCount }: Props) {
               )}
             </div>
 
-            {/* Modal footer (edit mode) */}
-            {isEditing && (
+            {/* Modal footer */}
+            {isEditing ? (
               <div className="px-6 py-4 border-t border-border shrink-0 flex items-center gap-2 justify-end">
                 <button onClick={() => { setEditTitle(viewingNote.title ?? ""); setEditContent(viewingNote.content); setEditImageUrl(viewingNote.image_url); setEditImageFile(null); setEditImagePreview(null); setIsEditing(false); }}
                   className="h-9 px-4 rounded-xl border border-border text-xs font-semibold text-ink-muted hover:bg-surface-alt transition-all">Cancel</button>
@@ -491,6 +686,15 @@ export function StudyHubClient({ initialNotes, stats, totalCount }: Props) {
                   className="h-9 px-5 rounded-xl bg-brand text-white text-xs font-bold hover:bg-brand/90 disabled:opacity-40 transition-all flex items-center gap-1.5">
                   {saving ? <><svg className="animate-spin" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 12a9 9 0 11-6.219-8.56" /></svg>Saving...</>
                     : <><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z" /><polyline points="17 21 17 13 7 13 7 21" /><polyline points="7 3 7 8 15 8" /></svg>Save Changes</>}
+                </button>
+              </div>
+            ) : viewingNote.type !== "flashcard" && (
+              <div className="px-6 py-4 border-t border-border shrink-0 flex items-center justify-between gap-3">
+                <span className="text-[11px] text-ink-muted">{genMsg ?? "Turn this into active-recall flashcards"}</span>
+                <button onClick={() => generateFromNote(viewingNote.id)} disabled={generating}
+                  className="h-9 px-4 rounded-xl bg-gradient-to-r from-brand to-violet-500 text-white text-xs font-bold hover:opacity-90 disabled:opacity-50 transition-all flex items-center gap-1.5 shrink-0">
+                  {generating ? <><svg className="animate-spin" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 12a9 9 0 11-6.219-8.56" /></svg>Generating…</>
+                    : <><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M12 3l1.9 4.6L18.5 9l-3.5 3 1 4.9L12 14.8 8 16.9l1-4.9-3.5-3 4.6-1.4z" /></svg>Make Flashcards</>}
                 </button>
               </div>
             )}
@@ -521,14 +725,24 @@ export function StudyHubClient({ initialNotes, stats, totalCount }: Props) {
             <option value="course">Course</option>
           </select>
           <div className="flex items-center gap-2 h-9 px-3 rounded-lg border border-border bg-surface text-sm text-ink-muted flex-1 sm:flex-initial sm:min-w-[200px]">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" /></svg>
-            <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search notes..." className="flex-1 bg-transparent text-sm focus:outline-none text-ink" />
+            {searching ? (
+              <svg className="animate-spin" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 12a9 9 0 11-6.219-8.56" /></svg>
+            ) : (
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" /></svg>
+            )}
+            <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search all notes..." className="flex-1 bg-transparent text-sm focus:outline-none text-ink" />
           </div>
         </div>
       </div>
 
+      {searchActive && (
+        <p className="text-[11px] text-ink-muted mb-3 -mt-2">
+          {searching ? "Searching…" : `${displayed.length} result${displayed.length === 1 ? "" : "s"} across all your notes`}
+        </p>
+      )}
+
       {/* ── Notes grid ─────────────────────────────────── */}
-      {sorted.length === 0 ? (
+      {displayed.length === 0 ? (
         <div className="bg-surface rounded-xl border border-border p-12 text-center">
           <div className="w-14 h-14 rounded-2xl bg-surface-alt flex items-center justify-center mx-auto mb-4">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" strokeWidth="1.5" strokeLinecap="round">
@@ -536,15 +750,15 @@ export function StudyHubClient({ initialNotes, stats, totalCount }: Props) {
             </svg>
           </div>
           <h3 className="text-base font-bold text-ink mb-1">
-            {filter === "all" ? "Your Study Hub is empty" : `No ${FILTERS.find(f => f.id === filter)?.label.toLowerCase()} yet`}
+            {searchActive ? "No matches" : filter === "all" ? "Your Study Hub is empty" : `No ${FILTERS.find(f => f.id === filter)?.label.toLowerCase()} yet`}
           </h3>
           <p className="text-sm text-ink-muted max-w-sm mx-auto">
-            Save highlights, code snippets, and notes while studying. They&apos;ll appear here for easy review.
+            {searchActive ? "Try a different search term." : "Save highlights, code snippets, and notes while studying. They'll appear here for easy review."}
           </p>
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-          {sorted.map(note => {
+          {displayed.map(note => {
             const config = TYPE_CONFIG[note.type] ?? TYPE_CONFIG.note;
             return (
               <div key={note.id} onClick={() => openNote(note)}
@@ -591,7 +805,7 @@ export function StudyHubClient({ initialNotes, stats, totalCount }: Props) {
       )}
 
       {/* ── Load more ──────────────────────────────────── */}
-      {hasMore && (
+      {!searchActive && hasMore && (
         <div className="flex justify-center mt-8">
           <button onClick={loadMore} disabled={loadingMore}
             className="h-10 px-6 rounded-xl border border-border text-sm font-semibold text-ink-muted hover:text-brand hover:border-brand/30 hover:bg-surface-tint transition-all disabled:opacity-50 flex items-center gap-2">

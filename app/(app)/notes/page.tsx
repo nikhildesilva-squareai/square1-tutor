@@ -10,30 +10,44 @@ export default async function NotesPage() {
   const { data: student } = await supabase.from("students").select("id, name").eq("user_id", user.id).maybeSingle();
   if (!student) redirect("/dashboard");
 
-  // Fetch notes + total count
-  const { data: notes, count: totalCount } = await supabase
-    .from("study_notes")
-    .select("*", { count: "exact" })
-    .eq("student_id", student.id)
-    .order("is_pinned", { ascending: false })
-    .order("created_at", { ascending: false })
-    .limit(200);
+  const nowIso = new Date().toISOString();
 
-  // Stats
-  const allNotes = notes ?? [];
-  const highlights = allNotes.filter(n => n.type === "highlight").length;
-  const codeSnippets = allNotes.filter(n => n.type === "code_snippet").length;
-  const flashcards = allNotes.filter(n => n.type === "flashcard").length;
-  const dueFlashcards = allNotes.filter(n => n.type === "flashcard" && n.next_review_at && new Date(n.next_review_at) <= new Date()).length;
-  const userNotes = allNotes.filter(n => n.type === "note").length;
-  const novaSaves = allNotes.filter(n => n.type === "nova_save").length;
-  const summaries = allNotes.filter(n => n.type === "auto_summary").length;
+  // Two queries, both accurate at any scale:
+  //  1. The first page of full notes for initial render.
+  //  2. A lightweight (type + next_review_at only) sweep of EVERY note so the
+  //     filter counts and "due" count are correct beyond the loaded page.
+  const [{ data: notes }, { data: meta }] = await Promise.all([
+    supabase
+      .from("study_notes")
+      .select("*")
+      .eq("student_id", student.id)
+      .order("is_pinned", { ascending: false })
+      .order("created_at", { ascending: false })
+      .limit(50),
+    supabase
+      .from("study_notes")
+      .select("type, next_review_at")
+      .eq("student_id", student.id),
+  ]);
+
+  const allMeta = meta ?? [];
+  const countOf = (t: string) => allMeta.filter((n) => n.type === t).length;
+  const stats = {
+    total: allMeta.length,
+    highlights: countOf("highlight"),
+    codeSnippets: countOf("code_snippet"),
+    flashcards: countOf("flashcard"),
+    dueFlashcards: allMeta.filter((n) => n.type === "flashcard" && n.next_review_at && n.next_review_at <= nowIso).length,
+    userNotes: countOf("note"),
+    novaSaves: countOf("nova_save"),
+    summaries: countOf("auto_summary"),
+  };
 
   return (
     <StudyHubClient
-      initialNotes={allNotes}
-      stats={{ total: allNotes.length, highlights, codeSnippets, flashcards, dueFlashcards, userNotes, novaSaves, summaries }}
-      totalCount={totalCount ?? allNotes.length}
+      initialNotes={notes ?? []}
+      stats={stats}
+      totalCount={allMeta.length}
     />
   );
 }
