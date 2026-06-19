@@ -2,12 +2,7 @@
 import { useEffect, useState, useRef } from "react";
 import Link from "next/link";
 import { Logo } from "@/components/ui/logo";
-import { SplineScene } from "@/components/ui/splite";
-import { Spotlight } from "@/components/ui/spotlight";
-
-// Interactive 3D robot scene — follows the cursor. Heavy WebGL asset loaded
-// lazily (client-only) so it never blocks the rest of the hero from painting.
-const SPLINE_SCENE = "https://prod.spline.design/kZDDjO5HuC9GJUM2/scene.splinecode";
+import { ParticleGlobe } from "./ParticleGlobe";
 
 // Goal-typer roles — picking one personalises the CTA + shows the salary
 const GOAL_ROLES = [
@@ -91,9 +86,6 @@ export function HeroSection() {
           filter: "blur(100px)",
         }}
       />
-
-      {/* ── Spotlight sweep ────────────────────────────────────────────── */}
-      <Spotlight className="-top-40 left-0 md:left-60 md:-top-20" fill="white" />
 
       {/* ── LUSION-STYLE NAV ───────────────────────────────────────────── */}
       <nav className="relative z-30 w-full">
@@ -258,18 +250,32 @@ export function HeroSection() {
           </div>
         </div>
 
-        {/* RIGHT — Interactive 3D robot (desktop, absolute). Interactive, so it
-            captures pointer events and follows the cursor. */}
-        <div className="hidden lg:block absolute right-0 top-0 bottom-0 w-[55%]">
+        {/* RIGHT — Particle Globe (desktop, absolute) */}
+        <div
+          className="hidden lg:flex absolute right-0 top-0 bottom-0 w-[55%] items-center justify-center pointer-events-none"
+          style={{ userSelect: "none" }}
+        >
           {mounted && (
-            <SplineScene scene={SPLINE_SCENE} className="w-full h-full" />
+            <div style={{ width: 600, height: 600 }}>
+              <ParticleGlobe
+                particleCount={1400}
+                radius={240}
+                color2="#0056CE"
+              />
+            </div>
           )}
         </div>
 
-        {/* Mobile — robot below text, height-constrained to stay fast */}
-        <div className="lg:hidden mt-8 w-full h-[340px]">
+        {/* Mobile globe — centered below text */}
+        <div className="lg:hidden mt-8 w-full flex justify-center pointer-events-none">
           {mounted && (
-            <SplineScene scene={SPLINE_SCENE} className="w-full h-full" />
+            <div style={{ width: 300, height: 300 }}>
+              <ParticleGlobe
+                particleCount={600}
+                radius={120}
+                color2="#0056CE"
+              />
+            </div>
           )}
         </div>
       </div>
