@@ -56,6 +56,11 @@ export async function proxy(request: NextRequest) {
     ) ||
     pathname.startsWith("/_next") ||
     pathname.startsWith("/favicon") ||
+    // SEO / metadata routes (must be reachable by crawlers + social scrapers)
+    pathname === "/robots.txt" ||
+    pathname === "/sitemap.xml" ||
+    pathname.includes("opengraph-image") ||
+    pathname.includes("twitter-image") ||
     // Static media in /public — videos, images, audio
     pathname.startsWith("/videos") ||
     pathname.startsWith("/images") ||
