@@ -357,9 +357,17 @@ export function LearnClient({
   async function handleComplete() {
     setCompleting(true); setError(null);
     try {
+      // Send answers for every engaged MCQ so the server can verify the
+      // comprehension checks were actually completed (anti-spoof gate).
+      const answers: Record<string, string> = {};
+      for (const ex of exercises) {
+        if (ex.type === "mcq" && quizAnswered[ex.id] && ex.correct_answer) {
+          answers[ex.id] = ex.correct_answer;
+        }
+      }
       const res = await fetch("/api/learn/complete", {
         method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ lessonId: lesson.id }),
+        body: JSON.stringify({ lessonId: lesson.id, answers }),
       });
       if (!res.ok) { const d = await res.json(); throw new Error(d.error ?? "Failed"); }
       setCompleted(true);

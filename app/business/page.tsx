@@ -215,7 +215,7 @@ export default function BusinessPage() {
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
             {[
               { t: "Single sign-on", now: "Google Workspace SSO, live today.", soon: "SAML SSO + SCIM provisioning on the roadmap for 50+ teams.", icon: "M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4M10 17l5-5-5-5M15 12H3" },
-              { t: "Your data, handled right", now: "EU-hosted infrastructure. We never train AI models on your team's data.", soon: "SOC 2 on our roadmap.", icon: "M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" },
+              { t: "Your data, handled right", now: "Australia-hosted (AWS Sydney). We never train AI models on your team's data.", soon: "SOC 2 on our roadmap.", icon: "M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" },
               { t: "Works with your stack", now: "Manager dashboard + exportable reports today.", soon: "LMS / HRIS completion sync on the roadmap.", icon: "M12 2 2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" },
             ].map((s) => (
               <div key={s.t} className="rounded-2xl border border-white/10 p-5" style={{ background: "rgba(255,255,255,0.03)" }}>

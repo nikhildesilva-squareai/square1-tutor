@@ -259,7 +259,7 @@ export default async function Home() {
                   ))}
                 </div>
                 <div className="mt-5 flex items-center gap-2">
-                  <span className="text-[9px] tracking-widest uppercase text-slate-600 font-bold px-2 py-1 rounded border border-white/[0.08]">GDPR Compliant</span>
+                  <span className="text-[9px] tracking-widest uppercase text-slate-600 font-bold px-2 py-1 rounded border border-white/[0.08]">Australia-hosted</span>
                   <span className="text-[9px] tracking-widest uppercase text-slate-600 font-bold px-2 py-1 rounded border border-white/[0.08]">SSL Encrypted</span>
                 </div>
               </div>

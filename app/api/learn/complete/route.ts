@@ -4,6 +4,8 @@ import { z } from "zod";
 
 const schema = z.object({
   lessonId: z.string(),
+  // Answers to the lesson's MCQ comprehension checks — required to complete.
+  answers: z.record(z.string(), z.string()).optional(),
 });
 
 export async function POST(request: Request) {
@@ -15,7 +17,7 @@ export async function POST(request: Request) {
     }
 
     const body = await request.json();
-    const { lessonId } = schema.parse(body);
+    const { lessonId, answers } = schema.parse(body);
 
     // Get student
     const { data: student } = await supabase
@@ -37,6 +39,30 @@ export async function POST(request: Request) {
 
     if (!lesson) {
       return NextResponse.json({ error: "Lesson not found" }, { status: 404 });
+    }
+
+    // Server-side gate: every MCQ comprehension check in this lesson must be
+    // answered correctly. Prevents marking a lesson complete via the API without
+    // actually engaging the checks (the client-side gate alone was spoofable).
+    const { data: mcqs } = await supabase
+      .from("exercises")
+      .select("id, correct_answer")
+      .eq("lesson_id", lessonId)
+      .eq("type", "mcq");
+
+    if (mcqs && mcqs.length > 0) {
+      const provided = answers ?? {};
+      const allAnswered = mcqs.every((m) => {
+        const a = provided[m.id];
+        return typeof a === "string" && m.correct_answer != null
+          && a.trim().toLowerCase() === m.correct_answer.trim().toLowerCase();
+      });
+      if (!allAnswered) {
+        return NextResponse.json(
+          { error: "Answer all comprehension checks before completing this lesson." },
+          { status: 403 }
+        );
+      }
     }
 
     // Find enrollment for this course
