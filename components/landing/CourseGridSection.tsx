@@ -307,8 +307,8 @@ export function CourseGridSection({ courses }: { courses: Course[] }) {
       style={{
         background: `
           radial-gradient(ellipse 900px 500px at 20% 20%, rgba(0,86,206,0.08), transparent 60%),
-          radial-gradient(ellipse 800px 500px at 80% 80%, rgba(167,139,250,0.07), transparent 60%),
-          radial-gradient(ellipse 700px 500px at 50% 50%, rgba(16,185,129,0.05), transparent 60%),
+          radial-gradient(ellipse 800px 500px at 80% 80%, rgba(14,165,233,0.07), transparent 60%),
+          radial-gradient(ellipse 700px 500px at 50% 50%, rgba(0,86,206,0.05), transparent 60%),
           linear-gradient(180deg, #F8FAFC 0%, #FFFFFF 50%, #F4F8FF 100%)
         `,
       }}
@@ -317,7 +317,7 @@ export function CourseGridSection({ courses }: { courses: Course[] }) {
       <div className="hidden sm:block pointer-events-none absolute top-0 left-1/4 w-[500px] h-[500px] rounded-full opacity-30 animate-blob-1"
         style={{ background: "radial-gradient(circle, rgba(0,86,206,0.15) 0%, transparent 70%)", filter: "blur(80px)" }} />
       <div className="hidden sm:block pointer-events-none absolute bottom-0 right-1/4 w-[600px] h-[500px] rounded-full opacity-25 animate-blob-2"
-        style={{ background: "radial-gradient(circle, rgba(167,139,250,0.12) 0%, transparent 70%)", filter: "blur(90px)" }} />
+        style={{ background: "radial-gradient(circle, rgba(14,165,233,0.12) 0%, transparent 70%)", filter: "blur(90px)" }} />
 
       <div className="relative max-w-6xl mx-auto">
         {/* Heading — tighter on mobile */}

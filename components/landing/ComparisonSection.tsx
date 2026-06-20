@@ -167,9 +167,9 @@ function ComparisonRow({
         >
           <defs>
             <linearGradient id={`arrow-grad-${index}`} x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%"   stopColor="#475569" />
+              <stop offset="0%"   stopColor="#94A3B8" />
               <stop offset="50%"  stopColor="#3388FF" />
-              <stop offset="100%" stopColor="#10B981" />
+              <stop offset="100%" stopColor="#0056CE" />
             </linearGradient>
           </defs>
           <path
@@ -183,7 +183,7 @@ function ComparisonRow({
           />
           <path
             d="M 42 4 L 50 10 L 42 16"
-            stroke="#10B981"
+            stroke="#0056CE"
             strokeWidth="2.5"
             strokeLinecap="round"
             strokeLinejoin="round"
@@ -207,18 +207,18 @@ function ComparisonRow({
           style={{
             fontSize: "clamp(48px, 7vw, 88px)",
             letterSpacing: "-0.04em",
-            background: "linear-gradient(135deg, #FFFFFF 0%, #3388FF 60%, #10B981 110%)",
+            background: "linear-gradient(135deg, #3388FF 0%, #0056CE 60%, #01224F 110%)",
             WebkitBackgroundClip: "text",
             WebkitTextFillColor: "transparent",
             backgroundClip: "text",
-            filter: isVisible ? "drop-shadow(0 0 24px rgba(51,136,255,0.4))" : "none",
+            filter: isVisible ? "drop-shadow(0 0 24px rgba(0,86,206,0.30))" : "none",
             transition: `filter 0.6s ease ${index * 0.15 + 0.6}s`,
           }}
         >
           {renderValue(comp.newNumber, comp.newValue, comp.newPrefix, comp.newSuffix, newCount)}
         </div>
         <p className="mt-2 text-xs sm:text-sm font-semibold"
-          style={{ color: "#94A3B8" }}>
+          style={{ color: "#475569" }}>
           {comp.newLabel}
         </p>
       </div>
@@ -227,7 +227,7 @@ function ComparisonRow({
       {!isLast && (
         <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-1/2 h-px"
           style={{
-            background: "linear-gradient(90deg, transparent, rgba(148,168,200,0.15), transparent)",
+            background: "linear-gradient(90deg, transparent, rgba(15,28,49,0.10), transparent)",
           }}
         />
       )}
@@ -263,28 +263,14 @@ export function ComparisonSection() {
       ref={sectionRef}
       className="relative overflow-hidden py-32 sm:py-40 lg:py-48 px-4 sm:px-6 lg:px-8"
       style={{
-        background: `
-          linear-gradient(180deg,
-            #F4F8FF 0%,
-            #94A8C8 5%,
-            #3E5070 10%,
-            #15243C 15%,
-            #050B14 22%,
-            #0B1626 50%,
-            #050B14 78%,
-            #15243C 85%,
-            #3E5070 90%,
-            #94A8C8 95%,
-            #F8FAFC 100%
-          )
-        `,
+        background: "linear-gradient(180deg, #F8FAFC 0%, #FFFFFF 50%, #F4F8FF 100%)",
       }}
     >
-      {/* Drifting background blobs */}
+      {/* Drifting background blobs — Square 1 blue */}
       <div className="pointer-events-none absolute top-1/3 left-1/4 w-[500px] h-[500px] rounded-full opacity-40 animate-blob-1"
-        style={{ background: "radial-gradient(circle, rgba(0,86,206,0.15) 0%, transparent 70%)", filter: "blur(90px)" }} />
+        style={{ background: "radial-gradient(circle, rgba(0,86,206,0.10) 0%, transparent 70%)", filter: "blur(90px)" }} />
       <div className="pointer-events-none absolute bottom-1/3 right-1/4 w-[600px] h-[500px] rounded-full opacity-30 animate-blob-2"
-        style={{ background: "radial-gradient(circle, rgba(16,185,129,0.12) 0%, transparent 70%)", filter: "blur(90px)" }} />
+        style={{ background: "radial-gradient(circle, rgba(14,165,233,0.10) 0%, transparent 70%)", filter: "blur(90px)" }} />
 
       <div className="relative max-w-5xl mx-auto">
         {/* Heading */}
@@ -293,12 +279,12 @@ export function ComparisonSection() {
             Why Square 1
           </span>
           <h2
-            className="mt-4 font-black tracking-tight text-white leading-[0.95]"
+            className="mt-4 font-black tracking-tight text-slate-900 leading-[0.95]"
             style={{ fontSize: "clamp(36px, 6vw, 84px)" }}
           >
             The math is{" "}
             <span style={{
-              background: "linear-gradient(135deg, #3388FF 0%, #A78BFA 50%, #10B981 100%)",
+              background: "linear-gradient(135deg, #3388FF 0%, #0056CE 55%, #01224F 100%)",
               WebkitBackgroundClip: "text",
               WebkitTextFillColor: "transparent",
               backgroundClip: "text",
@@ -306,7 +292,7 @@ export function ComparisonSection() {
               simple.
             </span>
           </h2>
-          <p className="mt-4 text-sm sm:text-base text-slate-400 max-w-lg mx-auto">
+          <p className="mt-4 text-sm sm:text-base text-slate-600 max-w-lg mx-auto">
             Same outcome. Completely different numbers.
           </p>
         </div>
@@ -327,9 +313,9 @@ export function ComparisonSection() {
 
         {/* Bottom takeaway */}
         <div className="text-center mt-14 sm:mt-20">
-          <p className="text-base sm:text-lg text-slate-300 font-medium max-w-xl mx-auto leading-relaxed">
+          <p className="text-base sm:text-lg text-slate-600 font-medium max-w-xl mx-auto leading-relaxed">
             You can keep grinding the old way for years.{" "}
-            <span className="text-white font-bold">Or you can take 30 minutes.</span>
+            <span className="text-slate-900 font-bold">Or you can take 30 minutes.</span>
           </p>
         </div>
       </div>

@@ -52,30 +52,30 @@ export function CodeReviewSlider() {
 
   return (
     <section className="relative overflow-hidden py-20 sm:py-28 px-4 sm:px-6 lg:px-8"
-      style={{ background: "linear-gradient(180deg,#050B14 0%,#0B1626 50%,#050B14 100%)" }}>
-      <div className="pointer-events-none absolute top-1/4 right-1/4 w-[500px] h-[400px] rounded-full opacity-25"
-        style={{ background: "radial-gradient(circle, rgba(16,185,129,0.25) 0%, transparent 70%)", filter: "blur(90px)" }} />
+      style={{ background: "linear-gradient(180deg,#FFFFFF 0%,#F8FAFC 50%,#F4F8FF 100%)" }}>
+      <div className="pointer-events-none absolute top-1/4 right-1/4 w-[500px] h-[400px] rounded-full opacity-100"
+        style={{ background: "radial-gradient(circle, rgba(0,86,206,0.08) 0%, transparent 70%)", filter: "blur(90px)" }} />
 
       <div className="relative max-w-3xl mx-auto">
         <div className="text-center mb-10">
-          <span className="text-[10px] sm:text-[11px] tracking-[0.35em] uppercase text-slate-500 font-bold">
+          <span className="text-[10px] sm:text-[11px] tracking-[0.35em] uppercase text-brand font-bold">
             What feedback actually looks like
           </span>
-          <h2 className="mt-4 font-black tracking-tight text-white leading-[0.95]"
+          <h2 className="mt-4 font-black tracking-tight text-slate-900 leading-[0.95]"
             style={{ fontSize: "clamp(30px,5vw,60px)" }}>
             Drag to see Nova{" "}
-            <span style={{ background: "linear-gradient(135deg,#3388FF,#10B981)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>
+            <span style={{ background: "linear-gradient(135deg,#3388FF,#0056CE)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>
               fix your code.
             </span>
           </h2>
-          <p className="mt-3 text-sm sm:text-base text-slate-400 max-w-md mx-auto">
+          <p className="mt-3 text-sm sm:text-base text-slate-600 max-w-md mx-auto">
             Every line you write gets read and graded — not a video, not a generic tip. This is the difference.
           </p>
         </div>
 
-        {/* Slider */}
-        <div className="relative rounded-2xl overflow-hidden border border-white/10 select-none"
-          style={{ height: 280, boxShadow: "0 24px 64px rgba(5,11,20,0.5)" }}>
+        {/* Slider — code panels stay dark (IDE), framed on white */}
+        <div className="relative rounded-2xl overflow-hidden border border-slate-200 select-none"
+          style={{ height: 280, boxShadow: "0 24px 64px rgba(15,28,49,0.18)" }}>
           {/* Before (full, underneath) */}
           <CodeBlock code={BEFORE} tone="before" />
           {/* After (clipped to the right of the handle) */}
@@ -109,7 +109,7 @@ export function CodeReviewSlider() {
           </p>
           <Link href="/diagnostic"
             className="inline-flex items-center gap-2 px-6 py-3 rounded-full text-white font-bold text-sm hover:-translate-y-0.5 transition-transform"
-            style={{ background: "linear-gradient(135deg,#0056CE,#4F46E5)", boxShadow: "0 12px 32px rgba(0,86,206,0.3)" }}>
+            style={{ background: "linear-gradient(135deg,#0056CE,#3388FF)", boxShadow: "0 12px 32px rgba(0,86,206,0.3)" }}>
             Get your code reviewed — free →
           </Link>
         </div>

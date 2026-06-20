@@ -59,8 +59,9 @@ function StatTile({ stat, visible, delay }: { stat: Stat; visible: boolean; dela
     <div
       className="group relative rounded-2xl border p-5 sm:p-6 text-center overflow-hidden transition-all duration-700 hover:-translate-y-1.5"
       style={{
-        background: "rgba(255,255,255,0.03)",
-        borderColor: visible ? `${stat.accent}26` : "rgba(255,255,255,0.08)",
+        background: "#FFFFFF",
+        borderColor: visible ? `${stat.accent}33` : "#E2E8F0",
+        boxShadow: "0 4px 16px rgba(15,28,49,0.05)",
         opacity: visible ? 1 : 0,
         transform: visible ? "translateY(0)" : "translateY(28px)",
         transitionDelay: `${delay}ms`,
@@ -85,14 +86,14 @@ function StatTile({ stat, visible, delay }: { stat: Stat; visible: boolean; dela
       </p>
 
       {/* Animated magnitude bar */}
-      <div className="relative mt-3.5 mx-auto h-1 w-14 rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,0.08)" }}>
+      <div className="relative mt-3.5 mx-auto h-1 w-14 rounded-full overflow-hidden" style={{ background: "#E2E8F0" }}>
         <div
           className="h-full rounded-full transition-[width] duration-1000 ease-out"
           style={{ width: visible ? `${stat.bar}%` : "0%", background: stat.accent, transitionDelay: `${delay + 250}ms` }}
         />
       </div>
 
-      <p className="relative mt-3.5 text-[11px] sm:text-xs text-slate-400 leading-relaxed">{stat.label}</p>
+      <p className="relative mt-3.5 text-[11px] sm:text-xs text-slate-500 leading-relaxed">{stat.label}</p>
     </div>
   );
 }
@@ -111,15 +112,15 @@ export function RealityBand() {
   }, []);
 
   return (
-    <section ref={ref} className="relative overflow-hidden py-14 sm:py-16 px-4 sm:px-6 lg:px-8" style={{ background: "#050B14" }}>
-      {/* Accent glows */}
+    <section ref={ref} className="relative overflow-hidden py-14 sm:py-16 px-4 sm:px-6 lg:px-8" style={{ background: "linear-gradient(180deg, #FFFFFF 0%, #F8FAFC 100%)" }}>
+      {/* Accent glows — Square 1 blue */}
       <div
-        className="pointer-events-none absolute top-0 right-1/4 w-[600px] h-[600px] rounded-full opacity-[0.10]"
-        style={{ background: "radial-gradient(circle, #F87171 0%, transparent 70%)", filter: "blur(110px)" }}
+        className="pointer-events-none absolute top-0 right-1/4 w-[600px] h-[600px] rounded-full opacity-[0.06]"
+        style={{ background: "radial-gradient(circle, #0EA5E9 0%, transparent 70%)", filter: "blur(110px)" }}
       />
       <div
-        className="pointer-events-none absolute bottom-0 left-1/4 w-[600px] h-[600px] rounded-full opacity-[0.10]"
-        style={{ background: "radial-gradient(circle, #3388FF 0%, transparent 70%)", filter: "blur(110px)" }}
+        className="pointer-events-none absolute bottom-0 left-1/4 w-[600px] h-[600px] rounded-full opacity-[0.06]"
+        style={{ background: "radial-gradient(circle, #0056CE 0%, transparent 70%)", filter: "blur(110px)" }}
       />
 
       <div className="relative max-w-5xl mx-auto">
@@ -132,7 +133,7 @@ export function RealityBand() {
 
         {/* Headline */}
         <h2
-          className="mt-4 text-center font-black tracking-tight text-white leading-[1.0] max-w-3xl mx-auto"
+          className="mt-4 text-center font-black tracking-tight text-slate-900 leading-[1.0] max-w-3xl mx-auto"
           style={{ fontSize: "clamp(26px, 4vw, 46px)", letterSpacing: "-0.03em" }}
         >
           A degree used to be enough.{" "}
@@ -148,9 +149,9 @@ export function RealityBand() {
           </span>
         </h2>
 
-        <p className="mt-5 text-center text-sm sm:text-base text-slate-400 leading-relaxed max-w-2xl mx-auto">
+        <p className="mt-5 text-center text-sm sm:text-base text-slate-600 leading-relaxed max-w-2xl mx-auto">
           Hundreds of applications, no callbacks — it&apos;s not a you problem, it&apos;s a{" "}
-          <span className="text-white font-semibold">proof problem</span>. Employers stopped
+          <span className="text-slate-900 font-semibold">proof problem</span>. Employers stopped
           hiring on credentials and started hiring on what you can show.
         </p>
 
@@ -162,9 +163,9 @@ export function RealityBand() {
         </div>
 
         {/* Resolution — slim one-liner (CTAs live in the hook above) */}
-        <p className="mt-9 text-center text-sm sm:text-base text-slate-300 leading-relaxed max-w-2xl mx-auto">
+        <p className="mt-9 text-center text-sm sm:text-base text-slate-600 leading-relaxed max-w-2xl mx-auto">
           Square 1 Ai closes that gap with{" "}
-          <span className="font-bold text-white">10–12 deployed, code-reviewed projects employers can actually click on.</span>
+          <span className="font-bold text-slate-900">10–12 deployed, code-reviewed projects employers can actually click on.</span>
         </p>
       </div>
     </section>

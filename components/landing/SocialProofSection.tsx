@@ -32,7 +32,7 @@ export function SocialProofSection() {
       style={{
         background: `
           radial-gradient(ellipse 900px 500px at 20% 30%, rgba(0,86,206,0.08), transparent 60%),
-          radial-gradient(ellipse 800px 500px at 80% 70%, rgba(167,139,250,0.06), transparent 60%),
+          radial-gradient(ellipse 800px 500px at 80% 70%, rgba(14,165,233,0.06), transparent 60%),
           linear-gradient(180deg, #F8FAFC 0%, #FFFFFF 50%, #F4F8FF 100%)
         `,
       }}
