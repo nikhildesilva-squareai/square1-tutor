@@ -86,28 +86,28 @@ export default async function Home() {
       <SocialProofSection />
 
       {/* ── About + Final CTA + Footer ────────────────────────────────────── */}
-      <section className="relative overflow-hidden" style={{ background: "#050B14" }}>
+      <section className="relative overflow-hidden bg-white">
 
-        {/* Background accents */}
-        <div className="pointer-events-none absolute top-1/4 left-0 -translate-x-1/2 w-[700px] h-[700px] rounded-full opacity-15"
+        {/* Background accents — subtle blue on white */}
+        <div className="pointer-events-none absolute top-1/4 left-0 -translate-x-1/2 w-[700px] h-[700px] rounded-full opacity-[0.06]"
           style={{ background: "radial-gradient(circle, #0056CE 0%, transparent 70%)", filter: "blur(100px)" }} />
-        <div className="pointer-events-none absolute bottom-1/4 right-0 translate-x-1/2 w-[800px] h-[800px] rounded-full opacity-10"
-          style={{ background: "radial-gradient(circle, #4F46E5 0%, transparent 70%)", filter: "blur(100px)" }} />
+        <div className="pointer-events-none absolute bottom-1/4 right-0 translate-x-1/2 w-[800px] h-[800px] rounded-full opacity-[0.05]"
+          style={{ background: "radial-gradient(circle, #0EA5E9 0%, transparent 70%)", filter: "blur(100px)" }} />
 
         {/* ── About Square 1 Ai ───────────────────────────────────────── */}
         <div className="relative max-w-5xl mx-auto px-6 sm:px-8 pt-24 sm:pt-32 lg:pt-40 pb-16 sm:pb-20">
           {/* Logo centered + large */}
           <div className="flex justify-center mb-10">
-            <Logo variant="light" size="xl" />
+            <Logo variant="dark" size="xl" />
           </div>
 
           {/* Mission statement */}
           <div className="text-center max-w-3xl mx-auto">
-            <h2 className="font-black tracking-tight text-white leading-[1.05] mb-6"
+            <h2 className="font-black tracking-tight text-slate-900 leading-[1.05] mb-6"
               style={{ fontSize: "clamp(32px, 5vw, 60px)", letterSpacing: "-0.03em" }}>
               We&apos;re building the future of{" "}
               <span style={{
-                background: "linear-gradient(135deg, #3388FF 0%, #A78BFA 50%, #10B981 100%)",
+                background: "linear-gradient(135deg, #3388FF 0%, #0056CE 55%, #01224F 100%)",
                 WebkitBackgroundClip: "text",
                 WebkitTextFillColor: "transparent",
                 backgroundClip: "text",
@@ -116,7 +116,7 @@ export default async function Home() {
               </span>
             </h2>
 
-            <p className="text-base sm:text-lg text-slate-400 leading-relaxed mb-8 max-w-2xl mx-auto">
+            <p className="text-base sm:text-lg text-slate-600 leading-relaxed mb-8 max-w-2xl mx-auto">
               Square1 Ai is an AI-powered learn-to-launch platform.
               We don&apos;t just teach you — we assess your level, personalise your path,
               grade every line of code you write, and walk you from day one to a deployed
@@ -126,7 +126,7 @@ export default async function Home() {
             <p className="text-sm sm:text-base text-slate-500 leading-relaxed max-w-2xl mx-auto">
               Traditional education gives you theory and hopes you figure out the rest.
               Bootcamps rush you through and hand you a certificate.{" "}
-              <span className="text-white font-semibold">We give you 12 deployed projects,
+              <span className="text-slate-900 font-semibold">We give you 12 deployed projects,
               Nova — an AI tutor that knows your code — and a skill report that proves you&apos;re
               ready.</span> That&apos;s the difference.
             </p>
@@ -143,12 +143,12 @@ export default async function Home() {
               {
                 label: "Feedback over content",
                 desc: "Content is free on YouTube. Personalised AI feedback on YOUR code isn't.",
-                accent: "#A78BFA",
+                accent: "#0EA5E9",
               },
               {
                 label: "Outcomes over promises",
                 desc: "Every course maps to a real role with a real salary. That's the bar.",
-                accent: "#10B981",
+                accent: "#0056CE",
               },
             ].map((p) => (
               <div key={p.label} className="text-center">
@@ -156,7 +156,7 @@ export default async function Home() {
                   style={{ background: `${p.accent}15`, border: `1px solid ${p.accent}30` }}>
                   <span className="text-sm font-black" style={{ color: p.accent }}>✓</span>
                 </div>
-                <h4 className="text-sm font-bold text-white mb-2">{p.label}</h4>
+                <h4 className="text-sm font-bold text-slate-900 mb-2">{p.label}</h4>
                 <p className="text-xs text-slate-500 leading-relaxed">{p.desc}</p>
               </div>
             ))}
@@ -165,21 +165,21 @@ export default async function Home() {
 
         {/* ── Divider ─────────────────────────────────────────────────── */}
         <div className="max-w-md mx-auto px-6 flex items-center gap-4 py-8">
-          <div className="flex-1 h-px bg-white/[0.08]" />
-          <span className="text-[9px] tracking-[0.35em] uppercase text-slate-600 font-bold whitespace-nowrap">
+          <div className="flex-1 h-px bg-slate-200" />
+          <span className="text-[9px] tracking-[0.35em] uppercase text-slate-500 font-bold whitespace-nowrap">
             Ready?
           </span>
-          <div className="flex-1 h-px bg-white/[0.08]" />
+          <div className="flex-1 h-px bg-slate-200" />
         </div>
 
         {/* ── Final CTA ───────────────────────────────────────────────── */}
         <div className="relative max-w-3xl mx-auto px-6 sm:px-8 pb-20 sm:pb-24 text-center">
-          <h3 className="font-black tracking-tight text-white leading-[0.95] mb-5"
+          <h3 className="font-black tracking-tight text-slate-900 leading-[0.95] mb-5"
             style={{ fontSize: "clamp(36px, 6vw, 76px)" }}>
             Your career starts
             <br />
             <span style={{
-              background: "linear-gradient(135deg, #3388FF 0%, #A78BFA 50%, #10B981 100%)",
+              background: "linear-gradient(135deg, #3388FF 0%, #0056CE 55%, #01224F 100%)",
               WebkitBackgroundClip: "text",
               WebkitTextFillColor: "transparent",
               backgroundClip: "text",
@@ -188,7 +188,7 @@ export default async function Home() {
             </span>
           </h3>
 
-          <p className="text-sm sm:text-base text-slate-400 max-w-md mx-auto mb-10">
+          <p className="text-sm sm:text-base text-slate-600 max-w-md mx-auto mb-10">
             30 minutes. Free forever. No credit card.
             <br />Find out where you stand — and exactly how to get where you want to be.
           </p>
@@ -208,8 +208,7 @@ export default async function Home() {
             </Link>
             <Link
               href="/login"
-              className="inline-flex items-center justify-center px-8 py-5 rounded-2xl text-white text-base font-semibold transition-all hover:bg-white/[0.06]"
-              style={{ border: "1px solid rgba(255,255,255,0.12)" }}
+              className="inline-flex items-center justify-center px-8 py-5 rounded-2xl text-slate-700 text-base font-semibold border border-slate-300 hover:border-slate-400 hover:bg-slate-50 transition-all"
             >
               Sign in
             </Link>
@@ -221,7 +220,8 @@ export default async function Home() {
         </div>
 
         {/* ── Footer ──────────────────────────────────────────────────── */}
-        <footer className="relative border-t border-white/[0.06]">
+        {/* Stays deep Square 1 navy — the page anchor under the white content */}
+        <footer className="relative border-t border-white/[0.06]" style={{ background: "#00183A" }}>
           <div className="max-w-6xl mx-auto px-6 sm:px-8 py-12 sm:py-16">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-10 md:gap-8">
 
