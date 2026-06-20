@@ -19,12 +19,13 @@ const ROLES = [
 ];
 
 // ─── Rotating headline roles (with gradient colors per role) ─────────────────
+// All Square 1 Blue — subtle variation within the blue family for rotation interest
 const HEADLINE_ROLES: { label: string; gradient: string }[] = [
-  { label: "AI Engineer",            gradient: "linear-gradient(135deg, #3388FF 0%, #A78BFA 50%, #10B981 100%)" },
-  { label: "Cybersecurity Engineer", gradient: "linear-gradient(135deg, #EF4444 0%, #F97316 50%, #FBBF24 100%)" },
-  { label: "ML Engineer",            gradient: "linear-gradient(135deg, #06B6D4 0%, #3388FF 50%, #6366F1 100%)" },
-  { label: "Cloud Architect",        gradient: "linear-gradient(135deg, #6366F1 0%, #8B5CF6 50%, #EC4899 100%)" },
-  { label: "Full Stack Engineer",    gradient: "linear-gradient(135deg, #10B981 0%, #06B6D4 50%, #3388FF 100%)" },
+  { label: "AI Engineer",            gradient: "linear-gradient(135deg, #3388FF 0%, #0056CE 55%, #01224F 100%)" },
+  { label: "Cybersecurity Engineer", gradient: "linear-gradient(135deg, #0EA5E9 0%, #0056CE 55%, #01224F 100%)" },
+  { label: "ML Engineer",            gradient: "linear-gradient(135deg, #3388FF 0%, #0EA5E9 50%, #0056CE 100%)" },
+  { label: "Cloud Architect",        gradient: "linear-gradient(135deg, #0056CE 0%, #1E40AF 50%, #01224F 100%)" },
+  { label: "Full Stack Engineer",    gradient: "linear-gradient(135deg, #3388FF 0%, #0056CE 100%)" },
 ];
 
 // ─── Outcome cards — deliverables the platform actually ships, not claimed results
@@ -41,14 +42,14 @@ const OUTCOMES = [
     suffix:    "%",
     label:     "of your code reviewed",
     sub:       "Every submission read line-by-line by Claude — strengths, fixes, and a score.",
-    accent:    "#A78BFA",
+    accent:    "#0EA5E9",
   },
   {
     target:    24,
     suffix:    "/7",
     label:     "AI tutor at your side",
     sub:       "Nova knows your code, your weak topics, and your current lesson.",
-    accent:    "#10B981",
+    accent:    "#0056CE",
   },
 ];
 
@@ -200,7 +201,7 @@ function RoleMarquee() {
       <div className="flex gap-8 animate-marquee whitespace-nowrap">
         {items.map((role, i) => (
           <div key={`${role.title}-${i}`} className="flex items-center gap-3 shrink-0">
-            <span className="w-2 h-2 rounded-full bg-emerald-500" />
+            <span className="w-2 h-2 rounded-full bg-brand" />
             <span className="text-sm sm:text-base font-bold text-slate-900">{role.title}</span>
             <span className="text-xs text-slate-500 hidden sm:inline">· {role.salary}</span>
           </div>
@@ -213,14 +214,14 @@ function RoleMarquee() {
 // ─── Mini product mockups for each step ───────────────────────────────────────
 function MockupAssessment() {
   return (
-    <div className="rounded-lg p-3 border border-white/8 bg-white/[0.02]">
+    <div className="rounded-lg p-3 border border-slate-200 bg-white shadow-sm">
       <div className="flex items-center gap-1.5 mb-2">
-        <span className="text-[8px] px-1.5 py-0.5 rounded font-mono text-white" style={{ background: "rgba(0,86,206,0.5)" }}>Q3</span>
+        <span className="text-[8px] px-1.5 py-0.5 rounded font-mono text-white" style={{ background: "#0056CE" }}>Q3</span>
         <span className="text-[8px] text-slate-500">RAG Systems</span>
       </div>
-      <p className="text-[11px] text-white/80 leading-snug mb-2">Which best describes RAG?</p>
+      <p className="text-[11px] text-slate-700 font-medium leading-snug mb-2">Which best describes RAG?</p>
       {["A", "B", "C", "D"].map((l, i) => (
-        <div key={l} className={`text-[9px] mb-1 px-2 py-1 rounded ${i === 1 ? "bg-white/10 text-white border border-white/15" : "text-slate-600"}`}>
+        <div key={l} className={`text-[9px] mb-1 px-2 py-1 rounded ${i === 1 ? "bg-blue-50 text-blue-900 border border-blue-200 font-semibold" : "text-slate-400"}`}>
           {l}. {i === 1 ? "External knowledge retrieval" : "Option text..."}
         </div>
       ))}
@@ -236,18 +237,18 @@ function MockupReport() {
     { l: "Agents",  v: 30, c: "#EF4444" },
   ];
   return (
-    <div className="rounded-lg p-3 border border-white/8 bg-white/[0.02]">
+    <div className="rounded-lg p-3 border border-slate-200 bg-white shadow-sm">
       <div className="flex items-end justify-between mb-3">
         <div>
           <p className="text-[8px] text-slate-500">Score</p>
-          <p className="text-2xl font-black text-white tabular-nums leading-none">74<span className="text-xs text-slate-500">/100</span></p>
+          <p className="text-2xl font-black text-slate-900 tabular-nums leading-none">74<span className="text-xs text-slate-400">/100</span></p>
         </div>
-        <span className="text-[7px] px-1.5 py-0.5 rounded-full font-bold bg-amber-400/20 text-amber-400">INT.</span>
+        <span className="text-[7px] px-1.5 py-0.5 rounded-full font-bold bg-amber-100 text-amber-700">INT.</span>
       </div>
       {bars.map((b) => (
         <div key={b.l} className="flex items-center gap-2 mb-1.5">
-          <span className="text-[8px] text-slate-400 w-14">{b.l}</span>
-          <div className="flex-1 h-1 rounded bg-white/8 overflow-hidden">
+          <span className="text-[8px] text-slate-500 w-14">{b.l}</span>
+          <div className="flex-1 h-1 rounded bg-slate-100 overflow-hidden">
             <div className="h-full rounded transition-all" style={{ width: `${b.v}%`, background: b.c }} />
           </div>
           <span className="text-[8px] tabular-nums w-6 text-right" style={{ color: b.c }}>{b.v}%</span>
@@ -259,18 +260,18 @@ function MockupReport() {
 
 function MockupPlan() {
   return (
-    <div className="rounded-lg p-3 border border-white/8 bg-white/[0.02] space-y-1.5">
+    <div className="rounded-lg p-3 border border-slate-200 bg-white shadow-sm space-y-1.5">
       {[
         { m: "3mo", h: "2hr/day", n: "8",  active: false },
         { m: "6mo", h: "1hr/day", n: "10", active: true  },
         { m: "9mo", h: "45m/day", n: "12", active: false },
       ].map((p) => (
-        <div key={p.m} className={`flex items-center justify-between p-2 rounded border ${p.active ? "border-blue-500/40 bg-blue-500/10" : "border-white/8"}`}>
+        <div key={p.m} className={`flex items-center justify-between p-2 rounded border ${p.active ? "border-blue-300 bg-blue-50" : "border-slate-200"}`}>
           <div>
-            <p className={`text-[10px] font-bold ${p.active ? "text-white" : "text-slate-500"}`}>{p.m}</p>
-            <p className="text-[8px] text-slate-600">{p.h}</p>
+            <p className={`text-[10px] font-bold ${p.active ? "text-slate-900" : "text-slate-500"}`}>{p.m}</p>
+            <p className="text-[8px] text-slate-400">{p.h}</p>
           </div>
-          <span className={`text-[9px] tabular-nums font-bold ${p.active ? "text-blue-400" : "text-slate-600"}`}>{p.n} proj</span>
+          <span className={`text-[9px] tabular-nums font-bold ${p.active ? "text-blue-600" : "text-slate-400"}`}>{p.n} proj</span>
         </div>
       ))}
     </div>
@@ -279,19 +280,19 @@ function MockupPlan() {
 
 function MockupBuild() {
   return (
-    <div className="rounded-lg p-3 border border-white/8 bg-white/[0.02] font-mono space-y-1">
+    <div className="rounded-lg p-3 border border-slate-200 bg-slate-50 font-mono space-y-1 shadow-sm">
       {["ai-chatbot", "rag-pipeline", "research-agent", "production-saas"].map((name, i) => (
         <div key={name} className="flex items-center justify-between text-[9px]">
-          <span className="text-blue-400">{name}</span>
+          <span className="text-blue-600">{name}</span>
           <div className="flex items-center gap-1">
-            <span className="text-amber-400">★</span>
+            <span className="text-amber-500">★</span>
             <span className="text-slate-500 tabular-nums">{[47, 31, 28, 62][i]}</span>
           </div>
         </div>
       ))}
-      <div className="pt-1.5 mt-1.5 border-t border-white/5 flex items-center justify-between text-[8px]">
-        <span className="text-slate-600">12 / 12 deployed</span>
-        <span className="text-emerald-400">●</span>
+      <div className="pt-1.5 mt-1.5 border-t border-slate-200 flex items-center justify-between text-[8px]">
+        <span className="text-slate-500">12 / 12 deployed</span>
+        <span className="text-emerald-500">●</span>
       </div>
     </div>
   );
@@ -299,22 +300,22 @@ function MockupBuild() {
 
 function MockupHired() {
   return (
-    <div className="rounded-lg p-3 border border-emerald-500/25 space-y-2"
-      style={{ background: "linear-gradient(135deg, rgba(16,185,129,0.08), rgba(16,185,129,0.02))" }}>
+    <div className="rounded-lg p-3 border border-blue-200 space-y-2 shadow-sm"
+      style={{ background: "linear-gradient(135deg, rgba(0,86,206,0.07), rgba(51,136,255,0.02))" }}>
       <div className="flex items-center justify-between">
-        <p className="text-[8px] text-emerald-400 font-bold tracking-widest">THE GOAL</p>
+        <p className="text-[8px] text-blue-700 font-bold tracking-widest">THE GOAL</p>
         <p className="text-[8px] text-slate-500">interview-ready</p>
       </div>
-      <p className="text-base font-black text-white leading-none mt-1">AI Engineer</p>
-      <p className="text-[10px] text-slate-400">$130–200k market range</p>
-      <div className="space-y-1 pt-2 border-t border-white/8">
+      <p className="text-base font-black text-slate-900 leading-none mt-1">AI Engineer</p>
+      <p className="text-[10px] text-slate-500">$130–200k market range</p>
+      <div className="space-y-1 pt-2 border-t border-blue-100">
         {[
           { l: "Projects live", v: "12" },
           { l: "Portfolio", v: "verified" },
         ].map((r) => (
           <div key={r.l} className="flex justify-between text-[8px]">
             <span className="text-slate-500">{r.l}</span>
-            <span className="text-emerald-400 font-bold">{r.v}</span>
+            <span className="text-blue-700 font-bold">{r.v}</span>
           </div>
         ))}
       </div>
@@ -325,17 +326,165 @@ function MockupHired() {
 const MOCKUPS = [MockupAssessment, MockupReport, MockupPlan, MockupBuild, MockupHired];
 
 // ═══════════════════════════════════════════════════════════════════════════════
+// INTERACTIVE JOURNEY FLOW — click the connected nodes (or let it auto-play) to
+// walk through the 5 steps. The rail shows the flow; the panel shows the detail.
+// ═══════════════════════════════════════════════════════════════════════════════
+const FLOW_ACCENTS = ["#3388FF", "#0EA5E9", "#0056CE", "#1E40AF", "#0056CE"];
+
+function JourneyFlow() {
+  const ref = useRef<HTMLDivElement>(null);
+  const [active, setActive] = useState(0);
+  const [paused, setPaused] = useState(false);
+  const [visible, setVisible] = useState(false);
+
+  const last = STEPS.length - 1;
+  const accent = FLOW_ACCENTS[active] ?? "#0056CE";
+  const step = STEPS[active];
+  const Mockup = MOCKUPS[active];
+
+  // Only start auto-playing once the flow scrolls into view.
+  useEffect(() => {
+    const obs = new IntersectionObserver(
+      ([e]) => e.isIntersecting && setVisible(true),
+      { threshold: 0.35 }
+    );
+    if (ref.current) obs.observe(ref.current);
+    return () => obs.disconnect();
+  }, []);
+
+  // Auto-advance through the flow; pauses while the user is interacting.
+  useEffect(() => {
+    if (!visible || paused) return;
+    const t = setInterval(() => setActive((a) => (a + 1) % STEPS.length), 3600);
+    return () => clearInterval(t);
+  }, [visible, paused]);
+
+  const go = (i: number) => setActive(((i % STEPS.length) + STEPS.length) % STEPS.length);
+
+  return (
+    <div ref={ref} onMouseEnter={() => setPaused(true)} onMouseLeave={() => setPaused(false)}>
+      {/* ── Flow rail ─────────────────────────────────────────── */}
+      <div className="relative">
+        {/* connecting track */}
+        <div className="absolute top-7 left-[10%] right-[10%] h-[3px] -translate-y-1/2 rounded-full bg-slate-200" />
+        {/* filled portion up to the active node */}
+        <div
+          className="absolute top-7 left-[10%] h-[3px] -translate-y-1/2 rounded-full transition-all duration-500 ease-out"
+          style={{ width: `${(active / last) * 80}%`, background: "linear-gradient(90deg,#3388FF,#0056CE)" }}
+        />
+        {/* nodes */}
+        <div className="relative z-10 flex justify-between">
+          {STEPS.map((s, i) => {
+            const isActive = i === active;
+            const isDone = i < active;
+            const a = FLOW_ACCENTS[i] ?? "#0056CE";
+            return (
+              <button
+                key={s.n}
+                onClick={() => go(i)}
+                className="flex-1 flex flex-col items-center gap-2.5 focus:outline-none"
+                aria-label={`${s.label} — step ${i + 1} of ${STEPS.length}`}
+                aria-current={isActive ? "step" : undefined}
+              >
+                <span
+                  className="relative w-12 h-12 sm:w-14 sm:h-14 rounded-full flex items-center justify-center font-black text-xs sm:text-sm transition-all duration-300"
+                  style={
+                    isActive
+                      ? { background: a, color: "#fff", boxShadow: `0 0 0 6px ${a}1f, 0 8px 24px ${a}55`, transform: "scale(1.08)" }
+                      : isDone
+                        ? { background: a, color: "#fff" }
+                        : { background: "#fff", color: "#94A3B8", border: "2px solid #E2E8F0" }
+                  }
+                >
+                  {isDone ? (
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
+                  ) : (
+                    s.n
+                  )}
+                </span>
+                <span
+                  className="text-[9px] sm:text-[11px] font-bold tracking-wide text-center transition-colors duration-300"
+                  style={{ color: isActive ? a : isDone ? "#475569" : "#94A3B8" }}
+                >
+                  {s.label}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* ── Active step detail ────────────────────────────────── */}
+      <div className="mt-12 lg:mt-16 grid lg:grid-cols-2 gap-8 lg:gap-12 items-center lg:min-h-[280px]">
+        {/* Text */}
+        <div key={`t-${active}`} className="animate-fade-in-up">
+          <div className="flex items-baseline gap-4 mb-4">
+            <span
+              className="font-black tabular-nums leading-none"
+              style={{
+                fontSize: "clamp(64px, 9vw, 112px)",
+                letterSpacing: "-0.05em",
+                background: `linear-gradient(180deg, ${accent} 0%, ${accent}99 110%)`,
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+                backgroundClip: "text",
+              }}
+            >
+              {step.n}
+            </span>
+            <div>
+              <span className="block text-[11px] font-black tracking-[0.3em] uppercase" style={{ color: accent }}>{step.label}</span>
+              <span className="block text-xs text-slate-400 mt-1">{step.duration}</span>
+            </div>
+          </div>
+          <h4 className="text-2xl lg:text-3xl font-bold text-slate-900 leading-tight mb-3">{step.title}</h4>
+          <p className="text-sm lg:text-base text-slate-600 leading-relaxed mb-8 max-w-md">{step.desc}</p>
+
+          {/* Controls */}
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => go(active - 1)}
+              className="w-11 h-11 rounded-full border border-slate-200 flex items-center justify-center text-slate-500 hover:border-brand hover:text-brand transition-colors"
+              aria-label="Previous step"
+            >
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6" /></svg>
+            </button>
+            <button
+              onClick={() => go(active + 1)}
+              className="w-11 h-11 rounded-full flex items-center justify-center text-white transition-transform hover:scale-105"
+              style={{ background: accent }}
+              aria-label="Next step"
+            >
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6" /></svg>
+            </button>
+            <span className="ml-1 text-sm tabular-nums text-slate-400">
+              <span className="font-bold text-slate-900">{active + 1}</span> / {STEPS.length}
+            </span>
+          </div>
+        </div>
+
+        {/* Mockup */}
+        <div key={`m-${active}`} className="animate-fade-in-up">
+          <div
+            className="w-full max-w-[300px] mx-auto rounded-2xl"
+            style={{ boxShadow: `0 16px 48px ${accent}22, 0 0 0 1px ${accent}18` }}
+          >
+            <Mockup />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
 // MAIN COMPONENT
 // ═══════════════════════════════════════════════════════════════════════════════
 
 export function JourneyHook() {
   const heroRef = useRef<HTMLDivElement>(null);
-  const stepsRef = useRef<HTMLDivElement>(null);
-  const stepsTrackRef = useRef<HTMLDivElement>(null);
-  const [heroVisible, setHeroVisible]       = useState(false);
-  const [visibleSteps, setVisibleSteps]     = useState<Set<number>>(new Set());
-  const [roleIdx, setRoleIdx]               = useState(0);
-  const [stepsProgress, setStepsProgress]   = useState(0); // 0..1 through steps
+  const [heroVisible, setHeroVisible] = useState(false);
+  const [roleIdx, setRoleIdx]         = useState(0);
 
   // Rotate the role in the headline
   useEffect(() => {
@@ -354,42 +503,6 @@ export function JourneyHook() {
     return () => obs.disconnect();
   }, []);
 
-  useEffect(() => {
-    if (!stepsRef.current) return;
-    const stepEls = stepsRef.current.querySelectorAll("[data-step-idx]");
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            const idx = Number((entry.target as HTMLElement).dataset.stepIdx);
-            setVisibleSteps((prev) => new Set(prev).add(idx));
-          }
-        });
-      },
-      { threshold: 0.3 }
-    );
-    stepEls.forEach((el) => observer.observe(el));
-    return () => observer.disconnect();
-  }, []);
-
-  // Scroll-driven progress line through the steps section
-  useEffect(() => {
-    function onScroll() {
-      if (!stepsTrackRef.current) return;
-      const rect       = stepsTrackRef.current.getBoundingClientRect();
-      const viewportH  = window.innerHeight;
-      // Triggers when the track enters the viewport from the bottom
-      // Reaches 1.0 when the track has fully scrolled past the middle
-      const start      = viewportH * 0.7;             // line starts filling when track is ~70% down
-      const end        = -rect.height + viewportH * 0.3; // line is full when track has scrolled past
-      const scrolled   = Math.max(0, Math.min(1, (start - rect.top) / (start - end)));
-      setStepsProgress(scrolled);
-    }
-    window.addEventListener("scroll", onScroll, { passive: true });
-    onScroll();
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
-
   return (
     <>
       {/* ════════════════════════════════════════════════════════════════════════ */}
@@ -404,7 +517,7 @@ export function JourneyHook() {
         <div className="pointer-events-none absolute top-1/4 left-0 -translate-x-1/2 w-[600px] h-[600px] rounded-full"
           style={{ background: "radial-gradient(circle, rgba(0,86,206,0.07) 0%, transparent 70%)", filter: "blur(80px)" }} />
         <div className="pointer-events-none absolute bottom-0 right-0 translate-x-1/2 w-[700px] h-[700px] rounded-full"
-          style={{ background: "radial-gradient(circle, rgba(16,185,129,0.06) 0%, transparent 70%)", filter: "blur(90px)" }} />
+          style={{ background: "radial-gradient(circle, rgba(14,165,233,0.06) 0%, transparent 70%)", filter: "blur(90px)" }} />
 
         <div className="relative max-w-6xl mx-auto">
 
@@ -518,175 +631,40 @@ export function JourneyHook() {
         </div>
       </section>
 
-      {/* Zone 1 (light) → Zone 2 (dark): clean hard edge, no fade */}
+      {/* Zone 1 → Zone 2: both light now, seamless */}
 
       {/* ════════════════════════════════════════════════════════════════════════ */}
       {/* ZONE 2 — THE 5 STEPS (How you get there) */}
       {/* ════════════════════════════════════════════════════════════════════════ */}
       <section
-        ref={stepsRef}
         className="relative w-full overflow-hidden py-16 sm:py-20 lg:py-24 px-4 sm:px-6 lg:px-8"
-        style={{ background: "linear-gradient(180deg, #050B14 0%, #0B1626 50%, #050B14 100%)" }}
+        style={{ background: "linear-gradient(180deg, #F8FAFC 0%, #FFFFFF 45%, #F4F8FF 100%)" }}
       >
-        {/* Background accent */}
+        {/* Background accent — Square 1 blue */}
         <div className="pointer-events-none absolute bottom-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] rounded-full"
-          style={{ background: "radial-gradient(ellipse, rgba(16,185,129,0.08) 0%, transparent 70%)", filter: "blur(80px)" }} />
+          style={{ background: "radial-gradient(ellipse, rgba(0,86,206,0.07) 0%, transparent 70%)", filter: "blur(80px)" }} />
 
-        <div className="relative max-w-6xl mx-auto">
+        <div className="relative max-w-5xl mx-auto">
           {/* Section intro */}
           <div className="text-center mb-12 sm:mb-16">
-            <span className="text-[10px] sm:text-[11px] tracking-[0.35em] uppercase text-slate-500 font-bold">
+            <span className="text-[10px] sm:text-[11px] tracking-[0.35em] uppercase text-brand font-bold">
               The 5-Step Journey
             </span>
-            <h3 className="mt-3 font-black text-white tracking-tight leading-[0.95]"
+            <h3 className="mt-3 font-black text-slate-900 tracking-tight leading-[0.95]"
               style={{ fontSize: "clamp(32px, 5vw, 64px)" }}>
               From doubt to offer letter.
             </h3>
-            <p className="mt-3 text-slate-400 text-sm sm:text-base max-w-lg mx-auto">
-              No fluff. No theory marathons. Just signal — and the proof to back it up.
+            <p className="mt-3 text-slate-600 text-sm sm:text-base max-w-lg mx-auto">
+              Click through the flow — or watch it play. Five steps from where you are to hired.
             </p>
           </div>
 
-          {/* Steps with scroll-driven progress line */}
-          <div ref={stepsTrackRef} className="relative space-y-12 sm:space-y-16 lg:space-y-24">
-
-            {/* Vertical scroll progress line — hidden on mobile */}
-            <div className="hidden lg:block absolute left-1/2 -translate-x-1/2 top-0 bottom-0 w-px pointer-events-none z-0">
-              {/* Background track */}
-              <div className="absolute inset-0 bg-white/[0.06]" />
-              {/* Filled portion — gradient */}
-              <div
-                className="absolute top-0 left-0 right-0 will-change-[height]"
-                style={{
-                  height: `${stepsProgress * 100}%`,
-                  background:
-                    "linear-gradient(180deg, #3388FF 0%, #A78BFA 25%, #8B5CF6 50%, #6366F1 75%, #10B981 100%)",
-                  boxShadow: "0 0 16px rgba(99,102,241,0.4)",
-                  transition: "height 0.05s linear",
-                }}
-              />
-              {/* Glowing orb at current scroll position */}
-              {stepsProgress > 0 && stepsProgress < 1 && (
-                <div
-                  className="absolute left-1/2 -translate-x-1/2 will-change-transform"
-                  style={{
-                    top: `${stepsProgress * 100}%`,
-                    transform: "translate(-50%, -50%)",
-                    transition: "top 0.05s linear",
-                  }}
-                >
-                  {/* Outer halo */}
-                  <div
-                    className="absolute -inset-6 rounded-full"
-                    style={{
-                      background: "radial-gradient(circle, rgba(99,102,241,0.5) 0%, transparent 70%)",
-                      filter: "blur(8px)",
-                    }}
-                  />
-                  {/* Inner bright dot */}
-                  <div
-                    className="relative w-3.5 h-3.5 rounded-full"
-                    style={{
-                      background: "radial-gradient(circle, #ffffff 0%, #6366F1 60%, #4F46E5 100%)",
-                      boxShadow: "0 0 24px rgba(99,102,241,0.9), 0 0 8px rgba(255,255,255,0.9)",
-                    }}
-                  />
-                </div>
-              )}
-            </div>
-
-            {STEPS.map((step, i) => {
-              const Mockup = MOCKUPS[i];
-              const isVisible = visibleSteps.has(i);
-              const isFinal = step.isFinal;
-              // Active step = the one the orb is currently passing through
-              const stepFraction = i / (STEPS.length - 1);
-              const nextFraction = (i + 1) / (STEPS.length - 1);
-              const isActive = stepsProgress >= stepFraction - 0.05 && stepsProgress < nextFraction + 0.05;
-              const isPassed = stepsProgress >= nextFraction;
-              // Step-specific accent colours for the active glow
-              const stepAccents = ["#3388FF", "#6366F1", "#A78BFA", "#8B5CF6", "#10B981"];
-              const accent = stepAccents[i] ?? "#3388FF";
-              return (
-                <div
-                  key={step.n}
-                  data-step-idx={i}
-                  className={`relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-12 items-center transition-all duration-700 ${i % 2 === 1 ? "lg:[direction:rtl]" : ""}`}
-                  style={{
-                    opacity: isVisible ? 1 : 0,
-                    transform: isVisible ? "translateY(0)" : "translateY(40px)",
-                  }}
-                >
-                  {/* HUGE numeral — lights up when active */}
-                  <div className={`lg:col-span-5 ${i % 2 === 1 ? "lg:[direction:ltr]" : ""}`}>
-                    <div className="flex items-baseline gap-4">
-                      <span
-                        className="font-black tabular-nums leading-none select-none transition-all duration-500"
-                        style={{
-                          fontSize: "clamp(96px, 16vw, 220px)",
-                          letterSpacing: "-0.06em",
-                          background: isFinal
-                            ? "linear-gradient(135deg, #10B981 0%, #34D399 100%)"
-                            : isActive || isPassed
-                              ? `linear-gradient(180deg, ${accent} 0%, ${accent}88 110%)`
-                              : "linear-gradient(180deg, #FFFFFF 0%, #475569 110%)",
-                          WebkitBackgroundClip: "text",
-                          WebkitTextFillColor: "transparent",
-                          backgroundClip: "text",
-                          filter: (isActive || (isFinal && isVisible))
-                            ? `drop-shadow(0 0 32px ${accent}60)`
-                            : "none",
-                          transform: isActive ? "scale(1.03)" : "scale(1)",
-                        }}
-                      >
-                        {step.n}
-                      </span>
-                    </div>
-                    <div className="mt-3 lg:mt-5 flex items-center gap-3 transition-all duration-500">
-                      <span
-                        className="text-[10px] font-black tracking-[0.35em] uppercase transition-colors duration-500"
-                        style={{ color: isFinal ? "#10B981" : isActive || isPassed ? accent : "rgba(148,163,184,1)" }}
-                      >
-                        {step.label}
-                      </span>
-                      <span className="h-px flex-1 max-w-[80px] transition-all duration-500"
-                        style={{ background: isActive || isPassed ? `${accent}50` : "rgba(255,255,255,0.08)" }} />
-                      <span className="text-[10px] tabular-nums transition-colors duration-500"
-                        style={{ color: isActive ? accent : "rgba(71,85,105,1)" }}>{step.duration}</span>
-                    </div>
-                  </div>
-
-                  {/* Content + mockup */}
-                  <div className={`lg:col-span-7 ${i % 2 === 1 ? "lg:[direction:ltr]" : ""}`}>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 lg:gap-8 items-center">
-                      <div>
-                        <h4 className="text-2xl lg:text-3xl font-bold text-white leading-tight mb-3 transition-all duration-500"
-                          style={{ textShadow: isActive ? `0 0 30px ${accent}40` : "none" }}>
-                          {step.title}
-                        </h4>
-                        <p className="text-sm lg:text-base leading-relaxed mb-4 transition-colors duration-500"
-                          style={{ color: isActive ? "rgba(226,232,240,1)" : "rgba(148,163,184,1)" }}>
-                          {step.desc}
-                        </p>
-                      </div>
-
-                      <div className="w-full max-w-[260px] mx-auto sm:mx-0 rounded-2xl transition-all duration-500"
-                        style={{
-                          boxShadow: isActive ? `0 0 32px ${accent}30, 0 0 0 1px ${accent}25` : "none",
-                          transform: isActive ? "scale(1.02)" : "scale(1)",
-                        }}>
-                        <Mockup />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
+          {/* Interactive flow — click the nodes or let it auto-play */}
+          <JourneyFlow />
         </div>
       </section>
 
-      {/* Zone 2 (dark) → Zone 3 (light): clean hard edge, no fade */}
+      {/* Zone 2 → Zone 3: both light, seamless */}
 
       {/* ════════════════════════════════════════════════════════════════════════ */}
       {/* ZONE 3 — CLOSING CTA · LIGHT GRADIENT THEME · ALIVE BUTTON */}
@@ -696,8 +674,8 @@ export function JourneyHook() {
         style={{
           background: `
             radial-gradient(ellipse 900px 450px at 20% 25%, rgba(0,86,206,0.10), transparent 60%),
-            radial-gradient(ellipse 700px 500px at 80% 75%, rgba(16,185,129,0.10), transparent 60%),
-            radial-gradient(ellipse 800px 600px at 50% 50%, rgba(167,139,250,0.07), transparent 60%),
+            radial-gradient(ellipse 700px 500px at 80% 75%, rgba(14,165,233,0.10), transparent 60%),
+            radial-gradient(ellipse 800px 600px at 50% 50%, rgba(51,136,255,0.07), transparent 60%),
             linear-gradient(180deg, #F8FAFC 0%, #FFFFFF 50%, #F4F8FF 100%)
           `,
         }}
@@ -706,7 +684,7 @@ export function JourneyHook() {
         <div className="pointer-events-none absolute top-0 left-1/4 w-[500px] h-[500px] rounded-full opacity-40 animate-blob-1"
           style={{ background: "radial-gradient(circle, rgba(0,86,206,0.15) 0%, transparent 70%)", filter: "blur(80px)" }} />
         <div className="pointer-events-none absolute bottom-0 right-1/4 w-[600px] h-[500px] rounded-full opacity-40 animate-blob-2"
-          style={{ background: "radial-gradient(circle, rgba(99,102,241,0.12) 0%, transparent 70%)", filter: "blur(90px)" }} />
+          style={{ background: "radial-gradient(circle, rgba(14,165,233,0.12) 0%, transparent 70%)", filter: "blur(90px)" }} />
 
         <div className="relative max-w-3xl mx-auto text-center">
           {/* Label */}
@@ -720,7 +698,7 @@ export function JourneyHook() {
             Start the assessment.
             <br />
             <span style={{
-              background: "linear-gradient(135deg, #3388FF 0%, #A78BFA 50%, #10B981 100%)",
+              background: "linear-gradient(135deg, #3388FF 0%, #0056CE 55%, #01224F 100%)",
               WebkitBackgroundClip: "text",
               WebkitTextFillColor: "transparent",
               backgroundClip: "text",

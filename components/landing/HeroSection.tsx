@@ -1,8 +1,7 @@
 "use client";
-import { useEffect, useState, useRef } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { Logo } from "@/components/ui/logo";
-import { ParticleGlobe } from "./ParticleGlobe";
 
 // Goal-typer roles — picking one personalises the CTA + shows the salary
 const GOAL_ROLES = [
@@ -14,186 +13,176 @@ const GOAL_ROLES = [
   { label: "DevOps Engineer", slug: "devops-engineering", salary: "$120–190k" },
 ];
 
+// ─── Hero product preview: a Skill Report card with a circular score ───────────
+function ScoreRing({ value }: { value: number }) {
+  const r = 34;
+  const c = 2 * Math.PI * r;
+  const off = c * (1 - value / 100);
+  return (
+    <svg width="84" height="84" viewBox="0 0 84 84" className="shrink-0">
+      <defs>
+        <linearGradient id="hero-score" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stopColor="#3388FF" />
+          <stop offset="100%" stopColor="#0056CE" />
+        </linearGradient>
+      </defs>
+      <circle cx="42" cy="42" r={r} fill="none" stroke="#E8EEF5" strokeWidth="8" />
+      <circle
+        cx="42" cy="42" r={r} fill="none" stroke="url(#hero-score)" strokeWidth="8"
+        strokeLinecap="round" strokeDasharray={c} strokeDashoffset={off}
+        transform="rotate(-90 42 42)"
+      />
+      <text x="42" y="40" textAnchor="middle" fill="#0F172A" fontSize="22" fontWeight="800">{value}</text>
+      <text x="42" y="55" textAnchor="middle" fill="#94A3B8" fontSize="9" fontWeight="600">/ 100</text>
+    </svg>
+  );
+}
+
+function HeroProductCard() {
+  const bars = [
+    { l: "LLMs & RAG",     v: 90, c: "#19A65F" },
+    { l: "Prompt design",  v: 75, c: "#19A65F" },
+    { l: "Agents",         v: 45, c: "#E5B217" },
+    { l: "Eval & testing", v: 30, c: "#D93636" },
+  ];
+  return (
+    <div className="relative w-full max-w-[420px] mx-auto">
+      {/* Soft blue glow behind the card */}
+      <div className="pointer-events-none absolute -inset-10 rounded-[40px]"
+        style={{ background: "radial-gradient(circle at 60% 40%, rgba(0,86,206,0.14), transparent 70%)", filter: "blur(40px)" }} />
+
+      {/* Main Skill Report card */}
+      <div className="relative rounded-3xl bg-white border border-slate-200 p-6 sm:p-7"
+        style={{ boxShadow: "0 24px 64px rgba(15,28,49,0.12), 0 0 0 1px rgba(15,28,49,0.02)" }}>
+        <div className="flex items-center justify-between mb-5">
+          <div>
+            <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-brand">Skill Report</p>
+            <p className="text-lg font-black text-slate-900 mt-0.5">Generative AI</p>
+          </div>
+          <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full bg-amber-50 text-amber-700 border border-amber-200">
+            Intermediate
+          </span>
+        </div>
+
+        <div className="flex items-center gap-5 mb-6">
+          <ScoreRing value={74} />
+          <div className="flex-1">
+            <p className="text-sm font-bold text-slate-900">You&apos;re 74% of the way to AI Engineer.</p>
+            <p className="text-xs text-slate-500 mt-1">Two focused gaps between you and interview-ready.</p>
+          </div>
+        </div>
+
+        <div className="space-y-2.5">
+          {bars.map((b) => (
+            <div key={b.l} className="flex items-center gap-3">
+              <span className="text-xs text-slate-600 w-24 shrink-0">{b.l}</span>
+              <div className="flex-1 h-1.5 rounded-full bg-slate-100 overflow-hidden">
+                <div className="h-full rounded-full" style={{ width: `${b.v}%`, background: b.c }} />
+              </div>
+              <span className="text-[11px] font-semibold tabular-nums w-8 text-right" style={{ color: b.c }}>{b.v}%</span>
+            </div>
+          ))}
+        </div>
+
+        <div className="mt-6 pt-4 border-t border-slate-100 flex items-center gap-2">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#0056CE" strokeWidth="2.5"><circle cx="12" cy="12" r="9" /><path d="M9 12l2 2 4-4" /></svg>
+          <span className="text-xs font-semibold text-slate-700">Personalised plan ready · target: AI Engineer</span>
+        </div>
+      </div>
+
+      {/* Floating accent — Nova code review */}
+      <div className="hidden sm:flex absolute -top-5 -right-4 items-center gap-2.5 rounded-2xl bg-white border border-slate-200 px-3.5 py-2.5"
+        style={{ boxShadow: "0 12px 32px rgba(15,28,49,0.12)" }}>
+        <div className="w-7 h-7 rounded-full flex items-center justify-center text-white text-xs font-black shrink-0"
+          style={{ background: "linear-gradient(135deg,#0056CE,#3388FF)" }}>N</div>
+        <div className="leading-tight">
+          <p className="text-[11px] font-bold text-slate-900">Nova reviewed your code</p>
+          <p className="text-[10px] text-emerald-600 font-semibold">94 / 100 · 2 fixes suggested</p>
+        </div>
+      </div>
+
+      {/* Floating accent — projects deployed */}
+      <div className="hidden sm:flex absolute -bottom-5 -left-5 items-center gap-2.5 rounded-2xl bg-white border border-slate-200 px-3.5 py-2.5"
+        style={{ boxShadow: "0 12px 32px rgba(15,28,49,0.12)" }}>
+        <span className="w-2 h-2 rounded-full bg-emerald-500 shrink-0" />
+        <div className="leading-tight">
+          <p className="text-[11px] font-bold text-slate-900">12 projects deployed</p>
+          <p className="text-[10px] text-slate-500">Live on GitHub · verifiable</p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export function HeroSection() {
-  const [mounted, setMounted] = useState(false);
   const [goal, setGoal] = useState(0);
-  const heroRef = useRef<HTMLElement>(null);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
   const role = GOAL_ROLES[goal];
+  const BLUE_GRADIENT = "linear-gradient(135deg, #3388FF 0%, #0056CE 55%, #01224F 100%)";
 
   return (
-    <section
-      ref={heroRef}
-      className="hero-section relative min-h-screen flex flex-col overflow-hidden"
-      style={{ background: "#050B14" }}
-    >
-      {/* ── Background video — neural network ──────────────────────────── */}
-      {/* Sits behind everything else; muted/autoplay/loop/playsInline for       */}
-      {/* cross-platform support. Respects prefers-reduced-motion via media query. */}
-      <video
-        autoPlay
-        muted
-        loop
-        playsInline
-        preload="auto"
-        aria-hidden="true"
-        className="motion-safe:block motion-reduce:hidden absolute inset-0 w-full h-full object-cover pointer-events-none"
-        style={{
-          opacity: 0.45,
-          mixBlendMode: "screen",
-        }}
-      >
-        <source src="/videos/neural-hero.mp4" type="video/mp4" />
-      </video>
+    <section className="hero-section relative min-h-screen flex flex-col overflow-hidden bg-white">
+      {/* ── Soft Square 1 blue accents on white ───────────────────────────── */}
+      <div className="pointer-events-none absolute -top-40 -left-40 w-[700px] h-[700px] rounded-full"
+        style={{ background: "radial-gradient(circle, rgba(0,86,206,0.08) 0%, transparent 70%)", filter: "blur(90px)" }} />
+      <div className="pointer-events-none absolute top-1/3 -right-40 w-[640px] h-[640px] rounded-full"
+        style={{ background: "radial-gradient(circle, rgba(14,165,233,0.07) 0%, transparent 70%)", filter: "blur(90px)" }} />
 
-      {/* Dark gradient overlay to keep text legible over the video */}
-      <div
-        className="pointer-events-none absolute inset-0"
-        style={{
-          background:
-            "linear-gradient(180deg, rgba(5,11,20,0.55) 0%, rgba(5,11,20,0.35) 50%, rgba(5,11,20,0.75) 100%)",
-        }}
-      />
-      {/* Left-side darkening — makes text panel readable on bright frames */}
-      <div
-        className="hidden lg:block pointer-events-none absolute inset-y-0 left-0 w-2/3"
-        style={{
-          background:
-            "linear-gradient(90deg, rgba(5,11,20,0.85) 0%, rgba(5,11,20,0.55) 50%, transparent 100%)",
-        }}
-      />
-
-      {/* ── Background blobs ───────────────────────────────────────────── */}
-      <div
-        className="animate-blob-1 pointer-events-none absolute -top-40 -left-40 rounded-full opacity-[0.12]"
-        style={{
-          width: 700,
-          height: 700,
-          background: "radial-gradient(circle, #0056CE 0%, transparent 70%)",
-          filter: "blur(100px)",
-        }}
-      />
-      <div
-        className="animate-blob-2 pointer-events-none absolute -bottom-40 -right-40 rounded-full opacity-[0.10]"
-        style={{
-          width: 600,
-          height: 600,
-          background: "radial-gradient(circle, #4F46E5 0%, transparent 70%)",
-          filter: "blur(100px)",
-        }}
-      />
-
-      {/* ── LUSION-STYLE NAV ───────────────────────────────────────────── */}
+      {/* ── NAV ───────────────────────────────────────────────────────────── */}
       <nav className="relative z-30 w-full">
         <div className="max-w-7xl mx-auto px-6 sm:px-8 py-5 flex items-center justify-between">
-          <Logo variant="light" size="md" />
+          <Logo variant="dark" size="md" />
 
-          {/* Right side — Lusion-inspired */}
-          <div className="flex items-center gap-3 sm:gap-4">
-            <Link
-              href="/business"
-              className="hidden sm:block text-[11px] font-semibold tracking-[0.12em] uppercase text-white/50 hover:text-white transition-colors"
-              style={{ minHeight: "unset" }}
-            >
+          <div className="flex items-center gap-3 sm:gap-5">
+            <Link href="/business" className="hidden sm:block text-[11px] font-semibold tracking-[0.12em] uppercase text-slate-500 hover:text-slate-900 transition-colors" style={{ minHeight: "unset" }}>
               For Teams
             </Link>
-            <Link
-              href="/about"
-              className="hidden sm:block text-[11px] font-semibold tracking-[0.12em] uppercase text-white/50 hover:text-white transition-colors"
-              style={{ minHeight: "unset" }}
-            >
+            <Link href="/about" className="hidden sm:block text-[11px] font-semibold tracking-[0.12em] uppercase text-slate-500 hover:text-slate-900 transition-colors" style={{ minHeight: "unset" }}>
               About
             </Link>
-            <Link
-              href="/login"
-              className="hidden sm:block text-[11px] font-semibold tracking-[0.12em] uppercase text-white/50 hover:text-white transition-colors"
-              style={{ minHeight: "unset" }}
-            >
+            <Link href="/login" className="hidden sm:block text-[11px] font-semibold tracking-[0.12em] uppercase text-slate-500 hover:text-slate-900 transition-colors" style={{ minHeight: "unset" }}>
               Sign In
             </Link>
-            {/* "GET STARTED •" pill — Lusion style dark pill */}
-            <Link
-              href="/diagnostic"
-              className="flex items-center gap-2.5 px-4 sm:px-5 py-2.5 rounded-full text-white text-xs font-bold tracking-wide uppercase hover:opacity-80 transition-all"
-              style={{
-                background: "rgba(255,255,255,0.08)",
-                border: "1px solid rgba(255,255,255,0.12)",
-                backdropFilter: "blur(8px)",
-                minHeight: "unset",
-              }}
-            >
+            {/* "GET STARTED" pill — solid Square 1 blue */}
+            <Link href="/diagnostic"
+              className="flex items-center gap-2.5 px-4 sm:px-5 py-2.5 rounded-full bg-brand text-white text-xs font-bold tracking-wide uppercase hover:bg-brand/90 transition-all shadow-[0_6px_20px_rgba(0,86,206,0.25)]"
+              style={{ minHeight: "unset" }}>
               Get Started
-              <span className="w-2 h-2 rounded-full bg-brand shrink-0" />
+              <span className="w-2 h-2 rounded-full bg-white/70 shrink-0" />
             </Link>
-            {/* Mobile Sign In */}
-            <Link
-              href="/login"
-              className="sm:hidden text-[11px] font-semibold tracking-[0.12em] uppercase text-white/50 hover:text-white transition-colors"
-              style={{ minHeight: "unset" }}
-            >
+            <Link href="/login" className="sm:hidden text-[11px] font-semibold tracking-[0.12em] uppercase text-slate-500 hover:text-slate-900 transition-colors" style={{ minHeight: "unset" }}>
               In
             </Link>
           </div>
         </div>
       </nav>
 
-      {/* ── HERO BODY ─────────────────────────────────────────────────── */}
-      <div className="relative z-10 flex-1 flex flex-col lg:flex-row items-center max-w-7xl mx-auto w-full px-6 sm:px-8">
+      {/* ── HERO BODY ─────────────────────────────────────────────────────── */}
+      <div className="relative z-10 flex-1 flex flex-col lg:flex-row items-center gap-12 lg:gap-8 max-w-7xl mx-auto w-full px-6 sm:px-8 py-10 lg:py-0">
 
         {/* LEFT — Text */}
-        <div className="w-full lg:w-[45%] flex flex-col justify-center py-8 lg:py-0">
+        <div className="w-full lg:w-1/2 flex flex-col justify-center">
 
-          {/* Tag line */}
           <div className="mb-6 sm:mb-8">
-            <span className="text-[10px] sm:text-xs font-bold tracking-[0.25em] uppercase text-brand border border-brand/30 bg-brand/10 px-3 py-1.5 rounded-full">
+            <span className="text-[10px] sm:text-xs font-bold tracking-[0.25em] uppercase text-brand border border-brand/20 bg-brand/5 px-3 py-1.5 rounded-full">
               Proof, not promises
             </span>
           </div>
 
-          {/* HEADLINE — Loaf-style HUGE bold typography */}
-          <h1
-            className="font-black leading-[0.92] tracking-tight text-white mb-6 sm:mb-8"
-            style={{ fontSize: "clamp(3rem, 8vw, 7rem)" }}
-          >
-            The AI
-            <br />
-            tutor that
-            <br />
-            <span
-              style={{
-                background: "linear-gradient(135deg, #3388FF 0%, #6366f1 50%, #8B5CF6 100%)",
-                WebkitBackgroundClip: "text",
-                WebkitTextFillColor: "transparent",
-                backgroundClip: "text",
-              }}
-            >
-              gets you
-            </span>
-            <br />
-            <span
-              style={{
-                background: "linear-gradient(135deg, #3388FF 0%, #6366f1 50%, #8B5CF6 100%)",
-                WebkitBackgroundClip: "text",
-                WebkitTextFillColor: "transparent",
-                backgroundClip: "text",
-              }}
-            >
-              hired.
+          <h1 className="font-black leading-[0.95] tracking-tight text-slate-900 mb-6 sm:mb-7"
+            style={{ fontSize: "clamp(2.75rem, 6.5vw, 5.5rem)" }}>
+            The AI tutor that{" "}
+            <span style={{ background: BLUE_GRADIENT, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>
+              gets you hired.
             </span>
           </h1>
 
-          {/* Subtext */}
-          <p className="text-sm sm:text-base text-slate-400 leading-relaxed mb-6 max-w-md">
+          <p className="text-sm sm:text-base text-slate-600 leading-relaxed mb-6 max-w-md">
             A degree alone won&apos;t get you hired in 2026 — deployed, code-reviewed
             projects will. Get assessed, get a personalised plan, and build 10–12 real
             projects you can put in front of any employer.
           </p>
 
-          {/* Goal-typer — pick a target role; CTA + salary personalise to it */}
+          {/* Goal-typer */}
           <div className="mb-7 max-w-md">
             <p className="text-xs text-slate-500 mb-2.5 font-medium">I want to become a…</p>
             <div className="flex flex-wrap gap-2">
@@ -204,92 +193,71 @@ export function HeroSection() {
                   className="px-3 py-1.5 rounded-full text-xs font-semibold transition-all"
                   style={
                     goal === i
-                      ? { background: "linear-gradient(135deg,#3388FF,#6366f1)", color: "#fff", boxShadow: "0 4px 16px rgba(51,136,255,0.35)" }
-                      : { background: "rgba(255,255,255,0.06)", color: "#cbd5e1", border: "1px solid rgba(255,255,255,0.12)" }
+                      ? { background: "linear-gradient(135deg,#3388FF,#0056CE)", color: "#fff", boxShadow: "0 4px 16px rgba(0,86,206,0.30)" }
+                      : { background: "#fff", color: "#475569", border: "1px solid #E2E8F0" }
                   }
                 >
                   {r.label}
                 </button>
               ))}
             </div>
-            <p className="mt-3 text-xs text-slate-400">
-              <span className="font-bold text-white">{role.label}</span> roles pay{" "}
-              <span className="font-bold" style={{ color: "#34D399" }}>{role.salary}</span>. See how far you are — free.
+            <p className="mt-3 text-xs text-slate-500">
+              <span className="font-bold text-slate-900">{role.label}</span> roles pay{" "}
+              <span className="font-bold text-emerald-600">{role.salary}</span>. See how far you are — free.
             </p>
           </div>
 
-          {/* CTA row — primary tailored to the picked role */}
+          {/* CTA row — red primary (kept), outline secondary */}
           <div className="flex flex-col sm:flex-row gap-3">
             <Link
               href={`/diagnostic?subject=${role.slug}`}
-              className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-full bg-white text-brand font-bold text-sm hover:bg-slate-100 transition-all shadow-xl hover:shadow-[0_0_30px_rgba(0,86,206,0.3)] hover:-translate-y-px"
+              className="group inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-full text-white font-bold text-sm transition-all hover:-translate-y-px"
+              style={{
+                background: "linear-gradient(135deg, #B91C1C 0%, #DC2626 40%, #EF4444 100%)",
+                boxShadow: "0 12px 32px rgba(220,38,38,0.35), 0 0 0 1px rgba(255,255,255,0.10) inset",
+              }}
             >
-              Show me my {role.label} path →
+              Show me my {role.label} path
+              <span className="transition-transform group-hover:translate-x-1">→</span>
             </Link>
             <Link
               href="/login"
-              className="inline-flex items-center justify-center px-6 py-3.5 rounded-full text-white text-sm font-semibold transition-all"
-              style={{ border: "1px solid rgba(255,255,255,0.15)" }}
+              className="inline-flex items-center justify-center px-6 py-3.5 rounded-full text-slate-700 text-sm font-semibold border border-slate-300 hover:border-slate-400 hover:bg-slate-50 transition-all"
             >
               Sign in
             </Link>
           </div>
 
-          {/* CTA reassurance */}
           <p className="mt-3 text-xs text-slate-500">
             Free · No credit card · No commitment — just signal.
           </p>
 
           {/* Mini trust bar */}
-          <div className="mt-8 flex items-center gap-4 text-[10px] text-slate-600 uppercase tracking-widest">
+          <div className="mt-8 flex items-center gap-4 text-[10px] text-slate-400 uppercase tracking-widest font-semibold">
             <span>12 Subjects</span>
-            <span className="w-1 h-1 rounded-full bg-slate-700" />
+            <span className="w-1 h-1 rounded-full bg-slate-300" />
             <span>10–12 Projects</span>
-            <span className="w-1 h-1 rounded-full bg-slate-700" />
+            <span className="w-1 h-1 rounded-full bg-slate-300" />
             <span>Public Proof</span>
           </div>
         </div>
 
-        {/* RIGHT — Particle Globe (desktop, absolute) */}
-        <div
-          className="hidden lg:flex absolute right-0 top-0 bottom-0 w-[55%] items-center justify-center pointer-events-none"
-          style={{ userSelect: "none" }}
-        >
-          {mounted && (
-            <div style={{ width: 600, height: 600 }}>
-              <ParticleGlobe
-                particleCount={1400}
-                radius={240}
-                color2="#0056CE"
-              />
-            </div>
-          )}
-        </div>
-
-        {/* Mobile globe — centered below text */}
-        <div className="lg:hidden mt-8 w-full flex justify-center pointer-events-none">
-          {mounted && (
-            <div style={{ width: 300, height: 300 }}>
-              <ParticleGlobe
-                particleCount={600}
-                radius={120}
-                color2="#0056CE"
-              />
-            </div>
-          )}
+        {/* RIGHT — Product preview */}
+        <div className="w-full lg:w-1/2 flex items-center justify-center">
+          <HeroProductCard />
         </div>
       </div>
 
-      {/* ── LUSION-STYLE BOTTOM BAR ────────────────────────────────────── */}
-      <div className="relative z-20 w-full border-t border-white/[0.07]">
+      {/* ── BOTTOM BAR ────────────────────────────────────────────────────── */}
+      <div className="relative z-20 w-full border-t border-slate-100">
         <div className="max-w-7xl mx-auto px-6 sm:px-8 py-4 flex items-center gap-4">
-          <span className="text-white/20 text-xs font-light">+</span>
-          <div className="flex-1 h-px bg-white/[0.06]" />
-          <span className="text-[9px] sm:text-[10px] tracking-[0.3em] uppercase text-white/30 font-medium whitespace-nowrap">
+          <span className="text-slate-300 text-xs font-light">+</span>
+          <div className="flex-1 h-px bg-slate-100" />
+          <span className="text-[9px] sm:text-[10px] tracking-[0.3em] uppercase text-slate-400 font-medium whitespace-nowrap">
             Scroll to explore
           </span>
-          <div className="flex-1 h-px bg-white/[0.06]" />
-          <span className="text-white/20 text-xs font-light">+</span>
+          <div className="flex-1 h-px bg-slate-100" />
+          <span className="text-slate-300 text-xs font-light">+</span>
         </div>
       </div>
     </section>
