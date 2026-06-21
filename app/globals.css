@@ -48,6 +48,12 @@
   /* Shadow */
   --shadow-card:       0 1px 2px rgb(15 23 42 / 0.05);
   --shadow-card-hover: 0 4px 24px rgb(0 86 206 / 0.12);
+
+  /* Animation — border beam (travels the card border via CSS motion path) */
+  --animate-border-beam: border-beam calc(var(--duration) * 1s) infinite linear;
+  @keyframes border-beam {
+    to { offset-distance: 100%; }
+  }
 }
 
 /* ─── Dark Mode Overrides ──────────────────────────────────────────────────── */

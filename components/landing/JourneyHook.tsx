@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import { BorderBeam } from "@/components/ui/border-beam";
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // THE HOOK — Sits right after the hero. Answers "Why take this course?"
@@ -181,6 +182,9 @@ function OutcomeCard({
         className="absolute inset-0 rounded-3xl pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-500"
         style={{ boxShadow: `0 16px 48px ${outcome.accent}35, 0 0 0 1px ${outcome.accent}40 inset` }}
       />
+
+      {/* Animated Square 1 blue border beam — staggered per card so they don't sync */}
+      <BorderBeam size={220} duration={8} delay={delay / 80} borderWidth={2} colorFrom="#3388FF" colorTo="#0056CE" />
     </div>
   );
 }
