@@ -9,7 +9,7 @@ import { HowItWorks } from "@/components/business/HowItWorks";
 import { EmployeeJourney } from "@/components/business/EmployeeJourney";
 import { ROICalculator } from "@/components/business/ROICalculator";
 import { NovaCapabilities } from "@/components/business/NovaCapabilities";
-import { InlineDiagnostic } from "@/components/landing/InlineDiagnostic";
+import { TeamImpact } from "@/components/business/TeamImpact";
 
 export const metadata: Metadata = {
   title: "For Teams — Upskill Your Staff in AI",
@@ -82,8 +82,8 @@ export default function BusinessPage() {
       {/* 2. Meet Nova — compact, full-capability (tutor / review / build / adapt) */}
       <NovaCapabilities />
 
-      {/* 3. Try it yourself — the real skill check (manager-framed) */}
-      <InlineDiagnostic eyebrow="Try it yourself · 2 minutes" heading="Take the skill check your staff take." />
+      {/* 3. Team impact — projected dashboard of what the program does to a team */}
+      <TeamImpact />
 
       {/* 4. Proof, not completion — deployed, reviewed, verifiable (white + blue) */}
       <section className="relative overflow-hidden py-20 sm:py-24 px-4 sm:px-6 lg:px-8" style={{ background: "linear-gradient(180deg,#F8FAFC 0%,#FFFFFF 100%)" }}>
