@@ -189,6 +189,150 @@ function OutcomeCard({
   );
 }
 
+// ─── "What an employer sees" — résumé→proof flip + hiring decision ────────────
+function EmployerProof({ visible }: { visible: boolean }) {
+  const [view, setView] = useState<"resume" | "proof">("proof");
+
+  const pillars = [
+    {
+      k: "Value", v: "A live, deployed product",
+      icon: <><circle cx="12" cy="12" r="9" /><path d="M3 12h18" /><path d="M12 3c2.5 2.6 2.5 15.4 0 18M12 3c-2.5 2.6-2.5 15.4 0 18" /></>,
+    },
+    {
+      k: "Experience", v: "12 real projects",
+      icon: <><rect x="3" y="3" width="7" height="7" rx="1" /><rect x="14" y="3" width="7" height="7" rx="1" /><rect x="3" y="14" width="7" height="7" rx="1" /><rect x="14" y="14" width="7" height="7" rx="1" /></>,
+    },
+    {
+      k: "Know-how", v: "Every line AI-graded",
+      icon: <><circle cx="12" cy="12" r="9" /><path d="M9 12l2 2 4-4" /></>,
+    },
+  ];
+
+  return (
+    <div className="mt-14 lg:mt-20 grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
+      {/* LEFT — student-first copy + pillars + de-risk row */}
+      <div className="text-center lg:text-left">
+        <span className="text-[10px] sm:text-[11px] tracking-[0.35em] uppercase text-brand font-bold">Your unfair advantage</span>
+        <h3 className="mt-3 text-2xl sm:text-3xl lg:text-[2.5rem] font-bold text-slate-900 leading-[1.05] mb-3">
+          Stop sending résumés.<br />Start sending proof.
+        </h3>
+        <p className="text-sm sm:text-base text-slate-600 leading-relaxed max-w-md mx-auto lg:mx-0 mb-6">
+          When 400 applicants all say &ldquo;familiar with Python,&rdquo; you&apos;re the one whose work a hiring manager can open, run, and verify — before the first call.
+        </p>
+
+        <div className="grid grid-cols-3 gap-2.5 max-w-md mx-auto lg:mx-0 mb-5">
+          {pillars.map((p) => (
+            <div key={p.k} className="rounded-xl border border-slate-200 bg-white p-3 text-left">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0056CE" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mb-1.5">{p.icon}</svg>
+              <p className="text-xs font-bold text-slate-900">{p.k}</p>
+              <p className="text-[11px] text-slate-500 leading-snug mt-0.5">{p.v}</p>
+            </div>
+          ))}
+        </div>
+
+        <div className="flex flex-wrap gap-x-3 gap-y-1.5 justify-center lg:justify-start">
+          {["Live demo", "AI-graded code", "One-click verify", "No take-home"].map((t) => (
+            <span key={t} className="inline-flex items-center gap-1 text-[11px] font-medium text-slate-500">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#19A65F" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
+              {t}
+            </span>
+          ))}
+        </div>
+      </div>
+
+      {/* RIGHT — interactive résumé ↔ proof flip */}
+      <div>
+        <div className="flex justify-center lg:justify-end mb-3">
+          <div className="inline-flex p-1 rounded-full bg-slate-100 border border-slate-200 text-xs font-semibold">
+            {([["resume", "Typical résumé"], ["proof", "Square 1 proof"]] as const).map(([key, label]) => (
+              <button key={key} onClick={() => setView(key)}
+                className={`px-3.5 py-1.5 rounded-full transition-all ${view === key ? "bg-white text-brand shadow-sm" : "text-slate-500 hover:text-slate-700"}`}>
+                {label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div key={view} className="animate-fade-in-up">
+          {view === "resume" ? (
+            <div className="rounded-2xl border border-slate-200 bg-white p-6" style={{ boxShadow: "0 14px 40px rgba(15,28,49,0.07)" }}>
+              <div className="flex items-center justify-between mb-4">
+                <div>
+                  <p className="text-base font-bold text-slate-700">Alex Rivera</p>
+                  <p className="text-xs text-slate-400">Aspiring Software Engineer · resume.pdf</p>
+                </div>
+                <span className="text-[10px] font-bold px-2 py-1 rounded bg-slate-100 text-slate-400 border border-slate-200">PDF</span>
+              </div>
+              <div className="space-y-2.5">
+                {["Familiar with Python (3 yrs)", "Strong team player, fast learner", "Built various personal projects", "Passionate about technology"].map((b) => (
+                  <div key={b} className="flex items-start gap-2 text-sm text-slate-500">
+                    <span className="mt-2 w-1.5 h-1.5 rounded-full bg-slate-300 shrink-0" />{b}
+                  </div>
+                ))}
+              </div>
+              <div className="mt-5 pt-4 border-t border-slate-100 flex items-center gap-2 text-xs text-slate-400">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10" /><path d="M9.1 9a3 3 0 1 1 5 2.2c-.9.7-1.6 1.2-1.6 2.3" /><line x1="12" y1="17" x2="12.01" y2="17" /></svg>
+                References on request — nothing to click, nothing to verify.
+              </div>
+            </div>
+          ) : (
+            <div className="relative rounded-2xl border border-slate-200 overflow-hidden" style={{ background: "linear-gradient(180deg,#0B1626 0%,#070E1A 100%)", boxShadow: "0 24px 64px rgba(15,28,49,0.25)" }}>
+              <div className="flex items-center gap-2 px-4 py-3 border-b border-white/[0.08]">
+                <span className="w-2.5 h-2.5 rounded-full bg-red-400/70" />
+                <span className="w-2.5 h-2.5 rounded-full bg-amber-400/70" />
+                <span className="w-2.5 h-2.5 rounded-full bg-emerald-400/70" />
+                <span className="ml-2 text-[11px] text-slate-500 font-mono truncate">alex-rivera.dev · portfolio</span>
+                <span className="ml-auto hidden sm:inline-flex items-center gap-1 text-[9px] font-semibold text-slate-400 whitespace-nowrap">
+                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="9" /><polyline points="12 7 12 12 15 14" /></svg>
+                  reviewed in 4 min
+                </span>
+              </div>
+              <div className="p-4 sm:p-5 space-y-3">
+                <div className="rounded-xl border border-white/10 p-4" style={{ background: "rgba(255,255,255,0.02)" }}>
+                  <div className="flex items-center justify-between gap-2 mb-3">
+                    <span className="text-sm font-bold text-white font-mono">rag-support-agent</span>
+                    <span className="inline-flex items-center gap-1.5 text-[10px] font-semibold px-2 py-0.5 rounded-full text-emerald-300" style={{ background: "rgba(52,211,153,0.12)", border: "1px solid rgba(52,211,153,0.3)" }}>
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" /> live
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between text-[10px] mb-1.5">
+                    <span className="text-slate-400">Nova code review</span>
+                    <span className="font-bold text-emerald-300 tabular-nums">94/100</span>
+                  </div>
+                  <div className="h-1.5 rounded-full bg-white/[0.08] overflow-hidden">
+                    <div className="h-full rounded-full transition-[width] duration-1000 ease-out" style={{ width: visible ? "94%" : "0%", background: "linear-gradient(90deg,#3388FF,#34D399)" }} />
+                  </div>
+                </div>
+                {[{ n: "vision-defect-detector", s: "91" }, { n: "trading-dashboard-api", s: "88" }].map((p) => (
+                  <div key={p.n} className="flex items-center justify-between rounded-lg border border-white/[0.08] px-3.5 py-2.5" style={{ background: "rgba(255,255,255,0.015)" }}>
+                    <span className="text-xs font-mono text-slate-300">{p.n}</span>
+                    <div className="flex items-center gap-2.5 text-[10px]">
+                      <span className="inline-flex items-center gap-1 text-emerald-300/80"><span className="w-1.5 h-1.5 rounded-full bg-emerald-400" /> live</span>
+                      <span className="text-slate-600">·</span>
+                      <span className="text-slate-400 tabular-nums">{p.s}/100</span>
+                    </div>
+                  </div>
+                ))}
+                {/* Hiring decision — the manager's YES */}
+                <div className="flex items-center justify-between gap-3 pt-2">
+                  <span className="inline-flex items-center gap-1.5 text-[10px] font-semibold text-slate-300">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#3388FF" strokeWidth="2.5"><circle cx="12" cy="12" r="9" /><path d="M9 12l2 2 4-4" /></svg>
+                    Verified <span className="hidden sm:inline text-slate-600 font-mono font-normal ml-1">SQ1-7F3A-9C21</span>
+                  </span>
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-bold text-white shrink-0" style={{ background: "linear-gradient(135deg,#19A65F,#34D399)" }}>
+                    Invite to interview
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
+                  </span>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ─── Role marquee (scrolling target roles) ────────────────────────────────────
 function RoleMarquee() {
   // Duplicate for seamless infinite scroll
@@ -580,58 +724,8 @@ export function JourneyHook() {
             ))}
           </div>
 
-          {/* What an employer actually sees — the tangible proof (folded in from ProofBand) */}
-          <div className="mt-14 lg:mt-20 grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
-            <div className="text-center lg:text-left">
-              <h3 className="text-2xl sm:text-3xl font-bold text-slate-900 leading-tight mb-3">And here&apos;s what an employer sees.</h3>
-              <p className="text-sm sm:text-base text-slate-600 leading-relaxed max-w-md mx-auto lg:mx-0">
-                Not a bullet point that says &ldquo;familiar with Python.&rdquo; A deployed project they can open, an AI review score that vouches for the code, and a credential they can verify in one click.
-              </p>
-            </div>
-
-            <div className="relative rounded-2xl border border-slate-200 overflow-hidden" style={{ background: "linear-gradient(180deg,#0B1626 0%,#070E1A 100%)", boxShadow: "0 24px 64px rgba(15,28,49,0.25)" }}>
-              <div className="flex items-center gap-2 px-4 py-3 border-b border-white/[0.08]">
-                <span className="w-2.5 h-2.5 rounded-full bg-red-400/70" />
-                <span className="w-2.5 h-2.5 rounded-full bg-amber-400/70" />
-                <span className="w-2.5 h-2.5 rounded-full bg-emerald-400/70" />
-                <span className="ml-2 text-[11px] text-slate-500 font-mono truncate">alex-rivera.dev · portfolio</span>
-              </div>
-              <div className="p-4 sm:p-5 space-y-3">
-                <div className="rounded-xl border border-white/10 p-4" style={{ background: "rgba(255,255,255,0.02)" }}>
-                  <div className="flex items-center justify-between gap-2 mb-3">
-                    <span className="text-sm font-bold text-white font-mono">rag-support-agent</span>
-                    <span className="inline-flex items-center gap-1.5 text-[10px] font-semibold px-2 py-0.5 rounded-full text-emerald-300" style={{ background: "rgba(52,211,153,0.12)", border: "1px solid rgba(52,211,153,0.3)" }}>
-                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" /> live
-                    </span>
-                  </div>
-                  <div className="flex items-center justify-between text-[10px] mb-1.5">
-                    <span className="text-slate-400">Nova code review</span>
-                    <span className="font-bold text-emerald-300 tabular-nums">94/100</span>
-                  </div>
-                  <div className="h-1.5 rounded-full bg-white/[0.08] overflow-hidden">
-                    <div className="h-full rounded-full transition-[width] duration-1000 ease-out" style={{ width: heroVisible ? "94%" : "0%", background: "linear-gradient(90deg,#3388FF,#34D399)" }} />
-                  </div>
-                </div>
-                {[{ n: "vision-defect-detector", s: "91" }, { n: "trading-dashboard-api", s: "88" }].map((p) => (
-                  <div key={p.n} className="flex items-center justify-between rounded-lg border border-white/[0.08] px-3.5 py-2.5" style={{ background: "rgba(255,255,255,0.015)" }}>
-                    <span className="text-xs font-mono text-slate-300">{p.n}</span>
-                    <div className="flex items-center gap-2.5 text-[10px]">
-                      <span className="inline-flex items-center gap-1 text-emerald-300/80"><span className="w-1.5 h-1.5 rounded-full bg-emerald-400" /> live</span>
-                      <span className="text-slate-600">·</span>
-                      <span className="text-slate-400 tabular-nums">{p.s}/100</span>
-                    </div>
-                  </div>
-                ))}
-                <div className="flex items-center justify-between pt-1.5">
-                  <span className="inline-flex items-center gap-1.5 text-[10px] font-semibold text-slate-300">
-                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#3388FF" strokeWidth="2.5"><circle cx="12" cy="12" r="9" /><path d="M9 12l2 2 4-4" /></svg>
-                    Verified by Square 1
-                  </span>
-                  <span className="text-[10px] text-slate-600 font-mono">SQ1-7F3A-9C21</span>
-                </div>
-              </div>
-            </div>
-          </div>
+          {/* What an employer sees — interactive résumé→proof flip + hiring decision */}
+          <EmployerProof visible={heroVisible} />
         </div>
       </section>
 
