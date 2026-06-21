@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { HeroSection } from "@/components/landing/HeroSection";
 import { RealityBand } from "@/components/landing/RealityBand";
 import { ComparisonSection } from "@/components/landing/ComparisonSection";
+import { TransformSection } from "@/components/landing/TransformSection";
 import { SocialProofSection } from "@/components/landing/SocialProofSection";
 import { JourneyHook } from "@/components/landing/JourneyHook";
 import { CourseGridSection } from "@/components/landing/CourseGridSection";
@@ -94,7 +95,12 @@ export default async function Home() {
 
       <SectionWave />
 
-      {/* ── 6. Why Square 1 beats everything else ────────────────────────────── */}
+      {/* ── 6. Before → after: the learner's six-month transformation ─────────── */}
+      <TransformSection />
+
+      <SectionWave />
+
+      {/* ── 7. Why Square 1 beats everything else ────────────────────────────── */}
       <ComparisonSection />
 
       <SectionWave />
