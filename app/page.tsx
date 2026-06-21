@@ -320,9 +320,6 @@ export default async function Home() {
               <p className="text-xs text-slate-600">
                 © 2026 Square 1 Ai. All rights reserved.
               </p>
-              <p className="text-[10px] text-slate-700 text-center sm:text-right">
-                Built with ❤️ for learners who want more than tutorials.
-              </p>
             </div>
           </div>
         </footer>
