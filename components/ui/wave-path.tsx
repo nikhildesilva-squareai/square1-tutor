@@ -77,7 +77,7 @@ export function WavePath({ className, ...props }: WWavePathProps) {
 			/>
 			{/* Visual only — never intercept clicks on the surrounding sections */}
 			<svg className="pointer-events-none absolute -top-[100px] h-[300px] w-full">
-				<path ref={path} className="fill-none stroke-current" strokeWidth={2} />
+				<path ref={path} className="fill-none stroke-current" strokeWidth={2.5} />
 			</svg>
 		</div>
 	);

@@ -15,7 +15,7 @@ import { WavePath } from "@/components/ui/wave-path";
 // ─── Interactive wavy divider between sections (bends toward the cursor) ───────
 function SectionWave() {
   return (
-    <div className="relative z-20 flex justify-center text-brand/40">
+    <div className="relative z-20 flex justify-center text-brand/70">
       <WavePath />
     </div>
   );
