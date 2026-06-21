@@ -419,8 +419,8 @@ function ClosingCTA() {
               href="/diagnostic"
               className="group inline-flex items-center gap-2.5 px-8 py-4 rounded-xl text-base sm:text-lg font-bold text-white tracking-tight transition-transform duration-200 ease-out hover:scale-[1.02]"
               style={{
-                background: "linear-gradient(135deg, #0056CE 0%, #3388FF 100%)",
-                boxShadow: "0 12px 28px rgba(0,86,206,0.28), 0 0 0 1px rgba(255,255,255,0.12) inset",
+                background: "linear-gradient(135deg, #DC2626 0%, #B91C1C 100%)",
+                boxShadow: "0 12px 28px rgba(15,28,49,0.18), 0 0 0 1px rgba(255,255,255,0.12) inset",
               }}
             >
               Get your free skill report
