@@ -333,6 +333,121 @@ function EmployerProof({ visible }: { visible: boolean }) {
   );
 }
 
+// ─── Closing CTA — scroll-reveal, animated headline sheen, magnetic glowing button
+function ClosingCTA() {
+  const ref = useRef<HTMLDivElement>(null);
+  const btnRef = useRef<HTMLAnchorElement>(null);
+  const reduceRef = useRef(false);
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    reduceRef.current = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const obs = new IntersectionObserver(([e]) => e.isIntersecting && setVisible(true), { threshold: 0.25 });
+    if (ref.current) obs.observe(ref.current);
+    return () => obs.disconnect();
+  }, []);
+
+  const onMove = (e: React.MouseEvent) => {
+    const b = btnRef.current;
+    if (!b || reduceRef.current) return;
+    const r = b.getBoundingClientRect();
+    b.style.transform = `translate(${(e.clientX - (r.left + r.width / 2)) * 0.1}px, ${(e.clientY - (r.top + r.height / 2)) * 0.16}px)`;
+  };
+  const onLeave = () => { if (btnRef.current) btnRef.current.style.transform = "translate(0,0)"; };
+
+  const reveal = (i: number): React.CSSProperties => ({
+    opacity: visible ? 1 : 0,
+    transform: visible ? "translateY(0)" : "translateY(24px)",
+    transition: `opacity .6s ease ${i * 80}ms, transform .6s ease ${i * 80}ms`,
+  });
+
+  return (
+    <section
+      className="relative w-full overflow-hidden py-20 sm:py-24 lg:py-32 px-4 sm:px-6 lg:px-8"
+      style={{
+        background: `
+          radial-gradient(ellipse 900px 450px at 20% 25%, rgba(0,86,206,0.10), transparent 60%),
+          radial-gradient(ellipse 700px 500px at 80% 75%, rgba(14,165,233,0.10), transparent 60%),
+          radial-gradient(ellipse 800px 600px at 50% 50%, rgba(51,136,255,0.07), transparent 60%),
+          linear-gradient(180deg, #F8FAFC 0%, #FFFFFF 50%, #F4F8FF 100%)
+        `,
+      }}
+    >
+      <div className="pointer-events-none absolute top-0 left-1/4 w-[500px] h-[500px] rounded-full opacity-40 animate-blob-1"
+        style={{ background: "radial-gradient(circle, rgba(0,86,206,0.15) 0%, transparent 70%)", filter: "blur(80px)" }} />
+      <div className="pointer-events-none absolute bottom-0 right-1/4 w-[600px] h-[500px] rounded-full opacity-40 animate-blob-2"
+        style={{ background: "radial-gradient(circle, rgba(14,165,233,0.12) 0%, transparent 70%)", filter: "blur(90px)" }} />
+
+      <div ref={ref} className="relative max-w-3xl mx-auto text-center">
+        <span className="block text-[10px] sm:text-[11px] tracking-[0.35em] uppercase text-brand font-bold" style={reveal(0)}>
+          Your turn
+        </span>
+
+        <h3 className="mt-4 mb-5 font-black text-slate-900 tracking-tight leading-[0.95]"
+          style={{ fontSize: "clamp(36px, 6vw, 76px)", ...reveal(1) }}>
+          Start the assessment.
+          <br />
+          <span
+            className="animate-text-sheen"
+            style={{
+              background: "linear-gradient(90deg, #3388FF, #0056CE, #01224F, #0056CE, #3388FF)",
+              backgroundSize: "200% auto",
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent",
+              backgroundClip: "text",
+            }}
+          >
+            Take step one.
+          </span>
+        </h3>
+
+        <p className="text-sm sm:text-base text-slate-600 max-w-md mx-auto mb-10" style={reveal(2)}>
+          30 minutes to find out where you stand. Zero pressure. Free forever.
+        </p>
+
+        <div className="flex justify-center mb-10" style={reveal(3)}>
+          <div className="inline-flex flex-wrap items-center justify-center gap-x-3 gap-y-2 px-5 py-2.5 rounded-full border bg-white text-xs sm:text-sm text-slate-600"
+            style={{ borderColor: "rgba(15,28,49,0.08)", boxShadow: "0 4px 16px rgba(15,28,49,0.05)" }}>
+            <span className="font-semibold text-slate-900">20 questions</span>
+            <span className="text-slate-300">·</span>
+            <span className="font-semibold text-slate-900">AI-graded</span>
+            <span className="text-slate-300">·</span>
+            <span className="font-semibold text-slate-900">Instant skill report</span>
+          </div>
+        </div>
+
+        <div className="flex flex-col items-center" style={reveal(4)}>
+          {/* Magnetic catch zone — gives the button room to lean toward the cursor */}
+          <div className="relative px-10 py-8" onMouseMove={onMove} onMouseLeave={onLeave}>
+            {/* Pulsing glow ring (transform handled by the keyframe) */}
+            <span aria-hidden className="pointer-events-none absolute left-1/2 top-1/2 w-[112%] h-[150%] rounded-full animate-cta-ring"
+              style={{ background: "radial-gradient(ellipse at center, rgba(244,63,94,0.45), transparent 70%)", filter: "blur(24px)" }} />
+            <Link
+              ref={btnRef}
+              href="/diagnostic"
+              className="relative group inline-flex items-center gap-4 px-12 sm:px-16 py-6 sm:py-7 rounded-2xl text-lg sm:text-xl lg:text-2xl font-black text-white overflow-hidden tracking-tight transition-transform duration-200 ease-out hover:scale-[1.02]"
+              style={{
+                background: "linear-gradient(135deg, #B91C1C 0%, #DC2626 35%, #EF4444 70%, #F43F5E 100%)",
+                boxShadow: "0 20px 56px rgba(220,38,38,0.45), 0 0 80px rgba(244,63,94,0.30), 0 0 0 1px rgba(255,255,255,0.15) inset",
+                letterSpacing: "-0.01em",
+              }}
+            >
+              <span className="relative z-10">Get your free skill report</span>
+              <span className="relative z-10 text-2xl sm:text-3xl transition-transform duration-300 group-hover:translate-x-2">→</span>
+              <span className="absolute inset-0 animate-cta-shimmer pointer-events-none"
+                style={{ background: "linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.40) 50%, transparent 100%)", width: "60%" }} />
+            </Link>
+          </div>
+
+          <p className="mt-2 text-xs sm:text-sm text-slate-500 font-medium">
+            No credit card · No commitment · Just signal
+          </p>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 // ─── Role marquee (scrolling target roles) ────────────────────────────────────
 function RoleMarquee() {
   // Duplicate for seamless infinite scroll
@@ -765,94 +880,9 @@ export function JourneyHook() {
       {/* Zone 2 → Zone 3: both light, seamless */}
 
       {/* ════════════════════════════════════════════════════════════════════════ */}
-      {/* ZONE 3 — CLOSING CTA · LIGHT GRADIENT THEME · ALIVE BUTTON */}
+      {/* ZONE 3 — CLOSING CTA · vibrant: reveal + headline sheen + magnetic button */}
       {/* ════════════════════════════════════════════════════════════════════════ */}
-      <section
-        className="relative w-full overflow-hidden py-20 sm:py-24 lg:py-32 px-4 sm:px-6 lg:px-8"
-        style={{
-          background: `
-            radial-gradient(ellipse 900px 450px at 20% 25%, rgba(0,86,206,0.10), transparent 60%),
-            radial-gradient(ellipse 700px 500px at 80% 75%, rgba(14,165,233,0.10), transparent 60%),
-            radial-gradient(ellipse 800px 600px at 50% 50%, rgba(51,136,255,0.07), transparent 60%),
-            linear-gradient(180deg, #F8FAFC 0%, #FFFFFF 50%, #F4F8FF 100%)
-          `,
-        }}
-      >
-        {/* Extra animated background blobs for depth */}
-        <div className="pointer-events-none absolute top-0 left-1/4 w-[500px] h-[500px] rounded-full opacity-40 animate-blob-1"
-          style={{ background: "radial-gradient(circle, rgba(0,86,206,0.15) 0%, transparent 70%)", filter: "blur(80px)" }} />
-        <div className="pointer-events-none absolute bottom-0 right-1/4 w-[600px] h-[500px] rounded-full opacity-40 animate-blob-2"
-          style={{ background: "radial-gradient(circle, rgba(14,165,233,0.12) 0%, transparent 70%)", filter: "blur(90px)" }} />
-
-        <div className="relative max-w-3xl mx-auto text-center">
-          {/* Label */}
-          <span className="text-[10px] sm:text-[11px] tracking-[0.35em] uppercase text-slate-500 font-bold">
-            Your turn
-          </span>
-
-          {/* Closing headline */}
-          <h3 className="mt-4 mb-5 font-black text-slate-900 tracking-tight leading-[0.95]"
-            style={{ fontSize: "clamp(36px, 6vw, 76px)" }}>
-            Start the assessment.
-            <br />
-            <span style={{
-              background: "linear-gradient(135deg, #3388FF 0%, #0056CE 55%, #01224F 100%)",
-              WebkitBackgroundClip: "text",
-              WebkitTextFillColor: "transparent",
-              backgroundClip: "text",
-            }}>
-              Take step one.
-            </span>
-          </h3>
-
-          <p className="text-sm sm:text-base text-slate-600 max-w-md mx-auto mb-10">
-            30 minutes to find out where you stand. Zero pressure. Free forever.
-          </p>
-
-          {/* What you get, stated plainly */}
-          <div className="flex justify-center mb-10">
-            <div className="inline-flex flex-wrap items-center justify-center gap-x-3 gap-y-2 px-5 py-2.5 rounded-full border bg-white text-xs sm:text-sm text-slate-600"
-              style={{ borderColor: "rgba(15,28,49,0.08)", boxShadow: "0 4px 16px rgba(15,28,49,0.05)" }}>
-              <span className="font-semibold text-slate-900">20 questions</span>
-              <span className="text-slate-300">·</span>
-              <span className="font-semibold text-slate-900">AI-graded</span>
-              <span className="text-slate-300">·</span>
-              <span className="font-semibold text-slate-900">Instant skill report</span>
-            </div>
-          </div>
-
-          {/* Big CTA — rich red gradient · large · warm and premium */}
-          <div className="flex flex-col items-center gap-5">
-            <Link
-              href="/diagnostic"
-              className="relative group inline-flex items-center gap-4 px-12 sm:px-16 py-6 sm:py-7 rounded-2xl text-lg sm:text-xl lg:text-2xl font-black text-white overflow-hidden tracking-tight hover:-translate-y-0.5 transition-transform duration-300"
-              style={{
-                /* Sophisticated 3-stop red: deep red → vibrant red → rose-red */
-                background: "linear-gradient(135deg, #B91C1C 0%, #DC2626 35%, #EF4444 70%, #F43F5E 100%)",
-                boxShadow: "0 20px 56px rgba(220,38,38,0.45), 0 0 80px rgba(244,63,94,0.30), 0 0 0 1px rgba(255,255,255,0.15) inset",
-                letterSpacing: "-0.01em",
-                willChange: "transform",
-              }}
-            >
-              <span className="relative z-10">Get your free skill report</span>
-              <span className="relative z-10 text-2xl sm:text-3xl transition-transform duration-300 group-hover:translate-x-2">→</span>
-
-              {/* Subtle auto-shimmer — premium polish, not blinking */}
-              <span
-                className="absolute inset-0 animate-cta-shimmer pointer-events-none"
-                style={{
-                  background: "linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.40) 50%, transparent 100%)",
-                  width: "60%",
-                }}
-              />
-            </Link>
-
-            <p className="text-xs sm:text-sm text-slate-500 font-medium">
-              No credit card · No commitment · Just signal
-            </p>
-          </div>
-        </div>
-      </section>
+      <ClosingCTA />
     </>
   );
 }
