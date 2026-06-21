@@ -13,7 +13,7 @@ const FEATURED = {
 };
 
 const TILES = [
-  { title: "Personalised to each level", desc: "A diagnostic places everyone, then builds a path from where they actually are — junior to senior, no one bored or lost.", accent: "#7C3AED", icon: "M12 2a10 10 0 100 20 10 10 0 000-20zM12 8v4l3 2", wide: true },
+  { title: "Personalised to each level", desc: "A diagnostic places everyone, then builds a path from where they actually are — junior to senior, no one bored or lost.", accent: "#0EA5E9", icon: "M12 2a10 10 0 100 20 10 10 0 000-20zM12 8v4l3 2", wide: true },
   { title: "Verifiable proof of skill", desc: "Deployed projects + AI-verified certificates — real evidence, not a completion checkbox.", accent: "#10B981", icon: "M22 11.08V12a10 10 0 11-5.93-9.14M22 4 12 14.01l-3-3", wide: false },
   { title: "A fraction of bootcamp cost", desc: "AI tutoring + project review at scale, per seat — it makes a bootcamp look absurd.", accent: "#F59E0B", icon: "M12 1v22M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6", wide: false },
 ];

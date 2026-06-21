@@ -90,7 +90,7 @@ export function BusinessLeadForm() {
 
       <button type="submit" disabled={state === "saving"}
         className="w-full h-12 rounded-xl font-bold text-sm text-white transition-all hover:-translate-y-0.5 disabled:opacity-60"
-        style={{ background: "linear-gradient(135deg,#0056CE,#4F46E5)", boxShadow: "0 12px 32px rgba(0,86,206,0.30)" }}>
+        style={{ background: "linear-gradient(135deg,#0056CE,#3388FF)", boxShadow: "0 12px 32px rgba(0,86,206,0.30)" }}>
         {state === "saving" ? "Sending…" : "Request team pricing →"}
       </button>
       <p className="text-[11px] text-slate-400 text-center">We&apos;ll reply with pricing + a pilot offer. No spam.</p>

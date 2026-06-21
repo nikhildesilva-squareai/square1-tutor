@@ -87,7 +87,7 @@ export function SeatSelector() {
 
       <Link href={`/business/start?seats=${seats}&interval=${interval}`}
         className="block text-center w-full py-4 rounded-xl text-white font-bold text-base hover:-translate-y-0.5 transition-transform"
-        style={{ background: "linear-gradient(135deg,#0056CE,#4F46E5)", boxShadow: "0 12px 32px rgba(0,86,206,0.30)" }}>
+        style={{ background: "linear-gradient(135deg,#0056CE,#3388FF)", boxShadow: "0 12px 32px rgba(0,86,206,0.30)" }}>
         Start your team — free →
       </Link>
       <p className="text-center text-[11px] text-slate-400 mt-3">

@@ -8,9 +8,9 @@ import { useEffect, useRef, useState } from "react";
 
 const CAPS = [
   { key: "tutor", title: "An AI tutor, 24/7", desc: "Answers questions on your lessons and your own code, right in the Study Hub — any time.", accent: "#3388FF", icon: "M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" },
-  { key: "review", title: "Reviews every line you write", desc: "Reads real submissions — strengths, fixes, and a score. Not a video, not a generic tip.", accent: "#A78BFA", icon: "M16 18l6-6-6-6M8 6l-6 6 6 6" },
-  { key: "build", title: "Coaches you through building", desc: "10–12 real, deployed projects. You learn it, then you build it — the proof is in the building.", accent: "#10B981", icon: "M12 2 2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" },
-  { key: "adapt", title: "Knows each learner", desc: "Adapts to every employee's level, weak topics, and current lesson — personal, at scale.", accent: "#FBBF24", icon: "M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2M12 11a4 4 0 100-8 4 4 0 000 8z" },
+  { key: "review", title: "Reviews every line you write", desc: "Reads real submissions — strengths, fixes, and a score. Not a video, not a generic tip.", accent: "#0EA5E9", icon: "M16 18l6-6-6-6M8 6l-6 6 6 6" },
+  { key: "build", title: "Coaches you through building", desc: "10–12 real, deployed projects. You learn it, then you build it — the proof is in the building.", accent: "#0056CE", icon: "M12 2 2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" },
+  { key: "adapt", title: "Knows each learner", desc: "Adapts to every employee's level, weak topics, and current lesson — personal, at scale.", accent: "#1E40AF", icon: "M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2M12 11a4 4 0 100-8 4 4 0 000 8z" },
 ];
 
 function NovaPanel({ k }: { k: string }) {
@@ -83,17 +83,17 @@ export function NovaCapabilities() {
   }, [visible, paused]);
 
   return (
-    <section ref={ref} className="relative overflow-hidden py-20 sm:py-24 px-4 sm:px-6 lg:px-8" style={{ background: "#050B14" }}>
-      <div className="pointer-events-none absolute top-0 left-1/4 w-[600px] h-[600px] rounded-full opacity-[0.10]"
-        style={{ background: "radial-gradient(circle,#3388FF 0%,transparent 70%)", filter: "blur(110px)" }} />
-      <div className="pointer-events-none absolute bottom-0 right-1/4 w-[600px] h-[600px] rounded-full opacity-[0.10]"
-        style={{ background: "radial-gradient(circle,#A78BFA 0%,transparent 70%)", filter: "blur(110px)" }} />
+    <section ref={ref} className="relative overflow-hidden py-20 sm:py-24 px-4 sm:px-6 lg:px-8" style={{ background: "linear-gradient(180deg,#F4F8FF 0%,#FFFFFF 100%)" }}>
+      <div className="pointer-events-none absolute top-0 left-1/4 w-[600px] h-[600px] rounded-full"
+        style={{ background: "radial-gradient(circle,rgba(0,86,206,0.07) 0%,transparent 70%)", filter: "blur(110px)" }} />
+      <div className="pointer-events-none absolute bottom-0 right-1/4 w-[600px] h-[600px] rounded-full"
+        style={{ background: "radial-gradient(circle,rgba(14,165,233,0.07) 0%,transparent 70%)", filter: "blur(110px)" }} />
 
       <div className="relative max-w-5xl mx-auto">
         <div className="text-center mb-9">
-          <span className="text-[10px] sm:text-[11px] tracking-[0.35em] uppercase text-slate-500 font-bold">Meet Nova</span>
-          <h2 className="mt-3 text-2xl sm:text-3xl font-black text-white">More than a code checker.</h2>
-          <p className="mt-3 text-sm sm:text-base text-slate-400 max-w-xl mx-auto">
+          <span className="text-[10px] sm:text-[11px] tracking-[0.35em] uppercase text-brand font-bold">Meet Nova</span>
+          <h2 className="mt-3 text-2xl sm:text-3xl font-black text-slate-900">More than a code checker.</h2>
+          <p className="mt-3 text-sm sm:text-base text-slate-600 max-w-xl mx-auto">
             Nova tutors every employee, reviews their real code, and coaches them through building deployed projects. They learn it — then prove it by building it.
           </p>
         </div>
@@ -106,13 +106,13 @@ export function NovaCapabilities() {
               return (
                 <button key={c.key} onClick={() => setActive(i)}
                   className="w-full text-left flex items-start gap-3 rounded-xl border p-3.5 transition-all"
-                  style={{ borderColor: on ? `${c.accent}66` : "rgba(255,255,255,0.10)", background: on ? `${c.accent}1a` : "rgba(255,255,255,0.03)", boxShadow: on ? `0 8px 24px ${c.accent}26` : "none" }}>
+                  style={{ borderColor: on ? `${c.accent}66` : "#E2E8F0", background: on ? `${c.accent}12` : "#FFFFFF", boxShadow: on ? `0 8px 24px ${c.accent}22` : "0 1px 3px rgba(15,28,49,0.04)" }}>
                   <span className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0 transition-transform" style={{ background: `linear-gradient(135deg, ${c.accent}, ${c.accent}cc)`, transform: on ? "scale(1.05)" : "scale(1)" }}>
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d={c.icon} /></svg>
                   </span>
                   <span>
-                    <span className="block text-sm font-black text-white leading-snug">{c.title}</span>
-                    <span className="block text-xs text-slate-400 leading-relaxed mt-0.5">{c.desc}</span>
+                    <span className="block text-sm font-black text-slate-900 leading-snug">{c.title}</span>
+                    <span className="block text-xs text-slate-600 leading-relaxed mt-0.5">{c.desc}</span>
                   </span>
                 </button>
               );

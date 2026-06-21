@@ -64,7 +64,7 @@ export function ROICalculator() {
         <div className="mt-6 flex flex-col sm:flex-row items-center justify-between gap-3">
           <p className="text-[11px] text-slate-400 max-w-xs text-center sm:text-left">Output = up to 12 deployable builds per learner. Bootcamp benchmark ≈ $10k/head.</p>
           <Link href="#start" className="inline-flex items-center gap-2 px-7 py-3.5 rounded-xl text-white font-bold text-sm hover:-translate-y-0.5 transition-transform whitespace-nowrap"
-            style={{ background: "linear-gradient(135deg,#0056CE,#4F46E5)", boxShadow: "0 12px 32px rgba(0,86,206,0.30)" }}>
+            style={{ background: "linear-gradient(135deg,#0056CE,#3388FF)", boxShadow: "0 12px 32px rgba(0,86,206,0.30)" }}>
             Start your team →
           </Link>
         </div>

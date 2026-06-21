@@ -49,7 +49,7 @@ export function HowItWorks() {
         <div className="hidden sm:block absolute top-8 left-[16.66%] right-[16.66%] h-[3px] rounded-full bg-slate-200" />
         <div
           className="hidden sm:block absolute top-8 left-[16.66%] h-[3px] rounded-full transition-[width] duration-700 ease-out"
-          style={{ width: `${fillPct}%`, background: "linear-gradient(90deg,#0056CE,#7C3AED)" }}
+          style={{ width: `${fillPct}%`, background: "linear-gradient(90deg,#0056CE,#3388FF)" }}
         />
 
         {STEPS.map((s, i) => {
@@ -65,7 +65,7 @@ export function HowItWorks() {
               <div
                 className="mx-auto w-16 h-16 rounded-2xl flex items-center justify-center text-xl font-black mb-4 transition-all duration-500"
                 style={{
-                  background: isActive || isDone ? "linear-gradient(135deg,#0056CE,#4F46E5)" : "#E2E8F0",
+                  background: isActive || isDone ? "linear-gradient(135deg,#0056CE,#3388FF)" : "#E2E8F0",
                   color: isActive || isDone ? "#fff" : "#94A3B8",
                   boxShadow: isActive
                     ? "0 12px 28px rgba(0,86,206,0.45), 0 0 0 6px #ffffff, 0 0 0 10px rgba(0,86,206,0.12)"

@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { Logo } from "@/components/ui/logo";
 
@@ -265,6 +265,16 @@ export function HeroSection() {
   const role = GOAL_ROLES[goal];
   const BLUE_GRADIENT = "linear-gradient(135deg, #3388FF 0%, #0056CE 55%, #01224F 100%)";
 
+  // Magnetic primary CTA — leans toward the cursor (consistent with the closing CTA)
+  const ctaRef = useRef<HTMLAnchorElement>(null);
+  const onCtaMove = (e: React.MouseEvent) => {
+    const el = ctaRef.current;
+    if (!el || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const r = el.getBoundingClientRect();
+    el.style.transform = `translate(${(e.clientX - (r.left + r.width / 2)) * 0.2}px, ${(e.clientY - (r.top + r.height / 2)) * 0.3}px)`;
+  };
+  const onCtaLeave = () => { if (ctaRef.current) ctaRef.current.style.transform = ""; };
+
   return (
     <section className="hero-section relative min-h-screen flex flex-col overflow-hidden bg-white">
       {/* ── Soft Square 1 blue accents on white ───────────────────────────── */}
@@ -356,8 +366,11 @@ export function HeroSection() {
           {/* CTA row — red primary (kept), outline secondary */}
           <div className="flex flex-col sm:flex-row gap-3">
             <Link
+              ref={ctaRef}
+              onMouseMove={onCtaMove}
+              onMouseLeave={onCtaLeave}
               href={`/diagnostic?subject=${role.slug}`}
-              className="group inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-full text-white font-bold text-sm transition-all hover:-translate-y-px"
+              className="group inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-full text-white font-bold text-sm transition-transform duration-200 ease-out"
               style={{
                 background: "linear-gradient(135deg, #B91C1C 0%, #DC2626 40%, #EF4444 100%)",
                 boxShadow: "0 12px 32px rgba(220,38,38,0.35), 0 0 0 1px rgba(255,255,255,0.10) inset",

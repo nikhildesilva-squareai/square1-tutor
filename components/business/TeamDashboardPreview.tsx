@@ -11,7 +11,7 @@ const ROLLUPS = [
 const ROSTER = [
   { initials: "AR", name: "Alex Rivera", track: "Cybersecurity", pct: 78, accent: "#0056CE" },
   { initials: "JL", name: "Jordan Lee", track: "Data Science", pct: 91, accent: "#10B981" },
-  { initials: "SK", name: "Sam Khan", track: "Generative AI", pct: 64, accent: "#7C3AED" },
+  { initials: "SK", name: "Sam Khan", track: "Generative AI", pct: 64, accent: "#0EA5E9" },
   { initials: "MP", name: "Morgan Patel", track: "Full Stack", pct: 45, accent: "#F59E0B" },
 ];
 
@@ -21,7 +21,7 @@ export function TeamDashboardPreview() {
       {/* Glow behind the card */}
       <div
         className="pointer-events-none absolute -inset-6 rounded-[2rem] opacity-60"
-        style={{ background: "radial-gradient(60% 60% at 70% 30%, rgba(0,86,206,0.22), transparent 70%), radial-gradient(50% 50% at 20% 80%, rgba(124,58,237,0.18), transparent 70%)", filter: "blur(24px)" }}
+        style={{ background: "radial-gradient(60% 60% at 70% 30%, rgba(0,86,206,0.22), transparent 70%), radial-gradient(50% 50% at 20% 80%, rgba(14,165,233,0.18), transparent 70%)", filter: "blur(24px)" }}
       />
 
       {/* The card */}

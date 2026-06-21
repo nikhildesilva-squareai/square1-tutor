@@ -8,7 +8,7 @@ import { useEffect, useRef, useState } from "react";
 
 const STEPS = [
   { label: "Skill check", title: "Every employee gets placed", desc: "A 20-question, AI-graded assessment finds each person's real level — nobody starts where they don't belong.", accent: "#0056CE" },
-  { label: "Personalised path", title: "A path built from their gaps", desc: "We map weak vs strong topics and build a tailored track — junior to senior, no filler, no boredom.", accent: "#7C3AED" },
+  { label: "Personalised path", title: "A path built from their gaps", desc: "We map weak vs strong topics and build a tailored track — junior to senior, no filler, no boredom.", accent: "#0EA5E9" },
   { label: "Build & deploy", title: "They ship real projects", desc: "10–12 deployable, real-world projects — pushed to GitHub with a live URL. Not toy exercises.", accent: "#06B6D4" },
   { label: "Nova reviews", title: "Every line gets reviewed", desc: "Nova reads their actual code — strengths, fixes, and a score. Personalised feedback, at team scale.", accent: "#10B981" },
   { label: "Verifiable proof", title: "They finish with proof", desc: "A public portfolio of deployed work + a verifiable certificate — capability you (and any employer) can check.", accent: "#F59E0B" },
