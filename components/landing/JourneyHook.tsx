@@ -363,81 +363,75 @@ function ClosingCTA() {
 
   return (
     <section
-      className="relative w-full overflow-hidden py-20 sm:py-24 lg:py-32 px-4 sm:px-6 lg:px-8"
+      className="relative w-full overflow-hidden py-20 sm:py-24 lg:py-28 px-4 sm:px-6 lg:px-8"
       style={{
         background: `
-          radial-gradient(ellipse 900px 450px at 20% 25%, rgba(0,86,206,0.10), transparent 60%),
-          radial-gradient(ellipse 700px 500px at 80% 75%, rgba(14,165,233,0.10), transparent 60%),
-          radial-gradient(ellipse 800px 600px at 50% 50%, rgba(51,136,255,0.07), transparent 60%),
+          radial-gradient(ellipse 900px 450px at 20% 25%, rgba(0,86,206,0.08), transparent 60%),
+          radial-gradient(ellipse 700px 500px at 80% 75%, rgba(14,165,233,0.07), transparent 60%),
           linear-gradient(180deg, #F8FAFC 0%, #FFFFFF 50%, #F4F8FF 100%)
         `,
       }}
     >
-      <div className="pointer-events-none absolute top-0 left-1/4 w-[500px] h-[500px] rounded-full opacity-40 animate-blob-1"
-        style={{ background: "radial-gradient(circle, rgba(0,86,206,0.15) 0%, transparent 70%)", filter: "blur(80px)" }} />
-      <div className="pointer-events-none absolute bottom-0 right-1/4 w-[600px] h-[500px] rounded-full opacity-40 animate-blob-2"
-        style={{ background: "radial-gradient(circle, rgba(14,165,233,0.12) 0%, transparent 70%)", filter: "blur(90px)" }} />
+      <div className="pointer-events-none absolute top-0 left-1/4 w-[500px] h-[500px] rounded-full opacity-25 animate-blob-1"
+        style={{ background: "radial-gradient(circle, rgba(0,86,206,0.12) 0%, transparent 70%)", filter: "blur(80px)" }} />
+      <div className="pointer-events-none absolute bottom-0 right-1/4 w-[600px] h-[500px] rounded-full opacity-25 animate-blob-2"
+        style={{ background: "radial-gradient(circle, rgba(14,165,233,0.10) 0%, transparent 70%)", filter: "blur(90px)" }} />
 
-      <div ref={ref} className="relative max-w-3xl mx-auto text-center">
+      {/* Contained "start your assessment" card — measured, product-like */}
+      <div ref={ref} className="relative max-w-2xl mx-auto rounded-3xl border border-slate-200 bg-white/90 backdrop-blur-sm text-center px-6 sm:px-12 py-12 sm:py-14"
+        style={{ boxShadow: "0 24px 64px rgba(15,28,49,0.10), 0 0 0 1px rgba(15,28,49,0.02)" }}>
         <span className="block text-[10px] sm:text-[11px] tracking-[0.35em] uppercase text-brand font-bold" style={reveal(0)}>
           Your turn
         </span>
 
-        <h3 className="mt-4 mb-5 font-black text-slate-900 tracking-tight leading-[0.95]"
-          style={{ fontSize: "clamp(36px, 6vw, 76px)", ...reveal(1) }}>
-          Start the assessment.
-          <br />
-          <span
-            className="animate-text-sheen"
-            style={{
-              background: "linear-gradient(90deg, #3388FF, #0056CE, #01224F, #0056CE, #3388FF)",
-              backgroundSize: "200% auto",
-              WebkitBackgroundClip: "text",
-              WebkitTextFillColor: "transparent",
-              backgroundClip: "text",
-            }}
-          >
+        <h3 className="mt-3 mb-4 font-black text-slate-900 tracking-tight leading-[1.04]"
+          style={{ fontSize: "clamp(28px, 4vw, 48px)", letterSpacing: "-0.02em", ...reveal(1) }}>
+          Start the assessment.{" "}
+          <span style={{
+            background: "linear-gradient(135deg, #0056CE 0%, #01224F 100%)",
+            WebkitBackgroundClip: "text",
+            WebkitTextFillColor: "transparent",
+            backgroundClip: "text",
+          }}>
             Take step one.
           </span>
         </h3>
 
-        <p className="text-sm sm:text-base text-slate-600 max-w-md mx-auto mb-10" style={reveal(2)}>
+        <p className="text-sm sm:text-base text-slate-600 max-w-sm mx-auto mb-7" style={reveal(2)}>
           30 minutes to find out where you stand. Zero pressure. Free forever.
         </p>
 
-        <div className="flex justify-center mb-10" style={reveal(3)}>
-          <div className="inline-flex flex-wrap items-center justify-center gap-x-3 gap-y-2 px-5 py-2.5 rounded-full border bg-white text-xs sm:text-sm text-slate-600"
-            style={{ borderColor: "rgba(15,28,49,0.08)", boxShadow: "0 4px 16px rgba(15,28,49,0.05)" }}>
-            <span className="font-semibold text-slate-900">20 questions</span>
-            <span className="text-slate-300">·</span>
-            <span className="font-semibold text-slate-900">AI-graded</span>
-            <span className="text-slate-300">·</span>
-            <span className="font-semibold text-slate-900">Instant skill report</span>
-          </div>
+        {/* Ticked meta */}
+        <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 mb-8" style={reveal(3)}>
+          {["20 questions", "AI-graded", "Instant skill report"].map((t) => (
+            <span key={t} className="inline-flex items-center gap-1.5 text-sm font-medium text-slate-700">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#0056CE" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
+              {t}
+            </span>
+          ))}
         </div>
 
+        {/* Square 1 Blue magnetic CTA — right-sized, confident */}
         <div className="flex flex-col items-center" style={reveal(4)}>
-          {/* Magnetic catch zone — gives the button room to lean toward the cursor */}
-          <div className="relative px-8 py-6" onMouseMove={onMove} onMouseLeave={onLeave}>
+          <div className="relative px-6 py-3" onMouseMove={onMove} onMouseLeave={onLeave}>
             <Link
               ref={btnRef}
               href="/diagnostic"
-              className="relative group inline-flex items-center gap-4 px-12 sm:px-16 py-6 sm:py-7 rounded-2xl text-lg sm:text-xl lg:text-2xl font-black text-white overflow-hidden tracking-tight transition-transform duration-200 ease-out hover:scale-[1.02]"
+              className="group inline-flex items-center gap-2.5 px-8 py-4 rounded-xl text-base sm:text-lg font-bold text-white tracking-tight transition-transform duration-200 ease-out hover:scale-[1.02]"
               style={{
-                background: "linear-gradient(135deg, #DC2626 0%, #B91C1C 100%)",
-                boxShadow: "0 18px 40px rgba(15,28,49,0.20), 0 0 0 1px rgba(255,255,255,0.12) inset",
-                letterSpacing: "-0.01em",
+                background: "linear-gradient(135deg, #0056CE 0%, #3388FF 100%)",
+                boxShadow: "0 12px 28px rgba(0,86,206,0.28), 0 0 0 1px rgba(255,255,255,0.12) inset",
               }}
             >
-              <span className="relative z-10">Get your free skill report</span>
-              <span className="relative z-10 text-2xl sm:text-3xl transition-transform duration-300 group-hover:translate-x-2">→</span>
-              <span className="absolute inset-0 animate-cta-shimmer pointer-events-none"
-                style={{ background: "linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.28) 50%, transparent 100%)", width: "60%" }} />
+              Get your free skill report
+              <span className="transition-transform duration-300 group-hover:translate-x-1">→</span>
             </Link>
           </div>
 
-          <p className="mt-2 text-xs sm:text-sm text-slate-500 font-medium">
-            No credit card · No commitment · Just signal
+          {/* Quiet credibility */}
+          <p className="mt-3 inline-flex items-center gap-1.5 text-xs text-slate-500">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /></svg>
+            No sign-up to start · results in 30 min · free, no card
           </p>
         </div>
       </div>
