@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { NeuralField } from "@/components/ui/neural-field";
 
 // Compact, interactive "Meet Nova" — full-black section (matches the main page's
 // dark-band rhythm). Shows Nova's full value (tutor / reviews code / coaches the
@@ -119,14 +120,15 @@ export function NovaCapabilities() {
             })}
           </div>
 
-          {/* Nova panel */}
-          <div className="rounded-2xl border border-white/10 overflow-hidden flex flex-col" style={{ background: "linear-gradient(180deg,#0B1626 0%,#070E1A 100%)", boxShadow: "0 20px 56px rgba(5,11,20,0.4)" }}>
-            <div className="flex items-center gap-2 px-4 py-2.5 border-b border-white/8">
+          {/* Nova panel — neural field glows behind the UI (dark = perfect canvas) */}
+          <div className="relative rounded-2xl border border-white/10 overflow-hidden flex flex-col" style={{ background: "linear-gradient(180deg,#0B1626 0%,#070E1A 100%)", boxShadow: "0 20px 56px rgba(5,11,20,0.4)" }}>
+            <NeuralField color="#3388FF" />
+            <div className="relative z-10 flex items-center gap-2 px-4 py-2.5 border-b border-white/8">
               <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
               <span className="text-[11px] font-bold text-slate-300">Nova</span>
               <span className="ml-auto text-[10px] text-slate-500">{CAPS[active].title}</span>
             </div>
-            <div key={active} className="flex-1 animate-fade-in-up"><NovaPanel k={CAPS[active].key} /></div>
+            <div key={active} className="relative z-10 flex-1 animate-fade-in-up"><NovaPanel k={CAPS[active].key} /></div>
           </div>
         </div>
       </div>
