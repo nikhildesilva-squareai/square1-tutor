@@ -372,8 +372,8 @@ export function HeroSection() {
               href={`/diagnostic?subject=${role.slug}`}
               className="group inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-full text-white font-bold text-sm transition-transform duration-200 ease-out"
               style={{
-                background: "linear-gradient(135deg, #B91C1C 0%, #DC2626 40%, #EF4444 100%)",
-                boxShadow: "0 12px 32px rgba(220,38,38,0.35), 0 0 0 1px rgba(255,255,255,0.10) inset",
+                background: "linear-gradient(135deg, #DC2626 0%, #B91C1C 100%)",
+                boxShadow: "0 12px 28px rgba(15,28,49,0.18), 0 0 0 1px rgba(255,255,255,0.12) inset",
               }}
             >
               Show me my {role.label} path

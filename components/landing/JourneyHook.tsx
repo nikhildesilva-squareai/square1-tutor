@@ -418,24 +418,21 @@ function ClosingCTA() {
 
         <div className="flex flex-col items-center" style={reveal(4)}>
           {/* Magnetic catch zone — gives the button room to lean toward the cursor */}
-          <div className="relative px-10 py-8" onMouseMove={onMove} onMouseLeave={onLeave}>
-            {/* Pulsing glow ring (transform handled by the keyframe) */}
-            <span aria-hidden className="pointer-events-none absolute left-1/2 top-1/2 w-[112%] h-[150%] rounded-full animate-cta-ring"
-              style={{ background: "radial-gradient(ellipse at center, rgba(244,63,94,0.45), transparent 70%)", filter: "blur(24px)" }} />
+          <div className="relative px-8 py-6" onMouseMove={onMove} onMouseLeave={onLeave}>
             <Link
               ref={btnRef}
               href="/diagnostic"
               className="relative group inline-flex items-center gap-4 px-12 sm:px-16 py-6 sm:py-7 rounded-2xl text-lg sm:text-xl lg:text-2xl font-black text-white overflow-hidden tracking-tight transition-transform duration-200 ease-out hover:scale-[1.02]"
               style={{
-                background: "linear-gradient(135deg, #B91C1C 0%, #DC2626 35%, #EF4444 70%, #F43F5E 100%)",
-                boxShadow: "0 20px 56px rgba(220,38,38,0.45), 0 0 80px rgba(244,63,94,0.30), 0 0 0 1px rgba(255,255,255,0.15) inset",
+                background: "linear-gradient(135deg, #DC2626 0%, #B91C1C 100%)",
+                boxShadow: "0 18px 40px rgba(15,28,49,0.20), 0 0 0 1px rgba(255,255,255,0.12) inset",
                 letterSpacing: "-0.01em",
               }}
             >
               <span className="relative z-10">Get your free skill report</span>
               <span className="relative z-10 text-2xl sm:text-3xl transition-transform duration-300 group-hover:translate-x-2">→</span>
               <span className="absolute inset-0 animate-cta-shimmer pointer-events-none"
-                style={{ background: "linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.40) 50%, transparent 100%)", width: "60%" }} />
+                style={{ background: "linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.28) 50%, transparent 100%)", width: "60%" }} />
             </Link>
           </div>
 
