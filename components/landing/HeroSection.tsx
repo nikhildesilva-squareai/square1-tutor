@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Logo } from "@/components/ui/logo";
 
@@ -13,7 +13,37 @@ const GOAL_ROLES = [
   { label: "DevOps Engineer", slug: "devops-engineering", salary: "$120–190k" },
 ];
 
-// ─── Hero product preview: a Skill Report card with a circular score ───────────
+// ─── Hero product TOUR: an auto-playing 3-scene showcase (Assess → Review → Ship)
+function useReducedMotion() {
+  const [reduce, setReduce] = useState(false);
+  useEffect(() => {
+    const m = window.matchMedia("(prefers-reduced-motion: reduce)");
+    setReduce(m.matches);
+    const fn = () => setReduce(m.matches);
+    m.addEventListener?.("change", fn);
+    return () => m.removeEventListener?.("change", fn);
+  }, []);
+  return reduce;
+}
+
+function useCountUp(target: number, run: boolean, reduce: boolean, duration = 1000) {
+  const [v, setV] = useState(reduce ? target : 0);
+  useEffect(() => {
+    if (!run) return;
+    if (reduce) { setV(target); return; }
+    const start = performance.now();
+    let raf = 0;
+    const tick = (now: number) => {
+      const t = Math.min(1, (now - start) / duration);
+      setV(Math.round(target * (1 - Math.pow(1 - t, 3))));
+      if (t < 1) raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [target, run, reduce, duration]);
+  return v;
+}
+
 function ScoreRing({ value }: { value: number }) {
   const r = 34;
   const c = 2 * Math.PI * r;
@@ -27,88 +57,204 @@ function ScoreRing({ value }: { value: number }) {
         </linearGradient>
       </defs>
       <circle cx="42" cy="42" r={r} fill="none" stroke="#E8EEF5" strokeWidth="8" />
-      <circle
-        cx="42" cy="42" r={r} fill="none" stroke="url(#hero-score)" strokeWidth="8"
+      <circle cx="42" cy="42" r={r} fill="none" stroke="url(#hero-score)" strokeWidth="8"
         strokeLinecap="round" strokeDasharray={c} strokeDashoffset={off}
-        transform="rotate(-90 42 42)"
-      />
+        transform="rotate(-90 42 42)" style={{ transition: "stroke-dashoffset 1s ease-out" }} />
       <text x="42" y="40" textAnchor="middle" fill="#0F172A" fontSize="22" fontWeight="800">{value}</text>
       <text x="42" y="55" textAnchor="middle" fill="#94A3B8" fontSize="9" fontWeight="600">/ 100</text>
     </svg>
   );
 }
 
-function HeroProductCard() {
+// Scene 1 — Assess: skill report with count-up score + filling topic bars
+function SceneAssess({ reduce }: { reduce: boolean }) {
+  const score = useCountUp(74, true, reduce);
+  const [fill, setFill] = useState(reduce);
+  useEffect(() => { const t = setTimeout(() => setFill(true), 60); return () => clearTimeout(t); }, []);
   const bars = [
-    { l: "LLMs & RAG",     v: 90, c: "#19A65F" },
-    { l: "Prompt design",  v: 75, c: "#19A65F" },
-    { l: "Agents",         v: 45, c: "#E5B217" },
+    { l: "LLMs & RAG", v: 90, c: "#19A65F" },
+    { l: "Prompt design", v: 75, c: "#19A65F" },
+    { l: "Agents", v: 45, c: "#E5B217" },
     { l: "Eval & testing", v: 30, c: "#D93636" },
   ];
   return (
-    <div className="relative w-full max-w-[420px] mx-auto">
+    <div>
+      <div className="flex items-center gap-5 mb-5">
+        <ScoreRing value={score} />
+        <div className="flex-1">
+          <p className="text-sm font-bold text-slate-900">You&apos;re {score}% of the way to AI Engineer.</p>
+          <p className="text-xs text-slate-500 mt-1">Two focused gaps between you and interview-ready.</p>
+        </div>
+      </div>
+      <div className="space-y-2.5">
+        {bars.map((b, i) => (
+          <div key={b.l} className="flex items-center gap-3">
+            <span className="text-xs text-slate-600 w-24 shrink-0">{b.l}</span>
+            <div className="flex-1 h-1.5 rounded-full bg-slate-100 overflow-hidden">
+              <div className="h-full rounded-full transition-[width] duration-700 ease-out"
+                style={{ width: fill ? `${b.v}%` : "0%", background: b.c, transitionDelay: `${i * 90}ms` }} />
+            </div>
+            <span className="text-[11px] font-semibold tabular-nums w-8 text-right" style={{ color: b.c }}>{b.v}%</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// Scene 2 — Review: Nova reads your code, scores it, suggests fixes
+function SceneReview({ reduce }: { reduce: boolean }) {
+  const score = useCountUp(94, true, reduce);
+  return (
+    <div>
+      <div className="flex items-center gap-4 mb-4">
+        <div className="w-12 h-12 rounded-full flex items-center justify-center text-white text-base font-black shrink-0"
+          style={{ background: "linear-gradient(135deg,#0056CE,#3388FF)" }}>N</div>
+        <div className="flex-1">
+          <p className="text-sm font-bold text-slate-900">Nova reviewed <span className="font-mono">rag-agent.py</span></p>
+          <p className="text-xs text-slate-500 mt-0.5">Read line-by-line · scored against the brief</p>
+        </div>
+        <span className="text-2xl font-black tabular-nums" style={{ color: "#0056CE" }}>{score}<span className="text-xs text-slate-400">/100</span></span>
+      </div>
+      <pre className="rounded-lg bg-[#0D1117] p-3 mb-3 text-[11px] leading-relaxed font-mono overflow-hidden whitespace-pre">
+        <code className="text-slate-300">r = requests.get(url, <span style={{ color: "#34D399" }}>timeout=5</span>)
+r.<span style={{ color: "#34D399" }}>raise_for_status()</span></code>
+      </pre>
+      <div className="space-y-2">
+        {[{ t: "Added request timeout", done: true }, { t: "Wrap call in error handling", done: false }].map((f) => (
+          <div key={f.t} className="flex items-center gap-2 text-xs">
+            <span className="w-4 h-4 rounded-full flex items-center justify-center shrink-0"
+              style={{ background: f.done ? "#D0FBED" : "#E5F0FF" }}>
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke={f.done ? "#19A65F" : "#0056CE"} strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                {f.done ? <polyline points="20 6 9 17 4 12" /> : <><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></>}
+              </svg>
+            </span>
+            <span className={f.done ? "text-slate-400 line-through" : "text-slate-700 font-medium"}>{f.t}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// Scene 3 — Ship: deployed, verifiable portfolio
+function SceneShip({ reduce }: { reduce: boolean }) {
+  const count = useCountUp(12, true, reduce);
+  const projects = [
+    { n: "rag-support-agent", s: 94 },
+    { n: "vision-defect-detector", s: 91 },
+    { n: "trading-dashboard-api", s: 88 },
+  ];
+  return (
+    <div>
+      <div className="flex items-center justify-between mb-4">
+        <div>
+          <p className="text-3xl font-black tabular-nums text-slate-900 leading-none">{count}<span className="text-base text-slate-400"> / 12</span></p>
+          <p className="text-xs text-slate-500 mt-1">projects live on GitHub</p>
+        </div>
+        <span className="inline-flex items-center gap-1.5 text-[10px] font-bold px-2.5 py-1 rounded-full text-emerald-700 bg-emerald-50 border border-emerald-200">
+          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" /> all deployed
+        </span>
+      </div>
+      <div className="space-y-2">
+        {projects.map((p) => (
+          <div key={p.n} className="flex items-center justify-between rounded-lg border border-slate-200 px-3 py-2">
+            <span className="text-xs font-mono text-slate-700">{p.n}</span>
+            <div className="flex items-center gap-2 text-[10px]">
+              <span className="inline-flex items-center gap-1 text-emerald-600"><span className="w-1.5 h-1.5 rounded-full bg-emerald-500" /> live</span>
+              <span className="text-slate-300">·</span>
+              <span className="text-slate-500 tabular-nums">{p.s}/100</span>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+const TOUR_SCENES = [
+  { key: "assess", step: "Step 1 · Assess", title: "Skill Report", badge: "Intermediate", badgeCls: "bg-amber-50 text-amber-700 border-amber-200", render: (reduce: boolean) => <SceneAssess reduce={reduce} /> },
+  { key: "review", step: "Step 2 · Review", title: "Nova code review", badge: "94 / 100", badgeCls: "bg-blue-50 text-brand border-blue-200", render: (reduce: boolean) => <SceneReview reduce={reduce} /> },
+  { key: "ship", step: "Step 3 · Ship", title: "Your portfolio", badge: "12 live", badgeCls: "bg-emerald-50 text-emerald-700 border-emerald-200", render: (reduce: boolean) => <SceneShip reduce={reduce} /> },
+];
+
+function HeroProductCard() {
+  const reduce = useReducedMotion();
+  const [active, setActive] = useState(0);
+  const [paused, setPaused] = useState(false);
+
+  // Auto-advance the tour; pause on hover/focus; honour reduced-motion.
+  useEffect(() => {
+    if (reduce || paused) return;
+    const t = setInterval(() => setActive((a) => (a + 1) % TOUR_SCENES.length), 4000);
+    return () => clearInterval(t);
+  }, [reduce, paused]);
+
+  const scene = TOUR_SCENES[active];
+
+  return (
+    <div
+      className="relative w-full max-w-[420px] mx-auto"
+      onMouseEnter={() => setPaused(true)}
+      onMouseLeave={() => setPaused(false)}
+      onFocusCapture={() => setPaused(true)}
+      onBlurCapture={() => setPaused(false)}
+    >
       {/* Soft blue glow behind the card */}
       <div className="pointer-events-none absolute -inset-10 rounded-[40px]"
         style={{ background: "radial-gradient(circle at 60% 40%, rgba(0,86,206,0.14), transparent 70%)", filter: "blur(40px)" }} />
 
-      {/* Main Skill Report card */}
+      {/* Main tour card */}
       <div className="relative rounded-3xl bg-white border border-slate-200 p-6 sm:p-7"
         style={{ boxShadow: "0 24px 64px rgba(15,28,49,0.12), 0 0 0 1px rgba(15,28,49,0.02)" }}>
+        {/* Header — changes per scene */}
         <div className="flex items-center justify-between mb-5">
-          <div>
-            <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-brand">Skill Report</p>
-            <p className="text-lg font-black text-slate-900 mt-0.5">Generative AI</p>
+          <div key={`h-${active}`} className="animate-fade-in-up">
+            <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-brand">{scene.step}</p>
+            <p className="text-lg font-black text-slate-900 mt-0.5">{scene.title}</p>
           </div>
-          <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full bg-amber-50 text-amber-700 border border-amber-200">
-            Intermediate
+          <span className={`text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full border ${scene.badgeCls}`}>
+            {scene.badge}
           </span>
         </div>
 
-        <div className="flex items-center gap-5 mb-6">
-          <ScoreRing value={74} />
-          <div className="flex-1">
-            <p className="text-sm font-bold text-slate-900">You&apos;re 74% of the way to AI Engineer.</p>
-            <p className="text-xs text-slate-500 mt-1">Two focused gaps between you and interview-ready.</p>
+        {/* Scene body — remounts per scene to replay its entrance animation */}
+        <div key={scene.key} className="animate-fade-in-up min-h-[208px]">
+          {scene.render(reduce)}
+        </div>
+
+        {/* Progress dots — clickable */}
+        <div className="mt-5 pt-4 border-t border-slate-100 flex items-center justify-between">
+          <div className="flex items-center gap-1.5">
+            {TOUR_SCENES.map((s, i) => (
+              <button
+                key={s.key}
+                onClick={() => setActive(i)}
+                aria-label={`Go to ${s.title}`}
+                aria-current={i === active ? "true" : undefined}
+                className="h-1.5 rounded-full cursor-pointer transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-brand/40"
+                style={{ width: i === active ? 22 : 7, background: i === active ? "#0056CE" : "#CBD5E1" }}
+              />
+            ))}
           </div>
-        </div>
-
-        <div className="space-y-2.5">
-          {bars.map((b) => (
-            <div key={b.l} className="flex items-center gap-3">
-              <span className="text-xs text-slate-600 w-24 shrink-0">{b.l}</span>
-              <div className="flex-1 h-1.5 rounded-full bg-slate-100 overflow-hidden">
-                <div className="h-full rounded-full" style={{ width: `${b.v}%`, background: b.c }} />
-              </div>
-              <span className="text-[11px] font-semibold tabular-nums w-8 text-right" style={{ color: b.c }}>{b.v}%</span>
-            </div>
-          ))}
-        </div>
-
-        <div className="mt-6 pt-4 border-t border-slate-100 flex items-center gap-2">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#0056CE" strokeWidth="2.5"><circle cx="12" cy="12" r="9" /><path d="M9 12l2 2 4-4" /></svg>
-          <span className="text-xs font-semibold text-slate-700">Personalised plan ready · target: AI Engineer</span>
+          <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold text-slate-500">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" /> Live demo
+          </span>
         </div>
       </div>
 
-      {/* Floating accent — Nova code review */}
-      <div className="hidden sm:flex absolute -top-5 -right-4 items-center gap-2.5 rounded-2xl bg-white border border-slate-200 px-3.5 py-2.5"
+      {/* Floating reassurance chips */}
+      <div className="hidden sm:flex absolute -top-5 -right-4 items-center gap-2 rounded-2xl bg-white border border-slate-200 px-3.5 py-2.5"
         style={{ boxShadow: "0 12px 32px rgba(15,28,49,0.12)" }}>
-        <div className="w-7 h-7 rounded-full flex items-center justify-center text-white text-xs font-black shrink-0"
-          style={{ background: "linear-gradient(135deg,#0056CE,#3388FF)" }}>N</div>
-        <div className="leading-tight">
-          <p className="text-[11px] font-bold text-slate-900">Nova reviewed your code</p>
-          <p className="text-[10px] text-emerald-600 font-semibold">94 / 100 · 2 fixes suggested</p>
-        </div>
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#0056CE" strokeWidth="2.5" strokeLinecap="round"><circle cx="12" cy="12" r="9" /><polyline points="12 7 12 12 15 14" /></svg>
+        <p className="text-[11px] font-bold text-slate-900">30-min assessment</p>
       </div>
-
-      {/* Floating accent — projects deployed */}
-      <div className="hidden sm:flex absolute -bottom-5 -left-5 items-center gap-2.5 rounded-2xl bg-white border border-slate-200 px-3.5 py-2.5"
+      <div className="hidden sm:flex absolute -bottom-5 -left-5 items-center gap-2 rounded-2xl bg-white border border-slate-200 px-3.5 py-2.5"
         style={{ boxShadow: "0 12px 32px rgba(15,28,49,0.12)" }}>
-        <span className="w-2 h-2 rounded-full bg-emerald-500 shrink-0" />
-        <div className="leading-tight">
-          <p className="text-[11px] font-bold text-slate-900">12 projects deployed</p>
-          <p className="text-[10px] text-slate-500">Live on GitHub · verifiable</p>
-        </div>
+        <span className="w-5 h-5 rounded-full bg-emerald-50 flex items-center justify-center shrink-0">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#19A65F" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
+        </span>
+        <p className="text-[11px] font-bold text-slate-900">Free · no credit card</p>
       </div>
     </div>
   );
