@@ -10,6 +10,16 @@ import { CourseGridSection } from "@/components/landing/CourseGridSection";
 import { InlineDiagnostic } from "@/components/landing/InlineDiagnostic";
 import { CodeReviewSlider } from "@/components/landing/CodeReviewSlider";
 import { CookieConsent } from "@/components/ui/cookie-consent";
+import { WavePath } from "@/components/ui/wave-path";
+
+// ─── Interactive wavy divider between sections (bends toward the cursor) ───────
+function SectionWave() {
+  return (
+    <div className="relative z-20 flex justify-center text-brand/40">
+      <WavePath />
+    </div>
+  );
+}
 
 // ─── Server-side data fetch ───────────────────────────────────────────────────
 type CourseRow = {
@@ -67,23 +77,37 @@ export default async function Home() {
       {/* ── 2. THE HOOK — outcome + proof: "Get hired as an [role]" + journey + employer view */}
       <JourneyHook />
 
+      <SectionWave />
+
       {/* ── 3. Foot-in-the-door: one inline question → act by screen two ─────── */}
       <InlineDiagnostic />
+
+      <SectionWave />
 
       {/* ── 4. The 2026 wedge — slim stakes strip ────────────────────────────── */}
       <RealityBand />
 
+      <SectionWave />
+
       {/* ── 5. Before/After — drag to see Nova review your code ──────────────── */}
       <CodeReviewSlider />
+
+      <SectionWave />
 
       {/* ── 6. Why Square 1 beats everything else ────────────────────────────── */}
       <ComparisonSection />
 
+      <SectionWave />
+
       {/* ── 7. Courses — inline explorer (click → preview Lesson 1) ──────────── */}
       <CourseGridSection courses={courses} />
 
+      <SectionWave />
+
       {/* ── 8. Honest proof — founder note + founding offer ──────────────────── */}
       <SocialProofSection />
+
+      <SectionWave />
 
       {/* ── About + Final CTA + Footer ────────────────────────────────────── */}
       <section className="relative overflow-hidden bg-white">
