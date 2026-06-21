@@ -22,8 +22,10 @@ export function QuickNotePanel() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
 
-  // Hide on login/signup/landing pages
-  const hiddenPaths = ["/login", "/signup", "/", "/verify"];
+  // Hide on login/signup/landing pages, and on surfaces that already have their
+  // own composer pinned bottom-right (Nova chat, Messages) — the floating pencil
+  // collides with their send button there.
+  const hiddenPaths = ["/login", "/signup", "/", "/verify", "/tutor", "/messages"];
   if (hiddenPaths.includes(pathname)) return null;
 
   // Handle image selection (file input or paste)

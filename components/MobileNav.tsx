@@ -10,6 +10,7 @@ import {
   Award,
   BarChart3,
   MessageSquare,
+  MessagesSquare,
   Settings,
   LogOut,
   Menu,
@@ -18,6 +19,7 @@ import {
 import { cn } from "@/lib/utils";
 import { createClient } from "@/lib/supabase/client";
 import { Logo } from "@/components/ui/logo";
+import { useUnreadMessages } from "@/lib/hooks/useUnreadMessages";
 
 const nav = [
   { href: "/dashboard", label: "Dashboard",   icon: LayoutDashboard },
@@ -26,7 +28,7 @@ const nav = [
   { href: "/portfolio", label: "Portfolio",   icon: Award           },
   { href: "/progress",  label: "Progress",    icon: BarChart3       },
   { href: "/tutor",     label: "Nova",        icon: MessageSquare   },
-  { href: "/settings",  label: "Settings",    icon: Settings        },
+  { href: "/messages",  label: "Messages",    icon: MessagesSquare  },
 ];
 
 interface MobileNavProps {
@@ -37,6 +39,7 @@ export function MobileNav({ userEmail }: MobileNavProps) {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
   const router   = useRouter();
+  const unread   = useUnreadMessages();
 
   // Close drawer on route change
   useEffect(() => { setOpen(false); }, [pathname]);
@@ -101,6 +104,7 @@ export function MobileNav({ userEmail }: MobileNavProps) {
         <nav className="flex-1 px-3 py-4 space-y-0.5 overflow-y-auto">
           {nav.map(({ href, label, icon: Icon }) => {
             const isActive = pathname === href || pathname.startsWith(href + "/");
+            const showDot = href === "/messages" && unread > 0;
             return (
               <Link
                 key={href}
@@ -113,17 +117,37 @@ export function MobileNav({ userEmail }: MobileNavProps) {
                 )}
               >
                 <Icon className="w-4 h-4" />
-                {label}
+                <span className="flex-1">{label}</span>
+                {showDot && (
+                  <span className="min-w-[18px] h-[18px] px-1.5 rounded-full bg-brand text-white text-[10px] font-bold flex items-center justify-center">
+                    {unread > 9 ? "9+" : unread}
+                  </span>
+                )}
               </Link>
             );
           })}
         </nav>
 
         {/* User footer */}
-        <div className="px-3 py-4 border-t border-border">
+        <div className="px-3 py-4 border-t border-border space-y-0.5">
           <div className="px-4 py-2 mb-1">
             <p className="text-xs text-ink-muted truncate">{userEmail}</p>
           </div>
+
+          {/* Settings — kept low, next to Sign out */}
+          <Link
+            href="/settings"
+            className={cn(
+              "flex items-center gap-3 px-4 h-10 w-full rounded-lg text-xs font-medium transition-all",
+              pathname === "/settings" || pathname.startsWith("/settings/")
+                ? "bg-surface-tint text-brand border border-brand/20"
+                : "text-ink-secondary hover:bg-surface-alt hover:text-ink border border-transparent"
+            )}
+          >
+            <Settings className="w-4 h-4" />
+            Settings
+          </Link>
+
           <button
             onClick={handleSignOut}
             className="flex items-center gap-3 px-4 h-10 w-full rounded-lg text-xs text-ink-secondary hover:bg-error-bg hover:text-error transition-all"
