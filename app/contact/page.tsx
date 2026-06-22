@@ -28,7 +28,7 @@ const CATEGORIES = [
         <path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2" />
       </svg>
     ),
-    accent: "#A78BFA",
+    accent: "#0EA5E9",
   },
   {
     id: "partnerships",
@@ -42,7 +42,7 @@ const CATEGORIES = [
         <path d="M16 3.13a4 4 0 010 7.75" />
       </svg>
     ),
-    accent: "#10B981",
+    accent: "#0056CE",
   },
   {
     id: "university",
@@ -54,7 +54,7 @@ const CATEGORIES = [
         <path d="M6 12v5c3 3 9 3 12 0v-5" />
       </svg>
     ),
-    accent: "#F59E0B",
+    accent: "#01224F",
   },
 ];
 
@@ -93,46 +93,45 @@ export default function ContactPage() {
       {/* HERO */}
       {/* ═══════════════════════════════════════════════════════════════════════ */}
       <section
-        className="relative overflow-hidden pt-8 pb-20 sm:pb-28 px-4 sm:px-6 lg:px-8"
-        style={{ background: "linear-gradient(180deg, #050B14 0%, #0B1626 100%)" }}
+        className="relative overflow-hidden pt-6 pb-16 sm:pb-20 px-4 sm:px-6 lg:px-8 bg-white"
       >
-        <div className="pointer-events-none absolute -top-40 -left-40 w-[700px] h-[700px] rounded-full opacity-[0.12]"
+        <div className="pointer-events-none absolute -top-40 -left-40 w-[680px] h-[680px] rounded-full opacity-[0.07]"
           style={{ background: "radial-gradient(circle, #0056CE 0%, transparent 70%)", filter: "blur(100px)" }} />
-        <div className="pointer-events-none absolute -bottom-40 -right-40 w-[600px] h-[600px] rounded-full opacity-[0.10]"
-          style={{ background: "radial-gradient(circle, #4F46E5 0%, transparent 70%)", filter: "blur(100px)" }} />
+        <div className="pointer-events-none absolute -bottom-40 -right-40 w-[560px] h-[560px] rounded-full opacity-[0.06]"
+          style={{ background: "radial-gradient(circle, #0EA5E9 0%, transparent 70%)", filter: "blur(100px)" }} />
 
         {/* Nav */}
-        <nav className="relative z-30 max-w-6xl mx-auto flex items-center justify-between mb-16 sm:mb-20">
-          <Link href="/" className="flex items-center gap-2 text-sm text-slate-500 hover:text-white transition-colors" style={{ minHeight: "unset" }}>
-            <span>←</span> <Logo variant="light" size="sm" />
+        <nav className="relative z-30 max-w-6xl mx-auto flex items-center justify-between mb-14 sm:mb-20">
+          <Link href="/" className="flex items-center gap-2 text-sm text-slate-500 hover:text-slate-900 transition-colors" style={{ minHeight: "unset" }}>
+            <span>←</span> <Logo variant="dark" size="sm" />
           </Link>
           <Link href="/signup"
-            className="flex items-center gap-2 px-4 py-2 rounded-full text-white text-xs font-bold tracking-wide uppercase hover:opacity-80 transition-all"
-            style={{ background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.12)", minHeight: "unset" }}>
-            Get Started <span className="w-2 h-2 rounded-full bg-brand shrink-0" />
+            className="flex items-center gap-2 px-4 py-2 rounded-full text-white text-xs font-bold tracking-wide uppercase transition-all hover:-translate-y-0.5"
+            style={{ background: "linear-gradient(135deg,#0056CE,#01224F)", minHeight: "unset", boxShadow: "0 8px 24px rgba(0,86,206,0.25)" }}>
+            Get started <span className="w-2 h-2 rounded-full bg-white/80 shrink-0" />
           </Link>
         </nav>
 
         {/* Headline */}
         <div className="relative z-10 max-w-4xl mx-auto text-center">
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border mb-6"
-            style={{ background: "rgba(51,136,255,0.10)", borderColor: "rgba(51,136,255,0.30)" }}>
+            style={{ background: "rgba(0,86,206,0.06)", borderColor: "rgba(0,86,206,0.20)" }}>
             <span className="w-1.5 h-1.5 rounded-full bg-brand animate-pulse" />
-            <span className="text-[10px] tracking-[0.25em] uppercase font-bold text-brand">Contact Us</span>
+            <span className="text-[10px] tracking-[0.25em] uppercase font-bold text-brand">Contact us</span>
           </div>
 
-          <h1 className="font-black tracking-tight text-white leading-[0.95] mb-6"
+          <h1 className="font-black tracking-tight text-slate-900 leading-[1.0] mb-6"
             style={{ fontSize: "clamp(36px, 6vw, 80px)", letterSpacing: "-0.03em" }}>
             Let&apos;s{" "}
             <span style={{
-              background: "linear-gradient(135deg, #3388FF 0%, #A78BFA 50%, #10B981 100%)",
+              background: "linear-gradient(135deg, #3388FF 0%, #0056CE 55%, #01224F 100%)",
               WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text",
             }}>
               talk.
             </span>
           </h1>
 
-          <p className="text-base sm:text-lg text-slate-400 leading-relaxed max-w-xl mx-auto">
+          <p className="text-base sm:text-lg text-slate-600 leading-relaxed max-w-xl mx-auto">
             Pick a reason, book a time, and we&apos;ll be there. Or just email us at{" "}
             <a href="mailto:tech@square1ai.com" className="text-brand hover:underline font-semibold">tech@square1ai.com</a>
           </p>
@@ -147,7 +146,7 @@ export default function ContactPage() {
         style={{
           background: `
             radial-gradient(ellipse 900px 500px at 20% 25%, rgba(0,86,206,0.08), transparent 60%),
-            radial-gradient(ellipse 800px 500px at 80% 75%, rgba(167,139,250,0.07), transparent 60%),
+            radial-gradient(ellipse 800px 500px at 80% 75%, rgba(14,165,233,0.07), transparent 60%),
             linear-gradient(180deg, #F8FAFC 0%, #FFFFFF 50%, #F4F8FF 100%)
           `,
         }}
@@ -156,7 +155,7 @@ export default function ContactPage() {
 
           {/* Step 1: Choose your reason */}
           <div className="text-center mb-10">
-            <span className="text-[10px] sm:text-[11px] tracking-[0.35em] uppercase text-slate-500 font-bold">
+            <span className="text-[10px] sm:text-[11px] tracking-[0.35em] uppercase text-brand font-bold">
               Step 1
             </span>
             <h2 className="mt-3 text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
@@ -220,7 +219,7 @@ export default function ContactPage() {
 
           {/* Step 2: Book a time */}
           <div className="text-center mb-8">
-            <span className="text-[10px] sm:text-[11px] tracking-[0.35em] uppercase text-slate-500 font-bold">
+            <span className="text-[10px] sm:text-[11px] tracking-[0.35em] uppercase text-brand font-bold">
               Step 2
             </span>
             <h2 className="mt-3 text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
@@ -273,10 +272,10 @@ export default function ContactPage() {
       {/* ═══════════════════════════════════════════════════════════════════════ */}
       {/* SOCIAL LINKS */}
       {/* ═══════════════════════════════════════════════════════════════════════ */}
-      <section className="py-14 sm:py-20 px-4 sm:px-6 lg:px-8" style={{ background: "#050B14" }}>
+      <section className="py-14 sm:py-20 px-4 sm:px-6 lg:px-8" style={{ background: "#00183A" }}>
         <div className="max-w-4xl mx-auto text-center">
-          <span className="text-[10px] sm:text-[11px] tracking-[0.35em] uppercase text-slate-500 font-bold">
-            Follow Us
+          <span className="text-[10px] sm:text-[11px] tracking-[0.35em] uppercase text-slate-400 font-bold">
+            Follow us
           </span>
           <div className="mt-6 flex items-center justify-center gap-3">
             {SOCIALS.map((s) => (
