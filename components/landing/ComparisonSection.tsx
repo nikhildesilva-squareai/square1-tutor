@@ -60,11 +60,11 @@ function Row({ comp, visible, last }: { comp: Comparison; visible: boolean; last
 
       {/* The Old Way */}
       <div className="px-2 sm:px-6 py-4 sm:py-5 border-t border-slate-100 text-center transition-colors group-hover:bg-slate-50/60">
-        <span className="relative inline-block font-black tabular-nums text-slate-400 text-lg sm:text-2xl leading-none">
+        <span className="relative inline-block font-black tabular-nums text-slate-500 text-lg sm:text-2xl leading-none">
           {oldDisplay}
           <span className="absolute top-1/2 -left-0.5 -right-0.5 h-[2px] rounded-full -translate-y-1/2" style={{ background: "#EF4444" }} />
         </span>
-        <p className="mt-1.5 text-[10px] sm:text-xs text-slate-400 leading-tight">{comp.oldLabel}</p>
+        <p className="mt-1.5 text-[10px] sm:text-xs text-slate-500 leading-tight">{comp.oldLabel}</p>
       </div>
 
       {/* Square 1 AI — highlighted winner column */}
@@ -125,7 +125,7 @@ export function ComparisonSection() {
           <div className="grid grid-cols-[1.1fr_1fr_1fr] items-end">
             <div className="px-3 sm:px-6 pt-5 pb-3" />
             <div className="px-2 sm:px-6 pt-5 pb-3 text-center">
-              <p className="text-[10px] sm:text-[11px] tracking-[0.2em] uppercase text-slate-400 font-bold">The Old Way</p>
+              <p className="text-[10px] sm:text-[11px] tracking-[0.2em] uppercase text-slate-500 font-bold">The Old Way</p>
             </div>
             <div className="px-2 sm:px-6 pt-4 pb-3 text-center bg-blue-50/70 border-x border-t border-blue-100 rounded-t-2xl">
               <span className="inline-flex items-center gap-1 text-[9px] sm:text-[10px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full text-white" style={{ background: "#0056CE" }}>

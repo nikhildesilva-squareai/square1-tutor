@@ -114,7 +114,7 @@ function SceneReview({ reduce }: { reduce: boolean }) {
           <p className="text-sm font-bold text-slate-900">Nova reviewed <span className="font-mono">rag-agent.py</span></p>
           <p className="text-xs text-slate-500 mt-0.5">Read line-by-line · scored against the brief</p>
         </div>
-        <span className="text-2xl font-black tabular-nums" style={{ color: "#0056CE" }}>{score}<span className="text-xs text-slate-400">/100</span></span>
+        <span className="text-2xl font-black tabular-nums" style={{ color: "#0056CE" }}>{score}<span className="text-xs text-slate-500">/100</span></span>
       </div>
       <pre className="rounded-lg bg-[#0D1117] p-3 mb-3 text-[11px] leading-relaxed font-mono overflow-hidden whitespace-pre">
         <code className="text-slate-300">r = requests.get(url, <span style={{ color: "#34D399" }}>timeout=5</span>)
@@ -129,7 +129,7 @@ r.<span style={{ color: "#34D399" }}>raise_for_status()</span></code>
                 {f.done ? <polyline points="20 6 9 17 4 12" /> : <><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></>}
               </svg>
             </span>
-            <span className={f.done ? "text-slate-400 line-through" : "text-slate-700 font-medium"}>{f.t}</span>
+            <span className={f.done ? "text-slate-500 line-through" : "text-slate-700 font-medium"}>{f.t}</span>
           </div>
         ))}
       </div>
@@ -149,7 +149,7 @@ function SceneShip({ reduce }: { reduce: boolean }) {
     <div>
       <div className="flex items-center justify-between mb-4">
         <div>
-          <p className="text-3xl font-black tabular-nums text-slate-900 leading-none">{count}<span className="text-base text-slate-400"> / 12</span></p>
+          <p className="text-3xl font-black tabular-nums text-slate-900 leading-none">{count}<span className="text-base text-slate-500"> / 12</span></p>
           <p className="text-xs text-slate-500 mt-1">projects live on GitHub</p>
         </div>
         <span className="inline-flex items-center gap-1.5 text-[10px] font-bold px-2.5 py-1 rounded-full text-emerald-700 bg-emerald-50 border border-emerald-200">
@@ -392,7 +392,7 @@ export function HeroSection() {
           </p>
 
           {/* Mini trust bar */}
-          <div className="mt-8 flex items-center gap-4 text-[10px] text-slate-400 uppercase tracking-widest font-semibold">
+          <div className="mt-8 flex items-center gap-4 text-[10px] text-slate-500 uppercase tracking-widest font-semibold">
             <span>12 Subjects</span>
             <span className="w-1 h-1 rounded-full bg-slate-300" />
             <span>10–12 Projects</span>
@@ -412,7 +412,7 @@ export function HeroSection() {
         <div className="max-w-7xl mx-auto px-6 sm:px-8 py-4 flex items-center gap-4">
           <span className="text-slate-300 text-xs font-light">+</span>
           <div className="flex-1 h-px bg-slate-100" />
-          <span className="text-[9px] sm:text-[10px] tracking-[0.3em] uppercase text-slate-400 font-medium whitespace-nowrap">
+          <span className="text-[9px] sm:text-[10px] tracking-[0.3em] uppercase text-slate-500 font-medium whitespace-nowrap">
             Scroll to explore
           </span>
           <div className="flex-1 h-px bg-slate-100" />

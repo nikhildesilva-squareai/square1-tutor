@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useFocusTrap } from "@/lib/hooks/useFocusTrap";
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // In-lesson Nova — a slide-over tutor panel that chats in-place with full lesson
@@ -66,6 +67,8 @@ export function NovaPanel({
   const [loading, setLoading] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const lastSeedNonce = useRef<number>(-1);
+  const panelRef = useRef<HTMLElement>(null);
+  useFocusTrap(open, onClose, panelRef);
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
@@ -129,6 +132,8 @@ export function NovaPanel({
 
       {/* Slide-over */}
       <aside
+        ref={panelRef}
+        role="dialog" aria-modal="true" aria-label="Nova — lesson tutor"
         className={`fixed top-0 right-0 z-50 h-full w-full sm:w-[420px] bg-surface border-l border-border shadow-2xl flex flex-col transition-transform duration-300 ${open ? "translate-x-0" : "translate-x-full"}`}
       >
         {/* Header */}

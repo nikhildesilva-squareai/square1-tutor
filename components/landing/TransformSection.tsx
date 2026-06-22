@@ -64,7 +64,7 @@ function Row({ before, after, revealed }: { before: string; after: string; revea
     >
       <span
         className={`flex-1 text-xs sm:text-sm transition-all duration-500 ${
-          revealed ? "text-slate-400 line-through" : "text-slate-600"
+          revealed ? "text-slate-500 line-through" : "text-slate-600"
         }`}
       >
         {before}
@@ -186,7 +186,7 @@ export function TransformSection() {
           {/* Stats */}
           <div className="grid grid-cols-3 gap-3 sm:gap-4 mb-8">
             <div className="rounded-2xl bg-blue-50/70 border border-blue-100 px-3 py-3 sm:px-4 sm:py-4">
-              <p className="text-[9px] sm:text-[10px] font-bold tracking-[0.15em] uppercase text-slate-400">Job-ready</p>
+              <p className="text-[9px] sm:text-[10px] font-bold tracking-[0.15em] uppercase text-slate-500">Job-ready</p>
               <p className="mt-1 text-2xl sm:text-3xl font-black tabular-nums"
                 style={{ background: "linear-gradient(135deg,#0056CE,#01224F)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>
                 {Math.round(readiness)}%
@@ -196,14 +196,14 @@ export function TransformSection() {
               </div>
             </div>
             <div className="rounded-2xl bg-slate-50 border border-slate-100 px-3 py-3 sm:px-4 sm:py-4">
-              <p className="text-[9px] sm:text-[10px] font-bold tracking-[0.15em] uppercase text-slate-400">Projects shipped</p>
+              <p className="text-[9px] sm:text-[10px] font-bold tracking-[0.15em] uppercase text-slate-500">Projects shipped</p>
               <p className="mt-1 text-2xl sm:text-3xl font-black tabular-nums text-slate-900">{Math.round(projects)}</p>
-              <p className="mt-2 text-[10px] text-slate-400">live on GitHub</p>
+              <p className="mt-2 text-[10px] text-slate-500">live on GitHub</p>
             </div>
             <div className="rounded-2xl bg-slate-50 border border-slate-100 px-3 py-3 sm:px-4 sm:py-4">
-              <p className="text-[9px] sm:text-[10px] font-bold tracking-[0.15em] uppercase text-slate-400">Stage</p>
+              <p className="text-[9px] sm:text-[10px] font-bold tracking-[0.15em] uppercase text-slate-500">Stage</p>
               <p className="mt-1 text-lg sm:text-2xl font-black text-slate-900 leading-tight">{MILESTONES[step].phase}</p>
-              <p className="mt-1 text-[10px] text-slate-400">{MILESTONES[step].when}</p>
+              <p className="mt-1 text-[10px] text-slate-500">{MILESTONES[step].when}</p>
             </div>
           </div>
 
@@ -221,14 +221,14 @@ export function TransformSection() {
                     className="flex flex-col items-center gap-2 group focus:outline-none"
                     aria-label={`${m.phase} — ${m.when}`}>
                     <span className={`w-7 h-7 rounded-full flex items-center justify-center text-[11px] font-black transition-all duration-300 ${
-                      reached ? "text-white" : "bg-white border-2 border-slate-200 text-slate-400 group-hover:border-brand/40"
+                      reached ? "text-white" : "bg-white border-2 border-slate-200 text-slate-500 group-hover:border-brand/40"
                     } ${active ? "ring-4 ring-brand/15 scale-110" : ""}`}
                       style={reached ? { background: "linear-gradient(135deg,#3388FF,#0056CE)" } : undefined}>
                       {reached ? (
                         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
                       ) : (i + 1)}
                     </span>
-                    <span className={`text-[10px] sm:text-xs font-semibold transition-colors text-center leading-tight ${active ? "text-brand" : reached ? "text-slate-700" : "text-slate-400"}`}>
+                    <span className={`text-[10px] sm:text-xs font-semibold transition-colors text-center leading-tight ${active ? "text-brand" : reached ? "text-slate-700" : "text-slate-500"}`}>
                       {m.phase}
                     </span>
                   </button>
@@ -237,7 +237,7 @@ export function TransformSection() {
             </div>
           </div>
 
-          <p className="mt-5 text-center text-[10px] text-slate-400">
+          <p className="mt-5 text-center text-[10px] text-slate-500">
             Readiness is illustrative — what the track is built to take you to, not a measured outcome.
           </p>
         </div>

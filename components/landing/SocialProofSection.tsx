@@ -80,7 +80,7 @@ export function SocialProofSection() {
               boxShadow: "0 16px 48px rgba(0,86,206,0.10), 0 0 0 1px rgba(0,86,206,0.05) inset",
             }}
           >
-            <p className="text-[10px] tracking-[0.3em] uppercase font-bold text-slate-400 mb-6">
+            <p className="text-[10px] tracking-[0.3em] uppercase font-bold text-slate-500 mb-6">
               A note from the founder
             </p>
 
@@ -154,7 +154,7 @@ export function SocialProofSection() {
                   </div>
                   <div>
                     <p className="text-sm font-bold text-white">{p.title}</p>
-                    <p className="text-xs text-slate-400 leading-relaxed mt-0.5">{p.desc}</p>
+                    <p className="text-xs text-slate-500 leading-relaxed mt-0.5">{p.desc}</p>
                   </div>
                 </div>
               ))}

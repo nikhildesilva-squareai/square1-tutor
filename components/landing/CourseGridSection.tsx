@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import { useFocusTrap } from "@/lib/hooks/useFocusTrap";
 
 type Course = {
   id: string;
@@ -97,7 +98,7 @@ function MobileCourseCard({
             {meta.role}
           </span>
         </div>
-        <div className="flex items-center gap-2 text-[9px] text-slate-400">
+        <div className="flex items-center gap-2 text-[9px] text-slate-500">
           <span><span className="font-bold text-slate-600">{course.total_lessons}</span> lessons</span>
           <span className="w-0.5 h-0.5 rounded-full bg-slate-300" />
           <span><span className="font-bold text-slate-600">{course.total_projects}</span> projects</span>
@@ -231,10 +232,13 @@ function DesktopCourseCard({
 // ─── Inline explorer modal — opens when a course card is clicked ──────────────
 function CourseExplorer({ course, onClose }: { course: Course; onClose: () => void }) {
   const meta = getMeta(course.slug);
+  const dialogRef = useRef<HTMLDivElement>(null);
+  useFocusTrap(true, onClose, dialogRef);
   return (
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
       <div className="absolute inset-0 bg-slate-900/50 backdrop-blur-sm" onClick={onClose} />
-      <div className="relative w-full sm:max-w-lg rounded-t-3xl sm:rounded-3xl bg-white shadow-2xl overflow-hidden animate-fade-in-up">
+      <div ref={dialogRef} role="dialog" aria-modal="true" aria-label={course.title}
+        className="relative w-full sm:max-w-lg rounded-t-3xl sm:rounded-3xl bg-white shadow-2xl overflow-hidden animate-fade-in-up">
         {/* Accent header */}
         <div className="p-6 sm:p-7" style={{ background: `linear-gradient(135deg, ${course.color}14, #fff)` }}>
           <div className="flex items-start justify-between">
@@ -245,7 +249,7 @@ function CourseExplorer({ course, onClose }: { course: Course; onClose: () => vo
                 {meta.role} · <span style={{ color: "#10B981" }}>{meta.salary}</span>
               </p>
             </div>
-            <button onClick={onClose} className="w-8 h-8 rounded-lg hover:bg-black/5 flex items-center justify-center text-slate-400" aria-label="Close">
+            <button onClick={onClose} className="w-8 h-8 rounded-lg hover:bg-black/5 flex items-center justify-center text-slate-500" aria-label="Close">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
             </button>
           </div>
@@ -254,7 +258,7 @@ function CourseExplorer({ course, onClose }: { course: Course; onClose: () => vo
         <div className="p-6 sm:p-7 pt-5">
           <p className="text-sm text-slate-600 leading-relaxed mb-5">{course.description}</p>
 
-          <p className="text-[10px] tracking-widest uppercase font-bold text-slate-400 mb-3">Real projects you&apos;ll ship</p>
+          <p className="text-[10px] tracking-widest uppercase font-bold text-slate-500 mb-3">Real projects you&apos;ll ship</p>
           <div className="space-y-2 mb-6">
             {meta.projects.map((p, i) => (
               <div key={p} className="flex items-center gap-2.5 px-3 py-2 rounded-lg border bg-slate-50/60" style={{ borderColor: `${course.color}20` }}>
@@ -262,7 +266,7 @@ function CourseExplorer({ course, onClose }: { course: Course; onClose: () => vo
                 <span className="text-sm font-semibold text-slate-700">{p}</span>
               </div>
             ))}
-            <p className="text-[11px] text-slate-400 pt-1">+ {Math.max(0, course.total_projects - meta.projects.length)} more · {course.total_lessons} lessons</p>
+            <p className="text-[11px] text-slate-500 pt-1">+ {Math.max(0, course.total_projects - meta.projects.length)} more · {course.total_lessons} lessons</p>
           </div>
 
           {/* Two next steps */}

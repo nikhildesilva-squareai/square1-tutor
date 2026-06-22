@@ -597,7 +597,7 @@ export function StudyHubClient({ initialNotes, stats, totalCount }: Props) {
       {/* ── Note Detail / Edit Modal ───────────────────── */}
       {viewingNote && (
         <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm flex items-center justify-center p-4" onClick={() => setViewingNote(null)}>
-          <div className="bg-surface rounded-2xl border border-border shadow-2xl max-w-lg w-full max-h-[85vh] flex flex-col" onClick={e => e.stopPropagation()}>
+          <div className="bg-surface rounded-2xl border border-border shadow-2xl max-w-lg w-full max-h-[85vh] flex flex-col" role="dialog" aria-modal="true" aria-label="Note details" onClick={e => e.stopPropagation()}>
             {/* Modal header */}
             <div className="flex items-center justify-between px-6 py-4 border-b border-border shrink-0">
               <div className="flex items-center gap-2">

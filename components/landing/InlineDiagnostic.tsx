@@ -96,7 +96,7 @@ export function InlineDiagnostic({
           )}
 
           {!answered && (
-            <p className="text-center text-[11px] text-slate-400 mt-5">Pick one — no signup, no judgement.</p>
+            <p className="text-center text-[11px] text-slate-500 mt-5">Pick one — no signup, no judgement.</p>
           )}
         </div>
       </div>

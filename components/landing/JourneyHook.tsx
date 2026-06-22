@@ -168,7 +168,7 @@ function OutcomeCard({
           {value}
         </span>
         {outcome.suffix && (
-          <span className="text-2xl lg:text-3xl font-semibold text-slate-400 tabular-nums">
+          <span className="text-2xl lg:text-3xl font-semibold text-slate-500 tabular-nums">
             {outcome.suffix}
           </span>
         )}
@@ -259,9 +259,9 @@ function EmployerProof({ visible }: { visible: boolean }) {
               <div className="flex items-center justify-between mb-4">
                 <div>
                   <p className="text-base font-bold text-slate-700">Alex Rivera</p>
-                  <p className="text-xs text-slate-400">Aspiring Software Engineer · resume.pdf</p>
+                  <p className="text-xs text-slate-500">Aspiring Software Engineer · resume.pdf</p>
                 </div>
-                <span className="text-[10px] font-bold px-2 py-1 rounded bg-slate-100 text-slate-400 border border-slate-200">PDF</span>
+                <span className="text-[10px] font-bold px-2 py-1 rounded bg-slate-100 text-slate-500 border border-slate-200">PDF</span>
               </div>
               <div className="space-y-2.5">
                 {["Familiar with Python (3 yrs)", "Strong team player, fast learner", "Built various personal projects", "Passionate about technology"].map((b) => (
@@ -270,7 +270,7 @@ function EmployerProof({ visible }: { visible: boolean }) {
                   </div>
                 ))}
               </div>
-              <div className="mt-5 pt-4 border-t border-slate-100 flex items-center gap-2 text-xs text-slate-400">
+              <div className="mt-5 pt-4 border-t border-slate-100 flex items-center gap-2 text-xs text-slate-500">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10" /><path d="M9.1 9a3 3 0 1 1 5 2.2c-.9.7-1.6 1.2-1.6 2.3" /><line x1="12" y1="17" x2="12.01" y2="17" /></svg>
                 References on request — nothing to click, nothing to verify.
               </div>
@@ -282,7 +282,7 @@ function EmployerProof({ visible }: { visible: boolean }) {
                 <span className="w-2.5 h-2.5 rounded-full bg-amber-400/70" />
                 <span className="w-2.5 h-2.5 rounded-full bg-emerald-400/70" />
                 <span className="ml-2 text-[11px] text-slate-500 font-mono truncate">alex-rivera.dev · portfolio</span>
-                <span className="ml-auto hidden sm:inline-flex items-center gap-1 text-[9px] font-semibold text-slate-400 whitespace-nowrap">
+                <span className="ml-auto hidden sm:inline-flex items-center gap-1 text-[9px] font-semibold text-slate-500 whitespace-nowrap">
                   <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="9" /><polyline points="12 7 12 12 15 14" /></svg>
                   reviewed in 4 min
                 </span>
@@ -296,7 +296,7 @@ function EmployerProof({ visible }: { visible: boolean }) {
                     </span>
                   </div>
                   <div className="flex items-center justify-between text-[10px] mb-1.5">
-                    <span className="text-slate-400">Nova code review</span>
+                    <span className="text-slate-500">Nova code review</span>
                     <span className="font-bold text-emerald-300 tabular-nums">94/100</span>
                   </div>
                   <div className="h-1.5 rounded-full bg-white/[0.08] overflow-hidden">
@@ -309,7 +309,7 @@ function EmployerProof({ visible }: { visible: boolean }) {
                     <div className="flex items-center gap-2.5 text-[10px]">
                       <span className="inline-flex items-center gap-1 text-emerald-300/80"><span className="w-1.5 h-1.5 rounded-full bg-emerald-400" /> live</span>
                       <span className="text-slate-600">·</span>
-                      <span className="text-slate-400 tabular-nums">{p.s}/100</span>
+                      <span className="text-slate-500 tabular-nums">{p.s}/100</span>
                     </div>
                   </div>
                 ))}
@@ -475,7 +475,7 @@ function MockupAssessment() {
       </div>
       <p className="text-[11px] text-slate-700 font-medium leading-snug mb-2">Which best describes RAG?</p>
       {["A", "B", "C", "D"].map((l, i) => (
-        <div key={l} className={`text-[9px] mb-1 px-2 py-1 rounded ${i === 1 ? "bg-blue-50 text-blue-900 border border-blue-200 font-semibold" : "text-slate-400"}`}>
+        <div key={l} className={`text-[9px] mb-1 px-2 py-1 rounded ${i === 1 ? "bg-blue-50 text-blue-900 border border-blue-200 font-semibold" : "text-slate-500"}`}>
           {l}. {i === 1 ? "External knowledge retrieval" : "Option text..."}
         </div>
       ))}
@@ -495,7 +495,7 @@ function MockupReport() {
       <div className="flex items-end justify-between mb-3">
         <div>
           <p className="text-[8px] text-slate-500">Score</p>
-          <p className="text-2xl font-black text-slate-900 tabular-nums leading-none">74<span className="text-xs text-slate-400">/100</span></p>
+          <p className="text-2xl font-black text-slate-900 tabular-nums leading-none">74<span className="text-xs text-slate-500">/100</span></p>
         </div>
         <span className="text-[7px] px-1.5 py-0.5 rounded-full font-bold bg-amber-100 text-amber-700">INT.</span>
       </div>
@@ -523,9 +523,9 @@ function MockupPlan() {
         <div key={p.m} className={`flex items-center justify-between p-2 rounded border ${p.active ? "border-blue-300 bg-blue-50" : "border-slate-200"}`}>
           <div>
             <p className={`text-[10px] font-bold ${p.active ? "text-slate-900" : "text-slate-500"}`}>{p.m}</p>
-            <p className="text-[8px] text-slate-400">{p.h}</p>
+            <p className="text-[8px] text-slate-500">{p.h}</p>
           </div>
-          <span className={`text-[9px] tabular-nums font-bold ${p.active ? "text-blue-600" : "text-slate-400"}`}>{p.n} proj</span>
+          <span className={`text-[9px] tabular-nums font-bold ${p.active ? "text-blue-600" : "text-slate-500"}`}>{p.n} proj</span>
         </div>
       ))}
     </div>
@@ -688,7 +688,7 @@ function JourneyFlow() {
             </span>
             <div>
               <span className="block text-[11px] font-black tracking-[0.3em] uppercase" style={{ color: accent }}>{step.label}</span>
-              <span className="block text-xs text-slate-400 mt-1">{step.duration}</span>
+              <span className="block text-xs text-slate-500 mt-1">{step.duration}</span>
             </div>
           </div>
           <h4 className="text-2xl lg:text-3xl font-bold text-slate-900 leading-tight mb-3">{step.title}</h4>
@@ -711,7 +711,7 @@ function JourneyFlow() {
             >
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6" /></svg>
             </button>
-            <span className="ml-1 text-sm tabular-nums text-slate-400">
+            <span className="ml-1 text-sm tabular-nums text-slate-500">
               <span className="font-bold text-slate-900">{active + 1}</span> / {STEPS.length}
             </span>
           </div>
