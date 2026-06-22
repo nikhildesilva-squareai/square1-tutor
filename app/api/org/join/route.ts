@@ -34,6 +34,22 @@ export async function POST(request: Request) {
       .from("organizations").select("id, seats").eq("join_code", code).maybeSingle();
     if (!org) return NextResponse.json({ error: "That invite link isn't valid." }, { status: 404 });
 
+    // If the manager assigned this person a specific track, it wins over the
+    // client's pick. Read it BEFORE we mark the invite accepted below.
+    let effectiveSlug = courseSlug;
+    if (user.email) {
+      const { data: inv } = await admin
+        .from("org_invites")
+        .select("assigned_course_id")
+        .eq("org_id", org.id).eq("status", "pending").ilike("email", user.email)
+        .not("assigned_course_id", "is", null)
+        .maybeSingle();
+      if (inv?.assigned_course_id) {
+        const { data: ac } = await admin.from("courses").select("slug").eq("id", inv.assigned_course_id).maybeSingle();
+        if (ac?.slug) effectiveSlug = ac.slug;
+      }
+    }
+
     // Already a member? idempotent.
     const { data: existingMember } = await admin
       .from("org_members").select("id, role").eq("org_id", org.id).eq("student_id", student.id).maybeSingle();
@@ -60,8 +76,9 @@ export async function POST(request: Request) {
         .eq("org_id", org.id).eq("status", "pending").ilike("email", user.email);
     }
 
-    // Free enrollment in the chosen track (mirror B2C: beginner, first lesson)
-    const { data: course } = await admin.from("courses").select("id").eq("slug", courseSlug).maybeSingle();
+    // Free enrollment in the chosen track (mirror B2C: beginner, first lesson).
+    // effectiveSlug honours a manager's assignment if one exists.
+    const { data: course } = await admin.from("courses").select("id").eq("slug", effectiveSlug).maybeSingle();
     if (!course) return NextResponse.json({ error: "Course not found" }, { status: 404 });
 
     const { data: firstLesson } = await admin

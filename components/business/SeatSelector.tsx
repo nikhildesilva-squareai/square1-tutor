@@ -91,7 +91,7 @@ export function SeatSelector() {
         Start your team — free →
       </Link>
       <p className="text-center text-[11px] text-slate-400 mt-3">
-        No card today. Need 50+? <Link href="#request" className="text-brand font-semibold hover:underline">Talk to us</Link>.
+        No card today. Need 100+? <Link href="#request" className="text-brand font-semibold hover:underline">Talk to sales</Link>.
       </p>
     </div>
   );

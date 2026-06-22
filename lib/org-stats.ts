@@ -9,9 +9,12 @@ export interface OrgMemberRow {
   name: string;
   email: string;
   track: string;
+  trackSlug: string | null;
   level: string;
   lessons: number;
   projects: number;
+  completionPct: number;
+  completed: boolean;
   lastActive: string | null;
 }
 
@@ -24,6 +27,8 @@ export interface OrgStats {
   seatsLeft: number;
   activeThisWeek: number;
   totalLessons: number;
+  completedCount: number;     // members who finished their track
+  avgCompletion: number;      // avg % of track completed across members
   deployedCount: number;
   avgScore: number | null;        // avg Nova/project score %
   teamReadiness: number | null;   // avg latest assessment readiness %
@@ -61,16 +66,16 @@ export async function getOrgStats(orgId: string): Promise<OrgStats | null> {
   if (memberIds.length > 0) {
     const [{ data: studs }, { data: enrs }, { data: comps }, { data: subs }, { data: reports }] = await Promise.all([
       admin.from("students").select("id, name, email").in("id", memberIds),
-      admin.from("student_enrollments").select("student_id, assessment_level, course:courses(title)").in("student_id", memberIds).eq("status", "active"),
+      admin.from("student_enrollments").select("student_id, assessment_level, course:courses(title, slug, total_lessons)").in("student_id", memberIds).eq("status", "active"),
       admin.from("lesson_completions").select("student_id, completed_at").in("student_id", memberIds),
       admin.from("project_submissions").select("student_id, score, max_score, live_url").in("student_id", memberIds),
       admin.from("skill_reports").select("student_id, weak_topics, strong_topics, estimated_score, max_score, created_at").in("student_id", memberIds),
     ]);
 
     const studMap = new Map((studs ?? []).map((s) => [s.id, s]));
-    const enrMap = new Map<string, { level: string; track: string }>();
-    for (const e of (enrs ?? []) as unknown as Array<{ student_id: string; assessment_level: string | null; course: { title: string } | null }>) {
-      if (!enrMap.has(e.student_id)) enrMap.set(e.student_id, { level: e.assessment_level ?? "—", track: e.course?.title ?? "—" });
+    const enrMap = new Map<string, { level: string; track: string; slug: string | null; total: number }>();
+    for (const e of (enrs ?? []) as unknown as Array<{ student_id: string; assessment_level: string | null; course: { title: string; slug: string; total_lessons: number } | null }>) {
+      if (!enrMap.has(e.student_id)) enrMap.set(e.student_id, { level: e.assessment_level ?? "—", track: e.course?.title ?? "—", slug: e.course?.slug ?? null, total: e.course?.total_lessons ?? 0 });
     }
     const lessonsByStud = new Map<string, number>();
     const lastByStud = new Map<string, string>();
@@ -136,14 +141,20 @@ export async function getOrgStats(orgId: string): Promise<OrgStats | null> {
     roster = memberIds.map((id) => {
       const s = studMap.get(id);
       const enr = enrMap.get(id);
+      const lessons = lessonsByStud.get(id) ?? 0;
+      const total = enr?.total ?? 0;
+      const completionPct = total > 0 ? Math.min(100, Math.round((lessons / total) * 100)) : 0;
       return {
         studentId: id,
         name: s?.name ?? (s?.email?.split("@")[0] ?? "Member"),
         email: s?.email ?? "",
         track: enr?.track ?? "—",
+        trackSlug: enr?.slug ?? null,
         level: enr?.level ?? "—",
-        lessons: lessonsByStud.get(id) ?? 0,
+        lessons,
         projects: projByStud.get(id) ?? 0,
+        completionPct,
+        completed: total > 0 && lessons >= total,
         lastActive: lastByStud.get(id) ?? null,
       };
     });
@@ -152,6 +163,8 @@ export async function getOrgStats(orgId: string): Promise<OrgStats | null> {
   const weekAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
   const activeThisWeek = roster.filter((r) => r.lastActive && new Date(r.lastActive).getTime() >= weekAgo).length;
   const totalLessons = roster.reduce((s, r) => s + r.lessons, 0);
+  const completedCount = roster.filter((r) => r.completed).length;
+  const avgCompletion = roster.length ? Math.round(roster.reduce((s, r) => s + r.completionPct, 0) / roster.length) : 0;
   const seatsUsed = roster.length;
   const seatsLeft = Math.max(0, org.seats - seatsUsed - pendingEmails.length);
 
@@ -164,6 +177,8 @@ export async function getOrgStats(orgId: string): Promise<OrgStats | null> {
     seatsLeft,
     activeThisWeek,
     totalLessons,
+    completedCount,
+    avgCompletion,
     deployedCount,
     avgScore,
     teamReadiness,

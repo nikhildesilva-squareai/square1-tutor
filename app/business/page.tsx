@@ -150,7 +150,7 @@ export default function BusinessPage() {
             { name: "Starter", seats: "1–5 seats", price: 39, yr: 468, blurb: "Small teams getting started", popular: false },
             { name: "Team", seats: "6–15 seats", price: 32, yr: 384, blurb: "Growing teams upskilling together", popular: true },
             { name: "Growth", seats: "16–30 seats", price: 26, yr: 312, blurb: "Departments scaling capability", popular: false },
-            { name: "Scale", seats: "31–50 seats", price: 20, yr: 240, blurb: "Best per-seat value for big teams", popular: false },
+            { name: "Scale", seats: "31–100 seats", price: 20, yr: 240, blurb: "Best per-seat value for big teams", popular: false },
           ].map((t) => (
             <div key={t.name}
               className="relative rounded-2xl border-2 bg-white p-6 flex flex-col"
@@ -181,10 +181,10 @@ export default function BusinessPage() {
 
         <div className="mt-4 rounded-2xl border border-slate-200 bg-slate-50 px-6 py-4 flex flex-col sm:flex-row items-center justify-between gap-3">
           <div className="text-center sm:text-left">
-            <p className="text-sm font-bold text-slate-900">More than 50 employees?</p>
+            <p className="text-sm font-bold text-slate-900">More than 100 employees?</p>
             <p className="text-xs text-slate-600">Custom pricing, volume rates, SSO, and dedicated onboarding.</p>
           </div>
-          <a href="#request" className="text-sm font-bold text-brand hover:underline whitespace-nowrap">Talk to us →</a>
+          <a href="#request" className="text-sm font-bold text-brand hover:underline whitespace-nowrap">Talk to sales →</a>
         </div>
 
         <p className="text-center text-[11px] text-slate-400 mt-5">
@@ -214,7 +214,7 @@ export default function BusinessPage() {
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
             {[
-              { t: "Single sign-on", now: "Google Workspace SSO, live today.", soon: "SAML SSO + SCIM provisioning on the roadmap for 50+ teams.", icon: "M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4M10 17l5-5-5-5M15 12H3" },
+              { t: "Single sign-on", now: "Google Workspace SSO, live today.", soon: "SAML SSO + SCIM provisioning on the roadmap for 100+ teams.", icon: "M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4M10 17l5-5-5-5M15 12H3" },
               { t: "Your data, handled right", now: "Australia-hosted (AWS Sydney). We never train AI models on your team's data.", soon: "SOC 2 on our roadmap.", icon: "M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" },
               { t: "Works with your stack", now: "Manager dashboard + exportable reports today.", soon: "LMS / HRIS completion sync on the roadmap.", icon: "M12 2 2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" },
             ].map((s) => (
@@ -234,12 +234,12 @@ export default function BusinessPage() {
         </div>
       </section>
 
-      {/* Lead form — book a demo / 50+ / questions */}
+      {/* Lead form — sales lane for 100+ / SSO / security review */}
       <section id="request" className="max-w-xl mx-auto px-5 sm:px-6 pb-20 scroll-mt-6">
         <div className="text-center mb-6">
-          <h2 className="text-2xl sm:text-3xl font-black text-slate-900 mb-2">Book a demo, or talk to us.</h2>
+          <h2 className="text-2xl sm:text-3xl font-black text-slate-900 mb-2">Rolling out to 100+? Let&apos;s talk.</h2>
           <p className="text-sm text-slate-600">
-            For 50+ seats, custom pricing, SSO or a security review — leave your details and we&apos;ll set it up. Smaller team? Just <a href="#start" className="text-brand font-semibold hover:underline">start above</a> — it&apos;s instant.
+            For 100+ seats, custom pricing, SSO or a security review — leave your details and we&apos;ll set it up. Under 100? Just <a href="#start" className="text-brand font-semibold hover:underline">start above</a> — it&apos;s instant, no call needed.
           </p>
         </div>
         <BusinessLeadForm />

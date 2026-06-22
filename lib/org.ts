@@ -17,7 +17,7 @@ export function tierName(seats: number): string {
   return "Scale";
 }
 
-export const MAX_SELF_SERVE_SEATS = 50; // 50+ → contact sales
+export const MAX_SELF_SERVE_SEATS = 100; // 100+ → contact sales
 
 // ─── Billing intervals ──────────────────────────────────────────────────────
 export type BillingInterval = "monthly" | "annual";

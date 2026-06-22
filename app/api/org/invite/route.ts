@@ -4,7 +4,10 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 
 const schema = z.object({
-  emails: z.array(z.string().email()).min(1).max(50),
+  emails: z.array(z.string().email()).min(1).max(100),
+  // Optional: manager assigns everyone in this batch a specific track.
+  // Omit / empty → invitee chooses their own course on join.
+  courseSlug: z.string().min(1).max(100).optional(),
 });
 
 /**
@@ -19,7 +22,7 @@ export async function POST(request: Request) {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-    const { emails } = schema.parse(await request.json());
+    const { emails, courseSlug } = schema.parse(await request.json());
 
     const { data: student } = await supabase.from("students").select("id").eq("user_id", user.id).maybeSingle();
     if (!student) return NextResponse.json({ error: "No account" }, { status: 403 });
@@ -28,6 +31,13 @@ export async function POST(request: Request) {
     const { data: mgr } = await admin
       .from("org_members").select("org_id").eq("student_id", student.id).eq("role", "manager").maybeSingle();
     if (!mgr) return NextResponse.json({ error: "Only a team manager can invite" }, { status: 403 });
+
+    // Optional course assignment for this batch (manager picks the track).
+    let assignedCourseId: string | null = null;
+    if (courseSlug) {
+      const { data: course } = await admin.from("courses").select("id").eq("slug", courseSlug).maybeSingle();
+      assignedCourseId = course?.id ?? null;
+    }
 
     const { data: org } = await admin
       .from("organizations").select("id, name, seats, join_code").eq("id", mgr.org_id).maybeSingle();
@@ -51,7 +61,7 @@ export async function POST(request: Request) {
       if (alreadyEmails.has(email)) { skipped++; continue; }   // already invited or joined
       if (seatsLeft <= 0) { skipped++; continue; }             // out of seats
       const { error } = await admin
-        .from("org_invites").insert({ org_id: org.id, email, status: "pending", invited_by: student.id });
+        .from("org_invites").insert({ org_id: org.id, email, status: "pending", invited_by: student.id, assigned_course_id: assignedCourseId });
       if (error) { skipped++; continue; }
       invited.push(email);
       seatsLeft--;

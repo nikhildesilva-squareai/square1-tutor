@@ -28,6 +28,8 @@ export default function JoinTeamPage() {
   const [code, setCode] = useState("");
   const [selected, setSelected] = useState<string | null>(null);
   const [error, setError] = useState("");
+  const [assigned, setAssigned] = useState<{ slug: string; title: string } | null>(null);
+  const [checkedAssign, setCheckedAssign] = useState(false);
 
   const join = useCallback(async (joinCode: string, slug: string) => {
     setStage("joining"); setError("");
@@ -55,6 +57,25 @@ export default function JoinTeamPage() {
     });
   }, []);
 
+  // Once authed and on the pick step, check whether the manager pre-assigned a track.
+  useEffect(() => {
+    if (stage !== "pick" || !code || checkedAssign) return;
+    (async () => {
+      try {
+        const res = await fetch(`/api/org/assignment?code=${encodeURIComponent(code)}`);
+        const data = await res.json();
+        if (data.assigned && data.courseSlug) {
+          setAssigned({ slug: data.courseSlug, title: data.courseTitle ?? "your track" });
+          setSelected(data.courseSlug);
+        }
+      } catch {
+        /* ignore — fall back to the picker */
+      } finally {
+        setCheckedAssign(true);
+      }
+    })();
+  }, [stage, code, checkedAssign]);
+
   return (
     <div className="min-h-screen flex flex-col" style={{ background: "linear-gradient(180deg,#F8FAFC 0%,#FFFFFF 45%)" }}>
       <header className="flex items-center px-5 sm:px-10 py-5">
@@ -79,7 +100,31 @@ export default function JoinTeamPage() {
           </div>
         )}
 
-        {(stage === "pick" || stage === "joining") && (
+        {/* Checking for a manager assignment */}
+        {(stage === "pick" || stage === "joining") && !checkedAssign && (
+          <p className="text-sm text-slate-400">Setting up your seat…</p>
+        )}
+
+        {/* Manager pre-assigned a track → skip the picker */}
+        {(stage === "pick" || stage === "joining") && checkedAssign && assigned && (
+          <div className="w-full max-w-md text-center">
+            <h1 className="text-3xl font-black text-slate-900 mb-1">You&apos;re all set 🎓</h1>
+            <p className="text-sm text-slate-600 mb-6">Your manager set you up with a track. Start whenever you&apos;re ready.</p>
+            <div className="rounded-2xl border-2 border-brand/30 bg-brand/[0.04] p-6 mb-6">
+              <p className="text-[10px] tracking-widest uppercase font-bold text-slate-400 mb-1">Your assigned track</p>
+              <p className="text-xl font-black text-slate-900">{assigned.title}</p>
+            </div>
+            {error && <p className="text-sm text-red-600 mb-3">{error}</p>}
+            <button onClick={() => join(code, assigned.slug)} disabled={stage === "joining"}
+              className="inline-flex items-center justify-center px-8 py-4 rounded-xl text-white font-bold text-sm disabled:opacity-40 hover:-translate-y-0.5 transition-transform"
+              style={{ background: "linear-gradient(135deg,#0056CE,#01224F)", boxShadow: "0 12px 32px rgba(0,86,206,0.30)" }}>
+              {stage === "joining" ? "Setting up…" : "Start learning →"}
+            </button>
+          </div>
+        )}
+
+        {/* No assignment → choose your own track */}
+        {(stage === "pick" || stage === "joining") && checkedAssign && !assigned && (
           <div className="w-full max-w-2xl text-center">
             <h1 className="text-3xl font-black text-slate-900 mb-1">Pick your track</h1>
             <p className="text-sm text-slate-600 mb-7">Choose what you want to learn — you can switch later.</p>
@@ -99,7 +144,7 @@ export default function JoinTeamPage() {
             {error && <p className="text-sm text-red-600 mb-3">{error}</p>}
             <button onClick={() => selected && join(code, selected)} disabled={!selected || stage === "joining"}
               className="inline-flex items-center justify-center px-8 py-4 rounded-xl text-white font-bold text-sm disabled:opacity-40 hover:-translate-y-0.5 transition-transform"
-              style={{ background: "linear-gradient(135deg,#0056CE,#4F46E5)", boxShadow: "0 12px 32px rgba(0,86,206,0.30)" }}>
+              style={{ background: "linear-gradient(135deg,#0056CE,#01224F)", boxShadow: "0 12px 32px rgba(0,86,206,0.30)" }}>
               {stage === "joining" ? "Setting up…" : "Start learning →"}
             </button>
           </div>

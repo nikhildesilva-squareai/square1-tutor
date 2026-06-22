@@ -28,9 +28,13 @@ export default async function ManagerDashboard() {
 
   const {
     org, roster, pendingCount, pendingEmails, seatsUsed, seatsLeft,
-    activeThisWeek, totalLessons, deployedCount, avgScore,
+    activeThisWeek, completedCount, avgCompletion, deployedCount, avgScore,
     teamReadiness, readinessDelta, membersAssessed, topWeak, topStrong,
   } = stats;
+
+  // Courses for the "assign a track" invite dropdown.
+  const { data: courseRows } = await admin.from("courses").select("slug, title").order("title");
+  const courseList = (courseRows ?? []) as { slug: string; title: string }[];
 
   const usedPct = org.seats > 0 ? Math.min(100, Math.round((seatsUsed / org.seats) * 100)) : 0;
   const pendingPct = org.seats > 0 ? Math.min(100 - usedPct, Math.round((pendingCount / org.seats) * 100)) : 0;
@@ -80,7 +84,7 @@ export default async function ManagerDashboard() {
           {[
             { label: "Seats used", value: `${seatsUsed}/${org.seats}` },
             { label: "Active this week", value: activeThisWeek },
-            { label: "Lessons completed", value: totalLessons },
+            { label: "Avg completion", value: `${avgCompletion}%` },
             { label: "Projects deployed", value: deployedCount },
           ].map((s) => (
             <div key={s.label} className="rounded-xl border border-slate-200 bg-white p-4">
@@ -166,7 +170,7 @@ export default async function ManagerDashboard() {
           <p className="text-xs text-slate-600 mb-3">
             Invite by email, or share the link — each person claims a seat and starts learning. ({seatsLeft} seat{seatsLeft !== 1 ? "s" : ""} left)
           </p>
-          <BulkInvite seatsLeft={seatsLeft} />
+          <BulkInvite seatsLeft={seatsLeft} courses={courseList} />
           <div className="mt-4 pt-4 border-t border-brand/10">
             <p className="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-2">Or share a link</p>
             <CopyInviteLink url={inviteUrl} />
@@ -178,11 +182,21 @@ export default async function ManagerDashboard() {
           )}
         </div>
 
+        {/* Completion nudge */}
+        {completedCount > 0 && (
+          <div className="mb-3 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 flex items-center gap-2.5">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#19A65F" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="shrink-0"><path d="M8.21 13.89 7 23l5-3 5 3-1.21-9.12" /><circle cx="12" cy="8" r="7" /></svg>
+            <p className="text-sm text-emerald-800 font-semibold">
+              {completedCount} of {seatsUsed} {completedCount === 1 ? "teammate has" : "teammates have"} completed their track — open a member to see their portfolio.
+            </p>
+          </div>
+        )}
+
         {/* Roster */}
         <div className="rounded-2xl border border-slate-200 bg-white overflow-hidden">
           <div className="px-5 py-3 border-b border-slate-200 flex items-center justify-between">
             <p className="text-sm font-bold text-slate-900">Team progress</p>
-            <span className="text-xs text-slate-400">{roster.length} member{roster.length !== 1 ? "s" : ""}</span>
+            <span className="text-xs text-slate-400">{roster.length} member{roster.length !== 1 ? "s" : ""}{completedCount > 0 ? ` · ${completedCount} completed` : ""}</span>
           </div>
           {roster.length === 0 ? (
             <div className="px-5 py-12 text-center">
@@ -198,6 +212,7 @@ export default async function ManagerDashboard() {
                     <th className="px-3 py-2.5 font-bold">Level</th>
                     <th className="px-3 py-2.5 font-bold text-center">Lessons</th>
                     <th className="px-3 py-2.5 font-bold text-center">Projects</th>
+                    <th className="px-3 py-2.5 font-bold">Progress</th>
                     <th className="px-5 py-2.5 font-bold text-right">Last active</th>
                   </tr>
                 </thead>
@@ -205,13 +220,23 @@ export default async function ManagerDashboard() {
                   {roster.map((r) => (
                     <tr key={r.studentId} className="border-b border-slate-50 last:border-0">
                       <td className="px-5 py-3">
-                        <p className="font-semibold text-slate-900">{r.name}</p>
+                        <Link href={`/portfolio/${r.studentId}`} className="font-semibold text-slate-900 hover:text-brand hover:underline">{r.name}</Link>
                         <p className="text-[11px] text-slate-400">{r.email}</p>
                       </td>
                       <td className="px-3 py-3 text-slate-700">{r.track}</td>
                       <td className="px-3 py-3 text-slate-600 capitalize">{r.level}</td>
                       <td className="px-3 py-3 text-center font-bold text-slate-900 tabular-nums">{r.lessons}</td>
                       <td className="px-3 py-3 text-center font-bold text-slate-900 tabular-nums">{r.projects}</td>
+                      <td className="px-3 py-3">
+                        <div className="flex items-center gap-2">
+                          <div className="w-16 h-1.5 rounded-full bg-slate-100 overflow-hidden">
+                            <div className="h-full rounded-full" style={{ width: `${r.completionPct}%`, background: r.completed ? "#19A65F" : "#0056CE" }} />
+                          </div>
+                          {r.completed
+                            ? <span className="text-[10px] font-bold text-emerald-600 whitespace-nowrap">✓ Done</span>
+                            : <span className="text-[10px] text-slate-400 tabular-nums">{r.completionPct}%</span>}
+                        </div>
+                      </td>
                       <td className="px-5 py-3 text-right text-slate-500 tabular-nums">{fmtDate(r.lastActive)}</td>
                     </tr>
                   ))}
