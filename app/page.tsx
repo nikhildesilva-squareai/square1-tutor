@@ -70,7 +70,7 @@ export default async function Home() {
   const courses   = dbCourses.length > 0 ? dbCourses : FALLBACK_COURSES;
 
   return (
-    <main className="overflow-x-hidden">
+    <main id="main" className="overflow-x-hidden">
 
       {/* ── 1. Hero (with goal-typer) ───────────────────────────────────────── */}
       <HeroSection />

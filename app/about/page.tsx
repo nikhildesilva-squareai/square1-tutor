@@ -184,7 +184,7 @@ function AiMiniVisual({ type, accent }: { type: string; accent: string }) {
       <div className="flex-1">
         <div className="flex items-baseline gap-1">
           <span className="text-2xl font-black text-slate-900 tabular-nums">94</span>
-          <span className="text-xs text-slate-400">/100</span>
+          <span className="text-xs text-slate-500">/100</span>
         </div>
         <p className="text-[9px] text-slate-500 mt-0.5">Portfolio score</p>
       </div>

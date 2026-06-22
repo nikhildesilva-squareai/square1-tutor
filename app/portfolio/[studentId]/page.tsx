@@ -194,7 +194,7 @@ export default async function PublicPortfolioPage({ params }: PageProps) {
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M22 11.08V12a10 10 0 11-5.93-9.14" /><polyline points="22 4 12 14.01 9 11.01" /></svg>
                   {career.label}
                 </div>
-                <p className="text-slate-400 text-sm">
+                <p className="text-slate-500 text-sm">
                   {coursesTaken} course{coursesTaken !== 1 ? "s" : ""} · {allSubs.length} project{allSubs.length !== 1 ? "s" : ""} in portfolio · {totalScored} total submitted · Since {joinYear}
                 </p>
               </div>

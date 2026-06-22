@@ -50,7 +50,7 @@ export function BusinessLeadForm() {
     );
   }
 
-  const inputClass = "w-full h-11 px-3.5 rounded-xl border border-slate-300 bg-white text-slate-900 text-sm placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-brand/30 focus:border-brand transition-all";
+  const inputClass = "w-full h-11 px-3.5 rounded-xl border border-slate-300 bg-white text-slate-900 text-sm placeholder:text-slate-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand/30 focus:border-brand transition-all";
   const labelClass = "block text-xs font-semibold text-slate-600 mb-1.5";
 
   return (
@@ -81,7 +81,7 @@ export function BusinessLeadForm() {
         <label className={labelClass}>Anything we should know? (optional)</label>
         <textarea value={message} onChange={(e) => setMessage(e.target.value)} rows={3}
           placeholder="What skills do you want your team to build?"
-          className="w-full px-3.5 py-3 rounded-xl border border-slate-300 bg-white text-slate-900 text-sm placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-brand/30 focus:border-brand transition-all resize-none" />
+          className="w-full px-3.5 py-3 rounded-xl border border-slate-300 bg-white text-slate-900 text-sm placeholder:text-slate-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand/30 focus:border-brand transition-all resize-none" />
       </div>
 
       {error && (
@@ -93,7 +93,7 @@ export function BusinessLeadForm() {
         style={{ background: "linear-gradient(135deg,#0056CE,#3388FF)", boxShadow: "0 12px 32px rgba(0,86,206,0.30)" }}>
         {state === "saving" ? "Sending…" : "Request team pricing →"}
       </button>
-      <p className="text-[11px] text-slate-400 text-center">We&apos;ll reply with pricing + a pilot offer. No spam.</p>
+      <p className="text-[11px] text-slate-500 text-center">We&apos;ll reply with pricing + a pilot offer. No spam.</p>
     </form>
   );
 }

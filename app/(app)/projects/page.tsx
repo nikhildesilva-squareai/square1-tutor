@@ -59,7 +59,7 @@ export default async function ProjectsPage() {
             <h1 className="text-3xl sm:text-4xl font-black text-white tracking-tight mb-3">
               Build what companies<br />actually hire for.
             </h1>
-            <p className="text-sm text-slate-400 leading-relaxed max-w-lg mb-6">
+            <p className="text-sm text-slate-500 leading-relaxed max-w-lg mb-6">
               {totalProjectCount} real projects across {allCourseList.length} tech disciplines. From your first API to a production SaaS — every project is AI code-reviewed and ships to your portfolio.
             </p>
             <div className="flex items-center gap-4 flex-wrap">
@@ -67,7 +67,7 @@ export default async function ProjectsPage() {
                 Start Free Assessment
                 <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M6 3l5 5-5 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /></svg>
               </Link>
-              <div className="flex items-center gap-5 text-sm text-slate-400">
+              <div className="flex items-center gap-5 text-sm text-slate-500">
                 <span className="flex items-center gap-1.5">
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round"><path d="M22 11.08V12a10 10 0 11-5.93-9.14" /><polyline points="22 4 12 14.01 9 11.01" /></svg>
                   AI code review

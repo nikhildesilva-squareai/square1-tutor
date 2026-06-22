@@ -145,7 +145,7 @@ export function SettingsClient({ studentId, studentName, userEmail, joinedDate, 
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="Enter your name"
-                className="flex-1 h-10 px-3.5 rounded-xl border border-border bg-surface text-ink text-sm focus:outline-none focus:ring-2 focus:ring-brand/20 focus:border-brand transition-all"
+                className="flex-1 h-10 px-3.5 rounded-xl border border-border bg-surface text-ink text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-brand/20 focus:border-brand transition-all"
               />
               <button
                 onClick={handleSaveName}
@@ -302,7 +302,7 @@ export function SettingsClient({ studentId, studentName, userEmail, joinedDate, 
                 value={deleteConfirmText}
                 onChange={(e) => setDeleteConfirmText(e.target.value)}
                 placeholder="DELETE"
-                className="w-full h-10 px-3.5 rounded-xl border border-red-200 bg-surface text-ink text-sm focus:outline-none focus:ring-2 focus:ring-red-200 focus:border-red-400 transition-all"
+                className="w-full h-10 px-3.5 rounded-xl border border-red-200 bg-surface text-ink text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-red-200 focus:border-red-400 transition-all"
               />
               {deleteError && <p className="text-xs text-red-600">{deleteError}</p>}
               <div className="flex items-center gap-2">

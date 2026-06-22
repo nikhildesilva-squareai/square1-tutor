@@ -644,7 +644,7 @@ export default function AssessPage({ params }: PageProps) {
                       <div className="w-3 h-3 rounded-full bg-[#FEBC2E]" />
                       <div className="w-3 h-3 rounded-full bg-[#28C840]" />
                     </div>
-                    <span className="text-xs text-slate-400 font-mono flex-1">
+                    <span className="text-xs text-slate-500 font-mono flex-1">
                       solution.{currentQ.language === "typescript" ? "ts" : currentQ.language === "javascript" ? "js" : "py"}
                     </span>
                     <span className="text-[10px] font-bold tracking-widest uppercase text-slate-500">

@@ -287,7 +287,7 @@ export default function SignupPage() {
   /* ── Shared input styles ───────────────────────────────────────────────── */
 
   const inputClass =
-    "w-full h-11 px-3.5 rounded-lg text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-brand/20 focus:border-brand transition-all";
+    "w-full h-11 px-3.5 rounded-lg text-sm text-slate-900 placeholder:text-slate-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand/20 focus:border-brand transition-all";
 
   const inputStyle: React.CSSProperties = {
     background: "#F8FAFC",
@@ -507,7 +507,7 @@ export default function SignupPage() {
                   onChange={(e) => handleDigitChange(i, e.target.value)}
                   onKeyDown={(e) => handleKeyDown(i, e)}
                   onFocus={(e) => e.target.select()}
-                  className="w-10 h-12 sm:w-12 sm:h-14 rounded-xl text-center text-lg sm:text-xl font-bold text-slate-900 transition-all focus:outline-none focus:ring-2 focus:ring-brand/20 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-10 h-12 sm:w-12 sm:h-14 rounded-xl text-center text-lg sm:text-xl font-bold text-slate-900 transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-brand/20 disabled:opacity-50 disabled:cursor-not-allowed"
                   style={{
                     background: digit ? "rgba(0,86,206,0.05)" : "#F8FAFC",
                     border: digit

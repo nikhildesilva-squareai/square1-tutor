@@ -259,7 +259,7 @@ export default function CheckoutPage({ params }: { params: Promise<{ slug: strin
                     value={cardName}
                     onChange={(e) => setCardName(e.target.value)}
                     placeholder="Name on card"
-                    className="w-full h-12 px-4 rounded-xl border border-border bg-surface text-ink text-sm placeholder:text-ink-muted/50 focus:outline-none focus:ring-2 focus:ring-brand focus:border-brand transition-colors"
+                    className="w-full h-12 px-4 rounded-xl border border-border bg-surface text-ink text-sm placeholder:text-ink-muted/50 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand focus:border-brand transition-colors"
                   />
                 </div>
 
@@ -275,7 +275,7 @@ export default function CheckoutPage({ params }: { params: Promise<{ slug: strin
                       onChange={(e) => setCardNumber(formatCardNumber(e.target.value))}
                       placeholder="1234 5678 9012 3456"
                       maxLength={19}
-                      className="w-full h-12 px-4 pr-12 rounded-xl border border-border bg-surface text-ink text-sm placeholder:text-ink-muted/50 focus:outline-none focus:ring-2 focus:ring-brand focus:border-brand transition-colors font-mono tracking-wider"
+                      className="w-full h-12 px-4 pr-12 rounded-xl border border-border bg-surface text-ink text-sm placeholder:text-ink-muted/50 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand focus:border-brand transition-colors font-mono tracking-wider"
                     />
                     <svg className="absolute right-4 top-1/2 -translate-y-1/2 text-ink-muted/40" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
                       <rect x="1" y="4" width="22" height="16" rx="3" /><line x1="1" y1="10" x2="23" y2="10" />
@@ -295,7 +295,7 @@ export default function CheckoutPage({ params }: { params: Promise<{ slug: strin
                       onChange={(e) => setExpiry(formatExpiry(e.target.value))}
                       placeholder="MM/YY"
                       maxLength={5}
-                      className="w-full h-12 px-4 rounded-xl border border-border bg-surface text-ink text-sm placeholder:text-ink-muted/50 focus:outline-none focus:ring-2 focus:ring-brand focus:border-brand transition-colors font-mono tracking-wider"
+                      className="w-full h-12 px-4 rounded-xl border border-border bg-surface text-ink text-sm placeholder:text-ink-muted/50 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand focus:border-brand transition-colors font-mono tracking-wider"
                     />
                   </div>
                   <div>
@@ -309,7 +309,7 @@ export default function CheckoutPage({ params }: { params: Promise<{ slug: strin
                         onChange={(e) => setCvc(e.target.value.replace(/\D/g, "").slice(0, 4))}
                         placeholder="123"
                         maxLength={4}
-                        className="w-full h-12 px-4 pr-10 rounded-xl border border-border bg-surface text-ink text-sm placeholder:text-ink-muted/50 focus:outline-none focus:ring-2 focus:ring-brand focus:border-brand transition-colors font-mono tracking-wider"
+                        className="w-full h-12 px-4 pr-10 rounded-xl border border-border bg-surface text-ink text-sm placeholder:text-ink-muted/50 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand focus:border-brand transition-colors font-mono tracking-wider"
                       />
                       <svg className="absolute right-3.5 top-1/2 -translate-y-1/2 text-ink-muted/40" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
                         <circle cx="12" cy="12" r="10" /><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3" /><circle cx="12" cy="17" r="0.5" fill="currentColor" />
@@ -324,7 +324,7 @@ export default function CheckoutPage({ params }: { params: Promise<{ slug: strin
                     type="checkbox"
                     checked={agreed}
                     onChange={(e) => setAgreed(e.target.checked)}
-                    className="mt-0.5 w-4 h-4 rounded border-border text-brand focus:ring-brand accent-[#0056CE]"
+                    className="mt-0.5 w-4 h-4 rounded border-border text-brand focus-visible:ring-brand accent-[#0056CE]"
                   />
                   <span className="text-xs text-ink-muted leading-relaxed">
                     I agree to the{" "}

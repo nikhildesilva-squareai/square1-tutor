@@ -185,7 +185,7 @@ export function MessagesClient() {
               }}
               placeholder="Write a message to the team…"
               rows={1}
-              className="flex-1 px-4 py-2.5 rounded-xl border border-border bg-surface-soft text-ink text-sm focus:outline-none focus:ring-2 focus:ring-brand/20 focus:border-brand resize-none"
+              className="flex-1 px-4 py-2.5 rounded-xl border border-border bg-surface-soft text-ink text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-brand/20 focus:border-brand resize-none"
               style={{ minHeight: "44px", maxHeight: "160px" }}
             />
             <button

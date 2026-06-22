@@ -120,7 +120,7 @@ export function SubmissionForm({ projectId }: SubmissionFormProps) {
           placeholder="https://github.com/you/your-project"
           value={githubUrl}
           onChange={(e) => setGithubUrl(e.target.value)}
-          className="w-full border border-border bg-surface text-ink rounded-xl h-11 px-4 text-sm placeholder:text-ink-muted focus:outline-none focus:ring-2 focus:ring-brand focus:border-brand"
+          className="w-full border border-border bg-surface text-ink rounded-xl h-11 px-4 text-sm placeholder:text-ink-muted focus:outline-none focus-visible:ring-2 focus-visible:ring-brand focus:border-brand"
         />
         <p className="text-[11px] text-ink-muted mt-1.5">
           Must be a public repository. We&apos;ll read your actual code for a real review.
@@ -137,7 +137,7 @@ export function SubmissionForm({ projectId }: SubmissionFormProps) {
           placeholder="https://your-demo.vercel.app"
           value={liveUrl}
           onChange={(e) => setLiveUrl(e.target.value)}
-          className="w-full border border-border bg-surface text-ink rounded-xl h-11 px-4 text-sm placeholder:text-ink-muted focus:outline-none focus:ring-2 focus:ring-brand focus:border-brand"
+          className="w-full border border-border bg-surface text-ink rounded-xl h-11 px-4 text-sm placeholder:text-ink-muted focus:outline-none focus-visible:ring-2 focus-visible:ring-brand focus:border-brand"
         />
       </div>
 
@@ -151,7 +151,7 @@ export function SubmissionForm({ projectId }: SubmissionFormProps) {
           placeholder="Any context for the reviewer..."
           value={description}
           onChange={(e) => setDescription(e.target.value)}
-          className="w-full border border-border bg-surface text-ink rounded-xl px-4 py-3 text-sm placeholder:text-ink-muted focus:outline-none focus:ring-2 focus:ring-brand focus:border-brand resize-none"
+          className="w-full border border-border bg-surface text-ink rounded-xl px-4 py-3 text-sm placeholder:text-ink-muted focus:outline-none focus-visible:ring-2 focus-visible:ring-brand focus:border-brand resize-none"
         />
       </div>
 
@@ -460,7 +460,7 @@ export function ScoreDisplay({ result, onResubmit }: ScoreDisplayProps) {
                                   {line.num}
                                 </td>
                                 <td className={`pr-4 whitespace-pre ${
-                                  line.highlighted ? "text-slate-100" : "text-slate-400"
+                                  line.highlighted ? "text-slate-100" : "text-slate-500"
                                 }`}>
                                   {line.text}
                                 </td>

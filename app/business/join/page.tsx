@@ -83,7 +83,7 @@ export default function JoinTeamPage() {
       </header>
 
       <main className="flex-1 flex items-center justify-center px-4 py-10">
-        {stage === "loading" && <p className="text-sm text-slate-400">Loading…</p>}
+        {stage === "loading" && <p className="text-sm text-slate-500">Loading…</p>}
 
         {stage === "error" && (
           <div className="text-center max-w-sm">
@@ -102,7 +102,7 @@ export default function JoinTeamPage() {
 
         {/* Checking for a manager assignment */}
         {(stage === "pick" || stage === "joining") && !checkedAssign && (
-          <p className="text-sm text-slate-400">Setting up your seat…</p>
+          <p className="text-sm text-slate-500">Setting up your seat…</p>
         )}
 
         {/* Manager pre-assigned a track → skip the picker */}
@@ -111,7 +111,7 @@ export default function JoinTeamPage() {
             <h1 className="text-3xl font-black text-slate-900 mb-1">You&apos;re all set 🎓</h1>
             <p className="text-sm text-slate-600 mb-6">Your manager set you up with a track. Start whenever you&apos;re ready.</p>
             <div className="rounded-2xl border-2 border-brand/30 bg-brand/[0.04] p-6 mb-6">
-              <p className="text-[10px] tracking-widest uppercase font-bold text-slate-400 mb-1">Your assigned track</p>
+              <p className="text-[10px] tracking-widest uppercase font-bold text-slate-500 mb-1">Your assigned track</p>
               <p className="text-xl font-black text-slate-900">{assigned.title}</p>
             </div>
             {error && <p className="text-sm text-red-600 mb-3">{error}</p>}

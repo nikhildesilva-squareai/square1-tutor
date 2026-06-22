@@ -288,7 +288,7 @@ export default function LoginPage() {
             {/* Divider */}
             <div className="flex items-center gap-3 mb-6">
               <div className="flex-1 h-px bg-slate-200" />
-              <span className="text-[11px] text-slate-400 uppercase tracking-wider font-medium">
+              <span className="text-[11px] text-slate-500 uppercase tracking-wider font-medium">
                 or continue with email
               </span>
               <div className="flex-1 h-px bg-slate-200" />
@@ -311,7 +311,7 @@ export default function LoginPage() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="you@example.com"
-                  className="w-full h-12 px-4 rounded-xl text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-brand/20 focus:border-brand transition-all"
+                  className="w-full h-12 px-4 rounded-xl text-sm text-slate-900 placeholder:text-slate-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand/20 focus:border-brand transition-all"
                   style={{
                     background: "#F8FAFC",
                     border: "1px solid #E2E8F0",
@@ -400,7 +400,7 @@ export default function LoginPage() {
                   onChange={(e) => handleDigitChange(i, e.target.value)}
                   onKeyDown={(e) => handleKeyDown(i, e)}
                   onFocus={(e) => e.target.select()}
-                  className="w-10 h-12 sm:w-12 sm:h-14 rounded-xl text-center text-lg sm:text-xl font-bold text-slate-900 transition-all focus:outline-none focus:ring-2 focus:ring-brand/20 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-10 h-12 sm:w-12 sm:h-14 rounded-xl text-center text-lg sm:text-xl font-bold text-slate-900 transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-brand/20 disabled:opacity-50 disabled:cursor-not-allowed"
                   style={{
                     background: digit ? "rgba(0,86,206,0.05)" : "#F8FAFC",
                     border: digit

@@ -155,7 +155,7 @@ export default function DiagnosticPage() {
               })}
             </div>
 
-            <p className="text-center text-[11px] text-slate-400 mt-6">
+            <p className="text-center text-[11px] text-slate-500 mt-6">
               No wrong-answer shame — this is just to find your starting point.
             </p>
           </div>
@@ -179,7 +179,7 @@ export default function DiagnosticPage() {
                       strokeDasharray={`${(result.score / result.total) * 276} 276`} />
                   </svg>
                   <div>
-                    <p className="text-4xl font-black text-slate-900 tabular-nums leading-none">{result.score}<span className="text-lg text-slate-400">/{result.total}</span></p>
+                    <p className="text-4xl font-black text-slate-900 tabular-nums leading-none">{result.score}<span className="text-lg text-slate-500">/{result.total}</span></p>
                   </div>
                 </div>
                 <span className="mt-4 inline-block px-4 py-1.5 rounded-full text-sm font-bold text-white" style={{ background: accent }}>
@@ -193,7 +193,7 @@ export default function DiagnosticPage() {
 
               {/* Weak topics */}
               <div className="mb-8">
-                <p className="text-[10px] tracking-widest uppercase text-slate-400 font-bold mb-3">Focus areas we spotted</p>
+                <p className="text-[10px] tracking-widest uppercase text-slate-500 font-bold mb-3">Focus areas we spotted</p>
                 <div className="flex flex-wrap justify-center gap-2">
                   {result.weakTopics.map((t) => (
                     <span key={t} className="px-3 py-1.5 rounded-full text-xs font-semibold border"
@@ -219,7 +219,7 @@ export default function DiagnosticPage() {
                 <p className="text-[11px] text-slate-500 mt-3">Free forever · No credit card</p>
               </div>
 
-              <button onClick={() => setStage("pick")} className="mt-6 text-xs text-slate-400 hover:text-slate-700 transition-colors">
+              <button onClick={() => setStage("pick")} className="mt-6 text-xs text-slate-500 hover:text-slate-700 transition-colors">
                 ← Try a different track
               </button>
             </div>

@@ -65,7 +65,7 @@ export default function BusinessPage() {
                 Book a demo →
               </a>
             </div>
-            <p className="mt-4 text-xs text-slate-400">Free during early access · set up in 2 minutes · no card today</p>
+            <p className="mt-4 text-xs text-slate-500">Free during early access · set up in 2 minutes · no card today</p>
             <p className="mt-3 text-sm">
               <Link href="/business/ai-readiness" className="font-semibold text-brand hover:underline">
                 Not sure where to start? Take the 2-min AI-readiness check →
@@ -98,7 +98,7 @@ export default function BusinessPage() {
           <div className="text-center mb-10">
             <span className="text-[10px] sm:text-[11px] tracking-[0.35em] uppercase text-brand font-bold">Proof, not completion certificates</span>
             <h2 className="mt-3 font-black tracking-tight text-slate-900" style={{ fontSize: "clamp(26px,4vw,42px)" }}>
-              They certify your staff <span className="text-slate-400">watched</span>. We prove they can{" "}
+              They certify your staff <span className="text-slate-500">watched</span>. We prove they can{" "}
               <span style={{ background: "linear-gradient(135deg,#3388FF,#0056CE)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>ship</span>.
             </h2>
             <p className="mt-3 text-sm sm:text-base text-slate-600 max-w-xl mx-auto">
@@ -171,7 +171,7 @@ export default function BusinessPage() {
                 <span className="text-3xl font-black text-slate-900 tabular-nums">${t.price}</span>
                 <span className="text-xs text-slate-500">/seat/mo</span>
               </div>
-              <p className="text-[11px] text-slate-400 mb-4">annual · ${t.yr}/seat/yr · free for now</p>
+              <p className="text-[11px] text-slate-500 mb-4">annual · ${t.yr}/seat/yr · free for now</p>
               <p className="text-xs text-slate-600 leading-relaxed flex-1">{t.blurb}</p>
               <a href="#start"
                 className="mt-5 inline-flex items-center justify-center h-10 rounded-xl text-sm font-bold transition-all hover:-translate-y-0.5"
@@ -192,7 +192,7 @@ export default function BusinessPage() {
           <a href="#request" className="text-sm font-bold text-brand hover:underline whitespace-nowrap">Talk to sales →</a>
         </div>
 
-        <p className="text-center text-[11px] text-slate-400 mt-5">
+        <p className="text-center text-[11px] text-slate-500 mt-5">
           Every plan: full courses · AI tutor · code review · personalised paths · certificates · manager dashboard.
         </p>
       </section>
@@ -229,7 +229,7 @@ export default function BusinessPage() {
                 </div>
                 <p className="text-sm font-black text-slate-900 mb-1">{s.t}</p>
                 <p className="text-xs text-slate-600 leading-relaxed">{s.now}</p>
-                <p className="text-[11px] text-slate-400 mt-1">{s.soon}</p>
+                <p className="text-[11px] text-slate-500 mt-1">{s.soon}</p>
               </div>
             ))}
           </div>

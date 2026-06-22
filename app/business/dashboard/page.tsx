@@ -98,7 +98,7 @@ export default async function ManagerDashboard() {
         <div className="rounded-2xl border border-slate-200 bg-white p-5 mb-3">
           <div className="flex items-center justify-between gap-3 flex-wrap mb-4">
             <p className="text-sm font-bold text-slate-900">Team skills &amp; readiness</p>
-            {membersAssessed > 0 && <p className="text-[11px] text-slate-400">{membersAssessed} of {seatsUsed} assessed</p>}
+            {membersAssessed > 0 && <p className="text-[11px] text-slate-500">{membersAssessed} of {seatsUsed} assessed</p>}
           </div>
 
           {membersAssessed === 0 ? (
@@ -109,7 +109,7 @@ export default async function ManagerDashboard() {
             <div className="grid grid-cols-1 lg:grid-cols-[200px_1fr] gap-5">
               {/* readiness + impact */}
               <div className="rounded-xl bg-slate-50 border border-slate-200 p-4 text-center flex flex-col justify-center">
-                <p className="text-4xl font-black text-slate-900 tabular-nums leading-none">{teamReadiness ?? "—"}<span className="text-lg text-slate-400">%</span></p>
+                <p className="text-4xl font-black text-slate-900 tabular-nums leading-none">{teamReadiness ?? "—"}<span className="text-lg text-slate-500">%</span></p>
                 <p className="text-[11px] text-slate-500 uppercase tracking-wider mt-1.5">Avg readiness</p>
                 {readinessDelta !== 0 && (
                   <p className="text-[11px] font-bold mt-1" style={{ color: readinessDelta > 0 ? "#059669" : "#DC2626" }}>
@@ -117,14 +117,14 @@ export default async function ManagerDashboard() {
                   </p>
                 )}
                 <div className="mt-3 pt-3 border-t border-slate-200 grid grid-cols-2 gap-2 text-center">
-                  <div><p className="text-base font-black text-slate-900 tabular-nums">{deployedCount}</p><p className="text-[9px] text-slate-400 uppercase tracking-wide">Deployed</p></div>
-                  <div><p className="text-base font-black text-slate-900 tabular-nums">{avgScore != null ? `${avgScore}%` : "—"}</p><p className="text-[9px] text-slate-400 uppercase tracking-wide">Avg score</p></div>
+                  <div><p className="text-base font-black text-slate-900 tabular-nums">{deployedCount}</p><p className="text-[9px] text-slate-500 uppercase tracking-wide">Deployed</p></div>
+                  <div><p className="text-base font-black text-slate-900 tabular-nums">{avgScore != null ? `${avgScore}%` : "—"}</p><p className="text-[9px] text-slate-500 uppercase tracking-wide">Avg score</p></div>
                 </div>
               </div>
 
               {/* skill gaps */}
               <div>
-                <p className="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-2.5">Biggest skill gaps</p>
+                <p className="text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-2.5">Biggest skill gaps</p>
                 <div className="space-y-2">
                   {topWeak.map((w) => (
                     <div key={w.topic} className="flex items-center gap-3">
@@ -132,13 +132,13 @@ export default async function ManagerDashboard() {
                       <div className="flex-1 h-1.5 rounded-full bg-slate-100 overflow-hidden">
                         <div className="h-full rounded-full bg-amber-400" style={{ width: `${Math.round((w.count / membersAssessed) * 100)}%` }} />
                       </div>
-                      <span className="text-[10px] text-slate-400 tabular-nums w-20 text-right">{w.count}/{membersAssessed} weak</span>
+                      <span className="text-[10px] text-slate-500 tabular-nums w-20 text-right">{w.count}/{membersAssessed} weak</span>
                     </div>
                   ))}
                 </div>
                 {topStrong.length > 0 && (
                   <div className="mt-4">
-                    <p className="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-2">Team strengths</p>
+                    <p className="text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-2">Team strengths</p>
                     <div className="flex flex-wrap gap-1.5">
                       {topStrong.map((s) => (
                         <span key={s.topic} className="text-[11px] px-2 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 capitalize">{s.topic}</span>
@@ -155,7 +155,7 @@ export default async function ManagerDashboard() {
         {/* Seat usage meter */}
         <div className="rounded-xl border border-slate-200 bg-white p-4 mb-6">
           <div className="flex items-center justify-between mb-2">
-            <p className="text-[11px] font-bold uppercase tracking-wider text-slate-400">Seat usage</p>
+            <p className="text-[11px] font-bold uppercase tracking-wider text-slate-500">Seat usage</p>
             <p className="text-[11px] text-slate-500">{seatsUsed} active · {pendingCount} invited · {seatsLeft} free</p>
           </div>
           <div className="h-2 rounded-full bg-slate-100 overflow-hidden flex">
@@ -172,7 +172,7 @@ export default async function ManagerDashboard() {
           </p>
           <BulkInvite seatsLeft={seatsLeft} courses={courseList} />
           <div className="mt-4 pt-4 border-t border-brand/10">
-            <p className="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-2">Or share a link</p>
+            <p className="text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-2">Or share a link</p>
             <CopyInviteLink url={inviteUrl} />
           </div>
           {pendingCount > 0 && (
@@ -196,7 +196,7 @@ export default async function ManagerDashboard() {
         <div className="rounded-2xl border border-slate-200 bg-white overflow-hidden">
           <div className="px-5 py-3 border-b border-slate-200 flex items-center justify-between">
             <p className="text-sm font-bold text-slate-900">Team progress</p>
-            <span className="text-xs text-slate-400">{roster.length} member{roster.length !== 1 ? "s" : ""}{completedCount > 0 ? ` · ${completedCount} completed` : ""}</span>
+            <span className="text-xs text-slate-500">{roster.length} member{roster.length !== 1 ? "s" : ""}{completedCount > 0 ? ` · ${completedCount} completed` : ""}</span>
           </div>
           {roster.length === 0 ? (
             <div className="px-5 py-12 text-center">
@@ -206,7 +206,7 @@ export default async function ManagerDashboard() {
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="text-left text-[10px] uppercase tracking-wider text-slate-400 border-b border-slate-100">
+                  <tr className="text-left text-[10px] uppercase tracking-wider text-slate-500 border-b border-slate-100">
                     <th className="px-5 py-2.5 font-bold">Member</th>
                     <th className="px-3 py-2.5 font-bold">Track</th>
                     <th className="px-3 py-2.5 font-bold">Level</th>
@@ -221,7 +221,7 @@ export default async function ManagerDashboard() {
                     <tr key={r.studentId} className="border-b border-slate-50 last:border-0">
                       <td className="px-5 py-3">
                         <Link href={`/portfolio/${r.studentId}`} className="font-semibold text-slate-900 hover:text-brand hover:underline">{r.name}</Link>
-                        <p className="text-[11px] text-slate-400">{r.email}</p>
+                        <p className="text-[11px] text-slate-500">{r.email}</p>
                       </td>
                       <td className="px-3 py-3 text-slate-700">{r.track}</td>
                       <td className="px-3 py-3 text-slate-600 capitalize">{r.level}</td>
@@ -234,7 +234,7 @@ export default async function ManagerDashboard() {
                           </div>
                           {r.completed
                             ? <span className="text-[10px] font-bold text-emerald-600 whitespace-nowrap">✓ Done</span>
-                            : <span className="text-[10px] text-slate-400 tabular-nums">{r.completionPct}%</span>}
+                            : <span className="text-[10px] text-slate-500 tabular-nums">{r.completionPct}%</span>}
                         </div>
                       </td>
                       <td className="px-5 py-3 text-right text-slate-500 tabular-nums">{fmtDate(r.lastActive)}</td>
@@ -246,7 +246,7 @@ export default async function ManagerDashboard() {
           )}
         </div>
 
-        <p className="text-[11px] text-slate-400 mt-5 text-center">
+        <p className="text-[11px] text-slate-500 mt-5 text-center">
           Workers use the normal Square 1 Ai student experience. You see their progress here, scoped to your team only.
         </p>
       </main>

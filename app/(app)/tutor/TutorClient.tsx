@@ -279,7 +279,7 @@ export function TutorClient({ studentName, userEmail, enrollments, weakTopics, l
         <div className="bg-surface border-b border-border px-4 py-3 shrink-0">
           <div className="flex items-center gap-3 mb-3">
             {/* History toggle */}
-            <button onClick={() => setSidebarOpen(!sidebarOpen)}
+            <button onClick={() => setSidebarOpen(!sidebarOpen)} aria-label="Toggle chat history" aria-expanded={sidebarOpen}
               className="w-9 h-9 rounded-lg border border-border hover:bg-surface-alt flex items-center justify-center text-ink-muted hover:text-ink transition-colors shrink-0">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><rect x="3" y="3" width="7" height="7" /><rect x="14" y="3" width="7" height="7" /><rect x="3" y="14" width="7" height="7" /><rect x="14" y="14" width="7" height="7" /></svg>
             </button>
@@ -420,9 +420,9 @@ export function TutorClient({ studentName, userEmail, enrollments, weakTopics, l
               <textarea ref={inputRef} value={input} onChange={e => setInput(e.target.value)}
                 onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); handleSend(e); } }}
                 placeholder={mode === "learn" ? "Ask Nova anything..." : mode === "debug" ? "Paste your code or error..." : mode === "quiz" ? "Name a topic to be quizzed on..." : mode === "interview" ? "Answer the question, or say 'start'..." : "Paste code for review..."}
-                rows={1} className="flex-1 px-4 py-2.5 rounded-xl border border-border bg-surface-soft text-ink text-sm focus:outline-none focus:ring-2 focus:ring-brand/20 focus:border-brand resize-none"
+                rows={1} className="flex-1 px-4 py-2.5 rounded-xl border border-border bg-surface-soft text-ink text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-brand/20 focus:border-brand resize-none"
                 style={{ minHeight: "44px", maxHeight: "160px" }} />
-              <button type="submit" disabled={!input.trim() || loading}
+              <button type="submit" disabled={!input.trim() || loading} aria-label="Send message"
                 className={cn("h-11 w-11 rounded-xl flex items-center justify-center transition-all shrink-0",
                   input.trim() && !loading ? "bg-brand text-white hover:bg-brand/90" : "bg-surface-alt text-ink-muted"
                 )}>

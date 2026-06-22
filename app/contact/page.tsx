@@ -274,7 +274,7 @@ export default function ContactPage() {
       {/* ═══════════════════════════════════════════════════════════════════════ */}
       <section className="py-14 sm:py-20 px-4 sm:px-6 lg:px-8" style={{ background: "#00183A" }}>
         <div className="max-w-4xl mx-auto text-center">
-          <span className="text-[10px] sm:text-[11px] tracking-[0.35em] uppercase text-slate-400 font-bold">
+          <span className="text-[10px] sm:text-[11px] tracking-[0.35em] uppercase text-slate-500 font-bold">
             Follow us
           </span>
           <div className="mt-6 flex items-center justify-center gap-3">

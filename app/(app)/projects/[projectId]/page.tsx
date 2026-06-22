@@ -123,7 +123,7 @@ export default async function ProjectBriefPage({ params }: PageProps) {
           </div>
 
           {/* Overview text */}
-          <p className="text-sm sm:text-base text-slate-400 leading-relaxed max-w-3xl mb-6">
+          <p className="text-sm sm:text-base text-slate-500 leading-relaxed max-w-3xl mb-6">
             {overview}
           </p>
 
@@ -274,7 +274,7 @@ export default async function ProjectBriefPage({ params }: PageProps) {
                   </svg>
                   <div className="flex-1">
                     <p className="text-sm font-semibold text-white">Use this template</p>
-                    <p className="text-[10px] text-slate-400">Creates a new repo from our starter</p>
+                    <p className="text-[10px] text-slate-500">Creates a new repo from our starter</p>
                   </div>
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#64748B" strokeWidth="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6" /><polyline points="15 3 21 3 21 9" /><line x1="10" y1="14" x2="21" y2="3" /></svg>
                 </a>

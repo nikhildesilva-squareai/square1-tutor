@@ -57,7 +57,7 @@ export default function StartTeamPage() {
           </div>
 
           {loggedIn === null ? (
-            <div className="text-center text-slate-400 text-sm py-8">Loading…</div>
+            <div className="text-center text-slate-500 text-sm py-8">Loading…</div>
           ) : !loggedIn ? (
             <div>
               <p className="text-sm text-slate-600 mb-4 text-center">First, sign in — you&apos;ll be the team&apos;s manager.</p>
@@ -68,7 +68,7 @@ export default function StartTeamPage() {
               <div>
                 <label className="block text-xs font-semibold text-slate-600 mb-1.5">Team / company name</label>
                 <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Acme Inc."
-                  className="w-full h-11 px-3.5 rounded-xl border border-slate-300 text-slate-900 text-sm focus:outline-none focus:ring-2 focus:ring-brand/30 focus:border-brand" />
+                  className="w-full h-11 px-3.5 rounded-xl border border-slate-300 text-slate-900 text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-brand/30 focus:border-brand" />
               </div>
               {error && <p className="text-sm text-red-600">{error}</p>}
               <button type="submit" disabled={saving}
@@ -76,7 +76,7 @@ export default function StartTeamPage() {
                 style={{ background: "linear-gradient(135deg,#0056CE,#4F46E5)" }}>
                 {saving ? "Creating…" : "Create team & open manager portal →"}
               </button>
-              <p className="text-[11px] text-slate-400 text-center">You&apos;ll get a link to invite your {seats} team members.</p>
+              <p className="text-[11px] text-slate-500 text-center">You&apos;ll get a link to invite your {seats} team members.</p>
             </form>
           )}
         </div>

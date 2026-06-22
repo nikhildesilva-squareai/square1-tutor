@@ -234,7 +234,7 @@ export default async function PortfolioPage() {
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M22 11.08V12a10 10 0 11-5.93-9.14" /><polyline points="22 4 12 14.01 9 11.01" /></svg>
                 {career.label}
               </div>
-              <p className="text-slate-400 text-xs mt-2">
+              <p className="text-slate-500 text-xs mt-2">
                 {portfolioCount} project{portfolioCount !== 1 ? "s" : ""} in portfolio · {deployed} total submitted · {[...new Set(enriched.map(e => e.course?.title))].filter(Boolean).join(", ")}
               </p>
             </div>

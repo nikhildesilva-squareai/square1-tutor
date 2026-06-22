@@ -26,7 +26,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
         {/* Mobile/tablet header + slide-over drawer (hidden on lg+) */}
         <MobileNav userEmail={email} />
 
-        <main className="flex-1 overflow-y-auto pb-20 lg:pb-0">
+        <main id="main" className="flex-1 overflow-y-auto pb-20 lg:pb-0">
           {children}
         </main>
 

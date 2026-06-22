@@ -26,7 +26,7 @@ function useCountUp(target: number, run: boolean, duration = 1200) {
 function Tile({ children, label }: { children: React.ReactNode; label: string }) {
   return (
     <div className="rounded-2xl border border-slate-200 bg-white p-5 sm:p-6" style={{ boxShadow: "0 4px 16px rgba(15,28,49,0.05)" }}>
-      <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-slate-400 mb-3">{label}</p>
+      <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-slate-500 mb-3">{label}</p>
       {children}
     </div>
   );
@@ -39,7 +39,7 @@ function ReadinessTile({ visible }: { visible: boolean }) {
     <Tile label="Avg team readiness">
       <div className="flex items-baseline gap-2 mb-3">
         <span className="text-3xl font-black text-slate-900 tabular-nums">{end}%</span>
-        <span className="text-xs text-slate-400">from ~32% at intake</span>
+        <span className="text-xs text-slate-500">from ~32% at intake</span>
       </div>
       <svg viewBox="0 0 260 84" className="w-full" preserveAspectRatio="none">
         <defs>
@@ -51,7 +51,7 @@ function ReadinessTile({ visible }: { visible: boolean }) {
         <path d="M0 70 C 70 64, 95 48, 135 34 S 215 12, 260 8" fill="none" stroke="url(#ti-line)" strokeWidth="3" strokeLinecap="round"
           pathLength={1} strokeDasharray={1} strokeDashoffset={visible ? 0 : 1} style={{ transition: "stroke-dashoffset 1.4s ease" }} />
       </svg>
-      <div className="flex justify-between text-[9px] text-slate-400 mt-1.5"><span>Diagnostic</span><span>Build</span><span>Portfolio</span></div>
+      <div className="flex justify-between text-[9px] text-slate-500 mt-1.5"><span>Diagnostic</span><span>Build</span><span>Portfolio</span></div>
     </Tile>
   );
 }
@@ -78,7 +78,7 @@ function SkillTile({ visible }: { visible: boolean }) {
           </div>
         ))}
       </div>
-      <p className="text-[10px] text-slate-400 mt-3">Red/amber at intake → green by the portfolio stage.</p>
+      <p className="text-[10px] text-slate-500 mt-3">Red/amber at intake → green by the portfolio stage.</p>
     </Tile>
   );
 }
@@ -94,14 +94,14 @@ function SavingTile({ visible }: { visible: boolean }) {
     <Tile label="Projected cost / upskilled dev">
       <div className="flex items-baseline gap-2 mb-4">
         <span className="text-3xl font-black text-slate-900 tabular-nums">~${k}k</span>
-        <span className="text-xs text-slate-400">saved per seat</span>
+        <span className="text-xs text-slate-500">saved per seat</span>
       </div>
       <div className="flex items-end gap-6 h-24">
         {bars.map((b, i) => (
           <div key={b.l} className="flex-1 flex flex-col items-center justify-end h-full">
             <div className="w-full rounded-t-lg" style={{ height: visible ? `${b.v}%` : "0%", background: b.c, transition: `height 1s ease ${i * 150}ms`, minHeight: 6 }} />
             <p className="text-[11px] font-bold text-slate-700 mt-2">{b.l}</p>
-            <p className="text-[9px] text-slate-400">{b.cap}</p>
+            <p className="text-[9px] text-slate-500">{b.cap}</p>
           </div>
         ))}
       </div>
@@ -120,7 +120,7 @@ function TimeTile({ visible }: { visible: boolean }) {
     <Tile label="Time to job-ready">
       <div className="flex items-baseline gap-2 mb-4">
         <span className="text-3xl font-black text-slate-900 tabular-nums">{x}×</span>
-        <span className="text-xs text-slate-400">faster, focused</span>
+        <span className="text-xs text-slate-500">faster, focused</span>
       </div>
       <div className="space-y-3">
         {bars.map((b, i) => (
@@ -175,7 +175,7 @@ export function TeamImpact() {
           <TimeTile visible={visible} />
         </div>
 
-        <p className="text-center text-[11px] text-slate-400 mt-6 max-w-xl mx-auto">
+        <p className="text-center text-[11px] text-slate-500 mt-6 max-w-xl mx-auto">
           Projected from the program design — not customer results. We&apos;re onboarding our founding cohort now; real benchmarks will replace these as teams complete the track.
         </p>
       </div>

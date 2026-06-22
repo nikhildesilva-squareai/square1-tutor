@@ -762,7 +762,10 @@ export function StudyHubClient({ initialNotes, stats, totalCount }: Props) {
             const config = TYPE_CONFIG[note.type] ?? TYPE_CONFIG.note;
             return (
               <div key={note.id} onClick={() => openNote(note)}
-                className="bg-surface rounded-xl border border-border p-4 hover:shadow-card hover:border-brand/20 transition-all group relative cursor-pointer">
+                role="button" tabIndex={0}
+                aria-label={`Open note${note.title ? ": " + note.title : ""}`}
+                onKeyDown={e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); openNote(note); } }}
+                className="bg-surface rounded-xl border border-border p-4 hover:shadow-card hover:border-brand/20 transition-all group relative cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-brand/40">
                 {/* Delete */}
                 <button onClick={e => { e.stopPropagation(); deleteNote(note.id); }}
                   className="absolute top-3 right-3 w-6 h-6 rounded-md bg-surface-alt flex items-center justify-center text-ink-muted hover:text-red-500 hover:bg-red-50 transition-all opacity-0 group-hover:opacity-100">

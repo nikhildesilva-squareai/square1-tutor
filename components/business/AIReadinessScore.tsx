@@ -224,7 +224,7 @@ export function AIReadinessScore() {
           </svg>
           <div className="absolute flex flex-col items-center">
             <span className="text-4xl font-black text-slate-900 tabular-nums">{animated}</span>
-            <span className="text-[10px] text-slate-400 font-semibold">/ 100</span>
+            <span className="text-[10px] text-slate-500 font-semibold">/ 100</span>
           </div>
         </div>
 
@@ -241,7 +241,7 @@ export function AIReadinessScore() {
                 <div className="flex-1 h-1.5 rounded-full bg-slate-100 overflow-hidden">
                   <div className="h-full rounded-full" style={{ width: `${(v / 3) * 100}%`, background: v >= 2 ? "#19A65F" : v === 1 ? "#D97706" : "#EF4444" }} />
                 </div>
-                <span className="text-[10px] text-slate-400 tabular-nums w-7 text-right">{v}/3</span>
+                <span className="text-[10px] text-slate-500 tabular-nums w-7 text-right">{v}/3</span>
               </div>
             );
           })}
@@ -277,22 +277,22 @@ export function AIReadinessScore() {
               <div>
                 <label htmlFor="rs-name" className="block text-[11px] font-semibold text-slate-500 mb-1">Name</label>
                 <input id="rs-name" type="text" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })}
-                  className="w-full h-11 px-3.5 rounded-xl border border-slate-300 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand/30 focus:border-brand" />
+                  className="w-full h-11 px-3.5 rounded-xl border border-slate-300 text-sm text-slate-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand/30 focus:border-brand" />
               </div>
               <div>
                 <label htmlFor="rs-company" className="block text-[11px] font-semibold text-slate-500 mb-1">Company</label>
                 <input id="rs-company" type="text" value={form.company} onChange={(e) => setForm({ ...form, company: e.target.value })}
-                  className="w-full h-11 px-3.5 rounded-xl border border-slate-300 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand/30 focus:border-brand" />
+                  className="w-full h-11 px-3.5 rounded-xl border border-slate-300 text-sm text-slate-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand/30 focus:border-brand" />
               </div>
               <div>
                 <label htmlFor="rs-email" className="block text-[11px] font-semibold text-slate-500 mb-1">Work email</label>
                 <input id="rs-email" type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })}
-                  className="w-full h-11 px-3.5 rounded-xl border border-slate-300 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand/30 focus:border-brand" />
+                  className="w-full h-11 px-3.5 rounded-xl border border-slate-300 text-sm text-slate-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand/30 focus:border-brand" />
               </div>
               <div>
                 <label htmlFor="rs-size" className="block text-[11px] font-semibold text-slate-500 mb-1">Team size</label>
                 <input id="rs-size" type="text" inputMode="numeric" value={form.teamSize} onChange={(e) => setForm({ ...form, teamSize: e.target.value })} placeholder="e.g. 25"
-                  className="w-full h-11 px-3.5 rounded-xl border border-slate-300 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand/30 focus:border-brand" />
+                  className="w-full h-11 px-3.5 rounded-xl border border-slate-300 text-sm text-slate-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand/30 focus:border-brand" />
               </div>
             </div>
             {error && <p className="text-sm text-red-600 mt-3" role="alert">{error}</p>}

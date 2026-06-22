@@ -42,7 +42,7 @@ export function BulkInvite({ seatsLeft, courses = [] }: { seatsLeft: number; cou
         onChange={(e) => setRaw(e.target.value)}
         rows={3}
         placeholder="alex@company.com, sam@company.com …"
-        className="w-full rounded-xl border border-slate-300 px-3.5 py-3 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand/30 focus:border-brand resize-none"
+        className="w-full rounded-xl border border-slate-300 px-3.5 py-3 text-sm text-slate-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand/30 focus:border-brand resize-none"
       />
       {courses.length > 0 && (
         <div className="mt-2 flex items-center gap-2 flex-wrap">
@@ -50,7 +50,7 @@ export function BulkInvite({ seatsLeft, courses = [] }: { seatsLeft: number; cou
           <select
             value={courseSlug}
             onChange={(e) => setCourseSlug(e.target.value)}
-            className="h-9 px-2.5 rounded-lg border border-slate-300 text-sm text-slate-900 bg-white focus:outline-none focus:ring-2 focus:ring-brand/30 focus:border-brand"
+            className="h-9 px-2.5 rounded-lg border border-slate-300 text-sm text-slate-900 bg-white focus:outline-none focus-visible:ring-2 focus-visible:ring-brand/30 focus:border-brand"
           >
             <option value="">Let them choose</option>
             {courses.map((c) => (
@@ -60,7 +60,7 @@ export function BulkInvite({ seatsLeft, courses = [] }: { seatsLeft: number; cou
         </div>
       )}
       <div className="flex items-center justify-between gap-3 mt-2 flex-wrap">
-        <p className="text-[11px] text-slate-400">
+        <p className="text-[11px] text-slate-500">
           Commas or new lines. {seatsLeft} seat{seatsLeft !== 1 ? "s" : ""} left.
         </p>
         <button

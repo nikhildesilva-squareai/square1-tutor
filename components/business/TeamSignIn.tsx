@@ -112,7 +112,7 @@ export function TeamSignIn({ next, onAuthed }: { next: string; onAuthed: () => v
               ref={(el) => { refs.current[i] = el; }}
               type="text" inputMode="numeric" pattern="[0-9]*" maxLength={1} value={d} disabled={loading}
               onChange={(e) => onDigit(i, e.target.value)} onKeyDown={(e) => onKey(i, e)} onFocus={(e) => e.target.select()}
-              className="w-10 h-12 sm:w-12 sm:h-14 rounded-xl text-center text-lg font-bold text-slate-900 border border-slate-300 focus:outline-none focus:ring-2 focus:ring-brand/30 focus:border-brand disabled:opacity-50"
+              className="w-10 h-12 sm:w-12 sm:h-14 rounded-xl text-center text-lg font-bold text-slate-900 border border-slate-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand/30 focus:border-brand disabled:opacity-50"
             />
           ))}
         </div>
@@ -126,9 +126,9 @@ export function TeamSignIn({ next, onAuthed }: { next: string; onAuthed: () => v
         </button>
         <div className="mt-4 flex flex-col items-center gap-2">
           {resend > 0
-            ? <p className="text-xs text-slate-400">Resend code in {resend}s</p>
+            ? <p className="text-xs text-slate-500">Resend code in {resend}s</p>
             : <button onClick={resendCode} disabled={loading} className="text-sm text-brand font-semibold hover:underline disabled:opacity-50">Resend code</button>}
-          <button onClick={() => { setStep("email"); setError(null); }} className="text-xs text-slate-400 hover:text-slate-700 hover:underline">Use a different email</button>
+          <button onClick={() => { setStep("email"); setError(null); }} className="text-xs text-slate-500 hover:text-slate-700 hover:underline">Use a different email</button>
         </div>
       </div>
     );
@@ -140,11 +140,11 @@ export function TeamSignIn({ next, onAuthed }: { next: string; onAuthed: () => v
         className="w-full flex items-center justify-center gap-3 h-12 rounded-xl border border-slate-300 bg-white text-slate-900 font-semibold text-sm hover:bg-slate-50 transition-all disabled:opacity-50 mb-1.5">
         <GoogleIcon /> Continue with Google
       </button>
-      <p className="text-[11px] text-slate-400 text-center mb-5">Fastest — most teams sign in this way.</p>
+      <p className="text-[11px] text-slate-500 text-center mb-5">Fastest — most teams sign in this way.</p>
 
       <div className="flex items-center gap-3 mb-5">
         <div className="flex-1 h-px bg-slate-200" />
-        <span className="text-[11px] text-slate-400 uppercase tracking-wider font-medium">or use your work email</span>
+        <span className="text-[11px] text-slate-500 uppercase tracking-wider font-medium">or use your work email</span>
         <div className="flex-1 h-px bg-slate-200" />
       </div>
 
@@ -152,7 +152,7 @@ export function TeamSignIn({ next, onAuthed }: { next: string; onAuthed: () => v
         <input
           type="email" autoComplete="email" required value={email} onChange={(e) => setEmail(e.target.value)}
           placeholder="you@company.com"
-          className="w-full h-12 px-4 rounded-xl border border-slate-300 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand/30 focus:border-brand"
+          className="w-full h-12 px-4 rounded-xl border border-slate-300 text-sm text-slate-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand/30 focus:border-brand"
         />
         {error && <p className="text-sm text-red-600">{error}</p>}
         <button type="submit" disabled={loading}

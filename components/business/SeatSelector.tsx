@@ -21,7 +21,7 @@ export function SeatSelector() {
     <div className="max-w-2xl mx-auto rounded-3xl border-2 border-brand/20 bg-white p-6 sm:p-8 shadow-[0_16px_48px_rgba(0,86,206,0.10)]">
       <div className="flex items-center justify-between gap-4 flex-wrap mb-5">
         <div>
-          <p className="text-[10px] tracking-widest uppercase font-bold text-slate-400">Build your team</p>
+          <p className="text-[10px] tracking-widest uppercase font-bold text-slate-500">Build your team</p>
           <p className="text-lg font-black text-slate-900">How many people?</p>
         </div>
         <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
@@ -60,7 +60,7 @@ export function SeatSelector() {
       {/* Price (reference — free for now) */}
       <div className="rounded-2xl bg-slate-50 border border-slate-200 p-5 mb-5 flex items-center justify-between flex-wrap gap-3">
         <div>
-          <p className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-0.5">{tierName(seats)} tier · {interval === "annual" ? "Annual" : "Monthly"}</p>
+          <p className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-0.5">{tierName(seats)} tier · {interval === "annual" ? "Annual" : "Monthly"}</p>
           <p className="text-sm text-slate-600">
             <span className="font-bold text-slate-900">${perSeat}</span>/seat/mo when billing launches
           </p>
@@ -70,7 +70,7 @@ export function SeatSelector() {
         </div>
         <div className="text-right">
           <p className="text-2xl font-black text-slate-900 tabular-nums">$0 <span className="text-sm font-semibold text-emerald-600">today</span></p>
-          <p className="text-[11px] text-slate-400">
+          <p className="text-[11px] text-slate-500">
             {interval === "annual" ? `~$${total.toLocaleString()}/yr later` : `~$${total.toLocaleString()}/mo later`} · cancel anytime
           </p>
         </div>
@@ -90,7 +90,7 @@ export function SeatSelector() {
         style={{ background: "linear-gradient(135deg,#0056CE,#3388FF)", boxShadow: "0 12px 32px rgba(0,86,206,0.30)" }}>
         Start your team — free →
       </Link>
-      <p className="text-center text-[11px] text-slate-400 mt-3">
+      <p className="text-center text-[11px] text-slate-500 mt-3">
         No card today. Need 100+? <Link href="#request" className="text-brand font-semibold hover:underline">Talk to sales</Link>.
       </p>
     </div>
