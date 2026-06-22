@@ -227,28 +227,27 @@ export default function LoginPage() {
       style={{
         background: `
           radial-gradient(ellipse 800px 500px at 20% 20%, rgba(0,86,206,0.08), transparent 60%),
-          radial-gradient(ellipse 700px 500px at 80% 80%, rgba(167,139,250,0.06), transparent 60%),
+          radial-gradient(ellipse 700px 500px at 80% 80%, rgba(14,165,233,0.06), transparent 60%),
           linear-gradient(180deg, #F8FAFC 0%, #FFFFFF 50%, #F4F8FF 100%)
         `,
       }}
     >
       <div className="w-full max-w-md mx-auto px-4 sm:px-0 py-10 sm:py-14">
         <div
-          className="relative rounded-3xl p-6 sm:p-8"
+          className="relative rounded-3xl p-6 sm:p-8 bg-white"
           style={{
-            background: "linear-gradient(135deg, #050B14 0%, #0B1626 50%, #0D1929 100%)",
-            border: "1px solid rgba(255,255,255,0.10)",
-            boxShadow: "0 32px 80px rgba(0,0,0,0.35), 0 0 0 1px rgba(255,255,255,0.05) inset, 0 0 60px rgba(0,86,206,0.08)",
+            border: "1px solid #E2E8F0",
+            boxShadow: "0 24px 64px rgba(15,28,49,0.12)",
         }}
       >
         {/* Logo */}
         <div className="flex flex-col items-center gap-3 mb-8">
-          <Logo variant="light" size="lg" />
+          <Logo variant="dark" size="lg" />
           <span
-            className="inline-flex items-center gap-2 rounded-full px-3 py-1 text-[10px] font-semibold uppercase tracking-widest text-slate-400"
-            style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.06)" }}
+            className="inline-flex items-center gap-2 rounded-full px-3 py-1 text-[10px] font-semibold uppercase tracking-widest text-slate-500"
+            style={{ background: "rgba(0,86,206,0.05)", border: "1px solid rgba(0,86,206,0.15)" }}
           >
-            <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
+            <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
             AI Powered Learn to Launch Platform
           </span>
         </div>
@@ -257,8 +256,8 @@ export default function LoginPage() {
         {step === "email" && (
           <>
             <div className="text-center mb-8">
-              <h1 className="text-2xl font-bold text-white">Welcome back</h1>
-              <p className="text-sm text-slate-400 mt-1">
+              <h1 className="text-2xl font-bold text-slate-900">Welcome back</h1>
+              <p className="text-sm text-slate-500 mt-1">
                 Sign in to continue learning
               </p>
             </div>
@@ -269,7 +268,7 @@ export default function LoginPage() {
                 type="button"
                 onClick={() => handleOAuth("google")}
                 disabled={loading}
-                className="w-full flex items-center justify-center gap-3 h-12 rounded-xl bg-white text-slate-900 font-semibold text-sm hover:bg-slate-50 transition-all shadow-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full flex items-center justify-center gap-3 h-12 rounded-xl bg-white text-slate-900 font-semibold text-sm border border-slate-200 hover:bg-slate-50 hover:border-slate-300 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <GoogleIcon />
                 Continue with Google
@@ -279,8 +278,7 @@ export default function LoginPage() {
                 type="button"
                 onClick={() => handleOAuth("azure")}
                 disabled={loading}
-                className="w-full flex items-center justify-center gap-3 h-12 rounded-xl text-white font-semibold text-sm transition-all hover:brightness-125 disabled:opacity-50 disabled:cursor-not-allowed"
-                style={{ background: "#1F1F1F", border: "1px solid rgba(255,255,255,0.12)" }}
+                className="w-full flex items-center justify-center gap-3 h-12 rounded-xl bg-white text-slate-900 font-semibold text-sm border border-slate-200 hover:bg-slate-50 hover:border-slate-300 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <MicrosoftIcon />
                 Continue with Microsoft
@@ -289,11 +287,11 @@ export default function LoginPage() {
 
             {/* Divider */}
             <div className="flex items-center gap-3 mb-6">
-              <div className="flex-1 h-px bg-white/[0.06]" />
-              <span className="text-[11px] text-slate-500 uppercase tracking-wider font-medium">
+              <div className="flex-1 h-px bg-slate-200" />
+              <span className="text-[11px] text-slate-400 uppercase tracking-wider font-medium">
                 or continue with email
               </span>
-              <div className="flex-1 h-px bg-white/[0.06]" />
+              <div className="flex-1 h-px bg-slate-200" />
             </div>
 
             {/* Email form */}
@@ -301,7 +299,7 @@ export default function LoginPage() {
               <div>
                 <label
                   htmlFor="email"
-                  className="block text-[11px] font-medium text-slate-400 mb-1.5 uppercase tracking-wider"
+                  className="block text-[11px] font-medium text-slate-500 mb-1.5 uppercase tracking-wider"
                 >
                   Email address
                 </label>
@@ -313,19 +311,19 @@ export default function LoginPage() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="you@example.com"
-                  className="w-full h-12 px-4 rounded-xl text-sm text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-brand/50 transition-all"
+                  className="w-full h-12 px-4 rounded-xl text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-brand/20 focus:border-brand transition-all"
                   style={{
-                    background: "rgba(255,255,255,0.06)",
-                    border: "1px solid rgba(255,255,255,0.12)",
+                    background: "#F8FAFC",
+                    border: "1px solid #E2E8F0",
                   }}
                 />
               </div>
 
               {error && (
                 <div
-                  className="text-sm text-red-400 px-4 py-3 rounded-xl"
+                  className="text-sm text-red-600 px-4 py-3 rounded-xl"
                   style={{
-                    background: "rgba(239,68,68,0.1)",
+                    background: "rgba(239,68,68,0.06)",
                     border: "1px solid rgba(239,68,68,0.2)",
                   }}
                 >
@@ -338,8 +336,8 @@ export default function LoginPage() {
                 disabled={loading}
                 className="w-full h-12 rounded-xl font-bold text-sm text-white transition-all hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0"
                 style={{
-                  background: "linear-gradient(135deg, #0056CE, #4F46E5)",
-                  boxShadow: "0 8px 24px rgba(0,86,206,0.35)",
+                  background: "linear-gradient(135deg, #0056CE, #01224F)",
+                  boxShadow: "0 8px 24px rgba(0,86,206,0.28)",
                 }}
               >
                 {loading ? (
@@ -372,12 +370,12 @@ export default function LoginPage() {
         {step === "otp" && (
           <>
             <div className="text-center mb-8">
-              <h1 className="text-2xl font-bold text-white">
+              <h1 className="text-2xl font-bold text-slate-900">
                 Enter your code
               </h1>
-              <p className="text-sm text-slate-400 mt-1">
+              <p className="text-sm text-slate-500 mt-1">
                 We sent a 6-digit code to{" "}
-                <strong className="text-white">{email}</strong>.
+                <strong className="text-slate-900">{email}</strong>.
                 <br />
                 Check your inbox (and spam folder).
               </p>
@@ -402,12 +400,12 @@ export default function LoginPage() {
                   onChange={(e) => handleDigitChange(i, e.target.value)}
                   onKeyDown={(e) => handleKeyDown(i, e)}
                   onFocus={(e) => e.target.select()}
-                  className="w-10 h-12 sm:w-12 sm:h-14 rounded-xl text-center text-lg sm:text-xl font-bold text-white transition-all focus:outline-none focus:ring-2 focus:ring-brand/30 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-10 h-12 sm:w-12 sm:h-14 rounded-xl text-center text-lg sm:text-xl font-bold text-slate-900 transition-all focus:outline-none focus:ring-2 focus:ring-brand/20 disabled:opacity-50 disabled:cursor-not-allowed"
                   style={{
-                    background: digit ? "rgba(0,86,206,0.05)" : "#161B22",
+                    background: digit ? "rgba(0,86,206,0.05)" : "#F8FAFC",
                     border: digit
                       ? "1px solid var(--color-brand, #0056CE)"
-                      : "1px solid rgba(255,255,255,0.10)",
+                      : "1px solid #E2E8F0",
                   }}
                 />
               ))}
@@ -415,9 +413,9 @@ export default function LoginPage() {
 
             {error && (
               <div
-                className="text-sm text-red-400 px-4 py-3 rounded-xl mb-4"
+                className="text-sm text-red-600 px-4 py-3 rounded-xl mb-4"
                 style={{
-                  background: "rgba(239,68,68,0.1)",
+                  background: "rgba(239,68,68,0.06)",
                   border: "1px solid rgba(239,68,68,0.2)",
                 }}
               >
@@ -433,8 +431,8 @@ export default function LoginPage() {
               disabled={digits.join("").length < CODE_LENGTH || loading}
               className="w-full h-12 rounded-xl font-bold text-sm text-white transition-all hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0"
               style={{
-                background: "linear-gradient(135deg, #0056CE, #4F46E5)",
-                boxShadow: "0 8px 24px rgba(0,86,206,0.35)",
+                background: "linear-gradient(135deg, #0056CE, #01224F)",
+                boxShadow: "0 8px 24px rgba(0,86,206,0.28)",
               }}
             >
               {loading ? (
@@ -454,7 +452,7 @@ export default function LoginPage() {
               {resendCountdown > 0 ? (
                 <p className="text-xs text-slate-500">
                   Resend code in{" "}
-                  <span className="font-semibold text-white">
+                  <span className="font-semibold text-slate-900">
                     {resendCountdown}s
                   </span>
                 </p>
@@ -474,7 +472,7 @@ export default function LoginPage() {
                   setDigits(Array(CODE_LENGTH).fill(""));
                   setError(null);
                 }}
-                className="text-xs text-slate-500 hover:text-white hover:underline"
+                className="text-xs text-slate-500 hover:text-slate-900 hover:underline"
               >
                 Use a different email
               </button>

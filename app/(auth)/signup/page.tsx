@@ -287,15 +287,15 @@ export default function SignupPage() {
   /* ── Shared input styles ───────────────────────────────────────────────── */
 
   const inputClass =
-    "w-full h-11 px-3.5 rounded-lg text-sm text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-brand/50 transition-all";
+    "w-full h-11 px-3.5 rounded-lg text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-brand/20 focus:border-brand transition-all";
 
   const inputStyle: React.CSSProperties = {
-    background: "rgba(255,255,255,0.06)",
-    border: "1px solid rgba(255,255,255,0.12)",
+    background: "#F8FAFC",
+    border: "1px solid #E2E8F0",
   };
 
   const labelClass =
-    "block text-[10px] font-medium text-slate-400 mb-1 uppercase tracking-wider";
+    "block text-[10px] font-medium text-slate-500 mb-1 uppercase tracking-wider";
 
   /* ── Render ───────────────────────────────────────────────────────────── */
 
@@ -305,28 +305,27 @@ export default function SignupPage() {
       style={{
         background: `
           radial-gradient(ellipse 800px 500px at 20% 20%, rgba(0,86,206,0.08), transparent 60%),
-          radial-gradient(ellipse 700px 500px at 80% 80%, rgba(167,139,250,0.06), transparent 60%),
+          radial-gradient(ellipse 700px 500px at 80% 80%, rgba(14,165,233,0.06), transparent 60%),
           linear-gradient(180deg, #F8FAFC 0%, #FFFFFF 50%, #F4F8FF 100%)
         `,
       }}
     >
       <div className="w-full max-w-md mx-auto px-4 sm:px-0 py-10 sm:py-14">
         <div
-          className="relative rounded-3xl p-6 sm:p-8"
+          className="relative rounded-3xl p-6 sm:p-8 bg-white"
           style={{
-            background: "linear-gradient(135deg, #050B14 0%, #0B1626 50%, #0D1929 100%)",
-            border: "1px solid rgba(255,255,255,0.10)",
-            boxShadow: "0 32px 80px rgba(0,0,0,0.35), 0 0 0 1px rgba(255,255,255,0.05) inset, 0 0 60px rgba(0,86,206,0.08)",
+            border: "1px solid #E2E8F0",
+            boxShadow: "0 24px 64px rgba(15,28,49,0.12)",
           }}
         >
         {/* Logo */}
         <div className="flex flex-col items-center gap-2 mb-5">
-          <Logo variant="light" size="lg" />
+          <Logo variant="dark" size="lg" />
           <span
-            className="inline-flex items-center gap-2 rounded-full px-3 py-1 text-[10px] font-semibold uppercase tracking-widest text-slate-400"
-            style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.06)" }}
+            className="inline-flex items-center gap-2 rounded-full px-3 py-1 text-[10px] font-semibold uppercase tracking-widest text-slate-500"
+            style={{ background: "rgba(0,86,206,0.05)", border: "1px solid rgba(0,86,206,0.15)" }}
           >
-            <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
+            <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
             AI Powered Learn to Launch Platform
           </span>
         </div>
@@ -335,10 +334,10 @@ export default function SignupPage() {
         {step === "email" && (
           <>
             <div className="text-center mb-5">
-              <h1 className="text-xl font-bold text-white">
+              <h1 className="text-xl font-bold text-slate-900">
                 Create your account
               </h1>
-              <p className="text-xs text-slate-400 mt-1">
+              <p className="text-xs text-slate-500 mt-1">
                 Free forever. No credit card.
               </p>
             </div>
@@ -349,7 +348,7 @@ export default function SignupPage() {
                 type="button"
                 onClick={() => handleOAuth("google")}
                 disabled={loading}
-                className="w-full flex items-center justify-center gap-3 h-11 rounded-lg bg-white text-slate-900 font-semibold text-sm hover:bg-slate-50 transition-all shadow-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full flex items-center justify-center gap-3 h-11 rounded-lg bg-white text-slate-900 font-semibold text-sm border border-slate-200 hover:bg-slate-50 hover:border-slate-300 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <GoogleIcon />
                 Sign up with Google
@@ -359,8 +358,7 @@ export default function SignupPage() {
                 type="button"
                 onClick={() => handleOAuth("azure")}
                 disabled={loading}
-                className="w-full flex items-center justify-center gap-3 h-11 rounded-lg text-white font-semibold text-sm transition-all hover:brightness-125 disabled:opacity-50 disabled:cursor-not-allowed"
-                style={{ background: "#1F1F1F", border: "1px solid rgba(255,255,255,0.12)" }}
+                className="w-full flex items-center justify-center gap-3 h-11 rounded-lg bg-white text-slate-900 font-semibold text-sm border border-slate-200 hover:bg-slate-50 hover:border-slate-300 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <MicrosoftIcon />
                 Sign up with Microsoft
@@ -372,14 +370,14 @@ export default function SignupPage() {
               By signing up, you agree to our{" "}
               <Link
                 href="/privacy"
-                className="text-slate-400 underline hover:text-white"
+                className="text-slate-600 underline hover:text-slate-900"
               >
                 Privacy Policy
               </Link>{" "}
               and{" "}
               <Link
                 href="/terms"
-                className="text-slate-400 underline hover:text-white"
+                className="text-slate-600 underline hover:text-slate-900"
               >
                 Terms of Service
               </Link>
@@ -388,11 +386,11 @@ export default function SignupPage() {
 
             {/* Divider */}
             <div className="flex items-center gap-3 mb-4">
-              <div className="flex-1 h-px bg-white/[0.06]" />
+              <div className="flex-1 h-px bg-slate-200" />
               <span className="text-[10px] text-slate-500 uppercase tracking-widest font-medium">
                 or sign up with email
               </span>
-              <div className="flex-1 h-px bg-white/[0.06]" />
+              <div className="flex-1 h-px bg-slate-200" />
             </div>
 
             {/* Email signup form — email only; profile is deferred to post-signup */}
@@ -418,11 +416,11 @@ export default function SignupPage() {
               {/* Implied-consent note (matches the OAuth path) */}
               <p className="text-[11px] text-slate-500 leading-relaxed pt-1">
                 By continuing, you agree to our{" "}
-                <Link href="/privacy" className="text-slate-400 underline hover:text-white" target="_blank">
+                <Link href="/privacy" className="text-slate-600 underline hover:text-slate-900" target="_blank">
                   Privacy Policy
                 </Link>{" "}
                 and{" "}
-                <Link href="/terms" className="text-slate-400 underline hover:text-white" target="_blank">
+                <Link href="/terms" className="text-slate-600 underline hover:text-slate-900" target="_blank">
                   Terms of Service
                 </Link>
                 .
@@ -430,9 +428,9 @@ export default function SignupPage() {
 
               {error && (
                 <div
-                  className="text-sm text-red-400 px-4 py-3 rounded-xl"
+                  className="text-sm text-red-600 px-4 py-3 rounded-xl"
                   style={{
-                    background: "rgba(239,68,68,0.1)",
+                    background: "rgba(239,68,68,0.06)",
                     border: "1px solid rgba(239,68,68,0.2)",
                   }}
                 >
@@ -445,8 +443,8 @@ export default function SignupPage() {
                 disabled={loading}
                 className="w-full h-12 rounded-xl font-bold text-sm text-white transition-all hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0"
                 style={{
-                  background: "linear-gradient(135deg, #0056CE, #4F46E5)",
-                  boxShadow: "0 8px 24px rgba(0,86,206,0.35)",
+                  background: "linear-gradient(135deg, #0056CE, #01224F)",
+                  boxShadow: "0 8px 24px rgba(0,86,206,0.28)",
                 }}
               >
                 {loading ? (
@@ -479,12 +477,12 @@ export default function SignupPage() {
         {step === "otp" && (
           <>
             <div className="text-center mb-8">
-              <h1 className="text-2xl font-bold text-white">
+              <h1 className="text-2xl font-bold text-slate-900">
                 Check your email
               </h1>
-              <p className="text-sm text-slate-400 mt-1">
+              <p className="text-sm text-slate-500 mt-1">
                 We sent a 6-digit code to{" "}
-                <strong className="text-white">{email}</strong>.
+                <strong className="text-slate-900">{email}</strong>.
                 <br />
                 Check your inbox (and spam folder).
               </p>
@@ -509,12 +507,12 @@ export default function SignupPage() {
                   onChange={(e) => handleDigitChange(i, e.target.value)}
                   onKeyDown={(e) => handleKeyDown(i, e)}
                   onFocus={(e) => e.target.select()}
-                  className="w-10 h-12 sm:w-12 sm:h-14 rounded-xl text-center text-lg sm:text-xl font-bold text-white transition-all focus:outline-none focus:ring-2 focus:ring-brand/30 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-10 h-12 sm:w-12 sm:h-14 rounded-xl text-center text-lg sm:text-xl font-bold text-slate-900 transition-all focus:outline-none focus:ring-2 focus:ring-brand/20 disabled:opacity-50 disabled:cursor-not-allowed"
                   style={{
-                    background: digit ? "rgba(0,86,206,0.05)" : "#161B22",
+                    background: digit ? "rgba(0,86,206,0.05)" : "#F8FAFC",
                     border: digit
                       ? "1px solid var(--color-brand, #0056CE)"
-                      : "1px solid rgba(255,255,255,0.10)",
+                      : "1px solid #E2E8F0",
                   }}
                 />
               ))}
@@ -522,9 +520,9 @@ export default function SignupPage() {
 
             {error && (
               <div
-                className="text-sm text-red-400 px-4 py-3 rounded-xl mb-4"
+                className="text-sm text-red-600 px-4 py-3 rounded-xl mb-4"
                 style={{
-                  background: "rgba(239,68,68,0.1)",
+                  background: "rgba(239,68,68,0.06)",
                   border: "1px solid rgba(239,68,68,0.2)",
                 }}
               >
@@ -561,7 +559,7 @@ export default function SignupPage() {
               {resendCountdown > 0 ? (
                 <p className="text-xs text-slate-500">
                   Resend code in{" "}
-                  <span className="font-semibold text-white">
+                  <span className="font-semibold text-slate-900">
                     {resendCountdown}s
                   </span>
                 </p>
@@ -581,7 +579,7 @@ export default function SignupPage() {
                   setDigits(Array(CODE_LENGTH).fill(""));
                   setError(null);
                 }}
-                className="text-xs text-slate-500 hover:text-white hover:underline"
+                className="text-xs text-slate-500 hover:text-slate-900 hover:underline"
               >
                 Use a different email
               </button>
