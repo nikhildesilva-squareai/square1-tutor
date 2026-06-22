@@ -66,6 +66,11 @@ export default function BusinessPage() {
               </a>
             </div>
             <p className="mt-4 text-xs text-slate-400">Free during early access · set up in 2 minutes · no card today</p>
+            <p className="mt-3 text-sm">
+              <Link href="/business/ai-readiness" className="font-semibold text-brand hover:underline">
+                Not sure where to start? Take the 2-min AI-readiness check →
+              </Link>
+            </p>
           </div>
 
           <div className="lg:pl-6">
