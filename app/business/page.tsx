@@ -12,13 +12,13 @@ import { NovaCapabilities } from "@/components/business/NovaCapabilities";
 import { TeamImpact } from "@/components/business/TeamImpact";
 
 export const metadata: Metadata = {
-  title: "For Teams — Upskill Your Staff in AI",
+  title: "For Teams — Upskill & Reskill Your Staff for the Age of AI",
   description:
-    "Buy seats, invite your staff, track everyone from one dashboard. An AI tutor that grades real code, a personalised path per employee, verifiable certificates. Free during early access.",
+    "Upskill and reskill your team for the age of AI. Buy seats, invite your staff, and track everyone from one dashboard — an AI tutor that grades real code, a personalised path per employee, and verifiable certificates. Free during early access.",
   openGraph: {
-    title: "Square 1 Ai for Teams — Upskill your staff for the AI era",
+    title: "Square 1 Ai for Teams — Upskill & reskill your team for the age of AI",
     description:
-      "AI-powered upskilling for your team: personalised paths, real projects, manager-visible progress, verifiable certificates.",
+      "AI-powered upskilling and reskilling for your team: personalised paths, real projects, manager-visible progress, and verifiable certificates.",
   },
 };
 
@@ -47,13 +47,13 @@ export default function BusinessPage() {
             </span>
             <h1 className="mt-4 mb-5 font-black tracking-tight text-slate-900 leading-[1.02]"
               style={{ fontSize: "clamp(36px,5vw,58px)", letterSpacing: "-0.02em" }}>
-              Upskill your team for the{" "}
+              Upskill and reskill your team for the{" "}
               <span style={{ background: "linear-gradient(135deg,#3388FF,#0056CE)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>
-                AI era.
+                age of AI.
               </span>
             </h1>
             <p className="text-base sm:text-lg text-slate-600 max-w-xl mx-auto lg:mx-0 mb-8 leading-relaxed">
-              An AI tutor that grades your staff&apos;s real code, builds each person a personalised path, and gives you the dashboard to prove they actually upskilled.
+              An AI tutor that grades your staff&apos;s real code, builds each person a personalised path, and gives you the dashboard to prove they upskilled — or reskilled into new roles.
             </p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center lg:justify-start items-center">
               <a href="#start"
