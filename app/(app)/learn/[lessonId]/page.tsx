@@ -25,7 +25,7 @@ export default async function LearnPage({ params }: PageProps) {
   // Get lesson with its module and course
   const { data: lesson } = await supabase
     .from("lessons")
-    .select("id, module_id, course_id, order_index, title, theory_md, estimated_minutes, learning_objectives")
+    .select("id, module_id, course_id, order_index, title, theory_md, estimated_minutes, learning_objectives, case_study, reference_links")
     .eq("id", lessonId)
     .maybeSingle();
 

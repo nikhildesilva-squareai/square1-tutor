@@ -11,9 +11,11 @@ import { NovaPanel } from "@/components/NovaPanel";
 
 // ─── Types ─────────────────────────────────────────────────────────────────
 
+interface LessonReference { title: string; url: string; note?: string }
 interface LessonData {
   id: string; module_id: string; course_id: string; order_index: number;
   title: string; theory_md: string; estimated_minutes: number; learning_objectives: string[];
+  case_study?: string | null; reference_links?: LessonReference[] | null;
 }
 interface ModuleData { id: string; title: string; order_index: number; course_id: string }
 interface CourseData { id: string; slug: string; title: string; total_lessons: number }
@@ -34,7 +36,7 @@ interface LearnClientProps {
 
 // ─── Card types ────────────────────────────────────────────────────────────
 
-type CardType = "objectives" | "theory" | "quiz" | "summary" | "practice" | "complete";
+type CardType = "objectives" | "theory" | "quiz" | "summary" | "casestudy" | "practice" | "complete";
 
 interface LessonCard {
   type: CardType;
@@ -165,7 +167,7 @@ function renderSection(md: string): string {
 
 // ─── Parse theory into cards ───────────────────────────────────────────────
 
-function parseTheoryIntoCards(theory: string, exercises: ExerciseData[], objectives: string[]): LessonCard[] {
+function parseTheoryIntoCards(theory: string, exercises: ExerciseData[], objectives: string[], caseStudy: string, references: LessonReference[]): LessonCard[] {
   const cards: LessonCard[] = [];
 
   // 1. Objectives card (if any)
@@ -217,6 +219,11 @@ function parseTheoryIntoCards(theory: string, exercises: ExerciseData[], objecti
   // 4. Summary card
   cards.push({ type: "summary", title: "Key Takeaways" });
 
+  // 4b. Real-world case study (how companies use this) — shown after the recap.
+  if ((caseStudy && caseStudy.trim()) || (references && references.length > 0)) {
+    cards.push({ type: "casestudy", title: "Real-World Case Study" });
+  }
+
   // 5. Practice cards (non-MCQ exercises)
   const practiceExercises = exercises.filter(e => e.type !== "mcq");
   for (const ex of practiceExercises) {
@@ -242,7 +249,8 @@ export function LearnClient({
   const styleRef = useRef(false);
 
   // Parse theory into cards
-  const cards = parseTheoryIntoCards(lesson.theory_md ?? "", exercises, lesson.learning_objectives);
+  const references = lesson.reference_links ?? [];
+  const cards = parseTheoryIntoCards(lesson.theory_md ?? "", exercises, lesson.learning_objectives, lesson.case_study ?? "", references);
   const [currentCard, setCurrentCard] = useState(0);
   const [animKey, setAnimKey] = useState(0);
   const [visitedCards, setVisitedCards] = useState<Set<number>>(new Set([0]));
@@ -458,6 +466,7 @@ export function LearnClient({
                   i === currentCard ? "w-6 h-2 bg-brand" :
                   visitedCards.has(i) ? "w-2 h-2 bg-brand/40" :
                   c.type === "quiz" ? "w-2 h-2 bg-amber-300" :
+                  c.type === "casestudy" ? "w-2 h-2 bg-sky-300" :
                   c.type === "practice" ? "w-2 h-2 bg-violet-300" :
                   c.type === "complete" ? "w-2 h-2 bg-emerald-300" :
                   "w-2 h-2 bg-border"
@@ -670,6 +679,49 @@ export function LearnClient({
               </div>
             )}
 
+            {/* ═══ CASE STUDY CARD ═══ */}
+            {card.type === "casestudy" && (
+              <div className="card-fade-up">
+                <div className="text-center mb-6">
+                  <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-sky-50 border border-sky-200 text-sky-700 text-xs font-bold">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" /><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" /></svg>
+                    Real-World Case Study
+                  </span>
+                  <h2 className="text-xl font-black text-ink mt-3">How this is used in the real world</h2>
+                </div>
+
+                {lesson.case_study && lesson.case_study.trim() && (
+                  <div className="bg-surface rounded-2xl border border-border p-6 sm:p-8 shadow-card lesson-content"
+                    dangerouslySetInnerHTML={{ __html: renderSection(lesson.case_study) }} />
+                )}
+
+                {references.length > 0 && (
+                  <div className="mt-5 bg-surface rounded-2xl border border-border p-6 shadow-card">
+                    <h3 className="text-xs font-bold text-ink-muted uppercase tracking-widest mb-4 flex items-center gap-2">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#0056CE" strokeWidth="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" /><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" /></svg>
+                      Further reading
+                    </h3>
+                    <ul className="space-y-3">
+                      {references.map((r, i) => (
+                        <li key={i}>
+                          <a href={r.url} target="_blank" rel="noopener noreferrer" className="text-sm font-semibold text-brand hover:underline">{r.title} ↗</a>
+                          {r.note && <p className="text-xs text-ink-muted leading-relaxed mt-0.5">{r.note}</p>}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
+                <div className="mt-5 flex items-center justify-center">
+                  <button onClick={() => openNova(`Give me another real-world example of how "${lesson.title}" is used in industry.`)}
+                    className="flex items-center gap-2 px-5 py-2.5 rounded-xl border border-brand/20 bg-surface-tint text-xs font-semibold text-brand hover:bg-brand hover:text-white transition-all">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" /></svg>
+                    Ask Nova for another example
+                  </button>
+                </div>
+              </div>
+            )}
+
             {/* ═══ PRACTICE CARD ═══ */}
             {card.type === "practice" && card.exercise && (() => {
               const ex = card.exercise;
@@ -836,6 +888,7 @@ export function LearnClient({
                card.type === "theory" ? "Learn" :
                card.type === "quiz" ? "Quick Check" :
                card.type === "summary" ? "Review" :
+               card.type === "casestudy" ? "Case Study" :
                card.type === "practice" ? "Practice" : "Complete"}
             </span>
 
