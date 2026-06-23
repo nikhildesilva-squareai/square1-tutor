@@ -70,6 +70,19 @@ export interface ProjectReference {
   note?: string;
 }
 
+export interface ProjectDataCardColumn {
+  name: string;
+  type: string;
+  description: string;
+}
+
+export interface ProjectDataCard {
+  summary?: string;
+  columns?: ProjectDataCardColumn[];
+  sample_rows?: Record<string, unknown>[];
+  notes?: string;
+}
+
 export interface Project {
   id: string;
   course_id: string;
@@ -90,6 +103,7 @@ export interface Project {
   dataset_url?: string | null;
   starter_repo_url?: string | null;
   resources?: Record<string, unknown>[] | null;
+  data_card?: ProjectDataCard | null;
 }
 
 export interface AssessmentQuestion {
