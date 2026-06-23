@@ -12,10 +12,12 @@ import { NovaPanel } from "@/components/NovaPanel";
 // ─── Types ─────────────────────────────────────────────────────────────────
 
 interface LessonReference { title: string; url: string; note?: string }
+interface AppliedTask { type: "writing" | "design"; prompt: string; model_answer?: string; checklist?: string[] }
 interface LessonData {
   id: string; module_id: string; course_id: string; order_index: number;
   title: string; theory_md: string; estimated_minutes: number; learning_objectives: string[];
   case_study?: string | null; reference_links?: LessonReference[] | null;
+  applied_task?: AppliedTask | null;
 }
 interface ModuleData { id: string; title: string; order_index: number; course_id: string }
 interface CourseData { id: string; slug: string; title: string; total_lessons: number }
@@ -36,7 +38,7 @@ interface LearnClientProps {
 
 // ─── Card types ────────────────────────────────────────────────────────────
 
-type CardType = "objectives" | "theory" | "quiz" | "summary" | "casestudy" | "practice" | "complete";
+type CardType = "objectives" | "theory" | "quiz" | "summary" | "casestudy" | "applied" | "practice" | "complete";
 
 interface LessonCard {
   type: CardType;
@@ -167,7 +169,7 @@ function renderSection(md: string): string {
 
 // ─── Parse theory into cards ───────────────────────────────────────────────
 
-function parseTheoryIntoCards(theory: string, exercises: ExerciseData[], objectives: string[], caseStudy: string, references: LessonReference[]): LessonCard[] {
+function parseTheoryIntoCards(theory: string, exercises: ExerciseData[], objectives: string[], caseStudy: string, references: LessonReference[], hasAppliedTask: boolean): LessonCard[] {
   const cards: LessonCard[] = [];
 
   // 1. Objectives card (if any)
@@ -224,6 +226,11 @@ function parseTheoryIntoCards(theory: string, exercises: ExerciseData[], objecti
     cards.push({ type: "casestudy", title: "Real-World Case Study" });
   }
 
+  // 4c. Applied "Apply It" task — reflective (not graded), optional Nova feedback.
+  if (hasAppliedTask) {
+    cards.push({ type: "applied", title: "Apply It" });
+  }
+
   // 5. Practice cards (non-MCQ exercises)
   const practiceExercises = exercises.filter(e => e.type !== "mcq");
   for (const ex of practiceExercises) {
@@ -250,7 +257,8 @@ export function LearnClient({
 
   // Parse theory into cards
   const references = lesson.reference_links ?? [];
-  const cards = parseTheoryIntoCards(lesson.theory_md ?? "", exercises, lesson.learning_objectives, lesson.case_study ?? "", references);
+  const appliedTask = lesson.applied_task ?? null;
+  const cards = parseTheoryIntoCards(lesson.theory_md ?? "", exercises, lesson.learning_objectives, lesson.case_study ?? "", references, !!(appliedTask && appliedTask.prompt));
   const [currentCard, setCurrentCard] = useState(0);
   const [animKey, setAnimKey] = useState(0);
   const [visitedCards, setVisitedCards] = useState<Set<number>>(new Set([0]));
@@ -265,6 +273,8 @@ export function LearnClient({
   const [quizCorrect, setQuizCorrect] = useState<Record<string, boolean>>({});
   const [quizAttempts, setQuizAttempts] = useState<Record<string, number>>({});
   const [submitting, setSubmitting] = useState(false);
+  const [appliedAnswer, setAppliedAnswer] = useState("");
+  const [appliedRevealed, setAppliedRevealed] = useState(false);
 
   // ── Nova in-lesson panel ──
   const [novaOpen, setNovaOpen] = useState(false);
@@ -467,6 +477,7 @@ export function LearnClient({
                   visitedCards.has(i) ? "w-2 h-2 bg-brand/40" :
                   c.type === "quiz" ? "w-2 h-2 bg-amber-300" :
                   c.type === "casestudy" ? "w-2 h-2 bg-sky-300" :
+                  c.type === "applied" ? "w-2 h-2 bg-fuchsia-300" :
                   c.type === "practice" ? "w-2 h-2 bg-violet-300" :
                   c.type === "complete" ? "w-2 h-2 bg-emerald-300" :
                   "w-2 h-2 bg-border"
@@ -722,6 +733,65 @@ export function LearnClient({
               </div>
             )}
 
+            {/* ═══ APPLY-IT CARD ═══ */}
+            {card.type === "applied" && appliedTask && (
+              <div className="card-fade-up">
+                <div className="text-center mb-6">
+                  <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-fuchsia-50 border border-fuchsia-200 text-fuchsia-700 text-xs font-bold">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M12 20h9" /><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" /></svg>
+                    {appliedTask.type === "design" ? "Design Task" : "Writing Task"}
+                  </span>
+                  <h2 className="text-xl font-black text-ink mt-3">Apply it</h2>
+                  <p className="text-sm text-ink-muted">Practice on a real scenario — for your own learning, not graded.</p>
+                </div>
+
+                <div className="bg-surface rounded-2xl border border-border p-6 sm:p-8 shadow-card">
+                  <div className="lesson-content" dangerouslySetInnerHTML={{ __html: renderSection(appliedTask.prompt) }} />
+
+                  <textarea
+                    value={appliedAnswer}
+                    onChange={(e) => setAppliedAnswer(e.target.value)}
+                    placeholder={appliedTask.type === "design" ? "Outline your design / approach…" : "Write your answer…"}
+                    rows={7}
+                    className="mt-4 w-full px-5 py-4 rounded-xl border-2 border-border bg-surface text-ink text-sm focus:outline-none focus:border-brand resize-none"
+                  />
+
+                  <div className="mt-4 flex flex-wrap items-center gap-3">
+                    <button onClick={() => setAppliedRevealed(v => !v)}
+                      className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-border text-sm font-semibold text-ink-secondary hover:bg-surface-alt transition-all">
+                      {appliedRevealed ? "Hide model answer" : "Reveal what a strong answer includes"}
+                    </button>
+                    <button onClick={() => openNova(`I'm doing this ${appliedTask.type} task for the lesson "${lesson.title}":\n\n${appliedTask.prompt}\n\nHere is my answer:\n${appliedAnswer || "(I haven't written anything yet — give me a hint to get started.)"}\n\nGive me concise, constructive feedback.`)}
+                      className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-brand text-white text-sm font-bold hover:bg-brand/90 transition-all">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" /></svg>
+                      Get Nova&apos;s feedback
+                    </button>
+                  </div>
+
+                  {appliedRevealed && (
+                    <div className="mt-5 rounded-xl border border-emerald-200 bg-emerald-50/50 p-5 card-fade-up">
+                      <p className="text-xs font-bold text-emerald-700 uppercase tracking-widest mb-3">What a strong answer includes</p>
+                      {appliedTask.model_answer && (
+                        <div className="lesson-content text-sm" dangerouslySetInnerHTML={{ __html: renderSection(appliedTask.model_answer) }} />
+                      )}
+                      {appliedTask.checklist && appliedTask.checklist.length > 0 && (
+                        <ul className="mt-3 space-y-2">
+                          {appliedTask.checklist.map((c, i) => (
+                            <li key={i} className="flex items-start gap-2 text-sm text-ink-secondary">
+                              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#059669" strokeWidth="2.5" className="mt-0.5 shrink-0"><polyline points="20 6 9 17 4 12" /></svg>
+                              <span>{c}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+                    </div>
+                  )}
+
+                  <p className="text-[11px] text-ink-muted mt-4">This task isn&apos;t graded and won&apos;t block completion — it&apos;s deliberate practice. Nova feedback is optional.</p>
+                </div>
+              </div>
+            )}
+
             {/* ═══ PRACTICE CARD ═══ */}
             {card.type === "practice" && card.exercise && (() => {
               const ex = card.exercise;
@@ -889,6 +959,7 @@ export function LearnClient({
                card.type === "quiz" ? "Quick Check" :
                card.type === "summary" ? "Review" :
                card.type === "casestudy" ? "Case Study" :
+               card.type === "applied" ? "Apply It" :
                card.type === "practice" ? "Practice" : "Complete"}
             </span>
 
