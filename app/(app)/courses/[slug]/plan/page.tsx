@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, use } from "react";
+import React, { useState, useEffect, use } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 
@@ -104,6 +104,19 @@ export default function PlanPage({ params }: PageProps) {
   const [billingCycle, setBillingCycle] = useState<"monthly" | "upfront">("monthly");
   const [openFaq, setOpenFaq] = useState<number | null>(null);
 
+  // While the early-access trial is open (and not full), enrolment is free —
+  // reflect that here so the pricing isn't misleading. Checked client-side to
+  // avoid a hydration mismatch on the date/count.
+  const [freeOpen, setFreeOpen] = useState(false);
+  useEffect(() => {
+    let active = true;
+    fetch("/api/free-access/status")
+      .then((r) => r.json())
+      .then((d) => { if (active) setFreeOpen(!!(d.open && !d.full)); })
+      .catch(() => { /* fall back to paid copy */ });
+    return () => { active = false; };
+  }, []);
+
   function goToCheckout(months: number) {
     const rp = reportId ? `&reportId=${reportId}` : "";
     router.push(`/courses/${slug}/checkout?months=${months}&billing=${billingCycle}${rp}`);
@@ -137,6 +150,23 @@ export default function PlanPage({ params }: PageProps) {
             University CS degrees cost <span className="line-through">$40,000+</span>.
             <span className="text-brand font-bold"> Start here for less than a coffee a day.</span>
           </p>
+
+          {/* Early-access free banner */}
+          {freeOpen && (
+            <div className="max-w-xl mx-auto -mt-4 mb-10 rounded-2xl border p-4 sm:p-5 flex items-center gap-4 text-left"
+              style={{ borderColor: "rgba(25,166,95,0.30)", background: "rgba(25,166,95,0.06)" }}>
+              <div className="w-11 h-11 shrink-0 rounded-xl flex items-center justify-center" style={{ background: "rgba(25,166,95,0.12)" }}>
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#19A65F" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
+              </div>
+              <div>
+                <p className="text-sm font-black text-ink">Early access — it&apos;s free right now</p>
+                <p className="text-xs text-ink-muted leading-relaxed">
+                  We&apos;re opening Square 1 to our first students free, no card needed. Pick the pace that
+                  suits you below and start today — your plan duration is just your study schedule.
+                </p>
+              </div>
+            </div>
+          )}
 
           {/* ── Billing toggle ──────────────────────────────────────────── */}
           <div className="inline-flex items-center gap-1 p-1 rounded-full border border-border bg-surface-alt mb-10">
@@ -271,7 +301,9 @@ export default function PlanPage({ params }: PageProps) {
                       : "bg-surface border border-border text-ink hover:bg-surface-alt"
                   )}
                 >
-                  {plan.isFeatured ? "Start Now — Best Value" : "Start Now"}
+                  {freeOpen
+                    ? (plan.isFeatured ? "Start free — Best Value" : "Start free")
+                    : (plan.isFeatured ? "Start Now — Best Value" : "Start Now")}
                 </button>
               </div>
             );
@@ -282,7 +314,7 @@ export default function PlanPage({ params }: PageProps) {
         <div className="max-w-5xl mx-auto mt-6 flex items-center justify-center gap-6 sm:gap-10 flex-wrap">
           <div className="flex items-center gap-2 text-xs text-ink-muted">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#0056CE" strokeWidth="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2" /><path d="M7 11V7a5 5 0 0110 0v4" /></svg>
-            Secure payment via Stripe
+            {freeOpen ? "No card required" : "Secure payment via Stripe"}
           </div>
           <div className="flex items-center gap-2 text-xs text-ink-muted">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#0056CE" strokeWidth="2"><circle cx="12" cy="12" r="10" /><line x1="2" y1="12" x2="22" y2="12" /><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z" /></svg>

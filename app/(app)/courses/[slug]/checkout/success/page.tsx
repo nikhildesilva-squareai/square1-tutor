@@ -109,6 +109,7 @@ export default function CheckoutSuccessPage({ params }: { params: Promise<{ slug
 
   const months = parseInt(searchParams.get("months") ?? "6", 10);
   const billing = searchParams.get("billing") ?? "monthly";
+  const isFree = searchParams.get("free") === "1";
   const plan = PLAN_MAP[months] ?? PLAN_MAP[6];
   const amount = billing === "monthly" ? plan.price : plan.upfront;
 
@@ -145,8 +146,10 @@ export default function CheckoutSuccessPage({ params }: { params: Promise<{ slug
         {/* ── Receipt card ─────────────────────────────────────────────── */}
         <div className="rounded-2xl border border-border bg-surface p-6 shadow-card text-left mb-8">
           <div className="flex items-center justify-between pb-4 border-b border-border mb-4">
-            <span className="text-xs font-semibold text-ink-muted uppercase tracking-wider">Receipt</span>
-            <span className="text-xs text-success font-semibold">Paid</span>
+            <span className="text-xs font-semibold text-ink-muted uppercase tracking-wider">
+              {isFree ? "Enrolment" : "Receipt"}
+            </span>
+            <span className="text-xs text-success font-semibold">{isFree ? "Free · Early access" : "Paid"}</span>
           </div>
 
           <div className="space-y-3">
@@ -158,13 +161,17 @@ export default function CheckoutSuccessPage({ params }: { params: Promise<{ slug
               <span className="text-ink-muted">Plan</span>
               <span className="text-ink font-medium">{plan.label}</span>
             </div>
-            <div className="flex items-center justify-between text-sm">
-              <span className="text-ink-muted">Billing</span>
-              <span className="text-ink font-medium capitalize">{billing}</span>
-            </div>
+            {!isFree && (
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-ink-muted">Billing</span>
+                <span className="text-ink font-medium capitalize">{billing}</span>
+              </div>
+            )}
             <div className="flex items-center justify-between text-sm pt-3 border-t border-border">
-              <span className="text-ink font-bold">Amount paid</span>
-              <span className="text-ink font-bold text-lg">${amount.toFixed(2)} USD</span>
+              <span className="text-ink font-bold">{isFree ? "Amount due" : "Amount paid"}</span>
+              <span className="text-ink font-bold text-lg">
+                {isFree ? "$0.00" : `$${amount.toFixed(2)} USD`}
+              </span>
             </div>
           </div>
         </div>

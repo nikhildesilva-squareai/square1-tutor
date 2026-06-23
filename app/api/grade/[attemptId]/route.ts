@@ -445,34 +445,45 @@ export async function POST(
       };
     }
 
-    // Short answer - AI grade each individually
-    const shortAnswerQs = questions.filter((q) => q.type === "short_answer");
-    for (const q of shortAnswerQs) {
-      const resp = responseMap.get(q.id);
-      const answer = resp?.response_text ?? "";
-      const result = await gradeShortAnswer(student.id, q, answer, subject);
-      allGrades[q.id] = {
-        marks: result.marks,
-        feedback: result.feedback,
-        breakdown: result.breakdown,
-        topicUnderstanding: result.topicUnderstanding,
-        improvedCode: null,
-      };
+    // Short-answer + code questions each need a Claude call. Grading them one
+    // at a time made a 20-question paper take ~2 minutes; run them concurrently
+    // (bounded) so the whole paper grades in seconds. Each grader catches its
+    // own errors and returns a fallback, so no task rejects.
+    const aiTasks: Array<() => Promise<void>> = [];
+
+    for (const q of questions.filter((q) => q.type === "short_answer")) {
+      aiTasks.push(async () => {
+        const resp = responseMap.get(q.id);
+        const result = await gradeShortAnswer(student.id, q, resp?.response_text ?? "", subject);
+        allGrades[q.id] = {
+          marks: result.marks,
+          feedback: result.feedback,
+          breakdown: result.breakdown,
+          topicUnderstanding: result.topicUnderstanding,
+          improvedCode: null,
+        };
+      });
     }
 
-    // Code - AI grade each individually
-    const codeQs = questions.filter((q) => q.type === "code");
-    for (const q of codeQs) {
-      const resp = responseMap.get(q.id);
-      const code = resp?.code_response ?? "";
-      const result = await gradeCode(student.id, q, code, subject);
-      allGrades[q.id] = {
-        marks: result.marks,
-        feedback: result.feedback,
-        breakdown: result.breakdown,
-        topicUnderstanding: result.topicUnderstanding,
-        improvedCode: result.improvedCode,
-      };
+    for (const q of questions.filter((q) => q.type === "code")) {
+      aiTasks.push(async () => {
+        const resp = responseMap.get(q.id);
+        const result = await gradeCode(student.id, q, resp?.code_response ?? "", subject);
+        allGrades[q.id] = {
+          marks: result.marks,
+          feedback: result.feedback,
+          breakdown: result.breakdown,
+          topicUnderstanding: result.topicUnderstanding,
+          improvedCode: result.improvedCode,
+        };
+      });
+    }
+
+    // Bounded concurrency keeps us comfortably under Anthropic's rate limits
+    // while still grading in parallel.
+    const GRADE_CONCURRENCY = 8;
+    for (let i = 0; i < aiTasks.length; i += GRADE_CONCURRENCY) {
+      await Promise.all(aiTasks.slice(i, i + GRADE_CONCURRENCY).map((task) => task()));
     }
 
     /* ── Calculate scores and topic mastery ─────────────────────────────── */
@@ -574,28 +585,30 @@ export async function POST(
       return NextResponse.json({ error: "Failed to save skill report" }, { status: 500 });
     }
 
-    /* ── Update responses with marks + structured feedback ─────────────── */
-    for (const q of questions) {
-      const grade = allGrades[q.id];
-      if (!grade) continue;
-      // Store structured data as JSON in ai_feedback
-      const feedbackData = JSON.stringify({
-        feedback: grade.feedback,
-        breakdown: grade.breakdown,
-        topicUnderstanding: grade.topicUnderstanding,
-        improvedCode: grade.improvedCode,
-      });
-      await supabase
-        .from("assessment_responses")
-        .update({
-          is_correct: grade.marks > 0,
-          partial_credit: grade.marks,
-          ai_feedback_md: feedbackData,
-          graded_at: new Date().toISOString(),
-        })
-        .eq("attempt_id", attemptId)
-        .eq("question_id", q.id);
-    }
+    /* ── Update responses with marks + structured feedback (in parallel) ── */
+    await Promise.all(
+      questions.map((q) => {
+        const grade = allGrades[q.id];
+        if (!grade) return Promise.resolve();
+        // Store structured data as JSON in ai_feedback
+        const feedbackData = JSON.stringify({
+          feedback: grade.feedback,
+          breakdown: grade.breakdown,
+          topicUnderstanding: grade.topicUnderstanding,
+          improvedCode: grade.improvedCode,
+        });
+        return supabase
+          .from("assessment_responses")
+          .update({
+            is_correct: grade.marks > 0,
+            partial_credit: grade.marks,
+            ai_feedback_md: feedbackData,
+            graded_at: new Date().toISOString(),
+          })
+          .eq("attempt_id", attemptId)
+          .eq("question_id", q.id);
+      }),
+    );
 
     /* ── Update attempt status ─────────────────────────────────────────── */
     await supabase

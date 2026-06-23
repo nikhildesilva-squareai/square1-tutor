@@ -175,53 +175,18 @@ async function logUsage(
   const supabase = await createClient();
   const monthKey = getMonthKey();
 
-  // 1. Update api_usage (tracking table)
-  const { data: existing } = await supabase
-    .from("api_usage")
-    .select("id, total_calls, input_tokens, output_tokens, estimated_cost")
-    .eq("student_id", studentId)
-    .eq("month_key", monthKey)
-    .maybeSingle();
+  // Atomic upsert-and-increment of both api_usage and (if present) ai_wallets.
+  // Done in one SQL function so concurrent AI calls (e.g. parallel assessment
+  // grading) can't lose each other's cost increments via read-modify-write.
+  const { error } = await supabase.rpc("log_ai_usage", {
+    p_student: studentId,
+    p_month: monthKey,
+    p_input: inputTokens,
+    p_output: outputTokens,
+    p_cost: cost,
+  });
 
-  if (existing) {
-    await supabase
-      .from("api_usage")
-      .update({
-        total_calls: existing.total_calls + 1,
-        input_tokens: existing.input_tokens + inputTokens,
-        output_tokens: existing.output_tokens + outputTokens,
-        estimated_cost: Number(existing.estimated_cost) + cost,
-        updated_at: new Date().toISOString(),
-      })
-      .eq("id", existing.id);
-  } else {
-    await supabase.from("api_usage").insert({
-      student_id: studentId,
-      month_key: monthKey,
-      total_calls: 1,
-      input_tokens: inputTokens,
-      output_tokens: outputTokens,
-      estimated_cost: cost,
-    });
-  }
-
-  // 2. Update ai_wallets spent_amount (if wallet exists)
-  const { data: wallet } = await supabase
-    .from("ai_wallets")
-    .select("id, spent_amount")
-    .eq("student_id", studentId)
-    .eq("month_key", monthKey)
-    .maybeSingle();
-
-  if (wallet) {
-    await supabase
-      .from("ai_wallets")
-      .update({
-        spent_amount: Number(wallet.spent_amount) + cost,
-        updated_at: new Date().toISOString(),
-      })
-      .eq("id", wallet.id);
-  }
+  if (error) console.error("[budget] log_ai_usage:", error);
 }
 
 // ─── Main function: budget-checked AI call ───────────────────────────────────

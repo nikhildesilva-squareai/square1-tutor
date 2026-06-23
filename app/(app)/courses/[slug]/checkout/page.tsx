@@ -37,6 +37,18 @@ const INCLUDED = [
 // only exist in local dev builds.
 const IS_DEV = process.env.NODE_ENV !== "production";
 
+// Free early-access trial status (from /api/free-access/status).
+interface FreeStatus {
+  open: boolean;
+  full: boolean;
+  cap: number;
+  claimed: number;
+  remaining: number;
+  claimedByMe: boolean;
+  canClaim: boolean;
+  endsAt: string;
+}
+
 export default function CheckoutPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = use(params);
   const searchParams = useSearchParams();
@@ -94,6 +106,47 @@ export default function CheckoutPage({ params }: { params: Promise<{ slug: strin
   /* ─── Founding-spot reservation (production, pre-Stripe) ──────────────────── */
   const [reserveState, setReserveState] = useState<"idle" | "saving" | "done">("idle");
   const [reserveError, setReserveError] = useState("");
+
+  /* ─── Free early-access trial ─────────────────────────────────────────────── */
+  const [freeStatus, setFreeStatus] = useState<FreeStatus | null>(null);
+  const [freeLoading, setFreeLoading] = useState(true);
+  const [freeClaiming, setFreeClaiming] = useState(false);
+  const [freeError, setFreeError] = useState("");
+
+  useEffect(() => {
+    let active = true;
+    fetch("/api/free-access/status")
+      .then((r) => r.json())
+      .then((d) => { if (active) setFreeStatus(d); })
+      .catch(() => { /* status optional — fall back to normal flow */ })
+      .finally(() => { if (active) setFreeLoading(false); });
+    return () => { active = false; };
+  }, []);
+
+  const freeOpen = !!freeStatus?.canClaim;
+
+  async function handleFreeClaim() {
+    setFreeClaiming(true);
+    setFreeError("");
+    try {
+      const safeMonths = [3, 6, 9].includes(months) ? months : 6;
+      const res = await fetch("/api/free-access/enroll", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          ...(reportId ? { reportId } : {}),
+          planMonths: safeMonths,
+          courseSlug: slug,
+        }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error ?? "Could not start your free access — please try again");
+      router.push(`/courses/${slug}/checkout/success?months=${months}&billing=${billing}&free=1`);
+    } catch (e) {
+      setFreeError(e instanceof Error ? e.message : "Could not start your free access — please try again");
+      setFreeClaiming(false);
+    }
+  }
 
   async function handleReserve() {
     setReserveState("saving");
@@ -176,12 +229,83 @@ export default function CheckoutPage({ params }: { params: Promise<{ slug: strin
           {/*  LEFT — PAYMENT FORM                                              */}
           {/* ═══════════════════════════════════════════════════════════════════ */}
           <div className="lg:col-span-3">
-            <h1 className="text-2xl sm:text-3xl font-black text-ink mb-1">Checkout</h1>
-            <p className="text-sm text-ink-muted mb-8">Complete your enrolment in {courseTitle || "this course"}</p>
+            <h1 className="text-2xl sm:text-3xl font-black text-ink mb-1">{freeOpen ? "Start free" : "Checkout"}</h1>
+            <p className="text-sm text-ink-muted mb-8">
+              {freeOpen
+                ? `Get full access to ${courseTitle || "this course"} — free during early access.`
+                : `Complete your enrolment in ${courseTitle || "this course"}`}
+            </p>
 
             {/* ── Payment panel ─────────────────────────────────────────────── */}
             <div className="rounded-2xl border border-border bg-surface p-6 sm:p-8 shadow-card">
-              {!IS_DEV ? (
+              {freeLoading ? (
+                /* ── Resolving whether the free trial is open ── */
+                <div className="py-12 flex flex-col items-center justify-center gap-3 text-ink-muted">
+                  <svg className="w-6 h-6 animate-spin" viewBox="0 0 24 24" fill="none">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                  </svg>
+                  <span className="text-sm">Loading…</span>
+                </div>
+              ) : freeOpen ? (
+                /* ── EARLY ACCESS: full access free during the trial window ── */
+                <div>
+                  <div className="flex items-center gap-2 mb-4">
+                    <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                    <span className="text-[10px] font-bold tracking-widest uppercase text-emerald-600">
+                      Early access · Free
+                    </span>
+                  </div>
+                  <h2 className="text-lg font-bold text-ink mb-2">Start learning today — on us</h2>
+                  <p className="text-sm text-ink-muted leading-relaxed mb-5">
+                    We&apos;re opening Square 1 to our first {freeStatus?.cap ?? 100} students free — no card
+                    required. The full course, Nova your AI tutor, AI-graded projects and your certificate are
+                    all included.
+                  </p>
+
+                  {typeof freeStatus?.remaining === "number" && !freeStatus?.claimedByMe && (
+                    <div className="mb-5 px-4 py-3 rounded-xl bg-emerald-50 border border-emerald-200 text-sm text-emerald-700 text-center font-medium">
+                      {freeStatus.remaining} of {freeStatus.cap} free spots left
+                    </div>
+                  )}
+
+                  <button
+                    onClick={handleFreeClaim}
+                    disabled={freeClaiming}
+                    className={cn(
+                      "w-full h-14 rounded-xl font-bold text-base transition-all flex items-center justify-center gap-2",
+                      freeClaiming
+                        ? "bg-border text-ink-muted cursor-not-allowed"
+                        : "bg-brand text-white hover:bg-brand/90 hover:shadow-lg hover:shadow-brand/25 hover:-translate-y-0.5 active:translate-y-0"
+                    )}
+                  >
+                    {freeClaiming ? (
+                      <>
+                        <svg className="w-5 h-5 animate-spin" viewBox="0 0 24 24" fill="none">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                        </svg>
+                        Setting up your course…
+                      </>
+                    ) : (
+                      <>
+                        {freeStatus?.claimedByMe ? "Continue — free access" : "Start learning — free"}
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M5 12h14" /><polyline points="12 5 19 12 12 19" /></svg>
+                      </>
+                    )}
+                  </button>
+
+                  {freeError && (
+                    <div className="mt-3 px-4 py-3 rounded-xl bg-red-50 border border-red-200 text-sm text-red-700 text-center">
+                      {freeError}
+                    </div>
+                  )}
+
+                  <p className="text-[10px] text-ink-muted text-center mt-4">
+                    No card today · Full access from day one · No obligation
+                  </p>
+                </div>
+              ) : !IS_DEV ? (
                 /* ── PRODUCTION: card payments not live — founding reservation ── */
                 <div>
                   <div className="flex items-center gap-2 mb-4">
@@ -494,10 +618,19 @@ export default function CheckoutPage({ params }: { params: Promise<{ slug: strin
               <div className="pt-5 pb-5 border-b border-border">
                 <div className="flex items-center justify-between">
                   <span className="text-base font-bold text-ink">Due today</span>
-                  <span className="text-2xl font-black text-ink">${totalToday.toFixed(2)}</span>
+                  {freeOpen ? (
+                    <span className="flex items-baseline gap-2">
+                      <span className="text-sm text-ink-muted line-through">${totalToday.toFixed(2)}</span>
+                      <span className="text-2xl font-black text-emerald-600">$0.00</span>
+                    </span>
+                  ) : (
+                    <span className="text-2xl font-black text-ink">${totalToday.toFixed(2)}</span>
+                  )}
                 </div>
                 <p className="text-[10px] text-ink-muted mt-1">
-                  {billing === "monthly" ? "Billed monthly. Cancel anytime." : "One-time payment. Full access."}
+                  {freeOpen
+                    ? "Free during early access — no card required."
+                    : billing === "monthly" ? "Billed monthly. Cancel anytime." : "One-time payment. Full access."}
                 </p>
               </div>
 
