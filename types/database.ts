@@ -58,6 +58,18 @@ export interface Exercise {
   correct_answer: string | null;
 }
 
+export interface ProjectRubricCriterion {
+  criterion: string;
+  weight: number;
+  description?: string;
+}
+
+export interface ProjectReference {
+  title: string;
+  url: string;
+  note?: string;
+}
+
 export interface Project {
   id: string;
   course_id: string;
@@ -69,6 +81,15 @@ export interface Project {
   tech_stack: string[];
   requirements: string[];
   milestone_checkpoints: Record<string, unknown>[];
+  // Gold-standard kit fields (added via migration)
+  rubric?: ProjectRubricCriterion[] | null;
+  reference_links?: ProjectReference[] | null;
+  dataset_source?: string | null;
+  dataset_license?: string | null;
+  dataset_attribution?: string | null;
+  dataset_url?: string | null;
+  starter_repo_url?: string | null;
+  resources?: Record<string, unknown>[] | null;
 }
 
 export interface AssessmentQuestion {

@@ -2,64 +2,17 @@ import { createClient } from "@/lib/supabase/server";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { SubmissionForm, ScoreDisplay } from "./SubmissionForm";
-import type { Project, ProjectSubmission } from "@/types/database";
+import { RichContent } from "@/components/ui/rich-content";
+import type { Project, ProjectSubmission, ProjectRubricCriterion, ProjectReference } from "@/types/database";
 
 export const revalidate = 120;
 
-interface Milestone { title?: string; description?: string; [key: string]: unknown }
 interface PageProps { params: Promise<{ projectId: string }> }
 
-function toSlug(title: string) {
-  return title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
-}
-
-function parseSections(md: string) {
-  const sections: Record<string, string> = {};
-  let current = "overview";
-  const lines = md.split("\n");
-
-  for (const line of lines) {
-    const h2 = line.match(/^## (.+)$/);
-    if (h2) {
-      current = h2[1].toLowerCase().trim();
-      continue;
-    }
-    const h3 = line.match(/^### (.+)$/);
-    if (h3) {
-      sections[current] = (sections[current] ?? "") + "\n" + line;
-      continue;
-    }
-    sections[current] = (sections[current] ?? "") + "\n" + line;
-  }
-
-  for (const key of Object.keys(sections)) {
-    sections[key] = sections[key].trim();
-  }
-  return sections;
-}
-
-function extractBullets(text: string): string[] {
-  return text
-    .split("\n")
-    .map(l => l.trim())
-    .filter(l => l.startsWith("- "))
-    .map(l => l.replace(/^- /, "").replace(/\*\*/g, ""));
-}
-
-function extractOverview(text: string): string {
-  return text
-    .split("\n")
-    .map(l => l.trim())
-    .filter(l => l.length > 0 && !l.startsWith("#"))
-    .join(" ")
-    .replace(/\*\*([^*]+)\*\*/g, "$1")
-    .replace(/`([^`]+)`/g, "$1");
-}
-
-const DIFF_COLORS: Record<string, { text: string; bg: string; border: string; dot: string }> = {
-  beginner:     { text: "text-emerald-600", bg: "bg-emerald-50", border: "border-emerald-200", dot: "#22C55E" },
-  intermediate: { text: "text-amber-600",   bg: "bg-amber-50",   border: "border-amber-200",   dot: "#F59E0B" },
-  advanced:     { text: "text-red-600",     bg: "bg-red-50",     border: "border-red-200",     dot: "#EF4444" },
+const DIFF_COLORS: Record<string, { text: string; bg: string; border: string }> = {
+  beginner:     { text: "text-emerald-600", bg: "bg-emerald-50", border: "border-emerald-200" },
+  intermediate: { text: "text-amber-600",   bg: "bg-amber-50",   border: "border-amber-200" },
+  advanced:     { text: "text-red-600",     bg: "bg-red-50",     border: "border-red-200" },
 };
 
 export default async function ProjectBriefPage({ params }: PageProps) {
@@ -80,20 +33,14 @@ export default async function ProjectBriefPage({ params }: PageProps) {
     submission = data;
   }
 
-  const milestones = (project.milestone_checkpoints ?? []) as Milestone[];
-  const requirements = project.requirements ?? [];
   const techStack = project.tech_stack ?? [];
   const dc = DIFF_COLORS[project.difficulty] ?? DIFF_COLORS.intermediate;
   const courseColor = course?.color ?? "#0056CE";
   const hasResult = submission && submission.score !== null;
 
-  const sections = parseSections(project.description_md);
-  const overview = extractOverview(sections["overview"] ?? "");
-  const learnings = extractBullets(sections["what you'll learn"] ?? "");
-  const deliverables = extractBullets(sections["deliverables"] ?? "");
-  const tips = extractBullets(sections["tips & guidance"] ?? "");
-  const evalCriteria = extractBullets(sections["how you'll be evaluated"] ?? "");
-  const careerRelevance = (sections["career relevance"] ?? "").replace(/\*\*/g, "").trim();
+  const rubric: ProjectRubricCriterion[] = Array.isArray(project.rubric) ? project.rubric : [];
+  const refs: ProjectReference[] = Array.isArray(project.reference_links) ? project.reference_links : [];
+  const rubricTotal = rubric.reduce((sum, r) => sum + (Number(r.weight) || 0), 0);
 
   return (
     <div className="min-h-full bg-surface-soft">
@@ -122,11 +69,6 @@ export default async function ProjectBriefPage({ params }: PageProps) {
             )}
           </div>
 
-          {/* Overview text */}
-          <p className="text-sm sm:text-base text-slate-500 leading-relaxed max-w-3xl mb-6">
-            {overview}
-          </p>
-
           {/* Meta row */}
           <div className="flex items-center gap-5 text-xs text-slate-500 flex-wrap">
             <span className="flex items-center gap-1.5">
@@ -137,180 +79,129 @@ export default async function ProjectBriefPage({ params }: PageProps) {
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M4 19.5A2.5 2.5 0 016.5 17H20" /><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z" /></svg>
               Project {project.order_index + 1} of {course?.total_projects ?? "?"}
             </span>
-            <span className="flex items-center gap-1.5">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><polyline points="16 18 22 12 16 6" /><polyline points="8 6 2 12 8 18" /></svg>
-              {techStack.join(" · ")}
-            </span>
+            {techStack.length > 0 && (
+              <span className="flex items-center gap-1.5">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><polyline points="16 18 22 12 16 6" /><polyline points="8 6 2 12 8 18" /></svg>
+                {techStack.join(" · ")}
+              </span>
+            )}
           </div>
         </div>
       </div>
 
-      {/* ── Body — single column, max-w-4xl ───────────────────────────── */}
+      {/* ── Body ───────────────────────────────────────────────────────── */}
       <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8 space-y-8">
 
-        {/* ── What You'll Learn — feature grid ──────────────────────── */}
-        {learnings.length > 0 && (
-          <section>
-            <h2 className="text-xs font-bold text-ink-muted uppercase tracking-widest mb-4">What You&apos;ll Learn</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              {learnings.map((item, i) => (
-                <div key={i} className="flex items-start gap-3 bg-surface rounded-xl border border-border p-4">
-                  <div className="w-6 h-6 rounded-lg flex items-center justify-center shrink-0 mt-0.5" style={{ background: `${courseColor}15` }}>
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={courseColor} strokeWidth="3"><polyline points="20 6 9 17 4 12" /></svg>
+        {/* ── The brief (full authored markdown) ─────────────────────── */}
+        <section className="bg-surface rounded-2xl border border-border p-5 sm:p-7 shadow-card">
+          <RichContent content={project.description_md} />
+        </section>
+
+        {/* ── Dataset ─────────────────────────────────────────────────── */}
+        {(project.dataset_source || project.dataset_url) && (
+          <section className="bg-surface rounded-2xl border border-border p-5 sm:p-6">
+            <h2 className="text-xs font-bold text-ink-muted uppercase tracking-widest mb-4 flex items-center gap-2">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={courseColor} strokeWidth="2"><ellipse cx="12" cy="5" rx="9" ry="3" /><path d="M3 5v14a9 3 0 0 0 18 0V5" /><path d="M3 12a9 3 0 0 0 18 0" /></svg>
+              Dataset
+            </h2>
+            <div className="space-y-2 text-sm">
+              {project.dataset_source && (
+                <div className="flex gap-2"><span className="text-ink-muted w-28 shrink-0">Source</span><span className="text-ink font-medium">{project.dataset_source}</span></div>
+              )}
+              {project.dataset_license && (
+                <div className="flex gap-2"><span className="text-ink-muted w-28 shrink-0">Licence</span><span className="text-ink">{project.dataset_license}</span></div>
+              )}
+              {project.dataset_attribution && (
+                <div className="flex gap-2"><span className="text-ink-muted w-28 shrink-0">Attribution</span><span className="text-ink">{project.dataset_attribution}</span></div>
+              )}
+            </div>
+            {project.dataset_url ? (
+              <a href={project.dataset_url} target="_blank" rel="noopener noreferrer"
+                className="mt-4 inline-flex items-center gap-2 h-10 px-4 rounded-xl bg-brand text-white text-sm font-semibold hover:bg-brand/90 transition-colors">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" y1="15" x2="12" y2="3" /></svg>
+                Download dataset
+              </a>
+            ) : (
+              <p className="mt-3 text-xs text-ink-muted leading-relaxed">
+                The dataset ships with the project starter (generated by its included script). It&apos;s 100% synthetic and Square 1-owned — free for you to use.
+              </p>
+            )}
+          </section>
+        )}
+
+        {/* ── Marking rubric ──────────────────────────────────────────── */}
+        {rubric.length > 0 && (
+          <section className="bg-surface rounded-2xl border border-border p-5 sm:p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-xs font-bold text-ink-muted uppercase tracking-widest flex items-center gap-2">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={courseColor} strokeWidth="2"><path d="M9 11l3 3L22 4" /><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" /></svg>
+                Marking rubric
+              </h2>
+              <span className="text-[11px] font-bold text-ink-muted">Total {rubricTotal}%</span>
+            </div>
+            <div className="space-y-4">
+              {rubric.map((r, i) => (
+                <div key={i}>
+                  <div className="flex items-baseline justify-between gap-3 mb-1">
+                    <span className="text-sm font-semibold text-ink">{r.criterion}</span>
+                    <span className="text-xs font-bold tabular-nums shrink-0" style={{ color: courseColor }}>{r.weight}%</span>
                   </div>
-                  <span className="text-sm text-ink leading-relaxed">{item}</span>
+                  <div className="w-full h-1.5 rounded-full bg-surface-alt overflow-hidden mb-1.5">
+                    <div className="h-full rounded-full" style={{ width: `${Math.min(100, Number(r.weight) || 0)}%`, background: courseColor }} />
+                  </div>
+                  {r.description && <p className="text-xs text-ink-muted leading-relaxed">{r.description}</p>}
                 </div>
               ))}
             </div>
+            <p className="text-[11px] text-ink-muted mt-4 pt-3 border-t border-border">
+              Nova reviews your submitted code + git history against these criteria and returns a weighted score with line-by-line feedback.
+            </p>
           </section>
         )}
 
-        {/* ── Milestones — horizontal stepper ──────────────────────── */}
-        {milestones.length > 0 && (
-          <section>
-            <h2 className="text-xs font-bold text-ink-muted uppercase tracking-widest mb-4">
-              Milestones
-            </h2>
-            <div className="bg-surface rounded-xl border border-border p-5">
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                {milestones.map((ms, i) => (
-                  <div key={i} className="relative">
-                    <div className="flex items-center gap-2.5 mb-2">
-                      <span className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold text-white shrink-0" style={{ background: courseColor }}>
-                        {i + 1}
-                      </span>
-                      <p className="text-sm font-semibold text-ink">{ms.title ?? `Milestone ${i + 1}`}</p>
-                    </div>
-                    {ms.description && (
-                      <p className="text-xs text-ink-muted leading-relaxed ml-[38px]">{ms.description}</p>
-                    )}
-                  </div>
-                ))}
-              </div>
-            </div>
-          </section>
-        )}
-
-        {/* ── Requirements ─────────────────────────────────────────── */}
-        {requirements.length > 0 && (
-          <section>
-            <h2 className="text-xs font-bold text-ink-muted uppercase tracking-widest mb-4">Requirements</h2>
-            <div className="bg-surface rounded-xl border border-border p-5">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2">
-                {requirements.map((req, i) => (
-                  <div key={i} className="flex items-start gap-2.5 py-1.5">
-                    <div className="w-4 h-4 rounded border border-border flex items-center justify-center shrink-0 mt-0.5">
-                      <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" strokeWidth="3"><polyline points="20 6 9 17 4 12" /></svg>
-                    </div>
-                    <span className="text-sm text-ink leading-snug">{req}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </section>
-        )}
-
-        {/* ── Deliverables + Evaluation — two-col ──────────────────── */}
-        {(deliverables.length > 0 || evalCriteria.length > 0) && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-            {deliverables.length > 0 && (
-              <section className="bg-surface rounded-xl border border-border p-5">
-                <h2 className="text-xs font-bold text-ink-muted uppercase tracking-widest mb-3">Deliverables</h2>
-                <ul className="space-y-2">
-                  {deliverables.map((d, i) => (
-                    <li key={i} className="flex items-start gap-2.5 text-sm text-ink">
-                      <span className="w-1.5 h-1.5 rounded-full mt-1.5 shrink-0" style={{ background: courseColor }} />
-                      {d}
-                    </li>
-                  ))}
-                </ul>
-              </section>
-            )}
-            {evalCriteria.length > 0 && (
-              <section className="bg-surface rounded-xl border border-border p-5">
-                <h2 className="text-xs font-bold text-ink-muted uppercase tracking-widest mb-3">How You&apos;ll Be Evaluated</h2>
-                <ul className="space-y-2">
-                  {evalCriteria.map((c, i) => (
-                    <li key={i} className="flex items-start gap-2.5 text-sm text-ink">
-                      <span className="w-1.5 h-1.5 rounded-full mt-1.5 shrink-0 bg-amber-400" />
-                      {c}
-                    </li>
-                  ))}
-                </ul>
-              </section>
-            )}
-          </div>
-        )}
-
-        {/* ── Tips ──────────────────────────────────────────────────── */}
-        {tips.length > 0 && (
-          <section className="bg-brand/[0.04] rounded-xl border border-brand/10 p-5">
-            <h2 className="text-xs font-bold text-brand uppercase tracking-widest mb-3 flex items-center gap-2">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="10" /><line x1="12" y1="16" x2="12" y2="12" /><line x1="12" y1="8" x2="12.01" y2="8" /></svg>
-              Tips &amp; Guidance
-            </h2>
-            <ul className="space-y-2">
-              {tips.map((t, i) => (
-                <li key={i} className="text-sm text-ink-secondary leading-relaxed pl-5 relative before:content-[''] before:absolute before:left-0 before:top-2 before:w-1.5 before:h-1.5 before:rounded-full before:bg-brand/40">
-                  {t}
-                </li>
-              ))}
-            </ul>
-          </section>
-        )}
-
-        {/* ── Getting Started ──────────────────────────────────────── */}
+        {/* ── Getting started ─────────────────────────────────────────── */}
         <section>
           <h2 className="text-xs font-bold text-ink-muted uppercase tracking-widest mb-4">Getting Started</h2>
-          <div className="bg-surface rounded-xl border border-border p-5">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-              {/* Left — template + clone */}
-              <div>
-                <a href={`https://github.com/nikhildesilva-squareai/starter-${toSlug(project.title)}/generate`}
-                  target="_blank" rel="noopener noreferrer"
-                  className="flex items-center gap-3 px-4 py-3.5 rounded-xl bg-[#0A0A0A] hover:bg-[#161616] transition-all group mb-3">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="#fff" className="shrink-0">
-                    <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.44 9.8 8.21 11.39.6.11.82-.26.82-.58 0-.29-.01-1.04-.02-2.05-3.34.73-4.04-1.61-4.04-1.61C4.42 17.92 3.63 17.5 3.63 17.5c-1.09-.74.08-.73.08-.73 1.21.09 1.85 1.24 1.85 1.24 1.07 1.84 2.81 1.31 3.49 1 .11-.78.42-1.31.76-1.61-2.66-.3-5.47-1.33-5.47-5.92 0-1.31.47-2.38 1.24-3.22-.13-.3-.54-1.52.12-3.17 0 0 1-.32 3.3 1.23A11.5 11.5 0 0112 5.8c1.02.01 2.04.14 3 .4 2.29-1.55 3.3-1.23 3.3-1.23.66 1.65.25 2.87.12 3.17.77.84 1.24 1.91 1.24 3.22 0 4.6-2.81 5.62-5.49 5.92.43.37.82 1.1.82 2.21 0 1.6-.02 2.89-.02 3.28 0 .32.22.7.83.58A12 12 0 0024 12c0-6.63-5.37-12-12-12z"/>
-                  </svg>
+          <div className="bg-surface rounded-2xl border border-border p-5 sm:p-6">
+            {project.starter_repo_url && (
+              <div className="mb-5">
+                <a href={`${project.starter_repo_url}/generate`} target="_blank" rel="noopener noreferrer"
+                  className="flex items-center gap-3 px-4 py-3.5 rounded-xl bg-[#0A0A0A] hover:bg-[#161616] transition-all mb-3">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="#fff" className="shrink-0"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.44 9.8 8.21 11.39.6.11.82-.26.82-.58 0-.29-.01-1.04-.02-2.05-3.34.73-4.04-1.61-4.04-1.61C4.42 17.92 3.63 17.5 3.63 17.5c-1.09-.74.08-.73.08-.73 1.21.09 1.85 1.24 1.85 1.24 1.07 1.84 2.81 1.31 3.49 1 .11-.78.42-1.31.76-1.61-2.66-.3-5.47-1.33-5.47-5.92 0-1.31.47-2.38 1.24-3.22-.13-.3-.54-1.52.12-3.17 0 0 1-.32 3.3 1.23A11.5 11.5 0 0112 5.8c1.02.01 2.04.14 3 .4 2.29-1.55 3.3-1.23 3.3-1.23.66 1.65.25 2.87.12 3.17.77.84 1.24 1.91 1.24 3.22 0 4.6-2.81 5.62-5.49 5.92.43.37.82 1.1.82 2.21 0 1.6-.02 2.89-.02 3.28 0 .32.22.7.83.58A12 12 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
                   <div className="flex-1">
                     <p className="text-sm font-semibold text-white">Use this template</p>
-                    <p className="text-[10px] text-slate-500">Creates a new repo from our starter</p>
+                    <p className="text-[10px] text-slate-500">Creates a new repo from our starter (code + dataset)</p>
                   </div>
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#64748B" strokeWidth="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6" /><polyline points="15 3 21 3 21 9" /><line x1="10" y1="14" x2="21" y2="3" /></svg>
                 </a>
                 <div className="rounded-xl bg-slate-950 px-4 py-3">
                   <p className="text-[9px] text-slate-500 uppercase tracking-wider font-bold mb-1.5">Or clone directly</p>
-                  <code className="text-[11px] text-slate-300 font-mono break-all select-all leading-relaxed">
-                    git clone https://github.com/nikhildesilva-squareai/starter-{toSlug(project.title)}.git
-                  </code>
+                  <code className="text-[11px] text-slate-300 font-mono break-all select-all leading-relaxed">git clone {project.starter_repo_url}.git</code>
                 </div>
               </div>
-              {/* Right — steps */}
-              <div className="space-y-3">
-                {[
-                  "Clone the starter template",
-                  "Build the project following the requirements",
-                  "Push to your own public GitHub repo",
-                  "Submit the repo URL below for AI review",
-                ].map((text, i) => (
-                  <div key={i} className="flex items-start gap-3">
-                    <span className="w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold text-white shrink-0" style={{ background: courseColor }}>
-                      {i + 1}
-                    </span>
-                    <span className="text-sm text-ink leading-relaxed pt-0.5">{text}</span>
-                  </div>
-                ))}
-              </div>
+            )}
+            <div className="space-y-3">
+              {[
+                "Read the brief above — it lists exactly what to build, the data, and how you're scored",
+                project.starter_repo_url ? "Clone the starter template (code + dataset included)" : "Set up your project repo and generate the dataset as described in the brief",
+                "Build the project, meeting the rubric criteria",
+                "Push to your own public GitHub repo, then submit the URL below for AI review",
+              ].map((text, i) => (
+                <div key={i} className="flex items-start gap-3">
+                  <span className="w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold text-white shrink-0" style={{ background: courseColor }}>{i + 1}</span>
+                  <span className="text-sm text-ink leading-relaxed pt-0.5">{text}</span>
+                </div>
+              ))}
             </div>
           </div>
         </section>
 
-        {/* ── Submit / Score ────────────────────────────────────────── */}
+        {/* ── Submit / Score ──────────────────────────────────────────── */}
         <section>
           <h2 className="text-xs font-bold text-ink-muted uppercase tracking-widest mb-4">
             {hasResult ? "Submission Result" : "Submit Your Project"}
           </h2>
-          <div className="bg-surface rounded-xl border border-border p-5">
+          <div className="bg-surface rounded-2xl border border-border p-5 sm:p-6">
             {hasResult ? (
               <ScoreDisplay
                 result={{
@@ -336,19 +227,34 @@ export default async function ProjectBriefPage({ params }: PageProps) {
           </div>
         </section>
 
-        {/* ── Career relevance + course link footer ─────────────────── */}
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pt-2 pb-4 border-t border-border">
-          {careerRelevance && (
-            <p className="text-xs text-ink-muted leading-relaxed">{careerRelevance}</p>
-          )}
+        {/* ── Further reading ─────────────────────────────────────────── */}
+        {refs.length > 0 && (
+          <section className="bg-surface rounded-2xl border border-border p-5 sm:p-6">
+            <h2 className="text-xs font-bold text-ink-muted uppercase tracking-widest mb-4 flex items-center gap-2">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={courseColor} strokeWidth="2"><path d="M4 19.5A2.5 2.5 0 016.5 17H20" /><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z" /></svg>
+              Further reading
+            </h2>
+            <ul className="space-y-3">
+              {refs.map((r, i) => (
+                <li key={i}>
+                  <a href={r.url} target="_blank" rel="noopener noreferrer" className="text-sm font-semibold text-brand hover:underline">
+                    {r.title} ↗
+                  </a>
+                  {r.note && <p className="text-xs text-ink-muted leading-relaxed mt-0.5">{r.note}</p>}
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
+
+        {/* ── Footer course link ──────────────────────────────────────── */}
+        <div className="flex items-center justify-end pt-2 pb-4 border-t border-border">
           <Link href={`/courses/${course?.slug}`}
             className="shrink-0 flex items-center gap-2 px-3 py-2 rounded-lg border border-border hover:border-brand/30 hover:bg-surface transition-all text-sm text-ink-secondary hover:text-brand">
             <div className="w-5 h-5 rounded flex items-center justify-center" style={{ background: `${courseColor}15` }}>
-              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke={courseColor} strokeWidth="2.5" strokeLinecap="round">
-                <path d="M4 19.5A2.5 2.5 0 016.5 17H20" /><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z" />
-              </svg>
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke={courseColor} strokeWidth="2.5" strokeLinecap="round"><path d="M4 19.5A2.5 2.5 0 016.5 17H20" /><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z" /></svg>
             </div>
-            {course?.title} →
+            Back to {course?.title} →
           </Link>
         </div>
       </div>
