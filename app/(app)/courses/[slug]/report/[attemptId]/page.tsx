@@ -4,7 +4,7 @@ import { useState, useEffect, useRef, use } from "react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { ShareResultButton } from "@/components/ShareResultButton";
-import { levelFor, LEVEL_LABELS, type DomainScore } from "@/lib/competency";
+import { levelFor, LEVEL_LABELS, getCompetencyConfig, type DomainScore } from "@/lib/competency";
 
 interface PageProps {
   params: Promise<{ slug: string; attemptId: string }>;
@@ -131,11 +131,18 @@ function ScoreRing({ percentage, level, animate }: { percentage: number; level: 
   return (
     <div className="relative" style={{ width: size, height: size }}>
       <svg width={size} height={size} className="-rotate-90">
+        <defs>
+          <linearGradient id="scoreRingGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor={color} stopOpacity="0.55" />
+            <stop offset="100%" stopColor={color} />
+          </linearGradient>
+        </defs>
         <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="#E8EEF5" strokeWidth={strokeWidth} />
         <circle
           cx={size / 2} cy={size / 2} r={r} fill="none"
-          stroke={color} strokeWidth={strokeWidth} strokeLinecap="round"
+          stroke="url(#scoreRingGrad)" strokeWidth={strokeWidth} strokeLinecap="round"
           strokeDasharray={circ} strokeDashoffset={offset}
+          style={{ filter: `drop-shadow(0 3px 10px ${color}55)` }}
           className="transition-none"
         />
       </svg>
@@ -329,6 +336,7 @@ function CompetencyMatrix({ domains }: { domains: DomainScore[] }) {
                 </div>
               ))}
             </div>
+            <span className="hidden sm:inline-flex items-center text-[9px] font-bold uppercase tracking-wide px-2 py-0.5 rounded-full shrink-0" style={{ background: BAND_COLORS[bandIdx], color: bandIdx >= 2 ? "#fff" : "#0C447C" }}>{d.level}</span>
             <span className="text-xs font-bold tabular-nums text-ink w-8 text-right">{d.percentage}</span>
           </div>
         );
@@ -497,8 +505,12 @@ export default function ReportPage({ params }: PageProps) {
   const competencyList = hasDomains
     ? report.domainMastery!.map((d) => ({ label: d.domain, percentage: d.percentage }))
     : report.topicMastery.map((t) => ({ label: formatTopicName(t.topic), percentage: t.percentage }));
-  const strengths = [...competencyList].sort((a, b) => b.percentage - a.percentage).slice(0, 3);
-  const gaps = [...competencyList].sort((a, b) => a.percentage - b.percentage).slice(0, 3);
+  const ranked = [...competencyList].sort((a, b) => b.percentage - a.percentage);
+  const strong = ranked.filter((t) => t.percentage >= 60).slice(0, 5);
+  const weak = ranked.filter((t) => t.percentage < 60).reverse().slice(0, 5);
+  const strengths = strong.length ? strong : ranked.slice(0, 3);
+  const gaps = weak.length ? weak : [...ranked].reverse().slice(0, 3);
+  const nextLevel = LEVEL_LABELS[Math.min(LEVEL_LABELS.indexOf(overallLevel as (typeof LEVEL_LABELS)[number]) + 1, LEVEL_LABELS.length - 1)];
   const radarData: TopicMastery[] = hasDomains
     ? report.domainMastery!.map((d) => ({ topic: d.domain, correct: d.correct, total: d.total, percentage: d.percentage }))
     : report.topicMastery;
@@ -671,9 +683,12 @@ export default function ReportPage({ params }: PageProps) {
               <div className="space-y-3">
                 {strengths.map((t) => (
                   <div key={t.label}>
-                    <div className="flex items-center justify-between mb-1">
-                      <span className="text-sm font-medium text-ink">{t.label}</span>
-                      <span className="text-xs font-bold text-success tabular-nums">{t.percentage}%</span>
+                    <div className="flex items-center justify-between mb-1 gap-2">
+                      <span className="text-sm font-medium text-ink truncate">{t.label}</span>
+                      <div className="flex items-center gap-2 shrink-0">
+                        <span className="text-[9px] font-bold uppercase tracking-wider text-success/80">{levelFor(t.percentage)}</span>
+                        <span className="text-xs font-bold text-success tabular-nums">{t.percentage}%</span>
+                      </div>
                     </div>
                     <div className="w-full h-2 rounded-full overflow-hidden bg-success/10">
                       <div className="h-full rounded-full bg-success transition-all duration-1000" style={{ width: `${t.percentage}%` }} />
@@ -696,9 +711,12 @@ export default function ReportPage({ params }: PageProps) {
               <div className="space-y-3">
                 {gaps.map((t) => (
                   <div key={t.label}>
-                    <div className="flex items-center justify-between mb-1">
-                      <span className="text-sm font-medium text-ink">{t.label}</span>
-                      <span className="text-xs font-bold text-error tabular-nums">{t.percentage}%</span>
+                    <div className="flex items-center justify-between mb-1 gap-2">
+                      <span className="text-sm font-medium text-ink truncate">{t.label}</span>
+                      <div className="flex items-center gap-2 shrink-0">
+                        <span className="text-[9px] font-bold uppercase tracking-wider text-error/80">{levelFor(t.percentage)}</span>
+                        <span className="text-xs font-bold text-error tabular-nums">{t.percentage}%</span>
+                      </div>
                     </div>
                     <div className="w-full h-2 rounded-full overflow-hidden bg-error/10">
                       <div className="h-full rounded-full bg-error transition-all duration-1000" style={{ width: `${t.percentage}%` }} />
@@ -715,31 +733,36 @@ export default function ReportPage({ params }: PageProps) {
       {/*  SECTION 4 — FIRST CTA (conversion point)                    */}
       {/* ═══════════════════════════════════════════════════════════════ */}
       <section className="pb-12 sm:pb-16 px-4 sm:px-6">
-        <div className="max-w-lg mx-auto">
-          <div className="rounded-2xl border-2 border-brand/30 bg-surface-tint p-6 sm:p-8 text-center shadow-card">
-            <div className="w-14 h-14 rounded-2xl bg-brand flex items-center justify-center mx-auto mb-4">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
-                <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
-              </svg>
+        <div className="max-w-2xl mx-auto">
+          <div className="relative overflow-hidden rounded-3xl p-8 sm:p-10 text-center shadow-xl"
+            style={{ background: "linear-gradient(135deg,#0056CE 0%,#0b3b97 55%,#1e1b4b 100%)" }}>
+            <div className="absolute -top-16 -right-12 w-48 h-48 rounded-full bg-white/10 blur-2xl" />
+            <div className="absolute -bottom-20 -left-12 w-56 h-56 rounded-full bg-[#4f7bff]/30 blur-2xl" />
+            <div className="relative">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/15 border border-white/20 mb-5">
+                <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
+                <span className="text-[10px] tracking-[0.2em] uppercase font-bold text-white">Your personalised path</span>
+              </div>
+              <h2 className="text-2xl sm:text-3xl font-black text-white mb-3 leading-tight">
+                {gaps[0]
+                  ? <>Close <span className="underline decoration-white/40 decoration-2 underline-offset-4">{gaps[0].label}</span> — and level up faster</>
+                  : <>Turn this score into real, hireable skill</>}
+              </h2>
+              <p className="text-sm text-blue-100/90 mb-7 max-w-md mx-auto leading-relaxed">
+                We&apos;ll build a plan around your exact gaps — bite-size lessons, 24/7 AI tutoring with Nova, and real portfolio projects, sequenced just for you.
+              </p>
+              <div className="flex flex-wrap items-center justify-center gap-2 mb-7">
+                {[`${overallLevel} → ${nextLevel}`, "AI tutor included", "Portfolio projects"].map((c) => (
+                  <span key={c} className="text-[11px] font-semibold text-white bg-white/10 border border-white/15 rounded-full px-3 py-1.5">{c}</span>
+                ))}
+              </div>
+              <Link href={`/courses/${slug}/plan?reportId=${report.reportId}`}
+                className="group inline-flex items-center gap-2 h-14 px-10 rounded-2xl bg-white text-brand font-black text-base hover:shadow-2xl hover:shadow-black/25 hover:-translate-y-0.5 active:translate-y-0 transition-all">
+                Build my learning plan
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="group-hover:translate-x-1 transition-transform"><path d="M5 12h14" /><polyline points="12 5 19 12 12 19" /></svg>
+              </Link>
+              <p className="text-[11px] text-blue-100/70 mt-4">Start free · No credit card needed</p>
             </div>
-            <h2 className="text-xl sm:text-2xl font-black text-ink mb-2">
-              Ready to close these gaps?
-            </h2>
-            <p className="text-sm text-ink-muted mb-6 max-w-sm mx-auto">
-              Your personalised learning plan targets exactly what you need.
-              {report.level === "beginner" ? " Start building from the foundation up." :
-               report.level === "intermediate" ? " Bridge the gaps to reach advanced level." :
-               " Master the final edges to become an expert."}
-            </p>
-            <Link
-              href={`/courses/${slug}/plan?reportId=${report.reportId}`}
-              className="inline-flex items-center gap-2 h-14 px-10 rounded-xl bg-brand text-white font-bold text-base hover:bg-brand/90 hover:shadow-lg hover:shadow-brand/25 hover:-translate-y-0.5 active:translate-y-0 transition-all"
-            >
-              Choose your plan
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                <path d="M5 12h14" /><polyline points="12 5 19 12 12 19" />
-              </svg>
-            </Link>
           </div>
         </div>
       </section>
@@ -754,31 +777,48 @@ export default function ReportPage({ params }: PageProps) {
               <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-brand/20 bg-surface-tint mb-3">
                 <span className="text-[10px] tracking-[0.2em] uppercase font-bold text-brand">Topic Mastery</span>
               </div>
-              <h2 className="text-xl sm:text-2xl font-black text-ink">Full Topic Breakdown</h2>
+              <h2 className="text-xl sm:text-2xl font-black text-ink">Topic-by-topic heatmap</h2>
             </div>
 
-            <div className="space-y-3">
-              {sortedTopics.map((t) => {
-                const color = t.percentage >= 70 ? "#19A65F" : t.percentage >= 40 ? "#E5B217" : "#D93636";
-                const bgColor = t.percentage >= 70 ? "rgba(25,166,95,0.1)" : t.percentage >= 40 ? "rgba(229,178,23,0.1)" : "rgba(217,54,54,0.1)";
-                return (
-                  <div key={t.topic} className="rounded-xl border border-border bg-surface p-4 shadow-card">
-                    <div className="flex items-center justify-between mb-2">
-                      <div className="flex items-center gap-2">
-                        <span className="text-sm font-semibold text-ink">{formatTopicName(t.topic)}</span>
-                        {t.questionCount != null && (
-                          <span className="text-[10px] text-ink-muted">{t.questionCount} Q{t.questionCount !== 1 ? "s" : ""}</span>
-                        )}
-                      </div>
-                      <span className="text-sm font-bold tabular-nums" style={{ color }}>{t.percentage}%</span>
-                    </div>
-                    <div className="w-full h-3 rounded-full overflow-hidden" style={{ background: bgColor }}>
-                      <div className="h-full rounded-full transition-all duration-1000" style={{ width: `${t.percentage}%`, background: color }} />
-                    </div>
-                  </div>
-                );
-              })}
+            {/* colour legend */}
+            <div className="flex items-center justify-center gap-3 sm:gap-4 mb-6 text-[11px] text-ink-muted flex-wrap">
+              <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded" style={{ background: "#19A65F" }} /> Strong 70%+</span>
+              <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded" style={{ background: "#E5B217" }} /> Developing 40–69%</span>
+              <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded" style={{ background: "#D93636" }} /> Gap &lt;40%</span>
             </div>
+
+            {(() => {
+              const cfg = getCompetencyConfig(slug);
+              const topicDomain: Record<string, string> = {};
+              if (cfg) for (const dm of cfg.domains) for (const tag of dm.tags) topicDomain[tag] = dm.name;
+              const groups: Record<string, TopicMastery[]> = {};
+              for (const t of sortedTopics) {
+                const g = topicDomain[t.topic] ?? "Other topics";
+                (groups[g] ||= []).push(t);
+              }
+              const order = cfg ? [...cfg.domains.map((d) => d.name), "Other topics"] : Object.keys(groups);
+              return (
+                <div className="space-y-5">
+                  {order.filter((g) => groups[g]?.length).map((g) => (
+                    <div key={g}>
+                      {cfg && <p className="text-xs font-bold text-ink-secondary mb-2.5">{g}</p>}
+                      <div className="flex flex-wrap gap-2">
+                        {[...groups[g]].sort((a, b) => b.percentage - a.percentage).map((t) => {
+                          const c = t.percentage >= 70 ? "#19A65F" : t.percentage >= 40 ? "#E5B217" : "#D93636";
+                          const bg = t.percentage >= 70 ? "rgba(25,166,95,0.12)" : t.percentage >= 40 ? "rgba(229,178,23,0.12)" : "rgba(217,54,54,0.12)";
+                          return (
+                            <span key={t.topic} className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium" style={{ background: bg, color: c }}>
+                              {formatTopicName(t.topic)}
+                              <span className="font-bold tabular-nums">{t.percentage}%</span>
+                            </span>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              );
+            })()}
           </div>
         </section>
       )}
@@ -908,8 +948,8 @@ export default function ReportPage({ params }: PageProps) {
           <div className="max-w-3xl mx-auto">
             <div className="rounded-2xl border border-brand/20 bg-surface-tint p-6 sm:p-8 shadow-card">
               <div className="flex items-start gap-4">
-                <div className="shrink-0 w-12 h-12 rounded-xl bg-brand flex items-center justify-center text-sm font-black text-white">
-                  AI
+                <div className="shrink-0 w-12 h-12 rounded-xl bg-brand flex items-center justify-center text-white">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 11l3 3L22 4" /><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" /></svg>
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-brand/20 bg-surface mb-3">
@@ -942,17 +982,18 @@ export default function ReportPage({ params }: PageProps) {
       <section className="py-12 sm:py-20 px-4 sm:px-6">
         <div className="max-w-lg mx-auto text-center">
           <h2 className="text-2xl sm:text-3xl font-black text-ink mb-3">
-            Start learning today
+            Your plan is ready when you are
           </h2>
           <p className="text-ink-muted text-sm mb-8">
-            Your personalised plan is waiting. Every lesson targets your weak spots.
+            Every lesson, project, and Nova session targets the gaps above. Start today — free during early access.
           </p>
           <Link
             href={`/courses/${slug}/plan?reportId=${report.reportId}`}
-            className="inline-flex items-center gap-2 h-14 px-10 rounded-xl bg-brand text-white font-bold text-base hover:bg-brand/90 hover:shadow-lg hover:shadow-brand/25 hover:-translate-y-0.5 transition-all"
+            className="group inline-flex items-center gap-2 h-14 px-10 rounded-2xl text-white font-black text-base hover:-translate-y-0.5 hover:shadow-2xl hover:shadow-brand/30 transition-all"
+            style={{ background: "linear-gradient(135deg,#0056CE 0%,#0b3b97 55%,#1e1b4b 100%)" }}
           >
-            Choose your plan
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+            Build my learning plan
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="group-hover:translate-x-1 transition-transform">
               <path d="M5 12h14" /><polyline points="12 5 19 12 12 19" />
             </svg>
           </Link>
