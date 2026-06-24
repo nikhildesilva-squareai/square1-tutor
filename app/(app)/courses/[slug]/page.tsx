@@ -150,12 +150,12 @@ export default async function CourseDetailPage({ params }: PageProps) {
   return (
     <div className="min-h-full bg-surface-soft pb-24">
       {/* ── Dark Hero Header ───────────────────────────────────────── */}
-      <div className="bg-[#0A0A0A] border-b border-white/10">
+      <div className="bg-[linear-gradient(135deg,#0056CE_0%,#0b3b97_50%,#1e1b4b_100%)] border-b border-white/10">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
           {/* Breadcrumb */}
           <div className="flex items-center gap-2 text-sm mb-4">
-            <Link href="/courses" className="text-slate-500 hover:text-white transition-colors">Courses</Link>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#475569" strokeWidth="2"><polyline points="9 18 15 12 9 6" /></svg>
+            <Link href="/courses" className="text-white/60 hover:text-white transition-colors">Courses</Link>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.4)" strokeWidth="2"><polyline points="9 18 15 12 9 6" /></svg>
             <span className="text-white font-medium">{course.title}</span>
           </div>
 
@@ -172,8 +172,8 @@ export default async function CourseDetailPage({ params }: PageProps) {
                   {course.level}
                 </span>
               </div>
-              <p className="text-sm text-slate-500 leading-relaxed max-w-2xl mb-4">{course.description}</p>
-              <div className="flex items-center flex-wrap gap-3 sm:gap-5 text-sm text-slate-500">
+              <p className="text-sm text-white/70 leading-relaxed max-w-2xl mb-4">{course.description}</p>
+              <div className="flex items-center flex-wrap gap-3 sm:gap-5 text-sm text-white/70">
                 <span className="flex items-center gap-1.5">
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 19.5A2.5 2.5 0 016.5 17H20" /><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z" /></svg>
                   {course.total_modules} modules
@@ -193,12 +193,12 @@ export default async function CourseDetailPage({ params }: PageProps) {
             {isEnrolled ? (
               <div className="flex flex-col items-center shrink-0 bg-white/5 rounded-xl px-5 py-4">
                 <p className="text-2xl font-black text-white">{progressPct}%</p>
-                <p className="text-[10px] text-slate-500 uppercase tracking-wider font-bold">Complete</p>
+                <p className="text-[10px] text-white/60 uppercase tracking-wider font-bold">Complete</p>
                 <div className="w-20 h-1.5 rounded-full bg-white/10 mt-2 overflow-hidden">
                   <div className="h-full rounded-full" style={{ width: `${progressPct}%`, background: course.color }} />
                 </div>
                 <Link href={`/courses/${slug}/reassess`}
-                  className="mt-3 text-[11px] text-slate-500 hover:text-white font-medium transition-colors flex items-center gap-1">
+                  className="mt-3 text-[11px] text-white/60 hover:text-white font-medium transition-colors flex items-center gap-1">
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
                     <path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z" /><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z" />
                   </svg>

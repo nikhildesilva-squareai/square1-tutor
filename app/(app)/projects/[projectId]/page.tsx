@@ -53,15 +53,15 @@ export default async function ProjectBriefPage({ params }: PageProps) {
   return (
     <div className="min-h-full bg-surface-soft">
       {/* ── Dark hero ─────────────────────────────────────────────────── */}
-      <div className="bg-[#0A0A0A] border-b border-white/10">
+      <div className="bg-[linear-gradient(135deg,#0056CE_0%,#0b3b97_50%,#1e1b4b_100%)] border-b border-white/10">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8 sm:py-10">
           {/* Breadcrumb */}
           <div className="flex items-center gap-2 text-xs mb-6">
-            <Link href="/projects" className="text-slate-500 hover:text-white transition-colors">Projects</Link>
-            <span className="text-slate-700">/</span>
-            <Link href={`/courses/${course?.slug}`} className="text-slate-500 hover:text-white transition-colors">{course?.title}</Link>
-            <span className="text-slate-700">/</span>
-            <span className="text-slate-300">{project.title}</span>
+            <Link href="/projects" className="text-white/60 hover:text-white transition-colors">Projects</Link>
+            <span className="text-white/30">/</span>
+            <Link href={`/courses/${course?.slug}`} className="text-white/60 hover:text-white transition-colors">{course?.title}</Link>
+            <span className="text-white/30">/</span>
+            <span className="text-white/90">{project.title}</span>
           </div>
 
           {/* Title + badges */}
@@ -78,7 +78,7 @@ export default async function ProjectBriefPage({ params }: PageProps) {
           </div>
 
           {/* Meta row */}
-          <div className="flex items-center gap-5 text-xs text-slate-500 flex-wrap">
+          <div className="flex items-center gap-5 text-xs text-white/70 flex-wrap">
             <span className="flex items-center gap-1.5">
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" /></svg>
               {project.estimated_hours}h estimated
@@ -238,13 +238,13 @@ export default async function ProjectBriefPage({ params }: PageProps) {
             {project.starter_repo_url && (
               <div className="mb-5">
                 <a href={`${project.starter_repo_url}/generate`} target="_blank" rel="noopener noreferrer"
-                  className="flex items-center gap-3 px-4 py-3.5 rounded-xl bg-[#0A0A0A] hover:bg-[#161616] transition-all mb-3">
+                  className="flex items-center gap-3 px-4 py-3.5 rounded-xl bg-brand hover:bg-brand/90 transition-all mb-3">
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="#fff" className="shrink-0"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.44 9.8 8.21 11.39.6.11.82-.26.82-.58 0-.29-.01-1.04-.02-2.05-3.34.73-4.04-1.61-4.04-1.61C4.42 17.92 3.63 17.5 3.63 17.5c-1.09-.74.08-.73.08-.73 1.21.09 1.85 1.24 1.85 1.24 1.07 1.84 2.81 1.31 3.49 1 .11-.78.42-1.31.76-1.61-2.66-.3-5.47-1.33-5.47-5.92 0-1.31.47-2.38 1.24-3.22-.13-.3-.54-1.52.12-3.17 0 0 1-.32 3.3 1.23A11.5 11.5 0 0112 5.8c1.02.01 2.04.14 3 .4 2.29-1.55 3.3-1.23 3.3-1.23.66 1.65.25 2.87.12 3.17.77.84 1.24 1.91 1.24 3.22 0 4.6-2.81 5.62-5.49 5.92.43.37.82 1.1.82 2.21 0 1.6-.02 2.89-.02 3.28 0 .32.22.7.83.58A12 12 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
                   <div className="flex-1">
                     <p className="text-sm font-semibold text-white">Use this template</p>
-                    <p className="text-[10px] text-slate-500">Creates a new repo from our starter (code + dataset)</p>
+                    <p className="text-[10px] text-white/70">Creates a new repo from our starter (code + dataset)</p>
                   </div>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#64748B" strokeWidth="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6" /><polyline points="15 3 21 3 21 9" /><line x1="10" y1="14" x2="21" y2="3" /></svg>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.7)" strokeWidth="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6" /><polyline points="15 3 21 3 21 9" /><line x1="10" y1="14" x2="21" y2="3" /></svg>
                 </a>
                 <div className="rounded-xl bg-slate-950 px-4 py-3">
                   <p className="text-[9px] text-slate-500 uppercase tracking-wider font-bold mb-1.5">Or clone directly</p>
