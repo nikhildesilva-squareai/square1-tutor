@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
-import { callAI } from "@/lib/ai/budget";
+import Anthropic from "@anthropic-ai/sdk";
+import { callAI, BudgetExceededError } from "@/lib/ai/budget";
 import { rateLimitAI } from "@/lib/rate-limit";
 
 const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -48,164 +49,184 @@ interface QuestionResult {
   topicUnderstanding: string | null;
 }
 
-/* ── Grade short answer questions with Claude ──────────────────────────── */
-async function gradeShortAnswer(
-  studentId: string,
-  question: Question,
-  answer: string,
-  subject: string
-): Promise<{
+interface Grade {
   marks: number;
   feedback: string;
-  breakdown: Array<{ criterion: string; awarded: number; reasoning: string }>;
-  topicUnderstanding: string;
-}> {
-  const result = await callAI(studentId, {
-    max_tokens: 1024,
-    messages: [{
-      role: "user",
-      content: `You are an expert examiner for ${subject}. Grade this answer strictly.
-
-Question (${question.marks} marks):
-${question.stem_md}
-
-${question.mark_scheme_md ? `Mark scheme:\n${question.mark_scheme_md}` : ""}
-
-Student's answer:
-${answer || "(no answer provided)"}
-
-Rules:
-- Award marks ONLY for points in the mark scheme
-- Be fair but rigorous
-- Provide specific, actionable feedback
-
-Return JSON only:
-{
-  "marks_awarded": number,
-  "max_marks": ${question.marks},
-  "breakdown": [{ "criterion": "...", "awarded": 0 or 1, "reasoning": "..." }],
-  "feedback": "2-3 sentences: what was right, what was missing, how to improve",
-  "topic_understanding": "strong" | "partial" | "weak"
-}`,
-    }],
-  });
-
-  try {
-    const jsonMatch = result.text.match(/\{[\s\S]*\}/);
-    if (!jsonMatch) throw new Error("No JSON");
-    const parsed = JSON.parse(jsonMatch[0]);
-    return {
-      marks: Math.min(Math.max(0, Math.round(parsed.marks_awarded ?? 0)), question.marks),
-      feedback: parsed.feedback ?? "No feedback available.",
-      breakdown: parsed.breakdown ?? [],
-      topicUnderstanding: parsed.topic_understanding ?? "partial",
-    };
-  } catch {
-    const hasAnswer = answer.trim().split(/\s+/).length > 10;
-    return {
-      marks: hasAnswer ? Math.floor(question.marks * 0.5) : 0,
-      feedback: "Could not automatically grade - partial credit awarded where answer was provided.",
-      breakdown: [],
-      topicUnderstanding: "partial",
-    };
-  }
-}
-
-/* ── Grade code questions with Claude ──────────────────────────────────── */
-async function gradeCode(
-  studentId: string,
-  question: Question,
-  code: string,
-  subject: string
-): Promise<{
-  marks: number;
-  feedback: string;
-  breakdown: Array<{ criterion: string; awarded: number; reasoning: string }>;
-  topicUnderstanding: string;
+  breakdown: Array<{ criterion: string; awarded: number; reasoning: string }> | null;
+  topicUnderstanding: string | null;
   improvedCode: string | null;
-}> {
-  const language = question.language ?? "Python";
+}
 
-  const result = await callAI(studentId, {
-    max_tokens: 2048,
-    messages: [{
-      role: "user",
-      content: `You are a senior engineer reviewing code for ${subject}. Grade this submission.
-
-Question (${question.marks} marks):
-${question.stem_md}
-
-${question.mark_scheme_md ? `Mark scheme:\n${question.mark_scheme_md}` : ""}
-
-Language: ${language}
-
-Student's code:
-\`\`\`${language.toLowerCase()}
-${code || "// No code submitted"}
-\`\`\`
-
-Evaluate:
-1. Correctness - does it solve the problem?
-2. Code quality - clean, readable, well-structured?
-3. Edge cases - does it handle errors/edge cases?
-4. Best practices - follows conventions for ${language}?
-
-Return JSON only:
-{
-  "marks_awarded": number,
-  "max_marks": ${question.marks},
-  "correctness_score": 0 to 3,
-  "quality_score": 0 to 2,
-  "edge_cases_score": 0 to 2,
-  "best_practices_score": 0 to 1,
-  "issues": ["issue 1", "issue 2"],
-  "feedback": "What's good, what needs fixing, and how",
-  "improved_code": "the corrected version of their code"
-}`,
-    }],
-  });
-
+/** Pull the first JSON array out of an LLM response. */
+function extractJsonArray(text: string): unknown[] | null {
+  const match = text.match(/\[[\s\S]*\]/);
+  if (!match) return null;
   try {
-    const jsonMatch = result.text.match(/\{[\s\S]*\}/);
-    if (!jsonMatch) throw new Error("No JSON");
-    const parsed = JSON.parse(jsonMatch[0]);
-    const marks = Math.min(Math.max(0, Math.round(parsed.marks_awarded ?? 0)), question.marks);
-    const breakdown = [
-      { criterion: "Correctness", awarded: parsed.correctness_score ?? 0, reasoning: "" },
-      { criterion: "Code quality", awarded: parsed.quality_score ?? 0, reasoning: "" },
-      { criterion: "Edge cases", awarded: parsed.edge_cases_score ?? 0, reasoning: "" },
-      { criterion: "Best practices", awarded: parsed.best_practices_score ?? 0, reasoning: "" },
-    ];
-    if (parsed.issues?.length) {
-      breakdown.forEach((b, i) => {
-        b.reasoning = parsed.issues[i] ?? "";
-      });
-    }
-    return {
-      marks,
-      feedback: parsed.feedback ?? "No feedback available.",
-      breakdown,
-      topicUnderstanding: marks >= question.marks * 0.7 ? "strong" : marks >= question.marks * 0.4 ? "partial" : "weak",
-      improvedCode: parsed.improved_code ?? null,
-    };
+    const parsed = JSON.parse(match[0]);
+    return Array.isArray(parsed) ? parsed : null;
   } catch {
-    const hasCode = code.trim().length > 20;
-    return {
-      marks: hasCode ? Math.floor(question.marks * 0.5) : 0,
-      feedback: "Could not automatically grade - partial credit awarded where code was provided.",
-      breakdown: [],
-      topicUnderstanding: "partial",
-      improvedCode: null,
-    };
+    return null;
   }
 }
 
-/* ── Generate AI recommendations ───────────────────────────────────────── */
+/** Heuristic fallback when the AI grade for a question is missing/unparseable. */
+function fallbackGrade(q: Question, answer: string, isCode: boolean): Grade {
+  const hasContent = isCode ? answer.trim().length > 20 : answer.trim().split(/\s+/).length > 10;
+  return {
+    marks: hasContent ? Math.floor(q.marks * 0.5) : 0,
+    feedback: "Could not automatically grade this answer — partial credit awarded where a response was provided.",
+    breakdown: null,
+    topicUnderstanding: "partial",
+    improvedCode: null,
+  };
+}
+
+/* ── Batch-grade all short-answer questions in ONE AI call ─────────────────
+ * Previously this was one Claude call PER question. On a low org rate limit
+ * (e.g. 5 req/min) a 12-question paper instantly exceeded the limit and the
+ * whole grade failed with a 429. Batching keeps the entire paper to ~3 calls. */
+async function gradeShortAnswers(
+  studentId: string,
+  questions: Question[],
+  responseMap: Map<string, Response>,
+  subject: string,
+): Promise<Map<string, Grade>> {
+  const out = new Map<string, Grade>();
+  if (questions.length === 0) return out;
+
+  const block = questions.map((q) => {
+    const ans = responseMap.get(q.id)?.response_text ?? "";
+    return `[#${q.number}] (${q.marks} marks)
+Question: ${q.stem_md}
+${q.mark_scheme_md ? `Mark scheme: ${q.mark_scheme_md}` : "Mark scheme: (use expert judgement)"}
+Student's answer: ${ans || "(no answer provided)"}`;
+  }).join("\n\n---\n\n");
+
+  const result = await callAI(studentId, {
+    max_tokens: 6000,
+    messages: [{
+      role: "user",
+      content: `You are an expert examiner for ${subject}. Grade each answer strictly against its mark scheme. Award marks only for points in the mark scheme; be fair but rigorous.
+
+Return ONLY a JSON array — one object per question, in the same order — and nothing else:
+[
+  {
+    "number": <the #number>,
+    "marks_awarded": <integer, 0..max>,
+    "max_marks": <max for that question>,
+    "breakdown": [{ "criterion": "...", "awarded": 0 or 1, "reasoning": "..." }],
+    "feedback": "1-2 sentences: what was right, what was missing, how to improve",
+    "topic_understanding": "strong" | "partial" | "weak"
+  }
+]
+
+Questions:
+${block}`,
+    }],
+  });
+
+  const parsed = extractJsonArray(result.text) ?? [];
+  const byNumber = new Map<number, Record<string, unknown>>();
+  for (const item of parsed) {
+    if (item && typeof item === "object" && "number" in item) {
+      byNumber.set(Number((item as { number: unknown }).number), item as Record<string, unknown>);
+    }
+  }
+
+  for (const q of questions) {
+    const r = byNumber.get(q.number);
+    if (!r) {
+      out.set(q.id, fallbackGrade(q, responseMap.get(q.id)?.response_text ?? "", false));
+      continue;
+    }
+    out.set(q.id, {
+      marks: Math.min(Math.max(0, Math.round(Number(r.marks_awarded ?? 0))), q.marks),
+      feedback: typeof r.feedback === "string" ? r.feedback : "No feedback available.",
+      breakdown: Array.isArray(r.breakdown) ? (r.breakdown as Grade["breakdown"]) : [],
+      topicUnderstanding: typeof r.topic_understanding === "string" ? r.topic_understanding : "partial",
+      improvedCode: null,
+    });
+  }
+  return out;
+}
+
+/* ── Batch-grade all code questions in ONE AI call ─────────────────────────── */
+async function gradeCodeAnswers(
+  studentId: string,
+  questions: Question[],
+  responseMap: Map<string, Response>,
+  subject: string,
+): Promise<Map<string, Grade>> {
+  const out = new Map<string, Grade>();
+  if (questions.length === 0) return out;
+
+  const block = questions.map((q) => {
+    const code = responseMap.get(q.id)?.code_response ?? "";
+    const lang = q.language ?? "Python";
+    return `[#${q.number}] (${q.marks} marks, ${lang})
+Question: ${q.stem_md}
+${q.mark_scheme_md ? `Mark scheme: ${q.mark_scheme_md}` : ""}
+Student's code:
+\`\`\`
+${code || "// No code submitted"}
+\`\`\``;
+  }).join("\n\n---\n\n");
+
+  const result = await callAI(studentId, {
+    max_tokens: 8000,
+    messages: [{
+      role: "user",
+      content: `You are a senior engineer grading code submissions for ${subject}. For each, judge correctness, code quality, edge cases, and best practices.
+
+Return ONLY a JSON array — one object per question, in the same order — and nothing else:
+[
+  {
+    "number": <the #number>,
+    "marks_awarded": <integer, 0..max>,
+    "max_marks": <max for that question>,
+    "breakdown": [{ "criterion": "Correctness|Code quality|Edge cases|Best practices", "awarded": <int>, "reasoning": "..." }],
+    "feedback": "what's good, what needs fixing, and how",
+    "improved_code": "a concise corrected version (key fix only, <= 25 lines)"
+  }
+]
+
+Questions:
+${block}`,
+    }],
+  });
+
+  const parsed = extractJsonArray(result.text) ?? [];
+  const byNumber = new Map<number, Record<string, unknown>>();
+  for (const item of parsed) {
+    if (item && typeof item === "object" && "number" in item) {
+      byNumber.set(Number((item as { number: unknown }).number), item as Record<string, unknown>);
+    }
+  }
+
+  for (const q of questions) {
+    const r = byNumber.get(q.number);
+    if (!r) {
+      out.set(q.id, fallbackGrade(q, responseMap.get(q.id)?.code_response ?? "", true));
+      continue;
+    }
+    const marks = Math.min(Math.max(0, Math.round(Number(r.marks_awarded ?? 0))), q.marks);
+    out.set(q.id, {
+      marks,
+      feedback: typeof r.feedback === "string" ? r.feedback : "No feedback available.",
+      breakdown: Array.isArray(r.breakdown) ? (r.breakdown as Grade["breakdown"]) : [],
+      topicUnderstanding: marks >= q.marks * 0.7 ? "strong" : marks >= q.marks * 0.4 ? "partial" : "weak",
+      improvedCode: typeof r.improved_code === "string" ? r.improved_code : null,
+    });
+  }
+  return out;
+}
+
+/* ── Generate AI recommendations (single call) ─────────────────────────────── */
 async function generateRecommendations(
   studentId: string,
   level: string,
   topicMastery: Array<{ topic: string; percentage: number }>,
-  subject: string
+  subject: string,
 ): Promise<string> {
   const sorted = [...topicMastery].sort((a, b) => a.percentage - b.percentage);
   const weakTopics = sorted.slice(0, 3).map((t) => `${t.topic} (${t.percentage}%)`).join(", ");
@@ -422,15 +443,9 @@ export async function POST(
     }
 
     /* ── Grade all questions ───────────────────────────────────────────── */
-    const allGrades: Record<string, {
-      marks: number;
-      feedback: string;
-      breakdown: Array<{ criterion: string; awarded: number; reasoning: string }> | null;
-      topicUnderstanding: string | null;
-      improvedCode: string | null;
-    }> = {};
+    const allGrades: Record<string, Grade> = {};
 
-    // MCQ - auto-grade (no AI needed)
+    // MCQ — auto-grade (no AI needed)
     for (const q of questions.filter((q) => q.type === "mcq")) {
       const resp = responseMap.get(q.id);
       const selected = (resp?.selected_option ?? "").trim().toLowerCase();
@@ -445,53 +460,32 @@ export async function POST(
       };
     }
 
-    // Short-answer + code questions each need a Claude call. Grading them one
-    // at a time made a 20-question paper take ~2 minutes; run them concurrently
-    // (bounded) so the whole paper grades in seconds. Each grader catches its
-    // own errors and returns a fallback, so no task rejects.
-    const aiTasks: Array<() => Promise<void>> = [];
+    // Free-response — TWO batched AI calls (all short answers in one, all code in
+    // one) instead of one-per-question. Cuts a 20-question paper from ~13 AI calls
+    // to 2, keeping us well under the org rate limit and avoiding the function
+    // timeout. Each batch catches its own error and falls back per-question.
+    const shortQs = questions.filter((q) => q.type === "short_answer");
+    const codeQs = questions.filter((q) => q.type === "code");
 
-    for (const q of questions.filter((q) => q.type === "short_answer")) {
-      aiTasks.push(async () => {
-        const resp = responseMap.get(q.id);
-        const result = await gradeShortAnswer(student.id, q, resp?.response_text ?? "", subject);
-        allGrades[q.id] = {
-          marks: result.marks,
-          feedback: result.feedback,
-          breakdown: result.breakdown,
-          topicUnderstanding: result.topicUnderstanding,
-          improvedCode: null,
-        };
-      });
-    }
+    const [shortGrades, codeGrades] = await Promise.all([
+      gradeShortAnswers(student.id, shortQs, responseMap, subject).catch((e) => {
+        console.error("[grade] short-answer batch failed:", e);
+        return new Map(shortQs.map((q) => [q.id, fallbackGrade(q, responseMap.get(q.id)?.response_text ?? "", false)]));
+      }),
+      gradeCodeAnswers(student.id, codeQs, responseMap, subject).catch((e) => {
+        console.error("[grade] code batch failed:", e);
+        return new Map(codeQs.map((q) => [q.id, fallbackGrade(q, responseMap.get(q.id)?.code_response ?? "", true)]));
+      }),
+    ]);
 
-    for (const q of questions.filter((q) => q.type === "code")) {
-      aiTasks.push(async () => {
-        const resp = responseMap.get(q.id);
-        const result = await gradeCode(student.id, q, resp?.code_response ?? "", subject);
-        allGrades[q.id] = {
-          marks: result.marks,
-          feedback: result.feedback,
-          breakdown: result.breakdown,
-          topicUnderstanding: result.topicUnderstanding,
-          improvedCode: result.improvedCode,
-        };
-      });
-    }
-
-    // Bounded concurrency keeps us comfortably under Anthropic's rate limits
-    // while still grading in parallel.
-    const GRADE_CONCURRENCY = 8;
-    for (let i = 0; i < aiTasks.length; i += GRADE_CONCURRENCY) {
-      await Promise.all(aiTasks.slice(i, i + GRADE_CONCURRENCY).map((task) => task()));
-    }
+    for (const [id, g] of shortGrades) allGrades[id] = g;
+    for (const [id, g] of codeGrades) allGrades[id] = g;
 
     /* ── Calculate scores and topic mastery ─────────────────────────────── */
     let totalScore = 0;
     let totalMax = 0;
     const topicAccum: Record<string, TopicAccum> = {};
 
-    // Score by question type
     let mcqScore = 0, mcqMax = 0;
     let shortScore = 0, shortMax = 0;
     let codeScore = 0, codeMax = 0;
@@ -551,11 +545,16 @@ export async function POST(
       questionCount,
     }));
 
-    /* ── Generate AI recommendations ───────────────────────────────────── */
-    const recommendationsMd = await generateRecommendations(student.id, level, topicMastery, subject);
+    /* ── Generate AI recommendations (1 call) ──────────────────────────── */
+    let recommendationsMd = "";
+    try {
+      recommendationsMd = await generateRecommendations(student.id, level, topicMastery, subject);
+    } catch (e) {
+      console.error("[grade] recommendations failed (non-fatal):", e);
+      recommendationsMd = "Your personalised study plan will appear here shortly. Focus first on your lowest-scoring topics above.";
+    }
 
     /* ── Save skill report ─────────────────────────────────────────────── */
-    // Compute weak + strong topic arrays
     const weakTopics = Object.entries(topicAccum)
       .filter(([, v]) => v.total > 0 && (v.correct / v.total) < 0.5)
       .map(([k]) => k);
@@ -590,7 +589,6 @@ export async function POST(
       questions.map((q) => {
         const grade = allGrades[q.id];
         if (!grade) return Promise.resolve();
-        // Store structured data as JSON in ai_feedback
         const feedbackData = JSON.stringify({
           feedback: grade.feedback,
           breakdown: grade.breakdown,
@@ -640,6 +638,26 @@ export async function POST(
       questionResults,
     });
   } catch (err) {
+    if (err instanceof BudgetExceededError) {
+      return NextResponse.json(
+        { error: err.message, reply: err.message },
+        { status: 429 },
+      );
+    }
+    // Anthropic rate limit / overload — surface an actionable, retryable message
+    // instead of a generic 500 so the UI can tell the learner to try again.
+    if (err instanceof Anthropic.RateLimitError || (err as { status?: number })?.status === 429) {
+      return NextResponse.json(
+        { error: "Our AI grader is briefly at capacity. Please wait a minute, then reopen your results to finish grading." },
+        { status: 429 },
+      );
+    }
+    if (err instanceof Anthropic.APIError && (err.status === 529 || err.status === 503)) {
+      return NextResponse.json(
+        { error: "The AI grader is momentarily overloaded. Please try again in a minute." },
+        { status: 503 },
+      );
+    }
     console.error("[grade]", err);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }

@@ -25,11 +25,11 @@ const FALLBACK_BUDGET_USD = 1.2;
 
 // Per-token pricing by model
 const PRICING = {
-  "claude-sonnet-4-5": { input: 3 / 1_000_000, output: 15 / 1_000_000 },
+  "claude-sonnet-4-6": { input: 3 / 1_000_000, output: 15 / 1_000_000 },
   "claude-haiku-4-5-20251001": { input: 1 / 1_000_000, output: 5 / 1_000_000 },
 } as const;
 
-const MODEL_SONNET = "claude-sonnet-4-5";
+const MODEL_SONNET = "claude-sonnet-4-6";
 const MODEL_HAIKU = "claude-haiku-4-5-20251001";
 
 // Once a student's wallet is spent we DON'T cut them off — we degrade to the
@@ -225,8 +225,11 @@ export async function callAI(
 
   const model = overBudget ? MODEL_HAIKU : MODEL_SONNET;
 
-  // 2. Make the API call
-  const client = new Anthropic();
+  // 2. Make the API call. maxRetries lets the SDK ride out transient 429/529s
+  // with exponential backoff that honours the `retry-after` header — important
+  // on a low org rate limit where bursts (e.g. assessment grading) can briefly
+  // exceed the per-minute cap.
+  const client = new Anthropic({ maxRetries: 5 });
   const response = await client.messages.create({
     model,
     max_tokens: params.max_tokens ?? 1024,
