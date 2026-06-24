@@ -4,6 +4,7 @@ import { SidebarNav } from "@/components/sidebar-nav";
 import { MobileNav } from "@/components/MobileNav";
 import { BottomNav } from "@/components/BottomNav";
 import { QuickNotePanel } from "@/components/QuickNotePanel";
+import { FeedbackWidget } from "@/components/FeedbackWidget";
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
   const supabase = await createClient();
@@ -36,6 +37,9 @@ export default async function AppLayout({ children }: { children: React.ReactNod
 
       {/* Floating quick-note panel — available everywhere */}
       <QuickNotePanel />
+
+      {/* Persistent in-app feedback launcher (bottom-left) */}
+      <FeedbackWidget />
     </div>
   );
 }
