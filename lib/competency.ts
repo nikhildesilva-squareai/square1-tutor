@@ -40,12 +40,14 @@ export function levelFor(pct: number): string {
 export const COMPETENCY: Record<string, CompetencyConfig> = {
   "generative-ai": {
     domains: [
-      { name: "LLM Foundations", tags: ["llm-basics", "llm-architecture", "transformers", "tokenisation", "model-types", "temperature"] },
+      { name: "LLM Fundamentals", tags: ["llm-basics", "model-types", "temperature"] },
+      { name: "Architecture & Transformers", tags: ["llm-architecture", "transformers", "tokenisation"] },
       { name: "Prompt Engineering", tags: ["prompt-engineering", "few-shot", "zero-shot", "system-prompts", "conversation"] },
       { name: "RAG & Retrieval", tags: ["rag", "retrieval", "embeddings", "semantic-search", "vector-db"] },
       { name: "Agents & Tool Use", tags: ["agents", "agentic-loop", "tool-use"] },
       { name: "Safety & Alignment", tags: ["ai-safety", "llm-safety", "alignment", "rlhf", "hallucination", "security"] },
-      { name: "Production & Eng", tags: ["anthropic-api", "production", "streaming", "python", "typescript"] },
+      { name: "Production & Deployment", tags: ["anthropic-api", "production", "streaming"] },
+      { name: "Programming (Python/TS)", tags: ["python", "typescript"] },
     ],
     roles: [
       { min: 0, label: "Exploring Generative AI" },

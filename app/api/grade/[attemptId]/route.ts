@@ -399,12 +399,22 @@ export async function POST(
           cohortPct = await computeCohortPercentile(supabase, existingAttempt.paper_id, Number(existingAttempt.percentage) || 0);
         }
 
+        // Recompute per-type scores from stored results so "Score by Question
+        // Type" renders on re-opened reports, not only fresh grades.
+        let mcqS = 0, mcqM = 0, shortS = 0, shortM = 0, codeS = 0, codeM = 0;
+        for (const qr of qResults) {
+          if (qr.type === "mcq") { mcqS += qr.marksAwarded; mcqM += qr.marksTotal; }
+          else if (qr.type === "code") { codeS += qr.marksAwarded; codeM += qr.marksTotal; }
+          else { shortS += qr.marksAwarded; shortM += qr.marksTotal; }
+        }
+
         return NextResponse.json({
           reportId: existingReport.id,
           level: existingAttempt.level_determined,
           score: existingAttempt.score,
           maxScore: existingAttempt.max_score,
           percentage: existingAttempt.percentage,
+          mcqScore: mcqS, mcqMax: mcqM, shortScore: shortS, shortMax: shortM, codeScore: codeS, codeMax: codeM,
           topicMastery: existingReport.topic_mastery_json ?? [],
           domainMastery,
           roleReadiness: roleLabel,

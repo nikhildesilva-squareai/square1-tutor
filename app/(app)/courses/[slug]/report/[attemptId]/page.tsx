@@ -682,16 +682,16 @@ export default function ReportPage({ params }: PageProps) {
               </div>
               <div className="space-y-3">
                 {strengths.map((t) => (
-                  <div key={t.label}>
-                    <div className="flex items-center justify-between mb-1 gap-2">
-                      <span className="text-sm font-medium text-ink truncate">{t.label}</span>
-                      <div className="flex items-center gap-2 shrink-0">
-                        <span className="text-[9px] font-bold uppercase tracking-wider text-success/80">{levelFor(t.percentage)}</span>
-                        <span className="text-xs font-bold text-success tabular-nums">{t.percentage}%</span>
-                      </div>
+                  <div key={t.label} className="rounded-xl bg-surface border border-success/15 p-3">
+                    <div className="flex items-center justify-between mb-2 gap-2">
+                      <span className="text-sm font-semibold text-ink truncate">{t.label}</span>
+                      <span className="text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-success/15 text-success shrink-0">{levelFor(t.percentage)}</span>
                     </div>
-                    <div className="w-full h-2 rounded-full overflow-hidden bg-success/10">
-                      <div className="h-full rounded-full bg-success transition-all duration-1000" style={{ width: `${t.percentage}%` }} />
+                    <div className="flex items-center gap-2.5">
+                      <div className="flex-1 h-2.5 rounded-full overflow-hidden bg-success/10">
+                        <div className="h-full rounded-full bg-success transition-all duration-1000" style={{ width: `${t.percentage}%` }} />
+                      </div>
+                      <span className="text-base font-black text-success tabular-nums w-11 text-right">{t.percentage}%</span>
                     </div>
                   </div>
                 ))}
@@ -710,16 +710,16 @@ export default function ReportPage({ params }: PageProps) {
               </div>
               <div className="space-y-3">
                 {gaps.map((t) => (
-                  <div key={t.label}>
-                    <div className="flex items-center justify-between mb-1 gap-2">
-                      <span className="text-sm font-medium text-ink truncate">{t.label}</span>
-                      <div className="flex items-center gap-2 shrink-0">
-                        <span className="text-[9px] font-bold uppercase tracking-wider text-error/80">{levelFor(t.percentage)}</span>
-                        <span className="text-xs font-bold text-error tabular-nums">{t.percentage}%</span>
-                      </div>
+                  <div key={t.label} className="rounded-xl bg-surface border border-error/15 p-3">
+                    <div className="flex items-center justify-between mb-2 gap-2">
+                      <span className="text-sm font-semibold text-ink truncate">{t.label}</span>
+                      <span className="text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-error/15 text-error shrink-0">{levelFor(t.percentage)}</span>
                     </div>
-                    <div className="w-full h-2 rounded-full overflow-hidden bg-error/10">
-                      <div className="h-full rounded-full bg-error transition-all duration-1000" style={{ width: `${t.percentage}%` }} />
+                    <div className="flex items-center gap-2.5">
+                      <div className="flex-1 h-2.5 rounded-full overflow-hidden bg-error/10">
+                        <div className="h-full rounded-full bg-error transition-all duration-1000" style={{ width: `${t.percentage}%` }} />
+                      </div>
+                      <span className="text-base font-black text-error tabular-nums w-11 text-right">{t.percentage}%</span>
                     </div>
                   </div>
                 ))}
@@ -745,7 +745,7 @@ export default function ReportPage({ params }: PageProps) {
               </div>
               <h2 className="text-2xl sm:text-3xl font-black text-white mb-3 leading-tight">
                 {gaps[0]
-                  ? <>Close <span className="underline decoration-white/40 decoration-2 underline-offset-4">{gaps[0].label}</span> — and level up faster</>
+                  ? <>Turn <span className="underline decoration-white/40 decoration-2 underline-offset-4">{gaps[0].label}</span> into a strength</>
                   : <>Turn this score into real, hireable skill</>}
               </h2>
               <p className="text-sm text-blue-100/90 mb-7 max-w-md mx-auto leading-relaxed">
@@ -780,11 +780,11 @@ export default function ReportPage({ params }: PageProps) {
               <h2 className="text-xl sm:text-2xl font-black text-ink">Topic-by-topic heatmap</h2>
             </div>
 
-            {/* colour legend */}
-            <div className="flex items-center justify-center gap-3 sm:gap-4 mb-6 text-[11px] text-ink-muted flex-wrap">
-              <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded" style={{ background: "#19A65F" }} /> Strong 70%+</span>
-              <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded" style={{ background: "#E5B217" }} /> Developing 40–69%</span>
-              <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded" style={{ background: "#D93636" }} /> Gap &lt;40%</span>
+            {/* gradient legend 0 → 100 */}
+            <div className="flex items-center justify-center gap-3 mb-7">
+              <span className="text-[11px] font-semibold text-ink-muted">0%</span>
+              <div className="h-2.5 w-44 rounded-full" style={{ background: "linear-gradient(90deg, hsl(2,62%,46%), hsl(42,68%,47%), hsl(82,52%,42%), hsl(140,52%,38%))" }} />
+              <span className="text-[11px] font-semibold text-ink-muted">100%</span>
             </div>
 
             {(() => {
@@ -797,22 +797,20 @@ export default function ReportPage({ params }: PageProps) {
                 (groups[g] ||= []).push(t);
               }
               const order = cfg ? [...cfg.domains.map((d) => d.name), "Other topics"] : Object.keys(groups);
+              // continuous red → amber → green by score
+              const tile = (p: number) => `hsl(${Math.round(2 + p * 1.25)}, ${p >= 70 ? 52 : 62}%, ${p >= 55 ? 40 : 44}%)`;
               return (
-                <div className="space-y-5">
+                <div className="space-y-6">
                   {order.filter((g) => groups[g]?.length).map((g) => (
                     <div key={g}>
-                      {cfg && <p className="text-xs font-bold text-ink-secondary mb-2.5">{g}</p>}
-                      <div className="flex flex-wrap gap-2">
-                        {[...groups[g]].sort((a, b) => b.percentage - a.percentage).map((t) => {
-                          const c = t.percentage >= 70 ? "#19A65F" : t.percentage >= 40 ? "#E5B217" : "#D93636";
-                          const bg = t.percentage >= 70 ? "rgba(25,166,95,0.12)" : t.percentage >= 40 ? "rgba(229,178,23,0.12)" : "rgba(217,54,54,0.12)";
-                          return (
-                            <span key={t.topic} className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium" style={{ background: bg, color: c }}>
-                              {formatTopicName(t.topic)}
-                              <span className="font-bold tabular-nums">{t.percentage}%</span>
-                            </span>
-                          );
-                        })}
+                      {cfg && <p className="text-xs font-bold text-ink-secondary mb-2.5 flex items-center gap-2">{g}<span className="flex-1 h-px bg-border" /></p>}
+                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
+                        {[...groups[g]].sort((a, b) => b.percentage - a.percentage).map((t) => (
+                          <div key={t.topic} className="rounded-xl p-3 text-white shadow-sm" style={{ background: tile(t.percentage) }} title={`${formatTopicName(t.topic)} · ${t.percentage}%`}>
+                            <div className="text-lg font-black tabular-nums leading-none">{t.percentage}%</div>
+                            <div className="text-[11px] font-medium mt-1.5 leading-tight opacity-95 line-clamp-2">{formatTopicName(t.topic)}</div>
+                          </div>
+                        ))}
                       </div>
                     </div>
                   ))}
