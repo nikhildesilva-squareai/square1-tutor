@@ -57,6 +57,198 @@ export const COMPETENCY: Record<string, CompetencyConfig> = {
       { min: 90, label: "Senior GenAI Engineer" },
     ],
   },
+
+  "machine-learning": {
+    domains: [
+      { name: "ML Foundations", tags: ["fundamentals", "algorithms", "statistics"] },
+      { name: "Supervised Learning", tags: ["supervised-learning", "classification", "regression", "linear-models", "decision-trees"] },
+      { name: "Unsupervised Learning", tags: ["unsupervised", "clustering"] },
+      { name: "Feature Engineering & Data", tags: ["feature-engineering", "data-preprocessing", "visualisation"] },
+      { name: "Model Evaluation", tags: ["model-evaluation", "cross-validation", "metrics", "bias-variance"] },
+      { name: "Optimisation & Regularisation", tags: ["optimisation", "gradient-descent", "regularisation", "ensemble-methods"] },
+    ],
+    roles: [
+      { min: 0, label: "Exploring Machine Learning" },
+      { min: 40, label: "Junior ML Engineer" },
+      { min: 60, label: "ML Engineer" },
+      { min: 75, label: "Senior ML Engineer" },
+      { min: 90, label: "ML Specialist" },
+    ],
+  },
+
+  "data-science": {
+    domains: [
+      { name: "Statistics & Probability", tags: ["statistics", "probability"] },
+      { name: "Hypothesis Testing & Experiments", tags: ["hypothesis_testing", "a_b_testing"] },
+      { name: "Data Wrangling", tags: ["pandas", "sql"] },
+      { name: "Modelling", tags: ["regression"] },
+      { name: "Visualisation & Comms", tags: ["data_viz"] },
+    ],
+    roles: [
+      { min: 0, label: "Exploring Data Science" },
+      { min: 40, label: "Junior Data Analyst" },
+      { min: 60, label: "Data Analyst" },
+      { min: 75, label: "Data Scientist" },
+      { min: 90, label: "Senior Data Scientist" },
+    ],
+  },
+
+  "artificial-intelligence": {
+    domains: [
+      { name: "Search Algorithms", tags: ["A*", "BFS", "DFS", "graph traversal", "shortest path", "heuristics", "search algorithms", "backtracking"] },
+      { name: "Adversarial Search & Games", tags: ["adversarial search", "alpha-beta pruning", "minimax", "game tree"] },
+      { name: "Constraint Satisfaction", tags: ["CSP", "constraint satisfaction", "variable elimination"] },
+      { name: "Knowledge & Reasoning", tags: ["first-order logic", "knowledge representation", "STRIPS", "planning", "modelling"] },
+      { name: "Probabilistic Reasoning", tags: ["Bayesian networks", "probabilistic reasoning"] },
+      { name: "Reinforcement Learning", tags: ["Q-learning", "reinforcement learning", "exploration", "grid world"] },
+    ],
+    roles: [
+      { min: 0, label: "Exploring AI" },
+      { min: 40, label: "AI Foundations" },
+      { min: 60, label: "AI Practitioner" },
+      { min: 75, label: "Advanced AI Engineer" },
+      { min: 90, label: "AI Specialist" },
+    ],
+  },
+
+  "computer-vision": {
+    domains: [
+      { name: "Image Processing", tags: ["image-processing", "filters", "preprocessing", "color-spaces", "color-analysis", "histograms"] },
+      { name: "Feature Detection", tags: ["edge-detection", "canny", "contours", "feature-detection", "descriptors"] },
+      { name: "CNN Architectures", tags: ["cnn", "convolution", "pooling", "architecture", "architectures"] },
+      { name: "Detection & Segmentation", tags: ["object-detection", "object-counting", "segmentation", "semantic", "yolo"] },
+      { name: "Training & Transfer Learning", tags: ["training", "data-augmentation", "transfer-learning", "classification", "metrics", "inference"] },
+      { name: "Motion & Video", tags: ["optical-flow", "video-analysis"] },
+    ],
+    roles: [
+      { min: 0, label: "Exploring Computer Vision" },
+      { min: 40, label: "Junior CV Engineer" },
+      { min: 60, label: "Computer Vision Engineer" },
+      { min: 75, label: "Senior CV Engineer" },
+      { min: 90, label: "CV Research Engineer" },
+    ],
+  },
+
+  "cybersecurity": {
+    domains: [
+      { name: "Security Fundamentals", tags: ["fundamentals", "cia-triad", "principles", "best-practices", "process"] },
+      { name: "Cryptography", tags: ["cryptography", "encryption", "classical-ciphers"] },
+      { name: "Access & Authentication", tags: ["access-control", "authentication"] },
+      { name: "Network Security", tags: ["network-security", "firewalls", "protocols", "dos"] },
+      { name: "Threats & Vulnerabilities", tags: ["threats", "vulnerabilities", "owasp", "web-security", "social-engineering"] },
+      { name: "Offensive & Response", tags: ["penetration-testing", "incident-response", "log-analysis"] },
+    ],
+    roles: [
+      { min: 0, label: "Exploring Cybersecurity" },
+      { min: 40, label: "Junior Security Analyst" },
+      { min: 60, label: "Security Analyst" },
+      { min: 75, label: "Senior Security Engineer" },
+      { min: 90, label: "Security Specialist" },
+    ],
+  },
+
+  "devops-engineering": {
+    domains: [
+      { name: "Fundamentals & Linux", tags: ["linux", "git"] },
+      { name: "Containers & Orchestration", tags: ["docker", "kubernetes"] },
+      { name: "CI/CD", tags: ["ci_cd"] },
+      { name: "Cloud & IaC", tags: ["cloud_aws", "terraform"] },
+      { name: "Observability", tags: ["monitoring"] },
+    ],
+    roles: [
+      { min: 0, label: "Exploring DevOps" },
+      { min: 40, label: "Junior DevOps Engineer" },
+      { min: 60, label: "DevOps Engineer" },
+      { min: 75, label: "Senior DevOps / SRE" },
+      { min: 90, label: "Platform Lead" },
+    ],
+  },
+
+  "fullstack-development": {
+    domains: [
+      { name: "Frontend (React/Next)", tags: ["react_nextjs"] },
+      { name: "Backend (Node/APIs)", tags: ["nodejs", "rest_apis"] },
+      { name: "Realtime", tags: ["websockets"] },
+      { name: "Data & Auth", tags: ["sql_postgresql", "jwt_oauth_auth"] },
+      { name: "Deployment", tags: ["deployment"] },
+    ],
+    roles: [
+      { min: 0, label: "Exploring Web Dev" },
+      { min: 40, label: "Junior Full-Stack Developer" },
+      { min: 60, label: "Full-Stack Developer" },
+      { min: 75, label: "Senior Full-Stack Engineer" },
+      { min: 90, label: "Lead Engineer" },
+    ],
+  },
+
+  "game-development": {
+    domains: [
+      { name: "Game Loop & Input", tags: ["game_loop", "input"] },
+      { name: "Rendering & Sprites", tags: ["2d_rendering", "sprites"] },
+      { name: "Physics & Collision", tags: ["physics_collision"] },
+      { name: "Pathfinding AI", tags: ["game_ai_astar"] },
+      { name: "Behaviour AI", tags: ["game_ai_state_machines"] },
+    ],
+    roles: [
+      { min: 0, label: "Exploring Game Dev" },
+      { min: 40, label: "Junior Game Developer" },
+      { min: 60, label: "Game Developer" },
+      { min: 75, label: "Senior Game Engineer" },
+      { min: 90, label: "Gameplay Lead" },
+    ],
+  },
+
+  "drone-technology": {
+    domains: [
+      { name: "Flight Control", tags: ["flight_control", "pid_controllers"] },
+      { name: "Sensing & Navigation", tags: ["gps_imu", "sensor_fusion"] },
+      { name: "Autonomy & Avoidance", tags: ["obstacle_avoidance"] },
+      { name: "Swarm Systems", tags: ["swarm"] },
+      { name: "Regulations & Safety", tags: ["regulations"] },
+    ],
+    roles: [
+      { min: 0, label: "Exploring Drone Tech" },
+      { min: 40, label: "Junior Drone Engineer" },
+      { min: 60, label: "Drone Systems Engineer" },
+      { min: 75, label: "Senior UAV Engineer" },
+      { min: 90, label: "Autonomy Specialist" },
+    ],
+  },
+
+  "ai-product-management": {
+    domains: [
+      { name: "Strategy & Vision", tags: ["ai_strategy", "build_vs_buy"] },
+      { name: "User & Market", tags: ["user_research", "go_to_market"] },
+      { name: "Roadmapping & Delivery", tags: ["roadmapping"] },
+      { name: "Metrics & Analytics", tags: ["metrics"] },
+      { name: "Responsible AI", tags: ["ethics_bias"] },
+    ],
+    roles: [
+      { min: 0, label: "Exploring AI PM" },
+      { min: 40, label: "Associate AI PM" },
+      { min: 60, label: "AI Product Manager" },
+      { min: 75, label: "Senior AI PM" },
+      { min: 90, label: "Director of AI Product" },
+    ],
+  },
+
+  "llm-agent-architect": {
+    domains: [
+      { name: "Agent Loops", tags: ["agent_loops"] },
+      { name: "Tool Use & Function Calling", tags: ["function_calling_tool_use"] },
+      { name: "Memory Systems", tags: ["memory_systems"] },
+      { name: "RAG for Agents", tags: ["rag_for_agents"] },
+      { name: "Multi-Agent Systems", tags: ["multi_agent"] },
+      { name: "Evaluation & Reliability", tags: ["evals"] },
+    ],
+    roles: [
+      { min: 0, label: "Exploring AI Agents" },
+      { min: 40, label: "Junior Agent Engineer" },
+      { min: 60, label: "Agent Engineer" },
+      { min: 75, label: "Senior Agent Architect" },
+      { min: 90, label: "Agent Systems Lead" },
+    ],
+  },
 };
 
 export function getCompetencyConfig(slug: string): CompetencyConfig | null {
