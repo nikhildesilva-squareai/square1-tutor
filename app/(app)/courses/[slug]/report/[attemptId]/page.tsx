@@ -745,7 +745,7 @@ export default function ReportPage({ params }: PageProps) {
               </div>
               <h2 className="text-2xl sm:text-3xl font-black text-white mb-3 leading-tight">
                 {gaps[0]
-                  ? <>Turn <span className="underline decoration-white/40 decoration-2 underline-offset-4">{gaps[0].label}</span> into a strength</>
+                  ? <>Close your biggest gap — <span className="underline decoration-white/40 decoration-2 underline-offset-4">{gaps[0].label}</span></>
                   : <>Turn this score into real, hireable skill</>}
               </h2>
               <p className="text-sm text-blue-100/90 mb-7 max-w-md mx-auto leading-relaxed">
