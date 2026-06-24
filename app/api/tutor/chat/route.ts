@@ -100,7 +100,27 @@ export async function POST(request: Request) {
     if (!rl.success) return rl.response;
 
     const studentName = student.name ?? user.email?.split("@")[0] ?? "Student";
-    const systemPrompt = buildSystemPrompt(studentName, context);
+    let systemPrompt = buildSystemPrompt(studentName, context);
+
+    // ── RAG: ground Nova in the curriculum via lexical retrieval (best-effort).
+    // If anything fails, Nova proceeds exactly as before — never blocks the chat.
+    try {
+      const lastUser = [...messages].reverse().find((m) => m.role === "user")?.content ?? "";
+      if (lastUser.trim().length > 2) {
+        const { data: hits } = await supabase.rpc("search_curriculum", {
+          q: lastUser.slice(0, 500),
+          match_count: 5,
+        });
+        if (Array.isArray(hits) && hits.length > 0) {
+          const block = (hits as Array<{ title?: string; course_slug?: string; snippet?: string }>)
+            .map((h, i) => `[${i + 1}] ${h.title ?? "Course material"}${h.course_slug ? ` (${h.course_slug})` : ""}: ${(h.snippet ?? "").replace(/\s+/g, " ").trim()}`)
+            .join("\n");
+          systemPrompt += `\n\nRelevant Square 1 course material (ground your answer in this; name the lesson/project when you use it, and don't invent beyond what the curriculum says):\n${block}`;
+        }
+      }
+    } catch (e) {
+      console.error("[tutor/chat] rag (non-fatal)", e);
+    }
 
     const result = await callAI(student.id, {
       system: systemPrompt,
