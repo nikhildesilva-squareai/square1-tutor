@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 import { callAI, BudgetExceededError } from "@/lib/ai/budget";
 import { rateLimitAI } from "@/lib/rate-limit";
+import { rollUpDomains, roleReadiness, buildActionPlan } from "@/lib/competency";
 
 const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
@@ -221,37 +222,23 @@ ${block}`,
   return out;
 }
 
-/* ── Generate AI recommendations (single call) ─────────────────────────────── */
-async function generateRecommendations(
-  studentId: string,
-  level: string,
-  topicMastery: Array<{ topic: string; percentage: number }>,
-  subject: string,
-): Promise<string> {
-  const sorted = [...topicMastery].sort((a, b) => a.percentage - b.percentage);
-  const weakTopics = sorted.slice(0, 3).map((t) => `${t.topic} (${t.percentage}%)`).join(", ");
-  const strongTopics = [...sorted].reverse().slice(0, 3).map((t) => `${t.topic} (${t.percentage}%)`).join(", ");
-
-  const result = await callAI(studentId, {
-    max_tokens: 800,
-    messages: [{
-      role: "user",
-      content: `A student just completed a skill assessment for ${subject} and placed at ${level} level.
-
-Their strongest areas: ${strongTopics || "none identified"}
-Their weakest areas: ${weakTopics || "none identified"}
-
-Write a personalised learning strategy in this exact structure:
-
-1. A brief paragraph summarising their current level
-2. A numbered list of 3 specific modules to focus on, ordered by priority (weakest first), with why each matters
-3. An estimated time to close all gaps (in months at 1 hour/day)
-
-Keep it concise, specific, encouraging, and actionable. Max 200 words. Do NOT use markdown headers.`,
-    }],
-  });
-
-  return result.text;
+/* ── Cohort percentile (real data, no tokens) ──────────────────────────────
+ * "You scored higher than X% of Square 1 learners on this assessment." Hidden
+ * (returns null) until enough peers have a graded score to be meaningful. */
+async function computeCohortPercentile(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  paperId: string,
+  myPercentage: number,
+): Promise<number | null> {
+  const { data: peers } = await supabase
+    .from("assessment_attempts")
+    .select("percentage")
+    .eq("paper_id", paperId)
+    .eq("status", "graded")
+    .not("percentage", "is", null);
+  if (!peers || peers.length < 20) return null;
+  const below = peers.filter((p) => Number(p.percentage) < myPercentage).length;
+  return Math.round((below / peers.length) * 100);
 }
 
 /* ═══════════════════════════════════════════════════════════════════════ */
@@ -390,6 +377,28 @@ export async function POST(
           }
         }
 
+        // Recompute the competency view from stored data — no tokens, no re-grade.
+        let domainMastery = null as ReturnType<typeof rollUpDomains>;
+        let roleLabel: string | null = null;
+        let cohortPct: number | null = null;
+        {
+          const { data: paperRow } = await supabase
+            .from("assessment_papers").select("course_id").eq("id", existingAttempt.paper_id).maybeSingle();
+          let slug = "";
+          if (paperRow?.course_id) {
+            const { data: course } = await supabase
+              .from("courses").select("slug").eq("id", paperRow.course_id).maybeSingle();
+            slug = course?.slug ?? "";
+          }
+          const accum: Record<string, { correct: number; total: number }> = {};
+          for (const t of (existingReport.topic_mastery_json ?? []) as Array<{ topic: string; correct: number; total: number }>) {
+            if (t && t.topic) accum[t.topic] = { correct: Number(t.correct) || 0, total: Number(t.total) || 0 };
+          }
+          domainMastery = rollUpDomains(slug, accum);
+          roleLabel = roleReadiness(slug, Number(existingAttempt.percentage) || 0);
+          cohortPct = await computeCohortPercentile(supabase, existingAttempt.paper_id, Number(existingAttempt.percentage) || 0);
+        }
+
         return NextResponse.json({
           reportId: existingReport.id,
           level: existingAttempt.level_determined,
@@ -397,6 +406,9 @@ export async function POST(
           maxScore: existingAttempt.max_score,
           percentage: existingAttempt.percentage,
           topicMastery: existingReport.topic_mastery_json ?? [],
+          domainMastery,
+          roleReadiness: roleLabel,
+          cohortPercentile: cohortPct,
           recommendationsMd: existingReport.recommendations_md ?? "",
           questionResults: qResults,
         });
@@ -433,13 +445,15 @@ export async function POST(
       .maybeSingle();
 
     let subject = "Technology";
+    let courseSlug = "";
     if (paper?.course_id) {
       const { data: course } = await supabase
         .from("courses")
-        .select("title")
+        .select("title, slug")
         .eq("id", paper.course_id)
         .maybeSingle();
       if (course?.title) subject = course.title;
+      if (course?.slug) courseSlug = course.slug;
     }
 
     /* ── Grade all questions ───────────────────────────────────────────── */
@@ -545,14 +559,10 @@ export async function POST(
       questionCount,
     }));
 
-    /* ── Generate AI recommendations (1 call) ──────────────────────────── */
-    let recommendationsMd = "";
-    try {
-      recommendationsMd = await generateRecommendations(student.id, level, topicMastery, subject);
-    } catch (e) {
-      console.error("[grade] recommendations failed (non-fatal):", e);
-      recommendationsMd = "Your personalised study plan will appear here shortly. Focus first on your lowest-scoring topics above.";
-    }
+    /* ── Competency rollup + role-readiness + cohort percentile (no tokens) ── */
+    const domainMastery = rollUpDomains(courseSlug, topicAccum);
+    const roleLabel = roleReadiness(courseSlug, percentage);
+    const cohortPct = await computeCohortPercentile(supabase, existingAttempt.paper_id, percentage);
 
     /* ── Save skill report ─────────────────────────────────────────────── */
     const weakTopics = Object.entries(topicAccum)
@@ -561,6 +571,9 @@ export async function POST(
     const strongTopics = Object.entries(topicAccum)
       .filter(([, v]) => v.total > 0 && (v.correct / v.total) >= 0.7)
       .map(([k]) => k);
+
+    // Token-free action plan — replaces the old per-grade AI recommendations call.
+    const recommendationsMd = buildActionPlan(domainMastery, weakTopics, subject);
 
     const { data: report, error: reportErr } = await supabase
       .from("skill_reports")
@@ -634,6 +647,9 @@ export async function POST(
       codeScore,
       codeMax,
       topicMastery,
+      domainMastery,
+      roleReadiness: roleLabel,
+      cohortPercentile: cohortPct,
       recommendationsMd,
       questionResults,
     });

@@ -4,6 +4,7 @@ import { useState, useEffect, useRef, use } from "react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { ShareResultButton } from "@/components/ShareResultButton";
+import { levelFor, LEVEL_LABELS, type DomainScore } from "@/lib/competency";
 
 interface PageProps {
   params: Promise<{ slug: string; attemptId: string }>;
@@ -66,6 +67,9 @@ interface ReportData {
   codeScore?: number;
   codeMax?: number;
   topicMastery: TopicMastery[];
+  domainMastery?: DomainScore[] | null;
+  roleReadiness?: string | null;
+  cohortPercentile?: number | null;
   recommendationsMd: string;
   questionResults: QuestionResult[];
 }
@@ -174,7 +178,7 @@ function MiniRing({ score, max, label, color }: { score: number; max: number; la
 }
 
 /* ── Radar chart (SVG) ─────────────────────────────────────────────────── */
-function RadarChart({ topics, animate }: { topics: TopicMastery[]; animate: boolean }) {
+function RadarChart({ topics, animate, preformatted }: { topics: TopicMastery[]; animate: boolean; preformatted?: boolean }) {
   const N = topics.length;
   const CX = 200;
   const CY = 200;
@@ -273,7 +277,7 @@ function RadarChart({ topics, animate }: { topics: TopicMastery[]; animate: bool
             onMouseLeave={() => setHoverIdx(null)}
             style={{ transition: "fill 0.2s", cursor: "pointer" }}
           >
-            {formatTopicName(t.topic)}
+            {preformatted ? t.topic : formatTopicName(t.topic)}
           </text>
         );
       })}
@@ -295,6 +299,76 @@ function ComparisonBar({ topic, percentage, rank }: { topic: string; percentage:
           <span className="text-[10px] font-bold text-white">{percentage}%</span>
         </div>
       </div>
+    </div>
+  );
+}
+
+/* ── Competency level-band colours (Novice → Expert) ───────────────────── */
+const BAND_COLORS = ["#E6F1FB", "#B5D4F4", "#378ADD", "#185FA5", "#0C447C"];
+
+/* ── Competency matrix (domain × Novice→Expert) ────────────────────────── */
+function CompetencyMatrix({ domains }: { domains: DomainScore[] }) {
+  return (
+    <div className="space-y-2.5">
+      {domains.map((d) => {
+        const bandIdx = LEVEL_LABELS.indexOf(d.level as (typeof LEVEL_LABELS)[number]);
+        return (
+          <div key={d.domain} className="flex items-center gap-2 sm:gap-3">
+            <span className="text-xs font-medium text-ink w-24 sm:w-32 shrink-0 truncate" title={d.domain}>{d.domain}</span>
+            <div className="flex-1 flex gap-1">
+              {LEVEL_LABELS.map((lvl, i) => (
+                <div
+                  key={lvl}
+                  title={lvl}
+                  className={`flex-1 h-6 rounded-md flex items-center justify-center ${i <= bandIdx ? "" : "bg-surface-alt"}`}
+                  style={i <= bandIdx ? { background: BAND_COLORS[i] } : undefined}
+                >
+                  {i === bandIdx && (
+                    <span className="text-[8px] font-bold px-0.5 truncate" style={{ color: i >= 2 ? "#fff" : "#0C447C" }}>{lvl}</span>
+                  )}
+                </div>
+              ))}
+            </div>
+            <span className="text-xs font-bold tabular-nums text-ink w-8 text-right">{d.percentage}</span>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+/* ── Where you stand (level bands + role-readiness + cohort percentile) ── */
+function WhereYouStand({ level, role, percentile }: { level: string; role: string | null; percentile: number | null }) {
+  const curIdx = LEVEL_LABELS.indexOf(level as (typeof LEVEL_LABELS)[number]);
+  return (
+    <div className="space-y-4">
+      <div className="flex gap-1.5">
+        {LEVEL_LABELS.map((lvl, i) => (
+          <div key={lvl} className="flex-1">
+            <div
+              className="h-8 rounded-md flex items-center justify-center text-[9px] sm:text-[10px] font-bold text-center px-0.5"
+              style={{ background: BAND_COLORS[i], color: i >= 2 ? "#fff" : "#0C447C", outline: i === curIdx ? "2px solid #0056CE" : "none", outlineOffset: "1px" }}
+            >
+              {lvl}
+            </div>
+            {i === curIdx && <p className="text-[9px] text-brand font-bold text-center mt-1">You</p>}
+          </div>
+        ))}
+      </div>
+      {role && (
+        <div className="rounded-xl border border-brand/20 bg-surface-tint p-4">
+          <p className="text-[10px] uppercase tracking-wider text-brand font-bold mb-1">Role readiness</p>
+          <p className="text-sm text-ink">Your profile aligns with a <span className="font-bold">{role}</span>.</p>
+          <p className="text-[10px] text-ink-muted mt-1.5">Square 1 role rubric — guidance, not a certification.</p>
+        </div>
+      )}
+      {percentile != null ? (
+        <p className="text-xs text-ink-muted text-center">
+          You scored higher than <span className="font-bold text-ink">{percentile}%</span> of Square 1 learners on this assessment.
+        </p>
+      ) : (
+        <p className="text-[10px] text-ink-muted text-center">Cohort percentile unlocks once more learners complete this assessment.</p>
+      )}
     </div>
   );
 }
@@ -416,8 +490,18 @@ export default function ReportPage({ params }: PageProps) {
   /*  THE REPORT — VISUALS FIRST                                        */
   /* ═══════════════════════════════════════════════════════════════════ */
   const sortedTopics = [...report.topicMastery].sort((a, b) => a.percentage - b.percentage);
-  const strengths = [...report.topicMastery].sort((a, b) => b.percentage - a.percentage).slice(0, 3);
-  const gaps = sortedTopics.slice(0, 3);
+  // When the course has a competency config, headline the high-level DOMAINS
+  // (clean ~6) instead of the raw micro-topics; fall back to topics otherwise.
+  const hasDomains = !!(report.domainMastery && report.domainMastery.length >= 3);
+  const overallLevel = levelFor(report.percentage);
+  const competencyList = hasDomains
+    ? report.domainMastery!.map((d) => ({ label: d.domain, percentage: d.percentage }))
+    : report.topicMastery.map((t) => ({ label: formatTopicName(t.topic), percentage: t.percentage }));
+  const strengths = [...competencyList].sort((a, b) => b.percentage - a.percentage).slice(0, 3);
+  const gaps = [...competencyList].sort((a, b) => a.percentage - b.percentage).slice(0, 3);
+  const radarData: TopicMastery[] = hasDomains
+    ? report.domainMastery!.map((d) => ({ topic: d.domain, correct: d.correct, total: d.total, percentage: d.percentage }))
+    : report.topicMastery;
 
   const levelConfig = {
     beginner: { label: "BEGINNER", bg: "bg-error-bg", text: "text-error", border: "border-error/30", desc: "You're just getting started — there's a lot to learn." },
@@ -486,9 +570,9 @@ export default function ReportPage({ params }: PageProps) {
           <div className="max-w-4xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Radar */}
             <div className="rounded-2xl border border-border p-5 sm:p-6 bg-surface shadow-card">
-              <h3 className="text-sm font-bold text-ink mb-1">Skill Radar</h3>
-              <p className="text-xs text-ink-muted mb-3">Your coverage across all topics</p>
-              <RadarChart topics={report.topicMastery} animate={true} />
+              <h3 className="text-sm font-bold text-ink mb-1">{hasDomains ? "Competency Radar" : "Skill Radar"}</h3>
+              <p className="text-xs text-ink-muted mb-3">{hasDomains ? "Your mastery across the core domains" : "Your coverage across all topics"}</p>
+              <RadarChart topics={radarData} animate={true} preformatted={hasDomains} />
             </div>
 
             {/* Score by Type + Accuracy */}
@@ -546,6 +630,26 @@ export default function ReportPage({ params }: PageProps) {
       )}
 
       {/* ═══════════════════════════════════════════════════════════════ */}
+      {/*  SECTION 2.5 — COMPETENCY MATRIX + WHERE YOU STAND            */}
+      {/* ═══════════════════════════════════════════════════════════════ */}
+      {hasDomains && (
+        <section className="pb-12 sm:pb-16 px-4 sm:px-6">
+          <div className="max-w-4xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="rounded-2xl border border-border p-5 sm:p-6 bg-surface shadow-card">
+              <h3 className="text-sm font-bold text-ink mb-1">Competency Matrix</h3>
+              <p className="text-xs text-ink-muted mb-4">Your level in each domain · Novice → Expert</p>
+              <CompetencyMatrix domains={report.domainMastery!} />
+            </div>
+            <div className="rounded-2xl border border-border p-5 sm:p-6 bg-surface shadow-card">
+              <h3 className="text-sm font-bold text-ink mb-1">Where You Stand</h3>
+              <p className="text-xs text-ink-muted mb-4">Overall level &amp; role readiness</p>
+              <WhereYouStand level={overallLevel} role={report.roleReadiness ?? null} percentile={report.cohortPercentile ?? null} />
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* ═══════════════════════════════════════════════════════════════ */}
       {/*  SECTION 3 — STRENGTHS vs GAPS (visual bars)                  */}
       {/* ═══════════════════════════════════════════════════════════════ */}
       <section className="pb-12 sm:pb-16 px-4 sm:px-6">
@@ -566,9 +670,9 @@ export default function ReportPage({ params }: PageProps) {
               </div>
               <div className="space-y-3">
                 {strengths.map((t) => (
-                  <div key={t.topic}>
+                  <div key={t.label}>
                     <div className="flex items-center justify-between mb-1">
-                      <span className="text-sm font-medium text-ink">{formatTopicName(t.topic)}</span>
+                      <span className="text-sm font-medium text-ink">{t.label}</span>
                       <span className="text-xs font-bold text-success tabular-nums">{t.percentage}%</span>
                     </div>
                     <div className="w-full h-2 rounded-full overflow-hidden bg-success/10">
@@ -591,9 +695,9 @@ export default function ReportPage({ params }: PageProps) {
               </div>
               <div className="space-y-3">
                 {gaps.map((t) => (
-                  <div key={t.topic}>
+                  <div key={t.label}>
                     <div className="flex items-center justify-between mb-1">
-                      <span className="text-sm font-medium text-ink">{formatTopicName(t.topic)}</span>
+                      <span className="text-sm font-medium text-ink">{t.label}</span>
                       <span className="text-xs font-bold text-error tabular-nums">{t.percentage}%</span>
                     </div>
                     <div className="w-full h-2 rounded-full overflow-hidden bg-error/10">
@@ -809,7 +913,7 @@ export default function ReportPage({ params }: PageProps) {
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-brand/20 bg-surface mb-3">
-                    <span className="text-[10px] tracking-[0.2em] uppercase font-bold text-brand">AI Recommendation</span>
+                    <span className="text-[10px] tracking-[0.2em] uppercase font-bold text-brand">Your Action Plan</span>
                   </div>
                   <div className="text-sm sm:text-base text-ink-secondary leading-relaxed space-y-3">
                     {report.recommendationsMd.split("\n").map((line, i) => {
