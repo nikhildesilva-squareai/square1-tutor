@@ -42,6 +42,13 @@ export function FeedbackWidget() {
     return () => window.removeEventListener("keydown", onKey);
   }, [open, close]);
 
+  // Allow other components (e.g. the sidebar "Feedback" item) to open the panel.
+  useEffect(() => {
+    function onOpen() { setOpen(true); }
+    window.addEventListener("open-feedback", onOpen);
+    return () => window.removeEventListener("open-feedback", onOpen);
+  }, []);
+
   async function submit() {
     if (!message.trim()) return;
     setState("sending");
@@ -150,7 +157,7 @@ export function FeedbackWidget() {
 
       <button
         onClick={() => setOpen((v) => !v)}
-        className="flex items-center gap-2 h-10 px-4 rounded-full bg-brand text-white text-sm font-bold shadow-lg hover:bg-brand/90 hover:-translate-y-0.5 transition-all"
+        className="lg:hidden flex items-center gap-2 h-10 px-4 rounded-full bg-brand text-white text-sm font-bold shadow-lg hover:bg-brand/90 hover:-translate-y-0.5 transition-all"
         aria-expanded={open}
         aria-label="Give feedback"
       >

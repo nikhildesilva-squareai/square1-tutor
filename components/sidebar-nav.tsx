@@ -10,6 +10,7 @@ import {
   BarChart3,
   MessageSquare,
   MessagesSquare,
+  MessageSquarePlus,
   Settings,
   LogOut,
   Bookmark,
@@ -28,7 +29,6 @@ const nav = [
   { href: "/progress", label: "Progress", icon: BarChart3 },
   { href: "/notes", label: "Study Hub", icon: Bookmark },
   { href: "/tutor", label: "Nova", icon: MessageSquare },
-  { href: "/messages", label: "Messages", icon: MessagesSquare },
 ];
 
 interface SidebarNavProps {
@@ -48,6 +48,13 @@ export function SidebarNav({ userEmail }: SidebarNavProps) {
   }
 
   const settingsActive = pathname === "/settings" || pathname.startsWith("/settings/");
+  const messagesActive = pathname === "/messages" || pathname.startsWith("/messages/");
+
+  const footerItem =
+    "flex items-center gap-3 px-4 h-10 w-full rounded-lg text-xs font-medium transition-all";
+  const footerInactive =
+    "text-ink-secondary hover:bg-surface-alt hover:text-ink border border-transparent";
+  const footerActive = "bg-surface-tint text-brand border border-brand/20";
 
   return (
     <aside
@@ -62,7 +69,6 @@ export function SidebarNav({ userEmail }: SidebarNavProps) {
       <nav className="flex-1 px-3 py-2 space-y-0.5 overflow-y-auto">
         {nav.map(({ href, label, icon: Icon }) => {
           const isActive = pathname === href || pathname.startsWith(href + "/");
-          const showDot = href === "/messages" && unread > 0;
           return (
             <Link
               key={href}
@@ -76,43 +82,57 @@ export function SidebarNav({ userEmail }: SidebarNavProps) {
             >
               <Icon className="w-4 h-4" />
               <span className="flex-1">{label}</span>
-              {showDot && (
-                <span className="min-w-[18px] h-[18px] px-1.5 rounded-full bg-brand text-white text-[10px] font-bold flex items-center justify-center">
-                  {unread > 9 ? "9+" : unread}
-                </span>
-              )}
             </Link>
           );
         })}
       </nav>
 
-      {/* User footer */}
+      {/* User footer — account + utility items (Settings, Feedback, Messages) */}
       <div className="px-3 py-4 border-t border-border space-y-0.5">
         <div className="px-4 py-2 mb-1 flex items-center justify-between">
           <p className="text-xs text-ink-muted truncate">{userEmail}</p>
           <ThemeToggle />
         </div>
 
-        {/* Settings — kept low, next to Sign out */}
+        {/* Settings */}
         <Link
           href="/settings"
-          className={cn(
-            "flex items-center gap-3 px-4 h-10 w-full rounded-lg text-xs font-medium transition-all",
-            settingsActive
-              ? "bg-surface-tint text-brand border border-brand/20"
-              : "text-ink-secondary hover:bg-surface-alt hover:text-ink border border-transparent"
-          )}
+          className={cn(footerItem, settingsActive ? footerActive : footerInactive)}
         >
           <Settings className="w-4 h-4" />
-          Settings
+          <span className="flex-1 text-left">Settings</span>
         </Link>
 
+        {/* Feedback — opens the FeedbackWidget panel (it listens for this event) */}
+        <button
+          onClick={() => window.dispatchEvent(new CustomEvent("open-feedback"))}
+          className={cn(footerItem, footerInactive)}
+        >
+          <MessageSquarePlus className="w-4 h-4" />
+          <span className="flex-1 text-left">Feedback</span>
+        </button>
+
+        {/* Messages */}
+        <Link
+          href="/messages"
+          className={cn(footerItem, messagesActive ? footerActive : footerInactive)}
+        >
+          <MessagesSquare className="w-4 h-4" />
+          <span className="flex-1 text-left">Messages</span>
+          {unread > 0 && (
+            <span className="min-w-[18px] h-[18px] px-1.5 rounded-full bg-brand text-white text-[10px] font-bold flex items-center justify-center">
+              {unread > 9 ? "9+" : unread}
+            </span>
+          )}
+        </Link>
+
+        {/* Sign out */}
         <button
           onClick={handleSignOut}
           className="flex items-center gap-3 px-4 h-10 w-full rounded-lg text-xs text-ink-secondary hover:bg-error-bg hover:text-error transition-all"
         >
           <LogOut className="w-4 h-4" />
-          Sign out
+          <span className="flex-1 text-left">Sign out</span>
         </button>
       </div>
     </aside>
