@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button";
 
 interface SubmissionFormProps {
   projectId: string;
+  /** Public instructions for the objective check — what output to paste. Null = no objective gate. */
+  submitFormat?: string | null;
 }
 
 interface SnippetLine {
@@ -33,31 +35,42 @@ interface RepoStats {
   hasTests: boolean;
 }
 
-export function SubmissionForm({ projectId }: SubmissionFormProps) {
+interface ObjectiveInfo {
+  score: number;
+  passed: boolean;
+  metric: string;
+  detail: Record<string, unknown>;
+  threshold: number | null;
+  error?: string | null;
+}
+
+interface SubmitResult {
+  score: number;
+  max_score: number;
+  breakdown: { criterion: string; score: number; max: number; feedback: string }[];
+  overall_feedback: string;
+  strengths: string[];
+  improvements: string[];
+  code_comments: CodeComment[];
+  repo_stats?: RepoStats;
+  attempt_number?: number;
+  in_portfolio?: boolean;
+  complete?: boolean;
+  objective_required?: boolean;
+  objective?: ObjectiveInfo | null;
+  previous_attempt?: PreviousAttempt | null;
+  submission_history?: PreviousAttempt[] | null;
+}
+
+export function SubmissionForm({ projectId, submitFormat }: SubmissionFormProps) {
   const [githubUrl, setGithubUrl] = useState("");
   const [liveUrl, setLiveUrl] = useState("");
   const [description, setDescription] = useState("");
+  const [output, setOutput] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [result, setResult] = useState<{
-    score: number;
-    max_score: number;
-    breakdown: { criterion: string; score: number; max: number; feedback: string }[];
-    overall_feedback: string;
-    strengths: string[];
-    improvements: string[];
-    code_comments: CodeComment[];
-    repo_stats?: RepoStats;
-    attempt_number?: number;
-    in_portfolio?: boolean;
-    previous_attempt?: {
-      attempt: number;
-      score: number;
-      max_score: number;
-      breakdown: { criterion: string; score: number; max: number; feedback: string }[];
-      submitted_at: string;
-    } | null;
-  } | null>(null);
+  const [result, setResult] = useState<SubmitResult | null>(null);
+  const objectiveRequired = !!submitFormat;
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -73,11 +86,11 @@ export function SubmissionForm({ projectId }: SubmissionFormProps) {
           githubUrl,
           liveUrl: liveUrl || undefined,
           description: description || undefined,
+          output: output || undefined,
         }),
       });
 
       const data = await res.json();
-
       if (!res.ok) {
         setError(data.error ?? "Something went wrong");
         return;
@@ -94,6 +107,9 @@ export function SubmissionForm({ projectId }: SubmissionFormProps) {
         repo_stats: data.repo_stats,
         attempt_number: data.attempt_number,
         in_portfolio: data.in_portfolio,
+        complete: data.complete,
+        objective_required: data.objective_required,
+        objective: data.objective ?? null,
         previous_attempt: data.previous_attempt ?? null,
       });
     } catch {
@@ -126,6 +142,26 @@ export function SubmissionForm({ projectId }: SubmissionFormProps) {
           Must be a public repository. We&apos;ll read your actual code for a real review.
         </p>
       </div>
+
+      {objectiveRequired && (
+        <div>
+          <label htmlFor="output" className="block text-sm font-medium text-ink mb-1.5">
+            Your tool&apos;s output <span className="text-brand font-normal">(required — graded against the answer key)</span>
+          </label>
+          <textarea
+            id="output"
+            rows={5}
+            required
+            placeholder={submitFormat ?? ""}
+            value={output}
+            onChange={(e) => setOutput(e.target.value)}
+            className="w-full border border-border bg-surface text-ink rounded-xl px-4 py-3 text-sm font-mono placeholder:text-ink-muted focus:outline-none focus-visible:ring-2 focus-visible:ring-brand focus:border-brand resize-y"
+          />
+          <p className="text-[11px] text-ink-muted mt-1.5">
+            Paste the result your program produced. {submitFormat}
+          </p>
+        </div>
+      )}
 
       <div>
         <label htmlFor="liveUrl" className="block text-sm font-medium text-ink mb-1.5">
@@ -163,7 +199,7 @@ export function SubmissionForm({ projectId }: SubmissionFormProps) {
 
       <div className="flex items-center gap-3">
         <Button type="submit" loading={loading} className="w-full sm:w-auto">
-          {loading ? "Reading code & reviewing..." : "Submit for AI Code Review"}
+          {loading ? "Reading code & reviewing..." : "Submit for review"}
         </Button>
         {loading && (
           <span className="text-xs text-ink-muted animate-pulse">
@@ -186,20 +222,7 @@ interface PreviousAttempt {
 }
 
 interface ScoreDisplayProps {
-  result: {
-    score: number;
-    max_score: number;
-    breakdown: { criterion: string; score: number; max: number; feedback: string }[];
-    overall_feedback: string;
-    strengths: string[];
-    improvements: string[];
-    code_comments?: CodeComment[];
-    repo_stats?: RepoStats;
-    attempt_number?: number;
-    in_portfolio?: boolean;
-    previous_attempt?: PreviousAttempt | null;
-    submission_history?: PreviousAttempt[] | null;
-  };
+  result: SubmitResult;
   onResubmit?: () => void;
 }
 
@@ -235,6 +258,12 @@ export function ScoreDisplay({ result, onResubmit }: ScoreDisplayProps) {
     ? [...history.filter(h => h.attempt !== prev.attempt), prev]
     : history;
 
+  const obj = result.objective ?? null;
+  const objReq = !!result.objective_required;
+  const complete = objReq ? !!result.complete : pct >= 70;
+  const badgeLabel = complete ? "Complete" : pct >= 50 ? "Needs Work" : "Not Ready";
+  const badgeStatus: "success" | "warning" | "error" = complete ? "success" : pct >= 50 ? "warning" : "error";
+
   return (
     <div className="space-y-5">
       {/* ── Header with score ring ─────────────────────────────────── */}
@@ -256,8 +285,8 @@ export function ScoreDisplay({ result, onResubmit }: ScoreDisplayProps) {
         </div>
         <div>
           <div className="flex items-center gap-2 flex-wrap">
-            <span className={`text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full ${statusClasses[overallStatus]}`}>
-              {pct >= 70 ? "Passed" : pct >= 50 ? "Needs Work" : "Not Ready"}
+            <span className={`text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full ${statusClasses[badgeStatus]}`}>
+              {badgeLabel}
             </span>
             {attempt > 1 && (
               <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full bg-surface-alt text-ink-muted">
@@ -282,6 +311,39 @@ export function ScoreDisplay({ result, onResubmit }: ScoreDisplayProps) {
           </div>
         </div>
       </div>
+
+      {/* ── Objective completion check (vs the withheld answer key) ──── */}
+      {objReq && (
+        <div className={`rounded-xl border px-4 py-3 ${obj?.passed ? "bg-emerald-50 border-emerald-200" : "bg-amber-50 border-amber-200"}`}>
+          <div className="flex items-center justify-between">
+            <p className="text-sm font-semibold text-ink">
+              Completion check{obj ? ` — ${obj.metric.replace(/_/g, " ")}` : ""}
+            </p>
+            {obj && (
+              <span className={`text-sm font-black tabular-nums ${obj.passed ? "text-emerald-700" : "text-amber-700"}`}>
+                {Math.round(obj.score * 100)}%
+                {obj.threshold != null && <span className="text-[11px] font-semibold text-ink-muted"> / need {Math.round(obj.threshold * 100)}%</span>}
+              </span>
+            )}
+          </div>
+          <p className="text-xs text-ink-secondary mt-1 leading-relaxed">
+            {obj?.error
+              ? obj.error
+              : obj?.passed
+              ? "Your tool's output matches the hidden answer key — the core task genuinely works. ✓"
+              : "Your output didn't clear the bar against the hidden answer key yet — your tool isn't fully recovering the planted signal. Fix it and re-submit."}
+          </p>
+          {obj && !obj.error && Object.keys(obj.detail).length > 0 && (
+            <div className="flex flex-wrap gap-2 mt-2">
+              {Object.entries(obj.detail).map(([k, v]) => (
+                <span key={k} className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-surface border border-border text-ink-secondary tabular-nums">
+                  {k.replace(/_/g, " ")}: {String(v)}
+                </span>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
 
       {/* ── Score history timeline (re-submission tracking) ────────── */}
       {allAttempts.length > 0 && (
@@ -340,7 +402,6 @@ export function ScoreDisplay({ result, onResubmit }: ScoreDisplayProps) {
         {result.breakdown.map((item) => {
           const status = scoreStatus(item.score, item.max);
           const itemPct = Math.round((item.score / item.max) * 100);
-          // Find matching criterion in previous attempt for diff
           const prevItem = prev?.breakdown?.find(
             (b: { criterion: string }) => b.criterion === item.criterion
           );
@@ -368,7 +429,6 @@ export function ScoreDisplay({ result, onResubmit }: ScoreDisplayProps) {
                   {item.score}/{item.max}
                 </span>
               </div>
-              {/* Progress bar */}
               <div className="h-1 rounded-full bg-surface-alt overflow-hidden mb-2 ml-7">
                 <div
                   className="h-full rounded-full transition-all"
@@ -378,7 +438,6 @@ export function ScoreDisplay({ result, onResubmit }: ScoreDisplayProps) {
                   }}
                 />
               </div>
-              {/* Feedback text */}
               <p className="text-xs text-ink-secondary leading-relaxed ml-7">{item.feedback}</p>
             </div>
           );
@@ -399,7 +458,6 @@ export function ScoreDisplay({ result, onResubmit }: ScoreDisplayProps) {
             <span className="ml-2 px-1.5 py-0.5 rounded bg-surface-alt text-ink-muted text-[10px] font-bold">{codeComments.length}</span>
           </p>
 
-          {/* Group comments by file */}
           {Object.entries(
             codeComments.reduce<Record<string, CodeComment[]>>((acc, c) => {
               const key = c.file;
@@ -409,7 +467,6 @@ export function ScoreDisplay({ result, onResubmit }: ScoreDisplayProps) {
             }, {})
           ).map(([file, comments]) => (
             <div key={file} className="mb-4 rounded-xl border border-border overflow-hidden bg-surface">
-              {/* ── File header ─────────────────────────── */}
               <div className="flex items-center gap-2 px-4 py-2.5 bg-surface-alt border-b border-border">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-ink-muted shrink-0">
                   <path d="M13 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V9z" />
@@ -434,12 +491,10 @@ export function ScoreDisplay({ result, onResubmit }: ScoreDisplayProps) {
                 )}
               </div>
 
-              {/* ── Comments for this file ──────────────── */}
               {comments.map((c, i) => {
                 const cfg = severityConfig[c.severity] ?? severityConfig.info;
                 return (
                   <div key={i} className="border-b border-border last:border-b-0">
-                    {/* Code snippet */}
                     {c.snippet && c.snippet.lines.length > 0 && (
                       <div className="overflow-x-auto bg-slate-950">
                         <table className="w-full text-[11px] font-mono leading-[1.6]">
@@ -471,7 +526,6 @@ export function ScoreDisplay({ result, onResubmit }: ScoreDisplayProps) {
                       </div>
                     )}
 
-                    {/* Comment body */}
                     <div className={`px-4 py-3 ${cfg.bg} flex gap-2.5`}>
                       <span className="text-sm shrink-0 mt-0.5">{cfg.icon}</span>
                       <div className="min-w-0">
@@ -545,7 +599,7 @@ export function ScoreDisplay({ result, onResubmit }: ScoreDisplayProps) {
           <div>
             <p className="text-sm font-semibold text-emerald-800">Added to your Career Portfolio</p>
             <p className="text-xs text-emerald-700 mt-0.5">
-              This project scored 70+ and is now visible on your public portfolio with your GitHub link and tech stack.
+              This project is complete and is now visible on your public portfolio with your GitHub link and tech stack.
             </p>
           </div>
         </div>
@@ -555,9 +609,9 @@ export function ScoreDisplay({ result, onResubmit }: ScoreDisplayProps) {
       {onResubmit && (
         <div className="pt-2 border-t border-border">
           <p className="text-xs text-ink-muted mb-3">
-            {pct >= 70
-              ? "Want a higher score? Fix the remaining issues, push to GitHub, and re-submit."
-              : "Fix the issues above, push to GitHub, and re-submit for an updated score."}
+            {complete
+              ? "Want a higher score? Tighten the remaining issues, push to GitHub, and re-submit."
+              : "Fix the issues above (and your tool's output if the completion check didn't pass), push to GitHub, and re-submit."}
             {attempt > 1 && ` This will be attempt #${attempt + 1}.`}
           </p>
           <Button variant="secondary" onClick={onResubmit}>

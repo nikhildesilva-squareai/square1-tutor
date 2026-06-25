@@ -294,7 +294,10 @@ export default async function ProjectBriefPage({ params }: PageProps) {
                 }}
               />
             ) : (
-              <SubmissionForm projectId={projectId} />
+              <SubmissionForm
+                projectId={projectId}
+                submitFormat={(project as unknown as { grading?: { submit_format?: string } | null }).grading?.submit_format ?? null}
+              />
             )}
           </div>
         </section>

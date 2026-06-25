@@ -4,6 +4,7 @@ import { callAI } from "@/lib/ai/budget";
 import { z } from "zod";
 import { rateLimitAI } from "@/lib/rate-limit";
 import { fetchRepo, formatRepoForReview, enrichCodeComments, type RepoAnalysis } from "@/lib/github/fetch-repo";
+import { scoreObjective, type GradingConfig, type ObjectiveResult } from "@/lib/grading/objective";
 
 const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
@@ -12,122 +13,89 @@ const schema = z.object({
   githubUrl: z.string().url("Invalid GitHub URL"),
   liveUrl: z.string().url("Invalid live URL").optional(),
   description: z.string().max(2000).optional(),
+  // The student's tool OUTPUT (findings/IOCs/recovered text/scored register), pasted
+  // for the objective completion check against the withheld answer key.
+  output: z.string().max(20000).optional(),
 });
+
+interface RubricCriterion { criterion: string; weight: number; description?: string }
+
+const RUBRIC_BAR = 60;   // rubric % needed when an objective gate also applies
+const SOLO_BAR = 70;     // rubric % needed when there is no objective gate
 
 export async function POST(request: Request) {
   try {
     const supabase = await createClient();
 
-    // 1. Auth check
     const { data: { user } } = await supabase.auth.getUser();
-    if (!user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+    if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-    // 2. Validate inputs
     const body = await request.json();
-    const { projectId, githubUrl, liveUrl, description } = schema.parse(body);
+    const { projectId, githubUrl, liveUrl, description, output } = schema.parse(body);
 
-    // 3. Find student
     const { data: student } = await supabase
-      .from("students")
-      .select("id")
-      .eq("user_id", user.id)
-      .maybeSingle();
+      .from("students").select("id").eq("user_id", user.id).maybeSingle();
+    if (!student) return NextResponse.json({ error: "Student not found" }, { status: 404 });
 
-    if (!student) {
-      return NextResponse.json({ error: "Student not found" }, { status: 404 });
-    }
-
-    // Rate limit: 15 AI requests per minute
     const rl = rateLimitAI(student.id);
     if (!rl.success) return rl.response;
 
-    // 4. Fetch the project details
+    // Fetch project incl. the real rubric + private grading config
     const { data: project } = await supabase
       .from("projects")
-      .select("id, title, description_md, difficulty, tech_stack, requirements, course_id")
+      .select("id, title, description_md, difficulty, tech_stack, requirements, rubric, grading, course_id")
       .eq("id", projectId)
       .maybeSingle();
+    if (!project) return NextResponse.json({ error: "Project not found" }, { status: 404 });
 
-    if (!project) {
-      return NextResponse.json({ error: "Project not found" }, { status: 404 });
-    }
-
-    // 5. Verify enrollment for this project's course
     const { data: enrollment } = await supabase
       .from("student_enrollments")
-      .select("id")
-      .eq("student_id", student.id)
-      .eq("course_id", project.course_id)
-      .maybeSingle();
+      .select("id").eq("student_id", student.id).eq("course_id", project.course_id).maybeSingle();
+    if (!enrollment) return NextResponse.json({ error: "Not enrolled in this course" }, { status: 403 });
 
-    if (!enrollment) {
-      return NextResponse.json({ error: "Not enrolled in this course" }, { status: 403 });
-    }
+    const rubric: RubricCriterion[] = Array.isArray(project.rubric) ? (project.rubric as RubricCriterion[]) : [];
+    const grading = (project.grading ?? null) as GradingConfig | null;
+    const hasObjective = !!(grading && grading.metric);
 
-    // ═══════════════════════════════════════════════════════════════════════════
-    // 6. FETCH ACTUAL CODE FROM GITHUB
-    // ═══════════════════════════════════════════════════════════════════════════
+    // ── 1. OBJECTIVE check (token-free): student output vs withheld answer key ──
+    let objective: ObjectiveResult | null = null;
+    if (hasObjective) objective = scoreObjective(grading as GradingConfig, output ?? "");
+
+    // ── 2. AI rubric review of the actual code, against THIS project's rubric ──
     const repoAnalysis = await fetchRepo(githubUrl);
-
-    // 7. Build the AI review prompt with real code
-    const reviewPrompt = buildReviewPrompt(project, githubUrl, repoAnalysis, description);
-
+    const reviewPrompt = buildReviewPrompt(project, rubric, githubUrl, repoAnalysis, description, objective);
     const aiResult = await callAI(student.id, {
       system: SYSTEM_PROMPT,
-      max_tokens: 2048, // More tokens for detailed code feedback
+      max_tokens: 2048,
       temperature: 0,
       messages: [{ role: "user", content: reviewPrompt }],
     });
 
-    const responseText = aiResult.text || "{}";
-
     let review: ReviewResult;
-
     try {
-      review = JSON.parse(responseText);
+      review = JSON.parse(aiResult.text || "{}");
     } catch {
-      // Fallback if AI returns malformed JSON
-      review = {
-        score: 50,
-        max_score: 100,
-        breakdown: [
-          { criterion: "Completeness", score: 15, max: 25, feedback: "Unable to fully evaluate." },
-          { criterion: "Code Quality", score: 10, max: 25, feedback: "Unable to fully evaluate." },
-          { criterion: "Error Handling", score: 8, max: 15, feedback: "Unable to fully evaluate." },
-          { criterion: "Testing", score: 5, max: 10, feedback: "Unable to fully evaluate." },
-          { criterion: "Documentation", score: 7, max: 15, feedback: "Unable to fully evaluate." },
-          { criterion: "Best Practices", score: 5, max: 10, feedback: "Unable to fully evaluate." },
-        ],
-        overall_feedback: "Submission received. The AI reviewer encountered an issue parsing the evaluation. Please try resubmitting.",
-        strengths: ["Project submitted successfully"],
-        improvements: ["Consider adding more detail in the notes field"],
-        code_comments: [],
-      };
+      review = fallbackReview(rubric);
     }
+    if (!Array.isArray(review.breakdown) || review.breakdown.length === 0) review = fallbackReview(rubric);
 
-    // ═══════════════════════════════════════════════════════════════════════════
-    // 8. ENRICH CODE COMMENTS WITH ACTUAL SNIPPETS
-    // ═══════════════════════════════════════════════════════════════════════════
-    const enrichedComments = enrichCodeComments(
-      review.code_comments ?? [],
-      repoAnalysis,
-    );
+    const enrichedComments = enrichCodeComments(review.code_comments ?? [], repoAnalysis);
 
-    // ═══════════════════════════════════════════════════════════════════════════
-    // 9. RE-SUBMISSION TRACKING — build history from previous attempt
-    // ═══════════════════════════════════════════════════════════════════════════
+    // ── 3. Completion gate ──────────────────────────────────────────────────
+    const rubricPct = review.max_score ? (review.score / review.max_score) * 100 : 0;
+    const complete = hasObjective
+      ? !!objective?.passed && rubricPct >= RUBRIC_BAR
+      : rubricPct >= SOLO_BAR;
+    const inPortfolio = complete;
+
+    // ── 4. Re-submission history ────────────────────────────────────────────
     const { data: existingSubmission } = await supabase
       .from("project_submissions")
       .select("score, max_score, breakdown, attempt_number, submission_history, submitted_at")
-      .eq("student_id", student.id)
-      .eq("project_id", projectId)
-      .maybeSingle();
+      .eq("student_id", student.id).eq("project_id", projectId).maybeSingle();
 
     let attemptNumber = 1;
     let submissionHistory: { attempt: number; score: number; max_score: number; breakdown: unknown[]; submitted_at: string }[] = [];
-
     if (existingSubmission && existingSubmission.score !== null) {
       const prevHistory = (existingSubmission.submission_history ?? []) as typeof submissionHistory;
       submissionHistory = [
@@ -143,10 +111,6 @@ export async function POST(request: Request) {
       attemptNumber = (existingSubmission.attempt_number ?? submissionHistory.length) + 1;
     }
 
-    // Auto-portfolio: score >= 70 → show in portfolio
-    const inPortfolio = review.score >= 70;
-
-    // 10. Upsert into project_submissions
     const { data: submission, error: upsertError } = await supabase
       .from("project_submissions")
       .upsert(
@@ -156,8 +120,11 @@ export async function POST(request: Request) {
           github_url: githubUrl,
           live_url: liveUrl ?? null,
           description: description ?? null,
+          student_output: output ?? null,
           score: review.score,
           max_score: review.max_score,
+          objective_score: objective ? objective.score : null,
+          objective_detail: objective ? { ...objective, threshold: grading?.threshold ?? null } : null,
           breakdown: review.breakdown,
           overall_feedback: review.overall_feedback,
           strengths: review.strengths,
@@ -171,27 +138,20 @@ export async function POST(request: Request) {
         },
         { onConflict: "student_id,project_id" }
       )
-      .select("id")
-      .single();
+      .select("id").single();
 
     if (upsertError) {
       console.error("[projects/submit] upsert error:", upsertError);
       return NextResponse.json({ error: "Failed to save submission" }, { status: 500 });
     }
 
-    // 11. Also update student_projects status if it exists
     await supabase
       .from("student_projects")
       .update({ status: "submitted", updated_at: new Date().toISOString() })
-      .eq("student_id", student.id)
-      .eq("project_id", projectId);
+      .eq("student_id", student.id).eq("project_id", projectId);
 
-    // Build previous attempt for diff display
-    const previousAttempt = submissionHistory.length > 0
-      ? submissionHistory[submissionHistory.length - 1]
-      : null;
+    const previousAttempt = submissionHistory.length > 0 ? submissionHistory[submissionHistory.length - 1] : null;
 
-    // 12. Return result with enriched comments + history
     return NextResponse.json({
       submissionId: submission.id,
       score: review.score,
@@ -203,6 +163,11 @@ export async function POST(request: Request) {
       code_comments: enrichedComments,
       attempt_number: attemptNumber,
       in_portfolio: inPortfolio,
+      complete,
+      objective: objective
+        ? { score: objective.score, passed: objective.passed, metric: objective.metric, detail: objective.detail, threshold: grading?.threshold ?? null, error: objective.error ?? null }
+        : null,
+      objective_required: hasObjective,
       previous_attempt: previousAttempt,
       repo_stats: {
         totalFiles: repoAnalysis.totalFiles,
@@ -233,86 +198,110 @@ interface ReviewResult {
   code_comments: { file: string; line?: number; comment: string; severity: "info" | "warning" | "error" }[];
 }
 
+const GENERIC_RUBRIC: RubricCriterion[] = [
+  { criterion: "Completeness", weight: 25 },
+  { criterion: "Code Quality", weight: 25 },
+  { criterion: "Error Handling", weight: 15 },
+  { criterion: "Testing", weight: 10 },
+  { criterion: "Documentation", weight: 15 },
+  { criterion: "Best Practices", weight: 10 },
+];
+
+function fallbackReview(rubric: RubricCriterion[]): ReviewResult {
+  const r = rubric.length ? rubric : GENERIC_RUBRIC;
+  const breakdown = r.map((c) => ({
+    criterion: c.criterion,
+    score: Math.round((c.weight ?? 0) * 0.5),
+    max: c.weight ?? 0,
+    feedback: "Unable to fully evaluate — the AI reviewer couldn't parse this submission. Please re-submit.",
+  }));
+  return {
+    score: breakdown.reduce((s, b) => s + b.score, 0),
+    max_score: breakdown.reduce((s, b) => s + b.max, 0) || 100,
+    breakdown,
+    overall_feedback: "Submission received. The AI reviewer hit a parsing issue — please re-submit.",
+    strengths: ["Project submitted successfully"],
+    improvements: ["Re-submit so the reviewer can fully evaluate your code"],
+    code_comments: [],
+  };
+}
+
 // ─── System prompt ───────────────────────────────────────────────────────────
 
-const SYSTEM_PROMPT = `You are a senior software engineer at a top tech company, reviewing a student's project submission. You have access to their actual source code from GitHub.
+const SYSTEM_PROMPT = `You are a senior engineer reviewing a student's project submission. You have their actual source code from GitHub.
 
 Your review must be:
-- HONEST: If the code is bad, say so. Don't inflate scores.
-- SPECIFIC: Reference actual files and code patterns you see.
-- ACTIONABLE: Every criticism must include what to do instead.
-- ENCOURAGING: Acknowledge genuine strengths.
+- HONEST: if the code is weak, say so — don't inflate scores.
+- SPECIFIC: reference actual files and code patterns you see.
+- ACTIONABLE: every criticism includes what to do instead.
+- ENCOURAGING: acknowledge genuine strengths.
 
-Score strictly but fairly. A beginner project with clean, working code can score 80+.
-An advanced project with sloppy code should score lower.
+You grade against the project's OWN rubric (provided). Score each criterion from 0 to its max. A correctness/detection criterion should reward code that actually implements the required behaviour — not just code that looks plausible.
 
 Always respond with valid JSON only — no markdown fences, no extra text.`;
 
-// ─── Build the review prompt with real code ──────────────────────────────────
+// ─── Build the review prompt: real brief + this project's rubric ──────────────
 
 function buildReviewPrompt(
-  project: { title: string; description_md: string; difficulty: string; tech_stack: string[]; requirements: string[] },
+  project: { title: string; description_md?: string | null; difficulty: string; tech_stack: string[] },
+  rubric: RubricCriterion[],
   githubUrl: string,
   repo: RepoAnalysis,
-  description?: string,
+  description: string | undefined,
+  objective: ObjectiveResult | null,
 ): string {
+  const r = rubric.length ? rubric : GENERIC_RUBRIC;
+  const total = r.reduce((s, c) => s + (Number(c.weight) || 0), 0) || 100;
   const repoContext = formatRepoForReview(repo);
   const codeAvailable = !repo.error && repo.files.length > 0;
+  const brief = (project.description_md ?? "").slice(0, 4000);
+
+  const rubricLines = r.map((c, i) => `${i + 1}. ${c.criterion} (0–${c.weight})${c.description ? ` — ${c.description}` : ""}`).join("\n");
+  const breakdownTemplate = r
+    .map((c) => `    { "criterion": ${JSON.stringify(c.criterion)}, "score": <0..${c.weight}>, "max": ${c.weight}, "feedback": "Specific feedback referencing actual code" }`)
+    .join(",\n");
+
+  const objectiveNote = objective
+    ? `\n## Objective check (already computed, do NOT re-score it)
+An automated check compared the student's submitted output to the hidden answer key: metric=${objective.metric}, score=${Math.round(objective.score * 100)}%, passed=${objective.passed}${objective.error ? `, note="${objective.error}"` : ""}. Use this as a strong signal of whether their tool actually works when scoring the correctness/detection criterion, but still score code quality, docs, etc. on their own merits.\n`
+    : "";
 
   return `# Project Review Request
 
 ## Project Brief
 **Title:** ${project.title}
 **Difficulty:** ${project.difficulty}
-**Required Tech Stack:** ${(project.tech_stack ?? []).join(", ")}
-**Requirements:**
-${(project.requirements ?? []).map((r, i) => `${i + 1}. ${r}`).join("\n")}
+**Tech stack:** ${(project.tech_stack ?? []).join(", ") || "n/a"}
 
+${brief ? `### Full brief\n${brief}\n` : ""}
 ## Student Submission
 **GitHub:** ${githubUrl}
-${description ? `**Student Notes:** ${description}` : ""}
-
+${description ? `**Student notes:** ${description}` : ""}
+${objectiveNote}
 ${repoContext}
 
 ---
 
 ## Your Task
-
 ${codeAvailable
-    ? `You have the student's actual source code above. Review it thoroughly.
+    ? "You have the student's actual source code above. Review it thoroughly and reference SPECIFIC files in your feedback and code_comments."
+    : `The repo could not be fetched (${repo.error}). Be transparent that you couldn't read the code and score conservatively.`}
 
-For each criterion, reference SPECIFIC files and code patterns.
-In code_comments, point to specific files (and line numbers if possible) with actionable feedback.`
-    : `The repo could not be fetched (${repo.error}). Review based on what's available.
-Be transparent that you couldn't read the code — score conservatively.`
-}
+Grade STRICTLY against THIS project's rubric (total ${total}). Score each criterion from 0 to its max:
+${rubricLines}
 
-Score out of 100:
-- **Completeness** (requirements met, features working): /25
-- **Code Quality** (clean code, naming, structure, DRY): /25
-- **Error Handling** (edge cases, validation, graceful failures): /15
-- **Testing** (has tests, test quality, coverage): /10
-- **Documentation** (README, code comments, types): /15
-- **Best Practices** (security, performance, accessibility): /10
-
-Return this exact JSON structure (no markdown fences):
+Return EXACTLY this JSON (no markdown fences):
 {
-  "score": <total_number>,
-  "max_score": 100,
+  "score": <sum of criterion scores>,
+  "max_score": ${total},
   "breakdown": [
-    { "criterion": "Completeness", "score": <number>, "max": 25, "feedback": "Specific feedback referencing actual code..." },
-    { "criterion": "Code Quality", "score": <number>, "max": 25, "feedback": "..." },
-    { "criterion": "Error Handling", "score": <number>, "max": 15, "feedback": "..." },
-    { "criterion": "Testing", "score": <number>, "max": 10, "feedback": "..." },
-    { "criterion": "Documentation", "score": <number>, "max": 15, "feedback": "..." },
-    { "criterion": "Best Practices", "score": <number>, "max": 10, "feedback": "..." }
+${breakdownTemplate}
   ],
-  "overall_feedback": "3-4 sentences of specific, actionable feedback. Reference files by name.",
-  "strengths": ["Specific strength 1 referencing code", "Specific strength 2"],
-  "improvements": ["Specific improvement 1 with what to change", "Specific improvement 2"],
+  "overall_feedback": "3-4 sentences of specific, actionable feedback referencing files by name.",
+  "strengths": ["Specific strength referencing code", "..."],
+  "improvements": ["Specific improvement with what to change", "..."],
   "code_comments": [
-    { "file": "src/app.ts", "line": 42, "comment": "This fetch call has no error handling — wrap in try/catch", "severity": "error" },
-    { "file": "src/utils.ts", "comment": "Good use of TypeScript generics here", "severity": "info" }
+    { "file": "path/to/file", "line": 42, "comment": "Actionable note", "severity": "error" }
   ]
 }`;
 }
