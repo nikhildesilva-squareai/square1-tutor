@@ -4,6 +4,7 @@ import Link from "next/link";
 import { SubmissionForm, ScoreDisplay } from "./SubmissionForm";
 import { RichContent } from "@/components/ui/rich-content";
 import type { Project, ProjectSubmission, ProjectRubricCriterion, ProjectReference, ProjectDataCard } from "@/types/database";
+import { scaleWeek, weekDueDate, projectStatus, countdownLabel, fmtDate, STATUS_STYLE, type ProjectStatus } from "@/lib/schedule";
 
 export const revalidate = 120;
 
@@ -31,6 +32,21 @@ export default async function ProjectBriefPage({ params }: PageProps) {
   if (student) {
     const { data } = await supabase.from("project_submissions").select("*").eq("student_id", student.id).eq("project_id", projectId).maybeSingle() as { data: ProjectSubmission | null };
     submission = data;
+  }
+
+  // Rolling deadline for this learner (enrolled + project scheduled)
+  let due: Date | null = null;
+  let dueStatus: ProjectStatus | null = null;
+  const schedWeek = (project as unknown as { schedule_week?: number | null }).schedule_week ?? null;
+  if (student && schedWeek != null) {
+    const { data: enr } = await supabase
+      .from("student_enrollments")
+      .select("enrolled_at, plan_months")
+      .eq("student_id", student.id).eq("course_id", project.course_id).eq("status", "active").maybeSingle();
+    if (enr?.enrolled_at) {
+      due = weekDueDate(new Date(enr.enrolled_at as string), scaleWeek(schedWeek, enr.plan_months as number | null));
+      dueStatus = projectStatus(due, !!(submission && submission.score !== null));
+    }
   }
 
   const techStack = project.tech_stack ?? [];
@@ -87,6 +103,12 @@ export default async function ProjectBriefPage({ params }: PageProps) {
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M4 19.5A2.5 2.5 0 016.5 17H20" /><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z" /></svg>
               Project {project.order_index + 1} of {course?.total_projects ?? "?"}
             </span>
+            {due && dueStatus && (
+              <span className={`flex items-center gap-1.5 px-2 py-0.5 rounded-full border ${STATUS_STYLE[dueStatus].cls}`}>
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" /><line x1="16" y1="2" x2="16" y2="6" /><line x1="8" y1="2" x2="8" y2="6" /><line x1="3" y1="10" x2="21" y2="10" /></svg>
+                Due {fmtDate(due)}{dueStatus !== "done" && <> · {countdownLabel(due)}</>}
+              </span>
+            )}
             {techStack.length > 0 && (
               <span className="flex items-center gap-1.5">
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><polyline points="16 18 22 12 16 6" /><polyline points="8 6 2 12 8 18" /></svg>

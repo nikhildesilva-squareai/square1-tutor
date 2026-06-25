@@ -526,7 +526,10 @@ export default async function DashboardPage({ searchParams }: DashboardProps) {
           <div className="bg-surface rounded-2xl border border-border shadow-card p-5">
             <div className="flex items-center justify-between mb-5">
               <p className="text-[10px] font-bold text-ink-muted uppercase tracking-widest">Course Roadmap</p>
-              <Link href={`/courses/${courseSlug}`} className="text-xs text-brand font-semibold hover:underline">View course</Link>
+              <div className="flex items-center gap-3">
+                <Link href={`/courses/${courseSlug}/schedule`} className="text-xs text-brand font-semibold hover:underline">Schedule &amp; deadlines</Link>
+                <Link href={`/courses/${courseSlug}`} className="text-xs text-ink-muted font-semibold hover:underline">View course</Link>
+              </div>
             </div>
 
             <div className="space-y-3">
