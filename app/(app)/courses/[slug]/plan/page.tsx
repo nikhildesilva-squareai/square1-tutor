@@ -99,6 +99,11 @@ export default function PlanPage({ params }: PageProps) {
   const { slug } = use(params);
   const searchParams = useSearchParams();
   const reportId = searchParams.get("reportId") ?? "";
+  const level = (searchParams.get("level") ?? "").toLowerCase();
+  // Recommend a pace by placement: beginner -> 9mo (room to learn the basics),
+  // intermediate -> 6mo, advanced -> 3mo. Unknown level falls back to 6mo.
+  const recMonths = level.includes("begin") ? 9 : level.includes("adv") ? 3 : 6;
+  const hasLevelRec = level.length > 0;
 
   const router = useRouter();
   const [billingCycle, setBillingCycle] = useState<"monthly" | "upfront">("monthly");
@@ -140,9 +145,14 @@ export default function PlanPage({ params }: PageProps) {
             Invest in yourself
           </h1>
           <p className="text-ink-muted text-sm sm:text-base max-w-lg mx-auto mb-4">
-            Every plan includes the full curriculum, AI-graded projects, Nova AI tutor, and a certificate.
-            Just pick your pace.
+            Every plan includes the <span className="font-semibold text-ink-secondary">same full curriculum</span> — all lessons and projects.
+            The plan just sets your pace.
           </p>
+          {hasLevelRec && (
+            <p className="text-sm font-semibold text-brand max-w-lg mx-auto mb-4">
+              Based on your assessment, we recommend the {recMonths}-month plan — but pick whatever pace fits your life.
+            </p>
+          )}
 
           {/* Value anchor */}
           <p className="text-xs text-ink-muted mb-10">
@@ -210,6 +220,7 @@ export default function PlanPage({ params }: PageProps) {
       <section className="px-4 sm:px-6 pb-12 sm:pb-16">
         <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-5">
           {PLANS.map((plan) => {
+            const recommended = plan.months === recMonths;
             const price = billingCycle === "monthly" ? plan.monthlyPrice : plan.upfrontPrice;
             const priceLabel = billingCycle === "monthly" ? "/mo" : " once";
             const altPrice = billingCycle === "monthly"
@@ -221,16 +232,16 @@ export default function PlanPage({ params }: PageProps) {
                 key={plan.months}
                 className={cn(
                   "relative rounded-2xl border p-6 sm:p-8 transition-all bg-surface flex flex-col",
-                  plan.isFeatured
+                  recommended
                     ? "border-brand shadow-card-hover ring-1 ring-brand/20"
                     : "border-border shadow-card hover:shadow-card-hover"
                 )}
               >
-                {/* Featured badge */}
-                {plan.isFeatured && (
+                {/* Recommended / popular badge */}
+                {recommended && (
                   <div className="absolute -top-3 left-1/2 -translate-x-1/2">
                     <span className="px-4 py-1 rounded-full bg-brand text-white text-[10px] font-bold uppercase tracking-wider shadow-lg shadow-brand/25">
-                      Most Popular
+                      {hasLevelRec ? "Recommended for you" : "Most Popular"}
                     </span>
                   </div>
                 )}
@@ -275,7 +286,7 @@ export default function PlanPage({ params }: PageProps) {
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" strokeWidth="2">
                       <polyline points="16 18 22 12 16 6" /><polyline points="8 6 2 12 8 18" />
                     </svg>
-                    <span className="text-sm text-ink-secondary">{plan.projects} projects</span>
+                    <span className="text-sm text-ink-secondary">All projects + lessons</span>
                   </div>
                   <div className="flex items-center gap-3">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#19A65F" strokeWidth="2.5">

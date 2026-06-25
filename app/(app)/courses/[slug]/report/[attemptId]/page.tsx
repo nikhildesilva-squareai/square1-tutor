@@ -756,7 +756,7 @@ export default function ReportPage({ params }: PageProps) {
                   <span key={c} className="text-[11px] font-semibold text-white bg-white/10 border border-white/15 rounded-full px-3 py-1.5">{c}</span>
                 ))}
               </div>
-              <Link href={`/courses/${slug}/plan?reportId=${report.reportId}`}
+              <Link href={`/courses/${slug}/plan?reportId=${report.reportId}&level=${overallLevel}`}
                 className="group inline-flex items-center gap-2 h-14 px-10 rounded-2xl bg-white text-brand font-black text-base hover:shadow-2xl hover:shadow-black/25 hover:-translate-y-0.5 active:translate-y-0 transition-all">
                 Build my learning plan
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="group-hover:translate-x-1 transition-transform"><path d="M5 12h14" /><polyline points="12 5 19 12 12 19" /></svg>
@@ -986,7 +986,7 @@ export default function ReportPage({ params }: PageProps) {
             Every lesson, project, and Nova session targets the gaps above. Start today — free during early access.
           </p>
           <Link
-            href={`/courses/${slug}/plan?reportId=${report.reportId}`}
+            href={`/courses/${slug}/plan?reportId=${report.reportId}&level=${overallLevel}`}
             className="group inline-flex items-center gap-2 h-14 px-10 rounded-2xl text-white font-black text-base hover:-translate-y-0.5 hover:shadow-2xl hover:shadow-brand/30 transition-all"
             style={{ background: "linear-gradient(135deg,#0056CE 0%,#0b3b97 55%,#1e1b4b 100%)" }}
           >

@@ -100,7 +100,9 @@ export async function POST(request: Request) {
     // First lesson of the course — module-aware (lessons.order_index is per-module).
     const firstLessonId = await getFirstLessonId(admin, courseId);
 
-    const months = planMonths ?? 3;
+    // Default to the balanced 6-month pace (not the intensive 3-month) — most
+    // free-trial learners are beginners and shouldn't be dropped into the hardest track.
+    const months = planMonths ?? 6;
     const targetDate = new Date();
     targetDate.setMonth(targetDate.getMonth() + months);
     const targetCompletionDate = targetDate.toISOString().split("T")[0];
