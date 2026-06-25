@@ -130,16 +130,14 @@ export default async function CourseDetailPage({ params }: PageProps) {
   }
 
   // Determine lesson status
-  function getLessonStatus(lessonId: string, moduleIndex: number): "completed" | "current" | "locked" {
+  function getLessonStatus(lessonId: string, moduleIndex: number): "completed" | "current" | "open" | "locked" {
     if (completedLessonIds.has(lessonId)) return "completed";
     if (lessonId === currentLessonId) return "current";
     // If student has no enrollment, all are locked
     if (!studentId) return "locked";
-    // First lesson of first module is accessible if nothing completed
-    if (moduleIndex === 0 && completedLessonIds.size === 0 && currentLessonId === null) {
-      const firstModuleLessons = lessonsByModule[moduleList[0]?.id] ?? [];
-      if (firstModuleLessons.length > 0 && firstModuleLessons[0].id === lessonId) return "current";
-    }
+    // Module 0 — the foundations on-ramp — is ALWAYS open: it's the beginner floor
+    // and review material, accessible no matter where you are in the course.
+    if (moduleIndex === 0) return "open";
     return "locked";
   }
 
@@ -278,9 +276,10 @@ export default async function CourseDetailPage({ params }: PageProps) {
                               )}
                             </div>
                             <p className={["text-sm flex-1 min-w-0 truncate",
-                              status === "completed" ? "text-ink-secondary" : status === "current" ? "text-ink font-medium" : "text-ink-muted"
+                              status === "completed" ? "text-ink-secondary" : status === "current" ? "text-ink font-medium" : status === "open" ? "text-ink-secondary" : "text-ink-muted"
                             ].join(" ")}>{lesson.title}</p>
                             {status === "completed" && <Link href={`/learn/${lesson.id}`} className="text-[10px] text-brand font-semibold hover:underline shrink-0">Review</Link>}
+                            {status === "open" && <Link href={`/learn/${lesson.id}`} className="text-[10px] text-brand font-semibold hover:underline shrink-0">Open</Link>}
                             {status === "current" && (
                               <Link href={`/learn/${lesson.id}`}
                                 className="h-7 px-3 rounded-lg bg-brand text-white text-[10px] font-bold inline-flex items-center gap-1 hover:bg-brand/90 transition-all shrink-0">
