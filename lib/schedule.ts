@@ -14,7 +14,10 @@ const WEEK = 7 * DAY;
 /** Scale a baseline (6-month) week to the learner's plan length. */
 export function scaleWeek(baseWeek: number, planMonths: number | null | undefined): number {
   const f = (planMonths || 6) / 6;
-  return Math.max(1, Math.round(baseWeek * f));
+  // Anchor at week 1: a baseline week-1 item (e.g. Module 0) stays week 1 at every
+  // pace — no empty lead-in week when stretched (9-mo), no week-1 pile-up when
+  // compressed (3-mo). Everything else stretches/compresses relative to week 1.
+  return Math.max(1, 1 + Math.round((baseWeek - 1) * f));
 }
 
 /** Total weeks in the program for a given plan length. */
