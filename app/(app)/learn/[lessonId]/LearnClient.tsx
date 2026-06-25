@@ -177,22 +177,21 @@ function parseTheoryIntoCards(theory: string, exercises: ExerciseData[], objecti
     cards.push({ type: "objectives", title: "What You'll Learn" });
   }
 
-  // 2. Split theory on ## headers into sections
+  // 2. Split theory on ## headers into sections.
+  //    Strip the leading "# Title" block first — it duplicates the lesson header
+  //    and would otherwise render as an empty first step (showing a literal "#").
+  const theoryBody = theory.replace(/^\s*#(?!#)\s+.*(?:\r?\n)+/, "");
   const sections: { title: string; content: string }[] = [];
-  const parts = theory.split(/^## /gm);
+  const parts = theoryBody.split(/^## /gm);
 
   for (const part of parts) {
     const trimmed = part.trim();
     if (!trimmed) continue;
     const firstNewline = trimmed.indexOf("\n");
-    if (firstNewline === -1) {
-      sections.push({ title: trimmed, content: "" });
-    } else {
-      sections.push({
-        title: trimmed.substring(0, firstNewline).trim(),
-        content: trimmed.substring(firstNewline + 1).trim(),
-      });
-    }
+    const rawTitle = firstNewline === -1 ? trimmed : trimmed.substring(0, firstNewline);
+    const title = rawTitle.replace(/^#+\s*/, "").trim();           // never show a literal "#"
+    const content = firstNewline === -1 ? "" : trimmed.substring(firstNewline + 1).trim();
+    sections.push({ title, content });
   }
 
   // 3. Add theory cards with inline quizzes after every 2 sections
