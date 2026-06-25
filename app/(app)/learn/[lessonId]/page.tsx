@@ -55,7 +55,20 @@ export default async function LearnPage({ params }: PageProps) {
   const lessonList = moduleLessons ?? [];
   const lessonIndex = lessonList.findIndex((l) => l.id === lessonId);
   const totalLessonsInModule = lessonList.length;
-  const nextLesson = lessonIndex < lessonList.length - 1 ? lessonList[lessonIndex + 1] : null;
+
+  // Course-wide ordered lessons → previous/next navigation that flows across modules,
+  // so a learner can always step back to review (or forward through) any lesson.
+  const [{ data: allCourseLessons }, { data: allCourseModules }] = await Promise.all([
+    supabase.from("lessons").select("id, order_index, module_id").eq("course_id", lesson.course_id),
+    supabase.from("modules").select("id, order_index").eq("course_id", lesson.course_id),
+  ]);
+  const modOrder = new Map((allCourseModules ?? []).map((m) => [m.id, m.order_index ?? 0]));
+  const orderedLessons = (allCourseLessons ?? []).slice().sort((a, b) =>
+    ((modOrder.get(a.module_id) ?? 0) - (modOrder.get(b.module_id) ?? 0)) || (a.order_index - b.order_index)
+  );
+  const courseIdx = orderedLessons.findIndex((l) => l.id === lessonId);
+  const prevLessonId = courseIdx > 0 ? orderedLessons[courseIdx - 1].id : null;
+  const nextLessonId = courseIdx >= 0 && courseIdx < orderedLessons.length - 1 ? orderedLessons[courseIdx + 1].id : null;
 
   // Get exercises for this lesson
   const { data: exercises } = await supabase
@@ -103,7 +116,8 @@ export default async function LearnPage({ params }: PageProps) {
       exercises={safeExercises}
       lessonPosition={lessonIndex + 1}
       totalLessonsInModule={totalLessonsInModule}
-      nextLessonId={nextLesson?.id ?? null}
+      prevLessonId={prevLessonId}
+      nextLessonId={nextLessonId}
       alreadyCompleted={!!completion}
       weakTopics={weakTopics}
     />

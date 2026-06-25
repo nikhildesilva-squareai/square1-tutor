@@ -33,7 +33,7 @@ interface ExerciseResult { exerciseId: string; correct: boolean; score: number; 
 interface LearnClientProps {
   lesson: LessonData; module: ModuleData | null; course: CourseData | null;
   exercises: ExerciseData[]; lessonPosition: number; totalLessonsInModule: number;
-  nextLessonId: string | null; alreadyCompleted: boolean;
+  prevLessonId: string | null; nextLessonId: string | null; alreadyCompleted: boolean;
   weakTopics: string[];
 }
 
@@ -267,7 +267,7 @@ function parseTheoryIntoCards(theory: string, exercises: ExerciseData[], objecti
 
 export function LearnClient({
   lesson, module, course, exercises,
-  lessonPosition, totalLessonsInModule, nextLessonId, alreadyCompleted,
+  lessonPosition, totalLessonsInModule, prevLessonId, nextLessonId, alreadyCompleted,
   weakTopics,
 }: LearnClientProps) {
   const router = useRouter();
@@ -455,6 +455,25 @@ export function LearnClient({
       {/* ── Fixed header ──────────────────────────────────────────── */}
       <div className="bg-surface border-b border-border px-4 sm:px-6 py-3 shrink-0">
         <div className="max-w-3xl mx-auto">
+          {/* Lesson-to-lesson nav — review any lesson, flows across modules */}
+          {(prevLessonId || nextLessonId) && (
+            <div className="flex items-center justify-between mb-2">
+              {prevLessonId ? (
+                <button onClick={() => router.push(`/learn/${prevLessonId}`)}
+                  className="inline-flex items-center gap-1 text-[11px] font-semibold text-ink-muted hover:text-brand transition-colors">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M15 18l-6-6 6-6" /></svg>
+                  Previous lesson
+                </button>
+              ) : <span />}
+              {nextLessonId ? (
+                <button onClick={() => router.push(`/learn/${nextLessonId}`)}
+                  className="inline-flex items-center gap-1 text-[11px] font-semibold text-ink-muted hover:text-brand transition-colors">
+                  Next lesson
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 18l6-6-6-6" /></svg>
+                </button>
+              ) : <span />}
+            </div>
+          )}
           {/* Top row */}
           <div className="flex items-center gap-3 mb-2.5">
             <Link href={course ? `/courses/${course.slug}` : "/courses"} className="text-ink-muted hover:text-brand transition-colors shrink-0">
