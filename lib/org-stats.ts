@@ -1,4 +1,5 @@
 import { createAdminClient } from "@/lib/supabase/admin";
+import { rollUpDomains, getCompetencyConfig, type DomainScore } from "@/lib/competency";
 
 // Single source of truth for manager-portal + Team Impact Report numbers.
 // All real data (no fabrication): roster, impact metrics, and skill-gap +
@@ -16,6 +17,14 @@ export interface OrgMemberRow {
   completionPct: number;
   completed: boolean;
   lastActive: string | null;
+}
+
+export interface TeamMatrix {
+  courseSlug: string;
+  courseTitle: string;
+  domains: string[];                                  // column headers (domain names)
+  rows: { name: string; cells: ({ pct: number; level: string } | null)[] }[]; // cells aligned to domains[]
+  avg: (number | null)[];                             // team average % per domain
 }
 
 export interface OrgStats {
@@ -36,6 +45,7 @@ export interface OrgStats {
   membersAssessed: number;
   topWeak: { topic: string; count: number }[];
   topStrong: { topic: string; count: number }[];
+  teamMatrices: TeamMatrix[];
 }
 
 export async function getOrgStats(orgId: string): Promise<OrgStats | null> {
@@ -62,6 +72,7 @@ export async function getOrgStats(orgId: string): Promise<OrgStats | null> {
   let membersAssessed = 0;
   let topWeak: { topic: string; count: number }[] = [];
   let topStrong: { topic: string; count: number }[] = [];
+  let teamMatrices: TeamMatrix[] = [];
 
   if (memberIds.length > 0) {
     const [{ data: studs }, { data: enrs }, { data: comps }, { data: subs }, { data: reports }] = await Promise.all([
@@ -69,7 +80,7 @@ export async function getOrgStats(orgId: string): Promise<OrgStats | null> {
       admin.from("student_enrollments").select("student_id, assessment_level, course:courses(title, slug, total_lessons)").in("student_id", memberIds).eq("status", "active"),
       admin.from("lesson_completions").select("student_id, completed_at").in("student_id", memberIds),
       admin.from("project_submissions").select("student_id, score, max_score, live_url").in("student_id", memberIds),
-      admin.from("skill_reports").select("student_id, weak_topics, strong_topics, estimated_score, max_score, created_at").in("student_id", memberIds),
+      admin.from("skill_reports").select("student_id, course_id, topic_mastery_json, weak_topics, strong_topics, estimated_score, max_score, created_at").in("student_id", memberIds),
     ]);
 
     const studMap = new Map((studs ?? []).map((s) => [s.id, s]));
@@ -138,6 +149,67 @@ export async function getOrgStats(orgId: string): Promise<OrgStats | null> {
     topWeak = tally(weakByStud).slice(0, 8);
     topStrong = tally(strongByStud).slice(0, 6);
 
+    // ── Team competency matrix (members × domains) — reuses the learner rollup ──
+    type Rep = { student_id: string; course_id: string | null; topic_mastery_json: unknown; created_at: string };
+    const repRows = (reports ?? []) as Rep[];
+    const courseIds = [...new Set(repRows.map((r) => r.course_id).filter((c): c is string => !!c))];
+    const { data: matrixCourses } = courseIds.length
+      ? await admin.from("courses").select("id, slug, title").in("id", courseIds)
+      : { data: [] as { id: string; slug: string; title: string }[] };
+    const courseById = new Map((matrixCourses ?? []).map((c) => [c.id, c]));
+
+    // Latest report per (student, course).
+    const latestRep = new Map<string, Rep>();
+    for (const r of repRows) {
+      if (!r.course_id) continue;
+      const key = `${r.student_id}|${r.course_id}`;
+      const ex = latestRep.get(key);
+      if (!ex || r.created_at > ex.created_at) latestRep.set(key, r);
+    }
+
+    // Group members' domain scores by course.
+    const perCourse = new Map<string, { studentId: string; domains: DomainScore[] }[]>();
+    for (const r of latestRep.values()) {
+      const course = courseById.get(r.course_id!);
+      if (!course) continue;
+      const tm = Array.isArray(r.topic_mastery_json)
+        ? (r.topic_mastery_json as Array<{ topic: string; correct: number; total: number }>)
+        : [];
+      const accum: Record<string, { correct: number; total: number }> = {};
+      for (const t of tm) if (t && t.topic) accum[t.topic] = { correct: Number(t.correct) || 0, total: Number(t.total) || 0 };
+      const domains = rollUpDomains(course.slug, accum);
+      if (!domains || !domains.length) continue;
+      const arr = perCourse.get(course.id) ?? [];
+      arr.push({ studentId: r.student_id, domains });
+      perCourse.set(course.id, arr);
+    }
+
+    for (const [courseId, entries] of perCourse) {
+      const course = courseById.get(courseId)!;
+      const cfg = getCompetencyConfig(course.slug);
+      const domainNames = cfg
+        ? cfg.domains.map((d) => d.name)
+        : [...new Set(entries.flatMap((e) => e.domains.map((d) => d.domain)))];
+      const rows = entries
+        .map((e) => {
+          const byName = new Map(e.domains.map((d) => [d.domain, d]));
+          return {
+            name: studMap.get(e.studentId)?.name ?? studMap.get(e.studentId)?.email?.split("@")[0] ?? "Member",
+            cells: domainNames.map((dn) => {
+              const d = byName.get(dn);
+              return d ? { pct: d.percentage, level: d.level } : null;
+            }),
+          };
+        })
+        .sort((a, b) => a.name.localeCompare(b.name));
+      const avg = domainNames.map((_, i) => {
+        const vals = rows.map((r) => r.cells[i]?.pct).filter((v): v is number => v != null);
+        return vals.length ? Math.round(vals.reduce((a, b) => a + b, 0) / vals.length) : null;
+      });
+      teamMatrices.push({ courseSlug: course.slug, courseTitle: course.title, domains: domainNames, rows, avg });
+    }
+    teamMatrices.sort((a, b) => b.rows.length - a.rows.length);
+
     roster = memberIds.map((id) => {
       const s = studMap.get(id);
       const enr = enrMap.get(id);
@@ -186,5 +258,6 @@ export async function getOrgStats(orgId: string): Promise<OrgStats | null> {
     membersAssessed,
     topWeak,
     topStrong,
+    teamMatrices,
   };
 }

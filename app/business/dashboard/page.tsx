@@ -7,8 +7,17 @@ import { Logo } from "@/components/ui/logo";
 import { CopyInviteLink } from "@/components/business/CopyInviteLink";
 import { BulkInvite } from "@/components/business/BulkInvite";
 import { getOrgStats } from "@/lib/org-stats";
+import { LEVEL_LABELS } from "@/lib/competency";
 
 export const dynamic = "force-dynamic";
+
+// Novice → Expert band colours for the team competency matrix.
+const BAND_COLORS = ["#E6F1FB", "#B5D4F4", "#378ADD", "#185FA5", "#0C447C"];
+function bandStyle(level: string): { background: string; color: string } {
+  const i = LEVEL_LABELS.indexOf(level as (typeof LEVEL_LABELS)[number]);
+  const idx = i < 0 ? 0 : i;
+  return { background: BAND_COLORS[idx], color: idx >= 2 ? "#fff" : "#0C447C" };
+}
 
 export default async function ManagerDashboard() {
   const supabase = await createClient();
@@ -29,7 +38,7 @@ export default async function ManagerDashboard() {
   const {
     org, roster, pendingCount, pendingEmails, seatsUsed, seatsLeft,
     activeThisWeek, completedCount, avgCompletion, deployedCount, avgScore,
-    teamReadiness, readinessDelta, membersAssessed, topWeak, topStrong,
+    teamReadiness, readinessDelta, membersAssessed, topWeak, topStrong, teamMatrices,
   } = stats;
 
   // Courses for the "assign a track" invite dropdown.
@@ -151,6 +160,60 @@ export default async function ManagerDashboard() {
             </div>
           )}
         </div>
+
+        {/* Team competency matrix — members × domains, reusing the learner rollup */}
+        {teamMatrices.length > 0 && (
+          <div className="rounded-2xl border border-slate-200 bg-white p-5 mb-3">
+            <div className="flex items-center justify-between gap-3 flex-wrap mb-1">
+              <p className="text-sm font-bold text-slate-900">Team competency matrix</p>
+              <div className="flex items-center gap-2.5 text-[10px] text-slate-500 flex-wrap">
+                {["Novice", "Developing", "Proficient", "Advanced", "Expert"].map((lvl, i) => (
+                  <span key={lvl} className="inline-flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-sm" style={{ background: BAND_COLORS[i] }} />{lvl}</span>
+                ))}
+              </div>
+            </div>
+            <p className="text-[11px] text-slate-500 mb-4">Each member&apos;s level per domain, from their latest assessment. Cells show %.</p>
+            {teamMatrices.map((tm) => (
+              <div key={tm.courseSlug} className="mb-5 last:mb-0">
+                <p className="text-xs font-bold text-slate-700 mb-2">{tm.courseTitle}</p>
+                <div className="overflow-x-auto">
+                  <table className="text-xs border-collapse min-w-full">
+                    <thead>
+                      <tr>
+                        <th className="text-left px-2 py-1.5 font-bold text-slate-500 sticky left-0 bg-white z-10">Member</th>
+                        {tm.domains.map((d) => (
+                          <th key={d} className="px-1.5 py-1.5 font-semibold text-slate-500 text-center">
+                            <span className="block truncate max-w-[88px] mx-auto" title={d}>{d}</span>
+                          </th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {tm.rows.map((r) => (
+                        <tr key={r.name} className="border-t border-slate-100">
+                          <td className="px-2 py-1.5 font-medium text-slate-800 whitespace-nowrap sticky left-0 bg-white z-10">{r.name}</td>
+                          {r.cells.map((c, i) => (
+                            <td key={i} className="px-1 py-1">
+                              {c
+                                ? <span className="block w-full rounded-md py-1 text-center text-[10px] font-bold tabular-nums" style={bandStyle(c.level)} title={`${c.level} · ${c.pct}%`}>{c.pct}</span>
+                                : <span className="block text-center text-slate-300">—</span>}
+                            </td>
+                          ))}
+                        </tr>
+                      ))}
+                      <tr className="border-t-2 border-slate-200">
+                        <td className="px-2 py-1.5 font-bold text-slate-500 sticky left-0 bg-white z-10">Team avg</td>
+                        {tm.avg.map((a, i) => (
+                          <td key={i} className="px-1 py-1.5 text-center font-bold text-slate-700 tabular-nums">{a != null ? `${a}%` : "—"}</td>
+                        ))}
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
 
         {/* Seat usage meter */}
         <div className="rounded-xl border border-slate-200 bg-white p-4 mb-6">
