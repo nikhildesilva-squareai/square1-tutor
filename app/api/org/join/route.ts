@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { NextResponse } from "next/server";
 import { z } from "zod";
+import { getFirstLessonId } from "@/lib/lessons";
 
 const schema = z.object({
   code: z.string().min(4).max(40),
@@ -81,21 +82,21 @@ export async function POST(request: Request) {
     const { data: course } = await admin.from("courses").select("id").eq("slug", effectiveSlug).maybeSingle();
     if (!course) return NextResponse.json({ error: "Course not found" }, { status: 404 });
 
-    const { data: firstLesson } = await admin
-      .from("lessons").select("id").eq("course_id", course.id).order("order_index", { ascending: true }).limit(1).maybeSingle();
+    // First lesson — module-aware (lessons.order_index is per-module).
+    const firstLessonId = await getFirstLessonId(admin, course.id);
 
     const { data: existingEnr } = await supabase
       .from("student_enrollments").select("id").eq("student_id", student.id).eq("course_id", course.id).maybeSingle();
 
     if (existingEnr) {
-      await supabase.from("student_enrollments").update({ status: "active", org_id: org.id, current_lesson_id: firstLesson?.id ?? null }).eq("id", existingEnr.id);
+      await supabase.from("student_enrollments").update({ status: "active", org_id: org.id, current_lesson_id: firstLessonId }).eq("id", existingEnr.id);
     } else {
       const { error: enrErr } = await supabase.from("student_enrollments").insert({
         student_id: student.id,
         course_id: course.id,
         org_id: org.id,
         assessment_level: "beginner",
-        current_lesson_id: firstLesson?.id ?? null,
+        current_lesson_id: firstLessonId,
         plan_months: 3,
         status: "active",
       });
@@ -105,7 +106,7 @@ export async function POST(request: Request) {
       }
     }
 
-    return NextResponse.json({ ok: true, firstLessonId: firstLesson?.id ?? null });
+    return NextResponse.json({ ok: true, firstLessonId });
   } catch (err) {
     if (err instanceof z.ZodError) return NextResponse.json({ error: "Invalid request" }, { status: 400 });
     console.error("[org/join]", err);

@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import Link from "next/link";
+import { rollUpDomains } from "@/lib/competency";
 
 // ─── Streak calculation ──────────────────────────────────────────────────────
 function calculateStreak(dates: string[]): { current: number; best: number; thisWeek: boolean[] } {
@@ -113,15 +114,30 @@ export default async function ProgressPage() {
     .select("course_id, topic_mastery_json, weak_topics, strong_topics, level_determined, estimated_score, max_score")
     .eq("student_id", student.id);
 
-  // Parse topic mastery across all reports
+  // Parse competency mastery across all reports. topic_mastery_json is an ARRAY
+  // of { topic, correct, total, percentage }; roll micro-topics up into each
+  // course's competency DOMAINS so the bars are stable and properly labelled
+  // (the old code ran Object.entries on the array → numeric index "topics").
   const topicScores: { topic: string; pct: number; course: string }[] = [];
   const weakTopics: string[] = [];
   const strongTopics: string[] = [];
   for (const report of skillReports ?? []) {
-    const course = enrollmentList.find(e => e.course_id === report.course_id)?.course?.title ?? "";
-    if (report.topic_mastery_json && typeof report.topic_mastery_json === "object") {
-      for (const [topic, data] of Object.entries(report.topic_mastery_json as Record<string, { correct: number; total: number }>)) {
-        if (data.total > 0) topicScores.push({ topic, pct: Math.round((data.correct / data.total) * 100), course });
+    const enr = enrollmentList.find(e => e.course_id === report.course_id);
+    const course = enr?.course?.title ?? "";
+    const slug = enr?.course?.slug ?? "";
+    const tm = Array.isArray(report.topic_mastery_json)
+      ? (report.topic_mastery_json as Array<{ topic: string; correct: number; total: number; percentage?: number }>)
+      : [];
+    const accum: Record<string, { correct: number; total: number }> = {};
+    for (const t of tm) {
+      if (t && t.topic) accum[t.topic] = { correct: Number(t.correct) || 0, total: Number(t.total) || 0 };
+    }
+    const domains = rollUpDomains(slug, accum);
+    if (domains && domains.length) {
+      for (const d of domains) topicScores.push({ topic: d.domain, pct: d.percentage, course });
+    } else {
+      for (const t of tm) {
+        if (t.total > 0) topicScores.push({ topic: t.topic, pct: t.percentage ?? Math.round((t.correct / t.total) * 100), course });
       }
     }
     if (report.weak_topics) weakTopics.push(...(report.weak_topics as string[]));
@@ -323,11 +339,11 @@ export default async function ProgressPage() {
           {/* Topic mastery — horizontal bars */}
           {topicScores.length > 0 && (
             <div className="bg-surface rounded-xl border border-border p-5">
-              <p className="text-[10px] font-bold text-ink-muted uppercase tracking-widest mb-4">Topic Mastery</p>
+              <p className="text-[10px] font-bold text-ink-muted uppercase tracking-widest mb-4">Competency Mastery</p>
               <div className="space-y-3">
                 {topicScores.sort((a, b) => b.pct - a.pct).slice(0, 10).map((t, i) => (
                   <div key={i} className="flex items-center gap-3">
-                    <span className="text-xs font-medium text-ink w-28 truncate">{t.topic}</span>
+                    <span className="text-xs font-medium text-ink w-40 truncate" title={t.topic}>{t.topic}</span>
                     <div className="flex-1 h-2.5 rounded-full bg-surface-alt overflow-hidden">
                       <div className="h-full rounded-full transition-all" style={{
                         width: `${t.pct}%`,

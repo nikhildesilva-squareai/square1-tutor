@@ -51,7 +51,7 @@ export function SidebarNav({ userEmail }: SidebarNavProps) {
   const messagesActive = pathname === "/messages" || pathname.startsWith("/messages/");
 
   const footerItem =
-    "flex items-center gap-3 px-4 h-10 w-full rounded-lg text-xs font-medium transition-all";
+    "flex items-center gap-3 px-4 h-10 w-full rounded-lg text-sm font-medium transition-all";
   const footerInactive =
     "text-ink-secondary hover:bg-surface-alt hover:text-ink border border-transparent";
   const footerActive = "bg-surface-tint text-brand border border-brand/20";
@@ -129,7 +129,7 @@ export function SidebarNav({ userEmail }: SidebarNavProps) {
         {/* Sign out */}
         <button
           onClick={handleSignOut}
-          className="flex items-center gap-3 px-4 h-10 w-full rounded-lg text-xs text-ink-secondary hover:bg-error-bg hover:text-error transition-all"
+          className="flex items-center gap-3 px-4 h-10 w-full rounded-lg text-sm font-medium text-ink-secondary hover:bg-error-bg hover:text-error transition-all"
         >
           <LogOut className="w-4 h-4" />
           <span className="flex-1 text-left">Sign out</span>

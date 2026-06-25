@@ -4,6 +4,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { allocateWallet } from "@/lib/ai/budget";
 import { FREE_ACCESS_CAP, FREE_ACCESS_WALLET_USD, freeWindowOpen } from "@/lib/free-access";
+import { getFirstLessonId } from "@/lib/lessons";
 
 const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
@@ -96,10 +97,8 @@ export async function POST(request: Request) {
       );
     }
 
-    // First lesson of the course (gates "current" vs "locked" in the UI).
-    const { data: firstLesson } = await admin
-      .from("lessons").select("id").eq("course_id", courseId)
-      .order("order_index", { ascending: true }).limit(1).maybeSingle();
+    // First lesson of the course — module-aware (lessons.order_index is per-module).
+    const firstLessonId = await getFirstLessonId(admin, courseId);
 
     const months = planMonths ?? 3;
     const targetDate = new Date();
@@ -115,7 +114,7 @@ export async function POST(request: Request) {
         .from("student_enrollments")
         .update({
           assessment_level: level,
-          current_lesson_id: firstLesson?.id ?? null,
+          current_lesson_id: firstLessonId,
           target_completion_date: targetCompletionDate,
           plan_months: months,
           status: "active",
@@ -132,7 +131,7 @@ export async function POST(request: Request) {
           student_id: student.id,
           course_id: courseId,
           assessment_level: level,
-          current_lesson_id: firstLesson?.id ?? null,
+          current_lesson_id: firstLessonId,
           target_completion_date: targetCompletionDate,
           plan_months: months,
           status: "active",
@@ -152,7 +151,7 @@ export async function POST(request: Request) {
 
     return NextResponse.json({
       ok: true,
-      firstLessonId: firstLesson?.id ?? null,
+      firstLessonId,
       courseSlug: slug,
     });
   } catch (err) {

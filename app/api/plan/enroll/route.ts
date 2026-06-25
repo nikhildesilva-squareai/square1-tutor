@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
 import { z } from "zod";
+import { getFirstLessonId } from "@/lib/lessons";
 
 const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
@@ -52,14 +53,8 @@ export async function POST(request: Request) {
     targetDate.setMonth(targetDate.getMonth() + planMonths);
     const targetCompletionDate = targetDate.toISOString().split("T")[0];
 
-    // Find first lesson for this course (ordered by module order, then lesson order)
-    const { data: firstLesson } = await supabase
-      .from("lessons")
-      .select("id, module_id")
-      .eq("course_id", report.course_id)
-      .order("order_index", { ascending: true })
-      .limit(1)
-      .maybeSingle();
+    // First lesson — module-aware (lessons.order_index is per-module).
+    const firstLessonId = await getFirstLessonId(supabase, report.course_id);
 
     // Check for existing active enrollment
     const { data: existingEnrollment } = await supabase
@@ -77,7 +72,7 @@ export async function POST(request: Request) {
         .from("student_enrollments")
         .update({
           assessment_level: report.level_determined,
-          current_lesson_id: firstLesson?.id ?? null,
+          current_lesson_id: firstLessonId,
           target_completion_date: targetCompletionDate,
           plan_months: planMonths,
           status: "active",
@@ -99,7 +94,7 @@ export async function POST(request: Request) {
           student_id: student.id,
           course_id: report.course_id,
           assessment_level: report.level_determined,
-          current_lesson_id: firstLesson?.id ?? null,
+          current_lesson_id: firstLessonId,
           target_completion_date: targetCompletionDate,
           plan_months: planMonths,
           status: "active",
