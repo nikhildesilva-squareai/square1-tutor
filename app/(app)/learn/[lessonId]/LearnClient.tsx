@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { CodeEditor } from "@/components/ui/code-editor";
 import { cn } from "@/lib/utils";
+import katex from "katex";
 import { SaveNoteButton } from "@/components/SaveNoteButton";
 import { NovaPanel } from "@/components/NovaPanel";
 
@@ -125,6 +126,21 @@ function renderSection(md: string): string {
     return `\x00CODE${codeBlocks.length - 1}\x00`;
   });
 
+  // ── Step 1.5: Extract math ($$ block + $ inline) and render with KaTeX ──
+  const mathBlocks: string[] = [];
+  const renderMath = (tex: string, displayMode: boolean) => {
+    try { return katex.renderToString(tex.trim(), { displayMode, throwOnError: false, output: "html" }); }
+    catch { return tex; }
+  };
+  processed = processed.replace(/\$\$([\s\S]+?)\$\$/g, (_m, tex: string) => {
+    mathBlocks.push(`<div class="my-5 overflow-x-auto text-center">${renderMath(tex, true)}</div>`);
+    return `\x00MATH${mathBlocks.length - 1}\x00`;
+  });
+  processed = processed.replace(/\$([^$\n]+?)\$/g, (_m, tex: string) => {
+    mathBlocks.push(renderMath(tex, false));
+    return `\x00MATH${mathBlocks.length - 1}\x00`;
+  });
+
   // ── Step 2: Extract markdown tables ──
   const tableBlocks: string[] = [];
   processed = processed.replace(/((?:^\|.+\|\s*\n){2,})/gm, (tableMatch) => {
@@ -162,6 +178,9 @@ function renderSection(md: string): string {
   }
   for (let i = 0; i < tableBlocks.length; i++) {
     html = html.replace(`\x00TABLE${i}\x00`, tableBlocks[i]);
+  }
+  for (let i = 0; i < mathBlocks.length; i++) {
+    html = html.replace(`\x00MATH${i}\x00`, mathBlocks[i]);
   }
 
   return html;
