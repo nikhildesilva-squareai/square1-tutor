@@ -213,7 +213,7 @@ export default async function DashboardPage({ searchParams }: DashboardProps) {
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
             {COURSES.map((course) => (
               <Link key={course.slug} href={`/courses/${course.slug}`}
-                className="group bg-surface rounded-xl border border-border p-4 hover:shadow-card hover:border-brand/20 transition-all">
+                className="group bg-surface rounded-2xl border border-border shadow-card p-4 hover:shadow-card hover:border-brand/20 transition-all">
                 <div className="w-8 h-1 rounded-full mb-3" style={{ background: course.color }} />
                 <p className="text-sm font-semibold text-ink mb-1 group-hover:text-brand transition-colors leading-snug">{course.title}</p>
                 <p className="text-[10px] text-ink-muted">{course.role}</p>
@@ -380,19 +380,30 @@ export default async function DashboardPage({ searchParams }: DashboardProps) {
 
       {/* ── Day-one welcome — celebrate, don't show a wall of zeros ────── */}
       {lessonsCompleted === 0 && (
-        <div className="mb-6 rounded-xl border border-brand/20 bg-surface-tint p-5 flex items-center gap-4">
-          <div className="w-11 h-11 rounded-xl bg-brand/10 flex items-center justify-center shrink-0 text-xl">🎉</div>
-          <div className="flex-1">
+        <div className="mb-6 rounded-2xl border border-border bg-surface shadow-card p-5 sm:p-6 flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-5">
+          {/* Spark icon — lights the first streak */}
+          <div className="w-12 h-12 rounded-2xl flex items-center justify-center shrink-0"
+            style={{ background: `${courseColor}14`, color: courseColor }}>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M12 2.5l1.9 5.4 5.4 1.9-5.4 1.9L12 17l-1.9-5.3L4.7 9.8l5.4-1.9L12 2.5z" />
+              <path d="M19 14.5l.8 2 2 .8-2 .8-.8 2-.8-2-2-.8 2-.8.8-2z" />
+            </svg>
+          </div>
+          {/* Copy */}
+          <div className="flex-1 min-w-0">
+            <p className="text-[10px] font-bold uppercase tracking-widest mb-1" style={{ color: courseColor }}>Getting started</p>
             <p className="text-sm font-bold text-ink">Day one — let&apos;s light your first streak.</p>
-            <p className="text-xs text-ink-muted mt-0.5">
-              Finish your first lesson today and your streak, heatmap, and progress all come alive. The hardest part is starting — you&apos;re already here.
+            <p className="text-xs text-ink-secondary mt-1 leading-relaxed">
+              Finish lesson 1 today and your streak, heatmap, and progress all come alive.
             </p>
           </div>
+          {/* CTA */}
           {currentLesson && (
             <Link href={`/learn/${currentLesson.id}`}
-              className="hidden sm:inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold text-white shrink-0 hover:-translate-y-0.5 transition-transform"
+              className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold text-white shrink-0 w-full sm:w-auto shadow-sm hover:shadow-card-hover hover:-translate-y-0.5 transition-all"
               style={{ background: courseColor }}>
-              Start lesson 1 →
+              Start lesson 1
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polygon points="5 3 19 12 5 21 5 3" /></svg>
             </Link>
           )}
         </div>
@@ -400,7 +411,7 @@ export default async function DashboardPage({ searchParams }: DashboardProps) {
 
       {/* ── Stats row ─────────────────────────────────────────────────── */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
-        <div className="bg-surface rounded-xl border border-border p-4 flex items-center gap-3">
+        <div className="bg-surface rounded-2xl border border-border shadow-card p-4 flex items-center gap-3">
           <div className="w-10 h-10 rounded-xl bg-surface-tint flex items-center justify-center shrink-0">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0056CE" strokeWidth="2" strokeLinecap="round">
               <path d="M4 19.5A2.5 2.5 0 016.5 17H20" /><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z" />
@@ -412,7 +423,7 @@ export default async function DashboardPage({ searchParams }: DashboardProps) {
           </div>
         </div>
 
-        <div className="bg-surface rounded-xl border border-border p-4 flex items-center gap-3">
+        <div className="bg-surface rounded-2xl border border-border shadow-card p-4 flex items-center gap-3">
           <div className="w-10 h-10 rounded-xl bg-emerald-50 flex items-center justify-center shrink-0">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#059669" strokeWidth="2" strokeLinecap="round">
               <path d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
@@ -424,7 +435,7 @@ export default async function DashboardPage({ searchParams }: DashboardProps) {
           </div>
         </div>
 
-        <div className="bg-surface rounded-xl border border-border p-4 flex items-center gap-3">
+        <div className="bg-surface rounded-2xl border border-border shadow-card p-4 flex items-center gap-3">
           <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0" style={{ background: `${courseColor}10` }}>
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={courseColor} strokeWidth="2" strokeLinecap="round">
               <path d="M18 20V10" /><path d="M12 20V4" /><path d="M6 20v-6" />
@@ -436,9 +447,9 @@ export default async function DashboardPage({ searchParams }: DashboardProps) {
           </div>
         </div>
 
-        <div className="bg-surface rounded-xl border border-border p-4 flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-amber-50 flex items-center justify-center shrink-0 text-lg">
-            🔥
+        <div className="bg-surface rounded-2xl border border-border shadow-card p-4 flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-amber-50 flex items-center justify-center shrink-0">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#D97706" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 12c2-2.96 0-7-1-8 0 3.038-1.773 4.741-3 6-1.226 1.26-2 3.24-2 5a6 6 0 1012 0c0-1.532-1.056-3.94-2-5-1.786 3-2.791 3-4 2z" /></svg>
           </div>
           <div>
             <p className="text-lg font-black text-ink">{streakInfo.current}</p>
@@ -454,13 +465,14 @@ export default async function DashboardPage({ searchParams }: DashboardProps) {
         <div className="lg:col-span-2 space-y-6">
 
           {/* Streak + Daily Goal */}
-          <div className="bg-surface rounded-xl border border-border p-5">
+          <div className="bg-surface rounded-2xl border border-border shadow-card p-5">
             <div className="flex items-center justify-between mb-4">
               <p className="text-[10px] font-bold text-ink-muted uppercase tracking-widest">This Week</p>
               <div className="flex items-center gap-2">
                 {streakInfo.current > 0 && (
-                  <span className="flex items-center gap-1 text-xs font-bold text-amber-600 bg-amber-50 px-2.5 py-1 rounded-full">
-                    🔥 {streakInfo.current} day streak
+                  <span className="flex items-center gap-1.5 text-xs font-bold text-amber-600 bg-amber-50 px-2.5 py-1 rounded-full">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 12c2-2.96 0-7-1-8 0 3.038-1.773 4.741-3 6-1.226 1.26-2 3.24-2 5a6 6 0 1012 0c0-1.532-1.056-3.94-2-5-1.786 3-2.791 3-4 2z" /></svg>
+                    {streakInfo.current} day streak
                   </span>
                 )}
                 {streakInfo.todayDone ? (
@@ -505,13 +517,13 @@ export default async function DashboardPage({ searchParams }: DashboardProps) {
           </div>
 
           {/* Activity heatmap */}
-          <div className="bg-surface rounded-xl border border-border p-5">
+          <div className="bg-surface rounded-2xl border border-border shadow-card p-5">
             <p className="text-[10px] font-bold text-ink-muted uppercase tracking-widest mb-4">Activity — Last 13 Weeks</p>
             <ActivityHeatmap activeDates={heatmapDates} weeks={13} />
           </div>
 
           {/* Module roadmap */}
-          <div className="bg-surface rounded-xl border border-border p-5">
+          <div className="bg-surface rounded-2xl border border-border shadow-card p-5">
             <div className="flex items-center justify-between mb-5">
               <p className="text-[10px] font-bold text-ink-muted uppercase tracking-widest">Course Roadmap</p>
               <Link href={`/courses/${courseSlug}`} className="text-xs text-brand font-semibold hover:underline">View course</Link>
@@ -589,13 +601,15 @@ export default async function DashboardPage({ searchParams }: DashboardProps) {
         <div className="space-y-4">
 
           {/* Quick actions */}
-          <div className="bg-surface rounded-xl border border-border p-5">
+          <div className="bg-surface rounded-2xl border border-border shadow-card p-5">
             <p className="text-[10px] font-bold text-ink-muted uppercase tracking-widest mb-4">Quick Actions</p>
             <div className="space-y-2">
               {dueFlashcards > 0 && (
                 <Link href="/notes?filter=flashcard"
                   className="flex items-center gap-3 px-4 py-3 rounded-xl border border-amber-200 bg-amber-50 hover:bg-amber-100 transition-all group">
-                  <div className="w-8 h-8 rounded-lg bg-amber-400/20 flex items-center justify-center shrink-0 text-base">🗂️</div>
+                  <div className="w-8 h-8 rounded-lg bg-amber-400/20 flex items-center justify-center shrink-0">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#D97706" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="7" width="13" height="13" rx="2"/><path d="M8 7V5a2 2 0 012-2h9a2 2 0 012 2v9a2 2 0 01-2 2h-2"/></svg>
+                  </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-semibold text-amber-900 truncate">{dueFlashcards} flashcard{dueFlashcards !== 1 ? "s" : ""} due</p>
                     <p className="text-[10px] text-amber-700/90 truncate">2 minutes of review keeps it stuck</p>
@@ -678,7 +692,7 @@ export default async function DashboardPage({ searchParams }: DashboardProps) {
           </div>
 
           {/* My courses + Add course */}
-          <div className="bg-surface rounded-xl border border-border p-5">
+          <div className="bg-surface rounded-2xl border border-border shadow-card p-5">
             <p className="text-[10px] font-bold text-ink-muted uppercase tracking-widest mb-4">
               {activeEnrollments.length > 1 ? "My Courses" : "Explore"}
             </p>
