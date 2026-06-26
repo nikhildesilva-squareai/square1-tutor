@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
+import { DirectEnrolButton } from "./DirectEnrolButton";
 import type { Metadata } from "next";
 import type { Course, Module, Lesson, Project } from "@/types/database";
 
@@ -51,6 +52,11 @@ export default async function CourseDetailPage({ params }: PageProps) {
     .maybeSingle() as { data: Course | null };
 
   if (!course) notFound();
+
+  // Open-access tracks (no placement assessment, e.g. Advanced Data Science) enrol directly.
+  const { count: assessmentPaperCount } = await supabase
+    .from("assessment_papers").select("id", { count: "exact", head: true }).eq("course_id", course.id);
+  const hasAssessment = (assessmentPaperCount ?? 0) > 0;
 
   const { data: modules } = (await supabase
     .from("modules")
@@ -245,12 +251,14 @@ export default async function CourseDetailPage({ params }: PageProps) {
                   Re-assess
                 </Link>
               </div>
-            ) : (
+            ) : hasAssessment ? (
               <Link href={`/courses/${slug}/assess`}
                 className="shrink-0 h-11 px-6 rounded-xl bg-white text-ink font-bold text-sm hover:bg-white/90 transition-all inline-flex items-center gap-2">
                 Take Assessment
                 <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M6 3l5 5-5 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /></svg>
               </Link>
+            ) : (
+              <DirectEnrolButton courseSlug={slug} />
             )}
           </div>
         </div>
@@ -366,11 +374,21 @@ export default async function CourseDetailPage({ params }: PageProps) {
             {!isEnrolled && (
               <div className="bg-surface rounded-xl border border-border p-5">
                 <p className="text-sm font-semibold text-ink mb-2">Get started</p>
-                <p className="text-xs text-ink-muted mb-4">Take the free assessment to see your skill level and get a personalised learning plan.</p>
-                <Link href={`/courses/${slug}/assess`}
-                  className="w-full h-11 rounded-xl bg-brand text-white text-sm font-bold flex items-center justify-center gap-2 hover:bg-brand/90 transition-all">
-                  Take Assessment
-                </Link>
+                {hasAssessment ? (
+                  <>
+                    <p className="text-xs text-ink-muted mb-4">Take the free assessment to see your skill level and get a personalised learning plan.</p>
+                    <Link href={`/courses/${slug}/assess`}
+                      className="w-full h-11 rounded-xl bg-brand text-white text-sm font-bold flex items-center justify-center gap-2 hover:bg-brand/90 transition-all">
+                      Take Assessment
+                    </Link>
+                  </>
+                ) : (
+                  <>
+                    <p className="text-xs text-ink-muted mb-4">A senior, self-paced track — no placement test. Jump straight into lesson 1, free.</p>
+                    <DirectEnrolButton courseSlug={slug}
+                      className="w-full h-11 rounded-xl bg-brand text-white text-sm font-bold inline-flex items-center justify-center gap-2 hover:bg-brand/90 transition-all disabled:opacity-60" />
+                  </>
+                )}
               </div>
             )}
 
@@ -422,8 +440,8 @@ export default async function CourseDetailPage({ params }: PageProps) {
         </div>
       </div>
 
-      {/* Sticky CTA — only for non-enrolled */}
-      {!isEnrolled && (
+      {/* Sticky CTA — only for non-enrolled courses that use a placement assessment */}
+      {!isEnrolled && hasAssessment && (
       <div className="fixed bottom-0 left-0 right-0 bg-surface border-t border-border px-4 sm:px-6 py-3 sm:py-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 print:hidden z-30">
         <div>
           <p className="text-sm font-semibold text-ink">{course.title}</p>
