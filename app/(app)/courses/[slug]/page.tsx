@@ -76,6 +76,9 @@ export default async function CourseDetailPage({ params }: PageProps) {
   let studentId: string | null = null;
   let currentLessonId: string | null = null;
   let completedLessonIds: Set<string> = new Set();
+  // Per-lesson mastery rolled up from the learner's spaced-retrieval review cards.
+  const masteryByLesson = new Map<string, { total: number; reviewed: number; mastered: number; due: number }>();
+  const nowIso = new Date().toISOString();
 
   if (user) {
     const { data: student } = await supabase
@@ -106,6 +109,27 @@ export default async function CourseDetailPage({ params }: PageProps) {
         if (completions) {
           completedLessonIds = new Set(completions.map((c) => c.lesson_id));
         }
+      }
+
+      // Curriculum spaced-retrieval cards → per-lesson mastery rollup. review_count
+      // is the SM-2 success streak; a card is "mastered" once it's been recalled
+      // correctly twice (interval has grown past the early steps).
+      const { data: reviewCards } = await supabase
+        .from("study_notes")
+        .select("lesson_id, review_count, next_review_at")
+        .eq("student_id", student.id)
+        .eq("course_id", course.id)
+        .not("source_exercise_id", "is", null);
+
+      for (const c of reviewCards ?? []) {
+        if (!c.lesson_id) continue;
+        const m = masteryByLesson.get(c.lesson_id) ?? { total: 0, reviewed: 0, mastered: 0, due: 0 };
+        m.total += 1;
+        const rc = c.review_count ?? 0;
+        if (rc >= 1) m.reviewed += 1;
+        if (rc >= 2) m.mastered += 1;
+        if (c.next_review_at && c.next_review_at <= nowIso) m.due += 1;
+        masteryByLesson.set(c.lesson_id, m);
       }
     }
   }
@@ -139,6 +163,24 @@ export default async function CourseDetailPage({ params }: PageProps) {
     // and review material, accessible no matter where you are in the course.
     if (moduleIndex === 0) return "open";
     return "locked";
+  }
+
+  // Small non-blocking mastery pill from the learner's review-deck performance.
+  // Priority: due (actionable) > mastered > learning. No badge until cards exist.
+  function masteryBadge(lessonId: string) {
+    const m = masteryByLesson.get(lessonId);
+    if (!m || m.total === 0) return null;
+    if (m.due > 0)
+      return (
+        <Link href="/notes?filter=flashcard" className="shrink-0 px-1.5 py-0.5 rounded text-[9px] font-bold bg-amber-100 text-amber-700 hover:bg-amber-200 transition-colors">
+          Review due
+        </Link>
+      );
+    if (m.mastered === m.total)
+      return <span className="shrink-0 px-1.5 py-0.5 rounded text-[9px] font-bold bg-emerald-100 text-emerald-700">Mastered</span>;
+    if (m.reviewed > 0)
+      return <span className="shrink-0 px-1.5 py-0.5 rounded text-[9px] font-bold bg-blue-100 text-blue-700">Learning</span>;
+    return null;
   }
 
   const isEnrolled = !!studentId && !!currentLessonId;
@@ -278,6 +320,7 @@ export default async function CourseDetailPage({ params }: PageProps) {
                             <p className={["text-sm flex-1 min-w-0 truncate",
                               status === "completed" ? "text-ink-secondary" : status === "current" ? "text-ink font-medium" : status === "open" ? "text-ink-secondary" : "text-ink-muted"
                             ].join(" ")}>{lesson.title}</p>
+                            {masteryBadge(lesson.id)}
                             {status === "completed" && <Link href={`/learn/${lesson.id}`} className="text-[10px] text-brand font-semibold hover:underline shrink-0">Review</Link>}
                             {status === "open" && <Link href={`/learn/${lesson.id}`} className="text-[10px] text-brand font-semibold hover:underline shrink-0">Open</Link>}
                             {status === "current" && (
