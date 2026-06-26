@@ -96,6 +96,70 @@ export async function POST(request: Request) {
       // Continue anyway — non-critical
     }
 
+    // ── Spaced-retrieval seeding ───────────────────────────────────────────
+    // Turn this lesson's recall items (its MCQ + short-answer exercises) into
+    // spaced-repetition flashcards in the learner's deck, first due the NEXT day
+    // (proper spacing — they just practised these in-lesson). Reuses the existing
+    // study_notes SRS, the /notes review UI, and the dashboard "due" card.
+    // Best-effort + idempotent (source_exercise_id) — never blocks completion.
+    try {
+      const { data: recallEx } = await supabase
+        .from("exercises")
+        .select("id, type, title, prompt_md, correct_answer")
+        .eq("lesson_id", lessonId)
+        .in("type", ["mcq", "short_answer"])
+        .order("order_index", { ascending: true });
+
+      if (recallEx && recallEx.length > 0) {
+        // Skip exercises already seeded for this student (idempotent re-completion).
+        const exIds = recallEx.map((e) => e.id);
+        const { data: existing } = await supabase
+          .from("study_notes")
+          .select("source_exercise_id")
+          .eq("student_id", student.id)
+          .in("source_exercise_id", exIds);
+        const seeded = new Set((existing ?? []).map((r) => r.source_exercise_id));
+
+        const fresh = recallEx.filter((e) => !seeded.has(e.id) && e.prompt_md && e.correct_answer);
+
+        if (fresh.length > 0) {
+          const [{ data: lessonMeta }, { data: moduleMeta }, { data: courseMeta }] = await Promise.all([
+            supabase.from("lessons").select("title").eq("id", lessonId).maybeSingle(),
+            supabase.from("modules").select("title").eq("id", lesson.module_id).maybeSingle(),
+            supabase.from("courses").select("id, title").eq("id", lesson.course_id).maybeSingle(),
+          ]);
+
+          const firstDue = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(); // tomorrow
+
+          const cards = fresh.map((e) => ({
+            student_id: student.id,
+            type: "flashcard",
+            title: e.title,
+            content: e.prompt_md as string,
+            flashcard_answer: e.correct_answer as string,
+            color: "blue",
+            source_exercise_id: e.id,
+            lesson_id: lessonId,
+            lesson_title: lessonMeta?.title ?? null,
+            module_title: moduleMeta?.title ?? null,
+            course_id: courseMeta?.id ?? lesson.course_id,
+            course_title: courseMeta?.title ?? null,
+            tags: ["curriculum-review"],
+            next_review_at: firstDue,
+            ease_factor: 2.5,
+            interval_days: 0,
+            review_count: 0,
+          }));
+
+          const { error: seedError } = await supabase.from("study_notes").insert(cards);
+          if (seedError) console.error("[learn/complete] review-seed insert error:", seedError);
+        }
+      }
+    } catch (seedErr) {
+      console.error("[learn/complete] review-seed error:", seedErr);
+      // Non-critical — never block completion on review seeding.
+    }
+
     // Find the next lesson in this module, or the first lesson in the next module
     let nextLessonId: string | null = null;
 
