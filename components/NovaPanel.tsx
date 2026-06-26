@@ -33,12 +33,26 @@ function render(text: string) {
     return (
       <span key={i}>
         {part.split("\n").map((line, j) => {
-          const isBullet = /^\s*[-*]\s+/.test(line);
-          const clean = line.replace(/^\s*[-*]\s+/, "");
+          // Horizontal rule (---, ***, ___) → a thin divider, never literal text.
+          if (/^\s*([-*_])\1{2,}\s*$/.test(line)) {
+            return <span key={j} className="block my-2 border-t border-border" />;
+          }
+          const heading = /^\s*(#{1,6})\s+(.*)$/.exec(line);
+          const isBullet = !heading && /^\s*[-*]\s+/.test(line);
+          const clean = heading ? heading[2] : line.replace(/^\s*[-*]\s+/, "");
           const html = clean
             .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
             .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
             .replace(/`([^`]+?)`/g, '<code class="px-1 py-0.5 rounded bg-brand/10 text-brand font-mono text-[12px]">$1</code>');
+          // Markdown headings → clean bold lead-ins sized for a narrow panel (no raw #).
+          if (heading) {
+            const big = heading[1].length <= 2;
+            return (
+              <span key={j} className={`block font-bold text-ink first:mt-0 ${big ? "text-[15px] mt-3 mb-1" : "text-[13px] mt-2 mb-0.5"}`}>
+                <span dangerouslySetInnerHTML={{ __html: html || "&nbsp;" }} />
+              </span>
+            );
+          }
           return (
             <span key={j} className={isBullet ? "flex gap-2" : "block"}>
               {isBullet && <span className="text-brand mt-0.5">•</span>}
