@@ -32,10 +32,14 @@ export default async function CoursesPage() {
   const { data: { user } } = await supabase.auth.getUser();
 
   // Fetch courses and student in parallel
-  const [{ data: courses }, studentResult] = await Promise.all([
+  const [{ data: courses }, studentResult, { data: papers }] = await Promise.all([
     supabase.from("courses").select("*").order("title", { ascending: true }) as unknown as Promise<{ data: Course[] | null }>,
     user ? supabase.from("students").select("id").eq("user_id", user.id).maybeSingle() : Promise.resolve({ data: null }),
+    supabase.from("assessment_papers").select("course_id") as unknown as Promise<{ data: { course_id: string }[] | null }>,
   ]);
+  // Courses with a placement assessment show "Start Assessment"; open-access tracks
+  // (e.g. Advanced Data Science, direct-enrol) show "View course" instead.
+  const assessmentCourseIds = new Set((papers ?? []).map((p) => p.course_id));
 
   const enrolledCourseIds = new Set<string>();
   const student = studentResult.data;
@@ -69,6 +73,7 @@ export default async function CoursesPage() {
           {courses.map((course) => {
             const isComingSoon = course.status === "coming_soon";
             const isEnrolled = enrolledCourseIds.has(course.id);
+            const cardHasAssessment = assessmentCourseIds.has(course.id);
             return (
               <div
                 key={course.id}
@@ -134,7 +139,7 @@ export default async function CoursesPage() {
                       href={`/courses/${course.slug}`}
                       className="flex items-center justify-center w-full h-10 rounded-[var(--radius-md)] bg-brand text-white text-sm font-semibold hover:bg-brand-dark transition-colors"
                     >
-                      Start Assessment
+                      {cardHasAssessment ? "Start Assessment" : "View course"}
                     </Link>
                   )}
                 </div>
