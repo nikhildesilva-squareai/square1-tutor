@@ -65,6 +65,7 @@ export async function POST(request: Request) {
     const repoAnalysis = await fetchRepo(githubUrl);
     const reviewPrompt = buildReviewPrompt(project, rubric, githubUrl, repoAnalysis, description, objective);
     const aiResult = await callAI(student.id, {
+      feature: "grading",
       system: SYSTEM_PROMPT,
       max_tokens: 2048,
       temperature: 0,

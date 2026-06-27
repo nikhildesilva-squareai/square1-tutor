@@ -116,6 +116,7 @@ Grade this submission. Respond in JSON format only:
 
         try {
           const aiResult = await callAI(student.id, {
+            feature: "grading",
             system: "You are an expert educator grading student work. Be fair but encouraging. Always respond in valid JSON only.",
             messages: [{ role: "user", content: gradingPrompt }],
             max_tokens: 256,

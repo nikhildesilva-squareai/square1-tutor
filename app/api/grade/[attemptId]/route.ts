@@ -104,6 +104,7 @@ Student's answer: ${ans || "(no answer provided)"}`;
   }).join("\n\n---\n\n");
 
   const result = await callAI(studentId, {
+    feature: "grading",
     max_tokens: 6000,
     messages: [{
       role: "user",
@@ -174,6 +175,7 @@ ${code || "// No code submitted"}
   }).join("\n\n---\n\n");
 
   const result = await callAI(studentId, {
+    feature: "grading",
     max_tokens: 8000,
     messages: [{
       role: "user",

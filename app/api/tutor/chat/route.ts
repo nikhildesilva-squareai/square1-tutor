@@ -124,6 +124,7 @@ export async function POST(request: Request) {
     }
 
     const result = await callAI(student.id, {
+      feature: "tutor",
       system: systemPrompt,
       messages: messages.map((m) => ({
         role: m.role,

@@ -88,6 +88,7 @@ export async function POST(request: Request) {
       "Avoid yes/no questions. Output ONLY a JSON array of objects with \"question\" and \"answer\" string fields — no prose, no markdown fences.";
 
     const result = await callAI(student.id, {
+      feature: "flashcards",
       system,
       messages: [{
         role: "user",

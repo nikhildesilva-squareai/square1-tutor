@@ -1,5 +1,5 @@
-import Anthropic from "@anthropic-ai/sdk";
 import { createClient } from "@/lib/supabase/server";
+import { generate, providerFor } from "./providers";
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // AI Budget Guardrail — wallet-based spend control
@@ -32,6 +32,11 @@ const PRICING = {
 const MODEL_SONNET = "claude-sonnet-4-6";
 const MODEL_HAIKU = "claude-haiku-4-5-20251001";
 
+// Open-model ids — used when a feature is routed to the "oss" provider via env
+// (OSS_AI_MODEL / OSS_AI_MODEL_CHEAP). Inert until AI_PROVIDER(_*)=oss is set.
+const OSS_MODEL = process.env.OSS_AI_MODEL ?? "oss-model";
+const OSS_MODEL_CHEAP = process.env.OSS_AI_MODEL_CHEAP ?? OSS_MODEL;
+
 // Once a student's wallet is spent we DON'T cut them off — we degrade to the
 // cheaper Haiku model so the tutor keeps working. We only hard-stop past an
 // absolute ceiling so cost can never run unbounded.
@@ -55,10 +60,14 @@ function getMonthKey(): string {
   return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
 }
 
-/** Calculate cost from token counts for a given model */
-function calculateCost(model: keyof typeof PRICING, inputTokens: number, outputTokens: number): number {
-  const p = PRICING[model] ?? PRICING[MODEL_SONNET];
-  return inputTokens * p.input + outputTokens * p.output;
+/** Calculate cost from token counts. Claude models use the PRICING table; open
+ *  models use optional env rates (OSS_AI_PRICE_*_PER_MTOK), else 0 (self-host). */
+function calculateCost(model: string, inputTokens: number, outputTokens: number): number {
+  const p = (PRICING as Record<string, { input: number; output: number }>)[model];
+  if (p) return inputTokens * p.input + outputTokens * p.output;
+  const inRate = Number(process.env.OSS_AI_PRICE_IN_PER_MTOK ?? 0) / 1_000_000;
+  const outRate = Number(process.env.OSS_AI_PRICE_OUT_PER_MTOK ?? 0) / 1_000_000;
+  return inputTokens * inRate + outputTokens * outRate;
 }
 
 // ─── Wallet management ───────────────────────────────────────────────────────
@@ -205,6 +214,9 @@ export async function callAI(
     messages: Array<{ role: "user" | "assistant"; content: string }>;
     max_tokens?: number;
     temperature?: number;
+    /** Routing label (e.g. "grading" | "tutor" | "flashcards") for per-feature
+     *  provider selection via AI_PROVIDER_<FEATURE>. Optional. */
+    feature?: string;
   }
 ): Promise<{
   text: string;
@@ -212,9 +224,10 @@ export async function callAI(
   outputTokens: number;
   cost: number;
   model: string;
+  provider: string;
   degraded: boolean;
 }> {
-  // 1. Check budget and decide the model
+  // 1. Check budget and decide the degrade tier
   const budgetCheck = await checkBudget(studentId);
   const overBudget = !budgetCheck.ok; // spent >= allocated
 
@@ -223,35 +236,47 @@ export async function callAI(
     throw new BudgetExceededError(budgetCheck.spent, budgetCheck.budget * HARD_CEILING_MULTIPLIER);
   }
 
-  const model = overBudget ? MODEL_HAIKU : MODEL_SONNET;
+  // 2. Pick provider (per-feature env) + model (primary, or cheaper degrade tier).
+  let provider = providerFor(params.feature);
+  let model =
+    provider === "oss"
+      ? (overBudget ? OSS_MODEL_CHEAP : OSS_MODEL)
+      : (overBudget ? MODEL_HAIKU : MODEL_SONNET);
 
-  // 2. Make the API call. maxRetries lets the SDK ride out transient 429/529s
-  // with exponential backoff that honours the `retry-after` header — important
-  // on a low org rate limit where bursts (e.g. assessment grading) can briefly
-  // exceed the per-minute cap.
-  const client = new Anthropic({ maxRetries: 5 });
-  const response = await client.messages.create({
-    model,
-    max_tokens: params.max_tokens ?? 1024,
-    temperature: params.temperature ?? 0,
-    ...(params.system ? { system: params.system } : {}),
+  const gen = {
+    system: params.system,
     messages: params.messages,
-  });
+    max_tokens: params.max_tokens,
+    temperature: params.temperature,
+  };
 
-  // 3. Extract usage + cost (priced by the model actually used)
-  const inputTokens = response.usage.input_tokens;
-  const outputTokens = response.usage.output_tokens;
+  // 3. Call the provider. The SDK/endpoint rides out transient 429/529s with
+  // backoff. If an open endpoint fails, fall back to Claude (default on) so
+  // high-stakes calls (grading) still complete.
+  let result;
+  try {
+    result = await generate(provider, { model, ...gen });
+  } catch (err) {
+    const fallback = (process.env.AI_OSS_FALLBACK ?? "claude").toLowerCase();
+    if (provider === "oss" && fallback === "claude") {
+      console.error("[ai] OSS provider failed — falling back to Claude:", err);
+      provider = "anthropic";
+      model = overBudget ? MODEL_HAIKU : MODEL_SONNET;
+      result = await generate("anthropic", { model, ...gen });
+    } else {
+      throw err;
+    }
+  }
+
+  // 4. Cost (priced by the model actually used) + non-blocking usage log
+  const { text, inputTokens, outputTokens } = result;
   const cost = calculateCost(model, inputTokens, outputTokens);
-
-  // 4. Log usage (non-blocking)
   logUsage(studentId, inputTokens, outputTokens, cost).catch((err) => {
     console.error("[budget] Failed to log usage:", err);
   });
 
   // 5. Return
-  const text =
-    response.content[0].type === "text" ? response.content[0].text : "";
-  return { text, inputTokens, outputTokens, cost, model, degraded: overBudget };
+  return { text, inputTokens, outputTokens, cost, model, provider, degraded: overBudget };
 }
 
 // ─── Usage summary (for dashboards) ─────────────────────────────────────────
