@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 import { callAI, BudgetExceededError } from "@/lib/ai/budget";
+import { GRADING_SYSTEM_PROMPT } from "@/lib/ai/prompts";
 import { rateLimitAI } from "@/lib/rate-limit";
 import { rollUpDomains, roleReadiness, buildActionPlan } from "@/lib/competency";
 
@@ -105,6 +106,7 @@ Student's answer: ${ans || "(no answer provided)"}`;
 
   const result = await callAI(studentId, {
     feature: "grading",
+    system: GRADING_SYSTEM_PROMPT,
     max_tokens: 6000,
     messages: [{
       role: "user",
@@ -176,6 +178,7 @@ ${code || "// No code submitted"}
 
   const result = await callAI(studentId, {
     feature: "grading",
+    system: GRADING_SYSTEM_PROMPT,
     max_tokens: 8000,
     messages: [{
       role: "user",

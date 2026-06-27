@@ -2,6 +2,8 @@ import { createClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { callAI } from "@/lib/ai/budget";
+import { GRADING_SYSTEM_PROMPT } from "@/lib/ai/prompts";
+import { extractJsonObject } from "@/lib/ai/json";
 import { rateLimitAI } from "@/lib/rate-limit";
 
 const exerciseSchema = z.object({
@@ -117,13 +119,14 @@ Grade this submission. Respond in JSON format only:
         try {
           const aiResult = await callAI(student.id, {
             feature: "grading",
-            system: "You are an expert educator grading student work. Be fair but encouraging. Always respond in valid JSON only.",
+            system: GRADING_SYSTEM_PROMPT,
             messages: [{ role: "user", content: gradingPrompt }],
             max_tokens: 256,
             temperature: 0,
           });
 
-          const parsed = JSON.parse(aiResult.text);
+          const parsed = extractJsonObject<{ score?: number; correct?: boolean; feedback?: string }>(aiResult.text);
+          if (!parsed) throw new Error("AI grade unparseable");
           results.push({
             exerciseId: exercise.id,
             correct: parsed.correct ?? false,

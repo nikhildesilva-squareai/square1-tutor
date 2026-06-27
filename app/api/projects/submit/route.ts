@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
 import { callAI } from "@/lib/ai/budget";
+import { GRADING_SYSTEM_PROMPT } from "@/lib/ai/prompts";
 import { z } from "zod";
 import { rateLimitAI } from "@/lib/rate-limit";
 import { fetchRepo, formatRepoForReview, enrichCodeComments, type RepoAnalysis } from "@/lib/github/fetch-repo";
@@ -66,7 +67,7 @@ export async function POST(request: Request) {
     const reviewPrompt = buildReviewPrompt(project, rubric, githubUrl, repoAnalysis, description, objective);
     const aiResult = await callAI(student.id, {
       feature: "grading",
-      system: SYSTEM_PROMPT,
+      system: `${GRADING_SYSTEM_PROMPT}\n\n${SYSTEM_PROMPT}`,
       max_tokens: 2048,
       temperature: 0,
       messages: [{ role: "user", content: reviewPrompt }],

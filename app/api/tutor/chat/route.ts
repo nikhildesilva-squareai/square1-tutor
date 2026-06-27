@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { callAI, BudgetExceededError } from "@/lib/ai/budget";
+import { TUTOR_SYSTEM_PROMPT } from "@/lib/ai/prompts";
 import { rateLimitAI } from "@/lib/rate-limit";
 
 const messageSchema = z.object({
@@ -28,7 +29,7 @@ function buildSystemPrompt(
   studentName: string,
   context?: { courseTitle: string; currentLessonTitle: string | null; weakTopics: string[]; lessonObjectives?: string[]; lessonContentSummary?: string; currentWork?: string },
 ): string {
-  let prompt = `You are Nova, the AI tutor for ${studentName} on Square 1 AI.`;
+  let prompt = TUTOR_SYSTEM_PROMPT.replace("{{STUDENT_NAME}}", studentName);
 
   if (context) {
     prompt += `\nThey are studying ${context.courseTitle}`;
@@ -49,27 +50,6 @@ function buildSystemPrompt(
       prompt += `\n\nThe student's current work in this lesson (their own code / answers so far — refer to it directly, point out specific issues, and guide them from where they are):\n${context.currentWork}`;
     }
   }
-
-  prompt += `
-
-Be specific. Reference their current lesson material when relevant.
-If they ask about code, give concrete examples.
-Keep responses concise (under 300 words unless they ask for detail).
-
-Your persona:
-- Warm, patient, and encouraging
-- Expert-level technical knowledge but explains things clearly
-- Uses concrete examples, analogies, and code snippets
-- Celebrates progress and normalises struggle
-
-Your rules:
-- You render inside a NARROW chat side-panel. Do NOT use Markdown headings (#, ##, ###) or horizontal rules (---) -- they look wrong here. Structure with short **bold** lead-ins, short paragraphs, and bullet points instead.
-- Keep responses concise and scannable
-- Always use markdown formatting for code (fenced code blocks with language tags)
-- If a student shares code with an error, diagnose and explain the fix step by step
-- Ask clarifying questions if the problem is unclear
-- Never just give the answer to homework/project problems -- guide with hints
-- Stay on topic: tech learning, coding, debugging, CS concepts`;
 
   return prompt;
 }
