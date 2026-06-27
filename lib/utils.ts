@@ -54,3 +54,15 @@ export function levelBadgeVariant(level: string): "success" | "warning" | "error
   if (level === "intermediate") return "warning";
   return "error";
 }
+
+// Honest "learnable hours" for a course: taught lesson time + hands-on practice time.
+// Practice estimate per exercise: mcq 2 min, short_answer 5 min, code 12 min
+// (defensible deliberate-practice averages — learners actually complete these).
+// Hosted projects are counted/shown SEPARATELY, never folded in here.
+export function learnableHours(
+  lessonMinutes: number,
+  ex: { mcq: number; short: number; code: number },
+): number {
+  const practice = ex.mcq * 2 + ex.short * 5 + ex.code * 12;
+  return Math.round((lessonMinutes + practice) / 60);
+}

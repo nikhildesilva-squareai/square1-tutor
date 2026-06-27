@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
+import { learnableHours } from "@/lib/utils";
 import { DirectEnrolButton } from "./DirectEnrolButton";
 import type { Metadata } from "next";
 import type { Course, Module, Lesson, Project } from "@/types/database";
@@ -77,6 +78,26 @@ export default async function CourseDetailPage({ params }: PageProps) {
     .select("id, module_id, order_index, title, estimated_minutes")
     .eq("course_id", course.id)
     .order("order_index", { ascending: true })) as { data: Pick<Lesson, "id" | "module_id" | "order_index" | "title" | "estimated_minutes">[] | null };
+
+  // Honest "learnable hours" = taught lesson time + hands-on practice time (exercises),
+  // shown instead of a lessons-only guess. Projects are summed + displayed separately.
+  const lessonMinutes = (lessons ?? []).reduce((s, l) => s + (l.estimated_minutes ?? 0), 0);
+  const lessonIds = (lessons ?? []).map((l) => l.id);
+  const { data: exRows } = lessonIds.length
+    ? ((await supabase.from("exercises").select("type").in("lesson_id", lessonIds)) as { data: { type: string }[] | null })
+    : { data: [] as { type: string }[] };
+  const exCounts = { mcq: 0, short: 0, code: 0 };
+  for (const r of exRows ?? []) {
+    if (r.type === "mcq") exCounts.mcq++;
+    else if (r.type === "short_answer") exCounts.short++;
+    else if (r.type === "code") exCounts.code++;
+  }
+  const guidedHours = learnableHours(lessonMinutes, exCounts);
+  const { data: projHourRows } = (await supabase
+    .from("projects")
+    .select("estimated_hours")
+    .eq("course_id", course.id)) as { data: { estimated_hours: number | null }[] | null };
+  const projectHours = (projHourRows ?? []).reduce((s, p) => s + (p.estimated_hours ?? 0), 0);
 
   // Fetch student + enrollment + completions (if logged in)
   let studentId: string | null = null;
@@ -424,11 +445,11 @@ export default async function CourseDetailPage({ params }: PageProps) {
                 </div>
                 <div className="flex items-center gap-2">
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" /></svg>
-                  <span>~{Math.round(course.total_lessons * 25 / 60)} hours total</span>
+                  <span>~{guidedHours} hours of guided learning</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" /></svg>
-                  <span>{course.total_projects} portfolio projects</span>
+                  <span>{course.total_projects} portfolio projects{projectHours ? ` (~${projectHours}h)` : ""}</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14" /><polyline points="22 4 12 14.01 9 11.01" /></svg>
