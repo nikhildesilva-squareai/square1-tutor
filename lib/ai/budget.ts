@@ -32,10 +32,23 @@ const PRICING = {
 const MODEL_SONNET = "claude-sonnet-4-6";
 const MODEL_HAIKU = "claude-haiku-4-5-20251001";
 
-// Open-model ids — used when a feature is routed to the "oss" provider via env
-// (OSS_AI_MODEL / OSS_AI_MODEL_CHEAP). Inert until AI_PROVIDER(_*)=oss is set.
+// Open-model ids — used when a feature is routed to the "oss" provider via env.
+// Global fallbacks:  OSS_AI_MODEL / OSS_AI_MODEL_CHEAP
+// Per-feature:       OSS_AI_MODEL_GRADING / OSS_AI_MODEL_TUTOR / OSS_AI_MODEL_FLASHCARDS etc.
+//                    OSS_AI_MODEL_CHEAP_GRADING / OSS_AI_MODEL_CHEAP_TUTOR etc.
+// Inert until AI_PROVIDER(_FEATURE)=oss is set.
 const OSS_MODEL = process.env.OSS_AI_MODEL ?? "oss-model";
 const OSS_MODEL_CHEAP = process.env.OSS_AI_MODEL_CHEAP ?? OSS_MODEL;
+
+function ossModelFor(feature?: string): string {
+  const perFeature = feature && process.env[`OSS_AI_MODEL_${feature.toUpperCase()}`];
+  return perFeature || OSS_MODEL;
+}
+
+function ossModelCheapFor(feature?: string): string {
+  const perFeature = feature && process.env[`OSS_AI_MODEL_CHEAP_${feature.toUpperCase()}`];
+  return perFeature || OSS_MODEL_CHEAP;
+}
 
 // Once a student's wallet is spent we DON'T cut them off — we degrade to the
 // cheaper Haiku model so the tutor keeps working. We only hard-stop past an
@@ -240,7 +253,7 @@ export async function callAI(
   let provider = providerFor(params.feature);
   let model =
     provider === "oss"
-      ? (overBudget ? OSS_MODEL_CHEAP : OSS_MODEL)
+      ? (overBudget ? ossModelCheapFor(params.feature) : ossModelFor(params.feature))
       : (overBudget ? MODEL_HAIKU : MODEL_SONNET);
 
   const gen = {

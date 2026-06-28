@@ -35,6 +35,7 @@ interface LearnClientProps {
   exercises: ExerciseData[]; lessonPosition: number; totalLessonsInModule: number;
   prevLessonId: string | null; nextLessonId: string | null; alreadyCompleted: boolean;
   weakTopics: string[];
+  advancedCourse?: { slug: string; title: string } | null;
 }
 
 // ─── Card types ────────────────────────────────────────────────────────────
@@ -268,7 +269,7 @@ function parseTheoryIntoCards(theory: string, exercises: ExerciseData[], objecti
 export function LearnClient({
   lesson, module, course, exercises,
   lessonPosition, totalLessonsInModule, prevLessonId, nextLessonId, alreadyCompleted,
-  weakTopics,
+  weakTopics, advancedCourse,
 }: LearnClientProps) {
   const router = useRouter();
   const styleRef = useRef(false);
@@ -975,6 +976,20 @@ export function LearnClient({
                     </Link>
                   )}
                 </div>
+
+                {/* Advanced course upsell — fires on final lesson completion */}
+                {completed && !nextLessonId && advancedCourse && (
+                  <div className="mt-6 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-xl p-5 text-white max-w-xs mx-auto">
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-white/60 mb-1">What&apos;s Next</p>
+                    <h3 className="text-sm font-bold mb-1">{advancedCourse.title}</h3>
+                    <p className="text-xs text-white/70 mb-3">6 senior modules · capstone · certificate. Included in your plan.</p>
+                    <Link href={`/courses/${advancedCourse.slug}`}
+                      className="inline-flex items-center gap-2 h-9 px-4 rounded-xl bg-white text-blue-700 font-bold text-xs hover:bg-white/90 transition-all">
+                      Start Advanced
+                      <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M6 3l5 5-5 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /></svg>
+                    </Link>
+                  </div>
+                )}
               </div>
             )}
           </div>

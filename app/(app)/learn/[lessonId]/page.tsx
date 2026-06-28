@@ -94,6 +94,18 @@ export default async function LearnPage({ params }: PageProps) {
     .eq("lesson_id", lessonId)
     .maybeSingle();
 
+  // Advanced course — fetch for the "What's Next" CTA shown on the final lesson
+  let advancedCourse: { slug: string; title: string } | null = null;
+  if (course && nextLessonId === null) {
+    const { data: adv } = await supabase
+      .from("courses")
+      .select("slug, title")
+      .eq("slug", `${course.slug}-advanced`)
+      .eq("status", "active")
+      .maybeSingle();
+    advancedCourse = adv ?? null;
+  }
+
   // Pull the learner's most recent assessment weak topics so in-lesson Nova
   // can connect explanations back to where they're actually struggling.
   const { data: skillReport } = await supabase
@@ -120,6 +132,7 @@ export default async function LearnPage({ params }: PageProps) {
       nextLessonId={nextLessonId}
       alreadyCompleted={!!completion}
       weakTopics={weakTopics}
+      advancedCourse={advancedCourse}
     />
   );
 }

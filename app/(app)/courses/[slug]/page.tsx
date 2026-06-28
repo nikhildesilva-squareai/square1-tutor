@@ -161,6 +161,30 @@ export default async function CourseDetailPage({ params }: PageProps) {
     }
   }
 
+  // Advanced course — "What's Next" teaser for enrolled students
+  let advancedCourse: { id: string; slug: string; title: string; total_modules: number } | null = null;
+  let enrolledInAdvanced = false;
+  const advancedSlug = `${slug}-advanced`;
+  const { data: advCourse } = await supabase
+    .from("courses")
+    .select("id, slug, title, total_modules")
+    .eq("slug", advancedSlug)
+    .eq("status", "active")
+    .maybeSingle();
+  if (advCourse) {
+    advancedCourse = advCourse;
+    if (studentId) {
+      const { data: advEnrollment } = await supabase
+        .from("student_enrollments")
+        .select("id")
+        .eq("student_id", studentId)
+        .eq("course_id", advCourse.id)
+        .eq("status", "active")
+        .maybeSingle();
+      enrolledInAdvanced = !!advEnrollment;
+    }
+  }
+
   const moduleList = modules ?? [];
   const projectList = projects ?? [];
   const lessonList = lessons ?? [];
@@ -367,6 +391,22 @@ export default async function CourseDetailPage({ params }: PageProps) {
                 );
               })}
             </div>
+
+            {/* Advanced course upsell — shown to enrolled students not yet in the advanced tier */}
+            {isEnrolled && advancedCourse && !enrolledInAdvanced && (
+              <div className="mt-4 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-xl p-5 text-white">
+                <p className="text-[10px] font-bold uppercase tracking-widest text-white/60 mb-1">What&apos;s Next</p>
+                <h3 className="text-base font-bold mb-1">{advancedCourse.title}</h3>
+                <p className="text-sm text-white/70 mb-4">
+                  {advancedCourse.total_modules} senior modules · capstone project · certificate. Included in your plan.
+                </p>
+                <Link href={`/courses/${advancedCourse.slug}`}
+                  className="inline-flex items-center gap-2 h-10 px-5 rounded-xl bg-white text-blue-700 font-bold text-sm hover:bg-white/90 transition-all">
+                  Start Advanced
+                  <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M6 3l5 5-5 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /></svg>
+                </Link>
+              </div>
+            )}
           </div>
 
           {/* Right: Sidebar (1/3) */}
