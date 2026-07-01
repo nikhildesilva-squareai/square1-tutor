@@ -161,14 +161,16 @@ export default async function CourseDetailPage({ params }: PageProps) {
     }
   }
 
-  // Advanced course — "What's Next" teaser for enrolled students
-  let advancedCourse: { id: string; slug: string; title: string; total_modules: number } | null = null;
+  // Advanced tier — fetch the child course (if any) and its modules/lessons to render inline
+  let advancedCourse: { id: string; slug: string; title: string; total_modules: number; total_lessons: number } | null = null;
   let enrolledInAdvanced = false;
-  const advancedSlug = `${slug}-advanced`;
+  let advModules: Module[] = [];
+  let advLessons: Pick<Lesson, "id" | "module_id" | "order_index" | "title" | "estimated_minutes">[] = [];
+
   const { data: advCourse } = await supabase
     .from("courses")
-    .select("id, slug, title, total_modules")
-    .eq("slug", advancedSlug)
+    .select("id, slug, title, total_modules, total_lessons")
+    .eq("parent_course_id", course.id)
     .eq("status", "active")
     .maybeSingle();
   if (advCourse) {
@@ -183,6 +185,15 @@ export default async function CourseDetailPage({ params }: PageProps) {
         .maybeSingle();
       enrolledInAdvanced = !!advEnrollment;
     }
+    // Fetch advanced modules + lessons for inline rendering
+    const [{ data: aMods }, { data: aLessons }] = await Promise.all([
+      supabase.from("modules").select("id, course_id, order_index, title, description, week_number")
+        .eq("course_id", advCourse.id).order("order_index", { ascending: true }) as unknown as Promise<{ data: Module[] | null }>,
+      supabase.from("lessons").select("id, module_id, order_index, title, estimated_minutes")
+        .eq("course_id", advCourse.id).order("order_index", { ascending: true }) as unknown as Promise<{ data: Pick<Lesson, "id" | "module_id" | "order_index" | "title" | "estimated_minutes">[] | null }>,
+    ]);
+    advModules = aMods ?? [];
+    advLessons = aLessons ?? [];
   }
 
   const moduleList = modules ?? [];
@@ -392,21 +403,127 @@ export default async function CourseDetailPage({ params }: PageProps) {
               })}
             </div>
 
-            {/* Advanced course upsell — shown to enrolled students not yet in the advanced tier */}
-            {isEnrolled && advancedCourse && !enrolledInAdvanced && (
-              <div className="mt-4 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-xl p-5 text-white">
-                <p className="text-[10px] font-bold uppercase tracking-widest text-white/60 mb-1">What&apos;s Next</p>
-                <h3 className="text-base font-bold mb-1">{advancedCourse.title}</h3>
-                <p className="text-sm text-white/70 mb-4">
-                  {advancedCourse.total_modules} senior modules · capstone project · certificate. Included in your plan.
-                </p>
-                <Link href={`/courses/${advancedCourse.slug}`}
-                  className="inline-flex items-center gap-2 h-10 px-5 rounded-xl bg-white text-blue-700 font-bold text-sm hover:bg-white/90 transition-all">
-                  Start Advanced
-                  <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M6 3l5 5-5 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /></svg>
-                </Link>
-              </div>
-            )}
+            {/* ── Advanced Tier — rendered inline below core modules ──── */}
+            {advancedCourse && advModules.length > 0 && (() => {
+              const advLessonsByModule: Record<string, typeof advLessons> = {};
+              for (const l of advLessons) {
+                if (!advLessonsByModule[l.module_id]) advLessonsByModule[l.module_id] = [];
+                advLessonsByModule[l.module_id].push(l);
+              }
+              const isLocked = !enrolledInAdvanced;
+
+              return (
+                <div className="mt-6">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="flex-1 h-px bg-gradient-to-r from-transparent via-border to-transparent" />
+                    <span className="px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest bg-gradient-to-r from-blue-600 to-indigo-600 text-white">
+                      Advanced Tier
+                    </span>
+                    <div className="flex-1 h-px bg-gradient-to-r from-border via-border to-transparent" />
+                  </div>
+
+                  {isLocked && (
+                    <div className="mb-4 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-xl p-5 text-white">
+                      <div className="flex items-start gap-3">
+                        <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center shrink-0">
+                          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2" /><path d="M7 11V7a5 5 0 0110 0v4" /></svg>
+                        </div>
+                        <div className="flex-1">
+                          <h3 className="text-base font-bold mb-1">{advancedCourse.title}</h3>
+                          <p className="text-sm text-white/70 mb-3">
+                            {advancedCourse.total_modules} senior modules · {advancedCourse.total_lessons} lessons · capstone &amp; certificate.
+                            Upgrade your plan to unlock the advanced tier.
+                          </p>
+                          <DirectEnrolButton courseSlug={advancedCourse.slug}
+                            className="inline-flex items-center gap-2 h-10 px-5 rounded-xl bg-white text-blue-700 font-bold text-sm hover:bg-white/90 transition-all"
+                            label="Unlock Advanced Tier" />
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  <div className={["space-y-3", isLocked ? "opacity-60" : ""].join(" ")}>
+                    {advModules.map((mod, mi) => {
+                      const modLessons = advLessonsByModule[mod.id] ?? [];
+                      const advModCompleted = enrolledInAdvanced && modLessons.length > 0 && modLessons.every(l => completedLessonIds.has(l.id));
+                      const advModCompletedCount = enrolledInAdvanced ? modLessons.filter(l => completedLessonIds.has(l.id)).length : 0;
+                      const advModPct = modLessons.length > 0 ? advModCompletedCount / modLessons.length : 0;
+
+                      return (
+                        <div key={mod.id} className="bg-surface rounded-xl border border-border overflow-hidden">
+                          <div className="px-4 py-3 flex items-center gap-3 border-b border-border">
+                            <div className={[
+                              "w-8 h-8 rounded-xl flex items-center justify-center text-xs font-bold shrink-0",
+                              advModCompleted ? "bg-emerald-100 text-emerald-600" : "bg-indigo-50 text-indigo-600",
+                            ].join(" ")}>
+                              {advModCompleted ? (
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><polyline points="20 6 9 17 4 12" /></svg>
+                              ) : isLocked ? (
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><rect x="3" y="11" width="18" height="11" rx="2" ry="2" /><path d="M7 11V7a5 5 0 0110 0v4" /></svg>
+                              ) : (
+                                <span>{mi + 1}</span>
+                              )}
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <p className="text-sm font-semibold text-ink">{mod.title}</p>
+                              <p className="text-[10px] text-ink-muted">{modLessons.length} lessons</p>
+                            </div>
+                            {enrolledInAdvanced && (
+                              <div className="flex items-center gap-2 shrink-0">
+                                <div className="w-12 h-1.5 rounded-full bg-surface-alt overflow-hidden">
+                                  <div className="h-full rounded-full" style={{ width: `${advModPct * 100}%`, background: advModCompleted ? "#059669" : "#4f46e5" }} />
+                                </div>
+                                <span className="text-[10px] text-ink-muted font-semibold tabular-nums">{advModCompletedCount}/{modLessons.length}</span>
+                              </div>
+                            )}
+                          </div>
+
+                          <div className="divide-y divide-border">
+                            {modLessons.map((lesson, li) => {
+                              const advStatus = !enrolledInAdvanced ? "locked" as const
+                                : completedLessonIds.has(lesson.id) ? "completed" as const
+                                : lesson.id === currentLessonId ? "current" as const
+                                : "locked" as const;
+                              return (
+                                <div key={lesson.id} className={["px-4 py-2.5 flex items-center gap-3", advStatus === "locked" ? "opacity-50" : ""].join(" ")}>
+                                  <div className={[
+                                    "w-6 h-6 rounded-lg flex items-center justify-center shrink-0",
+                                    advStatus === "completed" ? "bg-emerald-100" :
+                                    advStatus === "current" ? "bg-indigo-600" : "bg-surface-alt",
+                                  ].join(" ")}>
+                                    {advStatus === "completed" ? (
+                                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#059669" strokeWidth="3"><polyline points="20 6 9 17 4 12" /></svg>
+                                    ) : advStatus === "current" ? (
+                                      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5"><polygon points="5 3 19 12 5 21 5 3" /></svg>
+                                    ) : (
+                                      <span className="text-[9px] font-bold text-ink-muted">{li + 1}</span>
+                                    )}
+                                  </div>
+                                  <p className={["text-sm flex-1 min-w-0 truncate",
+                                    advStatus === "completed" ? "text-ink-secondary" : advStatus === "current" ? "text-ink font-medium" : "text-ink-muted"
+                                  ].join(" ")}>{lesson.title}</p>
+                                  {enrolledInAdvanced && advStatus === "completed" && <Link href={`/learn/${lesson.id}`} className="text-[10px] text-indigo-600 font-semibold hover:underline shrink-0">Review</Link>}
+                                  {enrolledInAdvanced && advStatus === "current" && (
+                                    <Link href={`/learn/${lesson.id}`}
+                                      className="h-7 px-3 rounded-lg bg-indigo-600 text-white text-[10px] font-bold inline-flex items-center gap-1 hover:bg-indigo-700 transition-all shrink-0">
+                                      Start
+                                      <svg width="10" height="10" viewBox="0 0 16 16" fill="none"><path d="M6 3l5 5-5 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /></svg>
+                                    </Link>
+                                  )}
+                                  {isLocked && li === 0 && (
+                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-ink-muted shrink-0"><rect x="3" y="11" width="18" height="11" rx="2" ry="2" /><path d="M7 11V7a5 5 0 0110 0v4" /></svg>
+                                  )}
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              );
+            })()}
           </div>
 
           {/* Right: Sidebar (1/3) */}

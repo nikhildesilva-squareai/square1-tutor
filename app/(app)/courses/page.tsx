@@ -64,13 +64,13 @@ export default async function CoursesPage() {
         </p>
       </div>
 
-      {!courses || courses.length === 0 ? (
+      {!courses || courses.filter(c => !c.parent_course_id).length === 0 ? (
         <div className="text-center py-20">
           <p className="text-ink-muted">No courses available yet. Check back soon.</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-5">
-          {courses.map((course) => {
+          {courses.filter(c => !c.parent_course_id).map((course) => {
             const isComingSoon = course.status === "coming_soon";
             const isEnrolled = enrolledCourseIds.has(course.id);
             const cardHasAssessment = assessmentCourseIds.has(course.id);

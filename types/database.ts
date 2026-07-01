@@ -19,6 +19,7 @@ export interface Course {
   total_lessons: number;
   total_projects: number;
   status: "active" | "coming_soon";
+  parent_course_id: string | null;
   created_at: string;
 }
 
