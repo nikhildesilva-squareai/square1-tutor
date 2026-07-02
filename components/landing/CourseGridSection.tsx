@@ -40,6 +40,8 @@ function getMeta(slug: string): CourseMeta {
   return META[slug] ?? META.default;
 }
 
+const BRAND = "#0056CE";
+
 // ─── Mobile card — compact tile ──────────────────────────────────────────────
 function MobileCourseCard({
   course,
@@ -59,9 +61,9 @@ function MobileCourseCard({
       onClick={() => onSelect(course)}
       className="relative group rounded-2xl p-4 transition-all duration-500 will-change-transform border overflow-hidden block w-full text-left"
       style={{
-        background: `linear-gradient(135deg, ${course.color}10 0%, #FFFFFF 60%, ${course.color}06 100%)`,
-        borderColor: `${course.color}25`,
-        boxShadow: `0 4px 16px ${course.color}10`,
+        background: `linear-gradient(135deg, ${BRAND}10 0%, #FFFFFF 60%, ${BRAND}06 100%)`,
+        borderColor: `${BRAND}25`,
+        boxShadow: `0 4px 16px ${BRAND}10`,
         opacity: isVisible ? 1 : 0,
         transform: isVisible ? "translateY(0)" : "translateY(20px)",
         transitionDelay: `${index * 60}ms`,
@@ -74,7 +76,7 @@ function MobileCourseCard({
         </h3>
         <span
           className="text-[8px] font-black tracking-wider uppercase px-1.5 py-0.5 rounded-full shrink-0 mt-0.5"
-          style={{ background: `${course.color}15`, color: course.color }}
+          style={{ background: `${BRAND}15`, color: BRAND }}
         >
           {meta.salary}
         </span>
@@ -89,9 +91,9 @@ function MobileCourseCard({
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-1.5">
           <svg width="10" height="10" viewBox="0 0 12 12" fill="none" className="shrink-0">
-            <path d="M2 6h7M6 3l3 3-3 3" stroke={course.color} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+            <path d="M2 6h7M6 3l3 3-3 3" stroke={BRAND} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
-          <span className="text-[10px] font-bold" style={{ color: course.color }}>
+          <span className="text-[10px] font-bold" style={{ color: BRAND }}>
             {meta.role}
           </span>
         </div>
@@ -103,7 +105,7 @@ function MobileCourseCard({
       </div>
 
       {/* Thin accent line at bottom */}
-      <div className="absolute bottom-0 left-0 right-0 h-0.5" style={{ background: `linear-gradient(90deg, ${course.color}40, ${course.color}10)` }} />
+      <div className="absolute bottom-0 left-0 right-0 h-0.5" style={{ background: `linear-gradient(90deg, ${BRAND}40, ${BRAND}10)` }} />
     </button>
   );
 }
@@ -127,35 +129,25 @@ function DesktopCourseCard({
       onClick={() => onSelect(course)}
       className="relative group rounded-3xl p-6 lg:p-7 transition-all duration-700 will-change-transform border overflow-hidden block w-full text-left"
       style={{
-        background: `
-          linear-gradient(135deg, ${course.color}14 0%, #FFFFFF 50%, ${course.color}08 100%),
-          radial-gradient(circle at top right, ${course.color}10, transparent 60%)
-        `,
-        borderColor: `${course.color}30`,
-        boxShadow: `0 10px 32px ${course.color}15, 0 0 0 1px ${course.color}10 inset`,
+        background: `linear-gradient(135deg, ${BRAND}08 0%, #FFFFFF 50%, ${BRAND}04 100%)`,
+        borderColor: `${BRAND}20`,
+        boxShadow: `0 8px 24px ${BRAND}08`,
         opacity: isVisible ? 1 : 0,
         transform: isVisible ? "translateY(0)" : "translateY(30px)",
         transitionDelay: `${index * 90}ms`,
       }}
     >
-      {/* Decorative blob top-right */}
-      <div className="absolute -top-12 -right-12 w-32 h-32 rounded-full pointer-events-none opacity-50"
-        style={{ background: `radial-gradient(circle, ${course.color}30 0%, transparent 70%)`, filter: "blur(16px)" }} />
-
       {/* Top badge */}
       <div className="relative flex items-center justify-between mb-5">
         <div className="flex items-center gap-2">
-          <span className="relative flex items-center justify-center">
-            <span className="absolute w-2.5 h-2.5 rounded-full animate-ping opacity-50" style={{ background: course.color }} />
-            <span className="w-1.5 h-1.5 rounded-full" style={{ background: course.color }} />
-          </span>
-          <span className="text-[10px] tracking-[0.25em] uppercase font-bold" style={{ color: course.color }}>
+          <span className="w-1.5 h-1.5 rounded-full" style={{ background: BRAND }} />
+          <span className="text-[10px] tracking-[0.25em] uppercase font-bold" style={{ color: BRAND }}>
             {course.status !== "active" ? "Coming Soon" : "Course"}
           </span>
         </div>
         <span
           className="text-[9px] font-black tracking-widest uppercase px-2 py-0.5 rounded-full"
-          style={{ background: `${course.color}20`, color: course.color }}
+          style={{ background: `${BRAND}15`, color: BRAND }}
         >
           {meta.salary}
         </span>
@@ -178,9 +170,9 @@ function DesktopCourseCard({
           <div
             key={p}
             className="flex items-center gap-2.5 px-3 py-2 rounded-lg border bg-white/60"
-            style={{ borderColor: `${course.color}20` }}
+            style={{ borderColor: `${BRAND}15` }}
           >
-            <span className="text-[9px] font-mono font-bold tabular-nums" style={{ color: course.color }}>
+            <span className="text-[9px] font-mono font-bold tabular-nums" style={{ color: BRAND }}>
               {String(i + 1).padStart(2, "0")}
             </span>
             <span className="text-xs sm:text-sm font-semibold text-slate-700">{p}</span>
@@ -195,14 +187,14 @@ function DesktopCourseCard({
         <span><span className="font-bold text-slate-700 tabular-nums">{course.total_projects}</span> projects</span>
       </div>
 
-      {/* Bottom — career role + popularity bar */}
-      <div className="relative pt-4 border-t" style={{ borderColor: `${course.color}15` }}>
+      {/* Bottom — career role + progress bar */}
+      <div className="relative pt-4 border-t" style={{ borderColor: `${BRAND}10` }}>
         <div className="flex items-center justify-between mb-2">
           <div className="flex items-center gap-1.5 min-w-0">
             <svg width="12" height="12" viewBox="0 0 12 12" fill="none" className="shrink-0">
-              <path d="M2 6h7M6 3l3 3-3 3" stroke={course.color} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+              <path d="M2 6h7M6 3l3 3-3 3" stroke={BRAND} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
-            <span className="text-[10px] sm:text-[11px] font-bold truncate" style={{ color: course.color }}>
+            <span className="text-[10px] sm:text-[11px] font-bold truncate" style={{ color: BRAND }}>
               {meta.role}
             </span>
           </div>
@@ -211,12 +203,12 @@ function DesktopCourseCard({
             AI-graded track
           </span>
         </div>
-        <div className="h-1 rounded-full overflow-hidden" style={{ background: `${course.color}15` }}>
+        <div className="h-1 rounded-full overflow-hidden" style={{ background: `${BRAND}12` }}>
           <div
             className="h-full rounded-full transition-all duration-700"
             style={{
               width: isVisible ? "100%" : "0%",
-              background: `linear-gradient(90deg, ${course.color}, ${course.color}cc)`,
+              background: `linear-gradient(90deg, ${BRAND}, ${BRAND}cc)`,
               transitionDelay: `${index * 90 + 400}ms`,
             }}
           />
@@ -237,12 +229,12 @@ function CourseExplorer({ course, onClose }: { course: Course; onClose: () => vo
       <div ref={dialogRef} role="dialog" aria-modal="true" aria-label={course.title}
         className="relative w-full sm:max-w-lg rounded-t-3xl sm:rounded-3xl bg-white shadow-2xl overflow-hidden animate-fade-in-up">
         {/* Accent header */}
-        <div className="p-6 sm:p-7" style={{ background: `linear-gradient(135deg, ${course.color}14, #fff)` }}>
+        <div className="p-6 sm:p-7" style={{ background: `linear-gradient(135deg, ${BRAND}10, #fff)` }}>
           <div className="flex items-start justify-between">
             <div>
               <span className="text-2xl">{course.icon}</span>
               <h3 className="mt-2 text-2xl font-black text-slate-900 leading-tight">{course.title}</h3>
-              <p className="text-sm font-semibold mt-1" style={{ color: course.color }}>
+              <p className="text-sm font-semibold mt-1" style={{ color: BRAND }}>
                 {meta.role} · <span style={{ color: "#10B981" }}>{meta.salary}</span>
               </p>
             </div>
@@ -258,8 +250,8 @@ function CourseExplorer({ course, onClose }: { course: Course; onClose: () => vo
           <p className="text-[10px] tracking-widest uppercase font-bold text-slate-500 mb-3">Real projects you&apos;ll ship</p>
           <div className="space-y-2 mb-6">
             {meta.projects.map((p, i) => (
-              <div key={p} className="flex items-center gap-2.5 px-3 py-2 rounded-lg border bg-slate-50/60" style={{ borderColor: `${course.color}20` }}>
-                <span className="text-[9px] font-mono font-bold tabular-nums" style={{ color: course.color }}>{String(i + 1).padStart(2, "0")}</span>
+              <div key={p} className="flex items-center gap-2.5 px-3 py-2 rounded-lg border bg-slate-50/60" style={{ borderColor: `${BRAND}15` }}>
+                <span className="text-[9px] font-mono font-bold tabular-nums" style={{ color: BRAND }}>{String(i + 1).padStart(2, "0")}</span>
                 <span className="text-sm font-semibold text-slate-700">{p}</span>
               </div>
             ))}
@@ -275,7 +267,7 @@ function CourseExplorer({ course, onClose }: { course: Course; onClose: () => vo
             </Link>
             <Link href={`/diagnostic?subject=${course.slug}`}
               className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-bold text-sm border-2 transition-all hover:bg-slate-50"
-              style={{ borderColor: `${course.color}30`, color: "#334155" }}>
+              style={{ borderColor: `${BRAND}25`, color: "#334155" }}>
               Get your free skill report
             </Link>
           </div>
@@ -352,7 +344,7 @@ export function CourseGridSection({ courses }: { courses: Course[] }) {
         </div>
 
         {/* ── DESKTOP: Full rich card grid (hidden on small screens) ──────── */}
-        <div className="hidden sm:grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 lg:gap-5">
+        <div className="hidden sm:grid sm:grid-cols-2 lg:grid-cols-3 gap-5 lg:gap-6">
           {courses.map((course, i) => (
             <DesktopCourseCard key={course.id} course={course} index={i} isVisible={visible} onSelect={setSelected} />
           ))}
