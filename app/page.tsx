@@ -41,6 +41,8 @@ async function getCourses(): Promise<CourseRow[]> {
     const { data } = await supabase
       .from("courses")
       .select("id,slug,title,description,icon,color,total_lessons,total_projects,status")
+      .is("parent_course_id", null)
+      .not("slug", "in", "(game-development,drone-technology,devops-engineering)")
       .order("title");
     return data ?? [];
   } catch {
@@ -48,7 +50,7 @@ async function getCourses(): Promise<CourseRow[]> {
   }
 }
 
-// ─── Static fallback courses (matches the actual 12 courses in Supabase) ──────
+// ─── Static fallback courses (matches the 9 world-class courses in Supabase) ─
 const FALLBACK_COURSES: CourseRow[] = [
   { id: "1",  slug: "generative-ai",          title: "Generative AI",          description: "Master LLMs, RAG, prompt engineering, and AI agents.",           icon: "🤖", color: "#6366f1", total_lessons: 40, total_projects: 10, status: "active" },
   { id: "2",  slug: "machine-learning",        title: "Machine Learning",       description: "From linear regression to neural networks.",                    icon: "🧠", color: "#8b5cf6", total_lessons: 40, total_projects: 10, status: "active" },
@@ -56,12 +58,9 @@ const FALLBACK_COURSES: CourseRow[] = [
   { id: "4",  slug: "cybersecurity",           title: "Cybersecurity",          description: "Ethical hacking, cryptography, OWASP, and incident response.",  icon: "🔐", color: "#ef4444", total_lessons: 40, total_projects: 10, status: "active" },
   { id: "5",  slug: "data-science",            title: "Data Science",           description: "Statistics, SQL, data analysis, and predictive insights.",       icon: "📊", color: "#14b8a6", total_lessons: 40, total_projects: 10, status: "active" },
   { id: "6",  slug: "fullstack-development",   title: "Full Stack Development", description: "APIs, databases, auth, and end-to-end web applications.",       icon: "🚀", color: "#06b6d4", total_lessons: 40, total_projects: 12, status: "active" },
-  { id: "7",  slug: "game-development",        title: "Game Development",       description: "Build games from scratch — game loop, physics, AI enemies.",    icon: "🎮", color: "#f59e0b", total_lessons: 40, total_projects: 10, status: "active" },
-  { id: "8",  slug: "computer-vision",         title: "Computer Vision",        description: "Image processing, CNNs, object detection, and segmentation.",   icon: "👁️", color: "#10b981", total_lessons: 40, total_projects: 10, status: "active" },
-  { id: "9",  slug: "drone-technology",        title: "Drone Technology",       description: "Autonomous flight, computer vision navigation, and aerial AI.", icon: "🚁", color: "#EC4899", total_lessons: 40, total_projects: 10, status: "active" },
-  { id: "10", slug: "llm-agent-architect",     title: "LLM Agent Architect",    description: "Design autonomous AI agents with tool use and orchestration.",  icon: "🤖", color: "#7C3AED", total_lessons: 40, total_projects: 10, status: "active" },
-  { id: "11", slug: "ai-product-management",   title: "AI Product Management",  description: "Ship AI products — strategy, roadmapping, and go-to-market.",  icon: "📋", color: "#0EA5E9", total_lessons: 40, total_projects: 10, status: "active" },
-  { id: "12", slug: "devops-engineering",      title: "DevOps Engineering",     description: "CI/CD, Docker, Kubernetes, and production reliability.",        icon: "⚙️", color: "#F97316", total_lessons: 40, total_projects: 10, status: "active" },
+  { id: "7",  slug: "computer-vision",         title: "Computer Vision",        description: "Image processing, CNNs, object detection, and segmentation.",   icon: "👁️", color: "#10b981", total_lessons: 40, total_projects: 10, status: "active" },
+  { id: "8",  slug: "llm-agent-architect",     title: "LLM Agent Architect",    description: "Design autonomous AI agents with tool use and orchestration.",  icon: "🤖", color: "#7C3AED", total_lessons: 40, total_projects: 10, status: "active" },
+  { id: "9",  slug: "ai-product-management",   title: "AI Product Management",  description: "Ship AI products — strategy, roadmapping, and go-to-market.",  icon: "📋", color: "#0EA5E9", total_lessons: 40, total_projects: 10, status: "active" },
 ];
 
 // ─── PAGE ─────────────────────────────────────────────────────────────────────

@@ -29,13 +29,10 @@ const META: Record<string, CourseMeta> = {
   "artificial-intelligence": { role: "AI Engineer",            salary: "$130–200k", projects: ["Pathfinding Visualiser", "Game AI", "Decision Engine"] },
   "cybersecurity":           { role: "Cybersecurity Engineer",  salary: "$110–180k", projects: ["Vulnerability Scanner", "Password Auditor", "Secure Auth"] },
   "computer-vision":         { role: "CV Engineer",            salary: "$120–180k", projects: ["Face Detection", "OCR App", "Object Tracker"] },
-  "game-development":        { role: "Game Developer",         salary: "$80–150k",  projects: ["2D Platformer", "AI Enemy System", "Multiplayer Game"] },
   "fullstack-development":   { role: "Full Stack Engineer",    salary: "$100–160k", projects: ["SaaS App", "Real-time Chat", "Payment System"] },
-  "drone-technology":        { role: "Drone Engineer",         salary: "$115–185k", projects: ["Autonomous Flight", "Aerial Vision AI", "Swarm Controller"] },
   "data-science":            { role: "Data Scientist",         salary: "$115–185k", projects: ["Cohort Analysis", "A/B Test Lab", "Sales Forecaster"] },
   "llm-agent-architect":     { role: "Agent Architect",        salary: "$150–250k", projects: ["Tool-use Agent", "Multi-agent System", "Autonomous Workflow"] },
   "ai-product-management":   { role: "AI Product Manager",     salary: "$140–220k", projects: ["AI Product Spec", "Go-to-Market Plan", "User Research Report"] },
-  "devops-engineering":      { role: "DevOps Engineer",        salary: "$120–190k", projects: ["CI/CD Pipeline", "K8s Deployment", "Monitoring Stack"] },
   "default":                 { role: "Software Engineer",      salary: "$90–150k",  projects: ["Starter Project", "Mid-level Project", "Capstone"] },
 };
 
@@ -331,7 +328,7 @@ export function CourseGridSection({ courses }: { courses: Course[] }) {
           </span>
           <h2 className="mt-3 sm:mt-4 font-black tracking-tight text-slate-900 leading-[0.95]"
             style={{ fontSize: "clamp(28px, 6vw, 80px)" }}>
-            12 subjects.
+            9 subjects.
             <br />
             <span style={{
               background: "linear-gradient(135deg, #3388FF 0%, #A78BFA 50%, #10B981 100%)",
