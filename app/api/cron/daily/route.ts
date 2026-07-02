@@ -1,16 +1,20 @@
 import { NextResponse } from "next/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { runStreakReminders, runWeeklyDigest, runAssessmentNudges } from "@/lib/email/jobs";
+import { checkAllIncompleteEnrollments } from "@/lib/enrollment-completion";
 
 export const maxDuration = 60;
 
 /**
- * GET /api/cron/daily — single daily lifecycle-email cron (07:00 UTC).
+ * GET /api/cron/daily — single daily lifecycle cron (07:00 UTC).
  *
- * Consolidates all email jobs into one cron entry (Vercel Hobby allows few):
- *  - streak reminders   → every day, students with an active enrollment who
- *                          haven't studied today
- *  - assessment nudges  → every day, signups >24h old with no enrollment (once ever)
- *  - weekly digest      → Sundays only
+ * Consolidates all daily jobs into one cron entry (Vercel Hobby allows few):
+ *  - enrollment completion  → every day, marks any enrollments that now meet
+ *                              completion criteria (lessons + projects + assessment)
+ *  - streak reminders       → every day, students with an active enrollment who
+ *                              haven't studied today
+ *  - assessment nudges      → every day, signups >24h old with no enrollment (once ever)
+ *  - weekly digest          → Sundays only
  *
  * Protected by CRON_SECRET. Vercel cron sends it automatically as a Bearer
  * header when the env var is set on the project.
@@ -27,6 +31,15 @@ export async function GET(request: Request) {
 
   const isSunday = new Date().getUTCDay() === 0;
   const results: Record<string, unknown> = {};
+
+  // ── Check incomplete enrollments for completion (fallback for on-demand triggers) ──
+  try {
+    const admin = createAdminClient();
+    const completedCount = await checkAllIncompleteEnrollments(admin);
+    results.enrollmentCompletion = { completedCount };
+  } catch (err) {
+    results.enrollmentCompletion = { error: err instanceof Error ? err.message : "failed" };
+  }
 
   try {
     results.streakReminders = await runStreakReminders();

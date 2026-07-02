@@ -5,7 +5,9 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "backfill:enrollment-completion": "BACKFILL_CONFIRM=0 npx ts-node scripts/backfill-enrollment-completion.ts",
+    "backfill:enrollment-completion:confirm": "BACKFILL_CONFIRM=1 npx ts-node scripts/backfill-enrollment-completion.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.100.1",
