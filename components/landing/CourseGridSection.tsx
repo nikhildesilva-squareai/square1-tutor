@@ -59,11 +59,11 @@ function MobileCourseCard({
   return (
     <button
       onClick={() => onSelect(course)}
-      className="relative group rounded-2xl p-4 transition-all duration-500 will-change-transform border overflow-hidden block w-full text-left"
+      className="relative group rounded-xl p-4 transition-all duration-500 will-change-transform overflow-hidden block w-full text-left"
       style={{
-        background: `linear-gradient(135deg, ${BRAND}10 0%, #FFFFFF 60%, ${BRAND}06 100%)`,
-        borderColor: `${BRAND}25`,
-        boxShadow: `0 4px 16px ${BRAND}10`,
+        background: "#FFFFFF",
+        border: "1.5px solid #E2E8F0",
+        boxShadow: "0 1px 3px rgba(0,0,0,0.06), 0 4px 12px rgba(0,0,0,0.04)",
         opacity: isVisible ? 1 : 0,
         transform: isVisible ? "translateY(0)" : "translateY(20px)",
         transitionDelay: `${index * 60}ms`,
@@ -127,11 +127,11 @@ function DesktopCourseCard({
   return (
     <button
       onClick={() => onSelect(course)}
-      className="relative group rounded-3xl p-6 lg:p-7 transition-all duration-700 will-change-transform border overflow-hidden block w-full text-left"
+      className="relative group rounded-2xl p-6 lg:p-7 transition-all duration-500 will-change-transform overflow-hidden block w-full text-left hover:-translate-y-1"
       style={{
-        background: `linear-gradient(135deg, ${BRAND}08 0%, #FFFFFF 50%, ${BRAND}04 100%)`,
-        borderColor: `${BRAND}20`,
-        boxShadow: `0 8px 24px ${BRAND}08`,
+        background: "#FFFFFF",
+        border: "1.5px solid #E2E8F0",
+        boxShadow: "0 1px 3px rgba(0,0,0,0.06), 0 4px 12px rgba(0,0,0,0.04)",
         opacity: isVisible ? 1 : 0,
         transform: isVisible ? "translateY(0)" : "translateY(30px)",
         transitionDelay: `${index * 90}ms`,
@@ -169,8 +169,7 @@ function DesktopCourseCard({
         {meta.projects.map((p, i) => (
           <div
             key={p}
-            className="flex items-center gap-2.5 px-3 py-2 rounded-lg border bg-white/60"
-            style={{ borderColor: `${BRAND}15` }}
+            className="flex items-center gap-2.5 px-3 py-2 rounded-lg bg-slate-50/80 border border-slate-200/80"
           >
             <span className="text-[9px] font-mono font-bold tabular-nums" style={{ color: BRAND }}>
               {String(i + 1).padStart(2, "0")}
