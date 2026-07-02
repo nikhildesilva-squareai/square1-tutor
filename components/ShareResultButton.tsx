@@ -10,15 +10,19 @@ export function ShareResultButton({
   percentage,
   level,
   courseTitle,
+  shareUrl,
 }: {
   percentage: number;
   level: string;
   courseTitle: string;
+  shareUrl?: string;
 }) {
   const [copied, setCopied] = useState(false);
   const origin = typeof window !== "undefined" ? window.location.origin : "https://square1-tutor.vercel.app";
-  const url = `${origin}/diagnostic`;
-  const text = `I scored ${percentage}/100 (${level}) on the Square 1 AI ${courseTitle} skill assessment. Find out where you stand — free, no signup:`;
+  const url = shareUrl ?? `${origin}/diagnostic`;
+  const text = shareUrl
+    ? `I just took the Square 1 AI ${courseTitle} skill snapshot — ${level} level. Take yours free:`
+    : `I scored ${percentage}/100 (${level}) on the Square 1 AI ${courseTitle} skill assessment. Find out where you stand — free, no signup:`;
 
   async function copyLink() {
     try {
