@@ -1,6 +1,8 @@
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { NextResponse } from "next/server";
 import { z } from "zod";
+import { checkAndMarkEnrollmentComplete } from "@/lib/enrollment-completion";
 
 const schema = z.object({
   lessonId: z.string(),
@@ -217,7 +219,11 @@ export async function POST(request: Request) {
         .eq("id", enrollment.id);
     }
 
-    return NextResponse.json({ completed: true, nextLessonId });
+    // ── Check if enrollment is now complete ──────────────────────────────────
+    const admin = createAdminClient();
+    const enrollmentCompleted = await checkAndMarkEnrollmentComplete(enrollment.id, admin);
+
+    return NextResponse.json({ completed: true, nextLessonId, enrollmentCompleted });
   } catch (err) {
     if (err instanceof z.ZodError) {
       return NextResponse.json({ error: "Invalid request", details: err.issues }, { status: 400 });

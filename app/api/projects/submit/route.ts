@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { NextResponse } from "next/server";
 import { callAI } from "@/lib/ai/budget";
 import { GRADING_SYSTEM_PROMPT } from "@/lib/ai/prompts";
@@ -6,6 +7,7 @@ import { z } from "zod";
 import { rateLimitAI } from "@/lib/rate-limit";
 import { fetchRepo, formatRepoForReview, enrichCodeComments, type RepoAnalysis } from "@/lib/github/fetch-repo";
 import { scoreObjective, type GradingConfig, type ObjectiveResult } from "@/lib/grading/objective";
+import { checkAndMarkEnrollmentComplete } from "@/lib/enrollment-completion";
 
 const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
@@ -152,6 +154,10 @@ export async function POST(request: Request) {
       .update({ status: "submitted", updated_at: new Date().toISOString() })
       .eq("student_id", student.id).eq("project_id", projectId);
 
+    // ── Check if enrollment is now complete ──────────────────────────────────
+    const admin = createAdminClient();
+    const enrollmentCompleted = await checkAndMarkEnrollmentComplete(enrollment.id, admin);
+
     const previousAttempt = submissionHistory.length > 0 ? submissionHistory[submissionHistory.length - 1] : null;
 
     return NextResponse.json({
@@ -166,6 +172,7 @@ export async function POST(request: Request) {
       attempt_number: attemptNumber,
       in_portfolio: inPortfolio,
       complete,
+      enrollmentCompleted,
       objective: objective
         ? { score: objective.score, passed: objective.passed, metric: objective.metric, detail: objective.detail, threshold: grading?.threshold ?? null, error: objective.error ?? null }
         : null,
