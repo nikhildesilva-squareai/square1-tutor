@@ -323,21 +323,21 @@ describe("Dashboard - Finished Courses", () => {
 
   describe("Pre-enrollment Dashboard Visibility", () => {
     it("should show pre-enrollment UI only when no current AND no finished enrollments", () => {
-      const currentEnrollments: typeof [] = [];
-      const finishedEnrollments: typeof [] = [];
+      const currentEnrollments: never[] = [];
+      const finishedEnrollments: never[] = [];
       const showPreEnrollment = currentEnrollments.length === 0 && finishedEnrollments.length === 0;
       expect(showPreEnrollment).toBe(true);
     });
 
     it("should show post-enrollment UI when current enrollments exist", () => {
       const currentEnrollments = [{ id: "1" }];
-      const finishedEnrollments: typeof [] = [];
+      const finishedEnrollments: never[] = [];
       const showPostEnrollment = !(currentEnrollments.length === 0 && finishedEnrollments.length === 0);
       expect(showPostEnrollment).toBe(true);
     });
 
     it("should show post-enrollment UI when only finished enrollments exist", () => {
-      const currentEnrollments: typeof [] = [];
+      const currentEnrollments: never[] = [];
       const finishedEnrollments = [{ id: "1" }];
       const showPostEnrollment = !(currentEnrollments.length === 0 && finishedEnrollments.length === 0);
       expect(showPostEnrollment).toBe(true);

@@ -413,7 +413,7 @@ describe("Message Input Component (CommunityMessageInput)", () => {
       // Expected: Button becomes "Sending..." and disabled
     });
 
-    it("should show "Send Message" when not sending", async () => {
+    it("should show 'Send Message' when not sending", async () => {
       // Test: Idle state
       // Expected: Button text = "Send Message"
     });

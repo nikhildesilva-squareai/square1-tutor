@@ -8,7 +8,7 @@ import { reviewFlag, escalateFlag } from "@/lib/community/moderation";
  */
 export async function PATCH(
   req: Request,
-  { params }: { params: { id: string; flagId: string } }
+  { params }: { params: Promise<{ id: string; flagId: string }> }
 ) {
   try {
     const supabase = await createClient();
@@ -19,8 +19,7 @@ export async function PATCH(
     }
 
     const { action, notes, escalate } = await req.json();
-    const communityId = params.id;
-    const flagId = params.flagId;
+    const { id: communityId, flagId } = await params;
 
     // Validate action
     if (!["approved", "deleted", "warned_author", "dismissed"].includes(action)) {

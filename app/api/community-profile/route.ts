@@ -56,7 +56,7 @@ export async function GET() {
       .eq("status", "active");
 
     const courseIds = enrollments?.map(e => e.course_id) ?? [];
-    let courses = [];
+    let courses: { id: string; title: string; icon: string | null; color: string | null }[] = [];
     if (courseIds.length > 0) {
       const { data: courseData } = await supabase
         .from("courses")

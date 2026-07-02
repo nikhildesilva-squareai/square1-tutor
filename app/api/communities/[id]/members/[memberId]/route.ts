@@ -7,7 +7,7 @@ import { NextResponse } from "next/server";
  */
 export async function PATCH(
   req: Request,
-  { params }: { params: { id: string; memberId: string } }
+  { params }: { params: Promise<{ id: string; memberId: string }> }
 ) {
   try {
     const supabase = await createClient();
@@ -18,8 +18,7 @@ export async function PATCH(
     }
 
     const { role, isMuted, mutedReason } = await req.json();
-    const communityId = params.id;
-    const memberRowId = params.memberId;
+    const { id: communityId, memberId: memberRowId } = await params;
 
     // Verify user is founder or moderator
     const { data: community } = await supabase

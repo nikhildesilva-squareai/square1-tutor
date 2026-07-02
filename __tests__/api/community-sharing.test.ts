@@ -397,7 +397,7 @@ describe("Social Sharing UI (CommunitySocialSharing)", () => {
 
 describe("Community Recommendations UI (CommunityRecommendations)", () => {
   describe("Rendering", () => {
-    it("should show "Recommended For You" section", async () => {
+    it("should show 'Recommended For You' section", async () => {
       // Test: Render component
       // Expected: Header visible
     });

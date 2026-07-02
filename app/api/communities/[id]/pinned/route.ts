@@ -7,11 +7,11 @@ import { NextResponse } from "next/server";
  */
 export async function GET(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const supabase = await createClient();
-    const communityId = params.id;
+    const communityId = (await params).id;
 
     const { data: pinned, error } = await supabase
       .from("pinned_messages")
@@ -71,7 +71,7 @@ export async function GET(
  */
 export async function POST(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const supabase = await createClient();
@@ -83,7 +83,7 @@ export async function POST(
 
     const { messageId, pinTitle, pinDescription, pinCategory, expiresAt } =
       await req.json();
-    const communityId = params.id;
+    const communityId = (await params).id;
 
     // Validate inputs
     if (!messageId) {

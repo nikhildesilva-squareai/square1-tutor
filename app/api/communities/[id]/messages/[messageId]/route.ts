@@ -7,7 +7,7 @@ import { NextResponse } from "next/server";
  */
 export async function PATCH(
   req: Request,
-  { params }: { params: { id: string; messageId: string } }
+  { params }: { params: Promise<{ id: string; messageId: string }> }
 ) {
   try {
     const supabase = await createClient();
@@ -18,7 +18,7 @@ export async function PATCH(
     }
 
     const { content, mentions } = await req.json();
-    const { messageId } = params;
+    const { messageId } = await params;
 
     // Validate content
     if (!content || typeof content !== "string" || !content.trim()) {
@@ -151,7 +151,7 @@ export async function PATCH(
  */
 export async function DELETE(
   req: Request,
-  { params }: { params: { id: string; messageId: string } }
+  { params }: { params: Promise<{ id: string; messageId: string }> }
 ) {
   try {
     const supabase = await createClient();
@@ -161,7 +161,7 @@ export async function DELETE(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { messageId } = params;
+    const { messageId } = await params;
 
     // Get user's profile
     const { data: profile } = await supabase

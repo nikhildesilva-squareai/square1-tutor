@@ -7,11 +7,11 @@ import { NextResponse } from "next/server";
  */
 export async function GET(
   req: Request,
-  { params }: { params: { id: string; messageId: string } }
+  { params }: { params: Promise<{ id: string; messageId: string }> }
 ) {
   try {
     const supabase = await createClient();
-    const { messageId } = params;
+    const { messageId } = await params;
 
     // Get reaction counts aggregated by emoji
     const { data: reactionCounts, error: countsError } = await supabase
@@ -70,7 +70,7 @@ export async function GET(
  */
 export async function POST(
   req: Request,
-  { params }: { params: { id: string; messageId: string } }
+  { params }: { params: Promise<{ id: string; messageId: string }> }
 ) {
   try {
     const supabase = await createClient();
@@ -81,7 +81,7 @@ export async function POST(
     }
 
     const { emoji } = await req.json();
-    const { messageId } = params;
+    const { messageId } = await params;
 
     // Validate emoji
     if (!emoji || typeof emoji !== "string" || emoji.trim() === "") {
@@ -162,7 +162,7 @@ export async function POST(
  */
 export async function DELETE(
   req: Request,
-  { params }: { params: { id: string; messageId: string } }
+  { params }: { params: Promise<{ id: string; messageId: string }> }
 ) {
   try {
     const supabase = await createClient();
@@ -174,7 +174,7 @@ export async function DELETE(
 
     const { searchParams } = new URL(req.url);
     const emoji = searchParams.get("emoji");
-    const { messageId } = params;
+    const { messageId } = await params;
 
     if (!emoji) {
       return NextResponse.json(

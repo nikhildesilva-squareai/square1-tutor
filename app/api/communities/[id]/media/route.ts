@@ -8,14 +8,14 @@ import { NextResponse } from "next/server";
  */
 export async function GET(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
     const { searchParams } = new URL(req.url);
 
-    const communityId = params.id;
+    const communityId = (await params).id;
     const mediaType = searchParams.get("type"); // file, link, image, document
     const sortBy = searchParams.get("sortBy") || "recent"; // recent, views
     const limit = Math.min(parseInt(searchParams.get("limit") || "20"), 100);

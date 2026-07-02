@@ -8,7 +8,7 @@ import { autoModerateMessage } from "@/lib/community/moderation";
  */
 export async function POST(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const supabase = await createClient();
@@ -19,7 +19,7 @@ export async function POST(
     }
 
     const { content, mentions, attachments } = await req.json();
-    const communityId = params.id;
+    const communityId = (await params).id;
 
     // Validate content
     if ((!content || typeof content !== "string" || !content.trim()) && (!attachments || attachments.length === 0)) {
@@ -167,7 +167,7 @@ export async function POST(
  */
 export async function GET(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const supabase = await createClient();
@@ -175,7 +175,7 @@ export async function GET(
 
     const limit = parseInt(searchParams.get("limit") || "50", 10);
     const offset = parseInt(searchParams.get("offset") || "0", 10);
-    const communityId = params.id;
+    const communityId = (await params).id;
 
     // Get messages
     const { data: messages, error, count } = await supabase

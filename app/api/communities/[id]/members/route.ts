@@ -7,7 +7,7 @@ import { NextResponse } from "next/server";
  */
 export async function POST(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const supabase = await createClient();
@@ -17,7 +17,7 @@ export async function POST(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const communityId = params.id;
+    const communityId = (await params).id;
 
     // Get user's community profile
     const { data: profile, error: profileError } = await supabase
@@ -104,7 +104,7 @@ export async function POST(
  */
 export async function GET(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const supabase = await createClient();
@@ -114,7 +114,7 @@ export async function GET(
     const offset = parseInt(searchParams.get("offset") || "0", 10);
     const sortBy = searchParams.get("sortBy") || "joined_at"; // joined_at or activity
 
-    const communityId = params.id;
+    const communityId = (await params).id;
 
     // Get members with their profiles
     let query = supabase
@@ -203,7 +203,7 @@ export async function GET(
  */
 export async function DELETE(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const supabase = await createClient();
@@ -213,7 +213,7 @@ export async function DELETE(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const communityId = params.id;
+    const communityId = (await params).id;
     const { searchParams } = new URL(req.url);
     const targetProfileId = searchParams.get("profileId");
 

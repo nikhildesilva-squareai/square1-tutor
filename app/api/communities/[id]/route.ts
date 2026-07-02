@@ -7,11 +7,11 @@ import { NextResponse } from "next/server";
  */
 export async function GET(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const supabase = await createClient();
-    const communityId = params.id;
+    const communityId = (await params).id;
 
     // Get community details
     const { data: community, error } = await supabase

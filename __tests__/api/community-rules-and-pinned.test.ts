@@ -235,7 +235,7 @@ describe("POST /api/communities/[id]/pinned (Pin Message)", () => {
 
 describe("Community Rules UI (CommunityRulesDisplay)", () => {
   describe("Rendering", () => {
-    it("should show "Community Rules" header", async () => {
+    it("should show 'Community Rules' header", async () => {
       // Test: Render component with showHeader=true
       // Expected: Header visible
     });
@@ -317,7 +317,7 @@ describe("Pinned Messages UI (CommunityPinnedMessages)", () => {
   });
 
   describe("Full View", () => {
-    it("should show "Pinned Announcements" header", async () => {
+    it("should show 'Pinned Announcements' header", async () => {
       // Test: Render full view
       // Expected: Header visible
     });

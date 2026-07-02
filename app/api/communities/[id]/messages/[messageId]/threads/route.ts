@@ -7,7 +7,7 @@ import { NextResponse } from "next/server";
  */
 export async function GET(
   req: Request,
-  { params }: { params: { id: string; messageId: string } }
+  { params }: { params: Promise<{ id: string; messageId: string }> }
 ) {
   try {
     const supabase = await createClient();
@@ -16,7 +16,7 @@ export async function GET(
     const limit = parseInt(searchParams.get("limit") || "50", 10);
     const offset = parseInt(searchParams.get("offset") || "0", 10);
 
-    const { messageId } = params;
+    const { messageId } = await params;
 
     // Get thread count
     const { data: threadCount } = await supabase
@@ -69,7 +69,7 @@ export async function GET(
     // Transform response
     const enriched = threads?.map((t: any) => ({
       id: t.id,
-      parentMessageId: params.messageId,
+      parentMessageId: messageId,
       replyMessageId: t.reply_message_id,
       createdAt: t.created_at,
       message: {
@@ -106,7 +106,7 @@ export async function GET(
  */
 export async function POST(
   req: Request,
-  { params }: { params: { id: string; messageId: string } }
+  { params }: { params: Promise<{ id: string; messageId: string }> }
 ) {
   try {
     const supabase = await createClient();
@@ -117,8 +117,7 @@ export async function POST(
     }
 
     const { content, mentions } = await req.json();
-    const communityId = params.id;
-    const parentMessageId = params.messageId;
+    const { id: communityId, messageId: parentMessageId } = await params;
 
     // Validate content
     if (!content || typeof content !== "string" || !content.trim()) {
