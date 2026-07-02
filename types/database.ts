@@ -189,3 +189,53 @@ export interface CodeComment {
   };
   githubUrl?: string;
 }
+
+export interface CommunityProfile {
+  id: string;
+  user_id: string;
+  student_id: string;
+  avatar_url: string | null;
+  bio: string | null;
+  pronouns: string | null;
+  location: string | null;
+  website_url: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export type TemplateType = "project" | "research" | "company" | "opensource" | "cohort";
+export type CommunityRole = "creator" | "moderator" | "member";
+export type InviteStatus = "auto_added" | "pending" | "accepted" | "declined";
+
+export interface Community {
+  id: string;
+  name: string;
+  slug: string;
+  description: string | null;
+  template_type: TemplateType;
+  category: string;
+  is_private: boolean;
+  creator_id: string;
+  created_at: string;
+  updated_at: string;
+  deleted_at: string | null;
+}
+
+export interface CommunityMember {
+  id: string;
+  community_id: string;
+  profile_id: string;
+  role: CommunityRole;
+  joined_at: string;
+  is_muted: boolean;
+}
+
+export interface CommunityInvite {
+  id: string;
+  community_id: string;
+  profile_id: string;
+  invited_by: string | null;
+  invite_status: InviteStatus;
+  sent_at: string;
+  responded_at: string | null;
+}

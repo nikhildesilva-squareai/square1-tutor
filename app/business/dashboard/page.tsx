@@ -255,6 +255,45 @@ export default async function ManagerDashboard() {
           </div>
         )}
 
+        {/* Team Completion Summary */}
+        {completedCount > 0 && (
+          <div className="rounded-2xl border border-slate-200 bg-white p-5 mb-3">
+            <div className="mb-4">
+              <p className="text-sm font-bold text-slate-900">Completed members</p>
+              <p className="text-[11px] text-slate-500 mt-1">{completedCount} of {seatsUsed} members finished their track</p>
+            </div>
+            <div className="space-y-2">
+              {roster
+                .filter((r) => r.completed && r.completedAt)
+                .sort((a, b) => (b.completedAt || "").localeCompare(a.completedAt || ""))
+                .map((r) => {
+                  const completedDate = r.completedAt ? new Date(r.completedAt).toLocaleDateString("en-AU", { day: "numeric", month: "short", year: "numeric" }) : "—";
+                  return (
+                    <div key={r.studentId} className="flex items-center justify-between p-3 rounded-lg border border-slate-100 bg-slate-50/50">
+                      <div className="flex-1">
+                        <p className="text-sm font-semibold text-slate-900">{r.name}</p>
+                        <p className="text-xs text-slate-500">{r.track}</p>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-xs text-slate-500">Completed</p>
+                        <p className="text-xs font-semibold text-slate-700">{completedDate}</p>
+                      </div>
+                      {r.trackSlug && (
+                        <Link
+                          href={`/certificate/${r.trackSlug}`}
+                          className="ml-3 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200 text-xs font-bold transition-colors"
+                        >
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" /></svg>
+                          Certificate
+                        </Link>
+                      )}
+                    </div>
+                  );
+                })}
+            </div>
+          </div>
+        )}
+
         {/* Roster */}
         <div className="rounded-2xl border border-slate-200 bg-white overflow-hidden">
           <div className="px-5 py-3 border-b border-slate-200 flex items-center justify-between">

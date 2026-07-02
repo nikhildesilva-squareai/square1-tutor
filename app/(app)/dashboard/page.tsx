@@ -36,6 +36,7 @@ interface EnrollmentRow {
   assessment_level: string | null;
   target_completion_date: string | null;
   current_lesson_id: string | null;
+  completed_at: string | null;
   course: { id: string; slug: string; title: string; icon: string; total_lessons: number } | null;
   current_lesson: { id: string; title: string; estimated_minutes: number; module_id: string } | null;
 }
@@ -82,7 +83,7 @@ export default async function DashboardPage({ searchParams }: DashboardProps) {
 
   const { data: enrollments } = await supabase
     .from("student_enrollments")
-    .select(`id, status, assessment_level, target_completion_date, current_lesson_id,
+    .select(`id, status, assessment_level, target_completion_date, current_lesson_id, completed_at,
       course:courses(id, slug, title, icon, total_lessons),
       current_lesson:lessons!student_enrollments_current_lesson_id_fkey(id, title, estimated_minutes, module_id)`)
     .eq("student_id", student?.id ?? "")
@@ -92,12 +93,19 @@ export default async function DashboardPage({ searchParams }: DashboardProps) {
   const name = student?.name ?? user.email?.split("@")[0] ?? "there";
   const firstName = name.split(" ")[0];
   const greeting = getGreeting();
-  const activeEnrollments = enrollments ?? [];
+  const allEnrollments = enrollments ?? [];
+
+  // Split enrollments into active (in-progress) and completed
+  const currentEnrollments = allEnrollments.filter(e => !e.completed_at);
+  const finishedEnrollments = allEnrollments.filter(e => e.completed_at).sort((a, b) => {
+    // Sort by completed_at DESC (newest first)
+    return new Date(b.completed_at ?? 0).getTime() - new Date(a.completed_at ?? 0).getTime();
+  });
 
   // Course switcher: if ?course=slug param is present, use that enrollment as primary
-  let primaryEnrollment = activeEnrollments[0] ?? null;
-  if (courseParam && activeEnrollments.length > 1) {
-    const match = activeEnrollments.find(e => e.course?.slug === courseParam);
+  let primaryEnrollment = currentEnrollments[0] ?? null;
+  if (courseParam && currentEnrollments.length > 1) {
+    const match = currentEnrollments.find(e => e.course?.slug === courseParam);
     if (match) primaryEnrollment = match;
   }
 
@@ -106,7 +114,7 @@ export default async function DashboardPage({ searchParams }: DashboardProps) {
   /* ═══════════════════════════════════════════════════════════════════════ */
   /*  PRE-ENROLLMENT DASHBOARD — Onboarding funnel                         */
   /* ═══════════════════════════════════════════════════════════════════════ */
-  if (activeEnrollments.length === 0) {
+  if (currentEnrollments.length === 0 && finishedEnrollments.length === 0) {
     return (
       <div className="min-h-full px-4 sm:px-6 py-8 max-w-6xl mx-auto">
 
@@ -307,11 +315,11 @@ export default async function DashboardPage({ searchParams }: DashboardProps) {
         <div className="absolute top-0 right-0 w-56 h-56 rounded-full opacity-15"
           style={{ background: "radial-gradient(circle, white 0%, transparent 70%)", transform: "translate(30%, -30%)" }} />
 
-        {/* Course switcher tabs — only when 2+ enrolled */}
-        {activeEnrollments.length > 1 && (
+        {/* Course switcher tabs — only when 2+ active courses */}
+        {currentEnrollments.length > 1 && (
           <div className="relative mb-5">
             <CourseSwitcher
-              courses={activeEnrollments.map(e => ({
+              courses={currentEnrollments.map(e => ({
                 slug: e.course?.slug ?? "",
                 title: e.course?.title ?? "Course",
                 color: e.course?.slug ? COURSE_COLORS[e.course.slug] ?? "#0056CE" : "#0056CE",
@@ -406,6 +414,37 @@ export default async function DashboardPage({ searchParams }: DashboardProps) {
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polygon points="5 3 19 12 5 21 5 3" /></svg>
             </Link>
           )}
+        </div>
+      )}
+
+      {/* ── Finished Courses Section ─────────────────────────────────── */}
+      {finishedEnrollments.length > 0 && (
+        <div className="mb-6">
+          <p className="text-[11px] font-semibold text-ink-muted uppercase tracking-widest mb-4">Completed Courses</p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {finishedEnrollments.map((enrollment) => {
+              const courseSlugValue = enrollment.course?.slug ?? "";
+              const completedDate = enrollment.completed_at ? new Date(enrollment.completed_at).toLocaleDateString("en-AU", { day: "numeric", month: "short", year: "numeric" }) : "—";
+              return (
+                <div key={enrollment.id} className="bg-surface rounded-2xl border border-border shadow-card p-5 hover:shadow-card-hover transition-all">
+                  <div className="flex items-start justify-between mb-3">
+                    <div className="flex items-center gap-2">
+                      <span className="text-xl">✅</span>
+                      <div className="flex-1">
+                        <h3 className="text-sm font-bold text-ink">{enrollment.course?.title}</h3>
+                        <p className="text-[10px] text-ink-muted">Completed {completedDate}</p>
+                      </div>
+                    </div>
+                  </div>
+                  <Link href={`/certificate/${courseSlugValue}`}
+                    className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold text-white bg-emerald-600 hover:bg-emerald-700 transition-all">
+                    View Certificate
+                    <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M6 3l5 5-5 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                  </Link>
+                </div>
+              );
+            })}
+          </div>
         </div>
       )}
 
@@ -697,11 +736,12 @@ export default async function DashboardPage({ searchParams }: DashboardProps) {
           {/* My courses + Add course */}
           <div className="bg-surface rounded-2xl border border-border shadow-card p-5">
             <p className="text-[10px] font-bold text-ink-muted uppercase tracking-widest mb-4">
-              {activeEnrollments.length > 1 ? "My Courses" : "Explore"}
+              {currentEnrollments.length > 1 || finishedEnrollments.length > 0 ? "My Courses" : "Explore"}
             </p>
-            {activeEnrollments.length > 1 && (
+            {currentEnrollments.length > 1 && (
               <div className="space-y-2 mb-3">
-                {activeEnrollments.slice(1).map((e) => {
+                <p className="text-[9px] font-semibold text-ink-muted uppercase tracking-wider px-2 mb-2">In Progress</p>
+                {currentEnrollments.slice(1).map((e) => {
                   const color = e.course?.slug ? COURSE_COLORS[e.course.slug] ?? "#0056CE" : "#0056CE";
                   return (
                     <Link key={e.id} href={`/courses/${e.course?.slug}`}
@@ -710,6 +750,28 @@ export default async function DashboardPage({ searchParams }: DashboardProps) {
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-semibold text-ink truncate group-hover:text-brand transition-colors">{e.course?.title}</p>
                         <p className="text-[10px] text-ink-muted capitalize">{e.assessment_level ?? "—"}</p>
+                      </div>
+                    </Link>
+                  );
+                })}
+              </div>
+            )}
+            {finishedEnrollments.length > 0 && (
+              <div className="space-y-2 mb-3">
+                <p className="text-[9px] font-semibold text-ink-muted uppercase tracking-wider px-2 mb-2">Completed</p>
+                {finishedEnrollments.map((e) => {
+                  const color = e.course?.slug ? COURSE_COLORS[e.course.slug] ?? "#0056CE" : "#0056CE";
+                  const completedDate = e.completed_at ? new Date(e.completed_at).toLocaleDateString("en-AU", { day: "numeric", month: "short", year: "numeric" }) : "—";
+                  return (
+                    <Link key={e.id} href={`/certificate/${e.course?.slug}`}
+                      className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-surface-soft transition-all group">
+                      <div className="w-2 h-8 rounded-full shrink-0" style={{ background: color }} />
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-semibold text-ink truncate group-hover:text-brand transition-colors flex items-center gap-1.5">
+                          <span>✅</span>
+                          {e.course?.title}
+                        </p>
+                        <p className="text-[10px] text-ink-muted">{completedDate}</p>
                       </div>
                     </Link>
                   );

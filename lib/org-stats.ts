@@ -16,6 +16,7 @@ export interface OrgMemberRow {
   projects: number;
   completionPct: number;
   completed: boolean;
+  completedAt: string | null;
   lastActive: string | null;
 }
 
@@ -216,6 +217,7 @@ export async function getOrgStats(orgId: string): Promise<OrgStats | null> {
       const lessons = lessonsByStud.get(id) ?? 0;
       const total = enr?.total ?? 0;
       const completionPct = total > 0 ? Math.min(100, Math.round((lessons / total) * 100)) : 0;
+      const isCompleted = total > 0 && lessons >= total;
       return {
         studentId: id,
         name: s?.name ?? (s?.email?.split("@")[0] ?? "Member"),
@@ -226,7 +228,8 @@ export async function getOrgStats(orgId: string): Promise<OrgStats | null> {
         lessons,
         projects: projByStud.get(id) ?? 0,
         completionPct,
-        completed: total > 0 && lessons >= total,
+        completed: isCompleted,
+        completedAt: isCompleted ? (lastByStud.get(id) ?? null) : null,
         lastActive: lastByStud.get(id) ?? null,
       };
     });

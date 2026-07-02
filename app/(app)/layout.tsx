@@ -1,10 +1,12 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { ensureCommunityProfile } from "@/lib/community/ensure-profile";
 import { SidebarNav } from "@/components/sidebar-nav";
 import { MobileNav } from "@/components/MobileNav";
 import { BottomNav } from "@/components/BottomNav";
 import { QuickNotePanel } from "@/components/QuickNotePanel";
 import { FeedbackWidget } from "@/components/FeedbackWidget";
+import { CommunityOnboardingToast } from "@/components/CommunityOnboardingToast";
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
   const supabase = await createClient();
@@ -16,6 +18,9 @@ export default async function AppLayout({ children }: { children: React.ReactNod
 
   const email = session.user.email ?? "";
   const userId = session.user.id;
+
+  // Ensure community profile exists for this user
+  await ensureCommunityProfile();
 
   return (
     <div className="flex h-screen overflow-hidden bg-surface-soft">
@@ -40,6 +45,9 @@ export default async function AppLayout({ children }: { children: React.ReactNod
 
       {/* Persistent in-app feedback launcher (bottom-left) */}
       <FeedbackWidget />
+
+      {/* Community onboarding toast — shows on first login */}
+      <CommunityOnboardingToast />
     </div>
   );
 }
