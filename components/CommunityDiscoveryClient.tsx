@@ -96,37 +96,37 @@ export function CommunityDiscoveryClient() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50/30">
       {/* Hero Banner */}
-      <div className="relative w-screen -mx-[calc((100vw-100%)/2)] bg-gradient-to-br from-slate-900 via-slate-800 to-blue-900 py-32 px-4 mb-20 overflow-hidden">
+      <div className="relative w-screen -mx-[calc((100vw-100%)/2)] bg-gradient-to-br from-slate-900 via-slate-800 to-blue-900 py-16 px-4 mb-12 overflow-hidden">
         {/* Decorative gradient orbs */}
-        <div className="absolute top-0 left-10 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl" />
-        <div className="absolute bottom-0 right-10 w-96 h-96 bg-purple-500/5 rounded-full blur-3xl" />
+        <div className="absolute top-0 left-10 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl" />
+        <div className="absolute bottom-0 right-10 w-64 h-64 bg-purple-500/5 rounded-full blur-3xl" />
 
         <div className="relative max-w-6xl mx-auto text-center">
-          <div className="mb-4">
-            <span className="inline-block px-4 py-2 rounded-full bg-blue-500/20 border border-blue-400/30 text-blue-200 text-sm font-medium uppercase tracking-widest">
+          <div className="mb-3">
+            <span className="inline-block px-3 py-1.5 rounded-full bg-blue-500/20 border border-blue-400/30 text-blue-200 text-xs font-medium uppercase tracking-widest">
               ✨ Explore Communities
             </span>
           </div>
-          <h1 className="text-7xl md:text-8xl font-black text-white mb-6 tracking-tighter leading-none">
+          <h1 className="text-5xl md:text-6xl font-black text-white mb-4 tracking-tighter leading-tight">
             Find Your <span className="bg-gradient-to-r from-blue-300 to-cyan-300 bg-clip-text text-transparent">Community</span>
           </h1>
-          <p className="text-xl md:text-2xl text-slate-300 font-light mb-14 max-w-2xl mx-auto leading-relaxed">
+          <p className="text-lg md:text-xl text-slate-300 font-light mb-10 max-w-2xl mx-auto leading-relaxed">
             Connect with like-minded people, share ideas, and grow together
           </p>
 
           {/* Search Bar */}
-          <div className="mt-12 max-w-3xl mx-auto group">
+          <div className="mt-8 max-w-3xl mx-auto group">
             <div className="relative">
-              <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-cyan-600 rounded-2xl opacity-0 group-focus-within:opacity-100 transition-opacity duration-300 -z-10 blur" />
+              <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-cyan-600 rounded-xl opacity-0 group-focus-within:opacity-100 transition-opacity duration-300 -z-10 blur" />
               <div className="relative">
                 <svg
-                  width="20"
-                  height="20"
+                  width="18"
+                  height="18"
                   viewBox="0 0 24 24"
                   fill="none"
                   stroke="currentColor"
                   strokeWidth="2"
-                  className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-400"
+                  className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400"
                 >
                   <circle cx="11" cy="11" r="8" />
                   <path d="m21 21-4.35-4.35" />
@@ -136,16 +136,16 @@ export function CommunityDiscoveryClient() {
                   placeholder="Search by name, category, or keywords..."
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
-                  className="w-full pl-16 pr-6 py-4 rounded-2xl bg-white/95 backdrop-blur-sm border border-white/20 text-slate-900 placeholder-slate-500 text-base focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent shadow-2xl hover:shadow-blue-500/20 transition-all duration-300"
+                  className="w-full pl-14 pr-5 py-3 rounded-xl bg-white/95 backdrop-blur-sm border border-white/20 text-slate-900 placeholder-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent shadow-lg hover:shadow-blue-500/20 transition-all duration-300"
                 />
               </div>
             </div>
           </div>
 
           {/* Quick action buttons */}
-          <div className="flex justify-center gap-4 mt-10">
+          <div className="flex justify-center gap-3 mt-7">
             <Link href="/community/create">
-              <button className="px-7 py-3 rounded-full bg-gradient-to-r from-blue-600 to-cyan-600 text-white font-semibold hover:shadow-lg hover:shadow-blue-500/50 transition-all duration-300 hover:scale-105">
+              <button className="px-6 py-2.5 rounded-full bg-gradient-to-r from-blue-600 to-cyan-600 text-white font-semibold text-sm hover:shadow-lg hover:shadow-blue-500/50 transition-all duration-300 hover:scale-105">
                 Create Community
               </button>
             </Link>
