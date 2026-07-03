@@ -111,21 +111,21 @@ export function CommunityDiscoveryClient() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50/30">
       {/* Hero Banner */}
-      <div className="relative w-screen -mx-[calc((100vw-100%)/2)] bg-gradient-to-br from-slate-900 via-slate-800 to-blue-900 py-16 px-4 mb-12 overflow-hidden">
+      <div className="relative w-screen -mx-[calc((100vw-100%)/2)] bg-gradient-to-br from-slate-900 via-slate-800 to-blue-900 py-8 px-4 mb-8 overflow-hidden">
         {/* Decorative gradient orbs */}
         <div className="absolute top-0 left-10 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl" />
         <div className="absolute bottom-0 right-10 w-64 h-64 bg-purple-500/5 rounded-full blur-3xl" />
 
         <div className="relative max-w-6xl mx-auto text-center">
-          <div className="mb-3">
+          <div className="mb-2">
             <span className="inline-block px-3 py-1.5 rounded-full bg-blue-500/20 border border-blue-400/30 text-blue-200 text-xs font-medium uppercase tracking-widest">
               ✨ Explore Communities
             </span>
           </div>
-          <h1 className="text-5xl md:text-6xl font-black text-white mb-4 tracking-tighter leading-tight">
+          <h1 className="text-4xl md:text-5xl font-black text-white mb-2 tracking-tighter leading-tight">
             Find Your <span className="bg-gradient-to-r from-blue-300 to-cyan-300 bg-clip-text text-transparent">Community</span>
           </h1>
-          <p className="text-lg md:text-xl text-slate-300 font-light mb-10 max-w-2xl mx-auto leading-relaxed">
+          <p className="text-base md:text-lg text-slate-300 font-light mb-6 max-w-2xl mx-auto leading-relaxed">
             Connect with like-minded people, share ideas, and grow together
           </p>
 
