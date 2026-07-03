@@ -51,6 +51,66 @@ export function CommunityCreationClient() {
     rules: "",
   });
 
+  // Auto-save draft to localStorage every 30 seconds
+  const [lastSavedTime, setLastSavedTime] = React.useState<Date | null>(null);
+  const [errors, setErrors] = React.useState<Record<string, string>>({});
+
+  // Validation rules
+  const validateField = (name: string, value: string): string => {
+    switch (name) {
+      case 'name':
+        if (!value.trim()) return 'Community name is required';
+        if (value.length < 3) return 'Name must be at least 3 characters';
+        if (value.length > 50) return 'Name must be less than 50 characters';
+        return '';
+      case 'category':
+        if (!value || value === 'Select category') return 'Please select a category';
+        return '';
+      case 'description':
+        if (!value.trim()) return 'Description is required';
+        if (value.length < 10) return 'Description must be at least 10 characters';
+        if (value.length > 500) return 'Description must be less than 500 characters';
+        return '';
+      case 'price':
+        if (value && isNaN(Number(value))) return 'Price must be a number';
+        if (value && Number(value) < 0) return 'Price must be positive';
+        return '';
+      default:
+        return '';
+    }
+  };
+
+  const handleFieldBlur = (e: React.FocusEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    const error = validateField(name, value);
+    setErrors((prev) => ({
+      ...prev,
+      [name]: error,
+    }));
+  };
+
+  React.useEffect(() => {
+    // Load draft from localStorage on mount
+    const savedDraft = localStorage.getItem('communityCreationDraft');
+    if (savedDraft) {
+      try {
+        setFormData(JSON.parse(savedDraft));
+      } catch (error) {
+        console.error('Failed to load draft:', error);
+      }
+    }
+  }, []);
+
+  React.useEffect(() => {
+    // Auto-save draft every 30 seconds
+    const saveInterval = setInterval(() => {
+      localStorage.setItem('communityCreationDraft', JSON.stringify(formData));
+      setLastSavedTime(new Date());
+    }, 30000);
+
+    return () => clearInterval(saveInterval);
+  }, [formData]);
+
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
   ) => {
@@ -136,6 +196,13 @@ export function CommunityCreationClient() {
         <div className="absolute bottom-0 right-10 w-96 h-96 bg-purple-500/5 rounded-full blur-3xl" />
 
         <div className="relative max-w-7xl mx-auto text-center">
+          {/* Auto-save Status */}
+          {lastSavedTime && (
+            <div className="mb-4 inline-block px-3 py-1.5 rounded-full bg-green-100 border border-green-300 text-green-700 text-xs font-medium">
+              ✓ Draft saved {Math.round((new Date().getTime() - lastSavedTime.getTime()) / 1000) < 60 ? 'just now' : 'moments ago'}
+            </div>
+          )}
+
           <span className="inline-block px-4 py-2 rounded-full bg-blue-500/20 border border-blue-400/30 text-blue-200 text-sm font-medium uppercase tracking-widest mb-4">
             ✨ Launch Your Community
           </span>
@@ -189,29 +256,62 @@ export function CommunityCreationClient() {
                 <div className="space-y-7">
                   {/* Community Name */}
                   <div>
-                    <label className="block text-sm font-semibold text-slate-900 mb-3 uppercase tracking-wider">
+                    <label htmlFor="community-name" className="block text-sm font-semibold text-slate-900 mb-3 uppercase tracking-wider">
                       Community name*
                     </label>
                     <input
+                      id="community-name"
                       type="text"
                       name="name"
                       value={formData.name}
                       onChange={handleInputChange}
+                      onBlur={handleFieldBlur}
                       placeholder="Learn AI in 2026"
-                      className="w-full px-5 py-4 border border-slate-200 rounded-2xl text-base text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                      className={`w-full px-5 py-4 border rounded-2xl text-base text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-offset-2 transition-all ${
+                        errors.name
+                          ? 'border-red-500 focus:ring-red-500'
+                          : formData.name && !errors.name
+                            ? 'border-green-500 focus:ring-green-500'
+                            : 'border-slate-200 focus:ring-blue-500 focus:border-transparent'
+                      }`}
+                      aria-invalid={!!errors.name}
+                      aria-describedby={errors.name ? 'name-error' : undefined}
                     />
+                    {errors.name && (
+                      <p id="name-error" className="mt-2 text-sm text-red-600 flex items-center gap-1">
+                        <span>✗</span> {errors.name}
+                      </p>
+                    )}
+                    {formData.name && !errors.name && (
+                      <p className="mt-2 text-sm text-green-600 flex items-center gap-1">
+                        <span>✓</span> Good to go!
+                      </p>
+                    )}
+                    <p className="mt-1 text-xs text-slate-500">
+                      {formData.name.length} / 50 characters
+                    </p>
                   </div>
 
                   {/* Community Category */}
                   <div>
-                    <label className="block text-sm font-semibold text-slate-900 mb-3 uppercase tracking-wider">
+                    <label htmlFor="community-category" className="block text-sm font-semibold text-slate-900 mb-3 uppercase tracking-wider">
                       Category
                     </label>
                     <select
+                      id="community-category"
                       name="category"
                       value={formData.category}
                       onChange={handleInputChange}
-                      className="w-full px-5 py-4 border border-slate-200 rounded-2xl text-base text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                      onBlur={handleFieldBlur}
+                      className={`w-full px-5 py-4 border rounded-2xl text-base text-slate-900 focus:outline-none focus:ring-2 focus:ring-offset-2 transition-all ${
+                        errors.category
+                          ? 'border-red-500 focus:ring-red-500'
+                          : formData.category && formData.category !== 'Select category' && !errors.category
+                            ? 'border-green-500 focus:ring-green-500'
+                            : 'border-slate-200 focus:ring-blue-500 focus:border-transparent'
+                      }`}
+                      aria-invalid={!!errors.category}
+                      aria-describedby={errors.category ? 'category-error' : undefined}
                     >
                       {CATEGORIES.map((cat) => (
                         <option key={cat} value={cat}>
@@ -219,21 +319,54 @@ export function CommunityCreationClient() {
                         </option>
                       ))}
                     </select>
+                    {errors.category && (
+                      <p id="category-error" className="mt-2 text-sm text-red-600 flex items-center gap-1">
+                        <span>✗</span> {errors.category}
+                      </p>
+                    )}
+                    {formData.category && formData.category !== 'Select category' && !errors.category && (
+                      <p className="mt-2 text-sm text-green-600 flex items-center gap-1">
+                        <span>✓</span> Category selected
+                      </p>
+                    )}
                   </div>
 
                   {/* Community Description */}
                   <div>
-                    <label className="block text-sm font-semibold text-slate-900 mb-3 uppercase tracking-wider">
+                    <label htmlFor="community-description" className="block text-sm font-semibold text-slate-900 mb-3 uppercase tracking-wider">
                       Description*
                     </label>
                     <textarea
+                      id="community-description"
                       name="description"
                       value={formData.description}
                       onChange={handleInputChange}
+                      onBlur={handleFieldBlur}
                       placeholder="Describe the purpose, mission, and value your community provides..."
                       rows={6}
-                      className="w-full px-5 py-4 border border-slate-200 rounded-2xl text-base text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none"
+                      className={`w-full px-5 py-4 border rounded-2xl text-base text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-offset-2 transition-all resize-none ${
+                        errors.description
+                          ? 'border-red-500 focus:ring-red-500'
+                          : formData.description && !errors.description
+                            ? 'border-green-500 focus:ring-green-500'
+                            : 'border-slate-200 focus:ring-blue-500 focus:border-transparent'
+                      }`}
+                      aria-invalid={!!errors.description}
+                      aria-describedby={errors.description ? 'description-error' : 'description-hint'}
                     />
+                    {errors.description && (
+                      <p id="description-error" className="mt-2 text-sm text-red-600 flex items-center gap-1">
+                        <span>✗</span> {errors.description}
+                      </p>
+                    )}
+                    {formData.description && !errors.description && (
+                      <p className="mt-2 text-sm text-green-600 flex items-center gap-1">
+                        <span>✓</span> Description looks good
+                      </p>
+                    )}
+                    <p id="description-hint" className="mt-1 text-xs text-slate-500">
+                      {formData.description.length} / 500 characters
+                    </p>
                   </div>
 
                   {/* Community Type */}
