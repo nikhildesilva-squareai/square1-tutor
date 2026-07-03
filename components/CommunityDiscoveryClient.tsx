@@ -231,6 +231,9 @@ export function CommunityDiscoveryClient() {
                     onMouseLeave={() => setHoveredCard(null)}
                     role="article"
                     aria-label={`${community.name} community with ${community.memberCount || 0} members`}
+                    style={{
+                      animation: `fadeInUp 0.6s ease-out ${index * 0.08}s both`,
+                    }}
                   >
                     {/* Premium Card with Glass Morphism effect */}
                     <div className="relative h-full bg-white/80 backdrop-blur-lg rounded-2xl overflow-hidden border border-white/60 shadow-xl transition-all duration-500 hover:shadow-2xl hover:shadow-blue-500/20 hover:-translate-y-2 flex flex-col" role="button" tabIndex={0}>
@@ -391,6 +394,25 @@ export function CommunityDiscoveryClient() {
           </div>
         )}
       </div>
+
+      <style>{`
+        @keyframes fadeInUp {
+          from {
+            opacity: 0;
+            transform: translateY(20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+        @keyframes ripple {
+          to {
+            transform: scale(4);
+            opacity: 0;
+          }
+        }
+      `}</style>
     </div>
   );
 }

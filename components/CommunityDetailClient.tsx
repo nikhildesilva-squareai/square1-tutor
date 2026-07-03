@@ -44,6 +44,8 @@ export function CommunityDetailClient({
 }: CommunityDetailClientProps) {
   const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
   const [isJoining, setIsJoining] = useState(false);
+  const [joinSuccess, setJoinSuccess] = useState(false);
+  const [copied, setCopied] = useState(false);
 
   const handleJoinClick = async () => {
     if (!isAuthorized) {
@@ -58,12 +60,25 @@ export function CommunityDetailClient({
       });
 
       if (response.ok) {
-        window.location.reload();
+        setJoinSuccess(true);
+        setTimeout(() => setJoinSuccess(false), 3000);
+        setTimeout(() => window.location.reload(), 1500);
       }
     } catch (error) {
       console.error("Failed to join community:", error);
     } finally {
       setIsJoining(false);
+    }
+  };
+
+  const handleShareClick = async () => {
+    try {
+      const url = typeof window !== 'undefined' ? window.location.href : '';
+      await navigator.clipboard.writeText(url);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (error) {
+      console.error('Failed to copy:', error);
     }
   };
 
@@ -267,6 +282,22 @@ export function CommunityDetailClient({
                 </div>
               </div>
 
+              {/* Share Button */}
+              <div className="px-5 pt-4 pb-2">
+                <button
+                  onClick={handleShareClick}
+                  className="w-full py-2.5 rounded-lg font-medium transition-all text-neutral-700 bg-neutral-100 hover:bg-neutral-200 active:scale-95 flex items-center justify-center gap-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm"
+                  aria-label="Share this community"
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+                    <path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8" />
+                    <polyline points="16 6 12 2 8 6" />
+                    <line x1="12" y1="2" x2="12" y2="15" />
+                  </svg>
+                  {copied ? "✓ Copied!" : "Share"}
+                </button>
+              </div>
+
               {/* Content */}
               <div className="p-5 space-y-4">
                 {/* Title & Link */}
@@ -307,25 +338,51 @@ export function CommunityDetailClient({
                   </div>
                 </div>
 
+                {/* Member Highlights - Phase 3 Social Feature */}
+                <div className="bg-gradient-to-r from-blue-50 to-cyan-50 rounded-lg p-3 border border-blue-100">
+                  <p className="text-xs font-semibold text-slate-700 mb-2">Active Members</p>
+                  <div className="flex items-center gap-2">
+                    <div className="flex -space-x-2">
+                      {[0, 1, 2].map((i) => (
+                        <div
+                          key={i}
+                          className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-400 to-cyan-400 border-2 border-white flex items-center justify-center text-white text-xs font-bold"
+                          title={`Member ${i + 1}`}
+                        >
+                          {String.fromCharCode(65 + i)}
+                        </div>
+                      ))}
+                    </div>
+                    <span className="text-xs text-slate-600 ml-1">+52 joined this week</span>
+                  </div>
+                </div>
+
                 {/* Join Button - Min 44px height for touch target */}
                 <button
                   onClick={handleJoinClick}
                   disabled={isMember || isJoining}
-                  className={`w-full py-3 rounded-lg font-medium transition-all text-white min-h-[48px] flex items-center justify-center gap-2 focus:outline-none focus:ring-2 focus:ring-offset-2 ${
-                    isMember || isJoining
+                  className={`w-full py-3 rounded-lg font-medium transition-all text-white min-h-[48px] flex items-center justify-center gap-2 focus:outline-none focus:ring-2 focus:ring-offset-2 relative overflow-hidden ${
+                    joinSuccess
+                      ? "bg-green-500 scale-95"
+                      : isMember || isJoining
                       ? "bg-slate-400 cursor-not-allowed opacity-75"
-                      : "bg-gradient-to-r from-blue-600 to-cyan-600 hover:shadow-lg hover:shadow-blue-500/50 active:scale-95 focus:ring-blue-500"
+                      : "bg-gradient-to-r from-blue-600 to-cyan-600 hover:shadow-lg hover:shadow-blue-500/50 active:scale-95 focus:ring-blue-500 hover:scale-105"
                   }`}
-                  aria-label={isMember ? "You are already a member" : "Join this community"}
+                  aria-label={joinSuccess ? "✓ Joined successfully!" : isMember ? "You are already a member" : "Join this community"}
                   aria-busy={isJoining}
                 >
-                  {isJoining && (
+                  {joinSuccess && (
+                    <svg className="w-5 h-5 animate-bounce" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                      <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
+                    </svg>
+                  )}
+                  {isJoining && !joinSuccess && (
                     <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24" aria-hidden="true">
                       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                       <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
                     </svg>
                   )}
-                  {isMember ? "Already Joined" : isJoining ? "Joining..." : "Join Community"}
+                  {joinSuccess ? "✓ Joined!" : isMember ? "Already Joined" : isJoining ? "Joining..." : "Join Community"}
                 </button>
 
                 {/* Powered By */}
@@ -342,6 +399,57 @@ export function CommunityDetailClient({
           </div>
         </div>
       </div>
+
+      {/* Recommended Communities - Phase 3 Social Feature */}
+      <div className="bg-gradient-to-b from-white to-blue-50 py-16 border-t border-slate-200">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="mb-12">
+            <h2 className="text-3xl font-bold text-slate-900 mb-2">Discover Related Communities</h2>
+            <p className="text-slate-600">Members in this community also enjoy these</p>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[
+              { name: "Advanced AI & LLMs", members: "2.3K", category: "Learn AI Tech", color: "from-blue-500 to-cyan-500" },
+              { name: "Product Design Hub", members: "1.8K", category: "Design", color: "from-purple-500 to-pink-500" },
+              { name: "Business Strategy", members: "1.5K", category: "Business management", color: "from-orange-500 to-red-500" },
+            ].map((rec, idx) => (
+              <div
+                key={idx}
+                className="group bg-white rounded-2xl border border-slate-200 shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1 overflow-hidden cursor-pointer"
+                style={{ animation: `fadeInUp 0.6s ease-out ${0.2 + idx * 0.1}s both` }}
+              >
+                <div className={`h-24 bg-gradient-to-r ${rec.color} opacity-80`} />
+                <div className="p-5">
+                  <span className="inline-block px-3 py-1 rounded-full bg-blue-100 text-blue-800 text-xs font-semibold mb-3">
+                    {rec.category}
+                  </span>
+                  <h3 className="font-bold text-slate-900 mb-2 group-hover:text-blue-600 transition-colors">{rec.name}</h3>
+                  <div className="flex items-center justify-between pt-3 border-t border-slate-100">
+                    <span className="text-sm text-slate-600">{rec.members} members</span>
+                    <svg className="w-5 h-5 text-blue-600 opacity-0 group-hover:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <style>{`
+        @keyframes fadeInUp {
+          from {
+            opacity: 0;
+            transform: translateY(20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+      `}</style>
     </div>
   );
 }
