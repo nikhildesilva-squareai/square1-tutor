@@ -90,20 +90,21 @@ export function CommunityDetailClient({
                   {community.name}
                 </h1>
 
-                {/* Hero Image with Rank Badge */}
-                <div className="relative bg-gradient-to-br from-blue-400 to-blue-600 rounded-lg overflow-hidden h-64">
+                {/* Hero Image with Rank Badge - Fixed aspect ratio to prevent CLS */}
+                <div className="relative bg-gradient-to-br from-blue-400 to-blue-600 rounded-lg overflow-hidden w-full aspect-video">
                   {community.thumbnail_url ? (
                     <img
                       src={community.thumbnail_url}
-                      alt={community.name}
+                      alt={`${community.name} community cover image`}
                       className="w-full h-full object-cover"
+                      loading="lazy"
                     />
                   ) : (
-                    <div className="w-full h-full bg-gradient-to-br from-blue-400 to-blue-600" />
+                    <div className="w-full h-full bg-gradient-to-br from-blue-400 to-blue-600" aria-hidden="true" />
                   )}
 
                   {/* Rank Badge */}
-                  <div className="absolute top-3 left-3 bg-sky-500 text-white px-2 py-1 rounded-md text-xs font-semibold">
+                  <div className="absolute top-3 left-3 bg-sky-500 text-white px-3 py-1.5 rounded-md text-xs font-semibold" aria-label="Top ranked community">
                     #1
                   </div>
                 </div>
@@ -253,14 +254,15 @@ export function CommunityDetailClient({
           {/* Right Sidebar - Stats & Join */}
           <div className="lg:col-span-1">
             <div className="bg-white/80 backdrop-blur-lg rounded-3xl border border-white/60 shadow-xl overflow-hidden sticky top-8">
-              {/* Preview Image */}
-              <div className="relative bg-gradient-to-br from-purple-400 via-purple-500 to-cyan-400 h-40 overflow-hidden">
+              {/* Preview Image - Fixed aspect ratio to prevent CLS */}
+              <div className="relative bg-gradient-to-br from-purple-400 via-purple-500 to-cyan-400 w-full aspect-video overflow-hidden">
                 <img
                   src={community.thumbnail_url || "https://via.placeholder.com/360x180"}
-                  alt={community.name}
+                  alt={`${community.name} community preview`}
                   className="w-full h-full object-cover"
+                  loading="lazy"
                 />
-                <div className="absolute top-3 left-3 bg-sky-500 text-white px-2 py-1 rounded-md text-xs font-semibold">
+                <div className="absolute top-3 left-3 bg-sky-500 text-white px-3 py-1.5 rounded-md text-xs font-semibold" aria-label="Top ranked community">
                   #1
                 </div>
               </div>
@@ -283,39 +285,47 @@ export function CommunityDetailClient({
                     "The Last Language App You'll Ever Need. From your first word to full fluency."}
                 </p>
 
-                {/* Stats Grid */}
-                <div className="grid grid-cols-3 gap-2">
-                  <div className="bg-neutral-50 rounded-lg p-3 text-center">
-                    <div className="text-lg font-semibold text-neutral-900">
+                {/* Stats Grid - Improved contrast */}
+                <div className="grid grid-cols-3 gap-3">
+                  <div className="bg-slate-100 rounded-lg p-4 text-center">
+                    <div className="text-lg font-bold text-slate-900">
                       1.4K
                     </div>
-                    <div className="text-xs text-neutral-600">Members</div>
+                    <div className="text-xs font-medium text-slate-600 mt-1">Members</div>
                   </div>
-                  <div className="bg-neutral-50 rounded-lg p-3 text-center">
-                    <div className="text-lg font-semibold text-neutral-900">
+                  <div className="bg-slate-100 rounded-lg p-4 text-center">
+                    <div className="text-lg font-bold text-slate-900">
                       36
                     </div>
-                    <div className="text-xs text-neutral-600">Online</div>
+                    <div className="text-xs font-medium text-slate-600 mt-1">Online</div>
                   </div>
-                  <div className="bg-neutral-50 rounded-lg p-3 text-center">
-                    <div className="text-lg font-semibold text-neutral-900">
+                  <div className="bg-slate-100 rounded-lg p-4 text-center">
+                    <div className="text-lg font-bold text-slate-900">
                       10
                     </div>
-                    <div className="text-xs text-neutral-600">Admins</div>
+                    <div className="text-xs font-medium text-slate-600 mt-1">Admins</div>
                   </div>
                 </div>
 
-                {/* Join Button */}
+                {/* Join Button - Min 44px height for touch target */}
                 <button
                   onClick={handleJoinClick}
                   disabled={isMember || isJoining}
-                  className={`w-full py-3 rounded-lg font-medium transition-all text-white ${
+                  className={`w-full py-3 rounded-lg font-medium transition-all text-white min-h-[48px] flex items-center justify-center gap-2 focus:outline-none focus:ring-2 focus:ring-offset-2 ${
                     isMember || isJoining
-                      ? "bg-neutral-400 cursor-not-allowed"
-                      : "bg-gradient-to-b from-blue-500 to-blue-700 hover:shadow-lg active:shadow-inner"
+                      ? "bg-slate-400 cursor-not-allowed opacity-75"
+                      : "bg-gradient-to-r from-blue-600 to-cyan-600 hover:shadow-lg hover:shadow-blue-500/50 active:scale-95 focus:ring-blue-500"
                   }`}
+                  aria-label={isMember ? "You are already a member" : "Join this community"}
+                  aria-busy={isJoining}
                 >
-                  {isMember ? "Joined" : isJoining ? "Joining..." : "Join group"}
+                  {isJoining && (
+                    <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24" aria-hidden="true">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                    </svg>
+                  )}
+                  {isMember ? "Already Joined" : isJoining ? "Joining..." : "Join Community"}
                 </button>
 
                 {/* Powered By */}

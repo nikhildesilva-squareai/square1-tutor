@@ -116,8 +116,11 @@ export function CommunityDiscoveryClient() {
 
           {/* Search Bar */}
           <div className="mt-8 max-w-3xl mx-auto group">
+            <label htmlFor="community-search" className="sr-only">
+              Search communities by name, category, or keywords
+            </label>
             <div className="relative">
-              <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-cyan-600 rounded-xl opacity-0 group-focus-within:opacity-100 transition-opacity duration-300 -z-10 blur" />
+              <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-cyan-600 rounded-xl opacity-0 group-focus-within:opacity-100 transition-opacity duration-300 -z-10 blur" aria-hidden="true" />
               <div className="relative">
                 <svg
                   width="18"
@@ -126,17 +129,20 @@ export function CommunityDiscoveryClient() {
                   fill="none"
                   stroke="currentColor"
                   strokeWidth="2"
-                  className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400"
+                  className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"
+                  aria-hidden="true"
                 >
                   <circle cx="11" cy="11" r="8" />
                   <path d="m21 21-4.35-4.35" />
                 </svg>
                 <input
+                  id="community-search"
                   type="text"
                   placeholder="Search by name, category, or keywords..."
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                   className="w-full pl-14 pr-5 py-3 rounded-xl bg-white/95 backdrop-blur-sm border border-white/20 text-slate-900 placeholder-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent shadow-lg hover:shadow-blue-500/20 transition-all duration-300"
+                  aria-label="Search communities"
                 />
               </div>
             </div>
@@ -160,15 +166,17 @@ export function CommunityDiscoveryClient() {
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-sm font-semibold text-slate-700 uppercase tracking-wider">Filter by Interest</h2>
           </div>
-          <div className="flex flex-wrap gap-3">
+          <div className="flex flex-wrap gap-3" role="group" aria-label="Community category filters">
             {CATEGORIES.map((cat) => (
               <button
                 key={cat}
                 onClick={() => setSelectedCategory(cat)}
-                className={`px-6 py-2.5 rounded-full text-sm font-medium transition-all duration-300 whitespace-nowrap ${
+                aria-pressed={selectedCategory === cat}
+                aria-label={`Filter by ${cat} community`}
+                className={`px-6 py-3 rounded-full text-sm font-medium transition-all duration-300 whitespace-nowrap min-h-[44px] flex items-center justify-center ${
                   selectedCategory === cat
                     ? "bg-gradient-to-r from-blue-600 to-cyan-600 text-white shadow-lg shadow-blue-600/30 scale-105"
-                    : "bg-white border border-slate-200 text-slate-700 hover:border-blue-300 hover:text-blue-600 hover:shadow-md hover:shadow-blue-500/10"
+                    : "bg-white border border-slate-200 text-slate-700 hover:border-blue-300 hover:text-blue-600 hover:shadow-md hover:shadow-blue-500/10 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
                 }`}
               >
                 {cat}
@@ -206,19 +214,22 @@ export function CommunityDiscoveryClient() {
                     className="group cursor-pointer h-full"
                     onMouseEnter={() => setHoveredCard(community.id)}
                     onMouseLeave={() => setHoveredCard(null)}
+                    role="article"
+                    aria-label={`${community.name} community with ${community.memberCount || 0} members`}
                   >
                     {/* Premium Card with Glass Morphism effect */}
-                    <div className="relative h-full bg-white/80 backdrop-blur-lg rounded-2xl overflow-hidden border border-white/60 shadow-xl transition-all duration-500 hover:shadow-2xl hover:shadow-blue-500/20 hover:-translate-y-2 flex flex-col">
+                    <div className="relative h-full bg-white/80 backdrop-blur-lg rounded-2xl overflow-hidden border border-white/60 shadow-xl transition-all duration-500 hover:shadow-2xl hover:shadow-blue-500/20 hover:-translate-y-2 flex flex-col" role="button" tabIndex={0}>
                       {/* Gradient overlay border */}
                       <div className="absolute inset-0 bg-gradient-to-br from-blue-600/10 via-transparent to-purple-600/10 pointer-events-none rounded-2xl" />
 
-                      {/* Image Container with overlay effect */}
+                      {/* Image Container with overlay effect - Fixed aspect ratio to prevent CLS */}
                       <div className="relative bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 aspect-video overflow-hidden">
                         {community.thumbnail_url ? (
                           <img
                             src={community.thumbnail_url}
-                            alt={community.name}
+                            alt={`${community.name} community thumbnail`}
                             className="w-full h-full object-cover group-hover:scale-125 transition-transform duration-700"
+                            loading="lazy"
                           />
                         ) : (
                           <div className="w-full h-full bg-gradient-to-br from-blue-600 via-cyan-600 to-slate-900 flex items-center justify-center relative overflow-hidden">
@@ -226,7 +237,7 @@ export function CommunityDiscoveryClient() {
                             <div className="absolute top-0 left-0 w-32 h-32 bg-blue-400/30 rounded-full blur-2xl animate-pulse" />
                             <div className="absolute bottom-0 right-0 w-40 h-40 bg-purple-400/20 rounded-full blur-3xl animate-pulse" />
                             <div className="relative z-10 text-white/30">
-                              <svg className="w-20 h-20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <svg className="w-20 h-20" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={0.5} d="M17 20h5v-2a3 3 0 00-5.856-1.487M15 10a3 3 0 11-6 0 3 3 0 016 0zM15 20a3 3 0 01-6 0" />
                               </svg>
                             </div>
@@ -235,50 +246,48 @@ export function CommunityDiscoveryClient() {
 
                         {/* Rank Badge - Premium style */}
                         <div className="absolute top-4 left-4 z-10">
-                          <div className="px-4 py-2 rounded-full bg-gradient-to-r from-white/20 to-white/10 backdrop-blur-lg border border-white/30 text-white text-xs font-bold">
+                          <div className="px-4 py-2 rounded-full bg-gradient-to-r from-white/20 to-white/10 backdrop-blur-lg border border-white/30 text-white text-xs font-bold" aria-label={`Rank ${startIndex + index + 1}`}>
                             #{startIndex + index + 1}
                           </div>
                         </div>
 
                         {/* Hover overlay effect */}
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" aria-hidden="true" />
                       </div>
 
                       {/* Content Section */}
                       <div className="relative z-10 p-6 flex-1 flex flex-col">
-                        {/* Category badge */}
+                        {/* Category badge - Improved contrast */}
                         <div className="mb-3">
-                          <span className="inline-block px-3 py-1 rounded-full bg-blue-50 text-blue-700 text-xs font-semibold uppercase tracking-wider">
+                          <span className="inline-block px-3 py-1 rounded-full bg-blue-100 text-blue-800 text-xs font-semibold uppercase tracking-wider" aria-label={`Category: ${community.category}`}>
                             {community.category}
                           </span>
                         </div>
 
-                        {/* Community Name */}
-                        <h3 className="font-bold text-slate-900 line-clamp-2 text-lg leading-snug mb-3 group-hover:text-blue-600 transition-colors">
+                        {/* Community Name - Better contrast (4.5:1) */}
+                        <h3 className="font-bold text-slate-900 line-clamp-2 text-lg leading-snug mb-3 group-hover:text-blue-700 transition-colors">
                           {community.name}
                         </h3>
 
-                        {/* Description */}
-                        <p className="text-sm text-slate-600 line-clamp-2 mb-auto leading-relaxed flex-1">
+                        {/* Description - Improved contrast */}
+                        <p className="text-sm text-slate-700 line-clamp-2 mb-auto leading-relaxed flex-1">
                           {community.description ||
                             "Join this vibrant community and connect with peers."}
                         </p>
                       </div>
 
-                      {/* Footer - Premium stats */}
-                      <div className="relative z-10 px-6 py-5 border-t border-slate-100/50 bg-gradient-to-r from-slate-50/50 to-blue-50/30 backdrop-blur-sm">
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-4">
-                            <div>
-                              <p className="text-xs text-slate-500 font-medium">Members</p>
-                              <p className="text-sm font-bold text-slate-900">
-                                {formatMemberCount(community.memberCount || 0)}
-                              </p>
-                            </div>
+                      {/* Footer - Premium stats with better contrast */}
+                      <div className="relative z-10 px-6 py-5 border-t border-slate-200 bg-gradient-to-r from-slate-50 to-blue-50 backdrop-blur-sm">
+                        <div className="flex items-center justify-between gap-4">
+                          <div className="flex-1 min-w-0">
+                            <p className="text-xs font-medium text-slate-600">Members</p>
+                            <p className="text-sm font-bold text-slate-900 mt-0.5">
+                              {formatMemberCount(community.memberCount || 0)}
+                            </p>
                           </div>
-                          <div className="text-right">
-                            <p className="text-xs text-slate-500 font-medium">Price</p>
-                            <p className="text-lg font-bold bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent">
+                          <div className="flex-1 text-right min-w-0">
+                            <p className="text-xs font-medium text-slate-600">Price</p>
+                            <p className="text-base font-bold text-blue-700 mt-0.5">
                               {formatPrice(community.monthlyPrice)}
                             </p>
                           </div>
@@ -292,27 +301,27 @@ export function CommunityDiscoveryClient() {
 
             {/* Pagination */}
             {totalPages > 1 && (
-              <div className="flex items-center justify-center gap-3 mt-16">
+              <nav className="flex items-center justify-center gap-3 mt-16" aria-label="Pagination">
                 <button
                   onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
                   disabled={currentPage === 1}
-                  className="w-10 h-10 rounded-full bg-white border border-slate-200 flex items-center justify-center hover:bg-slate-50 hover:border-blue-400 hover:text-blue-600 disabled:opacity-30 transition-all duration-300 text-slate-600"
+                  className="min-w-[44px] h-[44px] rounded-full bg-white border border-slate-200 flex items-center justify-center hover:bg-slate-50 hover:border-blue-400 hover:text-blue-600 disabled:opacity-30 transition-all duration-300 text-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
                   aria-label="Previous page"
                 >
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" aria-hidden="true">
                     <path d="M15 19l-7-7 7-7" />
                   </svg>
                 </button>
 
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2" role="group">
                   {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
                     <button
                       key={page}
                       onClick={() => setCurrentPage(page)}
-                      className={`min-w-10 h-10 rounded-full flex items-center justify-center font-semibold transition-all duration-300 ${
+                      className={`min-w-[44px] h-[44px] rounded-full flex items-center justify-center font-semibold transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 ${
                         currentPage === page
-                          ? "bg-gradient-to-r from-blue-600 to-cyan-600 text-white shadow-lg shadow-blue-600/30"
-                          : "bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 hover:border-blue-300 hover:text-blue-600"
+                          ? "bg-gradient-to-r from-blue-600 to-cyan-600 text-white shadow-lg shadow-blue-600/30 focus:ring-blue-500"
+                          : "bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 hover:border-blue-300 hover:text-blue-600 focus:ring-blue-500"
                       }`}
                       aria-label={`Go to page ${page}`}
                       aria-current={currentPage === page ? "page" : undefined}
@@ -325,20 +334,20 @@ export function CommunityDiscoveryClient() {
                 <button
                   onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
                   disabled={currentPage === totalPages}
-                  className="w-10 h-10 rounded-full bg-white border border-slate-200 flex items-center justify-center hover:bg-slate-50 hover:border-blue-400 hover:text-blue-600 disabled:opacity-30 transition-all duration-300 text-slate-600"
+                  className="min-w-[44px] h-[44px] rounded-full bg-white border border-slate-200 flex items-center justify-center hover:bg-slate-50 hover:border-blue-400 hover:text-blue-600 disabled:opacity-30 transition-all duration-300 text-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
                   aria-label="Next page"
                 >
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" aria-hidden="true">
                     <path d="M9 19l7-7-7-7" />
                   </svg>
                 </button>
-              </div>
+              </nav>
             )}
           </>
         ) : (
-          <div className="text-center py-32">
+          <div className="text-center py-32" role="status" aria-live="polite">
             <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-gradient-to-br from-slate-100 to-blue-50 mb-6">
-              <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" className="text-slate-400">
+              <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" className="text-slate-400" aria-hidden="true">
                 <circle cx="11" cy="11" r="8" />
                 <path d="m21 21-4.35-4.35" />
               </svg>
@@ -347,9 +356,9 @@ export function CommunityDiscoveryClient() {
             <p className="text-slate-600 mb-8 text-base max-w-md mx-auto leading-relaxed">
               Try adjusting your search or filters to find the right community for you.
             </p>
-            <div className="flex gap-4 justify-center">
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link href="/community/create">
-                <button className="px-7 py-3 bg-gradient-to-r from-blue-600 to-cyan-600 text-white rounded-full hover:shadow-lg hover:shadow-blue-500/50 transition-all duration-300 font-semibold hover:scale-105">
+                <button className="px-7 py-3 bg-gradient-to-r from-blue-600 to-cyan-600 text-white rounded-full hover:shadow-lg hover:shadow-blue-500/50 transition-all duration-300 font-semibold hover:scale-105 min-h-[44px] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
                   Create Community
                 </button>
               </Link>
@@ -358,7 +367,8 @@ export function CommunityDiscoveryClient() {
                   setSearch("");
                   setSelectedCategory("All");
                 }}
-                className="px-7 py-3 bg-white border border-slate-200 text-slate-700 rounded-full hover:bg-slate-50 hover:border-blue-300 transition-all duration-300 font-semibold"
+                className="px-7 py-3 bg-white border border-slate-200 text-slate-700 rounded-full hover:bg-slate-50 hover:border-blue-300 transition-all duration-300 font-semibold min-h-[44px] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                aria-label="Clear all filters and show all communities"
               >
                 Clear Filters
               </button>
