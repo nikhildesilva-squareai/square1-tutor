@@ -38,6 +38,7 @@ export function CommunityDiscoveryClient() {
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [currentPage, setCurrentPage] = useState(1);
   const [error, setError] = useState<string | null>(null);
+  const [hoveredCard, setHoveredCard] = useState<string | null>(null);
 
   const itemsPerPage = 8;
 
@@ -93,45 +94,61 @@ export function CommunityDiscoveryClient() {
   const totalPages = Math.ceil(communities.length / itemsPerPage);
 
   return (
-    <div className="min-h-screen bg-neutral-50">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50/30">
       {/* Hero Banner */}
-      <div className="relative w-screen -mx-[calc((100vw-100%)/2)] bg-gradient-to-br from-blue-950 via-blue-900 to-blue-800 py-24 px-4 mb-16">
-        <div className="max-w-6xl mx-auto text-center">
-          <h1 className="text-6xl md:text-7xl font-bold text-white mb-4 tracking-tight">
-            Discover communities
+      <div className="relative w-screen -mx-[calc((100vw-100%)/2)] bg-gradient-to-br from-slate-900 via-slate-800 to-blue-900 py-32 px-4 mb-20 overflow-hidden">
+        {/* Decorative gradient orbs */}
+        <div className="absolute top-0 left-10 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl" />
+        <div className="absolute bottom-0 right-10 w-96 h-96 bg-purple-500/5 rounded-full blur-3xl" />
+
+        <div className="relative max-w-6xl mx-auto text-center">
+          <div className="mb-4">
+            <span className="inline-block px-4 py-2 rounded-full bg-blue-500/20 border border-blue-400/30 text-blue-200 text-sm font-medium uppercase tracking-widest">
+              ✨ Explore Communities
+            </span>
+          </div>
+          <h1 className="text-7xl md:text-8xl font-black text-white mb-6 tracking-tighter leading-none">
+            Find Your <span className="bg-gradient-to-r from-blue-300 to-cyan-300 bg-clip-text text-transparent">Community</span>
           </h1>
-          <p className="text-xl md:text-2xl text-blue-100 font-light mb-12">
-            Find your community or{" "}
-            <Link href="/community/create">
-              <button className="text-blue-200 hover:text-white font-semibold underline decoration-2 underline-offset-2 transition-colors">
-                create your own
-              </button>
-            </Link>
+          <p className="text-xl md:text-2xl text-slate-300 font-light mb-14 max-w-2xl mx-auto leading-relaxed">
+            Connect with like-minded people, share ideas, and grow together
           </p>
 
           {/* Search Bar */}
-          <div className="mt-10 max-w-3xl mx-auto">
+          <div className="mt-12 max-w-3xl mx-auto group">
             <div className="relative">
-              <svg
-                width="20"
-                height="20"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                className="absolute left-5 top-1/2 -translate-y-1/2 text-neutral-400"
-              >
-                <circle cx="11" cy="11" r="8" />
-                <path d="m21 21-4.35-4.35" />
-              </svg>
-              <input
-                type="text"
-                placeholder="Search communities, topics, or interests..."
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                className="w-full pl-14 pr-6 py-4 rounded-xl bg-white border border-neutral-200 text-neutral-900 placeholder-neutral-400 text-base focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent shadow-md hover:shadow-lg transition-shadow"
-              />
+              <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-cyan-600 rounded-2xl opacity-0 group-focus-within:opacity-100 transition-opacity duration-300 -z-10 blur" />
+              <div className="relative">
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-400"
+                >
+                  <circle cx="11" cy="11" r="8" />
+                  <path d="m21 21-4.35-4.35" />
+                </svg>
+                <input
+                  type="text"
+                  placeholder="Search by name, category, or keywords..."
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  className="w-full pl-16 pr-6 py-4 rounded-2xl bg-white/95 backdrop-blur-sm border border-white/20 text-slate-900 placeholder-slate-500 text-base focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent shadow-2xl hover:shadow-blue-500/20 transition-all duration-300"
+                />
+              </div>
             </div>
+          </div>
+
+          {/* Quick action buttons */}
+          <div className="flex justify-center gap-4 mt-10">
+            <Link href="/community/create">
+              <button className="px-7 py-3 rounded-full bg-gradient-to-r from-blue-600 to-cyan-600 text-white font-semibold hover:shadow-lg hover:shadow-blue-500/50 transition-all duration-300 hover:scale-105">
+                Create Community
+              </button>
+            </Link>
           </div>
         </div>
       </div>
@@ -139,17 +156,19 @@ export function CommunityDiscoveryClient() {
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 pb-20">
         {/* Category Filters */}
-        <div className="mb-14">
-          <p className="text-sm font-semibold text-neutral-600 mb-4 uppercase tracking-wide">Browse by category</p>
-          <div className="flex flex-wrap gap-2 lg:gap-3">
+        <div className="mb-16">
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-sm font-semibold text-slate-700 uppercase tracking-wider">Filter by Interest</h2>
+          </div>
+          <div className="flex flex-wrap gap-3">
             {CATEGORIES.map((cat) => (
               <button
                 key={cat}
                 onClick={() => setSelectedCategory(cat)}
-                className={`px-5 py-3 rounded-full text-sm font-medium transition-all duration-200 ${
+                className={`px-6 py-2.5 rounded-full text-sm font-medium transition-all duration-300 whitespace-nowrap ${
                   selectedCategory === cat
-                    ? "bg-blue-600 text-white shadow-md shadow-blue-600/30 hover:shadow-lg hover:shadow-blue-600/40"
-                    : "bg-white border border-neutral-200 text-neutral-700 hover:bg-neutral-50 hover:border-neutral-300"
+                    ? "bg-gradient-to-r from-blue-600 to-cyan-600 text-white shadow-lg shadow-blue-600/30 scale-105"
+                    : "bg-white border border-slate-200 text-slate-700 hover:border-blue-300 hover:text-blue-600 hover:shadow-md hover:shadow-blue-500/10"
                 }`}
               >
                 {cat}
@@ -170,10 +189,11 @@ export function CommunityDiscoveryClient() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {[...Array(8)].map((_, i) => (
               <div key={i} className="animate-pulse">
-                <div className="aspect-square rounded-lg bg-neutral-200 mb-3" />
-                <div className="h-4 rounded bg-neutral-200 w-3/4 mb-2" />
-                <div className="h-3 rounded bg-neutral-200 w-full mb-2" />
-                <div className="h-3 rounded bg-neutral-200 w-1/2" />
+                <div className="aspect-video rounded-2xl bg-gradient-to-br from-slate-200 to-slate-100 mb-4" />
+                <div className="h-4 rounded-lg bg-slate-200 w-3/4 mb-3" />
+                <div className="h-3 rounded-lg bg-slate-100 w-full mb-2" />
+                <div className="h-3 rounded-lg bg-slate-100 w-2/3 mb-4" />
+                <div className="h-10 rounded-full bg-slate-100" />
               </div>
             ))}
           </div>
@@ -182,61 +202,86 @@ export function CommunityDiscoveryClient() {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
               {paginatedCommunities.map((community, index) => (
                 <Link key={community.id} href={`/community/${community.slug}`}>
-                  <div className="group cursor-pointer h-full">
-                    {/* Card */}
-                    <div className="bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-xl hover:shadow-blue-500/10 transition-all duration-300 border border-neutral-200 hover:border-blue-300 flex flex-col h-full">
-                      {/* Image Container */}
-                      <div className="relative bg-gradient-to-br from-blue-400 to-blue-600 aspect-square overflow-hidden">
+                  <div
+                    className="group cursor-pointer h-full"
+                    onMouseEnter={() => setHoveredCard(community.id)}
+                    onMouseLeave={() => setHoveredCard(null)}
+                  >
+                    {/* Premium Card with Glass Morphism effect */}
+                    <div className="relative h-full bg-white/80 backdrop-blur-lg rounded-2xl overflow-hidden border border-white/60 shadow-xl transition-all duration-500 hover:shadow-2xl hover:shadow-blue-500/20 hover:-translate-y-2 flex flex-col">
+                      {/* Gradient overlay border */}
+                      <div className="absolute inset-0 bg-gradient-to-br from-blue-600/10 via-transparent to-purple-600/10 pointer-events-none rounded-2xl" />
+
+                      {/* Image Container with overlay effect */}
+                      <div className="relative bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 aspect-video overflow-hidden">
                         {community.thumbnail_url ? (
                           <img
                             src={community.thumbnail_url}
                             alt={community.name}
-                            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                            className="w-full h-full object-cover group-hover:scale-125 transition-transform duration-700"
                           />
                         ) : (
-                          <div className="w-full h-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center">
-                            <div className="w-16 h-16 rounded-lg bg-white/20 backdrop-blur-sm" />
+                          <div className="w-full h-full bg-gradient-to-br from-blue-600 via-cyan-600 to-slate-900 flex items-center justify-center relative overflow-hidden">
+                            {/* Animated gradient shapes */}
+                            <div className="absolute top-0 left-0 w-32 h-32 bg-blue-400/30 rounded-full blur-2xl animate-pulse" />
+                            <div className="absolute bottom-0 right-0 w-40 h-40 bg-purple-400/20 rounded-full blur-3xl animate-pulse" />
+                            <div className="relative z-10 text-white/30">
+                              <svg className="w-20 h-20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={0.5} d="M17 20h5v-2a3 3 0 00-5.856-1.487M15 10a3 3 0 11-6 0 3 3 0 016 0zM15 20a3 3 0 01-6 0" />
+                              </svg>
+                            </div>
                           </div>
                         )}
 
-                        {/* Rank Badge */}
-                        <div className="absolute top-4 left-4 bg-gradient-to-r from-blue-600 to-blue-700 text-white px-3 py-1.5 rounded-full text-xs font-bold shadow-lg">
-                          #{startIndex + index + 1}
+                        {/* Rank Badge - Premium style */}
+                        <div className="absolute top-4 left-4 z-10">
+                          <div className="px-4 py-2 rounded-full bg-gradient-to-r from-white/20 to-white/10 backdrop-blur-lg border border-white/30 text-white text-xs font-bold">
+                            #{startIndex + index + 1}
+                          </div>
                         </div>
+
+                        {/* Hover overlay effect */}
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                       </div>
 
-                      {/* Content */}
-                      <div className="p-5 flex-1 flex flex-col">
-                        {/* Community Name and Info */}
+                      {/* Content Section */}
+                      <div className="relative z-10 p-6 flex-1 flex flex-col">
+                        {/* Category badge */}
                         <div className="mb-3">
-                          <h3 className="font-bold text-neutral-900 line-clamp-2 text-lg leading-snug mb-1">
-                            {community.name}
-                          </h3>
-                          <p className="text-xs font-medium text-blue-600 uppercase tracking-wider">
+                          <span className="inline-block px-3 py-1 rounded-full bg-blue-50 text-blue-700 text-xs font-semibold uppercase tracking-wider">
                             {community.category}
-                          </p>
+                          </span>
                         </div>
 
+                        {/* Community Name */}
+                        <h3 className="font-bold text-slate-900 line-clamp-2 text-lg leading-snug mb-3 group-hover:text-blue-600 transition-colors">
+                          {community.name}
+                        </h3>
+
                         {/* Description */}
-                        <p className="text-sm text-neutral-600 line-clamp-2 mb-4 leading-relaxed flex-1">
+                        <p className="text-sm text-slate-600 line-clamp-2 mb-auto leading-relaxed flex-1">
                           {community.description ||
                             "Join this vibrant community and connect with peers."}
                         </p>
                       </div>
 
-                      {/* Footer */}
-                      <div className="px-5 py-4 border-t border-neutral-100 flex items-center justify-between bg-neutral-50/50">
-                        <div className="flex flex-col">
-                          <span className="text-xs font-medium text-neutral-500">Members</span>
-                          <span className="text-sm font-semibold text-neutral-900">
-                            {formatMemberCount(community.memberCount || 0)}
-                          </span>
-                        </div>
-                        <div className="text-right">
-                          <span className="text-xs font-medium text-neutral-500">Pricing</span>
-                          <span className="text-lg font-bold text-blue-600">
-                            {formatPrice(community.monthlyPrice)}
-                          </span>
+                      {/* Footer - Premium stats */}
+                      <div className="relative z-10 px-6 py-5 border-t border-slate-100/50 bg-gradient-to-r from-slate-50/50 to-blue-50/30 backdrop-blur-sm">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-4">
+                            <div>
+                              <p className="text-xs text-slate-500 font-medium">Members</p>
+                              <p className="text-sm font-bold text-slate-900">
+                                {formatMemberCount(community.memberCount || 0)}
+                              </p>
+                            </div>
+                          </div>
+                          <div className="text-right">
+                            <p className="text-xs text-slate-500 font-medium">Price</p>
+                            <p className="text-lg font-bold bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent">
+                              {formatPrice(community.monthlyPrice)}
+                            </p>
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -247,34 +292,27 @@ export function CommunityDiscoveryClient() {
 
             {/* Pagination */}
             {totalPages > 1 && (
-              <div className="flex items-center justify-center gap-3 mt-14">
+              <div className="flex items-center justify-center gap-3 mt-16">
                 <button
                   onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
                   disabled={currentPage === 1}
-                  className="w-11 h-11 rounded-lg bg-white border border-neutral-200 flex items-center justify-center hover:bg-neutral-50 hover:border-neutral-300 disabled:opacity-40 transition-all duration-200"
+                  className="w-10 h-10 rounded-full bg-white border border-slate-200 flex items-center justify-center hover:bg-slate-50 hover:border-blue-400 hover:text-blue-600 disabled:opacity-30 transition-all duration-300 text-slate-600"
                   aria-label="Previous page"
                 >
-                  <svg
-                    width="18"
-                    height="18"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                  >
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                     <path d="M15 19l-7-7 7-7" />
                   </svg>
                 </button>
 
-                <div className="flex items-center gap-1">
+                <div className="flex items-center gap-2">
                   {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
                     <button
                       key={page}
                       onClick={() => setCurrentPage(page)}
-                      className={`w-11 h-11 rounded-lg flex items-center justify-center font-semibold transition-all duration-200 ${
+                      className={`min-w-10 h-10 rounded-full flex items-center justify-center font-semibold transition-all duration-300 ${
                         currentPage === page
-                          ? "bg-blue-600 text-white shadow-md shadow-blue-600/30"
-                          : "bg-white border border-neutral-200 text-neutral-700 hover:bg-neutral-50 hover:border-neutral-300"
+                          ? "bg-gradient-to-r from-blue-600 to-cyan-600 text-white shadow-lg shadow-blue-600/30"
+                          : "bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 hover:border-blue-300 hover:text-blue-600"
                       }`}
                       aria-label={`Go to page ${page}`}
                       aria-current={currentPage === page ? "page" : undefined}
@@ -287,17 +325,10 @@ export function CommunityDiscoveryClient() {
                 <button
                   onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
                   disabled={currentPage === totalPages}
-                  className="w-11 h-11 rounded-lg bg-white border border-neutral-200 flex items-center justify-center hover:bg-neutral-50 hover:border-neutral-300 disabled:opacity-40 transition-all duration-200"
+                  className="w-10 h-10 rounded-full bg-white border border-slate-200 flex items-center justify-center hover:bg-slate-50 hover:border-blue-400 hover:text-blue-600 disabled:opacity-30 transition-all duration-300 text-slate-600"
                   aria-label="Next page"
                 >
-                  <svg
-                    width="18"
-                    height="18"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                  >
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                     <path d="M9 19l7-7-7-7" />
                   </svg>
                 </button>
@@ -305,20 +336,33 @@ export function CommunityDiscoveryClient() {
             )}
           </>
         ) : (
-          <div className="text-center py-20">
-            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-neutral-100 mb-4">
-              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-neutral-400">
+          <div className="text-center py-32">
+            <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-gradient-to-br from-slate-100 to-blue-50 mb-6">
+              <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" className="text-slate-400">
                 <circle cx="11" cy="11" r="8" />
                 <path d="m21 21-4.35-4.35" />
               </svg>
             </div>
-            <p className="text-neutral-600 mb-2 text-lg font-medium">No communities found</p>
-            <p className="text-neutral-500 mb-6">Try adjusting your search or filters</p>
-            <Link href="/community/create">
-              <button className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium shadow-sm hover:shadow-md">
-                Create the first one
+            <h3 className="text-slate-900 mb-3 text-2xl font-bold">No communities found</h3>
+            <p className="text-slate-600 mb-8 text-base max-w-md mx-auto leading-relaxed">
+              Try adjusting your search or filters to find the right community for you.
+            </p>
+            <div className="flex gap-4 justify-center">
+              <Link href="/community/create">
+                <button className="px-7 py-3 bg-gradient-to-r from-blue-600 to-cyan-600 text-white rounded-full hover:shadow-lg hover:shadow-blue-500/50 transition-all duration-300 font-semibold hover:scale-105">
+                  Create Community
+                </button>
+              </Link>
+              <button
+                onClick={() => {
+                  setSearch("");
+                  setSelectedCategory("All");
+                }}
+                className="px-7 py-3 bg-white border border-slate-200 text-slate-700 rounded-full hover:bg-slate-50 hover:border-blue-300 transition-all duration-300 font-semibold"
+              >
+                Clear Filters
               </button>
-            </Link>
+            </div>
           </div>
         )}
       </div>
