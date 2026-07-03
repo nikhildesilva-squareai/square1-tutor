@@ -27,8 +27,8 @@ export async function generateMetadata({ params, searchParams }: Props): Promise
     ? `I scored ${result.score}/${result.total} on the ${sub.title} skill check. Take yours free — 3 minutes, no signup.`
     : `Take the free ${sub.title} skill check — 3 minutes, no signup.`;
 
-  const ogParams = result
-    ? `?subject=${subject}&score=${result.score}&total=${result.total}&level=${result.level}`
+  const ogParams = a
+    ? `?subject=${subject}&a=${a}`
     : `?subject=${subject}&score=0&total=5&level=Beginner`;
 
   return {

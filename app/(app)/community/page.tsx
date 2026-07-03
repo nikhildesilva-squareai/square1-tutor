@@ -1,4 +1,5 @@
 import { Suspense } from "react";
+import { createClient } from "@/lib/supabase/server";
 import { CommunityDiscoveryClient } from "@/components/CommunityDiscoveryClient";
 
 export const metadata = {
@@ -6,31 +7,47 @@ export const metadata = {
   description: "Connect with other learners, start projects, and build together.",
 };
 
-export default function CommunityPage() {
+export default async function CommunityPage() {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+
   return (
-    <div className="px-4 sm:px-6 py-8 max-w-6xl mx-auto">
-      {/* Header */}
-      <div className="mb-8">
-        <div className="flex items-center gap-3 mb-3">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-brand to-brand/80 flex items-center justify-center">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round">
-              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-              <circle cx="9" cy="7" r="4" />
-              <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
-              <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-            </svg>
-          </div>
+    <div className="min-h-screen flex flex-col">
+      {/* Header with Navigation */}
+      <div className="border-b border-border">
+        <div className="px-4 sm:px-6 py-4 max-w-7xl mx-auto flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-black text-ink">Community</h1>
-            <p className="text-sm text-ink-muted">Connect with peers, share ideas, and build together</p>
+            <h1 className="text-2xl font-bold text-ink">Discover communities</h1>
+            <p className="text-sm text-ink-muted">Time table or create your own</p>
           </div>
+
+          {/* User Profile Section */}
+          {user && (
+            <div className="flex items-center gap-4">
+              <div className="text-right">
+                <p className="font-medium text-ink text-sm">{user.email?.split("@")[0]}</p>
+                <p className="text-xs text-ink-muted">{user.email}</p>
+              </div>
+              <button className="p-2 rounded-lg hover:bg-surface-alt transition-colors text-ink-muted text-sm">
+                Profile
+              </button>
+              <button className="p-2 rounded-lg hover:bg-surface-alt transition-colors text-ink-muted text-sm">
+                Payment
+              </button>
+              <button className="p-2 rounded-lg hover:bg-surface-alt transition-colors text-ink-muted text-sm">
+                Logout
+              </button>
+            </div>
+          )}
         </div>
       </div>
 
-      {/* Suspense boundary for the discovery client */}
-      <Suspense fallback={<CommunityDiscoveryLoading />}>
-        <CommunityDiscoveryClient />
-      </Suspense>
+      {/* Main Content */}
+      <div className="flex-1 px-4 sm:px-6 py-8 max-w-7xl mx-auto w-full">
+        <Suspense fallback={<CommunityDiscoveryLoading />}>
+          <CommunityDiscoveryClient />
+        </Suspense>
+      </div>
     </div>
   );
 }

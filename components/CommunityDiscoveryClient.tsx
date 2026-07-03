@@ -2,9 +2,18 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { CommunityCreationForm } from "@/components/CommunityCreationForm";
 
-const CATEGORIES = ["Trending", "Tech", "AI/ML", "Data Science", "Startup", "Research", "Other"];
+const CATEGORIES = [
+  "All",
+  "Music",
+  "Design",
+  "Business management",
+  "Learn AI Tech",
+  "IT & Software",
+  "Finance & Accounting",
+  "Sciences & Technology",
+  "Sports",
+];
 
 interface Community {
   id: string;
@@ -17,18 +26,24 @@ interface Community {
   creator_id: string;
   memberCount: number;
   created_at: string;
+  monthlyPrice?: number;
+  annualPrice?: number;
+  thumbnail_url?: string;
 }
 
 export function CommunityDiscoveryClient() {
   const [communities, setCommunities] = useState<Community[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("Trending");
-  const [showCreationForm, setShowCreationForm] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState("All");
+  const [currentPage, setCurrentPage] = useState(1);
   const [error, setError] = useState<string | null>(null);
+
+  const itemsPerPage = 8;
 
   useEffect(() => {
     fetchCommunities();
+    setCurrentPage(1);
   }, [selectedCategory, search]);
 
   const fetchCommunities = async () => {
@@ -37,7 +52,7 @@ export function CommunityDiscoveryClient() {
       setError(null);
 
       const params = new URLSearchParams();
-      if (selectedCategory !== "Trending" && selectedCategory !== "Other") {
+      if (selectedCategory !== "All") {
         params.append("category", selectedCategory);
       }
       if (search) {
@@ -59,180 +74,238 @@ export function CommunityDiscoveryClient() {
     }
   };
 
-  const handleCreationSuccess = (communityId: string, communityName: string) => {
-    setShowCreationForm(false);
-    // Toast notification could go here
-    console.log(`Created community: ${communityName}`);
+  const formatPrice = (price: number | undefined): string => {
+    if (!price) return "Free";
+    return `$${price.toFixed(2)}`;
   };
 
+  const formatMemberCount = (count: number): string => {
+    if (count >= 1000) {
+      return `${(count / 1000).toFixed(1)}k members`;
+    }
+    return `${count} members`;
+  };
+
+  // Pagination logic
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const paginatedCommunities = communities.slice(startIndex, endIndex);
+  const totalPages = Math.ceil(communities.length / itemsPerPage);
+
   return (
-    <div className="space-y-6">
-      {/* Controls */}
-      <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center justify-between">
-        {/* Search */}
-        <div className="flex-1 relative">
-          <svg
-            width="18"
-            height="18"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            className="absolute left-3 top-1/2 -translate-y-1/2 text-ink-muted"
-          >
-            <circle cx="11" cy="11" r="8" />
-            <path d="m21 21-4.35-4.35" />
-          </svg>
-          <input
-            type="text"
-            placeholder="Search communities..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-border bg-surface text-ink placeholder-ink-muted focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent"
-          />
-        </div>
-
-        {/* Create button */}
-        <button
-          onClick={() => setShowCreationForm(true)}
-          className="px-6 py-2.5 rounded-lg bg-brand text-white font-semibold text-sm hover:bg-brand/90 transition-all whitespace-nowrap"
-        >
-          + Create Community
-        </button>
-      </div>
-
-      {/* Category tabs */}
-      <div className="flex gap-2 overflow-x-auto pb-2 -mx-4 px-4 sm:mx-0 sm:px-0">
-        {CATEGORIES.map((cat) => (
-          <button
-            key={cat}
-            onClick={() => setSelectedCategory(cat)}
-            className={`px-4 py-2 rounded-lg font-semibold text-sm whitespace-nowrap transition-all ${
-              selectedCategory === cat
-                ? "bg-brand text-white"
-                : "bg-surface-alt text-ink hover:bg-surface-alt/80"
-            }`}
-          >
-            {cat}
-          </button>
-        ))}
-      </div>
-
-      {/* Error message */}
-      {error && (
-        <div className="p-4 rounded-lg bg-red-50 border border-red-200">
-          <p className="text-sm text-red-700">{error}</p>
-        </div>
-      )}
-
-      {/* Communities grid */}
-      {loading ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {[...Array(6)].map((_, i) => (
-            <div key={i} className="p-4 rounded-lg bg-surface border border-border animate-pulse space-y-3">
-              <div className="h-5 rounded bg-surface-alt" />
-              <div className="h-3 rounded bg-surface-alt" />
-              <div className="h-3 rounded bg-surface-alt w-2/3" />
-            </div>
-          ))}
-        </div>
-      ) : communities.length === 0 ? (
-        <div className="text-center py-12">
-          <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-surface-alt mb-4">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <circle cx="11" cy="11" r="8" />
-              <path d="m21 21-4.35-4.35" />
-            </svg>
-          </div>
-          <h3 className="text-lg font-semibold text-ink mb-1">No communities found</h3>
-          <p className="text-sm text-ink-muted mb-6">
-            {search ? "Try a different search" : "Be the first to create one!"}
-          </p>
-          {!search && (
-            <button
-              onClick={() => setShowCreationForm(true)}
-              className="px-6 py-2.5 rounded-lg bg-brand text-white font-semibold text-sm hover:bg-brand/90 transition-all"
-            >
-              Create a Community
+    <div className="min-h-screen bg-neutral-50">
+      {/* Hero Banner */}
+      <div className="relative w-screen -mx-[calc((100vw-100%)/2)] bg-gradient-to-r from-blue-900 to-blue-800 py-20 px-4 mb-12">
+        <div className="max-w-7xl mx-auto text-center">
+          <h1 className="text-5xl font-bold text-white mb-2">Discover communities</h1>
+          <p className="text-xl text-blue-100">
+            or{" "}
+            <button className="text-blue-200 hover:text-white underline">
+              create your own
             </button>
-          )}
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {communities.map((community) => (
-            <Link
-              key={community.id}
-              href={`/community/${community.slug}`}
-              className="p-5 rounded-xl border border-border bg-surface hover:shadow-card hover:border-brand/15 transition-all group"
-            >
-              {/* Header */}
-              <div className="flex items-start justify-between mb-3">
-                <div className="flex-1">
-                  <h3 className="font-bold text-ink group-hover:text-brand transition-colors line-clamp-2">
-                    {community.name}
-                  </h3>
-                  <p className="text-xs text-ink-muted mt-1">{community.category}</p>
-                </div>
-              </div>
+          </p>
 
-              {/* Description */}
-              {community.description && (
-                <p className="text-sm text-ink-muted mb-3 line-clamp-2">{community.description}</p>
-              )}
-
-              {/* Footer */}
-              <div className="flex items-center justify-between pt-3 border-t border-border">
-                <div className="flex items-center gap-1.5">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" className="text-ink-muted">
-                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z" />
-                  </svg>
-                  <span className="text-xs text-ink-muted font-medium">
-                    {community.memberCount} member{community.memberCount !== 1 ? "s" : ""}
-                  </span>
-                </div>
-
-                {community.is_private && (
-                  <span className="px-2 py-1 rounded-md text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-200">
-                    Private
-                  </span>
-                )}
-              </div>
-            </Link>
-          ))}
-        </div>
-      )}
-
-      {/* Community creation modal */}
-      {showCreationForm && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-          <div className="bg-surface rounded-2xl shadow-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-            {/* Modal header */}
-            <div className="sticky top-0 flex items-center justify-between p-6 border-b border-border bg-surface">
-              <div>
-                <h2 className="text-2xl font-black text-ink">Create a Community</h2>
-                <p className="text-sm text-ink-muted mt-1">Start a new community to connect with peers</p>
-              </div>
-              <button
-                onClick={() => setShowCreationForm(false)}
-                className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-surface-alt transition-colors"
+          {/* Search Bar */}
+          <div className="mt-8 max-w-2xl mx-auto">
+            <div className="relative">
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-400"
               >
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <line x1="18" y1="6" x2="6" y2="18" />
-                  <line x1="6" y1="6" x2="18" y2="18" />
-                </svg>
-              </button>
-            </div>
-
-            {/* Modal content */}
-            <div className="p-6">
-              <CommunityCreationForm
-                onSuccess={handleCreationSuccess}
-                onCancel={() => setShowCreationForm(false)}
+                <circle cx="11" cy="11" r="8" />
+                <path d="m21 21-4.35-4.35" />
+              </svg>
+              <input
+                type="text"
+                placeholder="Search for anything"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="w-full pl-16 pr-6 py-4 rounded-lg bg-white border border-neutral-200 text-neutral-900 placeholder-slate-400 text-base focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
           </div>
         </div>
-      )}
+      </div>
+
+      {/* Main Content */}
+      <div className="max-w-7xl mx-auto px-4 pb-16">
+        {/* Category Filters */}
+        <div className="flex flex-wrap gap-3 mb-12 justify-center lg:justify-start">
+          {CATEGORIES.map((cat) => (
+            <button
+              key={cat}
+              onClick={() => setSelectedCategory(cat)}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                selectedCategory === cat
+                  ? "bg-neutral-900 text-white"
+                  : "bg-white border border-neutral-200 text-neutral-900 hover:border-neutral-300"
+              }`}
+            >
+              {cat}
+            </button>
+          ))}
+          <button className="w-10 h-10 rounded-lg bg-white border border-neutral-200 flex items-center justify-center hover:bg-neutral-50">
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+            >
+              <line x1="4" y1="6" x2="20" y2="6" />
+              <line x1="4" y1="12" x2="20" y2="12" />
+              <line x1="4" y1="18" x2="20" y2="18" />
+            </svg>
+          </button>
+        </div>
+
+        {/* Error Message */}
+        {error && (
+          <div className="p-4 rounded-lg bg-red-50 border border-red-200 text-red-700 mb-8">
+            {error}
+          </div>
+        )}
+
+        {/* Communities Grid */}
+        {loading ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {[...Array(8)].map((_, i) => (
+              <div key={i} className="animate-pulse">
+                <div className="aspect-square rounded-lg bg-neutral-200 mb-3" />
+                <div className="h-4 rounded bg-neutral-200 w-3/4 mb-2" />
+                <div className="h-3 rounded bg-neutral-200 w-full mb-2" />
+                <div className="h-3 rounded bg-neutral-200 w-1/2" />
+              </div>
+            ))}
+          </div>
+        ) : communities.length > 0 ? (
+          <>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {paginatedCommunities.map((community, index) => (
+                <Link key={community.id} href={`/community/${community.slug}`}>
+                  <div className="group cursor-pointer h-full">
+                    {/* Card */}
+                    <div className="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow border border-neutral-200">
+                      {/* Image Container */}
+                      <div className="relative bg-gradient-to-br from-blue-400 to-blue-600 aspect-square overflow-hidden">
+                        {community.thumbnail_url ? (
+                          <img
+                            src={community.thumbnail_url}
+                            alt={community.name}
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                          />
+                        ) : (
+                          <div className="w-full h-full bg-gradient-to-br from-blue-400 to-blue-600" />
+                        )}
+
+                        {/* Rank Badge */}
+                        <div className="absolute top-3 left-3 bg-sky-500 text-white px-2 py-1 rounded-md text-xs font-semibold">
+                          #{startIndex + index + 1}
+                        </div>
+                      </div>
+
+                      {/* Content */}
+                      <div className="p-4">
+                        {/* Community Name and Info */}
+                        <div className="mb-3">
+                          <div className="flex items-center gap-2 mb-2">
+                            <div className="w-8 h-8 rounded-lg bg-neutral-200" />
+                            <h3 className="font-semibold text-neutral-900 line-clamp-1">
+                              {community.name}
+                            </h3>
+                          </div>
+                        </div>
+
+                        {/* Description */}
+                        <p className="text-sm text-neutral-600 line-clamp-3 mb-4 leading-relaxed">
+                          {community.description ||
+                            "Join this community to connect with peers and collaborate."}
+                        </p>
+                      </div>
+
+                      {/* Footer */}
+                      <div className="px-4 py-3 border-t border-neutral-200 flex items-center justify-between">
+                        <span className="text-sm text-neutral-600">
+                          {formatMemberCount(community.memberCount || 0)}
+                        </span>
+                        <span className="font-semibold text-neutral-900">
+                          {formatPrice(community.monthlyPrice)}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+
+            {/* Pagination */}
+            {totalPages > 1 && (
+              <div className="flex items-center justify-center gap-2 mt-12">
+                <button
+                  onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+                  disabled={currentPage === 1}
+                  className="w-10 h-10 rounded-lg bg-white border border-neutral-200 flex items-center justify-center hover:bg-neutral-50 disabled:opacity-50"
+                >
+                  <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                  >
+                    <path d="M15 19l-7-7 7-7" />
+                  </svg>
+                </button>
+
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                  <button
+                    key={page}
+                    onClick={() => setCurrentPage(page)}
+                    className={`w-10 h-10 rounded-lg flex items-center justify-center font-medium transition-all ${
+                      currentPage === page
+                        ? "bg-neutral-900 text-white border border-neutral-900"
+                        : "bg-white border border-neutral-200 text-neutral-900 hover:bg-neutral-50"
+                    }`}
+                  >
+                    {page}
+                  </button>
+                ))}
+
+                <button
+                  onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
+                  disabled={currentPage === totalPages}
+                  className="w-10 h-10 rounded-lg bg-white border border-neutral-200 flex items-center justify-center hover:bg-neutral-50 disabled:opacity-50"
+                >
+                  <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                  >
+                    <path d="M9 19l7-7-7-7" />
+                  </svg>
+                </button>
+              </div>
+            )}
+          </>
+        ) : (
+          <div className="text-center py-12">
+            <p className="text-neutral-600 mb-4">No communities found</p>
+            <button className="px-6 py-2 bg-neutral-900 text-white rounded-lg hover:bg-neutral-800 transition-colors">
+              Create the first one
+            </button>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
