@@ -95,18 +95,22 @@ export function CommunityDiscoveryClient() {
   return (
     <div className="min-h-screen bg-neutral-50">
       {/* Hero Banner */}
-      <div className="relative w-screen -mx-[calc((100vw-100%)/2)] bg-gradient-to-r from-blue-900 to-blue-800 py-20 px-4 mb-12">
-        <div className="max-w-7xl mx-auto text-center">
-          <h1 className="text-5xl font-bold text-white mb-2">Discover communities</h1>
-          <p className="text-xl text-blue-100">
-            or{" "}
-            <button className="text-blue-200 hover:text-white underline">
-              create your own
-            </button>
+      <div className="relative w-screen -mx-[calc((100vw-100%)/2)] bg-gradient-to-br from-blue-950 via-blue-900 to-blue-800 py-24 px-4 mb-16">
+        <div className="max-w-6xl mx-auto text-center">
+          <h1 className="text-6xl md:text-7xl font-bold text-white mb-4 tracking-tight">
+            Discover communities
+          </h1>
+          <p className="text-xl md:text-2xl text-blue-100 font-light mb-12">
+            Find your community or{" "}
+            <Link href="/community/create">
+              <button className="text-blue-200 hover:text-white font-semibold underline decoration-2 underline-offset-2 transition-colors">
+                create your own
+              </button>
+            </Link>
           </p>
 
           {/* Search Bar */}
-          <div className="mt-8 max-w-2xl mx-auto">
+          <div className="mt-10 max-w-3xl mx-auto">
             <div className="relative">
               <svg
                 width="20"
@@ -115,17 +119,17 @@ export function CommunityDiscoveryClient() {
                 fill="none"
                 stroke="currentColor"
                 strokeWidth="2"
-                className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-400"
+                className="absolute left-5 top-1/2 -translate-y-1/2 text-neutral-400"
               >
                 <circle cx="11" cy="11" r="8" />
                 <path d="m21 21-4.35-4.35" />
               </svg>
               <input
                 type="text"
-                placeholder="Search for anything"
+                placeholder="Search communities, topics, or interests..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="w-full pl-16 pr-6 py-4 rounded-lg bg-white border border-neutral-200 text-neutral-900 placeholder-slate-400 text-base focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full pl-14 pr-6 py-4 rounded-xl bg-white border border-neutral-200 text-neutral-900 placeholder-neutral-400 text-base focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent shadow-md hover:shadow-lg transition-shadow"
               />
             </div>
           </div>
@@ -133,36 +137,25 @@ export function CommunityDiscoveryClient() {
       </div>
 
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 pb-16">
+      <div className="max-w-7xl mx-auto px-4 pb-20">
         {/* Category Filters */}
-        <div className="flex flex-wrap gap-3 mb-12 justify-center lg:justify-start">
-          {CATEGORIES.map((cat) => (
-            <button
-              key={cat}
-              onClick={() => setSelectedCategory(cat)}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-                selectedCategory === cat
-                  ? "bg-neutral-900 text-white"
-                  : "bg-white border border-neutral-200 text-neutral-900 hover:border-neutral-300"
-              }`}
-            >
-              {cat}
-            </button>
-          ))}
-          <button className="w-10 h-10 rounded-lg bg-white border border-neutral-200 flex items-center justify-center hover:bg-neutral-50">
-            <svg
-              width="20"
-              height="20"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-            >
-              <line x1="4" y1="6" x2="20" y2="6" />
-              <line x1="4" y1="12" x2="20" y2="12" />
-              <line x1="4" y1="18" x2="20" y2="18" />
-            </svg>
-          </button>
+        <div className="mb-14">
+          <p className="text-sm font-semibold text-neutral-600 mb-4 uppercase tracking-wide">Browse by category</p>
+          <div className="flex flex-wrap gap-2 lg:gap-3">
+            {CATEGORIES.map((cat) => (
+              <button
+                key={cat}
+                onClick={() => setSelectedCategory(cat)}
+                className={`px-5 py-3 rounded-full text-sm font-medium transition-all duration-200 ${
+                  selectedCategory === cat
+                    ? "bg-blue-600 text-white shadow-md shadow-blue-600/30 hover:shadow-lg hover:shadow-blue-600/40"
+                    : "bg-white border border-neutral-200 text-neutral-700 hover:bg-neutral-50 hover:border-neutral-300"
+                }`}
+              >
+                {cat}
+              </button>
+            ))}
+          </div>
         </div>
 
         {/* Error Message */}
@@ -191,52 +184,60 @@ export function CommunityDiscoveryClient() {
                 <Link key={community.id} href={`/community/${community.slug}`}>
                   <div className="group cursor-pointer h-full">
                     {/* Card */}
-                    <div className="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow border border-neutral-200">
+                    <div className="bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-xl hover:shadow-blue-500/10 transition-all duration-300 border border-neutral-200 hover:border-blue-300 flex flex-col h-full">
                       {/* Image Container */}
                       <div className="relative bg-gradient-to-br from-blue-400 to-blue-600 aspect-square overflow-hidden">
                         {community.thumbnail_url ? (
                           <img
                             src={community.thumbnail_url}
                             alt={community.name}
-                            className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
                           />
                         ) : (
-                          <div className="w-full h-full bg-gradient-to-br from-blue-400 to-blue-600" />
+                          <div className="w-full h-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center">
+                            <div className="w-16 h-16 rounded-lg bg-white/20 backdrop-blur-sm" />
+                          </div>
                         )}
 
                         {/* Rank Badge */}
-                        <div className="absolute top-3 left-3 bg-sky-500 text-white px-2 py-1 rounded-md text-xs font-semibold">
+                        <div className="absolute top-4 left-4 bg-gradient-to-r from-blue-600 to-blue-700 text-white px-3 py-1.5 rounded-full text-xs font-bold shadow-lg">
                           #{startIndex + index + 1}
                         </div>
                       </div>
 
                       {/* Content */}
-                      <div className="p-4">
+                      <div className="p-5 flex-1 flex flex-col">
                         {/* Community Name and Info */}
                         <div className="mb-3">
-                          <div className="flex items-center gap-2 mb-2">
-                            <div className="w-8 h-8 rounded-lg bg-neutral-200" />
-                            <h3 className="font-semibold text-neutral-900 line-clamp-1">
-                              {community.name}
-                            </h3>
-                          </div>
+                          <h3 className="font-bold text-neutral-900 line-clamp-2 text-lg leading-snug mb-1">
+                            {community.name}
+                          </h3>
+                          <p className="text-xs font-medium text-blue-600 uppercase tracking-wider">
+                            {community.category}
+                          </p>
                         </div>
 
                         {/* Description */}
-                        <p className="text-sm text-neutral-600 line-clamp-3 mb-4 leading-relaxed">
+                        <p className="text-sm text-neutral-600 line-clamp-2 mb-4 leading-relaxed flex-1">
                           {community.description ||
-                            "Join this community to connect with peers and collaborate."}
+                            "Join this vibrant community and connect with peers."}
                         </p>
                       </div>
 
                       {/* Footer */}
-                      <div className="px-4 py-3 border-t border-neutral-200 flex items-center justify-between">
-                        <span className="text-sm text-neutral-600">
-                          {formatMemberCount(community.memberCount || 0)}
-                        </span>
-                        <span className="font-semibold text-neutral-900">
-                          {formatPrice(community.monthlyPrice)}
-                        </span>
+                      <div className="px-5 py-4 border-t border-neutral-100 flex items-center justify-between bg-neutral-50/50">
+                        <div className="flex flex-col">
+                          <span className="text-xs font-medium text-neutral-500">Members</span>
+                          <span className="text-sm font-semibold text-neutral-900">
+                            {formatMemberCount(community.memberCount || 0)}
+                          </span>
+                        </div>
+                        <div className="text-right">
+                          <span className="text-xs font-medium text-neutral-500">Pricing</span>
+                          <span className="text-lg font-bold text-blue-600">
+                            {formatPrice(community.monthlyPrice)}
+                          </span>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -246,15 +247,16 @@ export function CommunityDiscoveryClient() {
 
             {/* Pagination */}
             {totalPages > 1 && (
-              <div className="flex items-center justify-center gap-2 mt-12">
+              <div className="flex items-center justify-center gap-3 mt-14">
                 <button
                   onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
                   disabled={currentPage === 1}
-                  className="w-10 h-10 rounded-lg bg-white border border-neutral-200 flex items-center justify-center hover:bg-neutral-50 disabled:opacity-50"
+                  className="w-11 h-11 rounded-lg bg-white border border-neutral-200 flex items-center justify-center hover:bg-neutral-50 hover:border-neutral-300 disabled:opacity-40 transition-all duration-200"
+                  aria-label="Previous page"
                 >
                   <svg
-                    width="16"
-                    height="16"
+                    width="18"
+                    height="18"
                     viewBox="0 0 24 24"
                     fill="none"
                     stroke="currentColor"
@@ -264,28 +266,33 @@ export function CommunityDiscoveryClient() {
                   </svg>
                 </button>
 
-                {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-                  <button
-                    key={page}
-                    onClick={() => setCurrentPage(page)}
-                    className={`w-10 h-10 rounded-lg flex items-center justify-center font-medium transition-all ${
-                      currentPage === page
-                        ? "bg-neutral-900 text-white border border-neutral-900"
-                        : "bg-white border border-neutral-200 text-neutral-900 hover:bg-neutral-50"
-                    }`}
-                  >
-                    {page}
-                  </button>
-                ))}
+                <div className="flex items-center gap-1">
+                  {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                    <button
+                      key={page}
+                      onClick={() => setCurrentPage(page)}
+                      className={`w-11 h-11 rounded-lg flex items-center justify-center font-semibold transition-all duration-200 ${
+                        currentPage === page
+                          ? "bg-blue-600 text-white shadow-md shadow-blue-600/30"
+                          : "bg-white border border-neutral-200 text-neutral-700 hover:bg-neutral-50 hover:border-neutral-300"
+                      }`}
+                      aria-label={`Go to page ${page}`}
+                      aria-current={currentPage === page ? "page" : undefined}
+                    >
+                      {page}
+                    </button>
+                  ))}
+                </div>
 
                 <button
                   onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
                   disabled={currentPage === totalPages}
-                  className="w-10 h-10 rounded-lg bg-white border border-neutral-200 flex items-center justify-center hover:bg-neutral-50 disabled:opacity-50"
+                  className="w-11 h-11 rounded-lg bg-white border border-neutral-200 flex items-center justify-center hover:bg-neutral-50 hover:border-neutral-300 disabled:opacity-40 transition-all duration-200"
+                  aria-label="Next page"
                 >
                   <svg
-                    width="16"
-                    height="16"
+                    width="18"
+                    height="18"
                     viewBox="0 0 24 24"
                     fill="none"
                     stroke="currentColor"
@@ -298,11 +305,20 @@ export function CommunityDiscoveryClient() {
             )}
           </>
         ) : (
-          <div className="text-center py-12">
-            <p className="text-neutral-600 mb-4">No communities found</p>
-            <button className="px-6 py-2 bg-neutral-900 text-white rounded-lg hover:bg-neutral-800 transition-colors">
-              Create the first one
-            </button>
+          <div className="text-center py-20">
+            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-neutral-100 mb-4">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-neutral-400">
+                <circle cx="11" cy="11" r="8" />
+                <path d="m21 21-4.35-4.35" />
+              </svg>
+            </div>
+            <p className="text-neutral-600 mb-2 text-lg font-medium">No communities found</p>
+            <p className="text-neutral-500 mb-6">Try adjusting your search or filters</p>
+            <Link href="/community/create">
+              <button className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium shadow-sm hover:shadow-md">
+                Create the first one
+              </button>
+            </Link>
           </div>
         )}
       </div>
