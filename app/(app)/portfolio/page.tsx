@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { redirect } from "next/navigation";
 import Link from "next/link";
 import type { ProjectSubmission } from "@/types/database";
 import { SharePortfolioButton } from "@/components/SharePortfolioButton";
@@ -44,7 +45,7 @@ function ScoreRing({ score, max, size = 64, color = "#0056CE" }: { score: number
 export default async function PortfolioPage() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return null;
+  if (!user) redirect("/login");
 
   const { data: student } = await supabase
     .from("students")
@@ -52,7 +53,7 @@ export default async function PortfolioPage() {
     .eq("user_id", user.id)
     .maybeSingle();
 
-  if (!student) return null;
+  if (!student) redirect("/courses");
 
   // Fetch submissions — only portfolio-worthy projects (score >= 70)
   const { data: submissions } = await supabase

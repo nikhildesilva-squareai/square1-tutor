@@ -57,6 +57,7 @@ export async function GET(request: Request) {
         sender: "team",
         body: WELCOME,
         read_by_student: true, // welcome shouldn't trigger an unread badge
+        read_by_team: true,
       });
       const reload = await supabase
         .from("student_messages")

@@ -63,7 +63,20 @@ export default async function ProgressPage() {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/login");
   const { data: student } = await supabase.from("students").select("id, name").eq("user_id", user.id).maybeSingle();
-  if (!student) redirect("/dashboard");
+  if (!student) {
+    return (
+      <div className="flex items-center justify-center min-h-[60vh] px-4">
+        <div className="text-center max-w-sm">
+          <div className="w-14 h-14 rounded-2xl bg-surface-alt flex items-center justify-center mx-auto mb-4">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" strokeWidth="2" strokeLinecap="round"><path d="M18 20V10" /><path d="M12 20V4" /><path d="M6 20v-6" /></svg>
+          </div>
+          <h2 className="text-lg font-bold text-ink mb-2">No progress yet</h2>
+          <p className="text-sm text-ink-muted mb-6">Enrol in a course to start tracking your progress.</p>
+          <Link href="/courses" className="inline-flex h-11 px-6 items-center rounded-xl bg-brand text-white text-sm font-semibold hover:bg-brand/90 transition-all">Browse courses</Link>
+        </div>
+      </div>
+    );
+  }
 
   // Enrollments
   const { data: enrollments } = await supabase

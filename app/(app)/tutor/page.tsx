@@ -21,7 +21,20 @@ export default async function TutorPage() {
     .eq("user_id", user.id)
     .maybeSingle();
 
-  if (!student) redirect("/dashboard");
+  if (!student) {
+    return (
+      <div className="flex items-center justify-center min-h-[60vh] px-4">
+        <div className="text-center max-w-sm">
+          <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-brand/10 to-violet-500/10 flex items-center justify-center mx-auto mb-4">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#0056CE" strokeWidth="1.5" strokeLinecap="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" /></svg>
+          </div>
+          <h2 className="text-lg font-bold text-ink mb-2">Nova is ready when you are</h2>
+          <p className="text-sm text-ink-muted mb-6">Enrol in a course first and Nova will have full lesson context to help you.</p>
+          <a href="/courses" className="inline-flex h-11 px-6 items-center rounded-xl bg-brand text-white text-sm font-semibold hover:bg-brand/90 transition-all">Browse courses</a>
+        </div>
+      </div>
+    );
+  }
 
   // Get active enrollments with course + current lesson
   const { data: enrollments } = await supabase
