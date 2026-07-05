@@ -176,7 +176,7 @@ export default function ResultsClient() {
               </div>
               <div className="px-4 py-2.5" style={{ background: "#111827" }}>
                 <span className="text-[9px] tracking-[0.2em] uppercase text-slate-500 font-bold">Track</span>
-                <p className="text-sm text-slate-200 font-semibold mt-0.5">{subject.icon} {subject.title}</p>
+                <p className="text-sm text-slate-200 font-semibold mt-0.5">{subject.title}</p>
               </div>
             </div>
 
@@ -330,7 +330,7 @@ export default function ResultsClient() {
               href={`/diagnostic/${slug}`}
               className="inline-flex items-center gap-1.5 text-xs font-semibold text-cyan-400 hover:text-cyan-300 transition-colors"
             >
-              {subject.icon} Take the {subject.title} skill check yourself
+              Take the {subject.title} skill check yourself →
             </Link>
             <br />
             <Link href="/diagnostic" className="text-[10px] text-slate-600 hover:text-slate-400 transition-colors">

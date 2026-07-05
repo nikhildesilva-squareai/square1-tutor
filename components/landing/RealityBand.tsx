@@ -27,7 +27,7 @@ type Stat = {
 
 const STATS: Stat[] = [
   { prefix: "−", target: 65, suffix: "%", bar: 65,  label: "drop in entry-level dev job postings, 2022–2025",      accent: "#F87171" },
-  { prefix: "+", target: 40, suffix: "%", bar: 40,  label: "more CS grads competing for them",                    accent: "#FBBF24" },
+  { prefix: "+", target: 40, suffix: "%", bar: 40,  label: "more CS grads competing for them",                    accent: "#0EA5E9" },
   { staticValue: "2–3×",                  bar: 72,  label: "higher offer rate with real, deployed project experience", accent: "#34D399" },
   { target: 1,               suffix: "",  bar: 100, label: "thing that now closes the gap: proof you can ship",    accent: "#3388FF" },
 ];
@@ -139,7 +139,7 @@ export function RealityBand() {
           A degree used to be enough.{" "}
           <span
             style={{
-              background: "linear-gradient(135deg, #F87171 0%, #FBBF24 100%)",
+              background: "linear-gradient(135deg, #3388FF 0%, #0056CE 55%, #01224F 100%)",
               WebkitBackgroundClip: "text",
               WebkitTextFillColor: "transparent",
               backgroundClip: "text",

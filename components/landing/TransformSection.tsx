@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { PrimaryCta } from "@/components/ui/primary-cta";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // B2C "before → after" transformation.
@@ -258,12 +259,9 @@ export function TransformSection() {
               Replay
             </button>
           )}
-          <a href="/diagnostic"
-            className="inline-flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-bold text-white transition-all hover:-translate-y-0.5"
-            style={{ background: "linear-gradient(135deg,#0056CE,#01224F)", boxShadow: "0 12px 32px rgba(0,86,206,0.28)" }}>
+          <PrimaryCta href="/diagnostic">
             See your starting point — free
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12" /><polyline points="12 5 19 12 12 19" /></svg>
-          </a>
+          </PrimaryCta>
         </div>
       </div>
     </section>

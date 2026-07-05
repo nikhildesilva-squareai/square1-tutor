@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { BorderBeam } from "@/components/ui/border-beam";
+import { PrimaryCta } from "@/components/ui/primary-cta";
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // THE HOOK — Sits right after the hero. Answers "Why take this course?"
@@ -414,18 +415,9 @@ function ClosingCTA() {
         {/* Square 1 Blue magnetic CTA — right-sized, confident */}
         <div className="flex flex-col items-center" style={reveal(4)}>
           <div className="relative px-6 py-3" onMouseMove={onMove} onMouseLeave={onLeave}>
-            <Link
-              ref={btnRef}
-              href="/diagnostic"
-              className="group inline-flex items-center gap-2.5 px-8 py-4 rounded-xl text-base sm:text-lg font-bold text-white tracking-tight transition-transform duration-200 ease-out hover:scale-[1.02]"
-              style={{
-                background: "linear-gradient(135deg, #DC2626 0%, #B91C1C 100%)",
-                boxShadow: "0 12px 28px rgba(15,28,49,0.18), 0 0 0 1px rgba(255,255,255,0.12) inset",
-              }}
-            >
+            <PrimaryCta ref={btnRef} href="/diagnostic" size="lg">
               Get your free skill report
-              <span className="transition-transform duration-300 group-hover:translate-x-1">→</span>
-            </Link>
+            </PrimaryCta>
           </div>
 
           {/* Quiet credibility */}

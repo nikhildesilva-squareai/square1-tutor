@@ -82,10 +82,11 @@ export default function SubjectDiagnosticPage() {
 
             <button
               onClick={() => setStarted(true)}
-              className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-xl text-white font-bold text-sm sm:text-base hover:-translate-y-0.5 transition-transform"
-              style={{ background: "linear-gradient(135deg, #0056CE 0%, #4F46E5 100%)", boxShadow: "0 12px 32px rgba(0,86,206,0.30)" }}
+              className="group inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full text-white font-bold text-sm sm:text-base hover:-translate-y-0.5 transition-transform"
+              style={{ background: "linear-gradient(135deg, #3388FF 0%, #0056CE 55%, #01224F 100%)", boxShadow: "0 12px 32px rgba(0,86,206,0.32), 0 0 0 1px rgba(255,255,255,0.12) inset" }}
             >
-              {subject.icon} Start the {subject.title} skill check
+              Start the {subject.title} skill check
+              <span aria-hidden className="transition-transform duration-300 group-hover:translate-x-1">→</span>
             </button>
 
             {/* FAQ section */}
@@ -122,7 +123,7 @@ export default function SubjectDiagnosticPage() {
           <div key={qIdx} className="max-w-xl mx-auto animate-fade-in-up">
             <div className="flex items-center justify-between mb-6">
               <span className="text-xs font-bold tracking-wide" style={{ color: accent }}>
-                {subject.icon} {subject.title}
+                {subject.title}
               </span>
               <span className="text-xs text-slate-500 tabular-nums">Question {qIdx + 1} / {questions.length}</span>
             </div>

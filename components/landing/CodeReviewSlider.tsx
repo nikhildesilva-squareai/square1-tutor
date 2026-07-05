@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
+import { PrimaryCta } from "@/components/ui/primary-cta";
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // Before/After transformation slider — drag to reveal a student's first draft
@@ -107,11 +107,9 @@ export function CodeReviewSlider() {
           <p className="text-xs text-slate-500">
             ← your draft &nbsp;·&nbsp; Nova&apos;s reviewed version →
           </p>
-          <Link href="/diagnostic"
-            className="inline-flex items-center gap-2 px-6 py-3 rounded-full text-white font-bold text-sm hover:-translate-y-0.5 transition-transform"
-            style={{ background: "linear-gradient(135deg,#0056CE,#3388FF)", boxShadow: "0 12px 32px rgba(0,86,206,0.3)" }}>
-            Get your code reviewed — free →
-          </Link>
+          <PrimaryCta href="/diagnostic">
+            Get your code reviewed — free
+          </PrimaryCta>
         </div>
       </div>
     </section>

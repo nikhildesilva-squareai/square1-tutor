@@ -2,6 +2,7 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { Logo } from "@/components/ui/logo";
+import { PrimaryCta } from "@/components/ui/primary-cta";
 
 // Goal-typer roles — picking one personalises the CTA + shows the salary
 const GOAL_ROLES = [
@@ -363,22 +364,16 @@ export function HeroSection({ courseCount = 9 }: { courseCount?: number }) {
             </p>
           </div>
 
-          {/* CTA row — red primary (kept), outline secondary */}
+          {/* CTA row — single brand primary, outline secondary */}
           <div className="flex flex-col sm:flex-row gap-3">
-            <Link
+            <PrimaryCta
               ref={ctaRef}
               onMouseMove={onCtaMove}
               onMouseLeave={onCtaLeave}
               href={`/diagnostic?subject=${role.slug}`}
-              className="group inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-full text-white font-bold text-sm transition-transform duration-200 ease-out"
-              style={{
-                background: "linear-gradient(135deg, #DC2626 0%, #B91C1C 100%)",
-                boxShadow: "0 12px 28px rgba(15,28,49,0.18), 0 0 0 1px rgba(255,255,255,0.12) inset",
-              }}
             >
               Show me my {role.label} path
-              <span className="transition-transform group-hover:translate-x-1">→</span>
-            </Link>
+            </PrimaryCta>
             <Link
               href="/login"
               className="inline-flex items-center justify-center px-6 py-3.5 rounded-full text-slate-700 text-sm font-semibold border border-slate-300 hover:border-slate-400 hover:bg-slate-50 transition-all"

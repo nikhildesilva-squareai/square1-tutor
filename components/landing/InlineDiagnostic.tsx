@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
+import { PrimaryCta } from "@/components/ui/primary-cta";
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // Foot-in-the-door: one real question, right on the landing page. Answering is a
@@ -85,13 +85,9 @@ export function InlineDiagnostic({
                   ? "One question barely scratches it. The full 3-minute check maps your real level and the gaps between you and the role you want."
                   : "No shame — most people miss it. The full 3-minute check shows your real level and a path to close every gap."}
               </p>
-              <Link
-                href="/diagnostic"
-                className="inline-flex items-center gap-2 px-6 py-3 rounded-xl text-white font-bold text-sm hover:-translate-y-0.5 transition-transform"
-                style={{ background: "linear-gradient(135deg,#0056CE,#4F46E5)", boxShadow: "0 12px 32px rgba(0,86,206,0.30)" }}
-              >
-                See your full snapshot — 4 more questions →
-              </Link>
+              <PrimaryCta href="/diagnostic">
+                See your full snapshot — 4 more questions
+              </PrimaryCta>
             </div>
           )}
 

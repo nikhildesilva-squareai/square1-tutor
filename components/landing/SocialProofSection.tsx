@@ -1,5 +1,6 @@
-import Link from "next/link";
+import { Check } from "lucide-react";
 import { FOUNDING_PRICE } from "@/lib/founding";
+import { PrimaryCta } from "@/components/ui/primary-cta";
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // Honest Proof — founder note + founding student offer.
@@ -17,12 +18,12 @@ const FOUNDING_PERKS = [
   {
     title: "A direct line to the founder",
     desc:  "Feedback, stuck points, ideas — they land in my inbox, not a ticket queue.",
-    accent: "#A78BFA",
+    accent: "#0EA5E9",
   },
   {
     title: "Shape the platform",
     desc:  "Early students decide what gets built next. Your gaps set the roadmap.",
-    accent: "#10B981",
+    accent: "#3388FF",
   },
 ];
 
@@ -52,7 +53,7 @@ export function SocialProofSection({ courseCount = 9 }: { courseCount?: number }
             style={{ fontSize: "clamp(36px, 6vw, 80px)" }}>
             No fake testimonials.{" "}
             <span style={{
-              background: "linear-gradient(135deg, #3388FF 0%, #A78BFA 50%, #10B981 100%)",
+              background: "linear-gradient(135deg, #3388FF 0%, #0056CE 55%, #01224F 100%)",
               WebkitBackgroundClip: "text",
               WebkitTextFillColor: "transparent",
               backgroundClip: "text",
@@ -108,7 +109,7 @@ export function SocialProofSection({ courseCount = 9 }: { courseCount?: number }
 
             <div className="mt-8 pt-6 border-t border-slate-200/70 flex items-center gap-4">
               <div className="w-12 h-12 rounded-full flex items-center justify-center text-base font-black text-white shrink-0"
-                style={{ background: "linear-gradient(135deg, #0056CE, #7C3AED)" }}>
+                style={{ background: "linear-gradient(135deg, #3388FF, #0056CE)" }}>
                 ND
               </div>
               <div>
@@ -151,7 +152,7 @@ export function SocialProofSection({ courseCount = 9 }: { courseCount?: number }
                 <div key={p.title} className="flex gap-3">
                   <div className="w-6 h-6 rounded-full flex items-center justify-center shrink-0 mt-0.5"
                     style={{ background: `${p.accent}18`, border: `1px solid ${p.accent}35` }}>
-                    <span className="text-[10px] font-black" style={{ color: p.accent }}>✓</span>
+                    <Check size={12} strokeWidth={3} style={{ color: p.accent }} aria-hidden />
                   </div>
                   <div>
                     <p className="text-sm font-bold text-white">{p.title}</p>
@@ -189,16 +190,9 @@ export function SocialProofSection({ courseCount = 9 }: { courseCount?: number }
 
         {/* Bottom CTA */}
         <div className="mt-12 sm:mt-14 flex flex-col items-center gap-4">
-          <Link
-            href="/diagnostic"
-            className="inline-flex items-center gap-2 px-8 py-4 rounded-full text-white font-bold text-sm shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all"
-            style={{
-              background: "linear-gradient(135deg, #0056CE 0%, #4F46E5 100%)",
-              boxShadow: "0 12px 32px rgba(0,86,206,0.30)",
-            }}
-          >
-            Get your free skill report →
-          </Link>
+          <PrimaryCta href="/diagnostic">
+            Get your free skill report
+          </PrimaryCta>
           <p className="text-xs text-slate-500">Free · 3 minutes · No credit card</p>
         </div>
       </div>

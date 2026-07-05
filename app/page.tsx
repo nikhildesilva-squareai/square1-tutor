@@ -1,5 +1,7 @@
 import Link from "next/link";
+import { Check } from "lucide-react";
 import { Logo } from "@/components/ui/logo";
+import { PrimaryCta } from "@/components/ui/primary-cta";
 import { createClient } from "@/lib/supabase/server";
 import { HeroSection } from "@/components/landing/HeroSection";
 import { RealityBand } from "@/components/landing/RealityBand";
@@ -183,7 +185,7 @@ export default async function Home() {
               <div key={p.label} className="text-center">
                 <div className="w-10 h-10 rounded-full mx-auto mb-4 flex items-center justify-center"
                   style={{ background: `${p.accent}15`, border: `1px solid ${p.accent}30` }}>
-                  <span className="text-sm font-black" style={{ color: p.accent }}>✓</span>
+                  <Check size={16} strokeWidth={3} style={{ color: p.accent }} aria-hidden />
                 </div>
                 <h4 className="text-sm font-bold text-slate-900 mb-2">{p.label}</h4>
                 <p className="text-xs text-slate-500 leading-relaxed">{p.desc}</p>
@@ -223,21 +225,12 @@ export default async function Home() {
           </p>
 
           <div className="flex flex-col sm:flex-row gap-3 justify-center mb-6">
-            <Link
-              href="/diagnostic"
-              className="group relative inline-flex items-center justify-center gap-3 px-10 py-5 rounded-2xl text-base lg:text-lg font-bold text-white overflow-hidden transition-all hover:-translate-y-0.5"
-              style={{
-                background: "linear-gradient(135deg, #DC2626 0%, #EF4444 50%, #F87171 100%)",
-                boxShadow: "0 16px 48px rgba(220,38,38,0.40), 0 0 0 1px rgba(255,255,255,0.10) inset",
-              }}
-            >
-              <span className="relative z-10">Get your free skill report</span>
-              <span className="relative z-10 text-xl transition-transform group-hover:translate-x-2">→</span>
-              <span className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent group-hover:translate-x-full transition-transform duration-1000" />
-            </Link>
+            <PrimaryCta href="/diagnostic" size="lg">
+              Get your free skill report
+            </PrimaryCta>
             <Link
               href="/login"
-              className="inline-flex items-center justify-center px-8 py-5 rounded-2xl text-slate-700 text-base font-semibold border border-slate-300 hover:border-slate-400 hover:bg-slate-50 transition-all"
+              className="inline-flex items-center justify-center px-8 py-5 rounded-full text-slate-700 text-base font-semibold border border-slate-300 hover:border-slate-400 hover:bg-slate-50 transition-all"
             >
               Sign in
             </Link>
@@ -252,12 +245,12 @@ export default async function Home() {
         {/* Stays deep Square 1 navy — the page anchor under the white content */}
         <footer className="relative border-t border-white/[0.06]" style={{ background: "#00183A" }}>
           <div className="max-w-6xl mx-auto px-6 sm:px-8 py-12 sm:py-16">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-10 md:gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-[1.3fr_1fr_1fr_1fr] gap-10 md:gap-8">
 
               {/* Col 1 — Brand + Social */}
               <div>
                 <Logo variant="light" size="md" />
-                <p className="mt-4 text-xs text-slate-500 leading-relaxed max-w-xs">
+                <p className="mt-4 text-xs text-slate-400 leading-relaxed max-w-xs">
                   The AI-powered learn-to-launch platform.
                   From assessment to deployed portfolio.
                 </p>
@@ -281,21 +274,40 @@ export default async function Home() {
                     )},
                   ].map((s) => (
                     <a key={s.label} href={s.href} target="_blank" rel="noopener noreferrer"
-                      className="w-11 h-11 rounded-full border border-white/[0.08] flex items-center justify-center text-slate-500 hover:text-white hover:border-white/25 transition-colors"
+                      className="w-11 h-11 rounded-full border border-white/[0.08] flex items-center justify-center text-slate-400 hover:text-white hover:border-white/25 transition-colors"
                       aria-label={s.label}>
                       {s.icon}
                     </a>
                   ))}
                 </div>
                 <div className="mt-5 flex items-center gap-2">
-                  <span className="text-[9px] tracking-widest uppercase text-slate-600 font-bold px-2 py-1 rounded border border-white/[0.08]">Australia-hosted</span>
-                  <span className="text-[9px] tracking-widest uppercase text-slate-600 font-bold px-2 py-1 rounded border border-white/[0.08]">SSL Encrypted</span>
+                  <span className="text-[10px] tracking-widest uppercase text-slate-400 font-bold px-2 py-1 rounded border border-white/[0.10]">Australia-hosted</span>
+                  <span className="text-[10px] tracking-widest uppercase text-slate-400 font-bold px-2 py-1 rounded border border-white/[0.10]">SSL Encrypted</span>
                 </div>
               </div>
 
-              {/* Col 2 — Company */}
+              {/* Col 2 — Learn (DB-driven course links) */}
               <div>
-                <h5 className="text-[10px] tracking-[0.3em] uppercase text-slate-500 font-bold mb-4">Company</h5>
+                <h5 className="text-[10px] tracking-[0.3em] uppercase text-slate-400 font-bold mb-4">Learn</h5>
+                <ul className="space-y-2.5">
+                  <li>
+                    <Link href="/diagnostic" className="text-sm text-slate-300 font-semibold hover:text-white transition-colors">
+                      Free 3-min skill check
+                    </Link>
+                  </li>
+                  {courses.map((c) => (
+                    <li key={c.slug}>
+                      <Link href={`/try/${c.slug}`} className="text-sm text-slate-400 hover:text-white transition-colors">
+                        {c.title}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              {/* Col 3 — Company */}
+              <div>
+                <h5 className="text-[10px] tracking-[0.3em] uppercase text-slate-400 font-bold mb-4">Company</h5>
                 <ul className="space-y-2.5">
                   <li><Link href="/business" className="text-sm text-slate-400 hover:text-white transition-colors">For Teams</Link></li>
                   <li><Link href="/about" className="text-sm text-slate-400 hover:text-white transition-colors">About Us</Link></li>
@@ -304,9 +316,9 @@ export default async function Home() {
                 </ul>
               </div>
 
-              {/* Col 3 — Legal */}
+              {/* Col 4 — Legal */}
               <div>
-                <h5 className="text-[10px] tracking-[0.3em] uppercase text-slate-500 font-bold mb-4">Legal</h5>
+                <h5 className="text-[10px] tracking-[0.3em] uppercase text-slate-400 font-bold mb-4">Legal</h5>
                 <ul className="space-y-2.5">
                   <li><Link href="/privacy" className="text-sm text-slate-400 hover:text-white transition-colors">Privacy Policy</Link></li>
                   <li><Link href="/terms" className="text-sm text-slate-400 hover:text-white transition-colors">Terms of Service</Link></li>
@@ -316,7 +328,7 @@ export default async function Home() {
 
             {/* Bottom bar */}
             <div className="mt-12 pt-8 border-t border-white/[0.06] flex flex-col sm:flex-row items-center justify-between gap-4">
-              <p className="text-xs text-slate-600">
+              <p className="text-xs text-slate-400">
                 © 2026 Square 1 Ai. All rights reserved.
               </p>
             </div>

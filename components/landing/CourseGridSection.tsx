@@ -3,6 +3,8 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useFocusTrap } from "@/lib/hooks/useFocusTrap";
+import { PrimaryCta } from "@/components/ui/primary-cta";
+import { CourseIcon } from "@/components/ui/course-icon";
 
 type Course = {
   id: string;
@@ -232,7 +234,10 @@ function CourseExplorer({ course, onClose }: { course: Course; onClose: () => vo
         <div className="p-6 sm:p-7" style={{ background: `linear-gradient(135deg, ${BRAND}10, #fff)` }}>
           <div className="flex items-start justify-between">
             <div>
-              <span className="text-2xl">{course.icon}</span>
+              <span className="inline-flex w-11 h-11 rounded-xl items-center justify-center"
+                style={{ background: `${course.color}15`, border: `1px solid ${course.color}30` }}>
+                <CourseIcon slug={course.slug} color={course.color} />
+              </span>
               <h3 className="mt-2 text-2xl font-black text-slate-900 leading-tight">{course.title}</h3>
               <p className="text-sm font-semibold mt-1" style={{ color: BRAND }}>
                 {meta.role} · <span style={{ color: "#10B981" }}>{meta.salary}</span>
@@ -260,11 +265,9 @@ function CourseExplorer({ course, onClose }: { course: Course; onClose: () => vo
 
           {/* Two next steps */}
           <div className="flex flex-col gap-2.5">
-            <Link href={`/try/${course.slug}`}
-              className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl text-white font-bold text-sm hover:-translate-y-0.5 transition-transform"
-              style={{ background: "linear-gradient(135deg,#0056CE,#4F46E5)", boxShadow: "0 12px 32px rgba(0,86,206,0.25)" }}>
-              Preview Lesson 1 — free →
-            </Link>
+            <PrimaryCta href={`/try/${course.slug}`}>
+              Preview Lesson 1 — free
+            </PrimaryCta>
             <Link href={`/diagnostic?subject=${course.slug}`}
               className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-bold text-sm border-2 transition-all hover:bg-slate-50"
               style={{ borderColor: `${BRAND}25`, color: "#334155" }}>
@@ -323,7 +326,7 @@ export function CourseGridSection({ courses }: { courses: Course[] }) {
             {courses.length} subjects.
             <br />
             <span style={{
-              background: "linear-gradient(135deg, #3388FF 0%, #A78BFA 50%, #10B981 100%)",
+              background: "linear-gradient(135deg, #3388FF 0%, #0056CE 55%, #01224F 100%)",
               WebkitBackgroundClip: "text",
               WebkitTextFillColor: "transparent",
               backgroundClip: "text",
@@ -356,16 +359,9 @@ export function CourseGridSection({ courses }: { courses: Course[] }) {
             Not sure which track is right for you?{" "}
             <span className="font-semibold text-slate-700">The free 3-minute skill check shows you.</span>
           </p>
-          <Link
-            href="/diagnostic"
-            className="inline-flex items-center gap-2 px-6 sm:px-7 py-3 sm:py-3.5 rounded-full text-white font-bold text-sm shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all"
-            style={{
-              background: "linear-gradient(135deg, #0056CE 0%, #4F46E5 100%)",
-              boxShadow: "0 12px 32px rgba(0,86,206,0.30)",
-            }}
-          >
-            Get your free skill report →
-          </Link>
+          <PrimaryCta href="/diagnostic">
+            Get your free skill report
+          </PrimaryCta>
         </div>
       </div>
 

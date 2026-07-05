@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Logo } from "@/components/ui/logo";
 import { DIAG_SUBJECTS as SUBJECTS } from "@/lib/diagnostic";
+import { CourseIcon } from "@/components/ui/course-icon";
 
 export default function DiagnosticPage() {
   const router = useRouter();
@@ -47,7 +48,10 @@ export default function DiagnosticPage() {
                   borderColor: `${s.color}25`,
                 }}
               >
-                <span className="text-2xl">{s.icon}</span>
+                <span className="inline-flex w-10 h-10 rounded-xl items-center justify-center"
+                  style={{ background: `${s.color}15`, border: `1px solid ${s.color}30` }}>
+                  <CourseIcon slug={s.slug} size={20} color={s.color} />
+                </span>
                 <p className="mt-2 text-sm font-bold text-slate-900 leading-tight">{s.title}</p>
                 <p className="text-[11px] font-semibold mt-0.5" style={{ color: s.color }}>{s.role}</p>
               </Link>
