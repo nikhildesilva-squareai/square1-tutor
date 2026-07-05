@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Check } from "lucide-react";
-import { FOUNDING_PRICE } from "@/lib/founding";
+import { FOUNDING_PLANS, FOUNDING_PRICE_FROM } from "@/lib/founding";
 import { PrimaryCta } from "@/components/ui/primary-cta";
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -23,7 +23,6 @@ const FOUNDING_FEATURES = [
   "Nova — an AI tutor that knows your code",
   "Every submission reviewed line-by-line",
   "Verified, shareable skill report",
-  "Founding rate locked for life",
 ];
 
 const TEAM_FEATURES = [
@@ -106,13 +105,35 @@ export function PricingSection() {
               </span>
             </div>
             <p className="relative font-black leading-none" style={{ fontSize: 40 }}>
-              {FOUNDING_PRICE ?? "Free"}
+              from {FOUNDING_PRICE_FROM}
+              <span className="text-base font-bold text-slate-400">/mo</span>
             </p>
-            <p className="relative text-xs text-slate-400 mt-1.5 mb-6">
-              {FOUNDING_PRICE
-                ? "founding rate — locked for life"
-                : "during early access — founding rate locks for life when paid plans open"}
+            <p className="relative text-xs text-slate-400 mt-1.5 mb-5">
+              founding rate — locked for life · free while early access is open
             </p>
+
+            {/* Plan rates by track length */}
+            <div className="relative rounded-2xl border border-white/10 divide-y divide-white/10 mb-6 overflow-hidden">
+              {FOUNDING_PLANS.map((p) => (
+                <div key={p.months}
+                  className="flex items-center justify-between px-4 py-2.5"
+                  style={p.popular ? { background: "rgba(51,136,255,0.10)" } : undefined}>
+                  <span className="text-sm font-semibold text-slate-300 flex items-center gap-2">
+                    {p.months}-month track
+                    {p.popular && (
+                      <span className="text-[9px] font-bold tracking-widest uppercase px-1.5 py-0.5 rounded-full"
+                        style={{ background: "rgba(51,136,255,0.18)", color: "#7EB3FF", border: "1px solid rgba(51,136,255,0.35)" }}>
+                        Most popular
+                      </span>
+                    )}
+                  </span>
+                  <span className="text-sm font-black tabular-nums text-white">
+                    {p.perMonth}<span className="text-[10px] font-semibold text-slate-400">/mo</span>
+                  </span>
+                </div>
+              ))}
+            </div>
+
             <ul className="relative space-y-2.5 flex-1">
               {FOUNDING_FEATURES.map((f) => (
                 <li key={f} className="flex items-start gap-2.5 text-sm text-slate-300">

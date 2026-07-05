@@ -1,4 +1,5 @@
 import { ChevronDown } from "lucide-react";
+import { FOUNDING_PLANS } from "@/lib/founding";
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // FAQ — answers the objections that stall signups, and doubles as an SEO
@@ -16,7 +17,7 @@ function buildFaqs(courseCount: number) {
     },
     {
       q: "Is Square 1 really free right now?",
-      a: "Yes. Cohort 01 early access is free with no credit card required. When paid plans open, founding members lock in their rate for life — it never goes up on you.",
+      a: `Yes. Cohort 01 early access is free with no credit card required. When paid plans open, founding rates are ${FOUNDING_PLANS.map((p) => `${p.perMonth}/mo on the ${p.months}-month track`).join(", ")} — and founding members lock their rate for life. It never goes up on you.`,
     },
     {
       q: "How does the AI code review actually work?",
