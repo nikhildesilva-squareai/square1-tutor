@@ -13,6 +13,7 @@ import { CourseGridSection } from "@/components/landing/CourseGridSection";
 import { InlineDiagnostic } from "@/components/landing/InlineDiagnostic";
 import { CodeReviewSlider } from "@/components/landing/CodeReviewSlider";
 import { CookieConsent } from "@/components/ui/cookie-consent";
+import { MobileStickyCta } from "@/components/landing/MobileStickyCta";
 import { WavePath } from "@/components/ui/wave-path";
 
 // ─── Interactive wavy divider between sections (bends toward the cursor) ───────
@@ -126,7 +127,7 @@ export default async function Home() {
           style={{ background: "radial-gradient(circle, #0EA5E9 0%, transparent 70%)", filter: "blur(100px)" }} />
 
         {/* ── About Square 1 Ai ───────────────────────────────────────── */}
-        <div className="relative max-w-5xl mx-auto px-6 sm:px-8 pt-24 sm:pt-32 lg:pt-40 pb-16 sm:pb-20">
+        <div className="relative max-w-5xl mx-auto px-6 sm:px-8 pt-14 sm:pt-20 lg:pt-24 pb-16 sm:pb-20">
           {/* Logo centered + large */}
           <div className="flex justify-center mb-10">
             <Logo variant="dark" size="xl" />
@@ -337,6 +338,7 @@ export default async function Home() {
       </section>
 
       <CookieConsent />
+      <MobileStickyCta />
     </main>
   );
 }

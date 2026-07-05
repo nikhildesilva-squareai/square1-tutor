@@ -660,8 +660,40 @@ function JourneyFlow() {
         </div>
       </div>
 
-      {/* ── Active step detail ────────────────────────────────── */}
-      <div className="mt-12 lg:mt-16 grid lg:grid-cols-2 gap-8 lg:gap-12 items-center lg:min-h-[280px]">
+      {/* ── Desktop: ALL five steps visible — auto-play just moves the highlight.
+             Burying 3 of 5 steps behind a carousel means most visitors never
+             see Plan/Build/Hired; the full arc must land in one glance. ──── */}
+      <div className="hidden lg:grid grid-cols-5 gap-4 mt-14">
+        {STEPS.map((s, i) => {
+          const a = FLOW_ACCENTS[i] ?? "#0056CE";
+          const isActive = i === active;
+          return (
+            <button
+              key={s.n}
+              onClick={() => go(i)}
+              className="text-left rounded-2xl border p-5 transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand/40"
+              style={
+                isActive
+                  ? { borderColor: `${a}55`, background: `${a}0A`, boxShadow: `0 12px 32px ${a}1F`, transform: "translateY(-4px)" }
+                  : { borderColor: "#E2E8F0", background: "#FFFFFF" }
+              }
+            >
+              <div className="flex items-baseline justify-between mb-3">
+                <span className="text-2xl font-black tabular-nums transition-colors duration-300"
+                  style={{ color: isActive ? a : "#CBD5E1" }}>
+                  {s.n}
+                </span>
+                <span className="text-[10px] font-semibold text-slate-500">{s.duration}</span>
+              </div>
+              <p className="text-sm font-bold text-slate-900 leading-snug mb-1.5">{s.title}</p>
+              <p className="text-xs text-slate-500 leading-relaxed">{s.desc}</p>
+            </button>
+          );
+        })}
+      </div>
+
+      {/* ── Mobile: active step detail (compact carousel) ───────── */}
+      <div className="mt-12 grid gap-8 items-center lg:hidden">
         {/* Text */}
         <div key={`t-${active}`} className="animate-fade-in-up">
           <div className="flex items-baseline gap-4 mb-4">

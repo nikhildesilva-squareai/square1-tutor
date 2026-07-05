@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { PrimaryCta } from "@/components/ui/primary-cta";
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -25,7 +25,11 @@ def get_user(user_id: str) -> str | None:
     r.raise_for_status()
     return r.json().get("name")`;
 
+// The "after" pane anchors its code to the RIGHT edge so the revealed region
+// always contains content — a left-anchored pane shows empty terminal until
+// the handle passes the code, which reads as a rendering bug.
 function CodeBlock({ code, tone }: { code: string; tone: "before" | "after" }) {
+  const after = tone === "after";
   return (
     <div className="absolute inset-0 flex flex-col">
       <div className="flex items-center gap-2 px-4 py-2.5 shrink-0" style={{ background: "#161B22" }}>
@@ -34,21 +38,51 @@ function CodeBlock({ code, tone }: { code: string; tone: "before" | "after" }) {
           <span className="w-2.5 h-2.5 rounded-full bg-[#FEBC2E]" />
           <span className="w-2.5 h-2.5 rounded-full bg-[#28C840]" />
         </div>
-        <span className="ml-2 text-[10px] font-bold tracking-widest uppercase"
-          style={{ color: tone === "after" ? "#34D399" : "#94A3B8" }}>
-          {tone === "after" ? "✓ Nova's review" : "your first draft"}
+        <span className={`text-[10px] font-bold tracking-widest uppercase ${after ? "ml-auto" : "ml-2"}`}
+          style={{ color: after ? "#34D399" : "#94A3B8" }}>
+          {after ? "✓ Nova's review" : "your first draft"}
         </span>
       </div>
       <pre className="flex-1 p-4 sm:p-5 overflow-hidden text-[12px] sm:text-[13px] leading-[1.7] font-mono whitespace-pre"
-        style={{ background: "#0D1117", color: tone === "after" ? "#E6EDF3" : "#cbd5e1" }}>
-        <code>{code}</code>
+        style={{ background: "#0D1117", color: after ? "#E6EDF3" : "#cbd5e1" }}>
+        <code className={after ? "block w-max ml-auto" : "block w-max"}>{code}</code>
       </pre>
     </div>
   );
 }
 
+const REST_POS = 55;
+
 export function CodeReviewSlider() {
-  const [pos, setPos] = useState(50);
+  const [pos, setPos] = useState(REST_POS);
+  const frameRef = useRef<HTMLDivElement>(null);
+  const interactedRef = useRef(false);
+  const nudgedRef = useRef(false);
+
+  // One-time nudge when the slider scrolls into view: the handle sweeps left
+  // and back so the affordance explains itself. Cancelled by any user input;
+  // skipped entirely under prefers-reduced-motion.
+  useEffect(() => {
+    const el = frameRef.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(([e]) => {
+      if (!e.isIntersecting || nudgedRef.current) return;
+      nudgedRef.current = true;
+      obs.disconnect();
+      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+      const start = performance.now();
+      const DURATION = 1600;
+      const tick = (now: number) => {
+        if (interactedRef.current) return;
+        const t = Math.min(1, (now - start) / DURATION);
+        setPos(REST_POS - Math.sin(t * Math.PI) * 20);
+        if (t < 1) requestAnimationFrame(tick);
+      };
+      requestAnimationFrame(tick);
+    }, { threshold: 0.6 });
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, []);
 
   return (
     <section className="relative overflow-hidden py-20 sm:py-28 px-4 sm:px-6 lg:px-8"
@@ -74,7 +108,7 @@ export function CodeReviewSlider() {
         </div>
 
         {/* Slider — code panels stay dark (IDE), framed on white */}
-        <div className="relative rounded-2xl overflow-hidden border border-slate-200 select-none"
+        <div ref={frameRef} className="relative rounded-2xl overflow-hidden border border-slate-200 select-none"
           style={{ height: 280, boxShadow: "0 24px 64px rgba(15,28,49,0.18)" }}>
           {/* Before (full, underneath) */}
           <CodeBlock code={BEFORE} tone="before" />
@@ -96,7 +130,7 @@ export function CodeReviewSlider() {
           {/* Range input drives it — bulletproof touch/mouse/keyboard */}
           <input
             type="range" min={0} max={100} value={pos}
-            onChange={(e) => setPos(Number(e.target.value))}
+            onChange={(e) => { interactedRef.current = true; setPos(Number(e.target.value)); }}
             aria-label="Drag to compare before and after code"
             className="absolute inset-0 w-full h-full opacity-0 cursor-ew-resize"
           />

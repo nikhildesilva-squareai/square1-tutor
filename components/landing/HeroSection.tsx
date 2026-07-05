@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import { Menu, X } from "lucide-react";
 import { Logo } from "@/components/ui/logo";
 import { PrimaryCta } from "@/components/ui/primary-cta";
 
@@ -263,6 +264,7 @@ function HeroProductCard() {
 
 export function HeroSection({ courseCount = 9 }: { courseCount?: number }) {
   const [goal, setGoal] = useState(0);
+  const [menuOpen, setMenuOpen] = useState(false);
   const role = GOAL_ROLES[goal];
   const BLUE_GRADIENT = "linear-gradient(135deg, #3388FF 0%, #0056CE 55%, #01224F 100%)";
 
@@ -277,7 +279,7 @@ export function HeroSection({ courseCount = 9 }: { courseCount?: number }) {
   const onCtaLeave = () => { if (ctaRef.current) ctaRef.current.style.transform = ""; };
 
   return (
-    <section className="hero-section relative min-h-screen flex flex-col overflow-hidden bg-white">
+    <section className="hero-section relative min-h-[92svh] flex flex-col overflow-hidden bg-white">
       {/* ── Soft Square 1 blue accents on white ───────────────────────────── */}
       <div className="pointer-events-none absolute -top-40 -left-40 w-[700px] h-[700px] rounded-full"
         style={{ background: "radial-gradient(circle, rgba(0,86,206,0.08) 0%, transparent 70%)", filter: "blur(90px)" }} />
@@ -306,11 +308,35 @@ export function HeroSection({ courseCount = 9 }: { courseCount?: number }) {
               Get Started
               <span className="w-2 h-2 rounded-full bg-white/70 shrink-0" />
             </Link>
-            <Link href="/login" className="sm:hidden text-[11px] font-semibold tracking-[0.12em] uppercase text-slate-500 hover:text-slate-900 transition-colors" style={{ minHeight: "unset" }}>
-              In
-            </Link>
+            {/* Mobile menu toggle */}
+            <button
+              onClick={() => setMenuOpen((o) => !o)}
+              aria-expanded={menuOpen}
+              aria-label={menuOpen ? "Close menu" : "Open menu"}
+              className="sm:hidden w-11 h-11 -mr-2 flex items-center justify-center text-slate-700"
+            >
+              {menuOpen ? <X size={22} /> : <Menu size={22} />}
+            </button>
           </div>
         </div>
+
+        {/* Mobile menu panel */}
+        {menuOpen && (
+          <div className="sm:hidden absolute top-full inset-x-0 z-40 bg-white border-b border-slate-200 shadow-[0_16px_40px_rgba(15,28,49,0.10)]">
+            <div className="px-6 py-2 flex flex-col">
+              {[
+                { href: "/business", label: "For Teams" },
+                { href: "/about",    label: "About" },
+                { href: "/login",    label: "Sign in" },
+              ].map((l) => (
+                <Link key={l.href} href={l.href} onClick={() => setMenuOpen(false)}
+                  className="py-3.5 text-sm font-semibold text-slate-700 border-b border-slate-100 last:border-0">
+                  {l.label}
+                </Link>
+              ))}
+            </div>
+          </div>
+        )}
       </nav>
 
       {/* ── HERO BODY ─────────────────────────────────────────────────────── */}

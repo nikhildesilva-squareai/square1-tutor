@@ -30,7 +30,7 @@ const FOUNDING_PERKS = [
 export function SocialProofSection({ courseCount = 9 }: { courseCount?: number }) {
   return (
     <section
-      className="relative overflow-hidden py-20 sm:py-28 lg:py-32 px-4 sm:px-6 lg:px-8"
+      className="relative overflow-hidden pt-20 sm:pt-28 lg:pt-32 pb-14 sm:pb-16 px-4 sm:px-6 lg:px-8"
       style={{
         background: `
           radial-gradient(ellipse 900px 500px at 20% 30%, rgba(0,86,206,0.08), transparent 60%),
