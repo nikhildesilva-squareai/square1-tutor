@@ -8,6 +8,8 @@ import { RealityBand } from "@/components/landing/RealityBand";
 import { ComparisonSection } from "@/components/landing/ComparisonSection";
 import { TransformSection } from "@/components/landing/TransformSection";
 import { SocialProofSection } from "@/components/landing/SocialProofSection";
+import { PricingSection } from "@/components/landing/PricingSection";
+import { FAQSection } from "@/components/landing/FAQSection";
 import { JourneyHook } from "@/components/landing/JourneyHook";
 import { CourseGridSection } from "@/components/landing/CourseGridSection";
 import { InlineDiagnostic } from "@/components/landing/InlineDiagnostic";
@@ -114,6 +116,16 @@ export default async function Home() {
 
       {/* ── 8. Honest proof — founder note + founding offer ──────────────────── */}
       <SocialProofSection courseCount={courses.length} />
+
+      <SectionWave />
+
+      {/* ── 9. Pricing — free start, founding rate locked for life ───────────── */}
+      <PricingSection />
+
+      <SectionWave />
+
+      {/* ── 10. FAQ — objections answered + FAQPage structured data ──────────── */}
+      <FAQSection courseCount={courses.length} />
 
       <SectionWave />
 
@@ -310,6 +322,8 @@ export default async function Home() {
               <div>
                 <h5 className="text-[10px] tracking-[0.3em] uppercase text-slate-400 font-bold mb-4">Company</h5>
                 <ul className="space-y-2.5">
+                  <li><Link href="/#pricing" className="text-sm text-slate-400 hover:text-white transition-colors">Pricing</Link></li>
+                  <li><Link href="/#faq" className="text-sm text-slate-400 hover:text-white transition-colors">FAQ</Link></li>
                   <li><Link href="/business" className="text-sm text-slate-400 hover:text-white transition-colors">For Teams</Link></li>
                   <li><Link href="/about" className="text-sm text-slate-400 hover:text-white transition-colors">About Us</Link></li>
                   <li><Link href="/careers" className="text-sm text-slate-400 hover:text-white transition-colors">Careers</Link></li>
