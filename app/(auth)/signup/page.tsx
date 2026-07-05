@@ -6,7 +6,7 @@
  * Compliance posture:
  * ───────────────────
  * - Essential Eight MFA: Email OTP = "something you have". OAuth = delegated
- *   identity via Google/Microsoft. Both satisfy the E8 MFA requirement.
+ *   identity via Google. Both satisfy the E8 MFA requirement.
  * - No passwords: eliminates credential stuffing, brute force, and password
  *   reuse attack surfaces entirely.
  * - Session management: Supabase handles JWT rotation + httpOnly cookies
@@ -72,17 +72,6 @@ function GoogleIcon() {
   );
 }
 
-function MicrosoftIcon() {
-  return (
-    <svg width="20" height="20" viewBox="0 0 21 21">
-      <rect x="1" y="1" width="9" height="9" fill="#F25022" />
-      <rect x="11" y="1" width="9" height="9" fill="#7FBA00" />
-      <rect x="1" y="11" width="9" height="9" fill="#00A4EF" />
-      <rect x="11" y="11" width="9" height="9" fill="#FFB900" />
-    </svg>
-  );
-}
-
 /* ─── Page ─────────────────────────────────────────────────────────────────── */
 
 export default function SignupPage() {
@@ -113,9 +102,11 @@ export default function SignupPage() {
     return () => clearInterval(id);
   }, [resendCountdown]);
 
-  /* ── OAuth handler (Google / Microsoft) ───────────────────────────────── */
+  /* ── OAuth handler (Google) ───────────────────────────────────────────── */
+  // Microsoft/Azure is intentionally absent until the provider is configured
+  // in Supabase — a visible-but-broken auth option costs signups.
 
-  async function handleOAuth(provider: "google" | "azure") {
+  async function handleOAuth(provider: "google") {
     setLoading(true);
     setError(null);
     const supabase = createClient();
@@ -342,26 +333,17 @@ export default function SignupPage() {
               </p>
             </div>
 
-            {/* OAuth buttons */}
-            <div className="space-y-2.5 mb-3">
+            {/* OAuth — Google is the primary, most reliable path */}
+            <div className="mb-3">
               <button
                 type="button"
                 onClick={() => handleOAuth("google")}
                 disabled={loading}
-                className="w-full flex items-center justify-center gap-3 h-11 rounded-lg bg-white text-slate-900 font-semibold text-sm border border-slate-200 hover:bg-slate-50 hover:border-slate-300 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full flex items-center justify-center gap-3 h-11 rounded-lg bg-white text-slate-900 font-semibold text-sm border-2 hover:bg-slate-50 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                style={{ borderColor: "rgba(0,86,206,0.35)", boxShadow: "0 4px 16px rgba(0,86,206,0.10)" }}
               >
                 <GoogleIcon />
                 Sign up with Google
-              </button>
-
-              <button
-                type="button"
-                onClick={() => handleOAuth("azure")}
-                disabled={loading}
-                className="w-full flex items-center justify-center gap-3 h-11 rounded-lg bg-white text-slate-900 font-semibold text-sm border border-slate-200 hover:bg-slate-50 hover:border-slate-300 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                <MicrosoftIcon />
-                Sign up with Microsoft
               </button>
             </div>
 

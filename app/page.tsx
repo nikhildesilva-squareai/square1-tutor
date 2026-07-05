@@ -72,7 +72,7 @@ export default async function Home() {
     <main id="main" className="overflow-x-hidden">
 
       {/* ── 1. Hero (with goal-typer) ───────────────────────────────────────── */}
-      <HeroSection />
+      <HeroSection courseCount={courses.length} />
 
       {/* ── 2. THE HOOK — outcome + proof: "Get hired as an [role]" + journey + employer view */}
       <JourneyHook />
@@ -110,7 +110,7 @@ export default async function Home() {
       <SectionWave />
 
       {/* ── 8. Honest proof — founder note + founding offer ──────────────────── */}
-      <SocialProofSection />
+      <SocialProofSection courseCount={courses.length} />
 
       <SectionWave />
 
@@ -155,9 +155,9 @@ export default async function Home() {
             <p className="text-sm sm:text-base text-slate-500 leading-relaxed max-w-2xl mx-auto">
               Traditional education gives you theory and hopes you figure out the rest.
               Bootcamps rush you through and hand you a certificate.{" "}
-              <span className="text-slate-900 font-semibold">We give you 12 deployed projects,
+              <span className="text-slate-900 font-semibold">We give you 10+ deployed projects,
               Nova — an AI tutor that knows your code — and a skill report that proves you&apos;re
-              ready.</span> That&apos;s the difference.
+              ready. </span>That&apos;s the difference.
             </p>
           </div>
 
@@ -166,7 +166,7 @@ export default async function Home() {
             {[
               {
                 label: "Proof over certificates",
-                desc: "12 real projects. Live on GitHub. Run the code, not a PDF.",
+                desc: "10+ real projects. Live on GitHub. Run the code, not a PDF.",
                 accent: "#3388FF",
               },
               {
@@ -244,7 +244,7 @@ export default async function Home() {
           </div>
 
           <p className="text-[10px] text-slate-600 tracking-widest uppercase">
-            12 subjects · 12 projects per course · AI graded · Career-mapped
+            {courses.length} subjects · 10+ projects per course · AI graded · Career-mapped
           </p>
         </div>
 

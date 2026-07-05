@@ -83,7 +83,7 @@ const STEPS = [
   {
     n:        "04",
     label:    "Build",
-    title:    "10–12 real, deployable projects",
+    title:    "10+ real, deployable projects",
     desc:     "Not toy apps. Real-world projects that prove you can do the job. Every one shipped to GitHub with a live URL.",
     duration: "3–9 months",
     isFinal:  false,
@@ -398,12 +398,12 @@ function ClosingCTA() {
         </h3>
 
         <p className="text-sm sm:text-base text-slate-600 max-w-sm mx-auto mb-7" style={reveal(2)}>
-          30 minutes to find out where you stand. Zero pressure. Free forever.
+          3 minutes to find out where you stand. Zero pressure. Free forever.
         </p>
 
         {/* Ticked meta */}
         <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 mb-8" style={reveal(3)}>
-          {["20 questions", "AI-graded", "Instant skill report"].map((t) => (
+          {["5 quick questions", "No sign-up", "Instant skill snapshot"].map((t) => (
             <span key={t} className="inline-flex items-center gap-1.5 text-sm font-medium text-slate-700">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#0056CE" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
               {t}
@@ -431,7 +431,7 @@ function ClosingCTA() {
           {/* Quiet credibility */}
           <p className="mt-3 inline-flex items-center gap-1.5 text-xs text-slate-500">
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /></svg>
-            No sign-up to start · results in 30 min · free, no card
+            Instant results · then a full 20-question assessment inside — free, no card
           </p>
         </div>
       </div>

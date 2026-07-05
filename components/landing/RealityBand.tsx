@@ -165,7 +165,7 @@ export function RealityBand() {
         {/* Resolution — slim one-liner (CTAs live in the hook above) */}
         <p className="mt-9 text-center text-sm sm:text-base text-slate-600 leading-relaxed max-w-2xl mx-auto">
           Square 1 Ai closes that gap with{" "}
-          <span className="font-bold text-slate-900">10–12 deployed, code-reviewed projects employers can actually click on.</span>
+          <span className="font-bold text-slate-900">10+ deployed, code-reviewed projects employers can actually click on.</span>
         </p>
       </div>
     </section>

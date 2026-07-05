@@ -145,7 +145,7 @@ export default async function DashboardPage({ searchParams }: DashboardProps) {
             </div>
             <h3 className="text-lg font-bold text-ink mb-2">Pick your course</h3>
             <p className="text-sm text-ink-muted mb-5 leading-relaxed">
-              12 subjects. Each one leads to a real career with a real salary.
+              Every subject leads to a real career with a real salary.
             </p>
             <Link href="/courses"
               className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold text-white bg-brand hover:bg-brand/90 transition-all">

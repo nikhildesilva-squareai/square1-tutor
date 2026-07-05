@@ -33,7 +33,7 @@ const accentText = {
 // ─── The ecosystem pillars (blue family + honest status) ──────────────────────
 const ECOSYSTEM = [
   { n: "01", title: "AI assessment & skill mapping", desc: "A 30-minute test across MCQ, short answer, and real code. AI grades everything and maps your skills topic by topic — strengths, gaps, and a personalised plan.", accent: "#3388FF", status: "live" },
-  { n: "02", title: "On-demand courses", desc: "Self-paced, AI-enhanced courses across 12 subjects. Theory, coding challenges, and real projects — 45 minutes a day. AI grades every line of code you write.", accent: "#0EA5E9", status: "building" },
+  { n: "02", title: "On-demand courses", desc: "Self-paced, AI-enhanced courses across every subject we teach. Theory, coding challenges, and real projects — 45 minutes a day. AI grades every line of code you write.", accent: "#0EA5E9", status: "building" },
   { n: "03", title: "Live courses & workshops", desc: "Instructor-led cohort sessions with real-time AI assistance. Weekly live workshops, Q&A, and pair programming — the energy of a classroom, the intelligence of AI.", accent: "#0056CE", status: "coming" },
   { n: "04", title: "Community", desc: "A global network of learners, builders, and mentors. Peer code reviews, study groups, accountability partners, and a space where you're never learning alone.", accent: "#3388FF", status: "coming" },
   { n: "05", title: "Competitions & hackathons", desc: "Monthly AI-judged coding competitions and team hackathons. Build under pressure, win recognition, and add real results to your portfolio.", accent: "#0EA5E9", status: "coming" },
@@ -53,7 +53,7 @@ const AI_FEATURES = [
   { title: "AI that grades your code", desc: "Not multiple choice. Claude reads every line of your code and tells you exactly what's wrong and how to fix it.", accent: "#0056CE", tag: "Code" },
   { title: "AI that knows your level", desc: "The 30-minute assessment maps your skills topic by topic. Your plan starts where YOU are — not where a curriculum assumes.", accent: "#0EA5E9", tag: "Skill map" },
   { title: "AI that adapts in real time", desc: "Struggling with RAG systems? Nova adjusts. Breezing through APIs? It accelerates. Every session is personalised.", accent: "#3388FF", tag: "Adaptive" },
-  { title: "AI that proves you're ready", desc: "Your portfolio score, skill report, and 12 deployed projects tell employers everything — without a single interview question.", accent: "#19A65F", tag: "Portfolio" },
+  { title: "AI that proves you're ready", desc: "Your portfolio score, skill report, and 10+ deployed projects tell employers everything — without a single interview question.", accent: "#19A65F", tag: "Portfolio" },
 ];
 
 // ─── How it works — 3 steps ───────────────────────────────────────────────────
@@ -62,10 +62,10 @@ const STEPS = [
     desc: "A 30-minute AI assessment maps every skill — strengths, gaps, and a plan that starts where you actually are.",
     icon: <><path d="M9 11l3 3L22 4" /><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11" /></> },
   { n: "2", title: "Build & get graded", accent: "#0056CE",
-    desc: "Self-paced projects across 12 subjects. Nova grades every line of code you write — and shows you the fix.",
+    desc: "Self-paced projects across every subject. Nova grades every line of code you write — and shows you the fix.",
     icon: <><polyline points="16 18 22 12 16 6" /><polyline points="8 6 2 12 8 18" /></> },
   { n: "3", title: "Ship & get hired", accent: "#01224F",
-    desc: "Finish with 12 deployed projects and a verifiable skill report you put straight in front of employers.",
+    desc: "Finish with 10+ deployed projects and a verifiable skill report you put straight in front of employers.",
     icon: <><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 00-2.91-.09z" /><path d="M12 15l-3-3a22 22 0 012-3.95A12.88 12.88 0 0122 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 01-4 2z" /></> },
 ];
 

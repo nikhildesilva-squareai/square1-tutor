@@ -247,7 +247,7 @@ function HeroProductCard() {
       <div className="hidden sm:flex absolute -top-5 -right-4 items-center gap-2 rounded-2xl bg-white border border-slate-200 px-3.5 py-2.5"
         style={{ boxShadow: "0 12px 32px rgba(15,28,49,0.12)" }}>
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#0056CE" strokeWidth="2.5" strokeLinecap="round"><circle cx="12" cy="12" r="9" /><polyline points="12 7 12 12 15 14" /></svg>
-        <p className="text-[11px] font-bold text-slate-900">30-min assessment</p>
+        <p className="text-[11px] font-bold text-slate-900">3-min skill check</p>
       </div>
       <div className="hidden sm:flex absolute -bottom-5 -left-5 items-center gap-2 rounded-2xl bg-white border border-slate-200 px-3.5 py-2.5"
         style={{ boxShadow: "0 12px 32px rgba(15,28,49,0.12)" }}>
@@ -260,7 +260,7 @@ function HeroProductCard() {
   );
 }
 
-export function HeroSection() {
+export function HeroSection({ courseCount = 9 }: { courseCount?: number }) {
   const [goal, setGoal] = useState(0);
   const role = GOAL_ROLES[goal];
   const BLUE_GRADIENT = "linear-gradient(135deg, #3388FF 0%, #0056CE 55%, #01224F 100%)";
@@ -334,7 +334,7 @@ export function HeroSection() {
 
           <p className="text-sm sm:text-base text-slate-600 leading-relaxed mb-6 max-w-md">
             A degree alone won&apos;t get you hired in 2026 — deployed, code-reviewed
-            projects will. Get assessed, get a personalised plan, and build 10–12 real
+            projects will. Get assessed, get a personalised plan, and build 10+ real
             projects you can put in front of any employer.
           </p>
 
@@ -393,9 +393,9 @@ export function HeroSection() {
 
           {/* Mini trust bar */}
           <div className="mt-8 flex items-center gap-4 text-[10px] text-slate-500 uppercase tracking-widest font-semibold">
-            <span>12 Subjects</span>
+            <span>{courseCount} Subjects</span>
             <span className="w-1 h-1 rounded-full bg-slate-300" />
-            <span>10–12 Projects</span>
+            <span>10+ Projects</span>
             <span className="w-1 h-1 rounded-full bg-slate-300" />
             <span>Public Proof</span>
           </div>

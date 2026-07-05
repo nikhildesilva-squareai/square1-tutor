@@ -24,6 +24,7 @@ type CourseMeta = {
 };
 
 const META: Record<string, CourseMeta> = {
+  "agentic-ai":              { role: "AI Engineer",            salary: "$130–200k", projects: ["Customer Service Agent", "Code Generation Assistant", "Multi-Agent Orchestrator"] },
   "generative-ai":           { role: "AI Engineer",            salary: "$130–200k", projects: ["AI Chatbot", "RAG Pipeline", "Research Agent"] },
   "machine-learning":        { role: "ML Engineer",            salary: "$140–220k", projects: ["House Price Predictor", "Image Classifier", "Fraud Detector"] },
   "artificial-intelligence": { role: "AI Engineer",            salary: "$130–200k", projects: ["Pathfinding Visualiser", "Game AI", "Decision Engine"] },
@@ -319,7 +320,7 @@ export function CourseGridSection({ courses }: { courses: Course[] }) {
           </span>
           <h2 className="mt-3 sm:mt-4 font-black tracking-tight text-slate-900 leading-[0.95]"
             style={{ fontSize: "clamp(28px, 6vw, 80px)" }}>
-            9 subjects.
+            {courses.length} subjects.
             <br />
             <span style={{
               background: "linear-gradient(135deg, #3388FF 0%, #A78BFA 50%, #10B981 100%)",

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { FOUNDING_PRICE } from "@/lib/founding";
 
 // ─── The 4 money-shot comparisons ─────────────────────────────────────────────
 type Comparison = {
@@ -18,9 +19,13 @@ type Comparison = {
 };
 
 const COMPARISONS: Comparison[] = [
-  { category: "Cost", oldValue: "$15,000+", oldNumber: 15000, oldPrefix: "$", oldSuffix: "+", oldLabel: "bootcamp tuition", newValue: "$0", newNumber: 0, newPrefix: "$", newLabel: "free assessment" },
+  // Cost: once FOUNDING_PRICE is set (lib/founding.ts) this shows the real
+  // founding rate — an honest like-for-like against bootcamp tuition.
+  FOUNDING_PRICE
+    ? { category: "Cost", oldValue: "$15,000+", oldNumber: 15000, oldPrefix: "$", oldSuffix: "+", oldLabel: "bootcamp tuition", newValue: FOUNDING_PRICE, newLabel: "founding rate — locked for life" }
+    : { category: "Cost", oldValue: "$15,000+", oldNumber: 15000, oldPrefix: "$", oldSuffix: "+", oldLabel: "bootcamp tuition", newValue: "$0", newNumber: 0, newPrefix: "$", newLabel: "to start — free assessment" },
   { category: "Time to job-ready", oldValue: "3 years", oldNumber: 3, oldSuffix: " yrs", oldLabel: "tutorials, alone", newValue: "6 months", newNumber: 6, newSuffix: " mo", newLabel: "one focused track" },
-  { category: "Real projects deployed", oldValue: "2", oldNumber: 2, oldLabel: "toy apps · maybe", newValue: "12", newNumber: 12, newLabel: "live on GitHub" },
+  { category: "Real projects deployed", oldValue: "2", oldNumber: 2, oldLabel: "toy apps · maybe", newValue: "10+", newNumber: 10, newSuffix: "+", newLabel: "live on GitHub" },
   { category: "Code feedback", oldValue: "0", oldNumber: 0, oldLabel: "you guess", newValue: "Every line", newLabel: "AI-graded by Claude" },
 ];
 
@@ -144,7 +149,7 @@ export function ComparisonSection() {
         <div className="text-center mt-10 sm:mt-14">
           <p className="text-base sm:text-lg text-slate-600 font-medium max-w-xl mx-auto leading-relaxed">
             You can keep grinding the old way for years.{" "}
-            <span className="text-slate-900 font-bold">Or you can take 30 minutes.</span>
+            <span className="text-slate-900 font-bold">Or you can take 3 minutes.</span>
           </p>
         </div>
       </div>

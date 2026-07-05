@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { FOUNDING_PRICE } from "@/lib/founding";
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // Honest Proof — founder note + founding student offer.
@@ -9,7 +10,7 @@ import Link from "next/link";
 
 const FOUNDING_PERKS = [
   {
-    title: "Founding pricing, locked",
+    title: FOUNDING_PRICE ? `Founding pricing — ${FOUNDING_PRICE}, locked` : "Founding pricing, locked",
     desc:  "Whatever you pay now is your price for life — it never goes up on you.",
     accent: "#3388FF",
   },
@@ -25,7 +26,7 @@ const FOUNDING_PERKS = [
   },
 ];
 
-export function SocialProofSection() {
+export function SocialProofSection({ courseCount = 9 }: { courseCount?: number }) {
   return (
     <section
       className="relative overflow-hidden py-20 sm:py-28 lg:py-32 px-4 sm:px-6 lg:px-8"
@@ -171,8 +172,8 @@ export function SocialProofSection() {
         {/* Bottom — factual stats row */}
         <div className="mt-12 sm:mt-16 grid grid-cols-2 sm:grid-cols-4 gap-6 max-w-3xl mx-auto text-center">
           {[
-            { value: "12",   label: "projects per student" },
-            { value: "12",   label: "career paths" },
+            { value: "10+",  label: "projects per student" },
+            { value: String(courseCount), label: "career paths" },
             { value: "45",   label: "minutes per day" },
             { value: "100%", label: "code, zero videos" },
           ].map((s) => (
@@ -198,7 +199,7 @@ export function SocialProofSection() {
           >
             Get your free skill report →
           </Link>
-          <p className="text-xs text-slate-500">Free · 30 minutes · No credit card</p>
+          <p className="text-xs text-slate-500">Free · 3 minutes · No credit card</p>
         </div>
       </div>
     </section>
