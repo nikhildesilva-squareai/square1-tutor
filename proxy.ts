@@ -13,6 +13,7 @@ const PUBLIC_PATHS = [
   "/business",
   "/careers",
   "/contact",
+  "/research",
   "/api/auth/callback",
   "/api/onboard",
   "/portfolio/",
@@ -85,6 +86,6 @@ export async function proxy(request: NextRequest) {
 export const config = {
   matcher: [
     // Skip Next internals, favicon, all images/videos/audio in /public
-    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|mp4|webm|mov|m4a|mp3|wav|ogg|woff|woff2|ttf|otf)$).*)",
+    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|mp4|webm|mov|m4a|mp3|wav|ogg|woff|woff2|ttf|otf|pdf)$).*)",
   ],
 };
