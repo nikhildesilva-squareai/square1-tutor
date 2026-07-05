@@ -295,6 +295,9 @@ export function HeroSection({ courseCount = 9 }: { courseCount?: number }) {
             <Link href="/business" className="hidden sm:block text-[11px] font-semibold tracking-[0.12em] uppercase text-slate-500 hover:text-slate-900 transition-colors" style={{ minHeight: "unset" }}>
               For Teams
             </Link>
+            <Link href="/research" className="hidden sm:block text-[11px] font-semibold tracking-[0.12em] uppercase text-slate-500 hover:text-slate-900 transition-colors" style={{ minHeight: "unset" }}>
+              Research
+            </Link>
             <Link href="/about" className="hidden sm:block text-[11px] font-semibold tracking-[0.12em] uppercase text-slate-500 hover:text-slate-900 transition-colors" style={{ minHeight: "unset" }}>
               About
             </Link>
@@ -326,6 +329,7 @@ export function HeroSection({ courseCount = 9 }: { courseCount?: number }) {
             <div className="px-6 py-2 flex flex-col">
               {[
                 { href: "/business", label: "For Teams" },
+                { href: "/research", label: "Research" },
                 { href: "/about",    label: "About" },
                 { href: "/login",    label: "Sign in" },
               ].map((l) => (

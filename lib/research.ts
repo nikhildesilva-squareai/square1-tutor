@@ -40,18 +40,9 @@ export const RESEARCH_ARTICLES: ResearchArticle[] = [
     slug: "ai-fluency-for-educators",
     title: "AI Fluency for Educators",
     description:
-      "A practical framework for teachers building AI literacy: what educators need to understand about modern AI systems, and how to fold that fluency into classroom practice.",
+      "The 4D framework — delegation, description, discernment, diligence — plus a systematic review of ten studies on how teachers build AI fluency while keeping human judgment central to the classroom.",
     topic: "Education",
     pdf: "/research/ai-fluency-for-educators.pdf",
-    published: "2026-07-06",
-  },
-  {
-    slug: "ai-cloud-infrastructure",
-    title: "AI-Optimised Cloud Infrastructure",
-    description:
-      "How AI workloads are reshaping cloud architecture — from compute and orchestration choices to the cost and scaling trade-offs of training and serving models in production.",
-    topic: "Cloud & Infrastructure",
-    pdf: "/research/ai-cloud-infrastructure.pdf",
     published: "2026-07-06",
   },
   {
@@ -109,12 +100,12 @@ export const RESEARCH_ARTICLES: ResearchArticle[] = [
     published: "2026-07-06",
   },
   {
-    slug: "autonomous-agent-loops",
-    title: "Autonomous Agent Loops",
+    slug: "ai-autonomous-loops-mineral-processing",
+    title: "AI-Autonomous Loops in Mineral Processing",
     description:
-      "Research on agents that plan, act, observe, and re-plan without a human in every loop — how autonomous cycles are built, where they break, and how to bound them safely.",
-    topic: "LLMs & Agents",
-    pdf: "/research/autonomous-agent-loops.pdf",
+      "How a digital bridge between geological models and plant hardware — hosted in a digital twin — enables real-time ore sorting and dynamic filtration, cutting energy use and improving water circularity in mining.",
+    topic: "Industry & Society",
+    pdf: "/research/ai-autonomous-loops-mineral-processing.pdf",
     published: "2026-07-06",
   },
   {

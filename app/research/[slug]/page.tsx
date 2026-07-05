@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { Download } from "lucide-react";
 import { Logo } from "@/components/ui/logo";
 import { PrimaryCta } from "@/components/ui/primary-cta";
 import { RESEARCH_ARTICLES, getArticle } from "@/lib/research";
+import { getArticleHtml } from "@/lib/research-content";
 
 const BASE = "https://square1-tutor.vercel.app";
 
@@ -40,6 +40,7 @@ export default async function ResearchArticlePage(
   const article = getArticle(slug);
   if (!article) notFound();
 
+  const body = getArticleHtml(article.slug);
   const related = RESEARCH_ARTICLES
     .filter((a) => a.topic === article.topic && a.slug !== article.slug)
     .slice(0, 3);
@@ -54,9 +55,9 @@ export default async function ResearchArticlePage(
         </Link>
       </header>
 
-      <main className="max-w-4xl mx-auto px-6 sm:px-8 pb-24">
+      <main className="max-w-3xl mx-auto px-6 sm:px-8 pb-24">
         {/* Article header */}
-        <div className="pt-8 sm:pt-12 mb-8">
+        <div className="pt-8 sm:pt-12 mb-10">
           <span className="text-[9px] tracking-[0.2em] uppercase font-bold px-2 py-1 rounded-full"
             style={{ background: "rgba(0,86,206,0.07)", color: "#0056CE" }}>
             {article.topic}
@@ -65,10 +66,10 @@ export default async function ResearchArticlePage(
             style={{ fontSize: "clamp(28px, 4.5vw, 52px)" }}>
             {article.title}
           </h1>
-          <p className="mt-4 text-base text-slate-600 leading-relaxed max-w-2xl">
+          <p className="mt-4 text-base sm:text-lg text-slate-600 leading-relaxed">
             {article.description}
           </p>
-          <div className="mt-5 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-slate-500">
+          <div className="mt-5 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-slate-500 pb-6 border-b border-slate-200">
             <span className="font-semibold text-slate-700">Square 1 AI Research Team</span>
             <span className="w-1 h-1 rounded-full bg-slate-300" />
             <time dateTime={article.published}>
@@ -76,36 +77,29 @@ export default async function ResearchArticlePage(
                 year: "numeric", month: "long", day: "numeric", timeZone: "UTC",
               })}
             </time>
-            <span className="w-1 h-1 rounded-full bg-slate-300" />
-            <a href={article.pdf} download
-              className="inline-flex items-center gap-1.5 font-bold hover:underline" style={{ color: "#0056CE" }}>
-              <Download size={13} aria-hidden /> Download PDF
-            </a>
+            {body && (
+              <>
+                <span className="w-1 h-1 rounded-full bg-slate-300" />
+                <span>{body.readingMinutes} min read</span>
+              </>
+            )}
           </div>
         </div>
 
-        {/* Inline PDF (with graceful fallback on mobile browsers without a viewer) */}
-        <object
-          data={article.pdf}
-          type="application/pdf"
-          className="w-full rounded-2xl border border-slate-200"
-          style={{ height: "75vh", boxShadow: "0 16px 48px rgba(15,28,49,0.10)" }}
-          aria-label={`${article.title} — full paper`}
-        >
-          <div className="flex flex-col items-center justify-center gap-4 py-20 px-6 text-center rounded-2xl bg-slate-50">
-            <p className="text-sm text-slate-600 max-w-sm">
-              Your browser can&apos;t display the PDF inline — download the full paper instead.
-            </p>
-            <a href={article.pdf} download
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-full text-sm font-bold text-white"
-              style={{ background: "linear-gradient(135deg, #3388FF 0%, #0056CE 55%, #01224F 100%)" }}>
-              <Download size={15} aria-hidden /> Download “{article.title}”
-            </a>
-          </div>
-        </object>
+        {/* Full article body — server-rendered from the markdown source */}
+        {body ? (
+          <article
+            className="research-prose"
+            dangerouslySetInnerHTML={{ __html: body.html }}
+          />
+        ) : (
+          <p className="text-sm text-slate-600">
+            The full text of this paper is being prepared — check back shortly.
+          </p>
+        )}
 
         {/* CTA — research readers are exactly the learners we want */}
-        <div className="mt-12 rounded-3xl border border-slate-200 p-8 text-center"
+        <div className="mt-14 rounded-3xl border border-slate-200 p-8 text-center"
           style={{ background: "linear-gradient(135deg, rgba(0,86,206,0.05) 0%, #FFFFFF 60%)" }}>
           <h2 className="text-xl sm:text-2xl font-black text-slate-900 mb-2">
             Want to build systems like this?
@@ -151,13 +145,9 @@ export default async function ResearchArticlePage(
             description: article.description,
             datePublished: article.published,
             url: `${BASE}/research/${article.slug}`,
+            ...(body ? { wordCount: body.wordCount } : {}),
             author: { "@type": "Organization", name: "Square 1 AI Research Team", url: BASE },
             publisher: { "@type": "Organization", name: "Square 1 AI", url: BASE },
-            encoding: {
-              "@type": "MediaObject",
-              contentUrl: `${BASE}${article.pdf}`,
-              encodingFormat: "application/pdf",
-            },
           }),
         }}
       />

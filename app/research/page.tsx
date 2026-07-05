@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Logo } from "@/components/ui/logo";
 import { RESEARCH_ARTICLES } from "@/lib/research";
+import { getReadingMinutes } from "@/lib/research-content";
 
 const BASE = "https://square1-tutor.vercel.app";
 
@@ -76,9 +77,14 @@ export default function ResearchIndexPage() {
                 {a.title}
               </h2>
               <p className="text-sm text-slate-600 leading-relaxed flex-1">{a.description}</p>
-              <span className="mt-5 inline-flex items-center gap-1.5 text-xs font-bold" style={{ color: "#0056CE" }}>
-                Read the paper
-                <span className="transition-transform group-hover:translate-x-1" aria-hidden>→</span>
+              <span className="mt-5 flex items-center justify-between text-xs">
+                <span className="inline-flex items-center gap-1.5 font-bold" style={{ color: "#0056CE" }}>
+                  Read the article
+                  <span className="transition-transform group-hover:translate-x-1" aria-hidden>→</span>
+                </span>
+                {getReadingMinutes(a.slug) && (
+                  <span className="text-slate-400 font-medium">{getReadingMinutes(a.slug)} min read</span>
+                )}
               </span>
             </Link>
           ))}
