@@ -8,6 +8,12 @@ import { getArticleHtml } from "@/lib/research-content";
 
 const BASE = "https://square1-tutor.vercel.app";
 
+// Articles are fully known at build time (registry + content files ship with
+// the build), so reject unknown slugs at the routing layer — this returns a
+// real 404 status instead of the soft-404 (200 + not-found UI) that streaming
+// produces once the root loading.tsx has flushed the response shell.
+export const dynamicParams = false;
+
 export function generateStaticParams() {
   return RESEARCH_ARTICLES.map((a) => ({ slug: a.slug }));
 }
