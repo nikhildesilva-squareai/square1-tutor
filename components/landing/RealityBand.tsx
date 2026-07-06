@@ -175,8 +175,8 @@ export function RealityBand() {
 
         <p className="mt-5 text-center text-sm sm:text-base text-slate-600 leading-relaxed max-w-2xl mx-auto">
           Hundreds of applications, no callbacks — it&apos;s not a you problem, it&apos;s a{" "}
-          <span className="text-slate-900 font-semibold">proof problem</span>. Employers stopped
-          hiring on credentials and started hiring on what you can show.
+          <span className="text-slate-900 font-semibold">proof problem</span>. Your degree gets you
+          shortlisted — <span className="text-slate-900 font-semibold">deployed proof gets you picked</span>.
         </p>
 
         {/* ── Two-candidates toggle — the market never changes, the candidate does ── */}

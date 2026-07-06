@@ -130,7 +130,7 @@ function DesktopCourseCard({
   return (
     <button
       onClick={() => onSelect(course)}
-      className="relative group rounded-2xl p-6 lg:p-7 transition-all duration-500 will-change-transform overflow-hidden block w-full text-left hover:-translate-y-1"
+      className="relative group rounded-2xl p-6 lg:p-7 xl:p-5 transition-all duration-500 will-change-transform overflow-hidden block w-full text-left hover:-translate-y-1"
       style={{
         background: "#FFFFFF",
         border: "1.5px solid #E2E8F0",
@@ -141,7 +141,7 @@ function DesktopCourseCard({
       }}
     >
       {/* Top badge */}
-      <div className="relative flex items-center justify-between mb-5">
+      <div className="relative flex items-center justify-between mb-5 xl:mb-3">
         <div className="flex items-center gap-2">
           <span className="w-1.5 h-1.5 rounded-full" style={{ background: BRAND }} />
           <span className="text-[10px] tracking-[0.25em] uppercase font-bold" style={{ color: BRAND }}>
@@ -157,33 +157,33 @@ function DesktopCourseCard({
       </div>
 
       {/* Course title */}
-      <h3 className="relative text-2xl lg:text-3xl font-black text-slate-900 leading-tight mb-2"
+      <h3 className="relative text-2xl lg:text-3xl xl:text-xl font-black text-slate-900 leading-tight mb-2"
         style={{ letterSpacing: "-0.02em" }}>
         {course.title}
       </h3>
 
       {/* Blurb */}
-      <p className="relative text-xs sm:text-sm text-slate-600 mb-5 leading-relaxed line-clamp-2">
+      <p className="relative text-xs sm:text-sm xl:text-xs text-slate-600 mb-5 xl:mb-3.5 leading-relaxed line-clamp-2">
         {course.description}
       </p>
 
       {/* Sample projects */}
-      <div className="relative space-y-1.5 mb-5">
+      <div className="relative space-y-1.5 mb-5 xl:mb-3.5">
         {meta.projects.map((p, i) => (
           <div
             key={p}
-            className="flex items-center gap-2.5 px-3 py-2 rounded-lg bg-slate-50/80 border border-slate-200/80"
+            className="flex items-center gap-2.5 xl:gap-2 px-3 py-2 xl:px-2.5 xl:py-1.5 rounded-lg bg-slate-50/80 border border-slate-200/80"
           >
             <span className="text-[9px] font-mono font-bold tabular-nums" style={{ color: BRAND }}>
               {String(i + 1).padStart(2, "0")}
             </span>
-            <span className="text-xs sm:text-sm font-semibold text-slate-700">{p}</span>
+            <span className="text-xs sm:text-sm xl:text-xs font-semibold text-slate-700 truncate">{p}</span>
           </div>
         ))}
       </div>
 
       {/* Schedule line */}
-      <div className="relative flex items-center gap-3 mb-4 text-[10px] text-slate-500">
+      <div className="relative flex items-center gap-3 mb-4 xl:mb-3 text-[10px] text-slate-500">
         <span><span className="font-bold text-slate-700 tabular-nums">{course.total_lessons}</span> lessons</span>
         <span className="w-0.5 h-0.5 rounded-full bg-slate-300" />
         <span><span className="font-bold text-slate-700 tabular-nums">{course.total_projects}</span> projects</span>
@@ -315,7 +315,7 @@ export function CourseGridSection({ courses }: { courses: Course[] }) {
       <div className="hidden sm:block pointer-events-none absolute bottom-0 right-1/4 w-[600px] h-[500px] rounded-full opacity-25 animate-blob-2"
         style={{ background: "radial-gradient(circle, rgba(14,165,233,0.12) 0%, transparent 70%)", filter: "blur(90px)" }} />
 
-      <div className="relative max-w-6xl mx-auto">
+      <div className="relative max-w-7xl mx-auto">
         {/* Heading — tighter on mobile */}
         <div className="text-center mb-8 sm:mb-16">
           <span className="text-[10px] sm:text-[11px] tracking-[0.35em] uppercase text-slate-500 font-bold">
@@ -347,7 +347,8 @@ export function CourseGridSection({ courses }: { courses: Course[] }) {
         </div>
 
         {/* ── DESKTOP: Full rich card grid (hidden on small screens) ──────── */}
-        <div className="hidden sm:grid sm:grid-cols-2 lg:grid-cols-3 gap-5 lg:gap-6">
+        {/* 10 courses → xl shows 5 across = two clean rows (no orphan card) */}
+        <div className="hidden sm:grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-5 lg:gap-6 xl:gap-4">
           {courses.map((course, i) => (
             <DesktopCourseCard key={course.id} course={course} index={i} isVisible={visible} onSelect={setSelected} />
           ))}

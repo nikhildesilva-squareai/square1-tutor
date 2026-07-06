@@ -3,10 +3,11 @@ import { Check } from "lucide-react";
 import { Logo } from "@/components/ui/logo";
 import { PrimaryCta } from "@/components/ui/primary-cta";
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
+import { FREE_ACCESS_CAP, freeWindowOpen } from "@/lib/free-access";
 import { HeroSection } from "@/components/landing/HeroSection";
 import { RealityBand } from "@/components/landing/RealityBand";
 import { ComparisonSection } from "@/components/landing/ComparisonSection";
-import { TransformSection } from "@/components/landing/TransformSection";
 import { SocialProofSection } from "@/components/landing/SocialProofSection";
 import { PricingSection } from "@/components/landing/PricingSection";
 import { FAQSection } from "@/components/landing/FAQSection";
@@ -68,16 +69,33 @@ const FALLBACK_COURSES: CourseRow[] = [
   { id: "9",  slug: "ai-product-management",   title: "AI Product Management",  description: "Ship AI products — strategy, roadmapping, and go-to-market.",  icon: "📋", color: "#0EA5E9", total_lessons: 40, total_projects: 10, status: "active" },
 ];
 
+// How many of the 100 free early-access seats are still open. Null (→ hidden
+// in the UI) when the window is closed or the count can't be read — the
+// counter must never show a made-up number.
+async function getFreeSeatsLeft(): Promise<{ left: number; cap: number } | null> {
+  try {
+    if (!freeWindowOpen()) return null;
+    const admin = createAdminClient();
+    const { count } = await admin
+      .from("free_trial_claims")
+      .select("student_id", { count: "exact", head: true });
+    if (count == null) return null;
+    return { left: Math.max(0, FREE_ACCESS_CAP - count), cap: FREE_ACCESS_CAP };
+  } catch {
+    return null;
+  }
+}
+
 // ─── PAGE ─────────────────────────────────────────────────────────────────────
 export default async function Home() {
-  const dbCourses = await getCourses();
-  const courses   = dbCourses.length > 0 ? dbCourses : FALLBACK_COURSES;
+  const [dbCourses, seats] = await Promise.all([getCourses(), getFreeSeatsLeft()]);
+  const courses = dbCourses.length > 0 ? dbCourses : FALLBACK_COURSES;
 
   return (
     <main id="main" className="overflow-x-hidden">
 
       {/* ── 1. Hero (with goal-typer) ───────────────────────────────────────── */}
-      <HeroSection courseCount={courses.length} />
+      <HeroSection courseCount={courses.length} seats={seats} />
 
       {/* ── 2. THE HOOK — outcome + proof: "Get hired as an [role]" + journey + employer view */}
       <JourneyHook />
@@ -99,12 +117,7 @@ export default async function Home() {
 
       <SectionWave />
 
-      {/* ── 6. Before → after: the learner's six-month transformation ─────────── */}
-      <TransformSection />
-
-      <SectionWave />
-
-      {/* ── 7. Why Square 1 beats everything else ────────────────────────────── */}
+      {/* ── 6. Why Square 1 beats everything else ────────────────────────────── */}
       <ComparisonSection />
 
       <SectionWave />
@@ -115,7 +128,7 @@ export default async function Home() {
       <SectionWave />
 
       {/* ── 8. Honest proof — founder note + founding offer ──────────────────── */}
-      <SocialProofSection courseCount={courses.length} />
+      <SocialProofSection courseCount={courses.length} seats={seats} />
 
       <SectionWave />
 
@@ -353,7 +366,7 @@ export default async function Home() {
       </section>
 
       <CookieConsent />
-      <MobileStickyCta />
+      <MobileStickyCta seats={seats} />
     </main>
   );
 }

@@ -262,7 +262,13 @@ function HeroProductCard() {
   );
 }
 
-export function HeroSection({ courseCount = 9 }: { courseCount?: number }) {
+export function HeroSection({
+  courseCount = 9,
+  seats = null,
+}: {
+  courseCount?: number;
+  seats?: { left: number; cap: number } | null;
+}) {
   const [goal, setGoal] = useState(0);
   const [menuOpen, setMenuOpen] = useState(false);
   const role = GOAL_ROLES[goal];
@@ -292,6 +298,9 @@ export function HeroSection({ courseCount = 9 }: { courseCount?: number }) {
           <Logo variant="dark" size="md" />
 
           <div className="flex items-center gap-3 sm:gap-5">
+            <Link href="/#pricing" className="hidden sm:block text-[11px] font-semibold tracking-[0.12em] uppercase text-slate-500 hover:text-slate-900 transition-colors" style={{ minHeight: "unset" }}>
+              Pricing
+            </Link>
             <Link href="/business" className="hidden sm:block text-[11px] font-semibold tracking-[0.12em] uppercase text-slate-500 hover:text-slate-900 transition-colors" style={{ minHeight: "unset" }}>
               For Teams
             </Link>
@@ -328,6 +337,7 @@ export function HeroSection({ courseCount = 9 }: { courseCount?: number }) {
           <div className="sm:hidden absolute top-full inset-x-0 z-40 bg-white border-b border-slate-200 shadow-[0_16px_40px_rgba(15,28,49,0.10)]">
             <div className="px-6 py-2 flex flex-col">
               {[
+                { href: "/#pricing", label: "Pricing" },
                 { href: "/business", label: "For Teams" },
                 { href: "/research", label: "Research" },
                 { href: "/about",    label: "About" },
@@ -415,6 +425,17 @@ export function HeroSection({ courseCount = 9 }: { courseCount?: number }) {
           <p className="mt-3 text-xs text-slate-500">
             Free · No credit card · No commitment — just signal.
           </p>
+
+          {/* Live early-access seat counter — real count, hidden when closed */}
+          {seats && (
+            <p className="mt-2.5 inline-flex items-center gap-2 text-xs font-bold text-slate-700">
+              <span className="relative flex w-2 h-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+                <span className="relative inline-flex rounded-full w-2 h-2 bg-emerald-500" />
+              </span>
+              {seats.left} of {seats.cap} free early-access seats left
+            </p>
+          )}
 
           {/* Mini trust bar */}
           <div className="mt-8 flex items-center gap-4 text-[10px] text-slate-500 uppercase tracking-widest font-semibold">

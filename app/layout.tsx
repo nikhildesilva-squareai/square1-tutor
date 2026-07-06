@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import "katex/dist/katex.min.css";
+import { Analytics } from "@vercel/analytics/next";
 import { CookieConsent } from "@/components/ui/cookie-consent";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { GoogleAnalytics } from "@/components/GoogleAnalytics";
@@ -64,6 +65,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         </ThemeProvider>
         <CookieConsent />
         <GoogleAnalytics />
+        {/* Vercel Web Analytics — route-level funnel: / → /diagnostic/[subject]
+            → results → /signup → /dashboard. GA4 (above) activates separately
+            once NEXT_PUBLIC_GA_MEASUREMENT_ID is set. */}
+        <Analytics />
       </body>
     </html>
   );

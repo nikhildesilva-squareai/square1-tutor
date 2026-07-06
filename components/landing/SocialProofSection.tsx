@@ -27,7 +27,13 @@ const FOUNDING_PERKS = [
   },
 ];
 
-export function SocialProofSection({ courseCount = 9 }: { courseCount?: number }) {
+export function SocialProofSection({
+  courseCount = 9,
+  seats = null,
+}: {
+  courseCount?: number;
+  seats?: { left: number; cap: number } | null;
+}) {
   return (
     <section
       className="relative overflow-hidden pt-20 sm:pt-28 lg:pt-32 pb-14 sm:pb-16 px-4 sm:px-6 lg:px-8"
@@ -138,7 +144,7 @@ export function SocialProofSection({ courseCount = 9 }: { courseCount?: number }
               <span className="inline-flex items-center gap-1.5 text-[9px] font-bold tracking-[0.15em] uppercase px-2 py-0.5 rounded-full"
                 style={{ background: "rgba(52,211,153,0.12)", color: "#34D399", border: "1px solid rgba(52,211,153,0.30)" }}>
                 <span className="w-1.5 h-1.5 rounded-full" style={{ background: "#34D399" }} />
-                Cohort 01 · open now
+                {seats ? `${seats.left} of ${seats.cap} free seats left` : "Cohort 01 · open now"}
               </span>
             </div>
             <h3 className="relative text-2xl font-black text-white leading-tight mb-6">

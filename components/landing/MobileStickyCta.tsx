@@ -9,7 +9,7 @@ import { PrimaryCta } from "@/components/ui/primary-cta";
 // should never be more than a thumb-reach away.
 // ═══════════════════════════════════════════════════════════════════════════════
 
-export function MobileStickyCta() {
+export function MobileStickyCta({ seats = null }: { seats?: { left: number; cap: number } | null }) {
   const [show, setShow] = useState(false);
 
   useEffect(() => {
@@ -28,6 +28,11 @@ export function MobileStickyCta() {
         background: "linear-gradient(180deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.92) 35%, #FFFFFF 100%)",
       }}
     >
+      {seats && (
+        <p className="mb-1.5 text-center text-[10px] font-bold text-slate-600">
+          {seats.left} of {seats.cap} free early-access seats left
+        </p>
+      )}
       <PrimaryCta href="/diagnostic" className="w-full">
         Free skill check — 3 min
       </PrimaryCta>

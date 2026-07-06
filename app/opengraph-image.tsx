@@ -1,7 +1,7 @@
 import { ImageResponse } from "next/og";
 
 export const runtime = "edge";
-export const alt = "Square 1 AI — AI-Powered Tech Education";
+export const alt = "Square 1 AI — the AI tutor that gets you hired. Build 10+ deployed projects. First 100 students free.";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -67,44 +67,63 @@ export default function Image() {
           S1
         </div>
 
-        {/* Title */}
+        {/* Headline — the launch pitch, not the brand slogan */}
         <div
           style={{
-            fontSize: 56,
+            fontSize: 58,
             fontWeight: 800,
             color: "white",
-            marginBottom: 12,
+            marginBottom: 16,
             display: "flex",
+            textAlign: "center",
+            letterSpacing: "-1px",
+            maxWidth: 940,
           }}
         >
-          Square 1 AI
+          The AI tutor that gets you hired.
         </div>
 
-        {/* Tagline */}
+        {/* Sub */}
         <div
           style={{
-            fontSize: 28,
+            fontSize: 26,
             fontWeight: 500,
-            color: "rgba(255, 255, 255, 0.7)",
+            color: "rgba(255, 255, 255, 0.72)",
             marginBottom: 40,
             display: "flex",
+            textAlign: "center",
+            maxWidth: 820,
           }}
         >
-          Learn it. Build it. Ship it.
+          Build 10+ deployed projects — every line of your code reviewed by AI.
         </div>
 
-        {/* Feature pills */}
-        <div style={{ display: "flex", gap: 16 }}>
-          {["AI Assessment", "Personalised Plans", "Real Projects", "AI Tutor"].map((label) => (
+        {/* Launch badge + proof pills */}
+        <div style={{ display: "flex", gap: 16, alignItems: "center" }}>
+          <div
+            style={{
+              padding: "12px 28px",
+              borderRadius: 100,
+              background: "rgba(52, 211, 153, 0.16)",
+              border: "2px solid rgba(52, 211, 153, 0.5)",
+              color: "#34D399",
+              fontSize: 20,
+              fontWeight: 800,
+              display: "flex",
+            }}
+          >
+            First 100 students free
+          </div>
+          {["10 subjects", "AI code review", "Verified portfolio"].map((label) => (
             <div
               key={label}
               style={{
-                padding: "10px 24px",
+                padding: "12px 24px",
                 borderRadius: 100,
                 background: "rgba(0, 86, 206, 0.2)",
                 border: "1px solid rgba(0, 86, 206, 0.4)",
                 color: "#93C5FD",
-                fontSize: 16,
+                fontSize: 18,
                 fontWeight: 600,
                 display: "flex",
               }}
