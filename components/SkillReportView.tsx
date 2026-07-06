@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
-import { ShareResultButton } from "@/components/ShareResultButton";
+import { ShareReportCta } from "@/components/ShareReportCta";
 import { RadarChart } from "@/components/RadarChart";
 import { levelFor, LEVEL_LABELS, getCompetencyConfig, type DomainScore } from "@/lib/competency";
 
@@ -319,7 +319,20 @@ function SkillRow({ label, percentage, tone }: { label: string; percentage: numb
 /* ═══════════════════════════════════════════════════════════════════════ */
 /*  SKILL REPORT VIEW                                                     */
 /* ═══════════════════════════════════════════════════════════════════════ */
-export function SkillReportView({ report, slug }: { report: ReportData; slug: string }) {
+export function SkillReportView({
+  report,
+  slug,
+  publicView = false,
+  shareSlot,
+}: {
+  report: ReportData;
+  slug: string;
+  /** Read-only shared mode: hides in-app CTAs and per-question sections,
+   *  swaps conversion CTAs for /diagnostic. Used by /report/[token]. */
+  publicView?: boolean;
+  /** Replaces the default share button (e.g. the full share panel). */
+  shareSlot?: React.ReactNode;
+}) {
   const [expandedQ, setExpandedQ] = useState<string | null>(null);
   const reducedMotion = usePrefersReducedMotion();
   const animate = !reducedMotion;
@@ -380,7 +393,8 @@ export function SkillReportView({ report, slug }: { report: ReportData; slug: st
           </div>
           <p className="text-sm text-ink-muted max-w-xs mx-auto">{lc.desc}</p>
 
-          {/* Quick stats row */}
+          {/* Quick stats row — only when per-question data is present */}
+          {totalQs > 0 && (
           <div className="mt-8 grid grid-cols-3 gap-3 max-w-sm mx-auto">
             <div className="bg-surface border border-border rounded-xl px-3 py-3.5 text-center">
               <p className="text-xl font-black text-ink tabular-nums">{totalQs}</p>
@@ -395,10 +409,11 @@ export function SkillReportView({ report, slug }: { report: ReportData; slug: st
               <p className="text-[11px] text-ink-muted font-medium mt-0.5">Incorrect</p>
             </div>
           </div>
+          )}
 
-          {/* Share your result — positive framing, drives the loop to /diagnostic */}
+          {/* Share — private view mints the public link; public view gets the panel */}
           <div className="mt-7">
-            <ShareResultButton percentage={report.percentage} level={lc.label} courseTitle={formatTopicName(slug)} />
+            {shareSlot ?? <ShareReportCta reportId={report.reportId} percentage={report.percentage} level={lc.label} courseTitle={formatTopicName(slug)} />}
           </div>
         </div>
       </section>
@@ -558,21 +573,28 @@ export function SkillReportView({ report, slug }: { report: ReportData; slug: st
                 <span className="text-[10px] tracking-[0.2em] uppercase font-bold text-white">Your personalised path</span>
               </div>
               <h2 className="text-2xl sm:text-3xl font-black text-white mb-3 leading-tight">
-                {gaps[0]
-                  ? <>Close your biggest gap — <span className="underline decoration-white/40 decoration-2 underline-offset-4">{gaps[0].label}</span></>
-                  : <>Turn this score into real, hireable skill</>}
+                {publicView
+                  ? <>Find out where <span className="underline decoration-white/40 decoration-2 underline-offset-4">you</span> stand</>
+                  : gaps[0]
+                    ? <>Close your biggest gap — <span className="underline decoration-white/40 decoration-2 underline-offset-4">{gaps[0].label}</span></>
+                    : <>Turn this score into real, hireable skill</>}
               </h2>
               <p className="text-sm text-blue-100/90 mb-7 max-w-md mx-auto leading-relaxed">
-                We&apos;ll build a plan around your exact gaps — bite-size lessons, 24/7 AI tutoring with Nova, and real portfolio projects, sequenced just for you.
+                {publicView
+                  ? "This report was built from a real AI-graded assessment. Take the free 3-minute skill check and get your own — no account needed to start."
+                  : "We'll build a plan around your exact gaps — bite-size lessons, 24/7 AI tutoring with Nova, and real portfolio projects, sequenced just for you."}
               </p>
               <div className="flex flex-wrap items-center justify-center gap-2 mb-7">
-                {[`${overallLevel} → ${nextLevel}`, "AI tutor included", "Portfolio projects"].map((c) => (
+                {(publicView
+                  ? ["3-minute check", "AI-graded", "Free"]
+                  : [`${overallLevel} → ${nextLevel}`, "AI tutor included", "Portfolio projects"]
+                ).map((c) => (
                   <span key={c} className="text-[11px] font-semibold text-white bg-white/10 border border-white/15 rounded-full px-3 py-1.5">{c}</span>
                 ))}
               </div>
-              <Link href={`/courses/${slug}/plan?reportId=${report.reportId}&level=${overallLevel}`}
+              <Link href={publicView ? "/diagnostic" : `/courses/${slug}/plan?reportId=${report.reportId}&level=${overallLevel}`}
                 className="group inline-flex items-center gap-2 h-14 px-10 rounded-2xl bg-white text-brand font-black text-base hover:shadow-2xl hover:shadow-black/25 hover:-translate-y-0.5 active:translate-y-0 transition-all">
-                Build my learning plan
+                {publicView ? "Take your free skill check" : "Build my learning plan"}
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="group-hover:translate-x-1 transition-transform"><path d="M5 12h14" /><polyline points="12 5 19 12 12 19" /></svg>
               </Link>
               <p className="text-[11px] text-blue-100/70 mt-4">Start free · No credit card needed</p>
@@ -648,8 +670,9 @@ export function SkillReportView({ report, slug }: { report: ReportData; slug: st
       )}
 
       {/* ═══════════════════════════════════════════════════════════════ */}
-      {/*  SECTION 6 — QUESTION BREAKDOWN                               */}
+      {/*  SECTION 6 — QUESTION BREAKDOWN (private only — needs answers) */}
       {/* ═══════════════════════════════════════════════════════════════ */}
+      {totalQs > 0 && (
       <section className="py-10 sm:py-14 px-4 sm:px-6 border-t border-border">
         <div className="max-w-3xl mx-auto">
           <SectionHeader kicker="Question Breakdown" title="Every question reviewed" />
@@ -757,6 +780,7 @@ export function SkillReportView({ report, slug }: { report: ReportData; slug: st
           </div>
         </div>
       </section>
+      )}
 
       {/* ═══════════════════════════════════════════════════════════════ */}
       {/*  SECTION 7 — AI RECOMMENDATIONS                               */}
@@ -800,17 +824,19 @@ export function SkillReportView({ report, slug }: { report: ReportData; slug: st
       <section className="py-12 sm:py-20 px-4 sm:px-6">
         <div className="max-w-lg mx-auto text-center">
           <h2 className="text-2xl sm:text-3xl font-black text-ink mb-3">
-            Your plan is ready when you are
+            {publicView ? "Ready to see your own numbers?" : "Your plan is ready when you are"}
           </h2>
           <p className="text-ink-muted text-sm mb-8">
-            Every lesson, project, and Nova session targets the gaps above. Start today — free during early access.
+            {publicView
+              ? "Free 3-minute skill check, instant snapshot — then a full AI-graded report like this one."
+              : "Every lesson, project, and Nova session targets the gaps above. Start today — free during early access."}
           </p>
           <Link
-            href={`/courses/${slug}/plan?reportId=${report.reportId}&level=${overallLevel}`}
+            href={publicView ? "/diagnostic" : `/courses/${slug}/plan?reportId=${report.reportId}&level=${overallLevel}`}
             className="group inline-flex items-center gap-2 h-14 px-10 rounded-2xl text-white font-black text-base hover:-translate-y-0.5 hover:shadow-2xl hover:shadow-brand/30 transition-all"
             style={{ background: brandGradient }}
           >
-            Build my learning plan
+            {publicView ? "Get my free skill report" : "Build my learning plan"}
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="group-hover:translate-x-1 transition-transform">
               <path d="M5 12h14" /><polyline points="12 5 19 12 12 19" />
             </svg>

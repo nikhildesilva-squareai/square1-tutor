@@ -14,6 +14,7 @@ const PUBLIC_PATHS = [
   "/careers",
   "/contact",
   "/research",
+  "/report", // tokenized public skill reports (opt-in shares)
   "/api/auth/callback",
   "/api/onboard",
   "/portfolio/",
