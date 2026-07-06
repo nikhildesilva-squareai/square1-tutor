@@ -5,6 +5,7 @@ import { callAI, BudgetExceededError } from "@/lib/ai/budget";
 import { GRADING_SYSTEM_PROMPT } from "@/lib/ai/prompts";
 import { rateLimitAI } from "@/lib/rate-limit";
 import { rollUpDomains, roleReadiness, buildActionPlan } from "@/lib/competency";
+import { gradeBatch, GradeBatchError, type Grade, type GradableQuestion } from "@/lib/grading/assessment";
 
 const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
@@ -51,197 +52,39 @@ interface QuestionResult {
   topicUnderstanding: string | null;
 }
 
-interface Grade {
-  marks: number;
-  feedback: string;
-  breakdown: Array<{ criterion: string; awarded: number; reasoning: string }> | null;
-  topicUnderstanding: string | null;
-  improvedCode: string | null;
-}
-
-/** A whole grading batch failed or came back unparseable — retryable, and the
- * caller must NOT persist anything (fallback scores would bake into the skill
- * report, learning plan and cohort percentiles permanently). */
-class GradeBatchError extends Error {}
-
-/** Pull the first JSON array out of an LLM response. */
-function extractJsonArray(text: string): unknown[] | null {
-  const match = text.match(/\[[\s\S]*\]/);
-  if (!match) return null;
-  try {
-    const parsed = JSON.parse(match[0]);
-    return Array.isArray(parsed) ? parsed : null;
-  } catch {
-    return null;
-  }
-}
-
-/** Heuristic fallback when the AI grade for a question is missing/unparseable. */
-function fallbackGrade(q: Question, answer: string, isCode: boolean): Grade {
-  const hasContent = isCode ? answer.trim().length > 20 : answer.trim().split(/\s+/).length > 10;
-  return {
-    marks: hasContent ? Math.floor(q.marks * 0.5) : 0,
-    feedback: "Could not automatically grade this answer — partial credit awarded where a response was provided.",
-    breakdown: null,
-    topicUnderstanding: "partial",
-    improvedCode: null,
-  };
-}
-
-/* ── Batch-grade all short-answer questions in ONE AI call ─────────────────
- * Previously this was one Claude call PER question. On a low org rate limit
- * (e.g. 5 req/min) a 12-question paper instantly exceeded the limit and the
- * whole grade failed with a 429. Batching keeps the entire paper to ~3 calls. */
-async function gradeShortAnswers(
+/* ── Batched grading via the shared core (lib/grading/assessment.ts) ────────
+ * One AI call grades all short answers, one grades all code. The prompts,
+ * parsing, clamping and fallback live in the shared module so the calibration
+ * harness (scripts/calibrate-grading.ts) exercises the IDENTICAL path; this
+ * wrapper only injects the budget-checked callAI executor. */
+function gradeFreeResponse(
+  kind: "short_answer" | "code",
   studentId: string,
   questions: Question[],
   responseMap: Map<string, Response>,
   subject: string,
 ): Promise<Map<string, Grade>> {
-  const out = new Map<string, Grade>();
-  if (questions.length === 0) return out;
-
-  const block = questions.map((q) => {
-    const ans = responseMap.get(q.id)?.response_text ?? "";
-    return `[#${q.number}] (${q.marks} marks)
-Question: ${q.stem_md}
-${q.mark_scheme_md ? `Mark scheme: ${q.mark_scheme_md}` : "Mark scheme: (use expert judgement)"}
-Student's answer: ${ans || "(no answer provided)"}`;
-  }).join("\n\n---\n\n");
-
-  const result = await callAI(studentId, {
-    feature: "grading",
-    system: GRADING_SYSTEM_PROMPT,
-    max_tokens: 6000,
-    temperature: 0,
-    messages: [{
-      role: "user",
-      content: `You are an expert examiner for ${subject}. Grade each answer strictly against its mark scheme. Award marks only for points in the mark scheme; be fair but rigorous.
-
-Return ONLY a JSON array — one object per question, in the same order — and nothing else:
-[
-  {
-    "number": <the #number>,
-    "marks_awarded": <integer, 0..max>,
-    "max_marks": <max for that question>,
-    "breakdown": [{ "criterion": "...", "awarded": 0 or 1, "reasoning": "..." }],
-    "feedback": "1-2 sentences: what was right, what was missing, how to improve",
-    "topic_understanding": "strong" | "partial" | "weak"
-  }
-]
-
-Questions:
-${block}`,
-    }],
-  });
-
-  const parsed = extractJsonArray(result.text);
-  if (!parsed || parsed.length === 0) {
-    throw new GradeBatchError("short-answer batch returned no parseable grades");
-  }
-  const byNumber = new Map<number, Record<string, unknown>>();
-  for (const item of parsed) {
-    if (item && typeof item === "object" && "number" in item) {
-      byNumber.set(Number((item as { number: unknown }).number), item as Record<string, unknown>);
-    }
-  }
-
-  for (const q of questions) {
-    const r = byNumber.get(q.number);
-    if (!r) {
-      // Per-question miss inside an otherwise-successful batch: partial credit,
-      // disclosed in the feedback text.
-      out.set(q.id, fallbackGrade(q, responseMap.get(q.id)?.response_text ?? "", false));
-      continue;
-    }
-    out.set(q.id, {
-      marks: Math.min(Math.max(0, Math.round(Number(r.marks_awarded ?? 0))), q.marks),
-      feedback: typeof r.feedback === "string" ? r.feedback : "No feedback available.",
-      breakdown: Array.isArray(r.breakdown) ? (r.breakdown as Grade["breakdown"]) : [],
-      topicUnderstanding: typeof r.topic_understanding === "string" ? r.topic_understanding : "partial",
-      improvedCode: null,
-    });
-  }
-  return out;
-}
-
-/* ── Batch-grade all code questions in ONE AI call ─────────────────────────── */
-async function gradeCodeAnswers(
-  studentId: string,
-  questions: Question[],
-  responseMap: Map<string, Response>,
-  subject: string,
-): Promise<Map<string, Grade>> {
-  const out = new Map<string, Grade>();
-  if (questions.length === 0) return out;
-
-  const block = questions.map((q) => {
-    const code = responseMap.get(q.id)?.code_response ?? "";
-    const lang = q.language ?? "Python";
-    return `[#${q.number}] (${q.marks} marks, ${lang})
-Question: ${q.stem_md}
-${q.mark_scheme_md ? `Mark scheme: ${q.mark_scheme_md}` : ""}
-Student's code:
-\`\`\`
-${code || "// No code submitted"}
-\`\`\``;
-  }).join("\n\n---\n\n");
-
-  const result = await callAI(studentId, {
-    feature: "grading",
-    system: GRADING_SYSTEM_PROMPT,
-    max_tokens: 8000,
-    temperature: 0,
-    messages: [{
-      role: "user",
-      content: `You are a senior engineer grading code submissions for ${subject}. For each, judge correctness, code quality, edge cases, and best practices.
-
-Return ONLY a JSON array — one object per question, in the same order — and nothing else:
-[
-  {
-    "number": <the #number>,
-    "marks_awarded": <integer, 0..max>,
-    "max_marks": <max for that question>,
-    "breakdown": [{ "criterion": "Correctness|Code quality|Edge cases|Best practices", "awarded": <int>, "reasoning": "..." }],
-    "feedback": "what's good, what needs fixing, and how",
-    "improved_code": "a concise corrected version (key fix only, <= 25 lines)"
-  }
-]
-
-Questions:
-${block}`,
-    }],
-  });
-
-  const parsed = extractJsonArray(result.text);
-  if (!parsed || parsed.length === 0) {
-    throw new GradeBatchError("code batch returned no parseable grades");
-  }
-  const byNumber = new Map<number, Record<string, unknown>>();
-  for (const item of parsed) {
-    if (item && typeof item === "object" && "number" in item) {
-      byNumber.set(Number((item as { number: unknown }).number), item as Record<string, unknown>);
-    }
-  }
-
-  for (const q of questions) {
-    const r = byNumber.get(q.number);
-    if (!r) {
-      // Per-question miss inside an otherwise-successful batch: partial credit,
-      // disclosed in the feedback text.
-      out.set(q.id, fallbackGrade(q, responseMap.get(q.id)?.code_response ?? "", true));
-      continue;
-    }
-    const marks = Math.min(Math.max(0, Math.round(Number(r.marks_awarded ?? 0))), q.marks);
-    out.set(q.id, {
-      marks,
-      feedback: typeof r.feedback === "string" ? r.feedback : "No feedback available.",
-      breakdown: Array.isArray(r.breakdown) ? (r.breakdown as Grade["breakdown"]) : [],
-      topicUnderstanding: marks >= q.marks * 0.7 ? "strong" : marks >= q.marks * 0.4 ? "partial" : "weak",
-      improvedCode: typeof r.improved_code === "string" ? r.improved_code : null,
-    });
-  }
-  return out;
+  const answerFor = (q: GradableQuestion) =>
+    (kind === "code"
+      ? responseMap.get(q.id)?.code_response
+      : responseMap.get(q.id)?.response_text) ?? "";
+  return gradeBatch(
+    kind,
+    questions,
+    answerFor,
+    subject,
+    async ({ system, userContent, max_tokens }) => {
+      const r = await callAI(studentId, {
+        feature: "grading",
+        system,
+        max_tokens,
+        temperature: 0,
+        messages: [{ role: "user", content: userContent }],
+      });
+      return { text: r.text };
+    },
+    GRADING_SYSTEM_PROMPT,
+  );
 }
 
 /* ── Cohort percentile (real data, no tokens) ──────────────────────────────
@@ -516,8 +359,8 @@ export async function POST(
     const codeQs = questions.filter((q) => q.type === "code");
 
     const [shortGrades, codeGrades] = await Promise.all([
-      gradeShortAnswers(student.id, shortQs, responseMap, subject),
-      gradeCodeAnswers(student.id, codeQs, responseMap, subject),
+      gradeFreeResponse("short_answer", student.id, shortQs, responseMap, subject),
+      gradeFreeResponse("code", student.id, codeQs, responseMap, subject),
     ]);
 
     for (const [id, g] of shortGrades) allGrades[id] = g;
