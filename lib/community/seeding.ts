@@ -1,4 +1,4 @@
-import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { TemplateType } from "@/types/database";
 
 /**
@@ -58,7 +58,9 @@ async function scoreProfile(
   profile: { id: string; student_id: string; created_at: string },
   options: SeedingOptions
 ): Promise<ScoredProfile> {
-  const supabase = await createClient();
+  // Service role: seeding scores other students' enrollments/submissions and
+  // inserts memberships for them — none of which the user-scoped client can do.
+  const supabase = createAdminClient();
 
   // Get student enrollments
   const { data: enrollments } = await supabase
@@ -126,7 +128,7 @@ async function scoreProfile(
 export async function findSeedingCandidates(
   options: SeedingOptions
 ): Promise<string[]> {
-  const supabase = await createClient();
+  const supabase = createAdminClient();
 
   // Fetch all community profiles except creator
   const { data: profiles } = await supabase
@@ -167,7 +169,7 @@ export async function seedCommunity(
   communityId: string,
   profileIds: string[]
 ): Promise<{ added: number; failed: number }> {
-  const supabase = await createClient();
+  const supabase = createAdminClient();
 
   let added = 0;
   let failed = 0;
@@ -231,7 +233,7 @@ export function generateSlug(name: string): string {
  * Check if slug is unique in the database
  */
 export async function isSlugUnique(slug: string): Promise<boolean> {
-  const supabase = await createClient();
+  const supabase = createAdminClient();
 
   const { data } = await supabase
     .from("communities")

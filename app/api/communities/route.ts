@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { findSeedingCandidates, seedCommunity, generateUniqueSlug } from "@/lib/community/seeding";
 import { TemplateType } from "@/types/database";
 import { NextResponse } from "next/server";
@@ -174,8 +175,10 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Failed to create community" }, { status: 500 });
     }
 
-    // Add creator as member with role='creator'
-    const { error: memberError } = await supabase
+    // Add creator as member with role='creator'.
+    // Service role: RLS only allows self-inserts with role='member'.
+    const admin = createAdminClient();
+    const { error: memberError } = await admin
       .from("community_members")
       .insert({
         community_id: community.id,
