@@ -22,10 +22,11 @@ const ENABLED = process.env.NEXT_PUBLIC_FREE_ACCESS_ENABLED !== "false";
 /** How many students may claim a free seat. */
 export const FREE_ACCESS_CAP = Number(process.env.NEXT_PUBLIC_FREE_ACCESS_CAP ?? "100");
 
-/** When the window closes (Australia/Sydney end-of-day). 2-week free test for
- *  100 students, opened 2026-06-26 → closes 2026-07-10. */
+/** When the window closes (Australia/Sydney end-of-day). Extended for the
+ *  July-14 public launch: first-100-free runs through end of July. Override
+ *  any time via NEXT_PUBLIC_FREE_ACCESS_ENDS_AT in Vercel (+ redeploy). */
 export const FREE_ACCESS_ENDS_AT =
-  process.env.NEXT_PUBLIC_FREE_ACCESS_ENDS_AT ?? "2026-07-10T23:59:59+10:00";
+  process.env.NEXT_PUBLIC_FREE_ACCESS_ENDS_AT ?? "2026-07-31T23:59:59+10:00";
 
 // Per-student trial AI wallet, ring-fenced on claim (USD). Sized for ~2 weeks,
 // not a full month — a full month is $1.20, so half is ~$0.60. NOTE: the budget
