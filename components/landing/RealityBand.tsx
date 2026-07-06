@@ -7,12 +7,13 @@ import { useEffect, useRef, useState } from "react";
 // alone no longer gets you hired, the market hires on proof, and proof is exactly
 // what Square 1 Ai produces.
 //
-// Interactive: count-up stats on scroll, staggered reveal, animated magnitude
-// bars, hover glow.
+// Interactive: a "two candidates" toggle. The market stats (−65% postings, +40%
+// grads) NEVER change when you flip it — only the candidate stats do. That's the
+// argument in one gesture: same market, different odds. Count-ups re-run on flip.
 //
 // NOTE: The figures below are from 2026 labour-market reporting (secondary
 // sources). Verify + cite before relying on them publicly — they're isolated in
-// STATS so they're trivial to edit or swap for your own sourced numbers.
+// the stat constants so they're trivial to edit or swap for sourced numbers.
 // ═══════════════════════════════════════════════════════════════════════════════
 
 type Stat = {
@@ -25,12 +26,25 @@ type Stat = {
   accent: string;
 };
 
-const STATS: Stat[] = [
-  { prefix: "−", target: 65, suffix: "%", bar: 65,  label: "drop in entry-level dev job postings, 2022–2025",      accent: "#F87171" },
-  { prefix: "+", target: 40, suffix: "%", bar: 40,  label: "more CS grads competing for them",                    accent: "#0EA5E9" },
-  { staticValue: "2–3×",                  bar: 72,  label: "higher offer rate with real, deployed project experience", accent: "#34D399" },
-  { target: 1,               suffix: "",  bar: 100, label: "thing that now closes the gap: proof you can ship",    accent: "#3388FF" },
+type Mode = "degree" | "proof";
+
+// The market — identical in both views, by design.
+const MARKET_STATS: Stat[] = [
+  { prefix: "−", target: 65, suffix: "%", bar: 65, label: "drop in entry-level dev job postings, 2022–2025", accent: "#F87171" },
+  { prefix: "+", target: 40, suffix: "%", bar: 40, label: "more CS grads competing for them",                accent: "#0EA5E9" },
 ];
+
+// The candidate — what flipping the toggle changes.
+const CANDIDATE_STATS: Record<Mode, Stat[]> = {
+  degree: [
+    { staticValue: "1×", bar: 24, label: "baseline offer rate on credentials alone",   accent: "#94A3B8" },
+    { target: 0,         bar: 6,  label: "deployed projects on the typical grad CV",   accent: "#94A3B8" },
+  ],
+  proof: [
+    { staticValue: "2–3×", bar: 72,  label: "higher offer rate with real, deployed project experience", accent: "#34D399" },
+    { staticValue: "10+",  bar: 100, label: "deployed, code-reviewed projects on your CV",              accent: "#3388FF" },
+  ],
+};
 
 // ─── Count-up on scroll ─────────────────────────────────────────────────────────
 function useCountUp(target: number, isVisible: boolean, duration = 1400) {
@@ -52,7 +66,7 @@ function useCountUp(target: number, isVisible: boolean, duration = 1400) {
 }
 
 // ─── Interactive stat tile ──────────────────────────────────────────────────────
-function StatTile({ stat, visible, delay }: { stat: Stat; visible: boolean; delay: number }) {
+function StatTile({ stat, visible, delay, dimmed = false }: { stat: Stat; visible: boolean; delay: number; dimmed?: boolean }) {
   const counted = useCountUp(stat.target ?? 0, visible);
   const display = stat.staticValue ?? `${stat.prefix ?? ""}${counted}${stat.suffix ?? ""}`;
   return (
@@ -62,7 +76,7 @@ function StatTile({ stat, visible, delay }: { stat: Stat; visible: boolean; dela
         background: "#FFFFFF",
         borderColor: visible ? `${stat.accent}33` : "#E2E8F0",
         boxShadow: "0 4px 16px rgba(15,28,49,0.05)",
-        opacity: visible ? 1 : 0,
+        opacity: visible ? (dimmed ? 0.55 : 1) : 0,
         transform: visible ? "translateY(0)" : "translateY(28px)",
         transitionDelay: `${delay}ms`,
       }}
@@ -104,12 +118,22 @@ function StatTile({ stat, visible, delay }: { stat: Stat; visible: boolean; dela
 export function RealityBand() {
   const ref = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(false);
+  const [mode, setMode] = useState<Mode>("degree");
+  const [touched, setTouched] = useState(false); // stops the affordance pulse
 
   useEffect(() => {
     const obs = new IntersectionObserver(([e]) => e.isIntersecting && setVisible(true), { threshold: 0.2 });
     if (ref.current) obs.observe(ref.current);
     return () => obs.disconnect();
   }, []);
+
+  const pick = (m: Mode) => {
+    setMode(m);
+    setTouched(true);
+  };
+
+  const candidate = CANDIDATE_STATS[mode];
+  const isProof = mode === "proof";
 
   return (
     <section ref={ref} className="relative overflow-hidden py-14 sm:py-16 px-4 sm:px-6 lg:px-8" style={{ background: "linear-gradient(180deg, #FFFFFF 0%, #F8FAFC 100%)" }}>
@@ -155,18 +179,64 @@ export function RealityBand() {
           hiring on credentials and started hiring on what you can show.
         </p>
 
-        {/* Interactive stat tiles */}
-        <div className="mt-9 sm:mt-10 grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-          {STATS.map((s, i) => (
-            <StatTile key={s.label} stat={s} visible={visible} delay={i * 130} />
+        {/* ── Two-candidates toggle — the market never changes, the candidate does ── */}
+        <div className="mt-8 flex justify-center">
+          <div className="inline-flex items-center gap-1 p-1 rounded-full bg-slate-100 border border-slate-200" role="group" aria-label="Compare two candidates in the same market">
+            {([
+              ["degree", "Degree only"],
+              ["proof", "Degree + deployed projects"],
+            ] as [Mode, string][]).map(([m, label]) => {
+              const active = mode === m;
+              return (
+                <button
+                  key={m}
+                  onClick={() => pick(m)}
+                  aria-pressed={active}
+                  className={`relative h-11 px-4 sm:px-5 rounded-full text-xs sm:text-sm font-bold transition-all ${
+                    active ? "bg-white text-slate-900 shadow-sm" : "text-slate-500 hover:text-slate-700"
+                  }`}
+                >
+                  {label}
+                  {/* Affordance pulse on the unexplored option until first interaction */}
+                  {!active && !touched && m === "proof" && (
+                    <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full animate-ping" style={{ background: "#3388FF" }} />
+                  )}
+                  {!active && !touched && m === "proof" && (
+                    <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full" style={{ background: "#3388FF" }} />
+                  )}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Stat tiles: market pair (constant) + candidate pair (flips) */}
+        <div className="mt-7 grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+          {MARKET_STATS.map((s, i) => (
+            <StatTile key={s.label} stat={s} visible={visible} delay={i * 130} dimmed={isProof} />
+          ))}
+          {candidate.map((s, i) => (
+            // Keyed by mode so the entrance animation + count-up replay on flip
+            <div key={`${mode}-${i}`} className="animate-fade-in-up">
+              <StatTile stat={s} visible={visible} delay={touched ? i * 80 : (i + 2) * 130} />
+            </div>
           ))}
         </div>
 
-        {/* Resolution — slim one-liner (CTAs live in the hook above) */}
-        <p className="mt-9 text-center text-sm sm:text-base text-slate-600 leading-relaxed max-w-2xl mx-auto">
-          Square 1 Ai closes that gap with{" "}
-          <span className="font-bold text-slate-900">10+ deployed, code-reviewed projects employers can actually click on.</span>
-        </p>
+        {/* Resolution — responds to the toggle */}
+        {isProof ? (
+          <p className="mt-9 text-center text-sm sm:text-base text-slate-600 leading-relaxed max-w-2xl mx-auto">
+            Same market — different candidate. Square 1 Ai gets you there with{" "}
+            <span className="font-bold text-slate-900">10+ deployed, code-reviewed projects employers can actually click on.</span>
+          </p>
+        ) : (
+          <p className="mt-9 text-center text-sm sm:text-base text-slate-600 leading-relaxed max-w-2xl mx-auto">
+            That&apos;s the squeeze on credentials alone.{" "}
+            <button onClick={() => pick("proof")} className="font-bold text-brand hover:underline">
+              See the same market with deployed proof →
+            </button>
+          </p>
+        )}
       </div>
     </section>
   );
