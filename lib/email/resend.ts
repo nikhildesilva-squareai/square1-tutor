@@ -15,11 +15,16 @@ export function getResend(): Resend {
 const FROM = "Square 1 AI <tech@square1ai.com>";
 
 /* ─── Corporate lead notification (to the founder) ───────────────────────────
- * Sent from Resend's shared sender so it delivers even before the square1ai.com
- * domain is verified — provided the recipient is the Resend account's own email.
- * Switch LEAD_FROM to the verified domain once DNS is set up. */
-const LEAD_FROM = "Square 1 Leads <onboarding@resend.dev>";
+ * square1ai.com is verified in Resend (2026-07-06, Tokyo region), so leads send
+ * from the real domain. Delivery destination comes from LEAD_NOTIFY_EMAIL —
+ * keep that pointed at a monitored inbox (the @square1ai.com mailboxes can't
+ * receive while Google Workspace is suspended). */
+const LEAD_FROM = "Square 1 Leads <tech@square1ai.com>";
 const LEAD_NOTIFY_TO = process.env["LEAD_NOTIFY_EMAIL"] ?? "nikhil.desilva@square1ai.com";
+
+// Replies to outbound product email should reach a monitored inbox, not the
+// suspended @square1ai.com mailboxes. Reuses LEAD_NOTIFY_EMAIL when set.
+const REPLY_TO = process.env["LEAD_NOTIFY_EMAIL"];
 
 export async function sendBusinessLeadNotification(lead: {
   name: string;
@@ -35,6 +40,7 @@ export async function sendBusinessLeadNotification(lead: {
     replyTo: lead.email,
     subject: `🚀 New team lead: ${lead.company}${lead.teamSize ? ` (${lead.teamSize})` : ""}`,
     html: `
+      <meta charset="utf-8">
       <div style="font-family:system-ui,-apple-system,sans-serif;max-width:520px;margin:0 auto;padding:32px 20px;">
         <h1 style="color:#0F172A;font-size:20px;font-weight:800;margin:0 0 4px;">New "For Teams" enquiry</h1>
         <p style="color:#64748B;font-size:13px;margin:0 0 20px;">Someone just requested team pricing on /business.</p>
@@ -234,8 +240,10 @@ export async function sendTeamInvite(to: string, teamName: string, inviteUrl: st
   return r.emails.send({
     from: FROM,
     to,
+    ...(REPLY_TO ? { replyTo: REPLY_TO } : {}),
     subject: `${teamName} invited you to upskill on Square 1 AI`,
     html: `
+      <meta charset="utf-8">
       <div style="font-family:system-ui,-apple-system,sans-serif;max-width:520px;margin:0 auto;padding:40px 20px;">
         <div style="text-align:center;margin-bottom:32px;">
           <div style="display:inline-block;background:linear-gradient(135deg,#0056CE,#7C3AED);border-radius:12px;padding:12px;margin-bottom:16px;">
