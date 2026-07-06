@@ -8,7 +8,9 @@ import { TeamSignIn } from "@/components/business/TeamSignIn";
 import { getVisibleCourses, type CatalogCourse } from "@/lib/catalog";
 import { CourseIcon } from "@/components/ui/course-icon";
 
-type Stage = "loading" | "signin" | "pick" | "joining" | "error";
+type Stage = "loading" | "signin" | "pick" | "joining" | "joined" | "error";
+
+type JoinedInfo = { slug: string; firstLessonId: string | null; assessmentAvailable: boolean };
 
 export default function JoinTeamPage() {
   const [stage, setStage] = useState<Stage>("loading");
@@ -18,6 +20,7 @@ export default function JoinTeamPage() {
   const [assigned, setAssigned] = useState<{ slug: string; title: string } | null>(null);
   const [checkedAssign, setCheckedAssign] = useState(false);
   const [subjects, setSubjects] = useState<CatalogCourse[]>([]);
+  const [joined, setJoined] = useState<JoinedInfo | null>(null);
 
   // Live course catalog — same visibility rules as the landing page, so team
   // members can never pick a retired track or miss a new one.
@@ -34,7 +37,15 @@ export default function JoinTeamPage() {
       });
       const data = await res.json();
       if (!res.ok || !data.ok) throw new Error(data.error ?? "Could not join");
-      window.location.href = data.firstLessonId ? `/learn/${data.firstLessonId}` : "/dashboard";
+      // Assessment-first: placement personalises the plan AND powers the
+      // manager's skill analytics. Courses without a placement paper (or a
+      // missing slug from an older API) skip straight to the first lesson.
+      if (data.assessmentAvailable && data.slug) {
+        setJoined({ slug: data.slug, firstLessonId: data.firstLessonId ?? null, assessmentAvailable: true });
+        setStage("joined");
+      } else {
+        window.location.href = data.firstLessonId ? `/learn/${data.firstLessonId}` : "/dashboard";
+      }
     } catch (e) {
       setError(e instanceof Error ? e.message : "Something went wrong");
       setStage("pick");
@@ -78,6 +89,32 @@ export default function JoinTeamPage() {
 
       <main className="flex-1 flex items-center justify-center px-4 py-10">
         {stage === "loading" && <p className="text-sm text-slate-500">Loading…</p>}
+
+        {/* Joined — assessment-first, with a skip to lesson 1 */}
+        {stage === "joined" && joined && (
+          <div className="w-full max-w-md text-center">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 mb-5">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" /> Seat claimed
+            </span>
+            <h1 className="text-3xl font-black text-slate-900 mb-2">You&apos;re in</h1>
+            <p className="text-sm text-slate-600 mb-7">
+              One step makes everything smarter: a placement assessment. It maps your current
+              skills, personalises your plan to your actual level, and shows your strengths on
+              your team&apos;s dashboard.
+            </p>
+            <a href={`/courses/${joined.slug}/assess`}
+              className="inline-flex w-full items-center justify-center gap-2 px-8 py-4 rounded-full text-white font-bold text-sm hover:-translate-y-0.5 transition-transform"
+              style={{ background: "linear-gradient(135deg, #3388FF 0%, #0056CE 55%, #01224F 100%)", boxShadow: "0 12px 32px rgba(0,86,206,0.30)" }}>
+              Take the placement assessment
+              <span aria-hidden>→</span>
+            </a>
+            <p className="text-[11px] text-slate-500 mt-2">~30 minutes · AI-graded · sets your starting level</p>
+            <a href={joined.firstLessonId ? `/learn/${joined.firstLessonId}` : "/dashboard"}
+              className="inline-block mt-5 text-xs font-semibold text-slate-500 hover:text-slate-800 transition-colors">
+              Skip for now — start from Lesson 1 (you can take it later)
+            </a>
+          </div>
+        )}
 
         {stage === "error" && (
           <div className="text-center max-w-sm">

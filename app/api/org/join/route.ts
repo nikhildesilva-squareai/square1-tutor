@@ -96,6 +96,13 @@ export async function POST(request: Request) {
     // First lesson — module-aware (lessons.order_index is per-module).
     const firstLessonId = await getFirstLessonId(admin, course.id);
 
+    // Does this course have a placement assessment? If so the client offers it
+    // as the primary next step (it personalises the plan AND feeds the manager
+    // dashboard's skill analytics); members can still skip to lesson 1.
+    const { count: paperCount } = await admin
+      .from("assessment_papers").select("id", { count: "exact", head: true }).eq("course_id", course.id);
+    const assessmentAvailable = (paperCount ?? 0) > 0;
+
     const { data: existingEnr } = await supabase
       .from("student_enrollments").select("id, current_lesson_id").eq("student_id", student.id).eq("course_id", course.id).maybeSingle();
 
@@ -146,7 +153,12 @@ export async function POST(request: Request) {
       }
     }
 
-    return NextResponse.json({ ok: true, firstLessonId: existingEnr?.current_lesson_id ?? firstLessonId });
+    return NextResponse.json({
+      ok: true,
+      firstLessonId: existingEnr?.current_lesson_id ?? firstLessonId,
+      slug: effectiveSlug,
+      assessmentAvailable,
+    });
   } catch (err) {
     if (err instanceof z.ZodError) return NextResponse.json({ error: "Invalid request" }, { status: 400 });
     console.error("[org/join]", err);
