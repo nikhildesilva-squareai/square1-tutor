@@ -66,7 +66,9 @@ export async function proxy(request: NextRequest) {
     pathname.startsWith("/videos") ||
     pathname.startsWith("/images") ||
     // Allow API routes (each route protects itself)
-    pathname.startsWith("/api");
+    pathname.startsWith("/api") ||
+    // Dev-only fixture previews (the pages themselves 404 in production)
+    (process.env.NODE_ENV !== "production" && pathname.startsWith("/dev/"));
 
   if (!user && !isPublic) {
     const url = request.nextUrl.clone();
