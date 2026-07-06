@@ -67,9 +67,7 @@ export async function sendWelcomeEmail(to: string, name: string) {
     html: `
       <div style="font-family:system-ui,-apple-system,sans-serif;max-width:520px;margin:0 auto;padding:40px 20px;">
         <div style="text-align:center;margin-bottom:32px;">
-          <div style="display:inline-block;background:linear-gradient(135deg,#0056CE,#7C3AED);border-radius:12px;padding:12px;margin-bottom:16px;">
-            <span style="color:white;font-weight:900;font-size:18px;">[ S1 ]</span>
-          </div>
+          <img src="https://square1-tutor.vercel.app/logo-square1.png" alt="Square 1 AI" width="150" style="display:inline-block;margin-bottom:16px;max-width:150px;height:auto;" />
           <h1 style="color:#0F172A;font-size:24px;font-weight:800;margin:0 0 8px;">Welcome, ${name}!</h1>
           <p style="color:#64748B;font-size:14px;margin:0;">Your journey to a tech career starts now.</p>
         </div>
@@ -114,9 +112,7 @@ export async function sendStreakReminder(to: string, name: string, streakDays: n
     html: `
       <div style="font-family:system-ui,-apple-system,sans-serif;max-width:520px;margin:0 auto;padding:40px 20px;">
         <div style="text-align:center;margin-bottom:32px;">
-          <div style="display:inline-block;background:linear-gradient(135deg,#0056CE,#7C3AED);border-radius:12px;padding:12px;margin-bottom:16px;">
-            <span style="color:white;font-weight:900;font-size:18px;">[ S1 ]</span>
-          </div>
+          <img src="https://square1-tutor.vercel.app/logo-square1.png" alt="Square 1 AI" width="150" style="display:inline-block;margin-bottom:16px;max-width:150px;height:auto;" />
           <h1 style="color:#0F172A;font-size:24px;font-weight:800;margin:0 0 8px;">
             ${streakDays > 0 ? `${streakDays}-day streak!` : "Hey " + name + "!"}
           </h1>
@@ -154,9 +150,7 @@ export async function sendAssessmentNudge(to: string, name: string) {
     html: `
       <div style="font-family:system-ui,-apple-system,sans-serif;max-width:520px;margin:0 auto;padding:40px 20px;">
         <div style="text-align:center;margin-bottom:32px;">
-          <div style="display:inline-block;background:linear-gradient(135deg,#0056CE,#7C3AED);border-radius:12px;padding:12px;margin-bottom:16px;">
-            <span style="color:white;font-weight:900;font-size:18px;">[ S1 ]</span>
-          </div>
+          <img src="https://square1-tutor.vercel.app/logo-square1.png" alt="Square 1 AI" width="150" style="display:inline-block;margin-bottom:16px;max-width:150px;height:auto;" />
           <h1 style="color:#0F172A;font-size:24px;font-weight:800;margin:0 0 8px;">Hey ${name} — one step left</h1>
           <p style="color:#64748B;font-size:14px;margin:0;">You created your account but haven't taken the free assessment yet.</p>
         </div>
@@ -198,9 +192,7 @@ export async function sendWeeklyDigest(to: string, name: string, stats: {
     html: `
       <div style="font-family:system-ui,-apple-system,sans-serif;max-width:520px;margin:0 auto;padding:40px 20px;">
         <div style="text-align:center;margin-bottom:32px;">
-          <div style="display:inline-block;background:linear-gradient(135deg,#0056CE,#7C3AED);border-radius:12px;padding:12px;margin-bottom:16px;">
-            <span style="color:white;font-weight:900;font-size:18px;">[ S1 ]</span>
-          </div>
+          <img src="https://square1-tutor.vercel.app/logo-square1.png" alt="Square 1 AI" width="150" style="display:inline-block;margin-bottom:16px;max-width:150px;height:auto;" />
           <h1 style="color:#0F172A;font-size:24px;font-weight:800;margin:0 0 8px;">Weekly Progress</h1>
           <p style="color:#64748B;font-size:14px;margin:0;">Here's how you did this week, ${name}.</p>
         </div>
@@ -246,9 +238,7 @@ export async function sendTeamInvite(to: string, teamName: string, inviteUrl: st
       <meta charset="utf-8">
       <div style="font-family:system-ui,-apple-system,sans-serif;max-width:520px;margin:0 auto;padding:40px 20px;">
         <div style="text-align:center;margin-bottom:32px;">
-          <div style="display:inline-block;background:linear-gradient(135deg,#0056CE,#7C3AED);border-radius:12px;padding:12px;margin-bottom:16px;">
-            <span style="color:white;font-weight:900;font-size:18px;">[ S1 ]</span>
-          </div>
+          <img src="https://square1-tutor.vercel.app/logo-square1.png" alt="Square 1 AI" width="150" style="display:inline-block;margin-bottom:16px;max-width:150px;height:auto;" />
           <h1 style="color:#0F172A;font-size:24px;font-weight:800;margin:0 0 8px;">${teamName} added you to their team</h1>
           <p style="color:#64748B;font-size:14px;margin:0;">You've got a free seat on Square 1 AI — an AI tutor that grades your real code.</p>
         </div>
@@ -283,9 +273,7 @@ export async function sendSeatActivationNudge(to: string, teamName: string, acti
     html: `
       <div style="font-family:system-ui,-apple-system,sans-serif;max-width:520px;margin:0 auto;padding:40px 20px;">
         <div style="text-align:center;margin-bottom:32px;">
-          <div style="display:inline-block;background:linear-gradient(135deg,#0056CE,#7C3AED);border-radius:12px;padding:12px;margin-bottom:16px;">
-            <span style="color:white;font-weight:900;font-size:18px;">[ S1 ]</span>
-          </div>
+          <img src="https://square1-tutor.vercel.app/logo-square1.png" alt="Square 1 AI" width="150" style="display:inline-block;margin-bottom:16px;max-width:150px;height:auto;" />
           <h1 style="color:#0F172A;font-size:24px;font-weight:800;margin:0 0 8px;">${left} of your seats are still empty</h1>
           <p style="color:#64748B;font-size:14px;margin:0;">${activated} of ${total} people on ${teamName} have started. Get the rest going in a click.</p>
         </div>
@@ -314,9 +302,7 @@ export async function sendInviteReminder(to: string, teamName: string, inviteUrl
       <meta charset="utf-8">
       <div style="font-family:system-ui,-apple-system,sans-serif;max-width:520px;margin:0 auto;padding:40px 20px;">
         <div style="text-align:center;margin-bottom:32px;">
-          <div style="display:inline-block;background:linear-gradient(135deg,#3388FF,#0056CE);border-radius:12px;padding:12px;margin-bottom:16px;">
-            <span style="color:white;font-weight:900;font-size:18px;">[ S1 ]</span>
-          </div>
+          <img src="https://square1-tutor.vercel.app/logo-square1.png" alt="Square 1 AI" width="150" style="display:inline-block;margin-bottom:16px;max-width:150px;height:auto;" />
           <h1 style="color:#0F172A;font-size:24px;font-weight:800;margin:0 0 8px;">Your seat is still open</h1>
           <p style="color:#64748B;font-size:14px;margin:0;">${teamName} reserved you a spot on Square 1 AI a few days ago — it takes about a minute to claim.</p>
         </div>
