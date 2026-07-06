@@ -1,7 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
-import { Anthropic } from "@anthropic-ai/sdk";
-
-const client = new Anthropic();
+import { providerFor, generate, type Provider } from "@/lib/ai/providers";
 
 interface ModerationResult {
   flagged: boolean;
@@ -10,16 +8,28 @@ interface ModerationResult {
   explanation: string;
 }
 
+// Moderation is a cheap classification task. It follows the pluggable provider
+// layer (AI_PROVIDER_MODERATION override > AI_PROVIDER global), so it runs on
+// the OSS endpoint alongside every other feature — the previous direct
+// Anthropic client bypassed the flags AND used Opus, the most expensive model.
+function moderationModel(provider: Provider): string {
+  return provider === "oss"
+    ? (process.env["OSS_AI_MODEL_CHEAP"] ?? process.env["OSS_AI_MODEL"] ?? "")
+    : "claude-haiku-4-5-20251001";
+}
+
 /**
- * Analyze a message for policy violations using Claude
- * Returns moderation verdict with confidence score
+ * Analyze a message for policy violations using the configured AI provider.
+ * Returns moderation verdict with confidence score.
+ * (Name kept for existing call sites; the model behind it is provider-routed.)
  */
 export async function analyzeMessageWithClaude(
   messageContent: string
 ): Promise<ModerationResult> {
   try {
-    const response = await client.messages.create({
-      model: "claude-opus-4-1-20250805",
+    const provider = providerFor("moderation");
+    const response = await generate(provider, {
+      model: moderationModel(provider),
       max_tokens: 500,
       system: `You are a content moderation assistant. Analyze the given message for policy violations.
 
@@ -46,20 +56,15 @@ Respond with JSON only:
     });
 
     // Extract JSON from response
-    const content = response.content[0];
-    if (content.type !== "text") {
-      throw new Error("Unexpected response type from Claude");
-    }
-
-    const jsonMatch = content.text.match(/\{[\s\S]*\}/);
+    const jsonMatch = response.text.match(/\{[\s\S]*\}/);
     if (!jsonMatch) {
-      throw new Error("Could not parse JSON from Claude response");
+      throw new Error("Could not parse JSON from moderation response");
     }
 
     const result = JSON.parse(jsonMatch[0]) as ModerationResult;
     return result;
   } catch (error) {
-    console.error("Error analyzing message with Claude:", error);
+    console.error("Error analyzing message for moderation:", error);
     // Default to no flag on error to avoid false positives
     return {
       flagged: false,
