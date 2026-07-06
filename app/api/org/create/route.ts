@@ -7,6 +7,9 @@ import { MAX_SELF_SERVE_SEATS } from "@/lib/org";
 const schema = z.object({
   name: z.string().min(1).max(120),
   seats: z.number().int().min(1).max(MAX_SELF_SERVE_SEATS),
+  // Billing preference captured now (free during early access) so the org is
+  // already on the right plan when Stripe goes live.
+  interval: z.enum(["monthly", "annual"]).optional(),
 });
 
 function makeJoinCode(): string {
@@ -23,7 +26,7 @@ export async function POST(request: Request) {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-    const { name, seats } = schema.parse(await request.json());
+    const { name, seats, interval } = schema.parse(await request.json());
 
     // Ensure a student record for the manager
     let { data: student } = await supabase.from("students").select("id").eq("user_id", user.id).maybeSingle();
@@ -47,7 +50,7 @@ export async function POST(request: Request) {
     const joinCode = makeJoinCode();
     const { data: org, error: orgErr } = await admin
       .from("organizations")
-      .insert({ name, seats, join_code: joinCode, created_by: student.id, plan: "free_beta" })
+      .insert({ name, seats, join_code: joinCode, created_by: student.id, plan: "free_beta", billing_interval: interval ?? null })
       .select("id, join_code")
       .single();
     if (orgErr || !org) {

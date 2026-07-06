@@ -3,6 +3,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { getFirstLessonId } from "@/lib/lessons";
+import { RETIRED_COURSE_SLUGS } from "@/lib/catalog";
 
 const schema = z.object({
   code: z.string().min(4).max(40),
@@ -78,18 +79,34 @@ export async function POST(request: Request) {
     }
 
     // Free enrollment in the chosen track (mirror B2C: beginner, first lesson).
-    // effectiveSlug honours a manager's assignment if one exists.
-    const { data: course } = await admin.from("courses").select("id").eq("slug", effectiveSlug).maybeSingle();
+    // effectiveSlug honours a manager's assignment if one exists. Server-side
+    // catalog guard: only visible top-level active courses are joinable — the
+    // client picker enforces this too, but never trust the slug from the wire.
+    if ((RETIRED_COURSE_SLUGS as readonly string[]).includes(effectiveSlug)) {
+      return NextResponse.json({ error: "That course is no longer available — pick another track." }, { status: 400 });
+    }
+    const { data: course } = await admin
+      .from("courses").select("id")
+      .eq("slug", effectiveSlug).eq("status", "active").is("parent_course_id", null)
+      .maybeSingle();
     if (!course) return NextResponse.json({ error: "Course not found" }, { status: 404 });
 
     // First lesson — module-aware (lessons.order_index is per-module).
     const firstLessonId = await getFirstLessonId(admin, course.id);
 
     const { data: existingEnr } = await supabase
-      .from("student_enrollments").select("id").eq("student_id", student.id).eq("course_id", course.id).maybeSingle();
+      .from("student_enrollments").select("id, current_lesson_id").eq("student_id", student.id).eq("course_id", course.id).maybeSingle();
 
     if (existingEnr) {
-      await supabase.from("student_enrollments").update({ status: "active", org_id: org.id, current_lesson_id: firstLessonId }).eq("id", existingEnr.id);
+      // Re-join (e.g. clicking the invite link twice): keep their lesson
+      // position — only backfill the pointer if it was never set.
+      await supabase.from("student_enrollments")
+        .update({
+          status: "active",
+          org_id: org.id,
+          current_lesson_id: existingEnr.current_lesson_id ?? firstLessonId,
+        })
+        .eq("id", existingEnr.id);
     } else {
       const { error: enrErr } = await supabase.from("student_enrollments").insert({
         student_id: student.id,
@@ -106,7 +123,7 @@ export async function POST(request: Request) {
       }
     }
 
-    return NextResponse.json({ ok: true, firstLessonId });
+    return NextResponse.json({ ok: true, firstLessonId: existingEnr?.current_lesson_id ?? firstLessonId });
   } catch (err) {
     if (err instanceof z.ZodError) return NextResponse.json({ error: "Invalid request" }, { status: 400 });
     console.error("[org/join]", err);

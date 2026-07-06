@@ -121,7 +121,7 @@ export function TeamSignIn({ next, onAuthed }: { next: string; onAuthed: () => v
           onClick={() => { const c = digits.join(""); if (c.length === CODE_LENGTH) verify(c); }}
           disabled={digits.join("").length < CODE_LENGTH || loading}
           className="w-full h-12 rounded-xl text-white font-bold text-sm disabled:opacity-50 hover:-translate-y-0.5 transition-transform"
-          style={{ background: "linear-gradient(135deg,#0056CE,#4F46E5)" }}>
+          style={{ background: "linear-gradient(135deg, #3388FF 0%, #0056CE 55%, #01224F 100%)" }}>
           {loading ? "Verifying…" : "Verify code"}
         </button>
         <div className="mt-4 flex flex-col items-center gap-2">
@@ -157,7 +157,7 @@ export function TeamSignIn({ next, onAuthed }: { next: string; onAuthed: () => v
         {error && <p className="text-sm text-red-600">{error}</p>}
         <button type="submit" disabled={loading}
           className="w-full h-12 rounded-xl text-white font-bold text-sm disabled:opacity-50 hover:-translate-y-0.5 transition-transform"
-          style={{ background: "linear-gradient(135deg,#0056CE,#4F46E5)" }}>
+          style={{ background: "linear-gradient(135deg, #3388FF 0%, #0056CE 55%, #01224F 100%)" }}>
           {loading ? "Sending…" : "Email me a code"}
         </button>
       </form>

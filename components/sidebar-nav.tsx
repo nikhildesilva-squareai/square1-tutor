@@ -5,6 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import {
   LayoutDashboard,
   BookOpen,
+  Briefcase,
   FolderKanban,
   Users,
   BarChart3,
@@ -34,9 +35,10 @@ const nav = [
 interface SidebarNavProps {
   userEmail: string;
   userId: string;
+  isManager?: boolean;
 }
 
-export function SidebarNav({ userEmail }: SidebarNavProps) {
+export function SidebarNav({ userEmail, isManager = false }: SidebarNavProps) {
   const pathname = usePathname();
   const router = useRouter();
   const unread = useUnreadMessages();
@@ -85,6 +87,22 @@ export function SidebarNav({ userEmail }: SidebarNavProps) {
             </Link>
           );
         })}
+
+        {/* Manager portal — only for team managers; the sole in-app route back */}
+        {isManager && (
+          <>
+            <div className="pt-3 pb-1 px-4">
+              <p className="text-[10px] font-bold uppercase tracking-wider text-ink-muted">Your team</p>
+            </div>
+            <Link
+              href="/business/dashboard"
+              className="h-10 px-4 rounded-lg flex items-center gap-3 text-sm font-medium transition-all text-ink-secondary hover:bg-surface-alt hover:text-ink border border-transparent"
+            >
+              <Briefcase className="w-4 h-4" />
+              <span className="flex-1">Manager portal</span>
+            </Link>
+          </>
+        )}
       </nav>
 
       {/* User footer — account + utility items (Settings, Feedback, Messages) */}

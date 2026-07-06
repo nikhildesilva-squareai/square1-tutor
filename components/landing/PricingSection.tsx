@@ -152,9 +152,9 @@ export function PricingSection() {
             style={{ boxShadow: "0 8px 32px rgba(15,28,49,0.06)" }}>
             <p className="text-[10px] tracking-[0.25em] uppercase font-bold text-slate-500 mb-3">For Teams</p>
             <p className="font-black text-slate-900 leading-none" style={{ fontSize: 40 }}>
-              Custom
+              from $20<span className="text-base font-bold text-slate-400">/seat/mo</span>
             </p>
-            <p className="text-xs text-slate-500 mt-1.5 mb-6">per-seat, sized to your team</p>
+            <p className="text-xs text-slate-500 mt-1.5 mb-6">volume-tiered · free during early access</p>
             <ul className="space-y-2.5 flex-1">
               {TEAM_FEATURES.map((f) => (
                 <li key={f} className="flex items-start gap-2.5 text-sm text-slate-600">

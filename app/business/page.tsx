@@ -146,7 +146,7 @@ export default function BusinessPage() {
 
         <div className="max-w-2xl mx-auto mb-9 mt-5 rounded-xl border border-emerald-300 bg-emerald-50 px-5 py-3 text-center">
           <p className="text-sm font-bold text-emerald-800">
-            🎉 Founding offer — our first corporate customers get <span className="underline">30% off these rates, locked for life.</span>
+            Founding offer — our first corporate customers get <span className="underline">30% off these rates, locked for life.</span>
           </p>
         </div>
 

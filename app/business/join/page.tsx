@@ -5,21 +5,8 @@ import Link from "next/link";
 import { Logo } from "@/components/ui/logo";
 import { createClient } from "@/lib/supabase/client";
 import { TeamSignIn } from "@/components/business/TeamSignIn";
-
-const SUBJECTS = [
-  { slug: "generative-ai", title: "Generative AI", icon: "🤖", color: "#6366f1" },
-  { slug: "machine-learning", title: "Machine Learning", icon: "🧠", color: "#8b5cf6" },
-  { slug: "fullstack-development", title: "Full Stack Dev", icon: "🚀", color: "#06b6d4" },
-  { slug: "cybersecurity", title: "Cybersecurity", icon: "🔐", color: "#ef4444" },
-  { slug: "data-science", title: "Data Science", icon: "📊", color: "#14b8a6" },
-  { slug: "devops-engineering", title: "DevOps", icon: "⚙️", color: "#F97316" },
-  { slug: "artificial-intelligence", title: "Artificial Intelligence", icon: "⚡", color: "#0ea5e9" },
-  { slug: "computer-vision", title: "Computer Vision", icon: "👁️", color: "#10b981" },
-  { slug: "llm-agent-architect", title: "LLM Agent Architect", icon: "🛠️", color: "#7C3AED" },
-  { slug: "game-development", title: "Game Development", icon: "🎮", color: "#f59e0b" },
-  { slug: "drone-technology", title: "Drone Technology", icon: "🚁", color: "#EC4899" },
-  { slug: "ai-product-management", title: "AI Product Management", icon: "📋", color: "#0EA5E9" },
-];
+import { getVisibleCourses, type CatalogCourse } from "@/lib/catalog";
+import { CourseIcon } from "@/components/ui/course-icon";
 
 type Stage = "loading" | "signin" | "pick" | "joining" | "error";
 
@@ -30,6 +17,13 @@ export default function JoinTeamPage() {
   const [error, setError] = useState("");
   const [assigned, setAssigned] = useState<{ slug: string; title: string } | null>(null);
   const [checkedAssign, setCheckedAssign] = useState(false);
+  const [subjects, setSubjects] = useState<CatalogCourse[]>([]);
+
+  // Live course catalog — same visibility rules as the landing page, so team
+  // members can never pick a retired track or miss a new one.
+  useEffect(() => {
+    getVisibleCourses(createClient()).then(setSubjects).catch(() => setSubjects([]));
+  }, []);
 
   const join = useCallback(async (joinCode: string, slug: string) => {
     setStage("joining"); setError("");
@@ -94,7 +88,7 @@ export default function JoinTeamPage() {
 
         {stage === "signin" && (
           <div className="w-full max-w-md text-center">
-            <h1 className="text-3xl font-black text-slate-900 mb-2">You&apos;re invited to learn 🎓</h1>
+            <h1 className="text-3xl font-black text-slate-900 mb-2">You&apos;re invited to learn</h1>
             <p className="text-sm text-slate-600 mb-6">Your team has a Square 1 Ai seat for you. Sign in to claim it.</p>
             <TeamSignIn next={`/business/join?code=${code}`} onAuthed={() => setStage("pick")} />
           </div>
@@ -108,7 +102,7 @@ export default function JoinTeamPage() {
         {/* Manager pre-assigned a track → skip the picker */}
         {(stage === "pick" || stage === "joining") && checkedAssign && assigned && (
           <div className="w-full max-w-md text-center">
-            <h1 className="text-3xl font-black text-slate-900 mb-1">You&apos;re all set 🎓</h1>
+            <h1 className="text-3xl font-black text-slate-900 mb-1">You&apos;re all set</h1>
             <p className="text-sm text-slate-600 mb-6">Your manager set you up with a track. Start whenever you&apos;re ready.</p>
             <div className="rounded-2xl border-2 border-brand/30 bg-brand/[0.04] p-6 mb-6">
               <p className="text-[10px] tracking-widest uppercase font-bold text-slate-500 mb-1">Your assigned track</p>
@@ -129,13 +123,18 @@ export default function JoinTeamPage() {
             <h1 className="text-3xl font-black text-slate-900 mb-1">Pick your track</h1>
             <p className="text-sm text-slate-600 mb-7">Choose what you want to learn — you can switch later.</p>
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-7">
-              {SUBJECTS.map((s) => {
+              {subjects.length === 0 && <p className="col-span-full text-sm text-slate-500 py-6">Loading tracks…</p>}
+              {subjects.map((s) => {
                 const on = selected === s.slug;
+                const color = s.color ?? "#0056CE";
                 return (
                   <button key={s.slug} onClick={() => setSelected(s.slug)} disabled={stage === "joining"}
                     className="rounded-2xl p-4 border-2 text-left transition-all hover:-translate-y-0.5 disabled:opacity-60"
-                    style={{ borderColor: on ? s.color : "rgba(15,28,49,0.10)", background: on ? `${s.color}0D` : "#fff" }}>
-                    <span className="text-2xl">{s.icon}</span>
+                    style={{ borderColor: on ? color : "rgba(15,28,49,0.10)", background: on ? `${color}0D` : "#fff" }}>
+                    <span className="inline-flex w-10 h-10 rounded-xl items-center justify-center"
+                      style={{ background: `${color}15`, border: `1px solid ${color}30` }}>
+                      <CourseIcon slug={s.slug} size={20} color={color} />
+                    </span>
                     <p className="mt-2 text-sm font-bold text-slate-900 leading-tight">{s.title}</p>
                   </button>
                 );

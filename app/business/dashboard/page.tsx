@@ -7,6 +7,7 @@ import { Logo } from "@/components/ui/logo";
 import { CopyInviteLink } from "@/components/business/CopyInviteLink";
 import { BulkInvite } from "@/components/business/BulkInvite";
 import { getOrgStats } from "@/lib/org-stats";
+import { getVisibleCourses } from "@/lib/catalog";
 import { LEVEL_LABELS } from "@/lib/competency";
 
 export const dynamic = "force-dynamic";
@@ -19,21 +20,50 @@ function bandStyle(level: string): { background: string; color: string } {
   return { background: BAND_COLORS[idx], color: idx >= 2 ? "#fff" : "#0C447C" };
 }
 
+// Explain-don't-bounce: a signed-in user with no team lands here (e.g. a manager
+// who mistyped, a member exploring, or a manager whose org lookup hiccupped).
+// A silent redirect to the marketing page is indistinguishable from a bug.
+function NoTeamState() {
+  return (
+    <div className="min-h-screen flex flex-col" style={{ background: "linear-gradient(180deg,#F8FAFC 0%,#FFFFFF 45%)" }}>
+      <header className="flex items-center justify-between px-5 sm:px-10 py-5">
+        <Link href="/"><Logo variant="dark" size="md" /></Link>
+        <span className="text-sm font-semibold text-slate-500">Manager portal</span>
+      </header>
+      <main className="flex-1 flex items-center justify-center px-4">
+        <div className="text-center max-w-md">
+          <h1 className="text-2xl font-black text-slate-900 mb-2">You don&apos;t manage a team yet</h1>
+          <p className="text-sm text-slate-600 mb-6">
+            This portal is for team managers. If you&apos;re a team <em>member</em>, your learning lives in your{" "}
+            <Link href="/dashboard" className="text-brand font-semibold hover:underline">student dashboard</Link>.
+            Want to run a team of your own? Setting one up takes two minutes and is free during early access.
+          </p>
+          <Link href="/business/start"
+            className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full text-white font-bold text-sm hover:-translate-y-0.5 transition-transform"
+            style={{ background: "linear-gradient(135deg, #3388FF 0%, #0056CE 55%, #01224F 100%)", boxShadow: "0 12px 32px rgba(0,86,206,0.32)" }}>
+            Start a team →
+          </Link>
+        </div>
+      </main>
+    </div>
+  );
+}
+
 export default async function ManagerDashboard() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/login");
 
   const { data: student } = await supabase.from("students").select("id").eq("user_id", user.id).maybeSingle();
-  if (!student) redirect("/business");
+  if (!student) return <NoTeamState />;
 
   const admin = createAdminClient();
   const { data: mgr } = await admin
     .from("org_members").select("org_id").eq("student_id", student.id).eq("role", "manager").maybeSingle();
-  if (!mgr) redirect("/business");
+  if (!mgr) return <NoTeamState />;
 
   const stats = await getOrgStats(mgr.org_id);
-  if (!stats) redirect("/business");
+  if (!stats) return <NoTeamState />;
 
   const {
     org, roster, pendingCount, pendingEmails, seatsUsed, seatsLeft,
@@ -41,9 +71,9 @@ export default async function ManagerDashboard() {
     teamReadiness, readinessDelta, membersAssessed, topWeak, topStrong, teamMatrices,
   } = stats;
 
-  // Courses for the "assign a track" invite dropdown.
-  const { data: courseRows } = await admin.from("courses").select("slug, title").order("title");
-  const courseList = (courseRows ?? []) as { slug: string; title: string }[];
+  // Courses for the "assign a track" invite dropdown — visible catalog only
+  // (no retired courses, no advanced sub-courses).
+  const courseList = await getVisibleCourses(admin);
 
   const usedPct = org.seats > 0 ? Math.min(100, Math.round((seatsUsed / org.seats) * 100)) : 0;
   const pendingPct = org.seats > 0 ? Math.min(100 - usedPct, Math.round((pendingCount / org.seats) * 100)) : 0;
@@ -278,15 +308,13 @@ export default async function ManagerDashboard() {
                         <p className="text-xs text-slate-500">Completed</p>
                         <p className="text-xs font-semibold text-slate-700">{completedDate}</p>
                       </div>
-                      {r.trackSlug && (
-                        <Link
-                          href={`/certificate/${r.trackSlug}`}
-                          className="ml-3 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200 text-xs font-bold transition-colors"
-                        >
-                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" /></svg>
-                          Certificate
-                        </Link>
-                      )}
+                      <Link
+                        href={`/portfolio/${r.studentId}`}
+                        className="ml-3 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200 text-xs font-bold transition-colors"
+                      >
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 15a7 7 0 100-14 7 7 0 000 14zM8.21 13.89 7 23l5-3 5 3-1.21-9.12" /></svg>
+                        Verified portfolio
+                      </Link>
                     </div>
                   );
                 })}

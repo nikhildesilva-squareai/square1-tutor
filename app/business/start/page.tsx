@@ -4,11 +4,12 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Logo } from "@/components/ui/logo";
 import { createClient } from "@/lib/supabase/client";
-import { tierName, seatRate } from "@/lib/org";
+import { tierName, ratePerSeat, MAX_SELF_SERVE_SEATS, type BillingInterval } from "@/lib/org";
 import { TeamSignIn } from "@/components/business/TeamSignIn";
 
 export default function StartTeamPage() {
   const [seats, setSeats] = useState(5);
+  const [interval, setInterval] = useState<BillingInterval>("annual");
   const [loggedIn, setLoggedIn] = useState<boolean | null>(null);
   const [name, setName] = useState("");
   const [saving, setSaving] = useState(false);
@@ -16,8 +17,12 @@ export default function StartTeamPage() {
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
+    // Clamp instead of silently discarding — a 100-seat buyer must land on a
+    // 100-seat form, never on the 5-seat default. Range mirrors the pricing
+    // table (1 to MAX_SELF_SERVE_SEATS).
     const s = parseInt(params.get("seats") ?? "5", 10);
-    if (!isNaN(s) && s >= 1 && s <= 50) setSeats(s);
+    if (!isNaN(s)) setSeats(Math.min(MAX_SELF_SERVE_SEATS, Math.max(1, s)));
+    if (params.get("interval") === "monthly") setInterval("monthly");
     createClient().auth.getUser().then(({ data }) => setLoggedIn(!!data.user));
   }, []);
 
@@ -28,7 +33,7 @@ export default function StartTeamPage() {
     try {
       const res = await fetch("/api/org/create", {
         method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name: name.trim(), seats }),
+        body: JSON.stringify({ name: name.trim(), seats, interval }),
       });
       const data = await res.json();
       if (!res.ok || !data.orgId) throw new Error(data.error ?? "Could not create your team");
@@ -53,7 +58,12 @@ export default function StartTeamPage() {
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" /> FREE during early access
             </span>
             <h1 className="text-3xl font-black text-slate-900 mb-1">Set up your team</h1>
-            <p className="text-sm text-slate-600">{seats} seats · {tierName(seats)} tier · ${seatRate(seats)}/seat/mo when billing launches (free today)</p>
+            <p className="text-sm text-slate-600">
+              {seats} seats · {tierName(seats)} tier · ${ratePerSeat(seats, interval)}/seat/mo {interval === "annual" ? "billed annually" : "month-to-month"} when billing launches (free today)
+            </p>
+            <p className="text-xs text-slate-500 mt-1">
+              <Link href="/business#start" className="text-brand font-semibold hover:underline">Change seats or billing</Link>
+            </p>
           </div>
 
           {loggedIn === null ? (
@@ -61,7 +71,7 @@ export default function StartTeamPage() {
           ) : !loggedIn ? (
             <div>
               <p className="text-sm text-slate-600 mb-4 text-center">First, sign in — you&apos;ll be the team&apos;s manager.</p>
-              <TeamSignIn next={`/business/start?seats=${seats}`} onAuthed={() => setLoggedIn(true)} />
+              <TeamSignIn next={`/business/start?seats=${seats}&interval=${interval}`} onAuthed={() => setLoggedIn(true)} />
             </div>
           ) : (
             <form onSubmit={createTeam} className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm space-y-4">
@@ -73,7 +83,7 @@ export default function StartTeamPage() {
               {error && <p className="text-sm text-red-600">{error}</p>}
               <button type="submit" disabled={saving}
                 className="w-full h-12 rounded-xl text-white font-bold text-sm disabled:opacity-60 hover:-translate-y-0.5 transition-transform"
-                style={{ background: "linear-gradient(135deg,#0056CE,#4F46E5)" }}>
+                style={{ background: "linear-gradient(135deg, #3388FF 0%, #0056CE 55%, #01224F 100%)" }}>
                 {saving ? "Creating…" : "Create team & open manager portal →"}
               </button>
               <p className="text-[11px] text-slate-500 text-center">You&apos;ll get a link to invite your {seats} team members.</p>
