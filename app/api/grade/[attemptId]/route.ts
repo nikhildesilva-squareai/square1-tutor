@@ -59,6 +59,11 @@ interface Grade {
   improvedCode: string | null;
 }
 
+/** A whole grading batch failed or came back unparseable — retryable, and the
+ * caller must NOT persist anything (fallback scores would bake into the skill
+ * report, learning plan and cohort percentiles permanently). */
+class GradeBatchError extends Error {}
+
 /** Pull the first JSON array out of an LLM response. */
 function extractJsonArray(text: string): unknown[] | null {
   const match = text.match(/\[[\s\S]*\]/);
@@ -108,6 +113,7 @@ Student's answer: ${ans || "(no answer provided)"}`;
     feature: "grading",
     system: GRADING_SYSTEM_PROMPT,
     max_tokens: 6000,
+    temperature: 0,
     messages: [{
       role: "user",
       content: `You are an expert examiner for ${subject}. Grade each answer strictly against its mark scheme. Award marks only for points in the mark scheme; be fair but rigorous.
@@ -129,7 +135,10 @@ ${block}`,
     }],
   });
 
-  const parsed = extractJsonArray(result.text) ?? [];
+  const parsed = extractJsonArray(result.text);
+  if (!parsed || parsed.length === 0) {
+    throw new GradeBatchError("short-answer batch returned no parseable grades");
+  }
   const byNumber = new Map<number, Record<string, unknown>>();
   for (const item of parsed) {
     if (item && typeof item === "object" && "number" in item) {
@@ -140,6 +149,8 @@ ${block}`,
   for (const q of questions) {
     const r = byNumber.get(q.number);
     if (!r) {
+      // Per-question miss inside an otherwise-successful batch: partial credit,
+      // disclosed in the feedback text.
       out.set(q.id, fallbackGrade(q, responseMap.get(q.id)?.response_text ?? "", false));
       continue;
     }
@@ -180,6 +191,7 @@ ${code || "// No code submitted"}
     feature: "grading",
     system: GRADING_SYSTEM_PROMPT,
     max_tokens: 8000,
+    temperature: 0,
     messages: [{
       role: "user",
       content: `You are a senior engineer grading code submissions for ${subject}. For each, judge correctness, code quality, edge cases, and best practices.
@@ -201,7 +213,10 @@ ${block}`,
     }],
   });
 
-  const parsed = extractJsonArray(result.text) ?? [];
+  const parsed = extractJsonArray(result.text);
+  if (!parsed || parsed.length === 0) {
+    throw new GradeBatchError("code batch returned no parseable grades");
+  }
   const byNumber = new Map<number, Record<string, unknown>>();
   for (const item of parsed) {
     if (item && typeof item === "object" && "number" in item) {
@@ -212,6 +227,8 @@ ${block}`,
   for (const q of questions) {
     const r = byNumber.get(q.number);
     if (!r) {
+      // Per-question miss inside an otherwise-successful batch: partial credit,
+      // disclosed in the feedback text.
       out.set(q.id, fallbackGrade(q, responseMap.get(q.id)?.code_response ?? "", true));
       continue;
     }
@@ -492,19 +509,15 @@ export async function POST(
     // Free-response — TWO batched AI calls (all short answers in one, all code in
     // one) instead of one-per-question. Cuts a 20-question paper from ~13 AI calls
     // to 2, keeping us well under the org rate limit and avoiding the function
-    // timeout. Each batch catches its own error and falls back per-question.
+    // timeout. A whole-batch failure aborts the grade WITHOUT persisting anything
+    // (the attempt stays ungraded and the student retries); only per-question
+    // misses inside a successful batch fall back to partial credit.
     const shortQs = questions.filter((q) => q.type === "short_answer");
     const codeQs = questions.filter((q) => q.type === "code");
 
     const [shortGrades, codeGrades] = await Promise.all([
-      gradeShortAnswers(student.id, shortQs, responseMap, subject).catch((e) => {
-        console.error("[grade] short-answer batch failed:", e);
-        return new Map(shortQs.map((q) => [q.id, fallbackGrade(q, responseMap.get(q.id)?.response_text ?? "", false)]));
-      }),
-      gradeCodeAnswers(student.id, codeQs, responseMap, subject).catch((e) => {
-        console.error("[grade] code batch failed:", e);
-        return new Map(codeQs.map((q) => [q.id, fallbackGrade(q, responseMap.get(q.id)?.code_response ?? "", true)]));
-      }),
+      gradeShortAnswers(student.id, shortQs, responseMap, subject),
+      gradeCodeAnswers(student.id, codeQs, responseMap, subject),
     ]);
 
     for (const [id, g] of shortGrades) allGrades[id] = g;
@@ -686,6 +699,13 @@ export async function POST(
     if (err instanceof Anthropic.APIError && (err.status === 529 || err.status === 503)) {
       return NextResponse.json(
         { error: "The AI grader is momentarily overloaded. Please try again in a minute." },
+        { status: 503 },
+      );
+    }
+    if (err instanceof GradeBatchError) {
+      console.error("[grade] batch unparseable:", err.message);
+      return NextResponse.json(
+        { error: "The AI grader returned an unreadable result. Please refresh in a minute to grade again — your answers are saved." },
         { status: 503 },
       );
     }
