@@ -10,7 +10,7 @@ import { CourseIcon } from "@/components/ui/course-icon";
 
 type Stage = "loading" | "signin" | "pick" | "joining" | "joined" | "error";
 
-type JoinedInfo = { slug: string; firstLessonId: string | null; assessmentAvailable: boolean };
+type JoinedInfo = { slug: string; firstLessonId: string | null; assessmentAvailable: boolean; mandatory: boolean };
 
 export default function JoinTeamPage() {
   const [stage, setStage] = useState<Stage>("loading");
@@ -28,7 +28,7 @@ export default function JoinTeamPage() {
     getVisibleCourses(createClient()).then(setSubjects).catch(() => setSubjects([]));
   }, []);
 
-  const join = useCallback(async (joinCode: string, slug: string) => {
+  const join = useCallback(async (joinCode: string, slug: string, viaAssignment = false) => {
     setStage("joining"); setError("");
     try {
       const res = await fetch("/api/org/join", {
@@ -38,10 +38,17 @@ export default function JoinTeamPage() {
       const data = await res.json();
       if (!res.ok || !data.ok) throw new Error(data.error ?? "Could not join");
       // Assessment-first: placement personalises the plan AND powers the
-      // manager's skill analytics. Courses without a placement paper (or a
-      // missing slug from an older API) skip straight to the first lesson.
+      // manager's skill analytics. Manager-assigned tracks make it MANDATORY
+      // (the employer relies on the analytics); self-picked tracks may skip.
+      // Courses without a placement paper (or a missing slug from an older
+      // API) go straight to the first lesson.
       if (data.assessmentAvailable && data.slug) {
-        setJoined({ slug: data.slug, firstLessonId: data.firstLessonId ?? null, assessmentAvailable: true });
+        setJoined({
+          slug: data.slug,
+          firstLessonId: data.firstLessonId ?? null,
+          assessmentAvailable: true,
+          mandatory: viaAssignment || Boolean(data.assigned),
+        });
         setStage("joined");
       } else {
         window.location.href = data.firstLessonId ? `/learn/${data.firstLessonId}` : "/dashboard";
@@ -98,9 +105,15 @@ export default function JoinTeamPage() {
             </span>
             <h1 className="text-3xl font-black text-slate-900 mb-2">You&apos;re in</h1>
             <p className="text-sm text-slate-600 mb-7">
-              One step makes everything smarter: a placement assessment. It maps your current
-              skills, personalises your plan to your actual level, and shows your strengths on
-              your team&apos;s dashboard.
+              {joined.mandatory ? (
+                <>Your first step is the placement assessment. It maps your current skills,
+                sets your starting level, and shows your strengths on your team&apos;s
+                dashboard — your manager will see your progress from here.</>
+              ) : (
+                <>One step makes everything smarter: a placement assessment. It maps your current
+                skills, personalises your plan to your actual level, and shows your strengths on
+                your team&apos;s dashboard.</>
+              )}
             </p>
             <a href={`/courses/${joined.slug}/assess`}
               className="inline-flex w-full items-center justify-center gap-2 px-8 py-4 rounded-full text-white font-bold text-sm hover:-translate-y-0.5 transition-transform"
@@ -109,10 +122,13 @@ export default function JoinTeamPage() {
               <span aria-hidden>→</span>
             </a>
             <p className="text-[11px] text-slate-500 mt-2">~30 minutes · AI-graded · sets your starting level</p>
-            <a href={joined.firstLessonId ? `/learn/${joined.firstLessonId}` : "/dashboard"}
-              className="inline-block mt-5 text-xs font-semibold text-slate-500 hover:text-slate-800 transition-colors">
-              Skip for now — start from Lesson 1 (you can take it later)
-            </a>
+            {/* Manager-assigned tracks: the assessment is mandatory — no skip. */}
+            {!joined.mandatory && (
+              <a href={joined.firstLessonId ? `/learn/${joined.firstLessonId}` : "/dashboard"}
+                className="inline-block mt-5 text-xs font-semibold text-slate-500 hover:text-slate-800 transition-colors">
+                Skip for now — start from Lesson 1 (you can take it later)
+              </a>
+            )}
           </div>
         )}
 
@@ -146,7 +162,7 @@ export default function JoinTeamPage() {
               <p className="text-xl font-black text-slate-900">{assigned.title}</p>
             </div>
             {error && <p className="text-sm text-red-600 mb-3">{error}</p>}
-            <button onClick={() => join(code, assigned.slug)} disabled={stage === "joining"}
+            <button onClick={() => join(code, assigned.slug, true)} disabled={stage === "joining"}
               className="inline-flex items-center justify-center px-8 py-4 rounded-xl text-white font-bold text-sm disabled:opacity-40 hover:-translate-y-0.5 transition-transform"
               style={{ background: "linear-gradient(135deg,#0056CE,#01224F)", boxShadow: "0 12px 32px rgba(0,86,206,0.30)" }}>
               {stage === "joining" ? "Setting up…" : "Start learning →"}

@@ -12,8 +12,9 @@ const schema = z.object({
 
 /**
  * POST /api/org/join — authed. A team member joins via the org's join code, takes
- * a free seat, and gets a free enrollment in their chosen track (no card, no
- * assessment gate) — same student experience as B2C. Seat-limited.
+ * a free seat, and gets a free enrollment in their chosen track (no card) — same
+ * student experience as B2C. Seat-limited. Manager-assigned tracks make the
+ * placement assessment the mandatory first step (self-picked tracks may skip).
  */
 export async function POST(request: Request) {
   try {
@@ -39,6 +40,7 @@ export async function POST(request: Request) {
     // If the manager assigned this person a specific track, it wins over the
     // client's pick. Read it BEFORE we mark the invite accepted below.
     let effectiveSlug = courseSlug;
+    let managerAssigned = false;
     if (user.email) {
       const { data: inv } = await admin
         .from("org_invites")
@@ -48,7 +50,7 @@ export async function POST(request: Request) {
         .maybeSingle();
       if (inv?.assigned_course_id) {
         const { data: ac } = await admin.from("courses").select("slug").eq("id", inv.assigned_course_id).maybeSingle();
-        if (ac?.slug) effectiveSlug = ac.slug;
+        if (ac?.slug) { effectiveSlug = ac.slug; managerAssigned = true; }
       }
     }
 
@@ -158,6 +160,9 @@ export async function POST(request: Request) {
       firstLessonId: existingEnr?.current_lesson_id ?? firstLessonId,
       slug: effectiveSlug,
       assessmentAvailable,
+      // Manager-assigned tracks make the placement assessment mandatory (no
+      // skip): the employer is buying the skill analytics the assessment feeds.
+      assigned: managerAssigned,
     });
   } catch (err) {
     if (err instanceof z.ZodError) return NextResponse.json({ error: "Invalid request" }, { status: 400 });

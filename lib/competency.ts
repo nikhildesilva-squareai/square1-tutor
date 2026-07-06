@@ -232,6 +232,24 @@ export const COMPETENCY: Record<string, CompetencyConfig> = {
     ],
   },
 
+  "agentic-ai": {
+    domains: [
+      { name: "Agent Fundamentals", tags: ["agent-fundamentals", "agent-loop", "autonomy-levels"] },
+      { name: "Tool Use & Integration", tags: ["tool-use", "function-calling", "mcp"] },
+      { name: "Memory & Context", tags: ["agent-memory", "context-management", "state-persistence"] },
+      { name: "Orchestration & Multi-Agent", tags: ["orchestration", "multi-agent-patterns", "workflow-design"] },
+      { name: "Safety & Guardrails", tags: ["agent-guardrails", "human-in-the-loop", "sandboxing"] },
+      { name: "Production Operations", tags: ["agent-observability", "agent-evals", "cost-management"] },
+    ],
+    roles: [
+      { min: 0, label: "Exploring Agentic AI" },
+      { min: 40, label: "Junior Agentic AI Engineer" },
+      { min: 60, label: "Agentic AI Engineer" },
+      { min: 75, label: "Senior Agentic AI Engineer" },
+      { min: 90, label: "Agentic Systems Lead" },
+    ],
+  },
+
   "llm-agent-architect": {
     domains: [
       { name: "Agent Loops", tags: ["agent_loops"] },
