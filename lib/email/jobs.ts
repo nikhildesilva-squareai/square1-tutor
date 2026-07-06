@@ -1,9 +1,12 @@
 import { createAdminClient } from "@/lib/supabase/admin";
 import { computeStreak } from "@/lib/streaks";
+import { getOrgStats } from "@/lib/org-stats";
 import {
   sendStreakReminder,
   sendWeeklyDigest,
   sendAssessmentNudge,
+  sendInviteReminder,
+  sendManagerDigest,
 } from "@/lib/email/resend";
 
 /**
@@ -256,6 +259,113 @@ export async function runAssessmentNudges(): Promise<JobResult> {
       result.sent++;
     } catch (err) {
       result.errors.push(`${student.email}: ${err instanceof Error ? err.message : "unknown"}`);
+    }
+  }
+
+  return result;
+}
+
+/* ─── B2B: invite reminder — one nudge per invite still pending after 3 days ── */
+export async function runInviteReminders(): Promise<JobResult> {
+  const supabase = createAdminClient();
+  const result: JobResult = { sent: 0, skipped: 0, errors: [] };
+
+  const threeDaysAgo = new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString();
+
+  // Pending invites, older than 3 days, never reminded. reminded_at (not
+  // email_log) gates this job: invitees usually have no student row yet.
+  const { data: invites } = await supabase
+    .from("org_invites")
+    .select("id, email, org:organizations(name, join_code)")
+    .eq("status", "pending")
+    .is("reminded_at", null)
+    .lt("created_at", threeDaysAgo)
+    .limit(BATCH_CAP);
+
+  if (!invites || invites.length === 0) return result;
+
+  for (const invite of invites as unknown as Array<{
+    id: string;
+    email: string;
+    org: { name: string; join_code: string } | null;
+  }>) {
+    if (!invite.org || !invite.email) {
+      result.skipped++;
+      continue;
+    }
+    const inviteUrl = `https://square1-tutor.vercel.app/business/join?code=${invite.org.join_code}`;
+    try {
+      await sendInviteReminder(invite.email, invite.org.name, inviteUrl);
+      await supabase.from("org_invites").update({ reminded_at: new Date().toISOString() }).eq("id", invite.id);
+      result.sent++;
+    } catch (err) {
+      result.errors.push(`${invite.email}: ${err instanceof Error ? err.message : "unknown"}`);
+    }
+  }
+
+  return result;
+}
+
+/* ─── B2B: weekly manager digest (Mondays) ───────────────────────────────────
+ * One email per org manager with the same rollup the dashboard shows. Skips
+ * orgs with nothing to report (no members AND no pending invites). */
+export async function runManagerDigests(): Promise<JobResult> {
+  const supabase = createAdminClient();
+  const result: JobResult = { sent: 0, skipped: 0, errors: [] };
+
+  const { data: orgs } = await supabase
+    .from("organizations")
+    .select("id, name, join_code")
+    .limit(50); // getOrgStats per org — cap to stay inside the cron time budget
+
+  if (!orgs || orgs.length === 0) return result;
+
+  const sixDaysAgo = new Date(Date.now() - 6 * 24 * 60 * 60 * 1000).toISOString();
+  const alreadyEmailed = await recentlySent(supabase, "manager_digest", sixDaysAgo);
+
+  for (const org of orgs) {
+    if (result.sent >= BATCH_CAP) break;
+
+    const { data: mgr } = await supabase
+      .from("org_members")
+      .select("student_id, students!inner(id, name, email, email_opt_out)")
+      .eq("org_id", org.id)
+      .eq("role", "manager")
+      .maybeSingle();
+
+    const manager = (mgr as unknown as {
+      student_id: string;
+      students: { id: string; name: string | null; email: string; email_opt_out: boolean };
+    } | null)?.students;
+
+    if (!manager?.email || manager.email_opt_out || alreadyEmailed.has(manager.id)) {
+      result.skipped++;
+      continue;
+    }
+
+    const stats = await getOrgStats(org.id);
+    if (!stats || (stats.seatsUsed === 0 && stats.pendingCount === 0)) {
+      result.skipped++;
+      continue;
+    }
+
+    const inviteUrl = `https://square1-tutor.vercel.app/business/join?code=${org.join_code}`;
+    try {
+      await sendManagerDigest(manager.email, org.name, {
+        seatsUsed: stats.seatsUsed,
+        seats: stats.org.seats,
+        pendingCount: stats.pendingCount,
+        activeThisWeek: stats.activeThisWeek,
+        avgCompletion: stats.avgCompletion,
+        completedCount: stats.completedCount,
+        deployedCount: stats.deployedCount,
+        teamReadiness: stats.teamReadiness,
+        topWeak: stats.topWeak,
+      }, inviteUrl);
+      await logSend(supabase, manager.id, "manager_digest");
+      result.sent++;
+    } catch (err) {
+      result.errors.push(`${manager.email}: ${err instanceof Error ? err.message : "unknown"}`);
     }
   }
 

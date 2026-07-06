@@ -33,7 +33,7 @@ export async function POST(request: Request) {
 
     const admin = createAdminClient();
     const { data: org } = await admin
-      .from("organizations").select("id, seats").eq("join_code", code).maybeSingle();
+      .from("organizations").select("id, name, seats").eq("join_code", code).maybeSingle();
     if (!org) return NextResponse.json({ error: "That invite link isn't valid." }, { status: 404 });
 
     // If the manager assigned this person a specific track, it wins over the
@@ -78,6 +78,8 @@ export async function POST(request: Request) {
         .eq("org_id", org.id).eq("status", "pending").ilike("email", user.email);
     }
 
+    const isNewMember = !existingMember;
+
     // Free enrollment in the chosen track (mirror B2C: beginner, first lesson).
     // effectiveSlug honours a manager's assignment if one exists. Server-side
     // catalog guard: only visible top-level active courses are joinable — the
@@ -120,6 +122,27 @@ export async function POST(request: Request) {
       if (enrErr) {
         console.error("[org/join] enroll", enrErr);
         return NextResponse.json({ error: "Could not start your access" }, { status: 500 });
+      }
+    }
+
+    // Tell the manager a seat was claimed — first join only, best-effort
+    // (never blocks or fails the member's onboarding).
+    if (isNewMember) {
+      try {
+        const { data: mgr } = await admin
+          .from("org_members")
+          .select("students!inner(email, email_opt_out)")
+          .eq("org_id", org.id).eq("role", "manager").maybeSingle();
+        const manager = (mgr as unknown as { students: { email: string; email_opt_out: boolean } } | null)?.students;
+        if (manager?.email && !manager.email_opt_out) {
+          const { data: courseRow } = await admin.from("courses").select("title").eq("slug", effectiveSlug).maybeSingle();
+          const { data: me } = await admin.from("students").select("name, email").eq("id", student.id).maybeSingle();
+          const memberLabel = me?.name || me?.email || user.email || "A team member";
+          const { sendMemberJoinedAlert } = await import("@/lib/email/resend");
+          await sendMemberJoinedAlert(manager.email, memberLabel, org.name, courseRow?.title ?? "their track");
+        }
+      } catch (e) {
+        console.error("[org/join] member-joined alert", e);
       }
     }
 

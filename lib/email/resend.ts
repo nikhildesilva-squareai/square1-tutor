@@ -301,3 +301,129 @@ export async function sendSeatActivationNudge(to: string, teamName: string, acti
     `,
   });
 }
+
+/* ─── Invite reminder — one nudge for a seat still unclaimed after 3 days ──── */
+export async function sendInviteReminder(to: string, teamName: string, inviteUrl: string) {
+  const r = getResend();
+  return r.emails.send({
+    from: FROM,
+    to,
+    ...(REPLY_TO ? { replyTo: REPLY_TO } : {}),
+    subject: `Your ${teamName} seat on Square 1 AI is still waiting`,
+    html: `
+      <meta charset="utf-8">
+      <div style="font-family:system-ui,-apple-system,sans-serif;max-width:520px;margin:0 auto;padding:40px 20px;">
+        <div style="text-align:center;margin-bottom:32px;">
+          <div style="display:inline-block;background:linear-gradient(135deg,#3388FF,#0056CE);border-radius:12px;padding:12px;margin-bottom:16px;">
+            <span style="color:white;font-weight:900;font-size:18px;">[ S1 ]</span>
+          </div>
+          <h1 style="color:#0F172A;font-size:24px;font-weight:800;margin:0 0 8px;">Your seat is still open</h1>
+          <p style="color:#64748B;font-size:14px;margin:0;">${teamName} reserved you a spot on Square 1 AI a few days ago — it takes about a minute to claim.</p>
+        </div>
+
+        <div style="background:#F8FAFC;border:1px solid #E2E8F0;border-radius:12px;padding:24px;margin-bottom:24px;">
+          <p style="color:#334155;font-size:14px;line-height:1.6;margin:0;">
+            Pick a track, and start building real projects with an AI tutor reviewing every line
+            of your code. Your work stays yours — your manager just sees your progress.
+          </p>
+        </div>
+
+        <div style="text-align:center;margin-bottom:32px;">
+          <a href="${inviteUrl}" style="display:inline-block;background:#0056CE;color:white;font-weight:700;font-size:14px;text-decoration:none;padding:12px 32px;border-radius:12px;">
+            Claim your seat
+          </a>
+        </div>
+
+        <p style="color:#94A3B8;font-size:12px;text-align:center;">Square 1 AI · tech@square1ai.com</p>
+      </div>
+    `,
+  });
+}
+
+/* ─── Member-joined alert (to the manager) — fires on first join ────────────── */
+export async function sendMemberJoinedAlert(to: string, memberLabel: string, teamName: string, trackTitle: string) {
+  const r = getResend();
+  return r.emails.send({
+    from: FROM,
+    to,
+    ...(REPLY_TO ? { replyTo: REPLY_TO } : {}),
+    subject: `${memberLabel} joined ${teamName} — starting ${trackTitle}`,
+    html: `
+      <meta charset="utf-8">
+      <div style="font-family:system-ui,-apple-system,sans-serif;max-width:520px;margin:0 auto;padding:32px 20px;">
+        <h1 style="color:#0F172A;font-size:20px;font-weight:800;margin:0 0 4px;">A seat just got claimed</h1>
+        <p style="color:#64748B;font-size:13px;margin:0 0 20px;">Progress starts showing on your dashboard as soon as they finish their first lesson.</p>
+        <table style="width:100%;border-collapse:collapse;font-size:14px;">
+          <tr><td style="padding:8px 0;color:#94A3B8;width:110px;">Member</td><td style="padding:8px 0;color:#0F172A;font-weight:600;">${memberLabel}</td></tr>
+          <tr><td style="padding:8px 0;color:#94A3B8;">Team</td><td style="padding:8px 0;color:#0F172A;font-weight:600;">${teamName}</td></tr>
+          <tr><td style="padding:8px 0;color:#94A3B8;">Track</td><td style="padding:8px 0;color:#0F172A;font-weight:600;">${trackTitle}</td></tr>
+        </table>
+        <div style="margin-top:24px;">
+          <a href="https://square1-tutor.vercel.app/business/dashboard" style="display:inline-block;background:#0056CE;color:white;font-weight:700;font-size:13px;text-decoration:none;padding:10px 24px;border-radius:10px;">
+            Open manager portal
+          </a>
+        </div>
+      </div>
+    `,
+  });
+}
+
+/* ─── Weekly manager digest (Mondays) — the team's week at a glance ─────────── */
+export async function sendManagerDigest(
+  to: string,
+  teamName: string,
+  stats: {
+    seatsUsed: number;
+    seats: number;
+    pendingCount: number;
+    activeThisWeek: number;
+    avgCompletion: number;
+    completedCount: number;
+    deployedCount: number;
+    teamReadiness: number | null;
+    topWeak: { topic: string; count: number }[];
+  },
+  inviteUrl: string,
+) {
+  const r = getResend();
+  const stat = (value: string, label: string) => `
+    <td style="width:33%;padding:12px 8px;text-align:center;background:#F8FAFC;border:1px solid #E2E8F0;border-radius:10px;">
+      <div style="color:#0F172A;font-size:22px;font-weight:800;">${value}</div>
+      <div style="color:#94A3B8;font-size:11px;text-transform:uppercase;letter-spacing:0.05em;margin-top:2px;">${label}</div>
+    </td>`;
+  const gaps = stats.topWeak.slice(0, 3).map((w) => w.topic).join(" · ");
+  return r.emails.send({
+    from: FROM,
+    to,
+    ...(REPLY_TO ? { replyTo: REPLY_TO } : {}),
+    subject: `${teamName}: your team's week on Square 1 AI`,
+    html: `
+      <meta charset="utf-8">
+      <div style="font-family:system-ui,-apple-system,sans-serif;max-width:520px;margin:0 auto;padding:32px 20px;">
+        <h1 style="color:#0F172A;font-size:20px;font-weight:800;margin:0 0 4px;">${teamName} — weekly summary</h1>
+        <p style="color:#64748B;font-size:13px;margin:0 0 20px;">How your team tracked this week.</p>
+
+        <table style="width:100%;border-collapse:separate;border-spacing:6px 0;margin-bottom:6px;"><tr>
+          ${stat(`${stats.seatsUsed}/${stats.seats}`, "Seats used")}
+          ${stat(String(stats.activeThisWeek), "Active this week")}
+          ${stat(`${stats.avgCompletion}%`, "Avg completion")}
+        </tr></table>
+        <table style="width:100%;border-collapse:separate;border-spacing:6px 0;margin-bottom:20px;"><tr>
+          ${stat(String(stats.completedCount), "Tracks completed")}
+          ${stat(String(stats.deployedCount), "Projects deployed")}
+          ${stat(stats.teamReadiness != null ? `${stats.teamReadiness}%` : "—", "Team readiness")}
+        </tr></table>
+
+        ${gaps ? `<p style="color:#334155;font-size:13px;margin:0 0 16px;"><strong style="color:#0F172A;">Biggest skill gaps:</strong> ${gaps}</p>` : ""}
+        ${stats.pendingCount > 0 ? `<p style="color:#B45309;font-size:13px;background:#FFFBEB;border:1px solid #FDE68A;border-radius:8px;padding:10px 12px;margin:0 0 16px;">${stats.pendingCount} invite${stats.pendingCount === 1 ? " is" : "s are"} still unclaimed — <a href="${inviteUrl}" style="color:#B45309;font-weight:700;">re-share the join link</a>.</p>` : ""}
+
+        <div style="margin-top:8px;">
+          <a href="https://square1-tutor.vercel.app/business/dashboard" style="display:inline-block;background:#0056CE;color:white;font-weight:700;font-size:13px;text-decoration:none;padding:10px 24px;border-radius:10px;">
+            Open manager portal
+          </a>
+        </div>
+        <p style="color:#94A3B8;font-size:12px;margin-top:24px;">Square 1 AI · sent every Monday · tech@square1ai.com</p>
+      </div>
+    `,
+  });
+}

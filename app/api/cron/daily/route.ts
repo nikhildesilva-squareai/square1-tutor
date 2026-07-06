@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { runStreakReminders, runWeeklyDigest, runAssessmentNudges } from "@/lib/email/jobs";
+import { runStreakReminders, runWeeklyDigest, runAssessmentNudges, runInviteReminders, runManagerDigests } from "@/lib/email/jobs";
 import { checkAllIncompleteEnrollments } from "@/lib/enrollment-completion";
 
 export const maxDuration = 60;
@@ -30,6 +30,7 @@ export async function GET(request: Request) {
   }
 
   const isSunday = new Date().getUTCDay() === 0;
+  const isMonday = new Date().getUTCDay() === 1;
   const results: Record<string, unknown> = {};
 
   // ── Check incomplete enrollments for completion (fallback for on-demand triggers) ──
@@ -53,6 +54,13 @@ export async function GET(request: Request) {
     results.assessmentNudges = { error: err instanceof Error ? err.message : "failed" };
   }
 
+  // B2B: one reminder per team invite still pending after 3 days
+  try {
+    results.inviteReminders = await runInviteReminders();
+  } catch (err) {
+    results.inviteReminders = { error: err instanceof Error ? err.message : "failed" };
+  }
+
   if (isSunday) {
     try {
       results.weeklyDigest = await runWeeklyDigest();
@@ -61,6 +69,15 @@ export async function GET(request: Request) {
     }
   }
 
+  // B2B: manager digest lands Monday (start-of-week planning read)
+  if (isMonday) {
+    try {
+      results.managerDigests = await runManagerDigests();
+    } catch (err) {
+      results.managerDigests = { error: err instanceof Error ? err.message : "failed" };
+    }
+  }
+
   console.log("[cron/daily]", JSON.stringify(results));
-  return NextResponse.json({ ok: true, isSunday, results });
+  return NextResponse.json({ ok: true, isSunday, isMonday, results });
 }
