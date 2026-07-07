@@ -11,54 +11,52 @@ interface LogoProps {
 
 const HEIGHTS = { sm: "h-6", md: "h-8", lg: "h-10", xl: "h-14" };
 
-// ─── The Square 1 Ai brand mark (matches Figma exactly) ──────────────────────
-// An open square: top + left + bottom (shorter) edges form an L-shape,
-// right edge starts from top-right corner and goes down ~70% of the height.
-// The bottom-right corner is OPEN — creating the distinctive gap.
-function BracketMark({ color, strokeW = 2.5 }: { color: string; strokeW?: number }) {
-  // The bracket colour is lighter than the text for the dark variant
-  const bracketColor = color === "#FFFFFF" ? "#FFFFFF" : "#5B8DEF";
+// ─── The Square 1 Ai brand mark ──────────────────────────────────────────────
+// Geometry measured from the official lockup (public/logo-square1.png):
+// 75×75 square, 8px stroke, square (butt) ends. Top + left edges are full;
+// the right edge is a short stub from the top (32% of the height) and the
+// bottom edge runs 60% of the width — the bottom-right corner is OPEN, and in
+// the full lockup the "S" of the wordmark nests inside that opening.
+function BracketMark({ white = false }: { white?: boolean }) {
   return (
-    <svg
-      viewBox="0 0 28 28"
-      fill="none"
-      className="h-full w-auto shrink-0"
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      {/* Top edge: full width */}
-      <line x1="4" y1="4" x2="24" y2="4" stroke={bracketColor} strokeWidth={strokeW} strokeLinecap="round" />
-      {/* Left edge: full height */}
-      <line x1="4" y1="4" x2="4" y2="24" stroke={bracketColor} strokeWidth={strokeW} strokeLinecap="round" />
-      {/* Bottom edge: shorter — stops at ~65% */}
-      <line x1="4" y1="24" x2="17" y2="24" stroke={bracketColor} strokeWidth={strokeW} strokeLinecap="round" />
-      {/* Right edge: starts from top, goes down ~70% */}
-      <line x1="24" y1="4" x2="24" y2="19" stroke={bracketColor} strokeWidth={strokeW} strokeLinecap="round" />
+    <svg viewBox="0 0 75 75" fill="none" className="h-full w-auto shrink-0" xmlns="http://www.w3.org/2000/svg">
+      {!white && (
+        <defs>
+          <linearGradient id="sq1-mark" x1="0" y1="0" x2="0" y2="75" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stopColor="#689AF4" />
+            <stop offset="100%" stopColor="#5E94F0" />
+          </linearGradient>
+        </defs>
+      )}
+      <g fill={white ? "#FFFFFF" : "url(#sq1-mark)"}>
+        <rect x="0" y="0" width="75" height="8" />
+        <rect x="0" y="0" width="8" height="75" />
+        <rect x="67" y="0" width="8" height="24" />
+        <rect x="0" y="67" width="45" height="8" />
+      </g>
     </svg>
   );
 }
 
 // ─── Filled app-icon (gradient square — for favicons, avatars) ───────────────
+// Wordmark gradient (#4482E5 → #075BCC) as the fill, white brand mark on top.
 function AppIcon({ size = 36 }: { size?: number }) {
   return (
-    <svg
-      width={size}
-      height={size}
-      viewBox="0 0 64 64"
-      xmlns="http://www.w3.org/2000/svg"
-      className="shrink-0"
-    >
+    <svg width={size} height={size} viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" className="shrink-0">
       <defs>
-        <linearGradient id="sq1-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%"   stopColor="#5B8DEF" />
-          <stop offset="100%" stopColor="#0056CE" />
+        <linearGradient id="sq1-appicon" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#4482E5" />
+          <stop offset="100%" stopColor="#075BCC" />
         </linearGradient>
       </defs>
-      <rect width="64" height="64" rx="14" fill="url(#sq1-gradient)" />
-      {/* White bracket mark — same proportions as BracketMark */}
-      <line x1="14" y1="14" x2="50" y2="14" stroke="white" strokeWidth="4" strokeLinecap="round" />
-      <line x1="14" y1="14" x2="14" y2="50" stroke="white" strokeWidth="4" strokeLinecap="round" />
-      <line x1="14" y1="50" x2="34" y2="50" stroke="white" strokeWidth="4" strokeLinecap="round" />
-      <line x1="50" y1="14" x2="50" y2="38" stroke="white" strokeWidth="4" strokeLinecap="round" />
+      <rect width="64" height="64" rx="14" fill="url(#sq1-appicon)" />
+      {/* White brand mark — same proportions as BracketMark (36px box, inset 14) */}
+      <g fill="#FFFFFF">
+        <rect x="14" y="14" width="36" height="3.8" />
+        <rect x="14" y="14" width="3.8" height="36" />
+        <rect x="46.2" y="14" width="3.8" height="11.5" />
+        <rect x="14" y="46.2" width="21.6" height="3.8" />
+      </g>
     </svg>
   );
 }
@@ -70,9 +68,6 @@ export function Logo({
   iconOnly = false,
   appIcon = false,
 }: LogoProps) {
-  const BRAND_BLUE = "#0056CE";
-  const textColor = variant === "light" ? "#FFFFFF" : BRAND_BLUE;
-
   if (appIcon) {
     const px = size === "sm" ? 28 : size === "md" ? 36 : size === "lg" ? 44 : 56;
     return (
@@ -85,31 +80,21 @@ export function Logo({
   if (iconOnly) {
     return (
       <div className={cn(HEIGHTS[size], "inline-flex", className)} aria-label="Square1 Ai">
-        <BracketMark color={textColor} />
+        <BracketMark white={variant === "light"} />
       </div>
     );
   }
 
-  // Default: bracket + wordmark
+  // Default: the official lockup, pixel-exact. The PNG is transparent
+  // blue-on-nothing; the light variant recolours the ink to white via CSS
+  // filter (alpha is preserved) for dark backgrounds.
   return (
-    <div
-      className={cn(HEIGHTS[size], "inline-flex items-center gap-2", className)}
-      aria-label="Square1 Ai"
-    >
-      <BracketMark color={textColor} />
-      <span
-        className="font-extrabold tracking-tight whitespace-nowrap leading-none"
-        style={{
-          color: textColor,
-          fontSize: size === "sm" ? "0.9rem" : size === "md" ? "1.05rem" : size === "lg" ? "1.3rem" : "1.65rem",
-          letterSpacing: "-0.02em",
-        }}
-      >
-        Square1{" "}
-        <span className="font-extrabold" style={{ color: textColor }}>
-          Ai
-        </span>
-      </span>
-    </div>
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      src="/logo-square1.png"
+      alt="Square1 Ai"
+      className={cn(HEIGHTS[size], "w-auto max-w-none shrink-0", className)}
+      style={variant === "light" ? { filter: "brightness(0) invert(1)" } : undefined}
+    />
   );
 }

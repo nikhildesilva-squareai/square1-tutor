@@ -54,8 +54,16 @@ export async function GET(request: Request) {
         {/* Header: wordmark + course */}
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
           <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", width: 48, height: 48, borderRadius: 12, background: "linear-gradient(135deg, #3388FF, #0056CE)", color: "#FFF", fontSize: 22, fontWeight: 800 }}>
-              S1
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", width: 48, height: 48, borderRadius: 12, background: "linear-gradient(135deg, #4482E5, #075BCC)" }}>
+              {/* The brand mark — geometry from the official lockup */}
+              <svg width="28" height="28" viewBox="0 0 75 75">
+                <g fill="#FFFFFF">
+                  <rect x="0" y="0" width="75" height="8" />
+                  <rect x="0" y="0" width="8" height="75" />
+                  <rect x="67" y="0" width="8" height="24" />
+                  <rect x="0" y="67" width="45" height="8" />
+                </g>
+              </svg>
             </div>
             <div style={{ display: "flex", color: "#FFF", fontSize: 26, fontWeight: 800 }}>Square 1 AI</div>
           </div>

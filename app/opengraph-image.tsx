@@ -48,7 +48,7 @@ export default function Image() {
           }}
         />
 
-        {/* Logo mark */}
+        {/* Logo mark — geometry from the official lockup */}
         <div
           style={{
             display: "flex",
@@ -57,14 +57,18 @@ export default function Image() {
             width: 80,
             height: 80,
             borderRadius: 20,
-            background: "linear-gradient(135deg, #0056CE, #3B82F6)",
+            background: "linear-gradient(135deg, #4482E5, #075BCC)",
             marginBottom: 32,
-            fontSize: 36,
-            fontWeight: 800,
-            color: "white",
           }}
         >
-          S1
+          <svg width="46" height="46" viewBox="0 0 75 75">
+            <g fill="#FFFFFF">
+              <rect x="0" y="0" width="75" height="8" />
+              <rect x="0" y="0" width="8" height="75" />
+              <rect x="67" y="0" width="8" height="24" />
+              <rect x="0" y="67" width="45" height="8" />
+            </g>
+          </svg>
         </div>
 
         {/* Headline — the launch pitch, not the brand slogan */}
