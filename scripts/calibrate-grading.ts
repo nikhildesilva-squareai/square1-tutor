@@ -96,7 +96,9 @@ async function main() {
   }
 
   const setDir = join(ROOT, "golden-sets");
-  const files = readdirSync(setDir).filter((f) => f.endsWith(".json"));
+  const setsFilter = (argVal("--sets") ?? "").split(",").map((x) => x.trim()).filter(Boolean);
+  const files = readdirSync(setDir).filter((f) => f.endsWith(".json"))
+    .filter((f) => !setsFilter.length || setsFilter.includes(f.replace(/\.json$/, "")));
   if (files.length === 0) {
     console.error("No golden sets found in golden-sets/.");
     process.exit(2);
@@ -119,6 +121,10 @@ async function main() {
   };
 
   const allResults: CaseResult[] = [];
+  const reportDir = join(ROOT, "golden-sets", "reports");
+  mkdirSync(reportDir, { recursive: true });
+  const partialPath = join(reportDir, `partial-${provider}-${model.replace(/[^a-z0-9.-]/gi, "_")}.json`);
+  const checkpoint = () => writeFileSync(partialPath, JSON.stringify({ provider, model, runs, results: allResults }, null, 2));
 
   for (const file of files) {
     const set = JSON.parse(readFileSync(join(setDir, file), "utf-8")) as GoldenSet;
@@ -147,6 +153,7 @@ async function main() {
     }
 
     const marksPerCase = new Map<string, number[]>();
+    try {
     for (let run = 0; run < runs; run++) {
       for (const kind of ["short_answer", "code"] as const) {
         const items = byType[kind];
@@ -169,6 +176,10 @@ async function main() {
         process.stdout.write(`  ${set.course} ${kind} run ${run + 1}/${runs} done\n`);
       }
     }
+    } catch (err) {
+      console.error(`  !! ${set.course} failed: ${String(err).slice(0, 200)} — skipping course, continuing`);
+      continue;
+    }
 
     for (const kind of ["short_answer", "code"] as const) {
       for (const { q, c } of byType[kind]) {
@@ -189,6 +200,7 @@ async function main() {
         });
       }
     }
+    checkpoint(); // course complete — persist partial results
   }
 
   /* ── report ─────────────────────────────────────────────────────────────── */

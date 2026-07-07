@@ -69,23 +69,47 @@ async function genOSS(p: GenParams): Promise<GenResult> {
     ...p.messages,
   ];
 
-  const res = await fetch(`${base.replace(/\/+$/, "")}/chat/completions`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      ...(apiKey ? { Authorization: `Bearer ${apiKey}` } : {}),
-    },
-    body: JSON.stringify({
-      model: p.model,
-      messages,
-      max_tokens: p.max_tokens ?? 1024,
-      temperature: p.temperature ?? 0,
-    }),
-  });
+  // Ride out transient 429/5xx with backoff, mirroring the Anthropic SDK's
+  // maxRetries — essential when AI_OSS_FALLBACK=none, or every rate-limit
+  // blip becomes a user-facing grading failure. Honours Retry-After.
+  const MAX_ATTEMPTS = 5;
+  let res: Response | undefined;
+  for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
+    try {
+      res = await fetch(`${base.replace(/\/+$/, "")}/chat/completions`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          ...(apiKey ? { Authorization: `Bearer ${apiKey}` } : {}),
+        },
+        body: JSON.stringify({
+          model: p.model,
+          messages,
+          max_tokens: p.max_tokens ?? 1024,
+          temperature: p.temperature ?? 0,
+        }),
+      });
+    } catch (err) {
+      // Network-level failure (DNS drop, reset connection) — retryable too.
+      res = undefined;
+      if (attempt === MAX_ATTEMPTS) throw err;
+      await new Promise((r) => setTimeout(r, Math.min(1000 * 2 ** attempt, 30_000)));
+      continue;
+    }
+    if (res.ok) break;
+    const retryable = res.status === 429 || res.status >= 500;
+    if (!retryable || attempt === MAX_ATTEMPTS) break;
+    const retryAfter = Number(res.headers.get("retry-after"));
+    const waitMs = Number.isFinite(retryAfter) && retryAfter > 0
+      ? Math.min(retryAfter * 1000, 60_000)
+      : Math.min(1000 * 2 ** attempt, 30_000) + Math.random() * 500;
+    await res.text().catch(() => "");
+    await new Promise((r) => setTimeout(r, waitMs));
+  }
 
-  if (!res.ok) {
-    const body = await res.text().catch(() => "");
-    throw new Error(`OSS AI endpoint ${res.status}: ${body.slice(0, 300)}`);
+  if (!res || !res.ok) {
+    const body = res ? await res.text().catch(() => "") : "";
+    throw new Error(`OSS AI endpoint ${res?.status ?? "unreachable"}: ${body.slice(0, 300)}`);
   }
 
   const data = await res.json();
