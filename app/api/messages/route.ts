@@ -105,5 +105,31 @@ export async function POST(request: Request) {
 
   if (error) return NextResponse.json({ error: "Failed to send" }, { status: 500 });
 
+  // Ping the team so a message never sits unseen. Best-effort — email trouble
+  // must never fail the student's send. Deduped to one alert per student per
+  // 10-minute window so a burst of quick messages doesn't spam the inbox.
+  try {
+    const admin = createAdminClient();
+    const tenMinAgo = new Date(Date.now() - 10 * 60 * 1000).toISOString();
+    const { count: recent } = await admin
+      .from("student_messages")
+      .select("id", { count: "exact", head: true })
+      .eq("student_id", student.id)
+      .eq("sender", "student")
+      .gte("created_at", tenMinAgo);
+    // recent includes the just-inserted row; >1 means we already alerted lately.
+    if ((recent ?? 1) <= 1) {
+      const { data: me } = await admin
+        .from("students").select("name, email").eq("id", student.id).maybeSingle();
+      const label = me?.name || me?.email || "A student";
+      if (me?.email) {
+        const { sendSupportMessageAlert } = await import("@/lib/email/resend");
+        await sendSupportMessageAlert({ studentName: label, studentEmail: me.email, body: parsed.data.body });
+      }
+    }
+  } catch (e) {
+    console.error("[messages] team alert", e);
+  }
+
   return NextResponse.json({ message });
 }

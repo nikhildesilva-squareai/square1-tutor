@@ -5,6 +5,17 @@ import { cn } from "@/lib/utils";
 
 type Msg = { id: string; sender: "student" | "team"; body: string; created_at: string };
 
+function BrandMark({ size = 16 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 75 75" aria-hidden>
+      <g fill="#FFFFFF">
+        <rect x="0" y="0" width="75" height="8" /><rect x="0" y="0" width="8" height="75" />
+        <rect x="67" y="0" width="8" height="24" /><rect x="0" y="67" width="45" height="8" />
+      </g>
+    </svg>
+  );
+}
+
 function formatTime(iso: string) {
   const d = new Date(iso);
   const now = new Date();
@@ -100,10 +111,10 @@ export function MessagesClient() {
       <div className="bg-surface border-b border-border px-4 sm:px-6 py-4 shrink-0">
         <div className="max-w-3xl mx-auto flex items-center gap-3">
           <div
-            className="w-9 h-9 rounded-xl flex items-center justify-center text-xs font-black text-white shrink-0"
-            style={{ background: "linear-gradient(135deg,#0056CE,#3388FF)" }}
+            className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0"
+            style={{ background: "linear-gradient(135deg,#4482E5,#075BCC)" }}
           >
-            S1
+            <BrandMark size={17} />
           </div>
           <div className="min-w-0">
             <p className="text-sm font-bold text-ink leading-none">Messages</p>
@@ -132,10 +143,10 @@ export function MessagesClient() {
               >
                 {msg.sender === "team" && (
                   <div
-                    className="w-7 h-7 rounded-lg flex items-center justify-center text-[9px] font-black text-white shrink-0 mt-0.5"
-                    style={{ background: "linear-gradient(135deg,#0056CE,#3388FF)" }}
+                    className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0 mt-0.5"
+                    style={{ background: "linear-gradient(135deg,#4482E5,#075BCC)" }}
                   >
-                    S1
+                    <BrandMark size={13} />
                   </div>
                 )}
                 <div className="flex flex-col max-w-[85%]">

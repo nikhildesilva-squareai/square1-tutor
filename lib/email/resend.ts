@@ -57,6 +57,36 @@ export async function sendBusinessLeadNotification(lead: {
   });
 }
 
+/* ─── Support message alert (student → team, to the founder's inbox) ─────────
+ * Fires when a student writes in the in-app Messages thread. The founder reads
+ * + replies from the in-app inbox (/inbox); this is the "you've got a message"
+ * ping so nothing is missed. replyTo is the student so a Gmail reply also works
+ * as a fallback. */
+export async function sendSupportMessageAlert(opts: {
+  studentName: string;
+  studentEmail: string;
+  body: string;
+}) {
+  const r = getResend();
+  const safeBody = opts.body.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  return r.emails.send({
+    from: LEAD_FROM,
+    to: LEAD_NOTIFY_TO,
+    replyTo: opts.studentEmail,
+    subject: `💬 New message from ${opts.studentName}`,
+    html: `
+      <meta charset="utf-8">
+      <div style="font-family:system-ui,-apple-system,sans-serif;max-width:520px;margin:0 auto;padding:32px 20px;">
+        <h1 style="color:#0F172A;font-size:20px;font-weight:800;margin:0 0 4px;">New message in your inbox</h1>
+        <p style="color:#64748B;font-size:13px;margin:0 0 20px;">${opts.studentName} (${opts.studentEmail}) wrote to the team.</p>
+        <blockquote style="margin:0 0 20px;padding:14px 18px;border-left:3px solid #0056CE;background:#F8FAFC;border-radius:0 10px 10px 0;color:#334155;font-size:14px;white-space:pre-wrap;">${safeBody}</blockquote>
+        <a href="https://square1-tutor.vercel.app/inbox" style="display:inline-block;background:#0056CE;color:white;font-weight:700;font-size:14px;text-decoration:none;padding:11px 26px;border-radius:10px;">Reply in the inbox →</a>
+        <p style="margin-top:18px;font-size:12px;color:#94A3B8;">Or just reply to this email to reach ${opts.studentName} directly.</p>
+      </div>
+    `,
+  });
+}
+
 /* ─── Welcome Email ──────────────────────────────────────────────────────── */
 export async function sendWelcomeEmail(to: string, name: string) {
   const r = getResend();

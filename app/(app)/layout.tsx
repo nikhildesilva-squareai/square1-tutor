@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { createAdminClient } from "@/lib/supabase/admin";
+import { createAdminClient, isAdminEmail } from "@/lib/supabase/admin";
 import { ensureCommunityProfile } from "@/lib/community/ensure-profile";
 import { SidebarNav } from "@/components/sidebar-nav";
 import { MobileNav } from "@/components/MobileNav";
@@ -19,6 +19,8 @@ export default async function AppLayout({ children }: { children: React.ReactNod
 
   const email = session.user.email ?? "";
   const userId = session.user.id;
+  // Team members (ADMIN_EMAILS) get a link to the production support inbox.
+  const isAdmin = isAdminEmail(email);
 
   // Ensure community profile exists for this user
   await ensureCommunityProfile();
@@ -40,12 +42,12 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   return (
     <div className="flex h-screen overflow-hidden bg-surface-soft">
       {/* Desktop sidebar — hidden on mobile/tablet */}
-      <SidebarNav userEmail={email} userId={userId} isManager={isManager} />
+      <SidebarNav userEmail={email} userId={userId} isManager={isManager} isAdmin={isAdmin} />
 
       {/* Main content */}
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
         {/* Mobile/tablet header + slide-over drawer (hidden on lg+) */}
-        <MobileNav userEmail={email} isManager={isManager} />
+        <MobileNav userEmail={email} isManager={isManager} isAdmin={isAdmin} />
 
         <main id="main" className="flex-1 overflow-y-auto pb-20 lg:pb-0">
           {children}

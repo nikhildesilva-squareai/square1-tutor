@@ -15,6 +15,7 @@ import {
   Settings,
   LogOut,
   Bookmark,
+  Inbox,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { createClient } from "@/lib/supabase/client";
@@ -36,9 +37,10 @@ interface SidebarNavProps {
   userEmail: string;
   userId: string;
   isManager?: boolean;
+  isAdmin?: boolean;
 }
 
-export function SidebarNav({ userEmail, isManager = false }: SidebarNavProps) {
+export function SidebarNav({ userEmail, isManager = false, isAdmin = false }: SidebarNavProps) {
   const pathname = usePathname();
   const router = useRouter();
   const unread = useUnreadMessages();
@@ -100,6 +102,22 @@ export function SidebarNav({ userEmail, isManager = false }: SidebarNavProps) {
             >
               <Briefcase className="w-4 h-4" />
               <span className="flex-1">Manager portal</span>
+            </Link>
+          </>
+        )}
+
+        {/* Support inbox — team members only (ADMIN_EMAILS) */}
+        {isAdmin && (
+          <>
+            <div className="pt-3 pb-1 px-4">
+              <p className="text-[10px] font-bold uppercase tracking-wider text-ink-muted">Team</p>
+            </div>
+            <Link
+              href="/inbox"
+              className="h-10 px-4 rounded-lg flex items-center gap-3 text-sm font-medium transition-all text-ink-secondary hover:bg-surface-alt hover:text-ink border border-transparent"
+            >
+              <Inbox className="w-4 h-4" />
+              <span className="flex-1">Support inbox</span>
             </Link>
           </>
         )}
