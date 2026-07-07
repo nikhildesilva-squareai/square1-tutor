@@ -55,7 +55,7 @@ export function SidebarNav({ userEmail, isManager = false, isAdmin = false }: Si
   const messagesActive = pathname === "/messages" || pathname.startsWith("/messages/");
 
   const footerItem =
-    "flex items-center gap-3 px-4 h-10 w-full rounded-lg text-sm font-medium transition-all";
+    "flex items-center gap-2.5 px-4 h-8 w-full rounded-lg text-[13px] font-medium transition-all";
   const footerInactive =
     "text-ink-secondary hover:bg-surface-alt hover:text-ink border border-transparent";
   const footerActive = "bg-surface-tint text-brand border border-brand/20";
@@ -124,9 +124,9 @@ export function SidebarNav({ userEmail, isManager = false, isAdmin = false }: Si
       </nav>
 
       {/* User footer — account + utility items (Settings, Feedback, Messages) */}
-      <div className="px-3 py-4 border-t border-border space-y-0.5">
-        <div className="px-4 py-2 mb-1 flex items-center justify-between">
-          <p className="text-xs text-ink-muted truncate">{userEmail}</p>
+      <div className="px-3 py-2 border-t border-border space-y-0.5">
+        <div className="px-4 py-1.5 mb-0.5 flex items-center justify-between">
+          <p className="text-[11px] text-ink-muted truncate">{userEmail}</p>
           <ThemeToggle />
         </div>
 
@@ -135,7 +135,7 @@ export function SidebarNav({ userEmail, isManager = false, isAdmin = false }: Si
           href="/settings"
           className={cn(footerItem, settingsActive ? footerActive : footerInactive)}
         >
-          <Settings className="w-4 h-4" />
+          <Settings className="w-3.5 h-3.5" />
           <span className="flex-1 text-left">Settings</span>
         </Link>
 
@@ -144,7 +144,7 @@ export function SidebarNav({ userEmail, isManager = false, isAdmin = false }: Si
           onClick={() => window.dispatchEvent(new CustomEvent("open-feedback"))}
           className={cn(footerItem, footerInactive)}
         >
-          <MessageSquarePlus className="w-4 h-4" />
+          <MessageSquarePlus className="w-3.5 h-3.5" />
           <span className="flex-1 text-left">Feedback</span>
         </button>
 
@@ -153,7 +153,7 @@ export function SidebarNav({ userEmail, isManager = false, isAdmin = false }: Si
           href="/messages"
           className={cn(footerItem, messagesActive ? footerActive : footerInactive)}
         >
-          <MessagesSquare className="w-4 h-4" />
+          <MessagesSquare className="w-3.5 h-3.5" />
           <span className="flex-1 text-left">Messages</span>
           {unread > 0 && (
             <span className="min-w-[18px] h-[18px] px-1.5 rounded-full bg-brand text-white text-[10px] font-bold flex items-center justify-center">
@@ -165,9 +165,9 @@ export function SidebarNav({ userEmail, isManager = false, isAdmin = false }: Si
         {/* Sign out */}
         <button
           onClick={handleSignOut}
-          className="flex items-center gap-3 px-4 h-10 w-full rounded-lg text-sm font-medium text-ink-secondary hover:bg-error-bg hover:text-error transition-all"
+          className="flex items-center gap-2.5 px-4 h-8 w-full rounded-lg text-[13px] font-medium text-ink-secondary hover:bg-error-bg hover:text-error transition-all"
         >
-          <LogOut className="w-4 h-4" />
+          <LogOut className="w-3.5 h-3.5" />
           <span className="flex-1 text-left">Sign out</span>
         </button>
       </div>
