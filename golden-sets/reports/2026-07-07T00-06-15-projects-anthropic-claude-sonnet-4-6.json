@@ -1,0 +1,67 @@
+{
+  "provider": "anthropic",
+  "model": "claude-sonnet-4-6",
+  "runs": 2,
+  "timestamp": "2026-07-07T00:06:16.003Z",
+  "gates": [
+    {
+      "name": "all cases within expected band",
+      "pass": false
+    },
+    {
+      "name": "tier ordering preserved (full > partial > broken)",
+      "pass": true
+    },
+    {
+      "name": "run-to-run spread <= 15 points",
+      "pass": true
+    }
+  ],
+  "results": [
+    {
+      "fixture": "machine-learning-spam-classifier.json",
+      "case_id": "spam-full",
+      "band": [
+        78,
+        100
+      ],
+      "scores": [
+        89,
+        91
+      ],
+      "mean": 90,
+      "inBand": true,
+      "spread": 2
+    },
+    {
+      "fixture": "machine-learning-spam-classifier.json",
+      "case_id": "spam-partial-leakage",
+      "band": [
+        30,
+        62
+      ],
+      "scores": [
+        22,
+        20
+      ],
+      "mean": 21,
+      "inBand": false,
+      "spread": 2
+    },
+    {
+      "fixture": "machine-learning-spam-classifier.json",
+      "case_id": "spam-broken-injection",
+      "band": [
+        0,
+        30
+      ],
+      "scores": [
+        2,
+        2
+      ],
+      "mean": 2,
+      "inBand": true,
+      "spread": 0
+    }
+  ]
+}
