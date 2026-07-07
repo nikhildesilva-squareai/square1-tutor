@@ -5,6 +5,7 @@ import { Logo } from "@/components/ui/logo";
 import { PrimaryCta } from "@/components/ui/primary-cta";
 import { RESEARCH_ARTICLES, getArticle } from "@/lib/research";
 import { getArticleHtml } from "@/lib/research-content";
+import { ReadingProgress } from "@/components/research/ReadingProgress";
 
 const BASE = "https://square1-tutor.vercel.app";
 
@@ -53,12 +54,15 @@ export default async function ResearchArticlePage(
 
   return (
     <div className="min-h-screen bg-white">
-      {/* Header */}
-      <header className="max-w-4xl mx-auto flex items-center justify-between px-6 sm:px-8 py-5">
-        <Link href="/"><Logo variant="dark" size="md" /></Link>
-        <Link href="/research" className="text-sm font-semibold text-slate-500 hover:text-slate-900 transition-colors">
-          ← All research
-        </Link>
+      {/* Sticky header with reading progress */}
+      <header className="sticky top-0 z-40 bg-white/85 backdrop-blur-md">
+        <div className="relative max-w-4xl mx-auto flex items-center justify-between px-6 sm:px-8 py-4">
+          <Link href="/"><Logo variant="dark" size="md" /></Link>
+          <Link href="/research" className="text-sm font-semibold text-slate-500 hover:text-slate-900 transition-colors">
+            ← All research
+          </Link>
+        </div>
+        <ReadingProgress />
       </header>
 
       <main className="max-w-3xl mx-auto px-6 sm:px-8 pb-24">
@@ -104,8 +108,15 @@ export default async function ResearchArticlePage(
           </p>
         )}
 
+        {/* End-of-article divider — three brand squares */}
+        <div className="mt-12 flex items-center justify-center gap-2.5" aria-hidden>
+          <span className="w-1.5 h-1.5 rounded-[2px]" style={{ background: "#3388FF" }} />
+          <span className="w-1.5 h-1.5 rounded-[2px]" style={{ background: "#0056CE" }} />
+          <span className="w-1.5 h-1.5 rounded-[2px]" style={{ background: "#01224F" }} />
+        </div>
+
         {/* CTA — research readers are exactly the learners we want */}
-        <div className="mt-14 rounded-3xl border border-slate-200 p-8 text-center"
+        <div className="mt-12 rounded-3xl border border-slate-200 p-8 text-center"
           style={{ background: "linear-gradient(135deg, rgba(0,86,206,0.05) 0%, #FFFFFF 60%)" }}>
           <h2 className="text-xl sm:text-2xl font-black text-slate-900 mb-2">
             Want to build systems like this?

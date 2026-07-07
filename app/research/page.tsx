@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Logo } from "@/components/ui/logo";
 import { RESEARCH_ARTICLES } from "@/lib/research";
 import { getReadingMinutes } from "@/lib/research-content";
+import { ResearchIndex, type ResearchCard } from "@/components/research/ResearchIndex";
 
 const BASE = "https://square1-tutor.vercel.app";
 
@@ -25,6 +26,18 @@ export default function ResearchIndexPage() {
   const articles = [...RESEARCH_ARTICLES].sort(
     (a, b) => b.published.localeCompare(a.published) || a.title.localeCompare(b.title),
   );
+  // Plain serialisable cards for the client (filtering + featured live there);
+  // reading minutes come from fs so they must be resolved server-side.
+  const cards: ResearchCard[] = articles.map((a) => ({
+    slug: a.slug,
+    title: a.title,
+    description: a.description,
+    topic: a.topic,
+    published: a.published,
+    minutes: getReadingMinutes(a.slug),
+  }));
+  const totalMinutes = cards.reduce((s, c) => s + (c.minutes ?? 0), 0);
+  const topicCount = new Set(cards.map((c) => c.topic)).size;
 
   return (
     <div className="min-h-screen" style={{ background: "linear-gradient(180deg,#F8FAFC 0%,#FFFFFF 40%,#F4F8FF 100%)" }}>
@@ -58,37 +71,17 @@ export default function ResearchIndexPage() {
             Papers and reports from the Square 1 AI team on the systems we build and teach —
             AI safety, security, LLMs and agents, and applied machine learning.
           </p>
+          <p className="mt-5 flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] font-bold tracking-wide uppercase text-slate-400">
+            <span className="text-slate-700">{cards.length} papers</span>
+            <span className="w-1 h-1 rounded-full bg-slate-300" aria-hidden />
+            <span className="text-slate-700">{topicCount} topics</span>
+            <span className="w-1 h-1 rounded-full bg-slate-300" aria-hidden />
+            <span className="text-slate-700">~{Math.round(totalMinutes / 60)} hours of reading</span>
+          </p>
         </div>
 
-        {/* Article grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-          {articles.map((a) => (
-            <Link
-              key={a.slug}
-              href={`/research/${a.slug}`}
-              className="group flex flex-col rounded-2xl border border-slate-200 bg-white p-6 transition-all hover:-translate-y-1 hover:border-brand/30"
-              style={{ boxShadow: "0 4px 20px rgba(15,28,49,0.05)" }}
-            >
-              <span className="text-[9px] tracking-[0.2em] uppercase font-bold self-start px-2 py-1 rounded-full mb-4"
-                style={{ background: "rgba(0,86,206,0.07)", color: "#0056CE" }}>
-                {a.topic}
-              </span>
-              <h2 className="text-lg font-black text-slate-900 leading-snug mb-2 group-hover:text-brand transition-colors">
-                {a.title}
-              </h2>
-              <p className="text-sm text-slate-600 leading-relaxed flex-1">{a.description}</p>
-              <span className="mt-5 flex items-center justify-between text-xs">
-                <span className="inline-flex items-center gap-1.5 font-bold" style={{ color: "#0056CE" }}>
-                  Read the article
-                  <span className="transition-transform group-hover:translate-x-1" aria-hidden>→</span>
-                </span>
-                {getReadingMinutes(a.slug) && (
-                  <span className="text-slate-400 font-medium">{getReadingMinutes(a.slug)} min read</span>
-                )}
-              </span>
-            </Link>
-          ))}
-        </div>
+        {/* Featured paper + topic filter + grid */}
+        <ResearchIndex articles={cards} />
       </main>
 
       {/* CollectionPage structured data */}
