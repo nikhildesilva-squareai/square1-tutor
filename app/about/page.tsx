@@ -285,8 +285,8 @@ export default function AboutPage() {
 
         {/* Nav */}
         <nav className="relative z-30 max-w-6xl mx-auto flex items-center justify-between mb-16 sm:mb-24">
-          <Link href="/" className="flex items-center gap-2 text-sm text-slate-500 hover:text-slate-900 transition-colors" style={{ minHeight: "unset" }}>
-            <span>←</span> <Logo variant="dark" size="sm" />
+          <Link href="/" style={{ minHeight: "unset" }}>
+            <Logo variant="dark" size="sm" />
           </Link>
           <div className="flex items-center gap-3">
             <Link href="/login" className="text-[11px] font-semibold tracking-[0.12em] uppercase text-slate-500 hover:text-slate-900 transition-colors" style={{ minHeight: "unset" }}>

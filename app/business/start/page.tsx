@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Logo } from "@/components/ui/logo";
+import { BackPill } from "@/components/ui/back-pill";
 import { createClient } from "@/lib/supabase/client";
 import { tierName, ratePerSeat, MAX_SELF_SERVE_SEATS, type BillingInterval } from "@/lib/org";
 import { TeamSignIn } from "@/components/business/TeamSignIn";
@@ -46,10 +47,12 @@ export default function StartTeamPage() {
 
   return (
     <div className="min-h-screen flex flex-col" style={{ background: "linear-gradient(180deg,#F8FAFC 0%,#FFFFFF 45%)" }}>
-      <header className="flex items-center justify-between px-5 sm:px-10 py-5">
+      <header className="flex items-center px-5 sm:px-10 py-5">
         <Link href="/business"><Logo variant="dark" size="md" /></Link>
-        <Link href="/business" className="text-sm font-semibold text-slate-500 hover:text-slate-900">← Back</Link>
       </header>
+      <div className="px-5 sm:px-10">
+        <BackPill href="/business" label="Back to Teams" />
+      </div>
 
       <main className="flex-1 flex items-center justify-center px-4 py-10">
         <div className="w-full max-w-md">

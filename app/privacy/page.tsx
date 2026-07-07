@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Logo } from "@/components/ui/logo";
+import { BackPill } from "@/components/ui/back-pill";
 
 export const metadata = {
   title: "Privacy Policy — Square 1 AI",
@@ -15,17 +16,12 @@ export default function PrivacyPage() {
           <Link href="/">
             <Logo variant="light" size="sm" />
           </Link>
-          <Link
-            href="/"
-            className="text-sm text-slate-400 hover:text-white transition-colors"
-          >
-            ← Back to home
-          </Link>
         </div>
       </header>
 
       {/* Content */}
-      <main className="max-w-3xl mx-auto px-6 py-16">
+      <main className="max-w-3xl mx-auto px-6 py-10 sm:py-12">
+        <BackPill href="/" label="Back to home" className="mb-6" />
         <div className="bg-surface rounded-2xl border border-border shadow-[0_1px_2px_rgb(15_23_42_/_0.05)] p-10">
           <p className="text-xs font-semibold text-brand uppercase tracking-widest mb-2">
             Legal
@@ -202,9 +198,8 @@ export default function PrivacyPage() {
       </main>
 
       {/* Footer */}
-      <footer className="py-8 px-6 text-center text-xs text-ink-muted">
-        <Link href="/" className="text-brand hover:underline">← Back to Square 1 AI</Link>
-        <span className="mx-3">·</span>
+      <footer className="py-8 px-6 flex items-center justify-center gap-4 text-xs text-ink-muted">
+        <BackPill href="/" label="Back to home" />
         <Link href="/terms" className="hover:underline">Terms of Service</Link>
       </footer>
     </div>

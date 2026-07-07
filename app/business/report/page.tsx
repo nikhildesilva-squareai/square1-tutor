@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { Logo } from "@/components/ui/logo";
+import { BackPill } from "@/components/ui/back-pill";
 import { PrintButton } from "@/components/business/PrintButton";
 import { getOrgStats } from "@/lib/org-stats";
 
@@ -43,7 +44,7 @@ export default async function TeamImpactReport() {
     <div className="min-h-screen bg-white text-slate-900">
       {/* Action bar — hidden in print */}
       <div className="print:hidden border-b border-slate-200 px-5 sm:px-8 py-4 flex items-center justify-between gap-4">
-        <Link href="/business/dashboard" className="text-sm font-semibold text-slate-500 hover:text-slate-900">← Back to portal</Link>
+        <BackPill href="/business/dashboard" label="Back to portal" />
         <PrintButton />
       </div>
 
