@@ -39,7 +39,7 @@ export function ResearchIndex({ articles }: { articles: ResearchCard[] }) {
       {!topic && featured && (
         <Link
           href={`/research/${featured.slug}`}
-          className="group relative block rounded-3xl overflow-hidden mb-10 p-8 sm:p-12"
+          className="group relative block rounded-3xl overflow-hidden mb-10 p-7 sm:px-12 sm:py-9"
           style={{ background: "linear-gradient(135deg, #00183A 0%, #01224F 60%, #0B3B7E 130%)" }}
         >
           {/* Brand-mark watermark — the open square, oversized */}
