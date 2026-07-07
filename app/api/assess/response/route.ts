@@ -4,12 +4,16 @@ import { z } from "zod";
 
 const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
+// 15k chars ≈ 4k tokens — caps what a single answer can add to a grading batch
+// (the prompt builders in lib/grading/assessment.ts also truncate as backstop).
+const MAX_ANSWER_CHARS = 15_000;
+
 const schema = z.object({
   attemptId: z.string().regex(UUID_REGEX, "Invalid attemptId"),
   questionId: z.string().regex(UUID_REGEX, "Invalid questionId"),
   selectedOption: z.string().optional(),
-  responseText: z.string().optional(),
-  codeResponse: z.string().optional(),
+  responseText: z.string().max(MAX_ANSWER_CHARS, "Answer is too long — please keep it under 15,000 characters.").optional(),
+  codeResponse: z.string().max(MAX_ANSWER_CHARS, "Code is too long — please keep it under 15,000 characters.").optional(),
 });
 
 export async function POST(request: Request) {

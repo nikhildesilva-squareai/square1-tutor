@@ -45,6 +45,14 @@ export type LlmExec = (params: {
  * report, learning plan and cohort percentiles permanently). */
 export class GradeBatchError extends Error {}
 
+/** Backstop input cap: no single answer may balloon a grading batch, even if a
+ * legacy row predates the 15k-char submission validation. */
+const MAX_ANSWER_CHARS = 15_000;
+function clampAnswer(answer: string): string {
+  if (answer.length <= MAX_ANSWER_CHARS) return answer;
+  return `${answer.slice(0, MAX_ANSWER_CHARS)}\n[... answer truncated at ${MAX_ANSWER_CHARS.toLocaleString()} characters ...]`;
+}
+
 /** Pull the first JSON array out of an LLM response. */
 export function extractJsonArray(text: string): unknown[] | null {
   const match = text.match(/\[[\s\S]*\]/);
@@ -76,7 +84,7 @@ export function buildShortAnswerPrompt(
   subject: string,
 ): string {
   const block = questions.map((q) => {
-    const ans = answerFor(q);
+    const ans = clampAnswer(answerFor(q));
     return `[#${q.number}] (${q.marks} marks)
 Question: ${q.stem_md}
 ${q.mark_scheme_md ? `Mark scheme: ${q.mark_scheme_md}` : "Mark scheme: (use expert judgement)"}
@@ -108,7 +116,7 @@ export function buildCodePrompt(
   subject: string,
 ): string {
   const block = questions.map((q) => {
-    const code = answerFor(q);
+    const code = clampAnswer(answerFor(q));
     const lang = q.language ?? "Python";
     return `[#${q.number}] (${q.marks} marks, ${lang})
 Question: ${q.stem_md}

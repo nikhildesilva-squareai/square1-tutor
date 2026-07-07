@@ -55,6 +55,61 @@ function ossModelCheapFor(feature?: string): string {
 // absolute ceiling so cost can never run unbounded.
 const HARD_CEILING_MULTIPLIER = 2;
 
+// ─── Platform-wide monthly ceiling ───────────────────────────────────────────
+// Per-student wallets can't see aggregate cost: 10k students × small amounts,
+// or a bot-signup swarm, each stays under its own wallet while the total runs
+// away. This is the guardrail on the whole card: past the soft ceiling EVERY
+// call degrades to the cheap tier and the founder is alerted; past 2× the
+// platform hard-stops AI features entirely.
+const PLATFORM_AI_BUDGET_USD = Number(process.env.PLATFORM_AI_BUDGET_USD ?? 100);
+
+/** Total platform AI spend this month (all students), via a DB-side SUM. */
+async function getPlatformSpend(): Promise<number> {
+  try {
+    const supabase = await createClient();
+    const { data, error } = await supabase.rpc("get_month_ai_spend", { p_month: getMonthKey() });
+    if (error) {
+      console.error("[budget] get_month_ai_spend:", error);
+      return 0; // fail-open: never block AI on a monitoring query failure
+    }
+    return Number(data ?? 0);
+  } catch (err) {
+    console.error("[budget] platform spend check failed:", err);
+    return 0;
+  }
+}
+
+// Alert the founder when the platform ceiling is crossed. Deduped per
+// serverless instance per month+tier — a burst may send a handful of emails
+// across instances, which is acceptable for a budget alarm.
+const platformAlertsSent = new Set<string>();
+function alertPlatformBudget(spent: number, hardStop: boolean): void {
+  const key = `${getMonthKey()}:${hardStop ? "hard" : "soft"}`;
+  if (platformAlertsSent.has(key)) return;
+  platformAlertsSent.add(key);
+  const msg = `[budget] PLATFORM AI ${hardStop ? "HARD-STOP" : "soft ceiling"}: $${spent.toFixed(2)} of $${PLATFORM_AI_BUDGET_USD} this month`;
+  console.error(msg);
+  // Fire-and-forget email — never let alerting break an AI call.
+  void (async () => {
+    try {
+      const { getResend } = await import("@/lib/email/resend");
+      const to = process.env.LEAD_NOTIFY_EMAIL ?? "nikhil.desilva@square1ai.com";
+      await getResend().emails.send({
+        from: "Square 1 AI <tech@square1ai.com>",
+        to,
+        subject: hardStop
+          ? `🛑 Platform AI budget HARD-STOP at $${spent.toFixed(2)}`
+          : `⚠️ Platform AI budget soft ceiling crossed ($${spent.toFixed(2)} / $${PLATFORM_AI_BUDGET_USD})`,
+        text: `${msg}\n\n${hardStop
+          ? "AI features are now stopped platform-wide until the month resets or PLATFORM_AI_BUDGET_USD is raised."
+          : "All AI calls are now degraded to the cheap model tier. Hard stop at 2× the ceiling."}\n\nAdjust via the PLATFORM_AI_BUDGET_USD env var in Vercel.`,
+      });
+    } catch (err) {
+      console.error("[budget] platform alert email failed:", err);
+    }
+  })();
+}
+
 export class BudgetExceededError extends Error {
   constructor(spent: number, budget: number) {
     super(
@@ -240,12 +295,24 @@ export async function callAI(
   provider: string;
   degraded: boolean;
 }> {
-  // 1. Check budget and decide the degrade tier
-  const budgetCheck = await checkBudget(studentId);
-  const overBudget = !budgetCheck.ok; // spent >= allocated
+  // 1. Check budgets (student wallet + platform ceiling) and decide the degrade tier
+  const [budgetCheck, platformSpent] = await Promise.all([
+    checkBudget(studentId),
+    getPlatformSpend(),
+  ]);
+
+  // Platform hard stop: past 2× the global ceiling, no AI runs for anyone.
+  if (platformSpent >= PLATFORM_AI_BUDGET_USD * HARD_CEILING_MULTIPLIER) {
+    alertPlatformBudget(platformSpent, true);
+    throw new BudgetExceededError(platformSpent, PLATFORM_AI_BUDGET_USD * HARD_CEILING_MULTIPLIER);
+  }
+  const platformOver = platformSpent >= PLATFORM_AI_BUDGET_USD;
+  if (platformOver) alertPlatformBudget(platformSpent, false);
+
+  const overBudget = !budgetCheck.ok || platformOver; // degrade tier: student wallet spent OR platform soft ceiling
 
   // Only hard-stop past the absolute ceiling — otherwise degrade gracefully.
-  if (overBudget && budgetCheck.spent >= budgetCheck.budget * HARD_CEILING_MULTIPLIER) {
+  if (!budgetCheck.ok && budgetCheck.spent >= budgetCheck.budget * HARD_CEILING_MULTIPLIER) {
     throw new BudgetExceededError(budgetCheck.spent, budgetCheck.budget * HARD_CEILING_MULTIPLIER);
   }
 
