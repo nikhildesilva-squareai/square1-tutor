@@ -28,9 +28,11 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   // Team managers get a "Manager portal" nav entry — without it there is no
   // path back to /business/dashboard from inside the app.
   let isManager = false;
+  let userName = "";
   try {
-    const { data: student } = await supabase.from("students").select("id").eq("user_id", userId).maybeSingle();
+    const { data: student } = await supabase.from("students").select("id, name").eq("user_id", userId).maybeSingle();
     if (student) {
+      userName = student.name ?? "";
       const { data: mgr } = await createAdminClient()
         .from("org_members").select("id").eq("student_id", student.id).eq("role", "manager").maybeSingle();
       isManager = !!mgr;
@@ -42,7 +44,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   return (
     <div className="flex h-screen overflow-hidden bg-surface-soft">
       {/* Desktop sidebar — hidden on mobile/tablet */}
-      <SidebarNav userEmail={email} userId={userId} isManager={isManager} isAdmin={isAdmin} />
+      <SidebarNav userEmail={email} userName={userName} userId={userId} isManager={isManager} isAdmin={isAdmin} />
 
       {/* Main content */}
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
