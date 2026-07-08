@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
+import { Search, Plus, Users, TrendingUp } from "lucide-react";
 
 const CATEGORIES = [
   "All",
@@ -14,6 +15,14 @@ const CATEGORIES = [
   "Finance & Accounting",
   "Sciences & Technology",
   "Sports",
+];
+
+// On-system cover gradients, cycled by index for variety.
+const COVERS = [
+  "from-brand to-brand-dark",
+  "from-brand-sky to-brand",
+  "from-brand-light to-brand-deep",
+  "from-brand to-brand-deep",
 ];
 
 interface Community {
@@ -42,19 +51,16 @@ export function CommunityDiscoveryClient() {
   const [selectedCategory, setSelectedCategory] = useState(searchParams.get("category") || "All");
   const [currentPage, setCurrentPage] = useState(parseInt(searchParams.get("page") || "1", 10));
   const [error, setError] = useState<string | null>(null);
-  const [hoveredCard, setHoveredCard] = useState<string | null>(null);
 
   const itemsPerPage = 8;
 
-  // Update URL when filters change
+  // Keep the URL in sync with the active filters.
   useEffect(() => {
     const params = new URLSearchParams();
     if (search) params.set("search", search);
     if (selectedCategory !== "All") params.set("category", selectedCategory);
     if (currentPage > 1) params.set("page", currentPage.toString());
-
-    const queryString = params.toString();
-    router.push(`?${queryString}`, { scroll: false });
+    router.push(`?${params.toString()}`, { scroll: false });
   }, [selectedCategory, search, currentPage, router]);
 
   useEffect(() => {
@@ -66,353 +72,221 @@ export function CommunityDiscoveryClient() {
     try {
       setLoading(true);
       setError(null);
-
       const params = new URLSearchParams();
-      if (selectedCategory !== "All") {
-        params.append("category", selectedCategory);
-      }
-      if (search) {
-        params.append("search", search);
-      }
-
+      if (selectedCategory !== "All") params.append("category", selectedCategory);
+      if (search) params.append("search", search);
       const response = await fetch(`/api/communities?${params.toString()}`);
-      if (!response.ok) {
-        throw new Error("Failed to fetch communities");
-      }
-
+      if (!response.ok) throw new Error("Failed to fetch communities");
       const data = await response.json();
       setCommunities(data.communities || []);
     } catch (err) {
-      const message = err instanceof Error ? err.message : "An error occurred";
-      setError(message);
+      setError(err instanceof Error ? err.message : "An error occurred");
     } finally {
       setLoading(false);
     }
   };
 
-  const formatPrice = (price: number | undefined): string => {
-    if (!price) return "Free";
-    return `$${price.toFixed(2)}`;
-  };
+  const formatMemberCount = (count: number): string =>
+    count >= 1000 ? `${(count / 1000).toFixed(1).replace(/\.0$/, "")}k members` : `${count} members`;
 
-  const formatMemberCount = (count: number): string => {
-    if (count >= 1000) {
-      return `${(count / 1000).toFixed(1)}k members`;
-    }
-    return `${count} members`;
-  };
+  // Trending = the three largest communities in the current result set.
+  const trendingIds = new Set(
+    [...communities].sort((a, b) => (b.memberCount || 0) - (a.memberCount || 0)).slice(0, 3).map((c) => c.id)
+  );
 
-  // Pagination logic
   const startIndex = (currentPage - 1) * itemsPerPage;
-  const endIndex = startIndex + itemsPerPage;
-  const paginatedCommunities = communities.slice(startIndex, endIndex);
+  const paginatedCommunities = communities.slice(startIndex, startIndex + itemsPerPage);
   const totalPages = Math.ceil(communities.length / itemsPerPage);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50/30">
-      {/* Hero Banner */}
-      <div className="relative w-screen -mx-[calc((100vw-100%)/2)] bg-gradient-to-br from-slate-900 via-slate-800 to-blue-900 py-8 px-4 mb-8 overflow-hidden">
-        {/* Decorative gradient orbs */}
-        <div className="absolute top-0 left-10 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl" />
-        <div className="absolute bottom-0 right-10 w-64 h-64 bg-purple-500/5 rounded-full blur-3xl" />
-
-        <div className="relative max-w-6xl mx-auto text-center">
-          <div className="mb-2">
-            <span className="inline-block px-3 py-1.5 rounded-full bg-blue-500/20 border border-blue-400/30 text-blue-200 text-xs font-medium uppercase tracking-widest">
-              ✨ Explore Communities
-            </span>
-          </div>
-          <h1 className="text-4xl md:text-5xl font-black text-white mb-2 tracking-tighter leading-tight">
-            Find Your <span className="bg-gradient-to-r from-blue-300 to-cyan-300 bg-clip-text text-transparent">Community</span>
-          </h1>
-          <p className="text-base md:text-lg text-slate-300 font-light mb-6 max-w-2xl mx-auto leading-relaxed">
-            Connect with like-minded people, share ideas, and grow together
+    <div className="space-y-10">
+      {/* Hero */}
+      <section className="rounded-2xl border border-border bg-surface-tint px-6 py-14 sm:px-10">
+        <div className="mx-auto flex max-w-2xl flex-col items-center gap-5 text-center">
+          <span className="inline-flex items-center gap-2 rounded-full border border-brand/20 bg-surface px-3.5 py-1.5 text-[13px] font-bold uppercase tracking-[0.08em] text-brand">
+            <TrendingUp className="h-3.5 w-3.5" /> Explore communities
+          </span>
+          <h2 className="text-4xl font-bold leading-tight tracking-tight text-ink sm:text-5xl">Find your community</h2>
+          <p className="text-lg text-ink-secondary">
+            Connect with like-minded people, share ideas, and grow together.
           </p>
 
-          {/* Search Bar */}
-          <div className="mt-8 max-w-3xl mx-auto group">
-            <label htmlFor="community-search" className="sr-only">
-              Search communities by name, category, or keywords
-            </label>
-            <div className="relative">
-              <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-cyan-600 rounded-xl opacity-0 group-focus-within:opacity-100 transition-opacity duration-300 -z-10 blur" aria-hidden="true" />
-              <div className="relative">
-                <svg
-                  width="18"
-                  height="18"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"
-                  aria-hidden="true"
-                >
-                  <circle cx="11" cy="11" r="8" />
-                  <path d="m21 21-4.35-4.35" />
-                </svg>
-                <input
-                  id="community-search"
-                  type="text"
-                  placeholder="Search by name, category, or keywords..."
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                  className="w-full pl-14 pr-5 py-3 rounded-xl bg-white/95 backdrop-blur-sm border border-white/20 text-slate-900 placeholder-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent shadow-lg hover:shadow-blue-500/20 transition-all duration-300"
-                  aria-label="Search communities"
-                />
-              </div>
+          <div className="mt-2 flex w-full max-w-xl flex-wrap items-center justify-center gap-3">
+            <div className="relative min-w-[280px] flex-1">
+              <Search className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-ink-muted" />
+              <label htmlFor="community-search" className="sr-only">
+                Search communities
+              </label>
+              <input
+                id="community-search"
+                type="text"
+                placeholder="Search by name, category, or keywords"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="s1-search h-[52px] w-full rounded-xl border border-border bg-surface pl-12 pr-4 text-base text-ink shadow-[0_1px_2px_0_rgba(21,47,84,0.04)] outline-none transition-[border-color,box-shadow] placeholder:text-ink-muted focus:border-brand"
+              />
             </div>
-          </div>
-
-          {/* Quick action buttons */}
-          <div className="flex justify-center gap-3 mt-7">
-            <Link href="/community/create">
-              <button className="px-6 py-2.5 rounded-full bg-gradient-to-r from-blue-600 to-cyan-600 text-white font-semibold text-sm hover:shadow-lg hover:shadow-blue-500/50 transition-all duration-300 hover:scale-105">
-                Create Community
-              </button>
+            <Link
+              href="/community/create"
+              className="inline-flex h-[52px] items-center gap-2 whitespace-nowrap rounded-xl bg-brand px-6 text-base font-medium text-white transition-colors hover:bg-brand-dark"
+            >
+              <Plus className="h-[18px] w-[18px]" /> Create community
             </Link>
           </div>
         </div>
-      </div>
+      </section>
 
-      {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 pb-20">
-        {/* Category Filters */}
-        <div className="mb-16">
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-sm font-semibold text-slate-700 uppercase tracking-wider">Filter by Interest</h2>
-          </div>
-          <div className="flex flex-wrap gap-3" role="group" aria-label="Community category filters">
-            {CATEGORIES.map((cat) => (
+      {/* Filters */}
+      <div>
+        <h3 className="mb-4 text-[13px] font-bold uppercase tracking-[0.08em] text-ink-muted">Filter by interest</h3>
+        <div className="flex flex-wrap gap-3" role="group" aria-label="Community category filters">
+          {CATEGORIES.map((cat) => {
+            const active = selectedCategory === cat;
+            return (
               <button
                 key={cat}
                 onClick={() => setSelectedCategory(cat)}
-                aria-pressed={selectedCategory === cat}
-                aria-label={`Filter by ${cat} community`}
-                className={`px-6 py-3 rounded-full text-sm font-medium transition-all duration-300 whitespace-nowrap min-h-[44px] flex items-center justify-center ${
-                  selectedCategory === cat
-                    ? "bg-gradient-to-r from-blue-600 to-cyan-600 text-white shadow-lg shadow-blue-600/30 scale-105"
-                    : "bg-white border border-slate-200 text-slate-700 hover:border-blue-300 hover:text-blue-600 hover:shadow-md hover:shadow-blue-500/10 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-                }`}
+                aria-pressed={active}
+                className={
+                  active
+                    ? "rounded-full bg-brand px-5 py-2.5 text-[15px] font-medium text-white transition-colors"
+                    : "rounded-full border border-border bg-surface px-5 py-2.5 text-[15px] font-medium text-ink-secondary transition-colors hover:bg-surface-alt"
+                }
               >
                 {cat}
               </button>
-            ))}
-          </div>
+            );
+          })}
         </div>
-
-        {/* Error Message */}
-        {error && (
-          <div className="p-4 rounded-lg bg-red-50 border border-red-200 text-red-700 mb-8">
-            {error}
-          </div>
-        )}
-
-        {/* Communities Grid */}
-        {loading ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {[...Array(8)].map((_, i) => (
-              <div key={i} className="animate-pulse">
-                <div className="aspect-video rounded-2xl bg-gradient-to-br from-slate-200 to-slate-100 mb-4" />
-                <div className="h-4 rounded-lg bg-slate-200 w-3/4 mb-3" />
-                <div className="h-3 rounded-lg bg-slate-100 w-full mb-2" />
-                <div className="h-3 rounded-lg bg-slate-100 w-2/3 mb-4" />
-                <div className="h-10 rounded-full bg-slate-100" />
-              </div>
-            ))}
-          </div>
-        ) : communities.length > 0 ? (
-          <>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              {paginatedCommunities.map((community, index) => (
-                <Link key={community.id} href={`/community/${community.slug}`}>
-                  <div
-                    className="group cursor-pointer h-full"
-                    onMouseEnter={() => setHoveredCard(community.id)}
-                    onMouseLeave={() => setHoveredCard(null)}
-                    role="article"
-                    aria-label={`${community.name} community with ${community.memberCount || 0} members`}
-                    style={{
-                      animation: `fadeInUp 0.6s ease-out ${index * 0.08}s both`,
-                    }}
-                  >
-                    {/* Premium Card with Glass Morphism effect */}
-                    <div className="relative h-full bg-white/80 backdrop-blur-lg rounded-2xl overflow-hidden border border-white/60 shadow-xl transition-all duration-500 hover:shadow-2xl hover:shadow-blue-500/20 hover:-translate-y-2 flex flex-col" role="button" tabIndex={0}>
-                      {/* Gradient overlay border */}
-                      <div className="absolute inset-0 bg-gradient-to-br from-blue-600/10 via-transparent to-purple-600/10 pointer-events-none rounded-2xl" />
-
-                      {/* Image Container with overlay effect - Fixed aspect ratio to prevent CLS */}
-                      <div className="relative bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 aspect-video overflow-hidden">
-                        {community.thumbnail_url ? (
-                          <img
-                            src={community.thumbnail_url}
-                            alt={`${community.name} community thumbnail`}
-                            className="w-full h-full object-cover group-hover:scale-125 transition-transform duration-700"
-                            loading="lazy"
-                          />
-                        ) : (
-                          <div className="w-full h-full bg-gradient-to-br from-blue-600 via-cyan-600 to-slate-900 flex items-center justify-center relative overflow-hidden">
-                            {/* Animated gradient shapes */}
-                            <div className="absolute top-0 left-0 w-32 h-32 bg-blue-400/30 rounded-full blur-2xl animate-pulse" />
-                            <div className="absolute bottom-0 right-0 w-40 h-40 bg-purple-400/20 rounded-full blur-3xl animate-pulse" />
-                            <div className="relative z-10 text-white/30">
-                              <svg className="w-20 h-20" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={0.5} d="M17 20h5v-2a3 3 0 00-5.856-1.487M15 10a3 3 0 11-6 0 3 3 0 016 0zM15 20a3 3 0 01-6 0" />
-                              </svg>
-                            </div>
-                          </div>
-                        )}
-
-                        {/* Rank Badge - Premium style */}
-                        <div className="absolute top-4 left-4 z-10">
-                          <div className="px-4 py-2 rounded-full bg-gradient-to-r from-white/20 to-white/10 backdrop-blur-lg border border-white/30 text-white text-xs font-bold" aria-label={`Rank ${startIndex + index + 1}`}>
-                            #{startIndex + index + 1}
-                          </div>
-                        </div>
-
-                        {/* Hover overlay effect */}
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" aria-hidden="true" />
-                      </div>
-
-                      {/* Content Section */}
-                      <div className="relative z-10 p-6 flex-1 flex flex-col">
-                        {/* Category badge - Improved contrast */}
-                        <div className="mb-3">
-                          <span className="inline-block px-3 py-1 rounded-full bg-blue-100 text-blue-800 text-xs font-semibold uppercase tracking-wider" aria-label={`Category: ${community.category}`}>
-                            {community.category}
-                          </span>
-                        </div>
-
-                        {/* Community Name - Better contrast (4.5:1) */}
-                        <h3 className="font-bold text-slate-900 line-clamp-2 text-lg leading-snug mb-3 group-hover:text-blue-700 transition-colors">
-                          {community.name}
-                        </h3>
-
-                        {/* Description - Improved contrast */}
-                        <p className="text-sm text-slate-700 line-clamp-2 mb-auto leading-relaxed flex-1">
-                          {community.description ||
-                            "Join this vibrant community and connect with peers."}
-                        </p>
-                      </div>
-
-                      {/* Footer - Premium stats with better contrast */}
-                      <div className="relative z-10 px-6 py-5 border-t border-slate-200 bg-gradient-to-r from-slate-50 to-blue-50 backdrop-blur-sm">
-                        <div className="flex items-center justify-between gap-4">
-                          <div className="flex-1 min-w-0">
-                            <p className="text-xs font-medium text-slate-600">Members</p>
-                            <p className="text-sm font-bold text-slate-900 mt-0.5">
-                              {formatMemberCount(community.memberCount || 0)}
-                            </p>
-                          </div>
-                          <div className="flex-1 text-right min-w-0">
-                            <p className="text-xs font-medium text-slate-600">Price</p>
-                            <p className="text-base font-bold text-blue-700 mt-0.5">
-                              {formatPrice(community.monthlyPrice)}
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </Link>
-              ))}
-            </div>
-
-            {/* Pagination */}
-            {totalPages > 1 && (
-              <nav className="flex items-center justify-center gap-3 mt-16" aria-label="Pagination">
-                <button
-                  onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
-                  disabled={currentPage === 1}
-                  className="min-w-[44px] h-[44px] rounded-full bg-white border border-slate-200 flex items-center justify-center hover:bg-slate-50 hover:border-blue-400 hover:text-blue-600 disabled:opacity-30 transition-all duration-300 text-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-                  aria-label="Previous page"
-                >
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" aria-hidden="true">
-                    <path d="M15 19l-7-7 7-7" />
-                  </svg>
-                </button>
-
-                <div className="flex items-center gap-2" role="group">
-                  {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-                    <button
-                      key={page}
-                      onClick={() => setCurrentPage(page)}
-                      className={`min-w-[44px] h-[44px] rounded-full flex items-center justify-center font-semibold transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 ${
-                        currentPage === page
-                          ? "bg-gradient-to-r from-blue-600 to-cyan-600 text-white shadow-lg shadow-blue-600/30 focus:ring-blue-500"
-                          : "bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 hover:border-blue-300 hover:text-blue-600 focus:ring-blue-500"
-                      }`}
-                      aria-label={`Go to page ${page}`}
-                      aria-current={currentPage === page ? "page" : undefined}
-                    >
-                      {page}
-                    </button>
-                  ))}
-                </div>
-
-                <button
-                  onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
-                  disabled={currentPage === totalPages}
-                  className="min-w-[44px] h-[44px] rounded-full bg-white border border-slate-200 flex items-center justify-center hover:bg-slate-50 hover:border-blue-400 hover:text-blue-600 disabled:opacity-30 transition-all duration-300 text-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-                  aria-label="Next page"
-                >
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" aria-hidden="true">
-                    <path d="M9 19l7-7-7-7" />
-                  </svg>
-                </button>
-              </nav>
-            )}
-          </>
-        ) : (
-          <div className="text-center py-32" role="status" aria-live="polite">
-            <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-gradient-to-br from-slate-100 to-blue-50 mb-6">
-              <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" className="text-slate-400" aria-hidden="true">
-                <circle cx="11" cy="11" r="8" />
-                <path d="m21 21-4.35-4.35" />
-              </svg>
-            </div>
-            <h3 className="text-slate-900 mb-3 text-2xl font-bold">No communities found</h3>
-            <p className="text-slate-600 mb-8 text-base max-w-md mx-auto leading-relaxed">
-              Try adjusting your search or filters to find the right community for you.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link href="/community/create">
-                <button className="px-7 py-3 bg-gradient-to-r from-blue-600 to-cyan-600 text-white rounded-full hover:shadow-lg hover:shadow-blue-500/50 transition-all duration-300 font-semibold hover:scale-105 min-h-[44px] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
-                  Create Community
-                </button>
-              </Link>
-              <button
-                onClick={() => {
-                  setSearch("");
-                  setSelectedCategory("All");
-                }}
-                className="px-7 py-3 bg-white border border-slate-200 text-slate-700 rounded-full hover:bg-slate-50 hover:border-blue-300 transition-all duration-300 font-semibold min-h-[44px] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-                aria-label="Clear all filters and show all communities"
-              >
-                Clear Filters
-              </button>
-            </div>
-          </div>
-        )}
       </div>
 
-      <style>{`
-        @keyframes fadeInUp {
-          from {
-            opacity: 0;
-            transform: translateY(20px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-        @keyframes ripple {
-          to {
-            transform: scale(4);
-            opacity: 0;
-          }
-        }
-      `}</style>
+      {/* Result meta */}
+      {!loading && !error && (
+        <div className="flex items-baseline gap-2">
+          <span className="font-semibold text-ink">{communities.length}</span>
+          <span className="text-ink-muted">{communities.length === 1 ? "community" : "communities"}</span>
+        </div>
+      )}
+
+      {error && (
+        <div className="rounded-lg border border-error/30 bg-error-bg p-4 text-error">{error}</div>
+      )}
+
+      {/* Grid */}
+      {loading ? (
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {[...Array(6)].map((_, i) => (
+            <div key={i} className="overflow-hidden rounded-xl border border-border bg-surface">
+              <div className="h-[132px] animate-pulse bg-surface-alt" />
+              <div className="space-y-3 p-5">
+                <div className="h-4 w-1/3 animate-pulse rounded bg-surface-alt" />
+                <div className="h-5 w-2/3 animate-pulse rounded bg-surface-alt" />
+                <div className="h-10 animate-pulse rounded bg-surface-alt" />
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : communities.length > 0 ? (
+        <>
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {paginatedCommunities.map((community, index) => (
+              <article
+                key={community.id}
+                className="flex flex-col overflow-hidden rounded-xl border border-border bg-surface shadow-[0_1px_2px_0_rgba(21,47,84,0.04)] transition-[transform,box-shadow,border-color] duration-200 hover:-translate-y-[3px] hover:border-border-mid/40 hover:shadow-card-hover"
+              >
+                {/* Cover */}
+                <div className={`relative h-[132px] overflow-hidden bg-gradient-to-br ${COVERS[index % COVERS.length]}`}>
+                  <span className="pointer-events-none absolute -bottom-3.5 right-5 select-none text-[88px] font-bold leading-none text-white/20">
+                    {community.name.charAt(0).toUpperCase()}
+                  </span>
+                  <span className="absolute left-4 top-3.5 inline-flex items-center gap-1.5 rounded-full border border-white/30 bg-white/20 px-3 py-1 text-[13px] font-semibold text-white backdrop-blur-sm">
+                    <Users className="h-3.5 w-3.5" />
+                    {formatMemberCount(community.memberCount || 0)}
+                  </span>
+                  {trendingIds.has(community.id) && (
+                    <span className="absolute right-4 top-3.5 inline-flex items-center gap-1 rounded-full bg-white/90 px-2.5 py-1 text-[11px] font-bold uppercase tracking-wide text-[#C2410C]">
+                      <TrendingUp className="h-3 w-3" /> Trending
+                    </span>
+                  )}
+                </div>
+
+                {/* Body */}
+                <div className="flex flex-1 flex-col p-5 sm:px-6 sm:pb-6">
+                  <span className="mb-3 self-start rounded-md bg-surface-tint px-2.5 py-1 text-[11px] font-bold uppercase tracking-wide text-brand">
+                    {community.category}
+                  </span>
+                  <h3 className="mb-2 text-xl font-bold leading-snug text-ink">{community.name}</h3>
+                  <p className="mb-5 line-clamp-2 text-[15px] leading-relaxed text-ink-muted">
+                    {community.description || "Join this community and connect with peers."}
+                  </p>
+                  <Link
+                    href={`/community/${community.slug}`}
+                    className="mt-auto flex h-[42px] items-center justify-center rounded-lg border border-border bg-surface text-[15px] font-semibold text-brand transition-colors hover:border-brand/30 hover:bg-surface-tint"
+                  >
+                    View community
+                  </Link>
+                </div>
+              </article>
+            ))}
+          </div>
+
+          {/* Pagination */}
+          {totalPages > 1 && (
+            <nav className="flex items-center justify-center gap-2" aria-label="Pagination">
+              <button
+                onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+                disabled={currentPage === 1}
+                className="flex h-11 min-w-[44px] items-center justify-center rounded-full border border-border bg-surface text-ink-secondary transition-colors hover:bg-surface-alt disabled:opacity-30"
+                aria-label="Previous page"
+              >
+                ‹
+              </button>
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                <button
+                  key={page}
+                  onClick={() => setCurrentPage(page)}
+                  aria-current={currentPage === page ? "page" : undefined}
+                  className={
+                    currentPage === page
+                      ? "flex h-11 min-w-[44px] items-center justify-center rounded-full bg-brand font-semibold text-white"
+                      : "flex h-11 min-w-[44px] items-center justify-center rounded-full border border-border bg-surface font-semibold text-ink-secondary transition-colors hover:bg-surface-alt"
+                  }
+                >
+                  {page}
+                </button>
+              ))}
+              <button
+                onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
+                disabled={currentPage === totalPages}
+                className="flex h-11 min-w-[44px] items-center justify-center rounded-full border border-border bg-surface text-ink-secondary transition-colors hover:bg-surface-alt disabled:opacity-30"
+                aria-label="Next page"
+              >
+                ›
+              </button>
+            </nav>
+          )}
+        </>
+      ) : (
+        <div className="flex flex-col items-center gap-3 rounded-lg border border-dashed border-border bg-surface-soft px-6 py-16 text-center">
+          <Search className="h-10 w-10 text-ink-muted" />
+          <h3 className="text-lg font-bold text-ink">No communities found</h3>
+          <p className="text-[15px] text-ink-muted">Try a different keyword or interest, or create your own community.</p>
+          <div className="mt-2 flex flex-wrap justify-center gap-3">
+            <Link href="/community/create" className="rounded-full bg-brand px-6 py-2.5 font-medium text-white transition-colors hover:bg-brand-dark">
+              Create community
+            </Link>
+            <button
+              onClick={() => {
+                setSearch("");
+                setSelectedCategory("All");
+              }}
+              className="rounded-full border border-border bg-surface px-6 py-2.5 font-medium text-ink-secondary transition-colors hover:bg-surface-alt"
+            >
+              Clear filters
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

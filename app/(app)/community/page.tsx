@@ -1,6 +1,6 @@
 import { Suspense } from "react";
-import { createClient } from "@/lib/supabase/server";
 import { CommunityDiscoveryClient } from "@/components/CommunityDiscoveryClient";
+import { CommunityTabs } from "@/components/community/CommunityTabs";
 
 export const metadata = {
   title: "Community · Square 1 AI",
@@ -8,37 +8,13 @@ export const metadata = {
 };
 
 export default async function CommunityPage() {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-
   return (
     <div className="min-h-screen flex flex-col">
-      {/* Header with Navigation */}
+      {/* Header with tab navigation */}
       <div className="border-b border-border">
         <div className="px-4 sm:px-6 py-4 max-w-7xl mx-auto flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold text-ink">Discover communities</h1>
-            <p className="text-sm text-ink-muted">Time table or create your own</p>
-          </div>
-
-          {/* User Profile Section */}
-          {user && (
-            <div className="flex items-center gap-4">
-              <div className="text-right">
-                <p className="font-medium text-ink text-sm">{user.email?.split("@")[0]}</p>
-                <p className="text-xs text-ink-muted">{user.email}</p>
-              </div>
-              <button className="p-2 rounded-lg hover:bg-surface-alt transition-colors text-ink-muted text-sm">
-                Profile
-              </button>
-              <button className="p-2 rounded-lg hover:bg-surface-alt transition-colors text-ink-muted text-sm">
-                Payment
-              </button>
-              <button className="p-2 rounded-lg hover:bg-surface-alt transition-colors text-ink-muted text-sm">
-                Logout
-              </button>
-            </div>
-          )}
+          <h1 className="text-2xl font-bold text-ink">Community</h1>
+          <CommunityTabs />
         </div>
       </div>
 
