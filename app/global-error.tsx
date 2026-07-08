@@ -6,8 +6,17 @@ import { useEffect } from "react";
 // must render its own <html>/<body>. Kept dependency-free + inline-styled.
 export default function GlobalError({ error, reset }: { error: Error & { digest?: string }; reset: () => void }) {
   useEffect(() => {
-    // TODO: forward to error tracking (Sentry) once a DSN is configured.
     console.error("[global error]", error);
+    try {
+      const body = JSON.stringify({
+        path: typeof window !== "undefined" ? window.location.pathname : "",
+        message: error?.message ?? String(error),
+        stack: error?.stack ?? "",
+        digest: error?.digest ?? "",
+      });
+      if (navigator.sendBeacon) navigator.sendBeacon("/api/client-error", new Blob([body], { type: "application/json" }));
+      else void fetch("/api/client-error", { method: "POST", body, keepalive: true, headers: { "Content-Type": "application/json" } });
+    } catch { /* never block */ }
   }, [error]);
 
   return (

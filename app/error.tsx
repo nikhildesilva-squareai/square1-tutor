@@ -6,8 +6,19 @@ import { Logo } from "@/components/ui/logo";
 
 export default function Error({ error, reset }: { error: Error & { digest?: string }; reset: () => void }) {
   useEffect(() => {
-    // TODO: forward to error tracking (Sentry) once a DSN is configured.
     console.error("[app error]", error);
+    // Forward to the server so the real message + stack land in our logs
+    // (client render errors otherwise only appear in the browser console).
+    try {
+      const body = JSON.stringify({
+        path: typeof window !== "undefined" ? window.location.pathname : "",
+        message: error?.message ?? String(error),
+        stack: error?.stack ?? "",
+        digest: error?.digest ?? "",
+      });
+      if (navigator.sendBeacon) navigator.sendBeacon("/api/client-error", new Blob([body], { type: "application/json" }));
+      else void fetch("/api/client-error", { method: "POST", body, keepalive: true, headers: { "Content-Type": "application/json" } });
+    } catch { /* never block the error UI */ }
   }, [error]);
 
   return (
