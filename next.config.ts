@@ -16,6 +16,7 @@ const securityHeaders = [
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://assets.calendly.com",
       "font-src 'self' https://fonts.gstatic.com",
       "img-src 'self' data: blob: https://*.supabase.co",
+      "media-src 'self' blob: https://*.supabase.co", // community post video attachments
       "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.anthropic.com",
       "frame-src 'self' https://calendly.com",
       "object-src 'none'",

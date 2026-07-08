@@ -57,6 +57,10 @@ export async function POST(req: Request) {
         "application/vnd.ms-excel",
         "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
         "text/plain",
+        // Video (community post walkthroughs) — still subject to the 25MB/file cap
+        "video/mp4",
+        "video/webm",
+        "video/quicktime",
       ];
 
       if (!allowedTypes.includes(file.type)) {
