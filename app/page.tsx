@@ -17,6 +17,7 @@ import { InlineDiagnostic } from "@/components/landing/InlineDiagnostic";
 import { CodeReviewSlider } from "@/components/landing/CodeReviewSlider";
 import { CookieConsent } from "@/components/ui/cookie-consent";
 import { MobileStickyCta } from "@/components/landing/MobileStickyCta";
+import { LandingEngagement } from "@/components/LandingEngagement";
 import { WavePath } from "@/components/ui/wave-path";
 
 // ─── Interactive wavy divider between sections (bends toward the cursor) ───────
@@ -94,56 +95,59 @@ export default async function Home() {
   return (
     <main id="main" className="overflow-x-hidden">
 
+      {/* data-s1-section markers feed landing engagement tracking (time-per-
+          section + scroll depth). Plain block wrappers — layout-neutral. */}
+
       {/* ── 1. Hero (with goal-typer) ───────────────────────────────────────── */}
-      <HeroSection courseCount={courses.length} seats={seats} />
+      <div data-s1-section="hero"><HeroSection courseCount={courses.length} seats={seats} /></div>
 
       {/* ── 2. THE HOOK — outcome + proof: "Get hired as an [role]" + journey + employer view */}
-      <JourneyHook />
+      <div data-s1-section="journey"><JourneyHook /></div>
 
       <SectionWave />
 
       {/* ── 3. Foot-in-the-door: one inline question → act by screen two ─────── */}
-      <InlineDiagnostic />
+      <div data-s1-section="diagnostic"><InlineDiagnostic /></div>
 
       <SectionWave />
 
       {/* ── 4. The 2026 wedge — slim stakes strip ────────────────────────────── */}
-      <RealityBand />
+      <div data-s1-section="reality"><RealityBand /></div>
 
       <SectionWave />
 
       {/* ── 5. Before/After — drag to see Nova review your code ──────────────── */}
-      <CodeReviewSlider />
+      <div data-s1-section="code-review"><CodeReviewSlider /></div>
 
       <SectionWave />
 
       {/* ── 6. Why Square 1 beats everything else ────────────────────────────── */}
-      <ComparisonSection />
+      <div data-s1-section="comparison"><ComparisonSection /></div>
 
       <SectionWave />
 
       {/* ── 7. Courses — inline explorer (click → preview Lesson 1) ──────────── */}
-      <CourseGridSection courses={courses} />
+      <div data-s1-section="courses"><CourseGridSection courses={courses} /></div>
 
       <SectionWave />
 
       {/* ── 8. Honest proof — founder note + founding offer ──────────────────── */}
-      <SocialProofSection courseCount={courses.length} seats={seats} />
+      <div data-s1-section="social-proof"><SocialProofSection courseCount={courses.length} seats={seats} /></div>
 
       <SectionWave />
 
       {/* ── 9. Pricing — free start, founding rate locked for life ───────────── */}
-      <PricingSection />
+      <div data-s1-section="pricing"><PricingSection /></div>
 
       <SectionWave />
 
       {/* ── 10. FAQ — objections answered + FAQPage structured data ──────────── */}
-      <FAQSection courseCount={courses.length} />
+      <div data-s1-section="faq"><FAQSection courseCount={courses.length} /></div>
 
       <SectionWave />
 
       {/* ── About + Final CTA + Footer ────────────────────────────────────── */}
-      <section className="relative overflow-hidden bg-white">
+      <section data-s1-section="final-cta" className="relative overflow-hidden bg-white">
 
         {/* Background accents — subtle blue on white */}
         <div className="pointer-events-none absolute top-1/4 left-0 -translate-x-1/2 w-[700px] h-[700px] rounded-full opacity-[0.06]"
@@ -367,6 +371,8 @@ export default async function Home() {
 
       <CookieConsent />
       <MobileStickyCta seats={seats} />
+      {/* Landing engagement: time-per-section + scroll depth → /api/track (prod only) */}
+      <LandingEngagement />
     </main>
   );
 }
