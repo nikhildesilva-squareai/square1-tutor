@@ -46,6 +46,7 @@ export function CommunityDiscoveryClient() {
   const searchParams = useSearchParams();
 
   const [communities, setCommunities] = useState<Community[]>([]);
+  const [total, setTotal] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState(searchParams.get("search") || "");
   const [selectedCategory, setSelectedCategory] = useState(searchParams.get("category") || "All");
@@ -79,6 +80,7 @@ export function CommunityDiscoveryClient() {
       if (!response.ok) throw new Error("Failed to fetch communities");
       const data = await response.json();
       setCommunities(data.communities || []);
+      if (typeof data.total === "number") setTotal(data.total);
     } catch (err) {
       setError(err instanceof Error ? err.message : "An error occurred");
     } finally {
@@ -101,17 +103,34 @@ export function CommunityDiscoveryClient() {
   return (
     <div className="space-y-10">
       {/* Hero */}
-      <section className="rounded-2xl border border-border bg-surface-tint px-6 py-14 sm:px-10">
-        <div className="mx-auto flex max-w-2xl flex-col items-center gap-5 text-center">
-          <span className="inline-flex items-center gap-2 rounded-full border border-brand/20 bg-surface px-3.5 py-1.5 text-[13px] font-bold uppercase tracking-[0.08em] text-brand">
-            <TrendingUp className="h-3.5 w-3.5" /> Explore communities
+      <section className="relative overflow-hidden rounded-2xl border border-border bg-surface-tint px-6 py-11 sm:px-10 sm:py-12">
+        {/* Soft brand glow — depth without new colours */}
+        <div aria-hidden className="pointer-events-none absolute -right-16 -top-20 h-64 w-64 rounded-full bg-brand/10 blur-3xl" />
+        <div aria-hidden className="pointer-events-none absolute -bottom-24 -left-16 h-64 w-64 rounded-full bg-brand-sky/10 blur-3xl" />
+
+        <div className="relative mx-auto flex max-w-2xl flex-col items-center gap-4 text-center">
+          <span className="inline-flex items-center gap-1.5 rounded-full border border-brand/20 bg-surface px-3 py-1 text-[11px] font-bold uppercase tracking-[0.12em] text-brand">
+            <TrendingUp className="h-3 w-3" />
+            {total != null ? `${total} ${total === 1 ? "community" : "communities"} live` : "Explore communities"}
           </span>
-          <h2 className="text-4xl font-bold leading-tight tracking-tight text-ink sm:text-5xl">Find your community</h2>
-          <p className="text-lg text-ink-secondary">
-            Connect with like-minded people, share ideas, and grow together.
+
+          <h2 className="text-[32px] font-black leading-[1.05] tracking-tight text-ink sm:text-5xl">
+            Find your{" "}
+            <span style={{
+              background: "linear-gradient(120deg, var(--color-brand-sky) 0%, var(--color-brand) 50%, var(--color-brand-deep) 100%)",
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent",
+              backgroundClip: "text",
+            }}>
+              community
+            </span>
+          </h2>
+
+          <p className="max-w-md text-base text-ink-secondary sm:text-lg">
+            Join a cohort, team up on projects, and learn alongside people building the same skills as you.
           </p>
 
-          <div className="mt-2 flex w-full max-w-xl flex-wrap items-center justify-center gap-3">
+          <div className="mt-3 flex w-full max-w-xl flex-wrap items-center justify-center gap-3">
             <div className="relative min-w-[280px] flex-1">
               <Search className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-ink-muted" />
               <label htmlFor="community-search" className="sr-only">
@@ -128,7 +147,7 @@ export function CommunityDiscoveryClient() {
             </div>
             <Link
               href="/community/create"
-              className="inline-flex h-[52px] items-center gap-2 whitespace-nowrap rounded-xl bg-brand px-6 text-base font-medium text-white transition-colors hover:bg-brand-dark"
+              className="inline-flex h-[52px] items-center gap-2 whitespace-nowrap rounded-xl bg-brand px-6 text-base font-semibold text-white shadow-sm transition-all hover:bg-brand-dark hover:shadow-md"
             >
               <Plus className="h-[18px] w-[18px]" /> Create community
             </Link>
