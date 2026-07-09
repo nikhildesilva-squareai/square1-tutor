@@ -6,49 +6,63 @@ import { usePathname, useRouter } from "next/navigation";
 import {
   LayoutDashboard,
   BookOpen,
-  Briefcase,
   FolderKanban,
-  Users,
   BarChart3,
-  MessageSquare,
+  Bookmark,
+  Users,
   MessagesSquare,
+  Sparkles,
+  Briefcase,
+  Inbox,
   Settings,
+  MessageSquarePlus,
   LogOut,
   Menu,
   X,
-  Inbox,
+  type LucideIcon,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { createClient } from "@/lib/supabase/client";
 import { Logo } from "@/components/ui/logo";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import { useUnreadMessages } from "@/lib/hooks/useUnreadMessages";
 
-const nav = [
-  { href: "/dashboard", label: "Dashboard",   icon: LayoutDashboard },
-  { href: "/courses",   label: "Courses",     icon: BookOpen        },
-  { href: "/projects",  label: "My Projects", icon: FolderKanban    },
-  { href: "/community", label: "Community",   icon: Users           },
-  { href: "/progress",  label: "Progress",    icon: BarChart3       },
-  { href: "/tutor",     label: "Nova",        icon: MessageSquare   },
-  { href: "/messages",  label: "Messages",    icon: MessagesSquare  },
+// Mirrors the desktop sidebar: core learning, then a labelled "Connect" group.
+const learnNav: { href: string; label: string; icon: LucideIcon }[] = [
+  { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
+  { href: "/courses", label: "Courses", icon: BookOpen },
+  { href: "/projects", label: "My Projects", icon: FolderKanban },
+  { href: "/progress", label: "Progress", icon: BarChart3 },
+  { href: "/notes", label: "Study Hub", icon: Bookmark },
 ];
+
+const connectNav: { href: string; label: string; icon: LucideIcon }[] = [
+  { href: "/community", label: "Community", icon: Users },
+  { href: "/messages", label: "Messages", icon: MessagesSquare },
+  { href: "/tutor", label: "Nova", icon: Sparkles },
+];
+
+const ROW =
+  "h-10 px-3 rounded-lg flex items-center gap-3 text-sm font-medium transition-colors w-full";
+const ROW_INACTIVE =
+  "text-ink-secondary hover:bg-surface-alt hover:text-ink border border-transparent";
+const ROW_ACTIVE = "bg-surface-tint text-brand border border-brand/20";
 
 interface MobileNavProps {
   userEmail: string;
+  userName?: string;
   isManager?: boolean;
   isAdmin?: boolean;
 }
 
-export function MobileNav({ userEmail, isManager = false, isAdmin = false }: MobileNavProps) {
+export function MobileNav({ userEmail, userName, isManager = false, isAdmin = false }: MobileNavProps) {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
-  const router   = useRouter();
-  const unread   = useUnreadMessages();
+  const router = useRouter();
+  const unread = useUnreadMessages();
 
-  // Close drawer on route change
   useEffect(() => { setOpen(false); }, [pathname]);
 
-  // Prevent body scroll when drawer is open
   useEffect(() => {
     document.body.style.overflow = open ? "hidden" : "";
     return () => { document.body.style.overflow = ""; };
@@ -60,12 +74,33 @@ export function MobileNav({ userEmail, isManager = false, isAdmin = false }: Mob
     router.push("/login");
   }
 
+  const isActive = (href: string) => pathname === href || pathname.startsWith(href + "/");
+
+  const name = userName?.trim() || userEmail.split("@")[0];
+  const initials =
+    name
+      .split(/\s+/)
+      .map((p) => p[0])
+      .slice(0, 2)
+      .join("")
+      .toUpperCase() || "?";
+
+  const NavRow = ({ href, label, icon: Icon, badge }: { href: string; label: string; icon: LucideIcon; badge?: number }) => (
+    <Link href={href} className={cn(ROW, isActive(href) ? ROW_ACTIVE : ROW_INACTIVE)}>
+      <Icon className="w-[18px] h-[18px] shrink-0" />
+      <span className="flex-1">{label}</span>
+      {badge ? (
+        <span className="min-w-[18px] h-[18px] px-1.5 rounded-full bg-brand text-white text-[10px] font-bold flex items-center justify-center">
+          {badge > 9 ? "9+" : badge}
+        </span>
+      ) : null}
+    </Link>
+  );
+
   return (
     <>
       {/* Mobile/Tablet top bar (shown below lg) */}
-      <div
-        className="lg:hidden flex items-center justify-between h-14 px-4 border-b border-border bg-surface shrink-0 z-30"
-      >
+      <div className="lg:hidden flex items-center justify-between h-14 px-4 border-b border-border bg-surface shrink-0 z-30">
         <Logo variant="dark" size="sm" />
         <button
           onClick={() => setOpen(true)}
@@ -78,11 +113,7 @@ export function MobileNav({ userEmail, isManager = false, isAdmin = false }: Mob
 
       {/* Backdrop */}
       {open && (
-        <div
-          className="fixed inset-0 z-40 bg-black/30 lg:hidden"
-          onClick={() => setOpen(false)}
-          aria-hidden="true"
-        />
+        <div className="fixed inset-0 z-40 bg-black/30 lg:hidden" onClick={() => setOpen(false)} aria-hidden="true" />
       )}
 
       {/* Slide-in drawer */}
@@ -104,92 +135,69 @@ export function MobileNav({ userEmail, isManager = false, isAdmin = false }: Mob
           </button>
         </div>
 
-        {/* Nav items */}
-        <nav className="flex-1 px-3 py-4 space-y-0.5 overflow-y-auto">
-          {nav.map(({ href, label, icon: Icon }) => {
-            const isActive = pathname === href || pathname.startsWith(href + "/");
-            const showDot = href === "/messages" && unread > 0;
-            return (
-              <Link
-                key={href}
-                href={href}
-                className={cn(
-                  "h-10 px-4 rounded-lg flex items-center gap-3 text-sm font-medium transition-all",
-                  isActive
-                    ? "bg-surface-tint text-brand border border-brand/20"
-                    : "text-ink-secondary hover:bg-surface-alt hover:text-ink border border-transparent"
-                )}
-              >
-                <Icon className="w-4 h-4" />
-                <span className="flex-1">{label}</span>
-                {showDot && (
-                  <span className="min-w-[18px] h-[18px] px-1.5 rounded-full bg-brand text-white text-[10px] font-bold flex items-center justify-center">
-                    {unread > 9 ? "9+" : unread}
-                  </span>
-                )}
-              </Link>
-            );
-          })}
+        {/* Nav */}
+        <nav className="flex-1 px-3 py-2 overflow-y-auto">
+          <div className="space-y-0.5">
+            {learnNav.map((item) => <NavRow key={item.href} {...item} />)}
+          </div>
 
-          {/* Manager portal — only for team managers */}
+          <div className="my-2 h-px bg-border mx-1" />
+
+          <p className="px-3 pt-1 pb-1.5 text-[10.5px] font-bold uppercase tracking-[0.1em] text-ink-muted">Connect</p>
+          <div className="space-y-0.5">
+            {connectNav.map((item) => (
+              <NavRow key={item.href} {...item} badge={item.href === "/messages" ? unread : undefined} />
+            ))}
+          </div>
+
           {isManager && (
             <>
-              <div className="pt-3 pb-1 px-4">
-                <p className="text-[10px] font-bold uppercase tracking-wider text-ink-muted">Your team</p>
-              </div>
-              <Link
-                href="/business/dashboard"
-                className="h-10 px-4 rounded-lg flex items-center gap-3 text-sm font-medium transition-all text-ink-secondary hover:bg-surface-alt hover:text-ink border border-transparent"
-              >
-                <Briefcase className="w-4 h-4" />
-                <span className="flex-1">Manager portal</span>
-              </Link>
+              <p className="px-3 pt-4 pb-1.5 text-[10.5px] font-bold uppercase tracking-[0.1em] text-ink-muted">Your team</p>
+              <NavRow href="/business/dashboard" label="Manager portal" icon={Briefcase} />
             </>
           )}
 
-          {/* Support inbox — team members only (ADMIN_EMAILS) */}
           {isAdmin && (
             <>
-              <div className="pt-3 pb-1 px-4">
-                <p className="text-[10px] font-bold uppercase tracking-wider text-ink-muted">Team</p>
-              </div>
-              <Link
-                href="/inbox"
-                className="h-10 px-4 rounded-lg flex items-center gap-3 text-sm font-medium transition-all text-ink-secondary hover:bg-surface-alt hover:text-ink border border-transparent"
-              >
-                <Inbox className="w-4 h-4" />
-                <span className="flex-1">Support inbox</span>
-              </Link>
+              <p className="px-3 pt-4 pb-1.5 text-[10.5px] font-bold uppercase tracking-[0.1em] text-ink-muted">Team</p>
+              <NavRow href="/inbox" label="Support inbox" icon={Inbox} />
             </>
           )}
         </nav>
 
-        {/* User footer */}
-        <div className="px-3 py-4 border-t border-border space-y-0.5">
-          <div className="px-4 py-2 mb-1">
-            <p className="text-xs text-ink-muted truncate">{userEmail}</p>
+        {/* Account card */}
+        <div className="px-3 pt-2 border-t border-border">
+          <div className="flex items-center gap-2.5 rounded-xl border border-border bg-surface-soft p-2.5">
+            <div className="w-9 h-9 rounded-full bg-surface-tint text-brand flex items-center justify-center text-[13px] font-bold shrink-0">
+              {initials}
+            </div>
+            <div className="min-w-0 flex-1">
+              <p className="text-[13px] font-semibold text-ink truncate">{name}</p>
+              <p className="text-[11px] text-ink-muted truncate">{userEmail}</p>
+            </div>
+            <ThemeToggle className="w-8 h-8 shrink-0" />
           </div>
+        </div>
 
-          {/* Settings — kept low, next to Sign out */}
-          <Link
-            href="/settings"
-            className={cn(
-              "flex items-center gap-3 px-4 h-10 w-full rounded-lg text-xs font-medium transition-all",
-              pathname === "/settings" || pathname.startsWith("/settings/")
-                ? "bg-surface-tint text-brand border border-brand/20"
-                : "text-ink-secondary hover:bg-surface-alt hover:text-ink border border-transparent"
-            )}
-          >
-            <Settings className="w-4 h-4" />
-            Settings
+        {/* Utility rows — same style as the nav */}
+        <div className="px-3 py-2 space-y-0.5">
+          <Link href="/settings" className={cn(ROW, isActive("/settings") ? ROW_ACTIVE : ROW_INACTIVE)}>
+            <Settings className="w-[18px] h-[18px] shrink-0" />
+            <span className="flex-1">Settings</span>
           </Link>
-
+          <button
+            onClick={() => window.dispatchEvent(new CustomEvent("open-feedback"))}
+            className={cn(ROW, ROW_INACTIVE)}
+          >
+            <MessageSquarePlus className="w-[18px] h-[18px] shrink-0" />
+            <span className="flex-1 text-left">Feedback</span>
+          </button>
           <button
             onClick={handleSignOut}
-            className="flex items-center gap-3 px-4 h-10 w-full rounded-lg text-xs text-ink-secondary hover:bg-error-bg hover:text-error transition-all"
+            className={cn(ROW, "text-ink-secondary hover:bg-error-bg hover:text-error border border-transparent")}
           >
-            <LogOut className="w-4 h-4" />
-            Sign out
+            <LogOut className="w-[18px] h-[18px] shrink-0" />
+            <span className="flex-1 text-left">Sign out</span>
           </button>
         </div>
       </aside>
