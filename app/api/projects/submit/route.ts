@@ -148,11 +148,6 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Failed to save submission" }, { status: 500 });
     }
 
-    await supabase
-      .from("student_projects")
-      .update({ status: "submitted", updated_at: new Date().toISOString() })
-      .eq("student_id", student.id).eq("project_id", projectId);
-
     // ── Check if enrollment is now complete ──────────────────────────────────
     const admin = createAdminClient();
     const enrollmentCompleted = await checkAndMarkEnrollmentComplete(enrollment.id, admin);
