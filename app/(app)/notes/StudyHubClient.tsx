@@ -3,6 +3,7 @@
 import { useState, useRef, useCallback, useEffect, useMemo } from "react";
 import { cn } from "@/lib/utils";
 import { intervalLabel } from "@/lib/srs";
+import { NoteContent } from "@/components/ui/note-content";
 
 interface Note {
   id: string; type: string; title: string | null; content: string; color: string;
@@ -483,6 +484,11 @@ export function StudyHubClient({ initialNotes, stats, totalCount }: Props) {
         </div>
 
         <div className="flex items-center gap-2">
+          <a href="/notes/cheatsheet"
+            className="h-9 px-4 rounded-xl border border-border text-xs font-bold text-ink-muted hover:text-brand hover:border-brand/30 transition-all flex items-center gap-1.5">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M16 18l6-6-6-6M8 6l-6 6 6 6" /></svg>
+            Cheatsheet
+          </a>
           {counts.dueFlashcards > 0 && (
             <button onClick={startReview}
               className="h-9 px-4 rounded-xl bg-emerald-600 text-white text-xs font-bold hover:bg-emerald-700 transition-all flex items-center gap-1.5">
@@ -570,12 +576,12 @@ export function StudyHubClient({ initialNotes, stats, totalCount }: Props) {
                   {currentFlashcard.title && currentFlashcard.title !== currentFlashcard.content && (
                     <p className="text-[10px] font-bold text-ink-muted uppercase tracking-wider mb-2">{currentFlashcard.title}</p>
                   )}
-                  <p className="text-sm font-medium text-ink whitespace-pre-wrap">{currentFlashcard.content}</p>
+                  <NoteContent content={currentFlashcard.content} className="text-sm font-medium text-ink" />
                   {currentFlashcard.course_title && <p className="text-[10px] text-ink-muted mt-2">{currentFlashcard.course_title}{currentFlashcard.lesson_title ? ` · ${currentFlashcard.lesson_title}` : ""}</p>}
                 </div>
                 {showAnswer ? (
                   <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-5 mb-6">
-                    <p className="text-sm text-ink whitespace-pre-wrap">{currentFlashcard.flashcard_answer ?? currentFlashcard.content}</p>
+                    <NoteContent content={currentFlashcard.flashcard_answer ?? currentFlashcard.content} className="text-sm text-ink" />
                   </div>
                 ) : (
                   <button onClick={() => setShowAnswer(true)} className="w-full h-12 rounded-xl border-2 border-dashed border-border text-sm font-semibold text-ink-muted hover:border-brand/30 hover:text-brand transition-all mb-6">
@@ -677,12 +683,12 @@ export function StudyHubClient({ initialNotes, stats, totalCount }: Props) {
                     </div>
                   )}
 
-                  <p className="text-sm text-ink leading-relaxed whitespace-pre-wrap">{viewingNote.content}</p>
+                  <NoteContent content={viewingNote.content} noteType={viewingNote.type} className="text-sm text-ink" />
 
                   {viewingNote.type === "flashcard" && viewingNote.flashcard_answer && (
                     <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-4">
                       <p className="text-[10px] font-bold text-emerald-600 uppercase tracking-wider mb-1">Answer</p>
-                      <p className="text-sm text-ink whitespace-pre-wrap">{viewingNote.flashcard_answer}</p>
+                      <NoteContent content={viewingNote.flashcard_answer} className="text-sm text-ink" />
                     </div>
                   )}
 
@@ -811,9 +817,15 @@ export function StudyHubClient({ initialNotes, stats, totalCount }: Props) {
                   </div>
                 )}
 
-                <p className="text-xs text-ink-secondary leading-relaxed line-clamp-4 mb-2 whitespace-pre-wrap">
-                  {note.type === "code_snippet" ? note.content.slice(0, 200) : note.content.slice(0, 150)}
-                </p>
+                {note.type === "code_snippet" ? (
+                  <div className="mb-2">
+                    <NoteContent content={note.content.slice(0, 400)} noteType="code_snippet" compact />
+                  </div>
+                ) : (
+                  <p className="text-xs text-ink-secondary leading-relaxed line-clamp-4 mb-2 whitespace-pre-wrap">
+                    {note.content.slice(0, 150)}
+                  </p>
+                )}
 
                 <Tags tags={note.tags} compact />
 

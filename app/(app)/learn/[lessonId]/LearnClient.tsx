@@ -116,10 +116,16 @@ function renderSection(md: string): string {
   const codeBlocks: string[] = [];
   let processed = md.replace(/```(\w+)?\n([\s\S]*?)```/g, (_m, lang, code) => {
     const language = lang ?? "text";
+    const encoded = encodeURIComponent(code.trim());
+    const btn = "flex items-center gap-1 px-2 py-1 rounded text-[9px] font-bold text-slate-400 hover:text-white transition-colors cursor-pointer";
     const block = `<div class="relative rounded-xl overflow-hidden my-6 border border-white/10 shadow-lg">
         <div class="flex items-center gap-2 px-4 py-2.5" style="background:#161B22">
           <div class="flex gap-1.5"><div class="w-2.5 h-2.5 rounded-full bg-[#FF5F57]"></div><div class="w-2.5 h-2.5 rounded-full bg-[#FEBC2E]"></div><div class="w-2.5 h-2.5 rounded-full bg-[#28C840]"></div></div>
           <span class="text-[10px] font-bold tracking-widest uppercase text-slate-500 ml-2">${language}</span>
+          <div class="ml-auto flex items-center gap-1">
+            <button type="button" data-code-action="copy" data-code="${encoded}" class="${btn}">Copy</button>
+            <button type="button" data-code-action="save" data-code="${encoded}" data-lang="${language}" class="${btn}" title="Save to your Study Hub cheatsheet">Save ➜ Hub</button>
+          </div>
         </div>
         <pre class="p-5 overflow-x-auto text-[13px] leading-[1.75] font-mono" style="background:#0D1117;color:#E6EDF3"><code>${code.trim()}</code></pre>
       </div>`;
@@ -333,6 +339,50 @@ export function LearnClient({
     }
     setNovaOpen(true);
   }
+
+  // ── Code-block toolbar (delegated) ──
+  // Lesson code blocks are rendered as HTML strings; their Copy / Save➜Hub
+  // buttons carry the code in data attributes and clicks are handled here,
+  // where lesson/course context is available.
+  const handleCodeAction = useCallback(async (e: React.MouseEvent) => {
+    const btn = (e.target as HTMLElement).closest?.("[data-code-action]") as HTMLElement | null;
+    if (!btn) return;
+    e.preventDefault();
+    e.stopPropagation();
+    const code = decodeURIComponent(btn.dataset.code ?? "");
+    if (!code) return;
+    const original = btn.textContent;
+    const flash = (label: string) => {
+      btn.textContent = label;
+      setTimeout(() => { btn.textContent = original; }, 2000);
+    };
+    if (btn.dataset.codeAction === "copy") {
+      try { await navigator.clipboard.writeText(code); flash("Copied ✓"); } catch { flash("Copy failed"); }
+      return;
+    }
+    // save → Study Hub as a fenced snippet with language + lesson context
+    const lang = btn.dataset.lang && btn.dataset.lang !== "text" ? btn.dataset.lang : "";
+    try {
+      const res = await fetch("/api/notes", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          type: "code_snippet",
+          title: `${lesson.title}${lang ? ` — ${lang}` : ""}`,
+          content: "```" + lang + "\n" + code + "\n```",
+          lessonId: lesson.id,
+          lessonTitle: lesson.title,
+          moduleTitle: module?.title,
+          courseId: lesson.course_id,
+          courseTitle: course?.title,
+          tags: ["cheatsheet"],
+        }),
+      });
+      flash(res.ok ? "Saved ✓" : "Failed");
+    } catch {
+      flash("Failed");
+    }
+  }, [lesson, module, course]);
   const [results, setResults] = useState<ExerciseResult[] | null>(null);
   const [completing, setCompleting] = useState(false);
   const [completed, setCompleted] = useState(alreadyCompleted);
@@ -569,6 +619,7 @@ export function LearnClient({
 
                 {/* Rendered content — larger text for readability */}
                 <div className="bg-surface rounded-2xl border border-border p-6 sm:p-8 shadow-card lesson-content"
+                  onClick={handleCodeAction}
                   dangerouslySetInnerHTML={{ __html: card.content ?? "" }} />
 
                 {/* Actions: Ask Nova + Save */}
@@ -741,6 +792,7 @@ export function LearnClient({
 
                 {lesson.case_study && lesson.case_study.trim() && (
                   <div className="bg-surface rounded-2xl border border-border p-6 sm:p-8 shadow-card lesson-content"
+                    onClick={handleCodeAction}
                     dangerouslySetInnerHTML={{ __html: renderSection(lesson.case_study) }} />
                 )}
 
@@ -784,7 +836,7 @@ export function LearnClient({
                 </div>
 
                 <div className="bg-surface rounded-2xl border border-border p-6 sm:p-8 shadow-card">
-                  <div className="lesson-content" dangerouslySetInnerHTML={{ __html: renderSection(appliedTask.prompt) }} />
+                  <div className="lesson-content" onClick={handleCodeAction} dangerouslySetInnerHTML={{ __html: renderSection(appliedTask.prompt) }} />
 
                   <textarea
                     value={appliedAnswer}
@@ -810,7 +862,7 @@ export function LearnClient({
                     <div className="mt-5 rounded-xl border border-emerald-200 bg-emerald-50/50 p-5 card-fade-up">
                       <p className="text-xs font-bold text-emerald-700 uppercase tracking-widest mb-3">What a strong answer includes</p>
                       {appliedTask.model_answer && (
-                        <div className="lesson-content text-sm" dangerouslySetInnerHTML={{ __html: renderSection(appliedTask.model_answer) }} />
+                        <div className="lesson-content text-sm" onClick={handleCodeAction} dangerouslySetInnerHTML={{ __html: renderSection(appliedTask.model_answer) }} />
                       )}
                       {appliedTask.checklist && appliedTask.checklist.length > 0 && (
                         <ul className="mt-3 space-y-2">

@@ -538,3 +538,13 @@ body {
   padding-top: 0;
   border-top: none;
 }
+
+/* ─── Study Hub code highlighting (highlight.js tokens, GitHub-dark palette) ── */
+.hljs-note .hljs-keyword, .hljs-note .hljs-selector-tag, .hljs-note .hljs-meta { color: #FF7B72; }
+.hljs-note .hljs-string, .hljs-note .hljs-regexp { color: #A5D6FF; }
+.hljs-note .hljs-comment, .hljs-note .hljs-quote { color: #8B949E; font-style: italic; }
+.hljs-note .hljs-number, .hljs-note .hljs-literal, .hljs-note .hljs-attr, .hljs-note .hljs-variable { color: #79C0FF; }
+.hljs-note .hljs-title, .hljs-note .hljs-name, .hljs-note .hljs-section { color: #D2A8FF; }
+.hljs-note .hljs-built_in, .hljs-note .hljs-type, .hljs-note .hljs-symbol { color: #FFA657; }
+.hljs-note .hljs-addition { color: #AFF5B4; background: rgba(46,160,67,0.15); }
+.hljs-note .hljs-deletion { color: #FFDCD7; background: rgba(248,81,73,0.15); }
