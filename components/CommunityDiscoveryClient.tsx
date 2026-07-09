@@ -103,46 +103,38 @@ export function CommunityDiscoveryClient() {
   return (
     <div className="space-y-10">
       {/* Hero */}
-      <section className="relative overflow-hidden rounded-2xl border border-border bg-surface-tint px-6 py-11 sm:px-10 sm:py-12">
-        {/* Soft brand glow — depth without new colours */}
-        <div aria-hidden className="pointer-events-none absolute -right-16 -top-20 h-64 w-64 rounded-full bg-brand/10 blur-3xl" />
-        <div aria-hidden className="pointer-events-none absolute -bottom-24 -left-16 h-64 w-64 rounded-full bg-brand-sky/10 blur-3xl" />
+      <section className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#daeaff] via-[#e4f0ff] to-[#eef6ff] px-6 py-12 sm:px-10 sm:py-16">
+        {/* Layered depth glows */}
+        <div aria-hidden className="pointer-events-none absolute -right-20 -top-20 h-72 w-72 rounded-full bg-brand/10 blur-3xl" />
+        <div aria-hidden className="pointer-events-none absolute -bottom-20 -left-20 h-72 w-72 rounded-full bg-[#93c5fd]/20 blur-3xl" />
 
-        <div className="relative mx-auto flex max-w-2xl flex-col items-center gap-4 text-center">
-          <span className="inline-flex items-center gap-1.5 rounded-full border border-brand/20 bg-surface px-3 py-1 text-[11px] font-bold uppercase tracking-[0.12em] text-brand">
-            <TrendingUp className="h-3 w-3" />
+        <div className="relative mx-auto flex max-w-2xl flex-col items-center gap-5 text-center">
+          {/* Live badge — white pill with green pulse dot */}
+          <span className="inline-flex items-center gap-2 rounded-full border border-white/60 bg-white/90 px-4 py-1.5 text-[12px] font-bold uppercase tracking-[0.1em] text-ink shadow-sm backdrop-blur-sm">
+            <span className="h-2 w-2 rounded-full bg-green-500" aria-hidden />
             {total != null ? `${total} ${total === 1 ? "community" : "communities"} live` : "Explore communities"}
           </span>
 
           <h2 className="text-[32px] font-black leading-[1.05] tracking-tight text-ink sm:text-5xl">
             Find your{" "}
-            <span style={{
-              background: "linear-gradient(120deg, var(--color-brand-sky) 0%, var(--color-brand) 50%, var(--color-brand-deep) 100%)",
-              WebkitBackgroundClip: "text",
-              WebkitTextFillColor: "transparent",
-              backgroundClip: "text",
-            }}>
-              community
-            </span>
+            <span className="text-brand">community</span>
           </h2>
 
           <p className="max-w-md text-base text-ink-secondary sm:text-lg">
             Join a cohort, team up on projects, and learn alongside people building the same skills as you.
           </p>
 
-          <div className="mt-3 flex w-full max-w-xl flex-wrap items-center justify-center gap-3">
-            <div className="relative min-w-[280px] flex-1">
+          <div className="mt-2 flex w-full max-w-xl flex-wrap items-center justify-center gap-3">
+            <div className="relative min-w-[260px] flex-1">
               <Search className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-ink-muted" />
-              <label htmlFor="community-search" className="sr-only">
-                Search communities
-              </label>
+              <label htmlFor="community-search" className="sr-only">Search communities</label>
               <input
                 id="community-search"
                 type="text"
                 placeholder="Search by name, category, or keywords"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="s1-search h-[52px] w-full rounded-xl border border-border bg-surface pl-12 pr-4 text-base text-ink shadow-[0_1px_2px_0_rgba(21,47,84,0.04)] outline-none transition-[border-color,box-shadow] placeholder:text-ink-muted focus:border-brand"
+                className="h-[52px] w-full rounded-xl border border-white/70 bg-white pl-12 pr-4 text-base text-ink shadow-sm outline-none transition-[border-color,box-shadow] placeholder:text-ink-muted focus:border-brand focus:ring-2 focus:ring-brand/10"
               />
             </div>
             <Link
