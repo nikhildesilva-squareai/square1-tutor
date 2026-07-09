@@ -148,6 +148,7 @@ export function StudyHubClient({ initialNotes, stats, totalCount }: Props) {
   const [viewingNote, setViewingNote] = useState<Note | null>(null);
   const [editTitle, setEditTitle] = useState("");
   const [editContent, setEditContent] = useState("");
+  const [editAnswer, setEditAnswer] = useState("");
   const [isEditing, setIsEditing] = useState(false);
 
   // AI flashcard generation (from a note)
@@ -367,6 +368,7 @@ export function StudyHubClient({ initialNotes, stats, totalCount }: Props) {
     setViewingNote(note);
     setEditTitle(note.title ?? "");
     setEditContent(note.content);
+    setEditAnswer(note.flashcard_answer ?? "");
     setEditImageUrl(note.image_url);
     setEditImageFile(null);
     setEditImagePreview(null);
@@ -381,13 +383,21 @@ export function StudyHubClient({ initialNotes, stats, totalCount }: Props) {
       let finalImageUrl = editImageUrl;
       if (editImageFile) finalImageUrl = await uploadImage(editImageFile);
 
+      const isFlashcard = viewingNote.type === "flashcard";
       const res = await fetch("/api/notes", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id: viewingNote.id, title: editTitle.trim() || null, content: editContent.trim(), imageUrl: finalImageUrl }),
+        body: JSON.stringify({
+          id: viewingNote.id, title: editTitle.trim() || null, content: editContent.trim(), imageUrl: finalImageUrl,
+          ...(isFlashcard ? { flashcardAnswer: editAnswer.trim() || null } : {}),
+        }),
       });
       if (res.ok) {
-        const updated = { title: editTitle.trim() || null, content: editContent.trim(), image_url: finalImageUrl ?? null, updated_at: new Date().toISOString() };
+        const updated = {
+          title: editTitle.trim() || null, content: editContent.trim(), image_url: finalImageUrl ?? null,
+          ...(isFlashcard ? { flashcard_answer: editAnswer.trim() || null } : {}),
+          updated_at: new Date().toISOString(),
+        };
         setNotes(prev => prev.map(n => n.id === viewingNote.id ? { ...n, ...updated } : n));
         setViewingNote(prev => prev ? { ...prev, ...updated } : null);
         setEditImageUrl(finalImageUrl);
@@ -557,7 +567,10 @@ export function StudyHubClient({ initialNotes, stats, totalCount }: Props) {
                   </button>
                 </div>
                 <div className="bg-surface-soft rounded-xl p-5 mb-4 min-h-[100px]">
-                  <p className="text-sm font-medium text-ink whitespace-pre-wrap">{currentFlashcard.title ?? currentFlashcard.content}</p>
+                  {currentFlashcard.title && currentFlashcard.title !== currentFlashcard.content && (
+                    <p className="text-[10px] font-bold text-ink-muted uppercase tracking-wider mb-2">{currentFlashcard.title}</p>
+                  )}
+                  <p className="text-sm font-medium text-ink whitespace-pre-wrap">{currentFlashcard.content}</p>
                   {currentFlashcard.course_title && <p className="text-[10px] text-ink-muted mt-2">{currentFlashcard.course_title}{currentFlashcard.lesson_title ? ` · ${currentFlashcard.lesson_title}` : ""}</p>}
                 </div>
                 {showAnswer ? (
@@ -637,7 +650,15 @@ export function StudyHubClient({ initialNotes, stats, totalCount }: Props) {
                     onKeyDown={e => { if (e.key === "Enter") e.preventDefault(); e.stopPropagation(); }}
                     placeholder="Note title (optional)" className="w-full text-lg font-bold text-ink placeholder:text-ink-muted bg-transparent focus:outline-none" />
                   <textarea value={editContent} onChange={e => setEditContent(e.target.value)} onPaste={handleEditPaste}
-                    rows={10} className="w-full text-sm text-ink placeholder:text-ink-muted bg-surface-soft rounded-xl border border-border px-4 py-3 focus:outline-none focus:border-brand resize-none leading-relaxed" />
+                    rows={viewingNote.type === "flashcard" ? 5 : 10} className="w-full text-sm text-ink placeholder:text-ink-muted bg-surface-soft rounded-xl border border-border px-4 py-3 focus:outline-none focus:border-brand resize-none leading-relaxed" />
+                  {viewingNote.type === "flashcard" && (
+                    <div>
+                      <p className="text-[10px] font-bold text-emerald-600 uppercase tracking-wider mb-1.5">Answer</p>
+                      <textarea value={editAnswer} onChange={e => setEditAnswer(e.target.value)}
+                        placeholder="The answer shown when the card is flipped"
+                        rows={4} className="w-full text-sm text-ink placeholder:text-ink-muted bg-emerald-50/50 rounded-xl border border-emerald-200 px-4 py-3 focus:outline-none focus:border-emerald-400 resize-none leading-relaxed" />
+                    </div>
+                  )}
                   <ImageAttachment
                     preview={editImagePreview} existingUrl={editImageUrl}
                     onPickFile={() => editFileRef.current?.click()} onClear={clearEditImage} fileRef={editFileRef}
@@ -680,7 +701,7 @@ export function StudyHubClient({ initialNotes, stats, totalCount }: Props) {
             {/* Modal footer */}
             {isEditing ? (
               <div className="px-6 py-4 border-t border-border shrink-0 flex items-center gap-2 justify-end">
-                <button onClick={() => { setEditTitle(viewingNote.title ?? ""); setEditContent(viewingNote.content); setEditImageUrl(viewingNote.image_url); setEditImageFile(null); setEditImagePreview(null); setIsEditing(false); }}
+                <button onClick={() => { setEditTitle(viewingNote.title ?? ""); setEditContent(viewingNote.content); setEditAnswer(viewingNote.flashcard_answer ?? ""); setEditImageUrl(viewingNote.image_url); setEditImageFile(null); setEditImagePreview(null); setIsEditing(false); }}
                   className="h-9 px-4 rounded-xl border border-border text-xs font-semibold text-ink-muted hover:bg-surface-alt transition-all">Cancel</button>
                 <button onClick={saveEdit} disabled={saving || !editContent.trim()}
                   className="h-9 px-5 rounded-xl bg-brand text-white text-xs font-bold hover:bg-brand/90 disabled:opacity-40 transition-all flex items-center gap-1.5">

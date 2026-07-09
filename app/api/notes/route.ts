@@ -36,17 +36,22 @@ export async function GET(request: Request) {
 
   const offset = parseInt(url.searchParams.get("offset") ?? "0");
 
+  const dueOnly = url.searchParams.get("due") === "1";
+
   let query = supabase
     .from("study_notes")
     .select("*", { count: "exact" })
     .eq("student_id", student.id)
-    .order("is_pinned", { ascending: false })
-    .order("created_at", { ascending: false })
     .range(offset, offset + limit - 1);
+
+  // Review queues surface the most-overdue card first; browsing is pinned/newest-first.
+  query = dueOnly
+    ? query.order("next_review_at", { ascending: true })
+    : query.order("is_pinned", { ascending: false }).order("created_at", { ascending: false });
 
   if (type) query = query.eq("type", type);
   if (lessonId) query = query.eq("lesson_id", lessonId);
-  if (url.searchParams.get("due") === "1") {
+  if (dueOnly) {
     // Flashcards whose next review is now or overdue.
     query = query.lte("next_review_at", new Date().toISOString());
   }
@@ -72,8 +77,9 @@ export async function POST(request: Request) {
   const { data: student } = await supabase.from("students").select("id").eq("user_id", user.id).maybeSingle();
   if (!student) return NextResponse.json({ error: "Student not found" }, { status: 404 });
 
-  const body = await request.json();
-  const parsed = createSchema.parse(body);
+  const parsed_ = createSchema.safeParse(await request.json().catch(() => null));
+  if (!parsed_.success) return NextResponse.json({ error: "Invalid request" }, { status: 400 });
+  const parsed = parsed_.data;
 
   const { data: note, error } = await supabase
     .from("study_notes")
@@ -112,20 +118,22 @@ export async function PATCH(request: Request) {
   const { data: student } = await supabase.from("students").select("id").eq("user_id", user.id).maybeSingle();
   if (!student) return NextResponse.json({ error: "Student not found" }, { status: 404 });
 
-  const body = await request.json();
-  const { id, title, content, imageUrl } = body as { id?: string; title?: string | null; content?: string; imageUrl?: string | null };
+  const body = await request.json().catch(() => ({}));
+  const { id, title, content, imageUrl, flashcardAnswer } = body as {
+    id?: string; title?: string | null; content?: string; imageUrl?: string | null; flashcardAnswer?: string | null;
+  };
 
   if (!id) return NextResponse.json({ error: "Missing note ID" }, { status: 400 });
   if (!content?.trim()) return NextResponse.json({ error: "Content is required" }, { status: 400 });
 
   const updates: Record<string, unknown> = {
-    title: title ?? null,
     content: content.trim(),
     updated_at: new Date().toISOString(),
   };
-  if (imageUrl !== undefined) {
-    updates.image_url = imageUrl;
-  }
+  // Only touch fields the caller explicitly sent — an omitted field is "leave as is".
+  if (title !== undefined) updates.title = title;
+  if (imageUrl !== undefined) updates.image_url = imageUrl;
+  if (flashcardAnswer !== undefined) updates.flashcard_answer = flashcardAnswer?.trim() || null;
 
   const { error } = await supabase
     .from("study_notes")
