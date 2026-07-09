@@ -68,11 +68,30 @@ export async function checkAndMarkEnrollmentComplete(
     }
 
     // Check 2: All projects submitted?
-    const { data: projectSubmissions, error: projectError } = await adminClient
-      .from("project_submissions")
+    // project_submissions has no course_id column — scope by the course's
+    // project ids instead (filtering on course_id errored, so this check
+    // always returned false and completion could never fire).
+    const { data: courseProjects, error: courseProjectsError } = await adminClient
+      .from("projects")
       .select("id")
-      .eq("student_id", enrollment.student_id)
       .eq("course_id", enrollment.course_id);
+
+    if (courseProjectsError) {
+      console.error("[checkAndMarkEnrollmentComplete] Course projects query error:", courseProjectsError);
+      return false;
+    }
+
+    const courseProjectIds = (courseProjects ?? []).map((p) => p.id);
+    if (courseProjectIds.length === 0) {
+      // Course has no projects — treat the project criterion as unmet.
+      return false;
+    }
+
+    const { count: submissionCount, error: projectError } = await adminClient
+      .from("project_submissions")
+      .select("id", { count: "exact", head: true })
+      .eq("student_id", enrollment.student_id)
+      .in("project_id", courseProjectIds);
 
     if (projectError) {
       console.error("[checkAndMarkEnrollmentComplete] Project query error:", projectError);
@@ -80,7 +99,7 @@ export async function checkAndMarkEnrollmentComplete(
     }
 
     // At least one project must be submitted
-    if (!projectSubmissions || projectSubmissions.length === 0) {
+    if ((submissionCount ?? 0) === 0) {
       // No projects submitted yet
       return false;
     }
