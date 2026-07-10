@@ -62,21 +62,22 @@ export function ActivityHeatmap({ activeDates, weeks = 13 }: ActivityHeatmapProp
         </div>
       </div>
 
-      {/* Grid — cells flex to fill the full width, kept square via aspect-ratio */}
+      {/* Grid — columns span the full width; cells are capped + centred so they
+          stay a tidy size while the spare room becomes even spacing. */}
       <div className="flex items-stretch gap-1">
-        <div className="flex w-7 shrink-0 flex-col gap-[4px]">
+        <div className="flex w-7 shrink-0 flex-col gap-[6px]">
           {["", "Mon", "", "Wed", "", "Fri", ""].map((d, i) => (
             <span key={i} className="flex flex-1 items-center text-[10px] leading-none text-ink-muted">{d}</span>
           ))}
         </div>
-        <div className="flex flex-1 gap-[4px] min-w-0">
+        <div className="flex flex-1 gap-[6px] min-w-0">
           {cols.map((col, ci) => (
-            <div key={ci} className="flex flex-1 flex-col gap-[4px]">
+            <div key={ci} className="flex flex-1 flex-col items-center gap-[6px]">
               {col.map((cell) => (
                 <div
                   key={cell.date}
                   className={[
-                    "w-full aspect-square rounded-[4px] transition-colors",
+                    "w-full max-w-[30px] aspect-square rounded-[5px] transition-colors",
                     cell.isFuture ? "bg-transparent" :
                     cell.isToday && cell.level === 0 ? "bg-brand/20 ring-1 ring-brand/40" :
                     cell.level > 0 ? "bg-brand" : "bg-surface-alt",
