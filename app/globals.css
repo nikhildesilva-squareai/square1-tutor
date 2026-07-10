@@ -548,3 +548,9 @@ body {
 .hljs-note .hljs-built_in, .hljs-note .hljs-type, .hljs-note .hljs-symbol { color: #FFA657; }
 .hljs-note .hljs-addition { color: #AFF5B4; background: rgba(46,160,67,0.15); }
 .hljs-note .hljs-deletion { color: #FFDCD7; background: rgba(248,81,73,0.15); }
+
+/* ─── Study Hub note-card entrance ─────────────────────────────────────────── */
+@keyframes note-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}

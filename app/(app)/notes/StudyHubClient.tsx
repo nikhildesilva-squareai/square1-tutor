@@ -29,13 +29,13 @@ type Grade = "hard" | "good" | "easy";
 
 const PAGE_SIZE = 50;
 
-const TYPE_CONFIG: Record<string, { label: string; icon: string; color: string; bg: string }> = {
-  highlight:    { label: "Highlight",    icon: "M12 2L2 7l10 5 10-5-10-5z",                    color: "text-amber-600", bg: "bg-amber-50" },
-  note:         { label: "Note",         icon: "M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8zM14 2v6h6", color: "text-brand", bg: "bg-brand/5" },
-  code_snippet: { label: "Code",         icon: "M16 18l6-6-6-6M8 6l-6 6 6 6",                 color: "text-violet-600", bg: "bg-violet-50" },
-  flashcard:    { label: "Flashcard",    icon: "M2 4h20v16H2zM12 4v16",                         color: "text-emerald-600", bg: "bg-emerald-50" },
-  nova_save:    { label: "Nova",         icon: "M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z", color: "text-indigo-600", bg: "bg-indigo-50" },
-  auto_summary: { label: "Summary",     icon: "M9 11l3 3L22 4M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11", color: "text-teal-600", bg: "bg-teal-50" },
+const TYPE_CONFIG: Record<string, { label: string; icon: string; color: string; bg: string; accent: string }> = {
+  highlight:    { label: "Highlight",    icon: "M12 2L2 7l10 5 10-5-10-5z",                    color: "text-amber-600", bg: "bg-amber-50", accent: "#D97706" },
+  note:         { label: "Note",         icon: "M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8zM14 2v6h6", color: "text-brand", bg: "bg-brand/5", accent: "#0056CE" },
+  code_snippet: { label: "Code",         icon: "M16 18l6-6-6-6M8 6l-6 6 6 6",                 color: "text-violet-600", bg: "bg-violet-50", accent: "#7C3AED" },
+  flashcard:    { label: "Flashcard",    icon: "M2 4h20v16H2zM12 4v16",                         color: "text-emerald-600", bg: "bg-emerald-50", accent: "#059669" },
+  nova_save:    { label: "Nova",         icon: "M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z", color: "text-indigo-600", bg: "bg-indigo-50", accent: "#4F46E5" },
+  auto_summary: { label: "Summary",     icon: "M9 11l3 3L22 4M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11", color: "text-teal-600", bg: "bg-teal-50", accent: "#0D9488" },
 };
 
 function timeAgo(dateStr: string): string {
@@ -647,8 +647,13 @@ export function StudyHubClient({ initialNotes, stats, totalCount }: Props) {
               </div>
             ) : currentFlashcard ? (
               <>
+                {/* Session progress */}
+                <div className="h-1 rounded-full bg-surface-alt overflow-hidden mb-5">
+                  <div className="h-full bg-emerald-500 rounded-full transition-[width] duration-300 ease-out"
+                    style={{ width: `${(flashcardIdx / reviewQueue.length) * 100}%` }} />
+                </div>
                 <div className="flex items-center justify-between mb-6">
-                  <span className="text-xs font-bold text-ink-muted uppercase tracking-widest">Card {flashcardIdx + 1}/{reviewQueue.length}</span>
+                  <span className="text-xs font-bold text-ink-muted uppercase tracking-widest tabular-nums">Card {flashcardIdx + 1}/{reviewQueue.length}</span>
                   <button onClick={() => setFlashcardMode(false)} className="w-8 h-8 rounded-lg hover:bg-surface-alt flex items-center justify-center text-ink-muted">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
                   </button>
@@ -864,32 +869,43 @@ export function StudyHubClient({ initialNotes, stats, totalCount }: Props) {
 
       {/* ── Notes grid ─────────────────────────────────── */}
       {displayed.length === 0 ? (
-        <div className="bg-surface rounded-xl border border-border p-12 text-center">
-          <div className="w-14 h-14 rounded-2xl bg-surface-alt flex items-center justify-center mx-auto mb-4">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" strokeWidth="1.5" strokeLinecap="round">
+        <div className="bg-surface rounded-2xl border border-border p-12 text-center">
+          <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-brand/10 to-violet-500/10 flex items-center justify-center mx-auto mb-4">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#0056CE" strokeWidth="1.5" strokeLinecap="round">
               <path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z" /><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z" />
             </svg>
           </div>
           <h3 className="text-base font-bold text-ink mb-1">
             {searchActive ? "No matches" : filter === "all" ? "Your Study Hub is empty" : `No ${FILTERS.find(f => f.id === filter)?.label.toLowerCase()} yet`}
           </h3>
-          <p className="text-sm text-ink-muted max-w-sm mx-auto">
-            {searchActive ? "Try a different search term." : "Save highlights, code snippets, and notes while studying. They'll appear here for easy review."}
+          <p className="text-sm text-ink-muted max-w-md mx-auto mb-5">
+            {searchActive
+              ? "Try a different search term."
+              : "This is your personal reference manual — save code, log the bugs you fix, and turn any note into flashcards. Snippets you keep while studying land here."}
           </p>
+          {!searchActive && (
+            <div className="flex items-center justify-center gap-2">
+              <button onClick={() => { setShowNewNote(true); setShowErrorForm(false); }}
+                className="h-9 px-4 rounded-xl bg-brand text-white text-xs font-bold hover:bg-brand/90 transition-all">New note</button>
+              <button onClick={() => { setShowErrorForm(true); setShowNewNote(false); }}
+                className="h-9 px-4 rounded-xl border border-border text-xs font-bold text-ink-muted hover:text-red-500 hover:border-red-300 transition-all">Log a bug fix</button>
+            </div>
+          )}
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-          {displayed.map(note => {
+        <div className="columns-1 sm:columns-2 lg:columns-3 gap-3 [&>*]:mb-3">
+          {displayed.map((note, i) => {
             const isError = note.tags?.includes("error-log");
             const config = isError
-              ? { label: "Bug fix", icon: "M9 18h6M10 22h4M12 2v1M12 7a4 4 0 014 4c0 1.5-.8 2.8-2 3.4V16H10v-1.6C8.8 13.8 8 12.5 8 11a4 4 0 014-4z", color: "text-red-500", bg: "bg-red-50" }
+              ? { label: "Bug fix", icon: "M9 18h6M10 22h4M12 2v1M12 7a4 4 0 014 4c0 1.5-.8 2.8-2 3.4V16H10v-1.6C8.8 13.8 8 12.5 8 11a4 4 0 014-4z", color: "text-red-500", bg: "bg-red-50", accent: "#EF4444" }
               : (TYPE_CONFIG[note.type] ?? TYPE_CONFIG.note);
             return (
               <div key={note.id} onClick={() => openNote(note)}
                 role="button" tabIndex={0}
                 aria-label={`Open note${note.title ? ": " + note.title : ""}`}
                 onKeyDown={e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); openNote(note); } }}
-                className="bg-surface rounded-xl border border-border p-4 hover:shadow-card hover:border-brand/20 transition-all group relative cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-brand/40">
+                style={{ borderLeftColor: config.accent, animationDelay: i < 12 ? `${i * 35}ms` : undefined }}
+                className="break-inside-avoid bg-surface rounded-xl border border-border border-l-[3px] p-4 hover:shadow-card hover:-translate-y-0.5 hover:border-brand/20 transition-all duration-200 group relative cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-brand/40 motion-safe:animate-[note-in_0.35s_ease-out_both]">
                 {/* Delete */}
                 <button onClick={e => { e.stopPropagation(); deleteNote(note.id); }}
                   className="absolute top-3 right-3 w-6 h-6 rounded-md bg-surface-alt flex items-center justify-center text-ink-muted hover:text-red-500 hover:bg-red-50 transition-all opacity-0 group-hover:opacity-100">
