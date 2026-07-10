@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { CommunityMessage } from "./CommunityMessage";
 import { CommunityMessageInput } from "./CommunityMessageInput";
 import { useRealtimeMessages } from "@/lib/community/useRealtimeMessages";
@@ -26,8 +26,21 @@ export function CommunityMessagesTab({
   const { messages, loading, error } = useRealtimeMessages(communityId);
   const [localMessages, setLocalMessages] = useState(messages);
 
+  // Sync the hook's fetched/real-time messages into local state (the initial
+  // fetch and any live updates arrive after mount). Keep any optimistic
+  // messages that the server list doesn't have yet, deduped by id.
+  useEffect(() => {
+    setLocalMessages((prev) => {
+      const serverIds = new Set(messages.map((m) => m.id));
+      const optimisticOnly = prev.filter((m) => !serverIds.has(m.id));
+      return [...optimisticOnly, ...messages];
+    });
+  }, [messages]);
+
   const handleMessageSent = (newMessage: any) => {
-    setLocalMessages((prev) => [newMessage, ...prev]);
+    setLocalMessages((prev) =>
+      prev.some((m) => m.id === newMessage.id) ? prev : [newMessage, ...prev]
+    );
   };
 
   const handleEditMessage = async (messageId: string, newContent: string) => {
