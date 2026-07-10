@@ -10,12 +10,10 @@ interface FormData {
   type: "public" | "private";
   icon: File | null;
   cover: File | null;
-  subscriptionModel: "one-time" | "daily" | "weekly" | "monthly";
-  price: string;
   rules: string;
 }
 
-type Section = "about" | "visuals" | "pricing" | "rules";
+type Section = "about" | "visuals" | "rules";
 
 const CATEGORIES = [
   "Select category",
@@ -32,7 +30,6 @@ const CATEGORIES = [
 const SECTION_CONFIG = [
   { id: "about" as const, label: "About Community", icon: "📝" },
   { id: "visuals" as const, label: "Visuals & Branding", icon: "🎨" },
-  { id: "pricing" as const, label: "Set Up Pricing", icon: "💳" },
   { id: "rules" as const, label: "Rules & Guidelines", icon: "⚖️" },
 ];
 
@@ -46,8 +43,6 @@ export function CommunityCreationClient() {
     type: "public",
     icon: null,
     cover: null,
-    subscriptionModel: "monthly",
-    price: "",
     rules: "",
   });
 
@@ -70,10 +65,6 @@ export function CommunityCreationClient() {
         if (!value.trim()) return 'Description is required';
         if (value.length < 10) return 'Description must be at least 10 characters';
         if (value.length > 500) return 'Description must be less than 500 characters';
-        return '';
-      case 'price':
-        if (value && isNaN(Number(value))) return 'Price must be a number';
-        if (value && Number(value) < 0) return 'Price must be positive';
         return '';
       default:
         return '';
@@ -128,15 +119,6 @@ export function CommunityCreationClient() {
     }));
   };
 
-  const handleSubscriptionChange = (
-    model: "one-time" | "daily" | "weekly" | "monthly"
-  ) => {
-    setFormData((prev) => ({
-      ...prev,
-      subscriptionModel: model,
-    }));
-  };
-
   const handleFileChange = (
     e: React.ChangeEvent<HTMLInputElement>,
     type: "icon" | "cover"
@@ -163,8 +145,6 @@ export function CommunityCreationClient() {
       data.append("category", formData.category);
       data.append("description", formData.description);
       data.append("is_private", formData.type === "private" ? "true" : "false");
-      data.append("subscription_model", formData.subscriptionModel);
-      data.append("monthly_price", formData.price);
       data.append("rules", formData.rules);
       if (formData.icon) data.append("icon", formData.icon);
       if (formData.cover) data.append("cover", formData.cover);
@@ -210,7 +190,7 @@ export function CommunityCreationClient() {
             Create Your <span className="bg-gradient-to-r from-blue-300 to-cyan-300 bg-clip-text text-transparent">Community</span>
           </h1>
           <p className="text-xl text-slate-300 max-w-2xl mx-auto leading-relaxed">
-            Build a thriving community in minutes. Set your own rules, pricing, and values.
+            Build a thriving community in minutes. Set your own rules and values.
           </p>
         </div>
       </div>
@@ -515,100 +495,6 @@ export function CommunityCreationClient() {
                     {formData.cover && (
                       <p className="text-sm text-green-600 font-medium mt-3">✓ {formData.cover.name}</p>
                     )}
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Set Up Pricing Section */}
-            {activeSection === "pricing" && (
-              <div className="bg-white/80 backdrop-blur-lg rounded-3xl border border-white/60 shadow-xl p-10 space-y-8">
-                <div>
-                  <h2 className="text-3xl font-bold text-slate-900 mb-2">Set Up Pricing</h2>
-                  <p className="text-slate-600">Choose how you want to monetize your community</p>
-                </div>
-
-                <div className="space-y-8">
-                  {/* Subscription Model */}
-                  <div>
-                    <label className="block text-sm font-semibold text-slate-900 mb-4 uppercase tracking-wider">
-                      Subscription Model
-                    </label>
-                    <div className="grid grid-cols-4 gap-4">
-                      {[
-                        { value: "one-time", label: "One Time", icon: "💳" },
-                        { value: "daily", label: "Daily", icon: "📅" },
-                        { value: "weekly", label: "Weekly", icon: "📆" },
-                        { value: "monthly", label: "Monthly", icon: "🗓️" },
-                      ].map((option) => (
-                        <label
-                          key={option.value}
-                          className={`relative p-4 rounded-2xl border-2 cursor-pointer transition-all ${
-                            formData.subscriptionModel === option.value
-                              ? "border-blue-600 bg-blue-50"
-                              : "border-slate-200 hover:border-blue-300 hover:bg-white"
-                          }`}
-                        >
-                          <input
-                            type="radio"
-                            name="subscriptionModel"
-                            value={option.value}
-                            checked={formData.subscriptionModel === option.value}
-                            onChange={() => handleSubscriptionChange(option.value as any)}
-                            className="hidden"
-                          />
-                          <div className="text-center">
-                            <div className="text-3xl mb-2">{option.icon}</div>
-                            <p className={`font-semibold ${formData.subscriptionModel === option.value ? "text-blue-600" : "text-slate-900"}`}>
-                              {option.label}
-                            </p>
-                          </div>
-                        </label>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Price Input */}
-                  <div>
-                    <label className="block text-sm font-semibold text-slate-900 mb-4 uppercase tracking-wider">
-                      Membership Cost
-                    </label>
-                    <div className="flex gap-3">
-                      <select className="px-5 py-4 border border-slate-200 rounded-2xl text-base font-medium text-slate-900 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500">
-                        <option>USD $</option>
-                        <option>EUR €</option>
-                        <option>GBP £</option>
-                        <option>LKR ₨</option>
-                      </select>
-                      <input
-                        type="number"
-                        name="price"
-                        value={formData.price}
-                        onChange={handleInputChange}
-                        placeholder="49.99"
-                        step="0.01"
-                        min="0"
-                        className="flex-1 px-5 py-4 border border-slate-200 rounded-2xl text-base text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      />
-                    </div>
-                  </div>
-
-                  {/* Bank Account Section */}
-                  <div className="bg-gradient-to-br from-blue-50 to-cyan-50 border-2 border-blue-200 rounded-2xl p-8 space-y-4">
-                    <div className="flex gap-4">
-                      <div className="text-3xl">🏦</div>
-                      <div className="flex-1">
-                        <h3 className="text-lg font-bold text-slate-900">
-                          Connect Your Bank Account
-                        </h3>
-                        <p className="text-sm text-slate-700 mt-2">
-                          Square1.Ai uses Stripe to securely handle payments and send payouts to your bank account. Set this up to start earning from your community.
-                        </p>
-                      </div>
-                    </div>
-                    <button className="px-6 py-3 bg-gradient-to-r from-blue-600 to-cyan-600 text-white font-semibold rounded-xl hover:shadow-lg hover:shadow-blue-500/50 transition-all duration-300">
-                      Connect Stripe Account
-                    </button>
                   </div>
                 </div>
               </div>
