@@ -49,10 +49,12 @@ export function ActivityHeatmap({ activeDates, weeks = 13 }: ActivityHeatmapProp
   const monthByCol = new Map(months.map((m) => [m.col, m.label]));
 
   return (
-    <div className="w-full">
+    // Cap the width so cells stay a tidy ~26px on wide screens instead of
+    // stretching into huge squares; still fills narrower cards.
+    <div className="w-full max-w-[480px]">
       {/* Month labels — mirror the column grid so each label sits over its column */}
       <div className="mb-1.5 flex gap-1">
-        <div className="w-7 shrink-0" />
+        <div className="w-6 shrink-0" />
         <div className="flex flex-1 gap-[4px] min-w-0">
           {cols.map((_, ci) => (
             <div key={ci} className="flex-1 whitespace-nowrap text-[10px] text-ink-muted">
@@ -62,22 +64,21 @@ export function ActivityHeatmap({ activeDates, weeks = 13 }: ActivityHeatmapProp
         </div>
       </div>
 
-      {/* Grid — columns span the full width; cells are capped + centred so they
-          stay a tidy size while the spare room becomes even spacing. */}
+      {/* Grid — dense square cells that fill the (capped) width symmetrically */}
       <div className="flex items-stretch gap-1">
-        <div className="flex w-7 shrink-0 flex-col gap-[6px]">
+        <div className="flex w-6 shrink-0 flex-col gap-[4px]">
           {["", "Mon", "", "Wed", "", "Fri", ""].map((d, i) => (
-            <span key={i} className="flex flex-1 items-center text-[10px] leading-none text-ink-muted">{d}</span>
+            <span key={i} className="flex flex-1 items-center text-[9px] leading-none text-ink-muted">{d}</span>
           ))}
         </div>
-        <div className="flex flex-1 gap-[6px] min-w-0">
+        <div className="flex flex-1 gap-[4px] min-w-0">
           {cols.map((col, ci) => (
-            <div key={ci} className="flex flex-1 flex-col items-center gap-[6px]">
+            <div key={ci} className="flex flex-1 flex-col gap-[4px]">
               {col.map((cell) => (
                 <div
                   key={cell.date}
                   className={[
-                    "w-full max-w-[30px] aspect-square rounded-[5px] transition-colors",
+                    "w-full aspect-square rounded-[3px] transition-colors",
                     cell.isFuture ? "bg-transparent" :
                     cell.isToday && cell.level === 0 ? "bg-brand/20 ring-1 ring-brand/40" :
                     cell.level > 0 ? "bg-brand" : "bg-surface-alt",
@@ -93,9 +94,9 @@ export function ActivityHeatmap({ activeDates, weeks = 13 }: ActivityHeatmapProp
       {/* Legend */}
       <div className="mt-2.5 flex items-center gap-1.5 justify-end">
         <span className="text-[10px] text-ink-muted">Less</span>
-        <div className="w-[11px] h-[11px] rounded-[3px] bg-surface-alt" />
-        <div className="w-[11px] h-[11px] rounded-[3px] bg-brand/40" />
-        <div className="w-[11px] h-[11px] rounded-[3px] bg-brand" />
+        <div className="w-[10px] h-[10px] rounded-[2px] bg-surface-alt" />
+        <div className="w-[10px] h-[10px] rounded-[2px] bg-brand/40" />
+        <div className="w-[10px] h-[10px] rounded-[2px] bg-brand" />
         <span className="text-[10px] text-ink-muted">More</span>
       </div>
     </div>
