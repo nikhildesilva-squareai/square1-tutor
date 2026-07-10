@@ -130,6 +130,12 @@ export function StudyHubClient({ initialNotes, stats, totalCount }: Props) {
   const [newNoteTitle, setNewNoteTitle] = useState("");
   const [saving, setSaving] = useState(false);
 
+  // ── Error journal ──
+  const [showErrorForm, setShowErrorForm] = useState(false);
+  const [errMessage, setErrMessage] = useState("");
+  const [errContext, setErrContext] = useState("");
+  const [errFix, setErrFix] = useState("");
+
   // ── Flashcard review session ──
   const [flashcardMode, setFlashcardMode] = useState(false);
   const [flashcardIdx, setFlashcardIdx] = useState(0);
@@ -172,6 +178,14 @@ export function StudyHubClient({ initialNotes, stats, totalCount }: Props) {
 
   const newNoteTextareaRef = useRef<HTMLTextAreaElement>(null);
   const searchActive = search.trim().length >= 2;
+
+  // Deep-link from the lesson completion nudge: /notes#log-error opens the form.
+  useEffect(() => {
+    if (typeof window !== "undefined" && window.location.hash === "#log-error") {
+      setShowErrorForm(true);
+      window.history.replaceState(null, "", window.location.pathname);
+    }
+  }, []);
 
   // ── Display list (memoized) ─────────────────────────
   const displayed = useMemo(() => {
@@ -343,6 +357,37 @@ export function StudyHubClient({ initialNotes, stats, totalCount }: Props) {
     finally { setSaving(false); }
   }
 
+  async function saveError() {
+    if (!errMessage.trim() || !errFix.trim()) return;
+    setSaving(true);
+    try {
+      // Structured error entry, rendered with fenced blocks so code highlights.
+      const firstLine = errMessage.trim().split("\n")[0].slice(0, 80);
+      const content =
+        "**Error**\n```\n" + errMessage.trim() + "\n```\n\n" +
+        (errContext.trim() ? "**When / why**\n" + errContext.trim() + "\n\n" : "") +
+        "**Fix**\n```\n" + errFix.trim() + "\n```";
+      const res = await fetch("/api/notes", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ type: "note", title: `🐛 ${firstLine}`, content, tags: ["error-log"] }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setNotes(prev => [{
+          id: data.noteId, type: "note", title: `🐛 ${firstLine}`, content, color: "red",
+          lesson_id: null, lesson_title: null, module_title: null, course_title: null,
+          section_title: null, flashcard_answer: null, next_review_at: null,
+          review_count: 0, is_pinned: false, tags: ["error-log"], image_url: null,
+          created_at: new Date().toISOString(), updated_at: new Date().toISOString(),
+        }, ...prev]);
+        setCounts(c => ({ ...c, total: c.total + 1, userNotes: c.userNotes + 1 }));
+        setErrMessage(""); setErrContext(""); setErrFix(""); setShowErrorForm(false);
+      }
+    } catch { /* ignore */ }
+    finally { setSaving(false); }
+  }
+
   async function deleteNote(noteId: string) {
     const note = notes.find(n => n.id === noteId);
     try {
@@ -409,7 +454,7 @@ export function StudyHubClient({ initialNotes, stats, totalCount }: Props) {
     finally { setSaving(false); }
   }
 
-  async function generateFromNote(id: string) {
+  async function generateFromNote(id: string, mode: "concept" | "code" = "concept") {
     if (generating) return;
     setGenerating(true);
     setGenMsg(null);
@@ -417,7 +462,7 @@ export function StudyHubClient({ initialNotes, stats, totalCount }: Props) {
       const res = await fetch("/api/notes/generate-flashcards", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ sourceNoteId: id, count: 5 }),
+        body: JSON.stringify({ sourceNoteId: id, count: 5, mode }),
       });
       const d = await res.json().catch(() => ({}));
       if (res.ok) {
@@ -489,6 +534,11 @@ export function StudyHubClient({ initialNotes, stats, totalCount }: Props) {
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M16 18l6-6-6-6M8 6l-6 6 6 6" /></svg>
             Cheatsheet
           </a>
+          <button onClick={() => { setShowErrorForm(v => !v); setShowNewNote(false); }}
+            className="h-9 px-4 rounded-xl border border-border text-xs font-bold text-ink-muted hover:text-red-500 hover:border-red-300 transition-all flex items-center gap-1.5">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M9 18h6M10 22h4M12 2v1M12 7a4 4 0 014 4c0 1.5-.8 2.8-2 3.4V16H10v-1.6C8.8 13.8 8 12.5 8 11a4 4 0 014-4z" /></svg>
+            Log error
+          </button>
           {counts.dueFlashcards > 0 && (
             <button onClick={startReview}
               className="h-9 px-4 rounded-xl bg-emerald-600 text-white text-xs font-bold hover:bg-emerald-700 transition-all flex items-center gap-1.5">
@@ -503,6 +553,37 @@ export function StudyHubClient({ initialNotes, stats, totalCount }: Props) {
           </button>
         </div>
       </div>
+
+      {/* ── Error journal form ─────────────────────────── */}
+      {showErrorForm && (
+        <div className="bg-surface rounded-xl border border-red-200 p-5 mb-6 shadow-card">
+          <div className="flex items-center gap-2 mb-4">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#DC2626" strokeWidth="2" strokeLinecap="round"><path d="M9 18h6M10 22h4M12 2v1M12 7a4 4 0 014 4c0 1.5-.8 2.8-2 3.4V16H10v-1.6C8.8 13.8 8 12.5 8 11a4 4 0 014-4z" /></svg>
+            <h3 className="text-sm font-bold text-ink">Log a bug you solved</h3>
+            <span className="text-[11px] text-ink-muted">— your best future flashcards come from here</span>
+          </div>
+          <label className="block text-[11px] font-bold text-ink-muted uppercase tracking-wider mb-1.5">The error</label>
+          <textarea value={errMessage} onChange={e => setErrMessage(e.target.value)}
+            placeholder="Paste the error message or describe what broke" rows={2}
+            className="w-full text-sm font-mono text-ink placeholder:text-ink-muted bg-surface-soft rounded-xl border border-border px-4 py-3 focus:outline-none focus:border-red-400 resize-none mb-3" />
+          <label className="block text-[11px] font-bold text-ink-muted uppercase tracking-wider mb-1.5">When / why it happened <span className="font-medium normal-case">(optional)</span></label>
+          <textarea value={errContext} onChange={e => setErrContext(e.target.value)}
+            placeholder="What you were doing, the cause once you understood it" rows={2}
+            className="w-full text-sm text-ink placeholder:text-ink-muted bg-surface-soft rounded-xl border border-border px-4 py-3 focus:outline-none focus:border-brand resize-none mb-3" />
+          <label className="block text-[11px] font-bold text-emerald-600 uppercase tracking-wider mb-1.5">The fix</label>
+          <textarea value={errFix} onChange={e => setErrFix(e.target.value)}
+            placeholder="The code or change that fixed it" rows={3}
+            className="w-full text-sm font-mono text-ink placeholder:text-ink-muted bg-emerald-50/50 rounded-xl border border-emerald-200 px-4 py-3 focus:outline-none focus:border-emerald-400 resize-none mb-3" />
+          <div className="flex items-center gap-2 justify-end">
+            <button onClick={() => { setShowErrorForm(false); setErrMessage(""); setErrContext(""); setErrFix(""); }}
+              className="h-8 px-4 rounded-lg border border-border text-xs font-semibold text-ink-muted hover:bg-surface-alt transition-all">Cancel</button>
+            <button onClick={saveError} disabled={saving || !errMessage.trim() || !errFix.trim()}
+              className="h-8 px-4 rounded-lg bg-red-500 text-white text-xs font-bold disabled:opacity-40 hover:bg-red-600 transition-all">
+              {saving ? "Saving..." : "Save to journal"}
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* ── New note form ──────────────────────────────── */}
       {showNewNote && (
@@ -715,16 +796,29 @@ export function StudyHubClient({ initialNotes, stats, totalCount }: Props) {
                     : <><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z" /><polyline points="17 21 17 13 7 13 7 21" /><polyline points="7 3 7 8 15 8" /></svg>Save Changes</>}
                 </button>
               </div>
-            ) : viewingNote.type !== "flashcard" && (
+            ) : viewingNote.type !== "flashcard" && (() => {
+              // Code snippets and bug-fix logs get code-tuned cards (cloze / predict-output).
+              const codey = viewingNote.type === "code_snippet" || viewingNote.tags?.includes("error-log") || viewingNote.content.includes("```");
+              return (
               <div className="px-6 py-4 border-t border-border shrink-0 flex items-center justify-between gap-3">
-                <span className="text-[11px] text-ink-muted">{genMsg ?? "Turn this into active-recall flashcards"}</span>
-                <button onClick={() => generateFromNote(viewingNote.id)} disabled={generating}
-                  className="h-9 px-4 rounded-xl bg-gradient-to-r from-brand to-violet-500 text-white text-xs font-bold hover:opacity-90 disabled:opacity-50 transition-all flex items-center gap-1.5 shrink-0">
-                  {generating ? <><svg className="animate-spin" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 12a9 9 0 11-6.219-8.56" /></svg>Generating…</>
-                    : <><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M12 3l1.9 4.6L18.5 9l-3.5 3 1 4.9L12 14.8 8 16.9l1-4.9-3.5-3 4.6-1.4z" /></svg>Make Flashcards</>}
-                </button>
+                <span className="text-[11px] text-ink-muted">{genMsg ?? (codey ? "Drill this with code flashcards" : "Turn this into active-recall flashcards")}</span>
+                <div className="flex items-center gap-2 shrink-0">
+                  {codey && (
+                    <button onClick={() => generateFromNote(viewingNote.id, "code")} disabled={generating}
+                      className="h-9 px-4 rounded-xl bg-[#0D1117] text-white text-xs font-bold hover:opacity-90 disabled:opacity-50 transition-all flex items-center gap-1.5">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M16 18l6-6-6-6M8 6l-6 6 6 6" /></svg>
+                      Code cards
+                    </button>
+                  )}
+                  <button onClick={() => generateFromNote(viewingNote.id, "concept")} disabled={generating}
+                    className="h-9 px-4 rounded-xl bg-gradient-to-r from-brand to-violet-500 text-white text-xs font-bold hover:opacity-90 disabled:opacity-50 transition-all flex items-center gap-1.5">
+                    {generating ? <><svg className="animate-spin" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 12a9 9 0 11-6.219-8.56" /></svg>Generating…</>
+                      : <><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M12 3l1.9 4.6L18.5 9l-3.5 3 1 4.9L12 14.8 8 16.9l1-4.9-3.5-3 4.6-1.4z" /></svg>{codey ? "Concept cards" : "Make Flashcards"}</>}
+                  </button>
+                </div>
               </div>
-            )}
+              );
+            })()}
           </div>
         </div>
       )}
@@ -786,7 +880,10 @@ export function StudyHubClient({ initialNotes, stats, totalCount }: Props) {
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
           {displayed.map(note => {
-            const config = TYPE_CONFIG[note.type] ?? TYPE_CONFIG.note;
+            const isError = note.tags?.includes("error-log");
+            const config = isError
+              ? { label: "Bug fix", icon: "M9 18h6M10 22h4M12 2v1M12 7a4 4 0 014 4c0 1.5-.8 2.8-2 3.4V16H10v-1.6C8.8 13.8 8 12.5 8 11a4 4 0 014-4z", color: "text-red-500", bg: "bg-red-50" }
+              : (TYPE_CONFIG[note.type] ?? TYPE_CONFIG.note);
             return (
               <div key={note.id} onClick={() => openNote(note)}
                 role="button" tabIndex={0}

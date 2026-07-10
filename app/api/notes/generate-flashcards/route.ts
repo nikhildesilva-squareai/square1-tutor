@@ -13,6 +13,9 @@ const schema = z.object({
   sourceNoteId: z.string().uuid().optional(),
   text: z.string().min(1).max(8000).optional(),
   count: z.number().int().min(1).max(10).optional(),
+  // "concept" (default) = Q&A recall; "code" = cloze / predict-output cards
+  // tuned for syntax, commands, and outputs — what technical learners forget.
+  mode: z.enum(["concept", "code"]).optional(),
 });
 
 interface Card { question: string; answer: string }
@@ -82,10 +85,15 @@ export async function POST(request: Request) {
 
     if (!sourceText) return NextResponse.json({ error: "Nothing to generate from" }, { status: 400 });
 
-    const system =
-      "You are Nova, a study coach. Turn the student's material into high-quality active-recall flashcards. " +
-      "Each card tests ONE concept. Questions are specific and answerable from the material; answers are concise (1-3 sentences) and self-contained. " +
-      "Avoid yes/no questions. Output ONLY a JSON array of objects with \"question\" and \"answer\" string fields — no prose, no markdown fences.";
+    const mode = parsed.data.mode ?? "concept";
+    const system = mode === "code"
+      ? "You are Nova, a coding study coach. Turn the student's code/command material into active-recall flashcards that drill the things programmers actually forget: exact syntax, flags, function/method names, and outputs. " +
+        "Prefer two card styles: (1) CLOZE — show the snippet with ONE critical token blanked as ___ in the question, and the missing token (plus a one-line why) as the answer; (2) PREDICT-OUTPUT — question asks what a short snippet prints/returns, answer gives the exact output. " +
+        "Keep code in fenced blocks using triple backticks with the language. Each card tests ONE thing. " +
+        "Output ONLY a JSON array of objects with \"question\" and \"answer\" string fields — no prose, no markdown fences around the array itself."
+      : "You are Nova, a study coach. Turn the student's material into high-quality active-recall flashcards. " +
+        "Each card tests ONE concept. Questions are specific and answerable from the material; answers are concise (1-3 sentences) and self-contained. " +
+        "Avoid yes/no questions. Output ONLY a JSON array of objects with \"question\" and \"answer\" string fields — no prose, no markdown fences.";
 
     const result = await callAI(student.id, {
       feature: "flashcards",

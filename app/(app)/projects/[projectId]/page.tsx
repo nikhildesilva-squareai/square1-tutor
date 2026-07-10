@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { SubmissionForm, ScoreDisplay } from "./SubmissionForm";
+import { ProjectNotesPanel } from "./ProjectNotesPanel";
 import { RichContent } from "@/components/ui/rich-content";
 import type { Project, ProjectSubmission, ProjectRubricCriterion, ProjectReference, ProjectDataCard } from "@/types/database";
 import { scaleWeek, weekDueDate, projectStatus, countdownLabel, fmtDate, STATUS_STYLE, type ProjectStatus } from "@/lib/schedule";
@@ -29,9 +30,22 @@ export default async function ProjectBriefPage({ params }: PageProps) {
   const { data: student } = await supabase.from("students").select("id").eq("user_id", user.id).maybeSingle();
 
   let submission: ProjectSubmission | null = null;
+  let myNotes: { id: string; title: string | null; content: string; type: string; lesson_title: string | null; tags: string[] }[] = [];
   if (student) {
     const { data } = await supabase.from("project_submissions").select("*").eq("student_id", student.id).eq("project_id", projectId).maybeSingle() as { data: ProjectSubmission | null };
     submission = data;
+
+    // The learner's own code snippets + bug-fix logs for this course, for the
+    // side panel — their personal reference while building the project.
+    const { data: notes } = await supabase
+      .from("study_notes")
+      .select("id, title, content, type, lesson_title, tags")
+      .eq("student_id", student.id)
+      .eq("course_id", project.course_id)
+      .or("type.eq.code_snippet,tags.cs.{error-log}")
+      .order("created_at", { ascending: false })
+      .limit(50);
+    myNotes = notes ?? [];
   }
 
   // Rolling deadline for this learner (enrolled + project scheduled)
@@ -66,8 +80,11 @@ export default async function ProjectBriefPage({ params }: PageProps) {
   const dcRows = Array.isArray(dataCard?.sample_rows) ? dataCard!.sample_rows : [];
   const dcHeaders = dcCols.length > 0 ? dcCols.map((c) => c.name) : Object.keys(dcRows[0] ?? {});
 
+  const showNotesPanel = !!student;
+
   return (
     <div className="min-h-full bg-surface-soft">
+      {showNotesPanel && <ProjectNotesPanel snippets={myNotes} courseTitle={course?.title ?? "this course"} />}
       {/* ── Dark hero ─────────────────────────────────────────────────── */}
       <div className="bg-[linear-gradient(135deg,#0056CE_0%,#0b3b97_50%,#1e1b4b_100%)] border-b border-white/10">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8 sm:py-10">

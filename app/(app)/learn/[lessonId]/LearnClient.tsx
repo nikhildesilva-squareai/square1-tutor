@@ -973,6 +973,15 @@ export function LearnClient({
                   </div>
                 )}
 
+                {/* Error-journal nudge — only when this lesson had real coding work */}
+                {results && exercises.some(e => e.type === "code") && (
+                  <a href="/notes#log-error"
+                    className="inline-flex items-center gap-2 mx-auto mb-6 px-4 py-2.5 rounded-xl border border-red-200 bg-red-50/60 text-xs font-semibold text-red-600 hover:bg-red-50 transition-all">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M9 18h6M10 22h4M12 2v1M12 7a4 4 0 014 4c0 1.5-.8 2.8-2 3.4V16H10v-1.6C8.8 13.8 8 12.5 8 11a4 4 0 014-4z" /></svg>
+                    Hit a bug you solved? Log it to your Study Hub
+                  </a>
+                )}
+
                 {/* Comprehension check gate */}
                 {!completed && exercises.length > 0 && (() => {
                   const mcqExercises = exercises.filter(e => e.type === "mcq");
