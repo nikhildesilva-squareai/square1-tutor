@@ -65,10 +65,13 @@ export function PostFeedClient({ me }: PostFeedClientProps) {
     }).catch(() => {});
   }, []);
 
-  const onMessage = useCallback(() => {
-    // Member DMs are not yet built; the Messages tab is the app's inbox.
-    router.push("/messages");
-  }, [router]);
+  const onMessage = useCallback(
+    (profileId: string) => {
+      // Open (or start) a direct message with this member in the Messages inbox.
+      router.push(`/messages?toProfile=${profileId}`);
+    },
+    [router]
+  );
 
   return (
     <>
