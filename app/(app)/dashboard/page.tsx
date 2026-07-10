@@ -302,6 +302,10 @@ export default async function DashboardPage({ searchParams }: DashboardProps) {
   const streakInfo = computeStreak((allCompletionDates ?? []).map(c => c.completed_at));
   const heatmapDates = (allCompletionDates ?? []).map(c => c.completed_at);
 
+  // Weekly + window active-day tallies for the This Week bar and Activity pill.
+  const activeThisWeek = streakData.filter(d => d.active).length;
+  const activeDaysCount = new Set(heatmapDates.map(d => new Date(d).toDateString())).size;
+
   return (
     <div className="min-h-full px-4 sm:px-6 py-8 max-w-6xl mx-auto">
 
@@ -533,38 +537,47 @@ export default async function DashboardPage({ searchParams }: DashboardProps) {
                 )}
               </div>
             </div>
-            <div className="flex items-center justify-between gap-2">
+            <div className="flex items-stretch justify-between gap-2">
               {streakData.map((d, i) => {
                 const isToday = (today === 0 ? 6 : today - 1) === i;
                 return (
-                  <div key={d.day} className="flex flex-col items-center gap-2">
-                    <span className="text-[10px] text-ink-muted font-medium">{d.day}</span>
+                  <div key={i} className="flex flex-1 flex-col items-center gap-2.5">
+                    <span className="text-xs text-ink-muted font-semibold">{d.day.charAt(0)}</span>
                     <div className={[
-                      "w-9 h-9 rounded-xl flex items-center justify-center transition-all",
+                      "w-full aspect-square max-w-[52px] rounded-2xl flex items-center justify-center transition-all",
                       d.active
-                        ? "bg-brand text-white"
+                        ? "bg-brand text-white shadow-sm"
                         : isToday
-                        ? "bg-surface-tint border-2 border-brand/30"
+                        ? "bg-surface-tint ring-2 ring-brand/50"
                         : "bg-surface-alt",
                     ].join(" ")}>
                       {d.active ? (
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><polyline points="20 6 9 17 4 12" /></svg>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><polyline points="20 6 9 17 4 12" /></svg>
                       ) : isToday ? (
-                        <div className="w-2 h-2 rounded-full bg-brand" />
+                        <div className="w-2.5 h-2.5 rounded-full bg-brand" />
                       ) : null}
                     </div>
                   </div>
                 );
               })}
             </div>
-            {streakInfo.longest > 1 && (
-              <p className="text-[10px] text-ink-muted mt-3 text-right">Best streak: {streakInfo.longest} days</p>
-            )}
+            <div className="flex items-center gap-4 mt-5">
+              <div className="flex-1 h-2 rounded-full bg-surface-alt overflow-hidden">
+                <div className="h-full rounded-full bg-brand transition-[width] duration-700 ease-out"
+                  style={{ width: `${Math.max((activeThisWeek / 7) * 100, 4)}%` }} />
+              </div>
+              <p className="text-sm text-ink-muted shrink-0">
+                <span className="font-bold text-ink tabular-nums">{activeThisWeek} of 7</span> active days
+              </p>
+            </div>
           </div>
 
           {/* Activity heatmap */}
           <div className="bg-surface rounded-2xl border border-border shadow-card p-5">
-            <p className="text-[10px] font-bold text-ink-muted uppercase tracking-widest mb-4">Activity — Last 13 Weeks</p>
+            <div className="flex items-center justify-between mb-4">
+              <p className="text-[10px] font-bold text-ink-muted uppercase tracking-widest">Activity — Last 13 Weeks</p>
+              <span className="text-[11px] font-semibold text-ink-muted bg-surface-alt px-2.5 py-1 rounded-full tabular-nums">{activeDaysCount} active {activeDaysCount === 1 ? "day" : "days"}</span>
+            </div>
             <ActivityHeatmap activeDates={heatmapDates} weeks={13} />
           </div>
 
