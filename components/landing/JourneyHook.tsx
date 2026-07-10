@@ -16,8 +16,8 @@ const ROLES = [
   { title: "Cybersecurity Engineer", track: "Cybersecurity",         salary: "$110–180k" },
   { title: "ML Engineer",            track: "Machine Learning",      salary: "$140–220k" },
   { title: "Full Stack Engineer",    track: "Full Stack Development", salary: "$100–160k" },
-  { title: "Data Engineer",          track: "Data Engineering",      salary: "$120–190k" },
-  { title: "Cloud Architect",        track: "Cloud & DevOps",        salary: "$130–200k" },
+  { title: "Data Scientist",         track: "Data Science",          salary: "$115–185k" },
+  { title: "AI Product Manager",     track: "AI Product Management",  salary: "$140–220k" },
 ];
 
 // ─── Rotating headline roles (with gradient colors per role) ─────────────────
@@ -26,7 +26,7 @@ const HEADLINE_ROLES: { label: string; gradient: string }[] = [
   { label: "AI Engineer",            gradient: "linear-gradient(135deg, #3388FF 0%, #0056CE 55%, #01224F 100%)" },
   { label: "Cybersecurity Engineer", gradient: "linear-gradient(135deg, #0EA5E9 0%, #0056CE 55%, #01224F 100%)" },
   { label: "ML Engineer",            gradient: "linear-gradient(135deg, #3388FF 0%, #0EA5E9 50%, #0056CE 100%)" },
-  { label: "Cloud Architect",        gradient: "linear-gradient(135deg, #0056CE 0%, #1E40AF 50%, #01224F 100%)" },
+  { label: "Data Scientist",         gradient: "linear-gradient(135deg, #0056CE 0%, #1E40AF 50%, #01224F 100%)" },
   { label: "Full Stack Engineer",    gradient: "linear-gradient(135deg, #3388FF 0%, #0056CE 100%)" },
 ];
 

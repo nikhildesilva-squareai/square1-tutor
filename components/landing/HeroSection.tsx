@@ -12,7 +12,7 @@ const GOAL_ROLES = [
   { label: "Full Stack Engineer", slug: "fullstack-development", salary: "$100–160k" },
   { label: "Security Engineer", slug: "cybersecurity", salary: "$110–180k" },
   { label: "Data Scientist", slug: "data-science", salary: "$115–185k" },
-  { label: "DevOps Engineer", slug: "devops-engineering", salary: "$120–190k" },
+  { label: "LLM Agent Architect", slug: "llm-agent-architect", salary: "$150–250k" },
 ];
 
 // ─── Hero product TOUR: an auto-playing 3-scene showcase (Assess → Review → Ship)

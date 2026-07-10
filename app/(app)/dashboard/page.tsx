@@ -13,10 +13,7 @@ const COURSES = [
   { slug: "data-science",          title: "Data Science",          role: "Data Scientist",          salary: "$115–185k", color: "#14b8a6" },
   { slug: "artificial-intelligence",title: "AI Fundamentals",      role: "AI Engineer",             salary: "$130–200k", color: "#0ea5e9" },
   { slug: "llm-agent-architect",   title: "LLM Agent Architect",   role: "Agent Architect",         salary: "$150–250k", color: "#7C3AED" },
-  { slug: "devops-engineering",    title: "DevOps Engineering",    role: "DevOps Engineer",         salary: "$120–190k", color: "#F97316" },
   { slug: "computer-vision",       title: "Computer Vision",       role: "CV Engineer",             salary: "$120–180k", color: "#10b981" },
-  { slug: "game-development",      title: "Game Development",      role: "Game Developer",          salary: "$80–150k",  color: "#f59e0b" },
-  { slug: "drone-technology",      title: "Drone Technology",      role: "Drone Engineer",          salary: "$115–185k", color: "#EC4899" },
   { slug: "ai-product-management", title: "AI Product Mgmt",       role: "AI PM",                   salary: "$140–220k", color: "#0EA5E9" },
 ];
 
@@ -787,7 +784,7 @@ export default async function DashboardPage({ searchParams }: DashboardProps) {
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-semibold text-brand">Add Another Course</p>
-                <p className="text-[10px] text-ink-muted">Explore 12 career paths</p>
+                <p className="text-[10px] text-ink-muted">Explore 9 career paths</p>
               </div>
               <svg width="14" height="14" viewBox="0 0 16 16" fill="none" className="text-ink-muted group-hover:text-brand transition-colors"><path d="M6 3l5 5-5 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /></svg>
             </Link>
