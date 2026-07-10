@@ -98,21 +98,25 @@ export async function POST(
       );
     }
 
-    // Add attachments if provided
+    // Add attachments if provided. Map the client payload to the real
+    // message_attachments columns (the size column is file_size_bytes; also
+    // populate file_name + mime_type, which the GET query selects).
     if (attachments && Array.isArray(attachments) && attachments.length > 0) {
       const attachmentInserts = attachments.map((file: any) => ({
         message_id: message.id,
         file_url: file.file_url,
         file_type: file.file_type,
-        file_size: file.file_size,
+        mime_type: file.file_type,
+        file_name: file.original_filename,
         original_filename: file.original_filename,
+        file_size_bytes: file.file_size,
         upload_status: "completed",
       }));
 
-      await supabase
+      const { error: attachErr } = await supabase
         .from("message_attachments")
-        .insert(attachmentInserts)
-        .select();
+        .insert(attachmentInserts);
+      if (attachErr) console.error("Error saving message attachments:", attachErr);
     }
 
     // Add mentions if provided
