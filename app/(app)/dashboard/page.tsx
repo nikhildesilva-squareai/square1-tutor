@@ -49,13 +49,13 @@ interface ModuleRow {
 /* ═══════════════════════════════════════════════════════════════════════════ */
 /*  PROGRESS RING (SVG)                                                      */
 /* ═══════════════════════════════════════════════════════════════════════════ */
-function ProgressRing({ pct, size = 56, stroke = 4, color = "#0056CE" }: { pct: number; size?: number; stroke?: number; color?: string }) {
+function ProgressRing({ pct, size = 56, stroke = 4, color = "#0056CE", trackColor = "#E2E8F0" }: { pct: number; size?: number; stroke?: number; color?: string; trackColor?: string }) {
   const r = (size - stroke * 2) / 2;
   const circ = 2 * Math.PI * r;
   const offset = circ * (1 - Math.min(pct, 1));
   return (
     <svg width={size} height={size} className="-rotate-90">
-      <circle cx={size/2} cy={size/2} r={r} fill="none" stroke="#E2E8F0" strokeWidth={stroke} />
+      <circle cx={size/2} cy={size/2} r={r} fill="none" stroke={trackColor} strokeWidth={stroke} />
       <circle cx={size/2} cy={size/2} r={r} fill="none" stroke={color} strokeWidth={stroke}
         strokeLinecap="round" strokeDasharray={circ} strokeDashoffset={offset} style={{ transition: "stroke-dashoffset 1s ease" }} />
     </svg>
@@ -307,60 +307,59 @@ export default async function DashboardPage({ searchParams }: DashboardProps) {
 
       {/* ── Hero: Continue Learning (THE primary action) ──────────────── */}
       <div className="relative rounded-2xl overflow-hidden mb-6 p-6 sm:p-8"
-        style={{ background: `linear-gradient(135deg, ${courseColor} 0%, ${courseColor}cc 60%, ${courseColor}99 100%)` }}>
-        {/* Decorative */}
-        <div className="absolute top-0 right-0 w-56 h-56 rounded-full opacity-15"
-          style={{ background: "radial-gradient(circle, white 0%, transparent 70%)", transform: "translate(30%, -30%)" }} />
+        style={{ background: `linear-gradient(135deg, rgba(255,255,255,0.14) 0%, rgba(255,255,255,0) 34%), linear-gradient(135deg, rgba(0,0,0,0) 52%, rgba(0,0,0,0.22) 100%), ${courseColor}` }}>
+        {/* Faint grid texture for depth */}
+        <div className="absolute inset-0 opacity-[0.06] pointer-events-none"
+          style={{ backgroundImage: "linear-gradient(rgba(255,255,255,1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,1) 1px, transparent 1px)", backgroundSize: "44px 44px" }} />
 
-        {/* Course switcher tabs — only when 2+ active courses */}
-        {currentEnrollments.length > 1 && (
-          <div className="relative mb-5">
-            <CourseSwitcher
-              courses={currentEnrollments.map(e => ({
-                slug: e.course?.slug ?? "",
-                title: e.course?.title ?? "Course",
-                color: e.course?.slug ? COURSE_COLORS[e.course.slug] ?? "#0056CE" : "#0056CE",
-              }))}
-              activeSlug={courseSlug}
-            />
-          </div>
-        )}
+        <div className="relative flex flex-col lg:flex-row gap-6 lg:gap-8">
+          {/* Left: Course pills + greeting + lesson + CTA */}
+          <div className="flex-1 min-w-0">
+            {currentEnrollments.length > 1 && (
+              <div className="mb-6">
+                <CourseSwitcher
+                  courses={currentEnrollments.map(e => ({
+                    slug: e.course?.slug ?? "",
+                    title: e.course?.title ?? "Course",
+                    color: e.course?.slug ? COURSE_COLORS[e.course.slug] ?? "#0056CE" : "#0056CE",
+                  }))}
+                  activeSlug={courseSlug}
+                />
+              </div>
+            )}
 
-        <div className="relative flex flex-col sm:flex-row sm:items-center gap-6">
-          {/* Left: Greeting + lesson info */}
-          <div className="flex-1">
-            <p className="text-white/50 text-sm font-medium mb-1">{greeting}, {firstName}</p>
+            <p className="text-white/70 text-sm font-medium mb-2">{greeting}, {firstName}</p>
 
             {currentLesson ? (
               <>
-                <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight mb-1">
+                <h1 className="text-3xl sm:text-4xl font-black text-white tracking-tight mb-2">
                   Continue Learning
                 </h1>
-                <p className="text-white/80 text-sm mb-4">
+                <p className="text-white/80 text-base mb-6">
                   {currentLesson.title}
                 </p>
-                <div className="flex items-center gap-3 flex-wrap">
+                <div className="flex items-center gap-4 flex-wrap">
                   <Link href={`/learn/${currentLesson.id}`}
-                    className="inline-flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-bold bg-white text-ink hover:bg-white/90 transition-all shadow-lg">
+                    className="inline-flex items-center gap-2.5 pl-6 pr-5 py-3.5 rounded-xl text-sm font-bold bg-white text-ink hover:bg-white/90 hover:-translate-y-0.5 transition-all shadow-lg">
                     Resume Lesson
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polygon points="5 3 19 12 5 21 5 3" /></svg>
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><polygon points="6 4 20 12 6 20 6 4" /></svg>
                   </Link>
-                  <span className="text-white/60 text-xs flex items-center gap-1.5">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" /></svg>
+                  <span className="text-white/75 text-sm flex items-center gap-1.5">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" /></svg>
                     {currentLesson.estimated_minutes} min
                   </span>
                 </div>
               </>
             ) : (
               <>
-                <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight mb-1">
+                <h1 className="text-3xl sm:text-4xl font-black text-white tracking-tight mb-2">
                   {courseTitle}
                 </h1>
-                <p className="text-white/70 text-sm mb-4">
+                <p className="text-white/75 text-base mb-6">
                   Level: {level.charAt(0).toUpperCase() + level.slice(1)}
                 </p>
                 <Link href={`/courses/${courseSlug}`}
-                  className="inline-flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-bold bg-white text-ink hover:bg-white/90 transition-all shadow-lg">
+                  className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl text-sm font-bold bg-white text-ink hover:bg-white/90 hover:-translate-y-0.5 transition-all shadow-lg">
                   Go to Course
                   <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M6 3l5 5-5 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
                 </Link>
@@ -368,17 +367,28 @@ export default async function DashboardPage({ searchParams }: DashboardProps) {
             )}
           </div>
 
-          {/* Right: Progress ring */}
-          <div className="flex flex-col items-center shrink-0">
-            <div className="relative">
-              <ProgressRing pct={progressPct} size={80} stroke={5} color="white" />
-              <div className="absolute inset-0 flex flex-col items-center justify-center">
-                <span className="text-lg font-black text-white">{Math.round(progressPct * 100)}%</span>
+          {/* Right: Progress card — ring + bar + up-next */}
+          <div className="lg:w-[300px] shrink-0 rounded-2xl bg-white/10 border border-white/15 p-6 flex flex-col justify-center">
+            <div className="flex justify-center">
+              <div className="relative">
+                <ProgressRing pct={progressPct} size={132} stroke={7} color="white" trackColor="rgba(255,255,255,0.18)" />
+                <div className="absolute inset-0 flex flex-col items-center justify-center">
+                  <span className="text-[26px] leading-none font-black text-white tabular-nums">{Math.round(progressPct * 100)}%</span>
+                  <span className="text-white/60 text-[10px] uppercase tracking-[0.15em] font-bold mt-1.5">Complete</span>
+                </div>
               </div>
             </div>
-            <p className="text-white/60 text-[10px] uppercase tracking-wider font-bold mt-2">
-              {lessonsCompleted}/{totalLessons} lessons
-            </p>
+
+            <div className="mt-6 h-1.5 rounded-full bg-white/15 overflow-hidden">
+              <div className="h-full rounded-full bg-white transition-[width] duration-700 ease-out"
+                style={{ width: `${Math.max(progressPct * 100, progressPct > 0 ? 3 : 0)}%` }} />
+            </div>
+            <div className="mt-3 flex items-center justify-between">
+              <span className="text-white/60 text-xs">Up next</span>
+              <span className="text-white text-xs font-bold">
+                {lessonsCompleted >= totalLessons ? "Complete" : `Lesson ${Math.min(lessonsCompleted + 1, totalLessons)}`}
+              </span>
+            </div>
           </div>
         </div>
       </div>
