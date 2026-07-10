@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 
 /**
  * Ensures a community profile exists for the current user.
@@ -26,8 +27,8 @@ export async function ensureCommunityProfile() {
     return existingProfile;
   }
 
-  // Profile doesn't exist, create one
-  // First, get the student record
+  // Profile doesn't exist, create one.
+  // First, get the student record.
   const { data: student, error: studentError } = await supabase
     .from("students")
     .select("id")
@@ -39,14 +40,17 @@ export async function ensureCommunityProfile() {
     return null;
   }
 
-  // Create profile using service role (bypass RLS)
-  const { data: newProfile, error: profileError } = await supabase
+  // Insert via the service role — the community_profiles INSERT policy is
+  // service-role-only (with_check=false for public), so the regular client
+  // is blocked by RLS and the profile would silently never be created.
+  const admin = createAdminClient();
+  const { data: newProfile, error: profileError } = await admin
     .from("community_profiles")
     .insert({
       user_id: user.id,
       student_id: student.id,
     })
-    .select()
+    .select("id")
     .single();
 
   if (profileError) {

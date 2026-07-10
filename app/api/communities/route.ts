@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { findSeedingCandidates, seedCommunity, generateUniqueSlug } from "@/lib/community/seeding";
+import { ensureCommunityProfile } from "@/lib/community/ensure-profile";
 import { TemplateType } from "@/types/database";
 import { NextResponse } from "next/server";
 
@@ -140,14 +141,10 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: `Invalid category. Must be one of: ${VALID_CATEGORIES.join(", ")}` }, { status: 400 });
     }
 
-    // Get creator's community profile
-    const { data: creatorProfile, error: profileError } = await supabase
-      .from("community_profiles")
-      .select("id")
-      .eq("user_id", user.id)
-      .maybeSingle();
-
-    if (profileError || !creatorProfile) {
+    // Get (or lazily create) the creator's community profile. ensureCommunityProfile
+    // inserts via the service role — the RLS INSERT policy is service-role-only.
+    const creatorProfile = await ensureCommunityProfile();
+    if (!creatorProfile) {
       return NextResponse.json({ error: "Community profile not found. Please refresh the page." }, { status: 500 });
     }
 

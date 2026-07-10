@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
 import { getCurrentProfile } from "@/lib/community/current-profile";
+import { ensureCommunityProfile } from "@/lib/community/ensure-profile";
 import { rateLimitGeneral } from "@/lib/rate-limit";
 
 const VALID_KINDS = ["project", "repo", "notes", "image", "video", "document"];
@@ -224,11 +225,9 @@ export async function POST(req: Request) {
       }
     }
 
-    const { data: profile } = await supabase
-      .from("community_profiles")
-      .select("id")
-      .eq("user_id", user.id)
-      .maybeSingle();
+    // Lazily ensure the author's community profile (service-role insert — the
+    // community_profiles INSERT policy blocks the regular client via RLS).
+    const profile = await ensureCommunityProfile();
     if (!profile) {
       return NextResponse.json({ error: "Community profile not found" }, { status: 500 });
     }
