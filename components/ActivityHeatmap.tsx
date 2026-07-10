@@ -46,52 +46,56 @@ export function ActivityHeatmap({ activeDates, weeks = 13 }: ActivityHeatmapProp
     }
   });
 
+  const monthByCol = new Map(months.map((m) => [m.col, m.label]));
+
   return (
-    <div className="overflow-x-auto">
-      <div className="inline-flex flex-col gap-1 min-w-0">
-        <div className="flex gap-[3px] pl-7">
-          {months.map((m, i) => {
-            const nextCol = months[i + 1]?.col ?? cols.length;
-            const span = nextCol - m.col;
-            return (
-              <span key={m.label + m.col} className="text-[9px] text-ink-muted" style={{ width: span * 13 - 3 }}>
-                {m.label}
-              </span>
-            );
-          })}
+    <div className="w-full">
+      {/* Month labels — mirror the column grid so each label sits over its column */}
+      <div className="mb-1.5 flex gap-1">
+        <div className="w-7 shrink-0" />
+        <div className="flex flex-1 gap-[4px] min-w-0">
+          {cols.map((_, ci) => (
+            <div key={ci} className="flex-1 whitespace-nowrap text-[10px] text-ink-muted">
+              {monthByCol.get(ci) ?? ""}
+            </div>
+          ))}
         </div>
-        <div className="flex gap-0.5">
-          <div className="flex flex-col gap-[3px] pr-1.5 pt-[1px]">
-            {["", "Mon", "", "Wed", "", "Fri", ""].map((d, i) => (
-              <span key={i} className="text-[9px] text-ink-muted h-[10px] leading-[10px]">{d}</span>
-            ))}
-          </div>
-          <div className="flex gap-[3px]">
-            {cols.map((col, ci) => (
-              <div key={ci} className="flex flex-col gap-[3px]">
-                {col.map((cell) => (
-                  <div
-                    key={cell.date}
-                    className={[
-                      "w-[10px] h-[10px] rounded-[2px] transition-colors",
-                      cell.isFuture ? "bg-transparent" :
-                      cell.isToday && cell.level === 0 ? "bg-brand/20 ring-1 ring-brand/40" :
-                      cell.level > 0 ? "bg-brand" : "bg-surface-alt",
-                    ].join(" ")}
-                    title={`${cell.date}${cell.level > 0 ? " — active" : ""}`}
-                  />
-                ))}
-              </div>
-            ))}
-          </div>
+      </div>
+
+      {/* Grid — cells flex to fill the full width, kept square via aspect-ratio */}
+      <div className="flex items-stretch gap-1">
+        <div className="flex w-7 shrink-0 flex-col gap-[4px]">
+          {["", "Mon", "", "Wed", "", "Fri", ""].map((d, i) => (
+            <span key={i} className="flex flex-1 items-center text-[10px] leading-none text-ink-muted">{d}</span>
+          ))}
         </div>
-        <div className="flex items-center gap-1.5 justify-end mt-1 pr-1">
-          <span className="text-[9px] text-ink-muted">Less</span>
-          <div className="w-[10px] h-[10px] rounded-[2px] bg-surface-alt" />
-          <div className="w-[10px] h-[10px] rounded-[2px] bg-brand/40" />
-          <div className="w-[10px] h-[10px] rounded-[2px] bg-brand" />
-          <span className="text-[9px] text-ink-muted">More</span>
+        <div className="flex flex-1 gap-[4px] min-w-0">
+          {cols.map((col, ci) => (
+            <div key={ci} className="flex flex-1 flex-col gap-[4px]">
+              {col.map((cell) => (
+                <div
+                  key={cell.date}
+                  className={[
+                    "w-full aspect-square rounded-[4px] transition-colors",
+                    cell.isFuture ? "bg-transparent" :
+                    cell.isToday && cell.level === 0 ? "bg-brand/20 ring-1 ring-brand/40" :
+                    cell.level > 0 ? "bg-brand" : "bg-surface-alt",
+                  ].join(" ")}
+                  title={`${cell.date}${cell.level > 0 ? " — active" : ""}`}
+                />
+              ))}
+            </div>
+          ))}
         </div>
+      </div>
+
+      {/* Legend */}
+      <div className="mt-2.5 flex items-center gap-1.5 justify-end">
+        <span className="text-[10px] text-ink-muted">Less</span>
+        <div className="w-[11px] h-[11px] rounded-[3px] bg-surface-alt" />
+        <div className="w-[11px] h-[11px] rounded-[3px] bg-brand/40" />
+        <div className="w-[11px] h-[11px] rounded-[3px] bg-brand" />
+        <span className="text-[10px] text-ink-muted">More</span>
       </div>
     </div>
   );
