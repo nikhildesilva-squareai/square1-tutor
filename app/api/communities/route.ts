@@ -116,7 +116,7 @@ export async function POST(req: Request) {
     }
 
     const body = await req.json();
-    const { name, template_type, description, category, is_private, icon_url, cover_url } = body;
+    const { name, template_type, description, category, is_private, icon_url, cover_url, rules } = body;
 
     // The primary create UI has no template picker; default to a learning
     // cohort when one isn't supplied (still honour a valid explicit value).
@@ -187,6 +187,24 @@ export async function POST(req: Request) {
     if (memberError) {
       console.error("Error adding creator as member:", memberError);
       // Continue anyway - community is created
+    }
+
+    // Persist the creator's rules — one row per non-empty line (was silently dropped before).
+    if (typeof rules === "string" && rules.trim()) {
+      const ruleRows = rules
+        .split("\n")
+        .map((r: string) => r.trim())
+        .filter(Boolean)
+        .slice(0, 50)
+        .map((rule_text: string, i: number) => ({
+          community_id: community.id,
+          rule_text,
+          order_index: i,
+        }));
+      if (ruleRows.length > 0) {
+        const { error: rulesError } = await admin.from("community_rules").insert(ruleRows);
+        if (rulesError) console.error("Error adding community rules:", rulesError);
+      }
     }
 
     // Find seeding candidates

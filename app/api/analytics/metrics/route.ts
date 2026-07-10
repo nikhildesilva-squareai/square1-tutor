@@ -23,10 +23,10 @@ export async function GET() {
   ] = await Promise.all([
     supabase.from("students").select("id", { count: "exact", head: true }),
     supabase.from("student_enrollments").select("id", { count: "exact", head: true }).eq("status", "active"),
-    supabase.from("lesson_progress").select("id", { count: "exact", head: true }).eq("completed", true),
+    supabase.from("lesson_completions").select("id", { count: "exact", head: true }),
     supabase.from("lessons").select("id", { count: "exact", head: true }),
     supabase.from("project_submissions").select("score, project_id, course_id").not("score", "is", null),
-    supabase.from("assessment_results").select("score, max_score, course_id, level"),
+    supabase.from("assessment_attempts").select("score, max_score, course_id, level_determined"),
     supabase.from("student_enrollments")
       .select("course_id, course:courses(title, slug)")
       .eq("status", "active"),
@@ -49,7 +49,7 @@ export async function GET() {
   const assessments = assessmentResultsResult.data ?? [];
   const assessmentsByLevel: Record<string, { count: number; avgScore: number }> = {};
   for (const a of assessments) {
-    const level = a.level ?? "unknown";
+    const level = a.level_determined ?? "unknown";
     if (!assessmentsByLevel[level]) assessmentsByLevel[level] = { count: 0, avgScore: 0 };
     assessmentsByLevel[level].count++;
     assessmentsByLevel[level].avgScore += (a.score ?? 0);

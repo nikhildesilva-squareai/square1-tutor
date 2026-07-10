@@ -30,7 +30,7 @@ export default async function AdminCoursesPage() {
     db.from("courses").select("id, slug, title, total_lessons").order("title"),
     db.from("student_enrollments").select("course_id, student_id, status, assessment_level"),
     db.from("lesson_completions").select("enrollment_id, student_id, lesson_id, enrollment:student_enrollments(course_id)"),
-    db.from("quiz_attempts").select("course_id, student_id, score, max_score").not("score", "is", null),
+    db.from("assessment_attempts").select("course_id, student_id, score, max_score").not("score", "is", null),
   ]);
 
   const courses = coursesRes.data ?? [];

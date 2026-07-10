@@ -41,7 +41,10 @@ export function TeamDashboardPreview() {
           {/* Org header */}
           <div className="flex items-center justify-between mb-4">
             <div>
-              <p className="text-sm font-black text-slate-900 leading-tight">Acme Inc</p>
+              <p className="text-sm font-black text-slate-900 leading-tight">
+                Acme Inc
+                <span className="ml-1.5 align-middle rounded bg-slate-100 px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-wide text-slate-500">Example</span>
+              </p>
               <p className="text-[11px] text-slate-400">8 of 12 seats active</p>
             </div>
             <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">

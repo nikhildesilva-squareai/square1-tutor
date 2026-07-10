@@ -58,8 +58,8 @@ export default async function AdminOverviewPage() {
     db.from("lesson_completions").select("student_id", { count: "exact", head: true }).gte("completed_at", sevenDaysAgo),
     // Total lessons completed
     db.from("lesson_completions").select("id", { count: "exact", head: true }),
-    // Total quiz attempts
-    db.from("quiz_attempts").select("id", { count: "exact", head: true }),
+    // Total assessment attempts
+    db.from("assessment_attempts").select("id", { count: "exact", head: true }),
     // AI usage this month
     db.from("api_usage").select("total_calls, estimated_cost").eq("month_key", monthKey),
     // Recent students (last 10)
@@ -71,7 +71,7 @@ export default async function AdminOverviewPage() {
     // Signups in last 30 days
     db.from("students").select("id, created_at").gte("created_at", thirtyDaysAgo),
     // Total assessments taken
-    db.from("quiz_attempts").select("id, student_id, course_id, score, max_score").not("score", "is", null),
+    db.from("assessment_attempts").select("id, student_id, course_id, score, max_score").not("score", "is", null),
   ]);
 
   const totalStudents = studentsRes.count ?? 0;

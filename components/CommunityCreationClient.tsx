@@ -175,6 +175,7 @@ export function CommunityCreationClient() {
           template_type: "cohort",
           icon_url: iconUrl,
           cover_url: coverUrl,
+          rules: formData.rules,
         }),
       });
 

@@ -77,10 +77,6 @@ export function PostCard({ post, onLike, onCollaborate, onFollow, onOpenProfile,
           <Heart className="h-[18px] w-[18px]" fill={post.likedByMe ? "currentColor" : "none"} />
           {post.likeCount}
         </button>
-        <button className="inline-flex h-[38px] items-center gap-1.5 rounded-md px-3.5 text-sm font-medium text-ink-secondary transition-colors hover:bg-surface-alt">
-          <MessageCircle className="h-[18px] w-[18px]" />
-          {post.commentCount}
-        </button>
         <div className="flex-1" />
         {repo && (
           <button
