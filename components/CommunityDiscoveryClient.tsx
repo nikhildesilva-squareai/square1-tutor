@@ -39,6 +39,8 @@ interface Community {
   monthlyPrice?: number;
   annualPrice?: number;
   thumbnail_url?: string;
+  icon_url?: string | null;
+  cover_url?: string | null;
 }
 
 export function CommunityDiscoveryClient() {
@@ -207,9 +209,17 @@ export function CommunityDiscoveryClient() {
               >
                 {/* Cover */}
                 <div className={`relative h-[132px] overflow-hidden bg-gradient-to-br ${COVERS[index % COVERS.length]}`}>
-                  <span className="pointer-events-none absolute -bottom-3.5 right-5 select-none text-[88px] font-bold leading-none text-white/20">
-                    {community.name.charAt(0).toUpperCase()}
-                  </span>
+                  {community.cover_url ? (
+                    <img
+                      src={community.cover_url}
+                      alt=""
+                      className="absolute inset-0 h-full w-full object-cover"
+                    />
+                  ) : (
+                    <span className="pointer-events-none absolute -bottom-3.5 right-5 select-none text-[88px] font-bold leading-none text-white/20">
+                      {community.name.charAt(0).toUpperCase()}
+                    </span>
+                  )}
                   <span className="absolute left-4 top-3.5 inline-flex items-center gap-1.5 rounded-full border border-white/30 bg-white/20 px-3 py-1 text-[13px] font-semibold text-white backdrop-blur-sm">
                     <Users className="h-3.5 w-3.5" />
                     {formatMemberCount(community.memberCount || 0)}

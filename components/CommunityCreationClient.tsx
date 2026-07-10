@@ -132,6 +132,19 @@ export function CommunityCreationClient() {
     }
   };
 
+  const uploadImage = async (file: File): Promise<string | null> => {
+    try {
+      const fd = new FormData();
+      fd.append("files", file);
+      const res = await fetch("/api/upload", { method: "POST", body: fd });
+      if (!res.ok) return null;
+      const data = await res.json();
+      return data.files?.[0]?.fileUrl ?? null;
+    } catch {
+      return null;
+    }
+  };
+
   const handleCreateCommunity = async () => {
     if (
       !formData.name ||
@@ -145,6 +158,12 @@ export function CommunityCreationClient() {
 
     setIsCreating(true);
     try {
+      // Icon + cover are optional; upload any that were chosen first.
+      const [iconUrl, coverUrl] = await Promise.all([
+        formData.icon ? uploadImage(formData.icon) : Promise.resolve(null),
+        formData.cover ? uploadImage(formData.cover) : Promise.resolve(null),
+      ]);
+
       const response = await fetch("/api/communities", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -154,6 +173,8 @@ export function CommunityCreationClient() {
           description: formData.description,
           is_private: formData.type === "private",
           template_type: "cohort",
+          icon_url: iconUrl,
+          cover_url: coverUrl,
         }),
       });
 
@@ -413,7 +434,7 @@ export function CommunityCreationClient() {
                   {/* Icon Upload */}
                   <div>
                     <label className="block text-sm font-semibold text-slate-900 mb-4 uppercase tracking-wider">
-                      Community Icon*
+                      Community Icon
                     </label>
                     <label className="block border-2 border-dashed border-blue-300 bg-gradient-to-br from-blue-50 to-cyan-50 rounded-2xl p-8 text-center cursor-pointer hover:bg-blue-100/50 hover:border-blue-400 transition-all group">
                       <div className="flex flex-col items-center gap-3">
@@ -459,7 +480,7 @@ export function CommunityCreationClient() {
                   {/* Cover Upload */}
                   <div>
                     <label className="block text-sm font-semibold text-slate-900 mb-4 uppercase tracking-wider">
-                      Cover Image*
+                      Cover Image
                     </label>
                     <label className="block border-2 border-dashed border-blue-300 bg-gradient-to-br from-blue-50 to-cyan-50 rounded-2xl p-8 text-center cursor-pointer hover:bg-blue-100/50 hover:border-blue-400 transition-all group">
                       <div className="flex flex-col items-center gap-3">

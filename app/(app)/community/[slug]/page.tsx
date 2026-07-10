@@ -45,6 +45,8 @@ export default async function CommunityDetailPage({ params }: PageProps) {
       category,
       is_private,
       creator_id,
+      icon_url,
+      cover_url,
       created_at,
       updated_at,
       community_profiles!communities_creator_id_fkey(

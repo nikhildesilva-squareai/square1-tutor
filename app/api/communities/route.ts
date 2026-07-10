@@ -46,6 +46,8 @@ export async function GET(req: Request) {
         category,
         is_private,
         creator_id,
+        icon_url,
+        cover_url,
         created_at,
         updated_at,
         community_members(count)
@@ -113,7 +115,7 @@ export async function POST(req: Request) {
     }
 
     const body = await req.json();
-    const { name, template_type, description, category, is_private } = body;
+    const { name, template_type, description, category, is_private, icon_url, cover_url } = body;
 
     // The primary create UI has no template picker; default to a learning
     // cohort when one isn't supplied (still honour a valid explicit value).
@@ -163,6 +165,8 @@ export async function POST(req: Request) {
         category,
         is_private: is_private ?? false,
         creator_id: creatorProfile.id,
+        icon_url: icon_url || null,
+        cover_url: cover_url || null,
       })
       .select()
       .single();

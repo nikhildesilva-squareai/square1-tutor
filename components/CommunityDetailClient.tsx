@@ -13,6 +13,8 @@ interface Community {
   memberCount: number;
   monthlyPrice?: number;
   thumbnail_url?: string;
+  cover_url?: string | null;
+  icon_url?: string | null;
 }
 
 interface Creator {
@@ -107,9 +109,9 @@ export function CommunityDetailClient({
 
                 {/* Hero Image with Rank Badge - Fixed aspect ratio to prevent CLS */}
                 <div className="relative bg-gradient-to-br from-blue-400 to-blue-600 rounded-lg overflow-hidden w-full aspect-video">
-                  {community.thumbnail_url ? (
+                  {community.cover_url ? (
                     <img
-                      src={community.thumbnail_url}
+                      src={community.cover_url}
                       alt={`${community.name} community cover image`}
                       className="w-full h-full object-cover"
                       loading="lazy"
