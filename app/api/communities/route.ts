@@ -5,22 +5,17 @@ import { TemplateType } from "@/types/database";
 import { NextResponse } from "next/server";
 
 const VALID_TEMPLATES: TemplateType[] = ["project", "research", "company", "opensource", "cohort"];
+// Categories shown in the create form + discovery filters.
+// Keep in sync with CommunityCreationClient and CommunityDiscoveryClient.
 const VALID_CATEGORIES = [
-  "Tech",
-  "AI/ML",
-  "Data Science",
-  "Cloud",
-  "DevOps",
-  "Startup",
-  "Founder",
-  "Product",
-  "Research",
-  "Academic",
-  "Health",
-  "Finance",
-  "Education",
-  "Hobbies",
-  "Other",
+  "Music",
+  "Design",
+  "Business management",
+  "Learn AI Tech",
+  "IT & Software",
+  "Finance & Accounting",
+  "Sciences & Technology",
+  "Sports",
 ];
 
 /**
@@ -120,6 +115,12 @@ export async function POST(req: Request) {
     const body = await req.json();
     const { name, template_type, description, category, is_private } = body;
 
+    // The primary create UI has no template picker; default to a learning
+    // cohort when one isn't supplied (still honour a valid explicit value).
+    const templateType: TemplateType = VALID_TEMPLATES.includes(template_type)
+      ? template_type
+      : "cohort";
+
     // Validation
     if (!name || name.trim().length === 0) {
       return NextResponse.json({ error: "Community name is required" }, { status: 400 });
@@ -131,10 +132,6 @@ export async function POST(req: Request) {
 
     if (description && description.length > 500) {
       return NextResponse.json({ error: "Description must be 500 characters or less" }, { status: 400 });
-    }
-
-    if (!VALID_TEMPLATES.includes(template_type)) {
-      return NextResponse.json({ error: `Invalid template. Must be one of: ${VALID_TEMPLATES.join(", ")}` }, { status: 400 });
     }
 
     if (!VALID_CATEGORIES.includes(category)) {
@@ -162,7 +159,7 @@ export async function POST(req: Request) {
         name,
         slug,
         description: description || null,
-        template_type,
+        template_type: templateType,
         category,
         is_private: is_private ?? false,
         creator_id: creatorProfile.id,
@@ -196,7 +193,7 @@ export async function POST(req: Request) {
     if (!is_private) {
       // Only auto-seed public communities
       const candidateIds = await findSeedingCandidates({
-        templateType: template_type,
+        templateType: templateType,
         creatorId: creatorProfile.id,
         description,
       });

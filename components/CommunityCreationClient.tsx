@@ -133,32 +133,37 @@ export function CommunityCreationClient() {
   };
 
   const handleCreateCommunity = async () => {
-    if (!formData.name || !formData.category || !formData.description) {
+    if (
+      !formData.name ||
+      !formData.category ||
+      formData.category === "Select category" ||
+      !formData.description
+    ) {
       alert("Please fill in all required fields");
       return;
     }
 
     setIsCreating(true);
     try {
-      const data = new FormData();
-      data.append("name", formData.name);
-      data.append("category", formData.category);
-      data.append("description", formData.description);
-      data.append("is_private", formData.type === "private" ? "true" : "false");
-      data.append("rules", formData.rules);
-      if (formData.icon) data.append("icon", formData.icon);
-      if (formData.cover) data.append("cover", formData.cover);
-
       const response = await fetch("/api/communities", {
         method: "POST",
-        body: data,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: formData.name,
+          category: formData.category,
+          description: formData.description,
+          is_private: formData.type === "private",
+          template_type: "cohort",
+        }),
       });
 
       if (response.ok) {
-        const community = await response.json();
-        window.location.href = `/community/${community.slug}`;
+        const result = await response.json();
+        localStorage.removeItem("communityCreationDraft");
+        window.location.href = `/community/${result.community.slug}`;
       } else {
-        alert("Failed to create community");
+        const err = await response.json().catch(() => ({}));
+        alert(err.error || "Failed to create community");
       }
     } catch (error) {
       console.error("Failed to create community:", error);
