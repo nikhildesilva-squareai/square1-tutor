@@ -48,6 +48,7 @@ interface LessonCard {
   content?: string;       // rendered HTML for theory cards
   rawContent?: string;    // raw markdown section
   exercise?: ExerciseData; // for quiz/practice cards
+  takeaway?: string;      // optional one-line "In short" section takeaway
 }
 
 // ─── Styles ────────────────────────────────────────────────────────────────
@@ -225,11 +226,26 @@ function parseTheoryIntoCards(theory: string, exercises: ExerciseData[], objecti
   let quizIdx = 0;
 
   sections.forEach((section, i) => {
+    // Lift an optional author takeaway from the FIRST non-empty line —
+    // `**In short:** …` or `> [!KEY] …` — into a chip and strip it from the body.
+    let takeaway: string | undefined;
+    let body = section.content;
+    const bodyLines = body.split(/\r?\n/);
+    const firstIdx = bodyLines.findIndex((l) => l.trim().length > 0);
+    if (firstIdx !== -1) {
+      const m = bodyLines[firstIdx].match(/^\s*(?:\*\*In short:\*\*|>\s*\[!KEY\])\s*(.+?)\s*$/i);
+      if (m) {
+        takeaway = m[1].trim();
+        bodyLines.splice(firstIdx, 1);
+        body = bodyLines.join("\n").replace(/^\s+/, "");
+      }
+    }
     cards.push({
       type: "theory",
       title: section.title,
-      content: renderSection(section.content),
-      rawContent: section.content,
+      content: renderSection(body),
+      rawContent: body,
+      takeaway,
     });
 
     // Insert an inline quiz after every 2 theory sections
@@ -338,6 +354,17 @@ export function LearnClient({
       setNovaSeed({ text: seedText, nonce: novaNonce.current });
     }
     setNovaOpen(true);
+  }
+
+  // Ask Nova about a SPECIFIC section — seeds the prompt with the section text
+  // (capped) so answers are grounded in that section, not just its title.
+  function openNovaForSection(card: LessonCard, intent: "explain" | "example" | "quiz") {
+    const body = (card.rawContent ?? "").slice(0, 1200);
+    const ask =
+      intent === "explain" ? "Explain this section more simply." :
+      intent === "example" ? "Give me another concrete example for this section." :
+                             "Quiz me with 2 quick questions on this section, then wait for my answers.";
+    openNova(`${ask}\n\nSection: "${card.title}"\n\n${body}`);
   }
 
   // ── Code-block toolbar (delegated) ──
@@ -617,30 +644,45 @@ export function LearnClient({
                   </div>
                 </div>
 
+                {/* Per-section "In short" takeaway — lands the point before the prose */}
+                {card.takeaway && (
+                  <div className="mb-4 flex items-start gap-2.5 rounded-xl border border-brand/20 bg-surface-tint px-4 py-3">
+                    <span className="mt-0.5 shrink-0 text-[10px] font-extrabold uppercase tracking-wider text-brand">In short</span>
+                    <span className="text-[14.5px] font-medium leading-snug text-ink">{card.takeaway}</span>
+                  </div>
+                )}
+
                 {/* Rendered content — larger text for readability */}
                 <div className="bg-surface rounded-2xl border border-border p-6 sm:p-8 shadow-card lesson-content"
                   onClick={handleCodeAction}
                   dangerouslySetInnerHTML={{ __html: card.content ?? "" }} />
 
-                {/* Actions: Ask Nova + Save */}
-                <div className="mt-5 flex items-center justify-center gap-3">
-                  <button onClick={() => openNova(`Explain this section more simply: "${card.title}".`)}
-                    className="flex items-center gap-2 px-5 py-2.5 rounded-xl border border-brand/20 bg-surface-tint text-xs font-semibold text-brand hover:bg-brand hover:text-white transition-all">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-                      <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" />
-                    </svg>
-                    Ask Nova
-                  </button>
-                  <SaveNoteButton
-                    content={card.rawContent ?? card.title}
-                    type="highlight"
-                    variant="inline"
-                    lessonId={lesson.id}
-                    lessonTitle={lesson.title}
-                    moduleTitle={module?.title}
-                    courseId={lesson.course_id}
-                    sectionTitle={card.title}
-                  />
+                {/* Ask Nova about THIS section — 3 grounded actions + Save */}
+                <div className="mt-5 rounded-2xl border border-indigo-500/25 bg-indigo-500/[0.04] p-3.5">
+                  <div className="mb-2.5 flex items-center justify-between gap-2">
+                    <div className="flex items-center gap-2">
+                      <span className="flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-br from-indigo-600 to-violet-600 text-xs font-extrabold text-white">N</span>
+                      <span className="text-[13px] font-bold text-ink">Ask Nova <span className="font-medium text-ink-muted">about this section</span></span>
+                    </div>
+                    <SaveNoteButton
+                      content={card.rawContent ?? card.title}
+                      type="highlight"
+                      variant="inline"
+                      lessonId={lesson.id}
+                      lessonTitle={lesson.title}
+                      moduleTitle={module?.title}
+                      courseId={lesson.course_id}
+                      sectionTitle={card.title}
+                    />
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    <button onClick={() => openNovaForSection(card, "explain")}
+                      className="rounded-full border border-border bg-surface px-3.5 py-2 text-[13px] font-semibold text-ink hover:border-indigo-500/40 hover:bg-indigo-500/[0.06] transition-colors">Explain this simpler</button>
+                    <button onClick={() => openNovaForSection(card, "example")}
+                      className="rounded-full border border-border bg-surface px-3.5 py-2 text-[13px] font-semibold text-ink hover:border-indigo-500/40 hover:bg-indigo-500/[0.06] transition-colors">Show another example</button>
+                    <button onClick={() => openNovaForSection(card, "quiz")}
+                      className="rounded-full border border-border bg-surface px-3.5 py-2 text-[13px] font-semibold text-ink hover:border-indigo-500/40 hover:bg-indigo-500/[0.06] transition-colors">Quiz me on this</button>
+                  </div>
                 </div>
               </div>
             )}
