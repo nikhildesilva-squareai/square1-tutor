@@ -217,7 +217,12 @@ function parseTheoryIntoCards(theory: string, exercises: ExerciseData[], objecti
     const firstNewline = trimmed.indexOf("\n");
     const rawTitle = firstNewline === -1 ? trimmed : trimmed.substring(0, firstNewline);
     const title = rawTitle.replace(/^#+\s*/, "").trim();           // never show a literal "#"
-    const content = firstNewline === -1 ? "" : trimmed.substring(firstNewline + 1).trim();
+    // Strip the `---` section separators that glue to the section body when we
+    // split on `##` — renderSection prints them as literal dashes otherwise.
+    const content = (firstNewline === -1 ? "" : trimmed.substring(firstNewline + 1))
+      .replace(/(?:\r?\n)\s*-{3,}\s*$/, "")   // trailing separator
+      .replace(/^\s*-{3,}\s*(?:\r?\n)/, "")    // leading separator
+      .trim();
     sections.push({ title, content });
   }
 
