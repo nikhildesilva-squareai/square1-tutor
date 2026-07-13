@@ -18,8 +18,8 @@ export default async function CommunityPage() {
         </div>
       </div>
 
-      {/* Main Content */}
-      <div className="flex-1 px-4 sm:px-6 py-8 max-w-7xl mx-auto w-full">
+      {/* Main Content — the client owns its own hero (full-bleed) + container */}
+      <div className="flex-1 w-full">
         <Suspense fallback={<CommunityDiscoveryLoading />}>
           <CommunityDiscoveryClient />
         </Suspense>
@@ -30,7 +30,7 @@ export default async function CommunityPage() {
 
 function CommunityDiscoveryLoading() {
   return (
-    <div className="space-y-6">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 space-y-6">
       {/* Search skeleton */}
       <div className="h-10 rounded-lg bg-surface-alt animate-pulse" />
 
