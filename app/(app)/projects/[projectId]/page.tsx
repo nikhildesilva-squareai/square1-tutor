@@ -11,6 +11,26 @@ export const revalidate = 120;
 
 interface PageProps { params: Promise<{ projectId: string }> }
 
+// The hero + "At a glance" strip already show the title and the
+// "Course · Project N · difficulty · hours · stack" meta, so drop a leading
+// duplicate of them from the brief body — only when they actually match, so
+// briefs that don't lead with a title are untouched.
+function stripRedundantHeader(md: string, title: string): string {
+  const lines = (md ?? "").replace(/\r\n/g, "\n").split("\n");
+  let i = 0;
+  while (i < lines.length && lines[i].trim() === "") i++;
+  const h = lines[i]?.match(/^#{1,3}\s+(.+?)\s*$/);
+  if (h && h[1].replace(/[*_`]/g, "").trim().toLowerCase() === title.trim().toLowerCase()) {
+    lines.splice(i, 1);
+    while (i < lines.length && lines[i].trim() === "") lines.splice(i, 1);
+    if (/^\*\*Course:?\*\*/i.test(lines[i]?.trim() ?? "")) {
+      lines.splice(i, 1);
+      while (i < lines.length && lines[i].trim() === "") lines.splice(i, 1);
+    }
+  }
+  return lines.join("\n").trim();
+}
+
 
 export default async function ProjectBriefPage({ params }: PageProps) {
   const { projectId } = await params;
@@ -209,7 +229,7 @@ export default async function ProjectBriefPage({ params }: PageProps) {
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={courseColor} strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="10" /><path d="M12 16v-4M12 8h.01" /></svg>
                 Overview
               </h2>
-              <RichContent content={project.description_md} />
+              <RichContent content={stripRedundantHeader(project.description_md, project.title)} />
             </section>
 
             {/* ── What you'll deliver (surfaced from requirements[]) ────── */}
