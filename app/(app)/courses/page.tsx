@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
+import { LEARNING_PATHS } from "@/lib/learning-paths";
 import type { Course } from "@/types/database";
 import type { Metadata } from "next";
 
@@ -55,6 +56,9 @@ export default async function CoursesPage() {
     }
   }
 
+  // Map slugs -> course rows so the curated career paths render live titles/colours.
+  const coursesBySlug = new Map((courses ?? []).map((c) => [c.slug, c] as const));
+
   return (
     <div className="px-6 py-8 max-w-6xl mx-auto">
       <div className="mb-8">
@@ -63,6 +67,67 @@ export default async function CoursesPage() {
           Pick a subject, take the assessment, and get your personalised learning plan.
         </p>
       </div>
+
+      {/* Career paths — a guided sequence of existing courses toward a role */}
+      <section className="mb-12">
+        <h2 className="text-lg font-bold text-ink">Career paths</h2>
+        <p className="text-ink-muted mt-1 text-sm mb-5">
+          Follow a guided sequence to a role — or pick any course below.
+        </p>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+          {LEARNING_PATHS.map((path) => {
+            const steps = path.courseSlugs
+              .map((s) => coursesBySlug.get(s))
+              .filter((c): c is Course => Boolean(c));
+            if (steps.length === 0) return null;
+            const first = steps[0];
+            return (
+              <div
+                key={path.slug}
+                className="bg-surface rounded-[var(--radius-lg)] border border-border shadow-card p-5 flex flex-col"
+              >
+                <h3 className="text-base font-bold text-ink">{path.name}</h3>
+                <p className="text-xs font-semibold text-brand mt-0.5">{path.role}</p>
+                <p className="text-xs text-ink-muted leading-relaxed mt-2">{path.tagline}</p>
+
+                <div className="flex flex-wrap items-center gap-1.5 mt-4">
+                  {steps.map((c, i) => (
+                    <span key={c.id} className="flex items-center gap-1.5">
+                      {i > 0 && <span className="text-border-mid text-xs" aria-hidden>→</span>}
+                      <Link
+                        href={`/courses/${c.slug}`}
+                        className="flex items-center gap-1.5 rounded-full border border-border bg-surface-alt px-2.5 py-1 text-xs font-medium text-ink hover:border-brand/40 transition-colors"
+                      >
+                        <span className="w-1.5 h-1.5 rounded-full" style={{ background: c.color ?? undefined }} />
+                        {c.title}
+                      </Link>
+                    </span>
+                  ))}
+                  {path.comingSoon?.map((t) => (
+                    <span key={t} className="flex items-center gap-1.5">
+                      <span className="text-border-mid text-xs" aria-hidden>→</span>
+                      <span className="rounded-full border border-dashed border-border px-2.5 py-1 text-xs text-ink-muted">
+                        {t} · soon
+                      </span>
+                    </span>
+                  ))}
+                </div>
+
+                <div className="mt-4">
+                  <Link
+                    href={`/courses/${first.slug}`}
+                    className="inline-flex items-center justify-center h-9 px-4 rounded-[var(--radius-md)] bg-brand text-white text-sm font-semibold hover:bg-brand-dark transition-colors"
+                  >
+                    Start with {first.title}
+                  </Link>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </section>
+
+      <h2 className="text-lg font-bold text-ink mb-5">All courses</h2>
 
       {!courses || courses.filter(c => !c.parent_course_id).length === 0 ? (
         <div className="text-center py-20">
