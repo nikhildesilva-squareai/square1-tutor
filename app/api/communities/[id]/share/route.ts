@@ -8,7 +8,7 @@ import { createReferral, buildSocialShareUrl } from "@/lib/community/sharing";
  */
 export async function POST(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const supabase = await createClient();
@@ -19,7 +19,7 @@ export async function POST(
     }
 
     const { shareChannel, customMessage } = await req.json();
-    const communityId = params.id;
+    const communityId = (await params).id;
 
     // Validate share channel
     const validChannels = ["whatsapp", "linkedin", "facebook", "twitter", "email", "direct_link"];

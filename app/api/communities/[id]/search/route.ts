@@ -8,14 +8,14 @@ import { NextResponse } from "next/server";
  */
 export async function GET(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
     const { searchParams } = new URL(req.url);
 
-    const communityId = params.id;
+    const communityId = (await params).id;
     const query = searchParams.get("q") || "";
     const searchType = searchParams.get("type") || "all"; // all, text, files, links
     const dateFrom = searchParams.get("dateFrom");
