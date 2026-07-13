@@ -37,7 +37,8 @@ export function RichContent({ content, className = "" }: RichContentProps) {
 }
 
 // ─── Simple markdown → HTML converter ─────────────────────────────────────────
-// Handles: headers, bold, italic, code blocks, inline code, links, lists, blockquotes, tables
+// Handles: headers, bold, italic, code blocks, inline code, links, images, lists,
+// blockquotes, horizontal rules, tables.
 function simpleMarkdown(md: string): string {
   let html = md
     // Escape HTML
@@ -66,15 +67,20 @@ function simpleMarkdown(md: string): string {
     // Blockquotes
     .replace(/^&gt; (.+)$/gm, '<blockquote class="border-l-4 border-brand/30 pl-4 py-1 my-3 text-ink-secondary italic">$1</blockquote>')
 
-    // Unordered lists
-    .replace(/^- (.+)$/gm, '<li class="ml-4 list-disc">$1</li>')
+    // Horizontal rule
+    .replace(/^\s*---+\s*$/gm, '<hr class="my-6 border-0 h-px bg-border" />')
 
-    // Ordered lists
-    .replace(/^\d+\. (.+)$/gm, '<li class="ml-4 list-decimal">$1</li>')
+    // Images (must run before links so ![alt](url) isn't caught as a link)
+    .replace(/!\[([^\]]*)\]\(([^)]+)\)/g, '<img src="$2" alt="$1" loading="lazy" class="my-4 mx-auto block max-w-full rounded-xl border border-border" />')
 
     // Links
-    .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" class="text-brand hover:underline" target="_blank" rel="noopener">$1</a>')
+    .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" class="text-brand hover:underline" target="_blank" rel="noopener">$1</a>');
 
+  // Group consecutive list items into a single <ul>/<ol> — fixes ordered lists
+  // restarting at 1 for every item.
+  html = groupLists(html);
+
+  html = html
     // Tables (basic)
     .replace(/\|(.+)\|/g, (match) => {
       const cells = match.split("|").filter(Boolean).map(c => c.trim());
@@ -95,12 +101,46 @@ function simpleMarkdown(md: string): string {
   // Clean up empty paragraphs
   html = html.replace(/<p class="mb-3"><\/p>/g, "");
 
-  // Wrap list items in <ul> or <ol>
-  html = html.replace(/(<li class="ml-4 list-disc">[\s\S]*?<\/li>)/g, '<ul class="my-3">$1</ul>');
-  html = html.replace(/(<li class="ml-4 list-decimal">[\s\S]*?<\/li>)/g, '<ol class="my-3">$1</ol>');
-
   // Wrap tables
   html = html.replace(/(<tr>[\s\S]*?<\/tr>)/g, '<table class="w-full border-collapse my-4">$1</table>');
 
   return html;
+}
+
+// Walk the text line-by-line and fold runs of "- " / "N. " items (tolerating a
+// single blank line between loose items) into one real <ul>/<ol>.
+function groupLists(src: string): string {
+  const lines = src.split("\n");
+  const out: string[] = [];
+  const olRe = /^\s*\d+\.\s+(.*)$/;
+  const ulRe = /^\s*[-*]\s+(.*)$/;
+  let i = 0;
+  while (i < lines.length) {
+    const ol = olRe.exec(lines[i]);
+    const ul = ol ? null : ulRe.exec(lines[i]);
+    if (ol || ul) {
+      const ordered = !!ol;
+      const re = ordered ? olRe : ulRe;
+      const items: string[] = [];
+      while (i < lines.length) {
+        const m = re.exec(lines[i]);
+        if (!m) break;
+        items.push(m[1]);
+        i++;
+        // consume one blank line separating loose items of the same type
+        if (lines[i]?.trim() === "" && re.test(lines[i + 1] ?? "")) i++;
+      }
+      const tag = ordered ? "ol" : "ul";
+      const listCls = ordered ? "list-decimal" : "list-disc";
+      out.push(
+        `<${tag} class="my-4 pl-6 ${listCls} space-y-1.5 marker:text-ink-muted marker:font-semibold">` +
+        items.map((it) => `<li class="pl-1 leading-relaxed">${it}</li>`).join("") +
+        `</${tag}>`
+      );
+    } else {
+      out.push(lines[i]);
+      i++;
+    }
+  }
+  return out.join("\n");
 }
