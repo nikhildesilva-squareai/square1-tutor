@@ -4,11 +4,12 @@ import { CommunityMemberManagement } from "@/components/CommunityMemberManagemen
 import { CommunityModerationConsole } from "@/components/CommunityModerationConsole";
 
 interface PageProps {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }
 
 export default async function CommunityManagePage({ params }: PageProps) {
   const supabase = await createClient();
+  const { slug } = await params;
   const { data: { user } } = await supabase.auth.getUser();
 
   if (!user) {
@@ -27,7 +28,7 @@ export default async function CommunityManagePage({ params }: PageProps) {
       created_at
     `
     )
-    .eq("slug", params.slug)
+    .eq("slug", slug)
     .is("deleted_at", null)
     .maybeSingle();
 

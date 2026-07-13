@@ -5,16 +5,17 @@ import { CommunityDetailClient } from "@/components/CommunityDetailClient";
 export const revalidate = 10; // ISR: revalidate every 10 seconds
 
 interface PageProps {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }
 
 export async function generateMetadata({ params }: PageProps) {
   const supabase = await createClient();
+  const { slug } = await params;
 
   const { data: community } = await supabase
     .from("communities")
     .select("name, description")
-    .eq("slug", params.slug)
+    .eq("slug", slug)
     .is("deleted_at", null)
     .maybeSingle();
 
@@ -30,6 +31,7 @@ export async function generateMetadata({ params }: PageProps) {
 
 export default async function CommunityDetailPage({ params }: PageProps) {
   const supabase = await createClient();
+  const { slug } = await params;
   const { data: { user } } = await supabase.auth.getUser();
 
   // Fetch community by slug
@@ -56,7 +58,7 @@ export default async function CommunityDetailPage({ params }: PageProps) {
       )
     `
     )
-    .eq("slug", params.slug)
+    .eq("slug", slug)
     .is("deleted_at", null)
     .maybeSingle();
 
