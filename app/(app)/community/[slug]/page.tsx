@@ -117,7 +117,13 @@ export default async function CommunityDetailPage({ params }: PageProps) {
     };
   }
 
-  const creator = community.community_profiles;
+  // Supabase types this to-one `!fkey` embed as an array, but at runtime it is the
+  // single creator profile. Normalise to one object (or undefined) so it matches
+  // CommunityDetailClient's optional `creator` prop whichever shape comes back.
+  const creatorRel = community.community_profiles as unknown;
+  const creator = (Array.isArray(creatorRel) ? creatorRel[0] : creatorRel) as
+    | { id: string; avatar_url?: string; bio?: string }
+    | undefined;
   const isMember = !!userMembership;
 
   return (
