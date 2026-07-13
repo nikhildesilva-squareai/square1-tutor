@@ -22,11 +22,11 @@ export function QuickNotePanel() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
 
-  // Hide on login/signup/landing pages, and on surfaces that already have their
-  // own composer pinned bottom-right (Nova chat, Messages) — the floating pencil
-  // collides with their send button there.
-  const hiddenPaths = ["/login", "/signup", "/", "/verify", "/tutor", "/messages"];
-  if (hiddenPaths.includes(pathname)) return null;
+  // Course-material only: the quick-note pencil belongs on the lesson reader,
+  // where a student is consuming material and jots a note. Everywhere else it's
+  // redundant (Projects and the Study Hub have their own note surfaces) or
+  // collides with a pinned composer (Nova, Messages), so don't render it.
+  if (!pathname.startsWith("/learn")) return null;
 
   // Handle image selection (file input or paste)
   const handleImageFile = useCallback((file: File) => {
