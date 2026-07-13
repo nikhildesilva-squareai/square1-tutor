@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import Link from "next/link";
+import type { CSSProperties } from "react";
 
 /* ─── Types ─────────────────────────────────────────────────────────────── */
 interface CourseRow { id: string; slug: string; title: string; color: string }
@@ -13,6 +14,113 @@ interface SubmissionRow { project_id: string; score: number | null; max_score: n
 const DIFF_DOT: Record<string, string> = {
   beginner: "#22C55E", intermediate: "#F59E0B", advanced: "#EF4444",
 };
+
+/* ─── Score ring (completed projects) ───────────────────────────────────── */
+function ScoreRing({ score, max }: { score: number; max: number }) {
+  const pct = max > 0 ? Math.min(1, score / max) : 0;
+  const r = 18, c = 2 * Math.PI * r, off = c * (1 - pct);
+  return (
+    <div className="relative h-11 w-11 shrink-0">
+      <svg width="44" height="44" className="-rotate-90">
+        <circle cx="22" cy="22" r={r} fill="none" stroke="var(--color-surface-alt)" strokeWidth="4" />
+        <circle cx="22" cy="22" r={r} fill="none" stroke="#19A65F" strokeWidth="4" strokeLinecap="round" strokeDasharray={c} strokeDashoffset={off} />
+      </svg>
+      <span className="absolute inset-0 flex items-center justify-center text-[12px] font-extrabold text-emerald-600">{score}</span>
+    </div>
+  );
+}
+
+/* ─── Project card — cover + status + hover effects ─────────────────────── */
+function ProjectCard({ project, number, color, sub, unlocked, lessonsComplete }: {
+  project: ProjectRow; number: number; color: string;
+  sub: SubmissionRow | undefined; unlocked: boolean; lessonsComplete: number;
+}) {
+  const hasScore = !!sub && sub.score !== null;
+  const diffColor = DIFF_DOT[project.difficulty] ?? "#F59E0B";
+  const accStyle = { "--acc": color } as CSSProperties;
+
+  const cover = (
+    <div className="relative h-24 overflow-hidden"
+      style={{ background: unlocked ? `linear-gradient(135deg, ${color}, color-mix(in srgb, ${color} 55%, #000))` : "linear-gradient(135deg, #64748B, #334155)" }}>
+      {/* dot texture, faded toward the lower-left */}
+      <span aria-hidden className="pointer-events-none absolute inset-0 opacity-50"
+        style={{ backgroundImage: "radial-gradient(rgba(255,255,255,0.25) 1px, transparent 1.4px)", backgroundSize: "16px 16px", WebkitMaskImage: "radial-gradient(80% 100% at 80% 0, #000, transparent 75%)", maskImage: "radial-gradient(80% 100% at 80% 0, #000, transparent 75%)" }} />
+      {/* shine sweep on hover */}
+      {unlocked && (
+        <span aria-hidden className="pointer-events-none absolute inset-y-0 left-[-60%] w-2/5 -skew-x-12 bg-gradient-to-r from-transparent via-white/35 to-transparent transition-[left] duration-700 group-hover:left-[130%]" />
+      )}
+      <span className="absolute left-4 top-3.5 flex h-9 w-9 items-center justify-center rounded-xl border border-white/30 bg-white/20 text-white backdrop-blur-sm">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m16 18 6-6-6-6M8 6l-6 6 6 6" /></svg>
+      </span>
+      <span className="pointer-events-none absolute -bottom-2 right-4 select-none text-[58px] font-black leading-none text-white/20">{number}</span>
+      {hasScore ? (
+        <span className="absolute right-3 top-3 inline-flex items-center gap-1 rounded-full bg-emerald-500 px-2.5 py-1 text-[11px] font-bold text-white">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><polyline points="20 6 9 17 4 12" /></svg>Completed
+        </span>
+      ) : unlocked ? (
+        <span className="absolute right-3 top-3 rounded-full bg-white/90 px-2.5 py-1 text-[11px] font-bold text-ink">Open</span>
+      ) : (
+        <span className="absolute right-3 top-3 inline-flex items-center gap-1 rounded-full bg-slate-900/55 px-2.5 py-1 text-[11px] font-bold text-white">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><rect x="3" y="11" width="18" height="11" rx="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" /></svg>Locked
+        </span>
+      )}
+    </div>
+  );
+
+  const body = (
+    <div className="flex flex-1 flex-col p-4">
+      <h3 className="mb-2.5 text-[15px] font-bold leading-snug tracking-tight text-ink">{project.title}</h3>
+      <div className="mb-3 flex flex-wrap gap-1.5">
+        {project.tech_stack.slice(0, 3).map((t) => (
+          <span key={t} className="rounded-full bg-surface-alt px-2.5 py-[3px] text-[10.5px] font-semibold text-ink-secondary">{t}</span>
+        ))}
+      </div>
+      <div className="mb-3.5 flex items-center gap-4 text-[11.5px] text-ink-muted">
+        <span className="flex items-center gap-1.5 capitalize"><span className="h-2.5 w-2.5 rounded-full" style={{ background: diffColor }} />{project.difficulty}</span>
+        <span className="flex items-center gap-1.5"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" /></svg>{project.estimated_hours}h</span>
+      </div>
+      <div className="mt-auto">
+        {hasScore ? (
+          <div className="flex items-center gap-3">
+            <ScoreRing score={sub!.score!} max={sub!.max_score} />
+            <span className="text-[13px] font-bold text-brand group-hover:underline">View project →</span>
+          </div>
+        ) : unlocked ? (
+          <span className="inline-flex h-[38px] items-center gap-2 rounded-[10px] px-4 text-[13px] font-bold text-white shadow-[0_8px_18px_-8px_var(--acc)]" style={{ background: color }}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="6 4 20 12 6 20 6 4" /></svg>Start project
+          </span>
+        ) : (() => {
+          const threshold = project.difficulty === "intermediate" ? 10 : 25;
+          const remaining = Math.max(0, threshold - lessonsComplete);
+          const pct = Math.min(100, (lessonsComplete / threshold) * 100);
+          return (
+            <div>
+              <div className="mb-1.5 h-1.5 w-full overflow-hidden rounded-full bg-surface-alt"><div className="h-full rounded-full bg-brand transition-all" style={{ width: `${pct}%` }} /></div>
+              <div className="text-[11px] font-semibold text-ink-muted tabular-nums">{remaining} more {remaining === 1 ? "lesson" : "lessons"} to unlock</div>
+            </div>
+          );
+        })()}
+      </div>
+    </div>
+  );
+
+  const base = "group relative flex flex-col overflow-hidden rounded-2xl border border-border bg-surface shadow-card transition-all duration-200";
+  if (unlocked) {
+    return (
+      <Link href={`/projects/${project.id}`} style={accStyle}
+        className={`${base} hover:-translate-y-1.5 hover:border-[var(--acc)] hover:shadow-[0_20px_40px_-24px_var(--acc)]`}>
+        {cover}
+        {body}
+      </Link>
+    );
+  }
+  return (
+    <div style={accStyle} className={`${base} opacity-70 saturate-[0.6]`}>
+      {cover}
+      {body}
+    </div>
+  );
+}
 
 /* ═══════════════════════════════════════════════════════════════════════════ */
 export default async function ProjectsPage() {
@@ -254,115 +362,19 @@ export default async function ProjectsPage() {
               </div>
             </div>
 
-            {/* Project cards — GitHub repo card style */}
-            <div className="space-y-0 border border-border rounded-xl overflow-hidden divide-y divide-border">
-              {courseProjects.map((project) => {
-                const sub = subMap.get(project.id);
-                const hasScore = sub && sub.score !== null;
-                const unlocked = isUnlocked(project);
-                const globalIdx = courseProjects.indexOf(project);
-                const diffColor = DIFF_DOT[project.difficulty] ?? "#F59E0B";
-
-                return (
-                  <div key={project.id} className={!unlocked ? "opacity-50" : ""}>
-                    {unlocked ? (
-                      <Link href={`/projects/${project.id}`}
-                        className="flex items-start gap-4 px-5 py-4 bg-surface hover:bg-surface-soft transition-colors group">
-                        {/* Left: project info */}
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2 mb-1">
-                            <h3 className="text-sm font-semibold text-brand group-hover:underline">{project.title}</h3>
-                            {hasScore && (
-                              <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-600 border border-emerald-200">
-                                {sub.score}/{sub.max_score}
-                              </span>
-                            )}
-                            {!hasScore && (
-                              <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-surface-alt text-ink-muted border border-border">
-                                Open
-                              </span>
-                            )}
-                          </div>
-                          <p className="text-xs text-ink-muted line-clamp-1 mb-2.5 max-w-xl">
-                            {project.description_md.replace(/[#*`]/g, "").slice(0, 140)}
-                          </p>
-                          {/* Meta row — GitHub style */}
-                          <div className="flex items-center gap-4 text-[11px] text-ink-muted">
-                            {/* Language dot + primary tech */}
-                            {project.tech_stack[0] && (
-                              <span className="flex items-center gap-1.5">
-                                <span className="w-3 h-3 rounded-full" style={{ background: diffColor }} />
-                                {project.tech_stack[0]}
-                              </span>
-                            )}
-                            {/* Additional tech */}
-                            {project.tech_stack.slice(1, 3).map(t => (
-                              <span key={t} className="hidden sm:inline">{t}</span>
-                            ))}
-                            {/* Hours */}
-                            <span className="flex items-center gap-1">
-                              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" /></svg>
-                              {project.estimated_hours}h
-                            </span>
-                            {/* Difficulty */}
-                            <span className="capitalize">{project.difficulty}</span>
-                          </div>
-                        </div>
-                        {/* Right: action indicator */}
-                        <div className="shrink-0 mt-1">
-                          {hasScore ? (
-                            <div className="flex items-center gap-1 text-emerald-600">
-                              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="20 6 9 17 4 12" /></svg>
-                            </div>
-                          ) : (
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-ink-muted group-hover:text-brand transition-colors"><polyline points="9 18 15 12 9 6" /></svg>
-                          )}
-                        </div>
-                      </Link>
-                    ) : (
-                      /* Locked */
-                      <div className="flex items-start gap-4 px-5 py-4 bg-surface">
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2 mb-1">
-                            <h3 className="text-sm font-semibold text-ink">{project.title}</h3>
-                            <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-surface-alt text-ink-muted border border-border flex items-center gap-1">
-                              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><rect x="3" y="11" width="18" height="11" rx="2" /><path d="M7 11V7a5 5 0 0110 0v4" /></svg>
-                              Locked
-                            </span>
-                          </div>
-                          <p className="text-xs text-ink-muted line-clamp-1 mb-2.5 max-w-xl">{project.description_md.replace(/[#*`]/g, "").slice(0, 140)}</p>
-                          <div className="flex items-center gap-4 text-[11px] text-ink-muted">
-                            {project.tech_stack[0] && (
-                              <span className="flex items-center gap-1.5">
-                                <span className="w-3 h-3 rounded-full" style={{ background: diffColor }} />
-                                {project.tech_stack[0]}
-                              </span>
-                            )}
-                            <span>{project.estimated_hours}h</span>
-                            <span className="capitalize">{project.difficulty}</span>
-                          </div>
-                          {/* Unlock countdown with progress toward the threshold */}
-                          {(() => {
-                            const threshold = project.difficulty === "intermediate" ? 10 : 25;
-                            const remaining = Math.max(0, threshold - lessonsComplete);
-                            const pct = Math.min(100, (lessonsComplete / threshold) * 100);
-                            return (
-                              <div className="mt-2.5 flex items-center gap-2 max-w-xs">
-                                <div className="flex-1 h-1.5 rounded-full bg-surface-alt overflow-hidden">
-                                  <div className="h-full rounded-full bg-brand/60 transition-all" style={{ width: `${pct}%` }} />
-                                </div>
-                                <span className="text-[10px] font-semibold text-ink-muted shrink-0 tabular-nums">
-                                  {remaining} more {remaining === 1 ? "lesson" : "lessons"} to unlock
-                                </span>
-                              </div>
-                            );
-                          })()}
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
+            {/* Project cards */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {courseProjects.map((project, idx) => (
+                <ProjectCard
+                  key={project.id}
+                  project={project}
+                  number={idx + 1}
+                  color={course.color || "#0056CE"}
+                  sub={subMap.get(project.id)}
+                  unlocked={isUnlocked(project)}
+                  lessonsComplete={lessonsComplete}
+                />
+              ))}
             </div>
           </div>
         );
