@@ -3,10 +3,12 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { COUNTRIES } from "@/lib/countries";
 
 interface Props {
   studentId: string;
   studentName: string;
+  studentCountry: string;
   userEmail: string;
   joinedDate: string;
   enrollments: Array<{
@@ -18,11 +20,14 @@ interface Props {
   emailOptOut: boolean;
 }
 
-export function SettingsClient({ studentId, studentName, userEmail, joinedDate, enrollments, emailOptOut }: Props) {
+export function SettingsClient({ studentId, studentName, studentCountry, userEmail, joinedDate, enrollments, emailOptOut }: Props) {
   const router = useRouter();
   const [name, setName] = useState(studentName);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [country, setCountry] = useState(studentCountry);
+  const [savingCountry, setSavingCountry] = useState(false);
+  const [savedCountry, setSavedCountry] = useState(false);
   const [signingOut, setSigningOut] = useState(false);
   const [emailsOn, setEmailsOn] = useState(!emailOptOut);
   const [togglingEmails, setTogglingEmails] = useState(false);
@@ -68,6 +73,26 @@ export function SettingsClient({ studentId, studentName, userEmail, joinedDate, 
       // silent
     } finally {
       setSaving(false);
+    }
+  }
+
+  async function handleSaveCountry() {
+    if (!country || country === studentCountry) return;
+    setSavingCountry(true);
+    try {
+      const res = await fetch("/api/onboard", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ country }),
+      });
+      if (res.ok) {
+        setSavedCountry(true);
+        setTimeout(() => setSavedCountry(false), 2000);
+      }
+    } catch {
+      // silent
+    } finally {
+      setSavingCountry(false);
     }
   }
 
@@ -158,6 +183,34 @@ export function SettingsClient({ studentId, studentName, userEmail, joinedDate, 
                     Saved
                   </>
                 ) : saving ? "Saving..." : "Save"}
+              </button>
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-xs font-semibold text-ink-secondary mb-1.5">Country</label>
+            <div className="flex items-center gap-2">
+              <select
+                value={country}
+                onChange={(e) => setCountry(e.target.value)}
+                className="flex-1 h-10 px-3 rounded-xl border border-border bg-surface text-ink text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-brand/20 focus:border-brand transition-all"
+              >
+                <option value="" disabled>Select your country</option>
+                {COUNTRIES.map((c) => (
+                  <option key={c} value={c}>{c}</option>
+                ))}
+              </select>
+              <button
+                onClick={handleSaveCountry}
+                disabled={savingCountry || !country || country === studentCountry}
+                className="h-10 px-5 rounded-xl bg-brand text-white text-sm font-semibold hover:bg-brand/90 disabled:opacity-40 disabled:pointer-events-none transition-all flex items-center gap-2"
+              >
+                {savedCountry ? (
+                  <>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><polyline points="20 6 9 17 4 12" /></svg>
+                    Saved
+                  </>
+                ) : savingCountry ? "Saving..." : "Save"}
               </button>
             </div>
           </div>

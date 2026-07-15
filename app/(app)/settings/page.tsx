@@ -9,7 +9,7 @@ export default async function SettingsPage() {
 
   const { data: student } = await supabase
     .from("students")
-    .select("id, name, email, created_at, email_opt_out")
+    .select("id, name, email, created_at, email_opt_out, country")
     .eq("user_id", user.id)
     .maybeSingle();
 
@@ -47,6 +47,7 @@ export default async function SettingsPage() {
       <SettingsClient
         studentId={student?.id ?? ""}
         studentName={student?.name ?? ""}
+        studentCountry={student?.country ?? ""}
         userEmail={user.email ?? ""}
         joinedDate={joinedDate}
         enrollments={enrollmentList}

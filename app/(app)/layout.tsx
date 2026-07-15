@@ -25,20 +25,36 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   // Ensure community profile exists for this user
   await ensureCommunityProfile();
 
+  // Onboarding gate: every student must record their country before using the
+  // app. This one server-side choke point covers BOTH signup methods (email/OTP
+  // and Google OAuth), so no country is ever missed. Fails open on a fetch error
+  // (never lock a paying user out over a transient DB blip).
+  let student: { id: string; name: string | null; country: string | null } | null = null;
+  let fetchedOk = true;
+  try {
+    const { data, error } = await supabase
+      .from("students").select("id, name, country").eq("user_id", userId).maybeSingle();
+    if (error) fetchedOk = false;
+    student = data;
+  } catch {
+    fetchedOk = false;
+  }
+  if (fetchedOk && (!student || !student.country)) {
+    redirect("/welcome");
+  }
+
   // Team managers get a "Manager portal" nav entry — without it there is no
   // path back to /business/dashboard from inside the app.
   let isManager = false;
-  let userName = "";
-  try {
-    const { data: student } = await supabase.from("students").select("id, name").eq("user_id", userId).maybeSingle();
-    if (student) {
-      userName = student.name ?? "";
+  const userName = student?.name ?? "";
+  if (student) {
+    try {
       const { data: mgr } = await createAdminClient()
         .from("org_members").select("id").eq("student_id", student.id).eq("role", "manager").maybeSingle();
       isManager = !!mgr;
+    } catch {
+      /* nav extra only — never block the app shell on this */
     }
-  } catch {
-    /* nav extra only — never block the app shell on this */
   }
 
   return (
