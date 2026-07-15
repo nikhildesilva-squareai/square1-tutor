@@ -151,7 +151,7 @@ export function PostComposer({ me, onPosted }: { me: { name?: string; avatarUrl?
   };
 
   return (
-    <div className="rounded-lg border border-border bg-surface p-5 shadow-[0_1px_2px_0_rgba(21,47,84,0.04)]">
+    <div className="rounded-xl border border-border bg-surface p-5 shadow-[0_1px_2px_0_rgba(21,47,84,0.04)]">
       <div className="flex items-center gap-3">
         <Avatar name={me.name} avatarUrl={me.avatarUrl} size={40} />
         <input

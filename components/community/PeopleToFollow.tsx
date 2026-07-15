@@ -39,7 +39,7 @@ export function PeopleToFollow({ onFollow, onMessage, onOpenProfile, followVersi
 
   return (
     <aside className="flex flex-col gap-6 lg:sticky lg:top-6">
-      <div className="rounded-lg border border-border bg-surface p-5 shadow-[0_1px_2px_0_rgba(21,47,84,0.04)]">
+      <div className="rounded-xl border border-border bg-surface p-5 shadow-[0_1px_2px_0_rgba(21,47,84,0.04)]">
         <div className="mb-4 text-[13px] font-bold uppercase tracking-wide text-ink-muted">People to follow</div>
         <div className="flex flex-col gap-5">
           {members.map((m) => (

@@ -76,8 +76,8 @@ export function PostFeedClient({ me }: PostFeedClientProps) {
   return (
     <>
       <div className="mb-6">
-        <h1 className="text-[40px] font-bold leading-tight tracking-tight text-ink">Post</h1>
-        <p className="mt-1.5 text-lg text-ink-muted">Share projects, start threads, and connect with members</p>
+        <h1 className="text-2xl font-bold tracking-tight text-ink">Post</h1>
+        <p className="mt-1 text-sm text-ink-muted">Share projects, start threads, and connect with members</p>
       </div>
 
       <div className="grid grid-cols-1 items-start gap-8 lg:grid-cols-[minmax(0,1fr)_320px]">
