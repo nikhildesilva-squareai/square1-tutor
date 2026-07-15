@@ -29,11 +29,11 @@ function tierOf(pct: number): { color: string; label: string } {
 }
 
 const W = 460;
-const H = 300;
+const H = 236;
 const CX = W / 2;
 const CY = H / 2;
-const RX = 196;
-const RY = 126;
+const RX = 198;
+const RY = 94;
 
 export function SkillBrain({ competencies }: { competencies: Comp[] }) {
   const [hover, setHover] = useState<number | null>(null);
@@ -117,7 +117,7 @@ export function SkillBrain({ competencies }: { competencies: Comp[] }) {
         </div>
       ) : (
         <>
-          <div className="relative overflow-hidden rounded-xl" style={{ background: "radial-gradient(60% 70% at 50% 45%, rgba(0,86,206,0.07), transparent 70%)" }}>
+          <div className="relative mx-auto max-w-[520px] overflow-hidden rounded-xl" style={{ background: "radial-gradient(60% 70% at 50% 45%, rgba(0,86,206,0.07), transparent 70%)" }}>
             <svg viewBox={`0 0 ${W} ${H}`} className="h-auto w-full" role="img" aria-label={`Skill map: ${masteredCount} of ${nodes.length} competencies mastered, ${avg}% average.`}>
               <defs>
                 <filter id="brain-glow" x="-60%" y="-60%" width="220%" height="220%">
