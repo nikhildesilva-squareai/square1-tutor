@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { rollUpDomains } from "@/lib/competency";
+import { SkillBrain } from "@/components/SkillBrain";
 
 // ─── Streak calculation ──────────────────────────────────────────────────────
 function calculateStreak(dates: string[]): { current: number; best: number; thisWeek: boolean[] } {
@@ -214,6 +215,11 @@ export default async function ProgressPage() {
           <ProgressRing pct={Math.min(projectsDone / 10, 1)} size={80} stroke={5} label={String(projectsDone)} sublabel="Projects" color="#059669" />
           <ProgressRing pct={Math.min(totalHours / 100, 1)} size={80} stroke={5} label={`${totalHours}h`} sublabel="Time Invested" color="#F59E0B" />
         </div>
+      </div>
+
+      {/* ── Skill brain — neural map of competency mastery ──────── */}
+      <div className="mb-6">
+        <SkillBrain competencies={topicScores} />
       </div>
 
       {/* ── Main grid ──────────────────────────────────────────── */}
