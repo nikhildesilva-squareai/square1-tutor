@@ -19,8 +19,10 @@
 /** Master switch. Defaults ON — the date window is the real auto-kill. */
 const ENABLED = process.env.NEXT_PUBLIC_FREE_ACCESS_ENABLED !== "false";
 
-/** How many students may claim a free seat. */
-export const FREE_ACCESS_CAP = Number(process.env.NEXT_PUBLIC_FREE_ACCESS_CAP ?? "100");
+/** How many students may claim a free seat. Raised to 500 for the 500-student
+ *  fortnight trial (each seat is capped at $0.60 of AI by FREE_ACCESS_WALLET_USD).
+ *  Override any time via NEXT_PUBLIC_FREE_ACCESS_CAP in Vercel (+ redeploy). */
+export const FREE_ACCESS_CAP = Number(process.env.NEXT_PUBLIC_FREE_ACCESS_CAP ?? "500");
 
 /** When the window closes (Australia/Sydney end-of-day). Extended for the
  *  July-14 public launch: first-100-free runs through end of July. Override
