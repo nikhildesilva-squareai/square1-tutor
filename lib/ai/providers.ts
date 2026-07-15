@@ -219,3 +219,158 @@ async function genOSSViaNodeHttps(
 export async function generate(provider: Provider, p: GenParams): Promise<GenResult> {
   return provider === "oss" ? genOSS(p) : genAnthropic(p);
 }
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// Streaming — used ONLY by the tutor (Nova) path via callAIStream. generate()
+// above (used by grading) is deliberately untouched. Yields text deltas as they
+// arrive so the UI can render Nova's reply as it's written instead of after it's
+// finished, plus a final usage event when the endpoint reports one.
+// ═══════════════════════════════════════════════════════════════════════════════
+
+export interface StreamEvent {
+  delta?: string;
+  usage?: { inputTokens: number; outputTokens: number };
+}
+
+export async function* generateStream(provider: Provider, p: GenParams): AsyncGenerator<StreamEvent> {
+  if (provider === "anthropic") {
+    // Grading never streams; for the rare tutor-on-Claude config just emit the
+    // whole text as a single chunk (correct, if not token-by-token).
+    const r = await genAnthropic(p);
+    yield { delta: r.text, usage: { inputTokens: r.inputTokens, outputTokens: r.outputTokens } };
+    return;
+  }
+  yield* genOSSStream(p);
+}
+
+/** Parse a buffered block of OpenAI-style SSE, yielding events and RETURNING the
+ * incomplete trailing line to carry into the next block. */
+function* parseSSE(buf: string): Generator<StreamEvent, string> {
+  const lines = buf.split("\n");
+  const leftover = lines.pop() ?? "";
+  for (const raw of lines) {
+    const line = raw.trim();
+    if (!line.startsWith("data:")) continue;
+    const data = line.slice(5).trim();
+    if (data === "[DONE]" || !data) continue;
+    try {
+      const j = JSON.parse(data);
+      const delta = j?.choices?.[0]?.delta?.content;
+      if (typeof delta === "string" && delta.length) yield { delta };
+      if (j?.usage) {
+        yield { usage: { inputTokens: Number(j.usage.prompt_tokens ?? 0), outputTokens: Number(j.usage.completion_tokens ?? 0) } };
+      }
+    } catch {
+      // A complete SSE line should hold complete JSON; ignore keep-alives/comments.
+    }
+  }
+  return leftover;
+}
+
+async function* genOSSStream(p: GenParams): AsyncGenerator<StreamEvent> {
+  const base = process.env.OSS_AI_BASE_URL;
+  if (!base) throw new Error("OSS_AI_BASE_URL is not set");
+  const apiKey = process.env.OSS_AI_API_KEY ?? "";
+  const timeoutMs = Number(process.env.OSS_AI_TIMEOUT_MS ?? 60_000);
+  const messages = [
+    ...(p.system ? [{ role: "system", content: p.system }] : []),
+    ...p.messages,
+  ];
+  const body = JSON.stringify({
+    model: p.model,
+    messages,
+    max_tokens: p.max_tokens ?? 1024,
+    temperature: p.temperature ?? 0,
+    stream: true,
+    stream_options: { include_usage: true },
+  });
+  if (process.env.OSS_AI_HTTP === "node") {
+    yield* genOSSStreamViaNodeHttps(base, apiKey, body, timeoutMs);
+  } else {
+    yield* genOSSStreamViaFetch(base, apiKey, body, timeoutMs);
+  }
+}
+
+/** node:https streaming transport (used when OSS_AI_HTTP=node, as in prod) —
+ * DeepInfra hangs on undici's fetch, so we consume the IncomingMessage as an
+ * async iterable and parse SSE incrementally. `timeout` is a socket-inactivity
+ * timeout (resets on each chunk), which is the right semantic for a stream. */
+async function* genOSSStreamViaNodeHttps(
+  base: string,
+  apiKey: string,
+  body: string,
+  timeoutMs: number,
+): AsyncGenerator<StreamEvent> {
+  const { request } = await import("node:https");
+  const u = new URL(`${base.replace(/\/+$/, "")}/chat/completions`);
+  const res = await new Promise<import("node:http").IncomingMessage>((resolve, reject) => {
+    const req = request(
+      {
+        hostname: u.hostname,
+        port: u.port || 443,
+        path: u.pathname + u.search,
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Content-Length": Buffer.byteLength(body),
+          ...(apiKey ? { Authorization: `Bearer ${apiKey}` } : {}),
+        },
+        timeout: timeoutMs,
+      },
+      resolve,
+    );
+    req.on("timeout", () => req.destroy(new Error("node:https stream timeout")));
+    req.on("error", reject);
+    req.write(body);
+    req.end();
+  });
+  res.setEncoding("utf8");
+  const status = res.statusCode ?? 0;
+  if (status < 200 || status >= 300) {
+    let err = "";
+    for await (const c of res) err += c;
+    throw new Error(`OSS stream ${status}: ${String(err).slice(0, 300)}`);
+  }
+  let buf = "";
+  for await (const chunk of res as AsyncIterable<string>) {
+    buf += chunk;
+    const gen = parseSSE(buf);
+    let step = gen.next();
+    while (!step.done) { yield step.value; step = gen.next(); }
+    buf = step.value;
+  }
+}
+
+/** fetch streaming transport (used when OSS_AI_HTTP is unset). */
+async function* genOSSStreamViaFetch(
+  base: string,
+  apiKey: string,
+  body: string,
+  timeoutMs: number,
+): AsyncGenerator<StreamEvent> {
+  const res = await fetch(`${base.replace(/\/+$/, "")}/chat/completions`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      ...(apiKey ? { Authorization: `Bearer ${apiKey}` } : {}),
+    },
+    body,
+    signal: AbortSignal.timeout(timeoutMs),
+  });
+  if (!res.ok || !res.body) {
+    const errText = res.ok ? "" : await res.text().catch(() => "");
+    throw new Error(`OSS stream ${res.status}: ${errText.slice(0, 300)}`);
+  }
+  const reader = res.body.getReader();
+  const decoder = new TextDecoder();
+  let buf = "";
+  for (;;) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    buf += decoder.decode(value, { stream: true });
+    const gen = parseSSE(buf);
+    let step = gen.next();
+    while (!step.done) { yield step.value; step = gen.next(); }
+    buf = step.value;
+  }
+}

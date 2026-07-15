@@ -1,5 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
-import { generate, providerFor } from "./providers";
+import { generate, generateStream, providerFor } from "./providers";
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // AI Budget Guardrail — wallet-based spend control
@@ -357,6 +357,108 @@ export async function callAI(
 
   // 5. Return
   return { text, inputTokens, outputTokens, cost, model, provider, degraded: overBudget };
+}
+
+/**
+ * Streaming counterpart to callAI, for the tutor (Nova) only. Runs the SAME
+ * budget precheck (awaited, so BudgetExceededError surfaces BEFORE any Response
+ * is built), then returns a ReadableStream of UTF-8 text deltas. Usage is logged
+ * after the stream ends (best-effort). If streaming fails before any token is
+ * sent, it falls back to a single non-streamed completion (honouring
+ * AI_OSS_FALLBACK) so the student still gets an answer. Grading's callAI is
+ * untouched.
+ */
+export async function callAIStream(
+  studentId: string,
+  params: {
+    system?: string;
+    messages: Array<{ role: "user" | "assistant"; content: string }>;
+    max_tokens?: number;
+    temperature?: number;
+    feature?: string;
+    /** Called once with the complete text after the stream closes (e.g. to
+     *  persist the assistant message). Best-effort; errors are swallowed. */
+    onComplete?: (fullText: string) => void | Promise<void>;
+  },
+): Promise<ReadableStream<Uint8Array>> {
+  // 1. Budget precheck — identical policy to callAI, awaited so it can throw
+  //    BudgetExceededError before we hand back a streaming Response.
+  const [budgetCheck, platformSpent] = await Promise.all([
+    checkBudget(studentId),
+    getPlatformSpend(),
+  ]);
+  if (platformSpent >= PLATFORM_AI_BUDGET_USD * HARD_CEILING_MULTIPLIER) {
+    alertPlatformBudget(platformSpent, true);
+    throw new BudgetExceededError(platformSpent, PLATFORM_AI_BUDGET_USD * HARD_CEILING_MULTIPLIER);
+  }
+  const platformOver = platformSpent >= PLATFORM_AI_BUDGET_USD;
+  if (platformOver) alertPlatformBudget(platformSpent, false);
+  const overBudget = !budgetCheck.ok || platformOver;
+  if (!budgetCheck.ok && budgetCheck.spent >= budgetCheck.budget * HARD_CEILING_MULTIPLIER) {
+    throw new BudgetExceededError(budgetCheck.spent, budgetCheck.budget * HARD_CEILING_MULTIPLIER);
+  }
+
+  const provider = providerFor(params.feature);
+  const model =
+    provider === "oss"
+      ? (overBudget ? ossModelCheapFor(params.feature) : ossModelFor(params.feature))
+      : (overBudget ? MODEL_HAIKU : MODEL_SONNET);
+  const gen = {
+    model,
+    system: params.system,
+    messages: params.messages,
+    max_tokens: params.max_tokens,
+    temperature: params.temperature,
+  };
+
+  const encoder = new TextEncoder();
+  return new ReadableStream<Uint8Array>({
+    async start(controller) {
+      let full = "";
+      let usage = { inputTokens: 0, outputTokens: 0 };
+      try {
+        for await (const ev of generateStream(provider, gen)) {
+          if (ev.delta) {
+            full += ev.delta;
+            controller.enqueue(encoder.encode(ev.delta));
+          }
+          if (ev.usage) usage = ev.usage;
+        }
+      } catch (err) {
+        // Streaming failed. If nothing reached the client yet, fall back to a
+        // single non-streamed completion so the student still gets an answer.
+        if (!full) {
+          try {
+            const fallback = (process.env.AI_OSS_FALLBACK ?? "claude").toLowerCase();
+            const r = provider === "oss" && fallback === "claude"
+              ? await generate("anthropic", { ...gen, model: overBudget ? MODEL_HAIKU : MODEL_SONNET })
+              : await generate(provider, gen);
+            full = r.text;
+            usage = { inputTokens: r.inputTokens, outputTokens: r.outputTokens };
+            controller.enqueue(encoder.encode(r.text));
+          } catch (err2) {
+            console.error("[ai] tutor stream + fallback failed:", err2);
+            controller.enqueue(encoder.encode("Nova hit a snag — please try again in a moment."));
+          }
+        } else {
+          console.error("[ai] tutor stream interrupted mid-response:", err);
+        }
+      }
+      controller.close();
+
+      // Post-stream bookkeeping (best-effort — never throws into the stream).
+      if (!usage.outputTokens) usage.outputTokens = Math.ceil(full.length / 4);
+      const cost = calculateCost(model, usage.inputTokens, usage.outputTokens);
+      logUsage(studentId, usage.inputTokens, usage.outputTokens, cost).catch((e) =>
+        console.error("[budget] logUsage (stream):", e),
+      );
+      try {
+        await params.onComplete?.(full);
+      } catch (e) {
+        console.error("[tutor] onComplete:", e);
+      }
+    },
+  });
 }
 
 // ─── Usage summary (for dashboards) ─────────────────────────────────────────

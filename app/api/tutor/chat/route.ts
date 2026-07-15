@@ -1,7 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { callAI, BudgetExceededError } from "@/lib/ai/budget";
+import { callAIStream, BudgetExceededError } from "@/lib/ai/budget";
 import { TUTOR_SYSTEM_PROMPT } from "@/lib/ai/prompts";
 import { rateLimitAI } from "@/lib/rate-limit";
 
@@ -103,7 +103,7 @@ export async function POST(request: Request) {
       console.error("[tutor/chat] rag (non-fatal)", e);
     }
 
-    const result = await callAI(student.id, {
+    const stream = await callAIStream(student.id, {
       feature: "tutor",
       system: systemPrompt,
       messages: messages.map((m) => ({
@@ -111,41 +111,45 @@ export async function POST(request: Request) {
         content: m.content,
       })),
       max_tokens: 1024,
+      // Persist the full exchange once the stream has finished (non-blocking).
+      onComplete: async (fullText) => {
+        if (!conversationId) return;
+        const lastUserMsg = messages[messages.length - 1];
+        try {
+          await supabase.from("tutor_messages").insert({
+            conversation_id: conversationId,
+            student_id: student.id,
+            role: "user",
+            content: lastUserMsg.content,
+          });
+          await supabase.from("tutor_messages").insert({
+            conversation_id: conversationId,
+            student_id: student.id,
+            role: "assistant",
+            content: fullText,
+          });
+          const title = messages.length <= 2
+            ? lastUserMsg.content.slice(0, 60) + (lastUserMsg.content.length > 60 ? "..." : "")
+            : undefined;
+          await supabase.from("tutor_conversations").update({
+            message_count: messages.length + 1,
+            last_message_at: new Date().toISOString(),
+            ...(title ? { title } : {}),
+          }).eq("id", conversationId);
+        } catch {
+          // Non-blocking — don't fail the chat if saving fails
+        }
+      },
     });
 
-    // Save messages to conversation (non-blocking)
-    if (conversationId) {
-      const lastUserMsg = messages[messages.length - 1];
-      try {
-        // Save user message
-        await supabase.from("tutor_messages").insert({
-          conversation_id: conversationId,
-          student_id: student.id,
-          role: "user",
-          content: lastUserMsg.content,
-        });
-        // Save assistant reply
-        await supabase.from("tutor_messages").insert({
-          conversation_id: conversationId,
-          student_id: student.id,
-          role: "assistant",
-          content: result.text,
-        });
-        // Update conversation metadata
-        const title = messages.length <= 2
-          ? lastUserMsg.content.slice(0, 60) + (lastUserMsg.content.length > 60 ? "..." : "")
-          : undefined;
-        await supabase.from("tutor_conversations").update({
-          message_count: messages.length + 1,
-          last_message_at: new Date().toISOString(),
-          ...(title ? { title } : {}),
-        }).eq("id", conversationId);
-      } catch {
-        // Non-blocking — don't fail the chat if saving fails
-      }
-    }
-
-    return NextResponse.json({ reply: result.text });
+    // Stream Nova's reply as plain-text deltas; the client appends them live.
+    return new Response(stream, {
+      headers: {
+        "Content-Type": "text/plain; charset=utf-8",
+        "Cache-Control": "no-cache, no-transform",
+        "X-Accel-Buffering": "no",
+      },
+    });
   } catch (err) {
     if (err instanceof BudgetExceededError) {
       return NextResponse.json(

@@ -162,9 +162,22 @@ export function TutorClient({ studentName, userEmail, enrollments, weakTopics, l
           conversationId: convId,
         }),
       });
-      if (!res.ok) throw new Error("Chat failed");
-      const data = await res.json();
-      setMessages(prev => [...prev, { role: "assistant", content: data.reply }]);
+      if (!res.ok || !res.body) throw new Error("Chat failed");
+      // Stream Nova's reply into a placeholder assistant message, appending live.
+      setMessages(prev => [...prev, { role: "assistant" as const, content: "" }]);
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let acc = "";
+      for (;;) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        acc += decoder.decode(value, { stream: true });
+        setMessages(prev => {
+          const copy = prev.slice();
+          copy[copy.length - 1] = { role: "assistant" as const, content: acc };
+          return copy;
+        });
+      }
 
       // Update conversation title in local state
       if (convId && messages.length === 0) {

@@ -111,9 +111,34 @@ export function NovaPanel({
           },
         }),
       });
-      const data = await res.json();
-      const reply = data.reply ?? data.error ?? "Nova hit a snag — try again.";
-      setMessages((m) => [...m, { role: "assistant", content: reply }]);
+      if (!res.ok || !res.body) {
+        let msg = "Nova hit a snag — try again.";
+        try { const d = await res.json(); msg = d.error ?? d.reply ?? msg; } catch { /* not JSON */ }
+        setMessages((m) => [...m, { role: "assistant" as const, content: msg }]);
+        return;
+      }
+      // Stream the reply into a placeholder assistant bubble, appending live.
+      setMessages((m) => [...m, { role: "assistant" as const, content: "" }]);
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let acc = "";
+      for (;;) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        acc += decoder.decode(value, { stream: true });
+        setMessages((m) => {
+          const copy = m.slice();
+          copy[copy.length - 1] = { role: "assistant" as const, content: acc };
+          return copy;
+        });
+      }
+      if (!acc) {
+        setMessages((m) => {
+          const copy = m.slice();
+          copy[copy.length - 1] = { role: "assistant" as const, content: "Nova hit a snag — try again." };
+          return copy;
+        });
+      }
     } catch {
       setMessages((m) => [...m, { role: "assistant", content: "Nova hit a snag — try again in a moment." }]);
     } finally {
