@@ -62,12 +62,26 @@ async function genOSS(p: GenParams): Promise<GenResult> {
   const base = process.env.OSS_AI_BASE_URL;
   if (!base) throw new Error("OSS_AI_BASE_URL is not set");
   const apiKey = process.env.OSS_AI_API_KEY ?? "";
+  // Abort a stalled request so it becomes a *retryable* error instead of hanging
+  // forever — some networks / undici versions hang indefinitely on a dead
+  // keep-alive socket (curl to the same endpoint returns in ~1s). The retry loop
+  // below then recovers on a fresh connection. Env-tunable.
+  const timeoutMs = Number(process.env.OSS_AI_TIMEOUT_MS ?? 60_000);
 
   // OpenAI chat-completions shape: system goes in as the first message.
   const messages = [
     ...(p.system ? [{ role: "system", content: p.system }] : []),
     ...p.messages,
   ];
+
+  // Escape hatch for environments where undici's global fetch hangs (observed on
+  // Node 24 on some networks) even though node:https / curl to the same endpoint
+  // return in ~1s. OFF by default, so the production path is unchanged; set
+  // OSS_AI_HTTP=node to route through node:https instead (used by the calibration
+  // harness locally).
+  if (process.env.OSS_AI_HTTP === "node") {
+    return genOSSViaNodeHttps(p, base, apiKey, messages, timeoutMs);
+  }
 
   // Ride out transient 429/5xx with backoff, mirroring the Anthropic SDK's
   // maxRetries — essential when AI_OSS_FALLBACK=none, or every rate-limit
@@ -88,6 +102,7 @@ async function genOSS(p: GenParams): Promise<GenResult> {
           max_tokens: p.max_tokens ?? 1024,
           temperature: p.temperature ?? 0,
         }),
+        signal: AbortSignal.timeout(timeoutMs),
       });
     } catch (err) {
       // Network-level failure (DNS drop, reset connection) — retryable too.
@@ -120,6 +135,84 @@ async function genOSS(p: GenParams): Promise<GenResult> {
     inputTokens: Number(usage.prompt_tokens ?? 0),
     outputTokens: Number(usage.completion_tokens ?? 0),
   };
+}
+
+/**
+ * node:https transport for the OSS endpoint — used only when OSS_AI_HTTP=node.
+ * Same request/response contract as genOSS's fetch path (with backoff on
+ * 429/5xx and network errors), but bypasses undici. Kept self-contained so the
+ * default fetch path is completely untouched.
+ */
+async function genOSSViaNodeHttps(
+  p: GenParams,
+  base: string,
+  apiKey: string,
+  messages: { role: string; content: string }[],
+  timeoutMs: number,
+): Promise<GenResult> {
+  const { request } = await import("node:https");
+  const u = new URL(`${base.replace(/\/+$/, "")}/chat/completions`);
+  const bodyStr = JSON.stringify({
+    model: p.model,
+    messages,
+    max_tokens: p.max_tokens ?? 1024,
+    temperature: p.temperature ?? 0,
+  });
+
+  const post = () =>
+    new Promise<{ status: number; body: string }>((resolve, reject) => {
+      const req = request(
+        {
+          hostname: u.hostname,
+          port: u.port || 443,
+          path: u.pathname + u.search,
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Content-Length": Buffer.byteLength(bodyStr),
+            ...(apiKey ? { Authorization: `Bearer ${apiKey}` } : {}),
+          },
+          timeout: timeoutMs,
+        },
+        (res) => {
+          let data = "";
+          res.setEncoding("utf8");
+          res.on("data", (c) => {
+            data += c;
+          });
+          res.on("end", () => resolve({ status: res.statusCode ?? 0, body: data }));
+        },
+      );
+      req.on("timeout", () => req.destroy(new Error("node:https request timeout")));
+      req.on("error", reject);
+      req.write(bodyStr);
+      req.end();
+    });
+
+  const MAX_ATTEMPTS = 5;
+  let lastErr = "";
+  for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
+    try {
+      const { status, body } = await post();
+      if (status >= 200 && status < 300) {
+        const data = JSON.parse(body);
+        const text: string = data?.choices?.[0]?.message?.content ?? "";
+        const usage = data?.usage ?? {};
+        return {
+          text,
+          inputTokens: Number(usage.prompt_tokens ?? 0),
+          outputTokens: Number(usage.completion_tokens ?? 0),
+        };
+      }
+      lastErr = `${status}: ${body.slice(0, 300)}`;
+      if (!(status === 429 || status >= 500) || attempt === MAX_ATTEMPTS) break;
+    } catch (err) {
+      lastErr = String(err);
+      if (attempt === MAX_ATTEMPTS) throw err;
+    }
+    await new Promise((r) => setTimeout(r, Math.min(1000 * 2 ** attempt, 30_000)));
+  }
+  throw new Error(`OSS AI (node:https) failed: ${lastErr}`);
 }
 
 /** Generate a completion via the chosen provider. */

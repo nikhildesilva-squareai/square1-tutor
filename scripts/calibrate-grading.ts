@@ -90,6 +90,7 @@ async function main() {
   const provider = (argVal("--provider") ?? "anthropic") as Provider;
   const model = argVal("--model") ?? (provider === "oss" ? (process.env.OSS_AI_MODEL ?? "") : PROD_MODEL);
   const runs = Number(argVal("--runs") ?? 3);
+  const spacingMs = Number(argVal("--spacing") ?? CALL_SPACING_MS);
   if (provider === "anthropic" && !process.env.ANTHROPIC_API_KEY) {
     console.error("ANTHROPIC_API_KEY not found (checked .env.local and env).");
     process.exit(2);
@@ -109,7 +110,7 @@ async function main() {
 
   let callCount = 0;
   const llm = async (p: { system: string; userContent: string; max_tokens: number }) => {
-    if (callCount > 0) await sleep(CALL_SPACING_MS);
+    if (callCount > 0) await sleep(spacingMs);
     callCount++;
     return generate(provider, {
       model,
@@ -233,8 +234,6 @@ async function main() {
   console.log("");
   for (const g of gates) console.log(`  ${g.pass ? "PASS" : "FAIL"}  ${g.name}`);
 
-  const reportDir = join(ROOT, "golden-sets", "reports");
-  mkdirSync(reportDir, { recursive: true });
   const stamp = new Date().toISOString().replace(/[:.]/g, "-").slice(0, 19);
   const reportPath = join(reportDir, `${stamp}-${provider}-${model.replace(/[^a-z0-9.-]/gi, "_")}.json`);
   writeFileSync(reportPath, JSON.stringify({
