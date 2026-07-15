@@ -289,20 +289,20 @@ export default async function ProgressPage() {
               <p className="text-[10px] font-bold text-ink-muted uppercase tracking-widest">Activity — Last 12 Weeks</p>
               <p className="text-xs text-ink-muted">{completionList.length} total lessons completed</p>
             </div>
-            <div className="overflow-x-auto">
-              <div className="flex gap-[3px] min-w-[500px]">
-                {/* Group by week (columns) */}
+            <div>
+              <div className="flex gap-1.5">
+                {/* Group by week (columns) — flex-1 so the grid fills the card width */}
                 {Array.from({ length: 12 }, (_, weekIdx) => {
                   const weekDays = heatmapDays.slice(weekIdx * 7, weekIdx * 7 + 7);
                   return (
-                    <div key={weekIdx} className="flex flex-col gap-[3px]">
+                    <div key={weekIdx} className="flex flex-1 flex-col gap-1.5">
                       {weekDays.map((day, di) => {
                         const intensity = day.count === 0 ? "bg-surface-alt" :
                           day.count === 1 ? "bg-brand/30" :
                           day.count === 2 ? "bg-brand/50" :
                           day.count >= 3 ? "bg-brand" : "bg-surface-alt";
                         return (
-                          <div key={di} className={`w-3.5 h-3.5 rounded-sm ${intensity}`} title={`${day.date}: ${day.count} lessons`} />
+                          <div key={di} className={`h-5 w-full rounded-[4px] ${intensity}`} title={`${day.date}: ${day.count} lessons`} />
                         );
                       })}
                     </div>
