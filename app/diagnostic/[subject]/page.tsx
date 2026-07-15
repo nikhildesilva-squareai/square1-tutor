@@ -28,7 +28,7 @@ export default async function SubjectDiagnosticPage({ params }: PageProps) {
   const supabase = await createClient();
   const { data: course } = await supabase
     .from("courses")
-    .select("id, total_lessons, total_projects")
+    .select("id, total_projects")
     .eq("slug", slug)
     .is("parent_course_id", null)
     .maybeSingle();
@@ -60,7 +60,6 @@ export default async function SubjectDiagnosticPage({ params }: PageProps) {
         subject={{ title: subject.title, role: subject.role, color: subject.color }}
         seo={seo}
         modules={modules}
-        totalLessons={course?.total_lessons ?? 0}
         totalProjects={course?.total_projects ?? 0}
       />
     </div>

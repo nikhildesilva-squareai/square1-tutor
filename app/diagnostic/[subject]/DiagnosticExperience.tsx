@@ -17,14 +17,13 @@ interface Props {
     topicRelevance: Record<string, string>;
   };
   modules: Mod[];
-  totalLessons: number;
   totalProjects: number;
 }
 
 const BRAND = "#0056CE";
 const TINT = "#ECF8FE";
 
-export function DiagnosticExperience({ slug, subject, seo, modules, totalLessons, totalProjects }: Props) {
+export function DiagnosticExperience({ slug, subject, seo, modules, totalProjects }: Props) {
   const router = useRouter();
   const questions = useMemo<DiagQuestion[]>(() => getDiagnostic(slug), [slug]);
 
@@ -184,7 +183,7 @@ export function DiagnosticExperience({ slug, subject, seo, modules, totalLessons
           <p className="text-[11px] font-bold uppercase tracking-[0.14em]" style={{ color: BRAND }}>The course</p>
           <h2 className="mt-2 text-2xl font-bold text-slate-900 sm:text-[28px]">What you&apos;ll learn</h2>
           <p className="mt-2 max-w-2xl text-[15px] text-slate-500">
-            {modules.length} modules · {totalLessons} lessons{totalProjects ? ` · ${totalProjects} hands-on projects` : ""}. Your placement result maps straight onto this path.
+            {modules.length} modules · {modules.reduce((s, m) => s + m.lessons, 0)} lessons{totalProjects ? ` · ${totalProjects} hands-on projects` : ""}. Your placement result maps straight onto this path.
           </p>
 
           <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
