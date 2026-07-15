@@ -149,7 +149,7 @@ export default async function CoursesPage() {
                       ))}
                     </div>
 
-                    <div className="mt-6">
+                    <div className="mt-auto pt-6">
                       <Link
                         href={`/courses/${first.slug}`}
                         className="inline-flex h-10 items-center gap-2 rounded-xl bg-brand px-5 text-sm font-semibold text-white transition-colors hover:bg-brand-dark"
@@ -231,17 +231,17 @@ export default async function CoursesPage() {
                       {course.description}
                     </p>
 
-                    <div className="mt-3 flex items-center gap-4 text-xs text-ink-muted">
-                      <span className="inline-flex items-center gap-1.5">
-                        <BookOpen className="h-3.5 w-3.5" /> {course.total_lessons} lessons
-                      </span>
-                      <span className="inline-flex items-center gap-1.5">
-                        <FolderGit2 className="h-3.5 w-3.5" /> {course.total_projects} projects
-                      </span>
-                    </div>
-
-                    {/* Footer */}
-                    <div className="mt-5 pt-1">
+                    {/* Footer — pinned to the bottom so the stats row and CTA
+                        line up across every card, whatever the title/description length */}
+                    <div className="mt-auto pt-4">
+                      <div className="mb-4 flex items-center gap-4 text-xs text-ink-muted">
+                        <span className="inline-flex items-center gap-1.5">
+                          <BookOpen className="h-3.5 w-3.5" /> {course.total_lessons} lessons
+                        </span>
+                        <span className="inline-flex items-center gap-1.5">
+                          <FolderGit2 className="h-3.5 w-3.5" /> {course.total_projects} projects
+                        </span>
+                      </div>
                       {isComingSoon ? (
                         <div className="flex h-10 w-full items-center justify-center rounded-xl bg-surface-alt text-xs font-semibold text-ink-muted">
                           Coming soon
