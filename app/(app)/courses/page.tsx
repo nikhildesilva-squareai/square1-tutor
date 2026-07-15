@@ -93,7 +93,7 @@ export default async function CoursesPage() {
             <span className="text-sm text-ink-muted">— a guided sequence to a role</span>
           </div>
 
-          <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
+          <div className="grid grid-cols-1 items-start gap-5 lg:grid-cols-2">
             {LEARNING_PATHS.map((path) => {
               const steps = path.courseSlugs
                 .map((s) => coursesBySlug.get(s))
@@ -108,25 +108,25 @@ export default async function CoursesPage() {
                   className="group flex flex-col overflow-hidden rounded-2xl border border-border bg-surface shadow-card transition-shadow hover:shadow-card-hover"
                 >
                   {/* Colour accent strip across the path's course colours */}
-                  <div className="h-1.5" style={{ background: `linear-gradient(90deg, ${lead}, ${last})` }} />
+                  <div className="h-1" style={{ background: `linear-gradient(90deg, ${lead}, ${last})` }} />
 
-                  <div className="flex flex-1 flex-col p-6">
-                    <div className="flex items-start gap-3.5">
+                  <div className="flex flex-1 flex-col p-5">
+                    <div className="flex items-center gap-3">
                       <span
-                        className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-sm font-black text-white"
+                        className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-xs font-black text-white"
                         style={coverStyle(lead)}
                       >
                         {monogram(path.name)}
                       </span>
                       <div className="min-w-0">
-                        <h3 className="text-lg font-bold leading-tight text-ink">{path.name}</h3>
-                        <p className="mt-0.5 text-sm font-semibold text-brand">{path.role}</p>
+                        <h3 className="text-base font-bold leading-tight text-ink">{path.name}</h3>
+                        <p className="text-[13px] font-semibold text-brand">{path.role}</p>
                       </div>
                     </div>
 
-                    <p className="mt-3 text-sm leading-relaxed text-ink-muted">{path.tagline}</p>
+                    <p className="mt-2.5 line-clamp-2 text-[13px] leading-relaxed text-ink-muted">{path.tagline}</p>
 
-                    <div className="mt-5 flex flex-wrap items-center gap-1.5">
+                    <div className="mt-3.5 flex flex-wrap items-center gap-1.5">
                       {steps.map((c, i) => (
                         <span key={c.id} className="flex items-center gap-1.5">
                           {i > 0 && <ArrowRight className="h-3.5 w-3.5 text-border-mid" aria-hidden />}
@@ -149,13 +149,13 @@ export default async function CoursesPage() {
                       ))}
                     </div>
 
-                    <div className="mt-auto pt-6">
+                    <div className="mt-4">
                       <Link
                         href={`/courses/${first.slug}`}
-                        className="inline-flex h-10 items-center gap-2 rounded-xl bg-brand px-5 text-sm font-semibold text-white transition-colors hover:bg-brand-dark"
+                        className="inline-flex h-9 items-center gap-2 rounded-lg bg-brand px-4 text-[13px] font-semibold text-white transition-colors hover:bg-brand-dark"
                       >
                         Start with {first.title}
-                        <ArrowRight className="h-4 w-4" />
+                        <ArrowRight className="h-3.5 w-3.5" />
                       </Link>
                     </div>
                   </div>
