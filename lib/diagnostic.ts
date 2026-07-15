@@ -226,8 +226,40 @@ const BANK: Record<string, DiagQuestion[]> = {
   "devops-engineering": DEVOPS,
 };
 
+/**
+ * Deterministically shuffle a question's options so the correct answer isn't
+ * always in the same slot. The hand-authored bank clustered the correct answer
+ * on index 1 ("just pick B" every time), which looks unprofessional and is
+ * trivially gameable. The shuffle is SEEDED BY THE STEM (a pure function of the
+ * question text) so the quiz page and the results page — which both call
+ * getDiagnostic independently — produce the IDENTICAL order, keeping the
+ * answer-index scoring correct across the navigation.
+ */
+function shuffleOptions(q: DiagQuestion): DiagQuestion {
+  // FNV-1a hash of the stem → a stable, non-zero 32-bit seed.
+  let seed = 0x811c9dc5;
+  for (let i = 0; i < q.stem.length; i++) {
+    seed ^= q.stem.charCodeAt(i);
+    seed = Math.imul(seed, 0x01000193) >>> 0;
+  }
+  seed = seed || 1;
+  const rand = () => {
+    // xorshift32 — deterministic PRNG from the seed.
+    seed ^= seed << 13; seed >>>= 0;
+    seed ^= seed >> 17;
+    seed ^= seed << 5; seed >>>= 0;
+    return seed / 0x100000000;
+  };
+  const items = q.options.map((opt, i) => ({ opt, isCorrect: i === q.correct }));
+  for (let i = items.length - 1; i > 0; i--) {
+    const j = Math.floor(rand() * (i + 1));
+    [items[i], items[j]] = [items[j], items[i]];
+  }
+  return { ...q, options: items.map((x) => x.opt), correct: items.findIndex((x) => x.isCorrect) };
+}
+
 export function getDiagnostic(slug: string): DiagQuestion[] {
-  return BANK[slug] ?? GENERAL;
+  return (BANK[slug] ?? GENERAL).map(shuffleOptions);
 }
 
 export interface DiagResult {
