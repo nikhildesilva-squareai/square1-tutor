@@ -43,6 +43,34 @@ const GENERATIVE_AI: DiagQuestion[] = [
   },
 ];
 
+const AGENTIC_AI: DiagQuestion[] = [
+  {
+    stem: "In an agentic system, 'tool use' (function calling) lets the model…",
+    options: ["Retrain itself between messages", "Call external functions or APIs and use their results to act", "Enlarge its own context window", "Run with no prompt at all"],
+    correct: 1, topic: "Tool use",
+  },
+  {
+    stem: "The ReAct pattern runs an agent as a loop of…",
+    options: ["A single one-shot completion", "Reason, act (call a tool), observe the result, then repeat", "Random tool calls until it stops", "Fine-tuning after every step"],
+    correct: 1, topic: "Agent loops",
+  },
+  {
+    stem: "Breaking a complex goal into an ordered set of sub-tasks before acting is called…",
+    options: ["Tokenisation", "Task planning and decomposition", "Quantisation", "Sharding"],
+    correct: 1, topic: "Planning",
+  },
+  {
+    stem: "An agent's long-term memory is most commonly implemented with…",
+    options: ["A larger system prompt only", "A vector store the agent writes to and retrieves from", "Turning the context window off", "A higher temperature"],
+    correct: 1, topic: "Memory",
+  },
+  {
+    stem: "Because agents can call tools, a critical safety risk is…",
+    options: ["Slow font rendering", "Prompt injection turning retrieved or tool content into malicious instructions", "Using too few tokens", "Choosing a smaller model"],
+    correct: 1, topic: "Agent safety",
+  },
+];
+
 const FULLSTACK: DiagQuestion[] = [
   {
     stem: "Which HTTP status code means 'created successfully'?",
@@ -212,6 +240,7 @@ const GENERAL: DiagQuestion[] = [
 ];
 
 const BANK: Record<string, DiagQuestion[]> = {
+  "agentic-ai": AGENTIC_AI,
   "generative-ai": GENERATIVE_AI,
   "llm-agent-architect": GENERATIVE_AI,
   "artificial-intelligence": GENERATIVE_AI,
@@ -319,6 +348,7 @@ export const DIAG_SUBJECTS: DiagSubject[] = [
   { slug: "artificial-intelligence", title: "Artificial Intelligence", icon: "⚡", role: "AI Engineer", color: "#0ea5e9" },
   { slug: "computer-vision", title: "Computer Vision", icon: "\u{1F441}️", role: "CV Engineer", color: "#10b981" },
   { slug: "llm-agent-architect", title: "LLM Agent Architect", icon: "\u{1F6E0}️", role: "Agent Architect", color: "#7C3AED" },
+  { slug: "agentic-ai", title: "Agentic AI", icon: "\u{1F916}", role: "Agentic AI Engineer", color: "#7C3AED" },
   { slug: "ai-product-management", title: "AI Product Management", icon: "\u{1F4CB}", role: "AI PM", color: "#0EA5E9" },
 ];
 
@@ -506,6 +536,23 @@ export const SUBJECT_SEO: Record<string, SubjectSEO> = {
       "Inference controls": "Deterministic agent behaviour requires careful temperature and sampling configuration.",
       "AI safety": "Agents with tool access are high-risk targets for prompt injection — safety is non-negotiable.",
       "Embeddings": "Semantic search powers the memory and retrieval systems that make agents useful.",
+    },
+  },
+  "agentic-ai": {
+    h1: "Are you ready to build agentic AI?",
+    description: "Free 3-minute agentic AI skill check. Tool use, agent loops, planning, memory, and agent safety — instant results, no signup.",
+    body: "Agentic AI is the shift from models that answer questions to systems that take action — calling tools, making decisions, and completing multi-step tasks on their own. It's one of the fastest-moving areas in AI, and the engineers who can design reliable agents are in short supply.\n\nThis quick diagnostic tests five foundations that separate a working agent from a demo: tool use and function calling, the reason–act loop that drives an agent, planning and task decomposition, memory systems for state and recall, and the safety concerns unique to systems that can act.\n\nIt takes about 3 minutes, needs no signup, and gives you an instant read on where you stand before diving into the full Agentic AI track.",
+    faqs: [
+      { q: "What does an Agentic AI engineer do?", a: "They design systems where a language model autonomously uses tools, plans multi-step work, keeps memory, and completes tasks — from coding agents to research and workflow automation." },
+      { q: "How is this different from the LLM Agent Architect check?", a: "The foundations overlap because both build on agent fundamentals. The full Agentic AI course focuses on building and shipping agents end-to-end; LLM Agent Architect goes deeper into protocols, harnesses, and frameworks." },
+      { q: "Do I need to code to take it?", a: "No — this quick check tests conceptual understanding. The full course teaches you to build agents hands-on, so some programming experience helps there." },
+    ],
+    topicRelevance: {
+      "Tool use": "Calling tools is what turns a language model into an agent that can actually act.",
+      "Agent loops": "The reason–act–observe loop is the core control flow of every autonomous agent.",
+      "Planning": "Decomposing a goal into ordered steps is what lets agents tackle complex, multi-step tasks.",
+      "Memory": "Memory systems give agents state and recall beyond a single context window.",
+      "Agent safety": "Agents with tool access are high-risk for prompt injection — safety is non-negotiable.",
     },
   },
   "ai-product-management": {
