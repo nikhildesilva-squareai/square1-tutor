@@ -36,7 +36,7 @@ export default function DiagnosticPage() {
 
       <main className="flex-1 px-4 pb-16 sm:px-6">
         {/* ── Hero ─────────────────────────────────────────────────────── */}
-        <section className="mx-auto max-w-5xl">
+        <section className="mx-auto max-w-6xl">
           <div className="relative overflow-hidden rounded-2xl border border-[#D4F0FC] bg-[#ECF8FE] px-6 py-8 text-center sm:px-10 sm:py-9">
             <span aria-hidden className="pointer-events-none absolute -right-16 -top-16 h-52 w-52 rounded-full bg-white/40 blur-3xl" />
             <div className="relative mx-auto max-w-2xl">
@@ -68,13 +68,13 @@ export default function DiagnosticPage() {
         </section>
 
         {/* ── Grid ─────────────────────────────────────────────────────── */}
-        <section className="mx-auto mt-6 max-w-5xl">
+        <section className="mx-auto mt-6 max-w-6xl">
           <p className="mb-3 text-sm text-slate-500">
             <span className="font-semibold text-slate-900">{filtered.length}</span> {filtered.length === 1 ? "skill check" : "skill checks"}
           </p>
 
           {filtered.length > 0 ? (
-            <div className="grid grid-cols-1 gap-3.5 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="grid grid-cols-1 gap-3.5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5">
               {filtered.map((s) => (
                 <Link
                   key={s.slug}
