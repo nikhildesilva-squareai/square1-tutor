@@ -194,17 +194,49 @@ export default async function ProgressPage() {
   const { data: assessments } = await supabase.from("assessment_attempts")
     .select("course_id, score, max_score, percentage").eq("student_id", student.id).eq("status", "graded");
 
+  // Deduped competency list (one entry per domain, highest mastery) for the
+  // mastery card count, and the "suggested focus" callout.
+  const compMap = new Map<string, number>();
+  for (const t of topicScores) {
+    const ex = compMap.get(t.topic);
+    if (ex === undefined || t.pct > ex) compMap.set(t.topic, t.pct);
+  }
+  const compList = [...compMap.entries()].map(([topic, pct]) => ({ topic, pct }));
+  const masteredCount = compList.filter((c) => c.pct >= 80).length;
+  const focusAreas = compList.filter((c) => c.pct < 70).sort((a, b) => a.pct - b.pct).slice(0, 4);
+
+  // Milestones — precompute earned state so we can flag the next one to chase.
+  const MILESTONES = [
+    { label: "First Lesson", threshold: 1, icon: "M4 19.5A2.5 2.5 0 016.5 17H20" },
+    { label: "10 Lessons", threshold: 10, icon: "M12 2L2 7l10 5 10-5-10-5z" },
+    { label: "50 Lessons", threshold: 50, icon: "M13 2L3 14h9l-1 8 10-12h-9l1-8z" },
+    { label: "First Project", threshold: 1, icon: "M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z", useProjects: true },
+    { label: "5 Projects", threshold: 5, icon: "M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z", useProjects: true },
+    { label: "7-Day Streak", threshold: 7, icon: "M12 2C6 8 2 12 2 16a10 10 0 0020 0c0-4-4-8-10-14z", useStreak: true },
+    { label: "50% Complete", threshold: 50, icon: "M22 11.08V12a10 10 0 11-5.93-9.14", usePct: true },
+    { label: "100% Complete", threshold: 100, icon: "M22 11.08V12a10 10 0 11-5.93-9.14", usePct: true },
+  ];
+  const milestoneState = MILESTONES.map((m) => {
+    const val = (m as { useProjects?: boolean }).useProjects ? projectsDone
+      : (m as { usePct?: boolean }).usePct ? Math.round(overallPct * 100)
+      : (m as { useStreak?: boolean }).useStreak ? streak.best
+      : completedLessons;
+    return { ...m, earned: val >= m.threshold };
+  });
+  const nextMilestoneIdx = milestoneState.findIndex((m) => !m.earned);
+  const earnedMilestones = milestoneState.filter((m) => m.earned).length;
+
   return (
     <div className="min-h-full px-4 sm:px-6 py-8 max-w-5xl mx-auto">
       {/* Header */}
-      <div className="flex items-center gap-3 mb-8">
-        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-brand to-brand/80 flex items-center justify-center">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round"><path d="M18 20V10" /><path d="M12 20V4" /><path d="M6 20v-6" /></svg>
-        </div>
+      <div className="mb-8 flex items-start justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-black text-ink">Your Progress</h1>
-          <p className="text-sm text-ink-muted">Week {weekNum} of your learning journey</p>
+          <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-brand">Progress</p>
+          <h1 className="mt-1 text-2xl font-black text-ink">Your progress</h1>
         </div>
+        <span className="mt-1 shrink-0 rounded-full bg-[#ECF8FE] px-4 py-2 text-[13px] font-semibold text-brand">
+          Week {weekNum} of your journey
+        </span>
       </div>
 
       {/* ── Overview rings ──────────────────────────────────────── */}
@@ -221,6 +253,29 @@ export default async function ProgressPage() {
       <div className="mb-6">
         <SkillBrain competencies={topicScores} />
       </div>
+
+      {/* ── Suggested focus this week ───────────────────────────── */}
+      {focusAreas.length > 0 && (
+        <div className="mb-6 flex flex-col gap-4 rounded-2xl border border-[#CFE9FB] bg-[#ECF8FE] p-5 sm:flex-row sm:items-center sm:p-6">
+          <div className="flex items-center gap-3">
+            <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-white text-brand shadow-sm">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10" /><circle cx="12" cy="12" r="6" /><circle cx="12" cy="12" r="2" /></svg>
+            </span>
+            <div>
+              <p className="text-[10px] font-bold uppercase tracking-widest text-brand">Suggested focus this week</p>
+              <p className="text-sm text-ink-secondary">The competencies with the most room to grow.</p>
+            </div>
+          </div>
+          <div className="flex flex-wrap gap-2 sm:ml-auto">
+            {focusAreas.map((t) => (
+              <span key={t.topic} className="inline-flex items-center gap-2 rounded-full bg-white px-3.5 py-1.5 text-[13px] font-semibold text-ink shadow-sm">
+                {t.topic}
+                <span className="tabular-nums text-amber-600">{t.pct}%</span>
+              </span>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* ── Main grid ──────────────────────────────────────────── */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -356,24 +411,30 @@ export default async function ProgressPage() {
           </div>
 
           {/* Topic mastery — horizontal bars */}
-          {topicScores.length > 0 && (
+          {compList.length > 0 && (
             <div className="bg-surface rounded-xl border border-border p-5">
-              <p className="text-[10px] font-bold text-ink-muted uppercase tracking-widest mb-4">Competency Mastery</p>
+              <div className="mb-4 flex items-center justify-between">
+                <p className="text-[10px] font-bold text-ink-muted uppercase tracking-widest">Competency Mastery</p>
+                <span className="text-[11px] font-semibold text-ink-secondary">{masteredCount} of {compList.length} mastered</span>
+              </div>
               <div className="space-y-3">
-                {topicScores.sort((a, b) => b.pct - a.pct).slice(0, 10).map((t, i) => (
-                  <div key={i} className="flex items-center gap-3">
-                    <span className="text-xs font-medium text-ink w-40 truncate" title={t.topic}>{t.topic}</span>
-                    <div className="flex-1 h-2.5 rounded-full bg-surface-alt overflow-hidden">
-                      <div className="h-full rounded-full transition-all" style={{
-                        width: `${t.pct}%`,
-                        background: t.pct >= 70 ? "#22C55E" : t.pct >= 40 ? "#F59E0B" : "#EF4444",
-                      }} />
+                {[...compList].sort((a, b) => b.pct - a.pct).slice(0, 10).map((t, i) => {
+                  const col = t.pct >= 80 ? "#22C55E" : t.pct >= 40 ? "#F59E0B" : "#EF4444";
+                  return (
+                    <div key={i} className="flex items-center gap-3">
+                      <span className="flex w-40 items-center gap-1.5 text-xs font-medium text-ink" title={t.topic}>
+                        {t.pct >= 80 && (
+                          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" className="shrink-0"><circle cx="12" cy="12" r="10" fill="#22C55E" /><polyline points="17 9 10.5 15.5 7 12" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                        )}
+                        <span className="truncate">{t.topic}</span>
+                      </span>
+                      <div className="h-2.5 flex-1 overflow-hidden rounded-full bg-surface-alt">
+                        <div className="h-full rounded-full transition-all" style={{ width: `${t.pct}%`, background: col }} />
+                      </div>
+                      <span className="w-8 text-right text-[10px] font-bold tabular-nums" style={{ color: col }}>{t.pct}%</span>
                     </div>
-                    <span className="text-[10px] font-bold tabular-nums w-8 text-right" style={{
-                      color: t.pct >= 70 ? "#22C55E" : t.pct >= 40 ? "#F59E0B" : "#EF4444"
-                    }}>{t.pct}%</span>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
           )}
@@ -467,34 +528,30 @@ export default async function ProgressPage() {
 
           {/* Milestones */}
           <div className="bg-surface rounded-xl border border-border p-5">
-            <p className="text-[10px] font-bold text-ink-muted uppercase tracking-widest mb-4">Milestones</p>
+            <div className="mb-4 flex items-center justify-between">
+              <p className="text-[10px] font-bold text-ink-muted uppercase tracking-widest">Milestones</p>
+              <span className="text-[11px] font-semibold text-ink-secondary">{earnedMilestones} of {milestoneState.length}</span>
+            </div>
             <div className="space-y-2">
-              {[
-                { label: "First Lesson", threshold: 1, icon: "M4 19.5A2.5 2.5 0 016.5 17H20" },
-                { label: "10 Lessons", threshold: 10, icon: "M12 2L2 7l10 5 10-5-10-5z" },
-                { label: "50 Lessons", threshold: 50, icon: "M13 2L3 14h9l-1 8 10-12h-9l1-8z" },
-                { label: "First Project", threshold: 1, icon: "M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z", useProjects: true },
-                { label: "5 Projects", threshold: 5, icon: "M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z", useProjects: true },
-                { label: "7-Day Streak", threshold: 7, icon: "M12 2C6 8 2 12 2 16a10 10 0 0020 0c0-4-4-8-10-14z", useStreak: true },
-                { label: "50% Complete", threshold: 50, icon: "M22 11.08V12a10 10 0 11-5.93-9.14", usePct: true },
-                { label: "100% Complete", threshold: 100, icon: "M22 11.08V12a10 10 0 11-5.93-9.14", usePct: true },
-              ].map(m => {
-                const val = (m as { useProjects?: boolean }).useProjects ? projectsDone :
-                  (m as { usePct?: boolean }).usePct ? Math.round(overallPct * 100) :
-                  (m as { useStreak?: boolean }).useStreak ? streak.best :
-                  completedLessons;
-                const earned = val >= m.threshold;
+              {milestoneState.map((m, i) => {
+                const isNext = i === nextMilestoneIdx;
                 return (
-                  <div key={m.label} className={["flex items-center gap-3 px-3 py-2.5 rounded-xl border transition-all",
-                    earned ? "border-brand/20 bg-surface-tint" : "border-border opacity-40"
+                  <div key={m.label} className={[
+                    "flex items-center gap-3 rounded-xl border px-3 py-2.5 transition-all",
+                    m.earned ? "border-brand/20 bg-surface-tint" : isNext ? "border-brand/40 bg-surface-soft" : "border-border opacity-50",
                   ].join(" ")}>
-                    <div className={["w-7 h-7 rounded-lg flex items-center justify-center shrink-0",
-                      earned ? "bg-brand text-white" : "bg-surface-alt text-ink-muted"
+                    <div className={[
+                      "flex h-7 w-7 shrink-0 items-center justify-center rounded-lg",
+                      m.earned ? "bg-brand text-white" : isNext ? "bg-brand/10 text-brand" : "bg-surface-alt text-ink-muted",
                     ].join(" ")}>
                       <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d={m.icon} /></svg>
                     </div>
-                    <span className={["text-xs font-semibold", earned ? "text-ink" : "text-ink-muted"].join(" ")}>{m.label}</span>
-                    {earned && <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#059669" strokeWidth="2.5" className="ml-auto"><polyline points="20 6 9 17 4 12" /></svg>}
+                    <span className={["text-xs font-semibold", m.earned || isNext ? "text-ink" : "text-ink-muted"].join(" ")}>{m.label}</span>
+                    {m.earned ? (
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#059669" strokeWidth="2.5" className="ml-auto"><polyline points="20 6 9 17 4 12" /></svg>
+                    ) : isNext ? (
+                      <span className="ml-auto rounded-full bg-brand px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider text-white">Next</span>
+                    ) : null}
                   </div>
                 );
               })}
