@@ -122,40 +122,40 @@ export function DiagnosticExperience({ slug, subject, seo, modules, totalProject
     <main className="flex-1">
       {/* ── Hero ─────────────────────────────────────────────────────────── */}
       <section className="px-4 pb-4 pt-2 sm:px-6">
-        <div className="relative mx-auto max-w-6xl overflow-hidden rounded-2xl px-6 py-12 sm:px-12 sm:py-14" style={{ background: BRAND }}>
+        <div className="relative mx-auto max-w-6xl overflow-hidden rounded-2xl px-6 py-8 sm:px-9 sm:py-9" style={{ background: BRAND }}>
           {/* Watermark */}
-          <span aria-hidden className="pointer-events-none absolute -bottom-16 -right-6 select-none text-[300px] font-black leading-none text-white/[0.06] sm:text-[380px]">S1</span>
+          <span aria-hidden className="pointer-events-none absolute -bottom-12 -right-6 select-none text-[200px] font-black leading-none text-white/[0.06] sm:text-[260px]">S1</span>
 
-          <div className="relative grid items-center gap-10 lg:grid-cols-[1.05fr_0.95fr]">
+          <div className="relative grid items-center gap-7 lg:grid-cols-[1.05fr_0.95fr]">
             {/* Left */}
             <div>
-              <span className="text-[11px] font-bold uppercase tracking-[0.18em] text-[#A8CCFF]">Free · 3 minutes · No signup</span>
-              <h1 className="mt-4 text-3xl font-bold leading-[1.1] text-white sm:text-[42px]">{seo.h1}</h1>
-              <p className="mt-4 max-w-xl text-[15px] leading-relaxed text-white/85 sm:text-lg">{seo.description}</p>
-              <div className="mt-8 flex flex-col items-start gap-3">
+              <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#A8CCFF]">Free · 3 minutes · No signup</span>
+              <h1 className="mt-2.5 text-[24px] font-bold leading-[1.12] text-white sm:text-[30px]">{seo.h1}</h1>
+              <p className="mt-2.5 max-w-lg text-[13px] leading-relaxed text-white/85 sm:text-sm">{seo.description}</p>
+              <div className="mt-5 flex flex-col items-start gap-2">
                 <button
                   onClick={start}
-                  className="group inline-flex h-12 items-center gap-2 rounded-lg bg-white px-6 text-[15px] font-semibold text-[#0056CE] shadow-lg transition-transform hover:-translate-y-0.5"
+                  className="group inline-flex h-10 items-center gap-2 rounded-lg bg-white px-5 text-sm font-semibold text-[#0056CE] shadow-lg transition-transform hover:-translate-y-0.5"
                 >
                   Start the {subject.title} skill check
                   <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
                 </button>
-                <span className="text-[13px] text-white/75">Instant results. No account needed.</span>
+                <span className="text-xs text-white/75">Instant results. No account needed.</span>
               </div>
             </div>
 
             {/* Right — what this check covers */}
-            <div className="rounded-2xl bg-white p-6 shadow-[0_12px_24px_-6px_rgba(1,34,79,0.35)] sm:p-7">
-              <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-slate-500">What this check covers</p>
-              <ul className="mt-4 space-y-4">
+            <div className="rounded-2xl bg-white p-5 shadow-[0_12px_24px_-6px_rgba(1,34,79,0.35)]">
+              <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-slate-500">What this check covers</p>
+              <ul className="mt-3 space-y-2.5">
                 {areas.map((a, i) => (
-                  <li key={a.topic} className="flex gap-3.5">
-                    <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-[13px] font-bold" style={{ background: TINT, color: BRAND }}>
+                  <li key={a.topic} className="flex gap-3">
+                    <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-xs font-bold" style={{ background: TINT, color: BRAND }}>
                       {i + 1}
                     </span>
                     <div className="min-w-0">
-                      <p className="text-[15px] font-semibold leading-tight text-slate-900">{a.topic}</p>
-                      {a.why && <p className="mt-0.5 text-[13px] leading-relaxed text-slate-500">{a.why}</p>}
+                      <p className="text-sm font-semibold leading-tight text-slate-900">{a.topic}</p>
+                      {a.why && <p className="mt-0.5 text-xs leading-relaxed text-slate-500">{a.why}</p>}
                     </div>
                   </li>
                 ))}
@@ -166,12 +166,12 @@ export function DiagnosticExperience({ slug, subject, seo, modules, totalProject
       </section>
 
       {/* ── Value strip ──────────────────────────────────────────────────── */}
-      <section className="mx-auto max-w-6xl px-4 py-10 sm:px-6">
+      <section className="mx-auto max-w-6xl px-4 py-7 sm:px-6">
         <div className="grid gap-4 sm:grid-cols-3">
           {VALUE.map((v) => (
-            <div key={v.t} className="rounded-xl border border-[#E8EEF5] bg-white p-5 shadow-[0_1px_2px_rgba(21,47,84,0.04)]">
-              <h3 className="text-[17px] font-bold leading-snug text-slate-900">{v.t}</h3>
-              <p className="mt-2 text-sm leading-relaxed text-slate-500">{v.d}</p>
+            <div key={v.t} className="rounded-xl border border-[#E8EEF5] bg-white p-4 shadow-[0_1px_2px_rgba(21,47,84,0.04)]">
+              <h3 className="text-[15px] font-bold leading-snug text-slate-900">{v.t}</h3>
+              <p className="mt-1.5 text-[13px] leading-relaxed text-slate-500">{v.d}</p>
             </div>
           ))}
         </div>
@@ -179,9 +179,9 @@ export function DiagnosticExperience({ slug, subject, seo, modules, totalProject
 
       {/* ── The course ───────────────────────────────────────────────────── */}
       {modules.length > 0 && (
-        <section className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
+        <section className="mx-auto max-w-6xl px-4 py-6 sm:px-6">
           <p className="text-[11px] font-bold uppercase tracking-[0.14em]" style={{ color: BRAND }}>The course</p>
-          <h2 className="mt-2 text-2xl font-bold text-slate-900 sm:text-[28px]">What you&apos;ll learn</h2>
+          <h2 className="mt-1.5 text-xl font-bold text-slate-900 sm:text-2xl">What you&apos;ll learn</h2>
           <p className="mt-2 max-w-2xl text-[15px] text-slate-500">
             {modules.length} modules · {modules.reduce((s, m) => s + m.lessons, 0)} lessons{totalProjects ? ` · ${totalProjects} hands-on projects` : ""}. Your placement result maps straight onto this path.
           </p>
@@ -206,11 +206,11 @@ export function DiagnosticExperience({ slug, subject, seo, modules, totalProject
       )}
 
       {/* ── Outcomes ─────────────────────────────────────────────────────── */}
-      <section className="mx-auto max-w-6xl px-4 py-10 sm:px-6">
-        <div className="grid gap-8 rounded-2xl bg-[#F8FAFC] p-6 sm:p-10 lg:grid-cols-[0.8fr_1.2fr]">
+      <section className="mx-auto max-w-6xl px-4 py-7 sm:px-6">
+        <div className="grid gap-6 rounded-2xl bg-[#F8FAFC] p-6 sm:p-8 lg:grid-cols-[0.8fr_1.2fr]">
           <div>
             <p className="text-[11px] font-bold uppercase tracking-[0.14em]" style={{ color: BRAND }}>Outcomes</p>
-            <h2 className="mt-2 text-2xl font-bold text-slate-900 sm:text-[28px]">What you walk away with</h2>
+            <h2 className="mt-1.5 text-xl font-bold text-slate-900 sm:text-2xl">What you walk away with</h2>
             <p className="mt-3 text-[15px] leading-relaxed text-slate-500">
               The skill check is just the on-ramp. Finish the track and you leave with proof, not just knowledge.
             </p>
@@ -260,14 +260,14 @@ export function DiagnosticExperience({ slug, subject, seo, modules, totalProject
 
       {/* ── Bottom CTA ───────────────────────────────────────────────────── */}
       <section className="px-4 pb-12 pt-4 sm:px-6">
-        <div className="mx-auto flex max-w-6xl flex-col items-start justify-between gap-5 rounded-2xl px-6 py-10 sm:flex-row sm:items-center sm:px-12" style={{ background: BRAND }}>
+        <div className="mx-auto flex max-w-6xl flex-col items-start justify-between gap-4 rounded-2xl px-6 py-8 sm:flex-row sm:items-center sm:px-10" style={{ background: BRAND }}>
           <div>
-            <h2 className="text-2xl font-bold text-white sm:text-[28px]">Three minutes. Five questions.</h2>
-            <p className="mt-2 text-[15px] text-white/85">Find your starting point as {subject.role.startsWith("A") || subject.role.startsWith("E") ? "an" : "a"} {subject.role} — instantly, no signup.</p>
+            <h2 className="text-xl font-bold text-white sm:text-2xl">Three minutes. Five questions.</h2>
+            <p className="mt-1.5 text-sm text-white/85">Find your starting point as {subject.role.startsWith("A") || subject.role.startsWith("E") ? "an" : "a"} {subject.role} — instantly, no signup.</p>
           </div>
           <button
             onClick={start}
-            className="group inline-flex h-12 shrink-0 items-center gap-2 rounded-lg bg-white px-6 text-[15px] font-semibold text-[#0056CE] shadow-lg transition-transform hover:-translate-y-0.5"
+            className="group inline-flex h-10 shrink-0 items-center gap-2 rounded-lg bg-white px-5 text-sm font-semibold text-[#0056CE] shadow-lg transition-transform hover:-translate-y-0.5"
           >
             Start the skill check
             <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
