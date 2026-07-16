@@ -630,11 +630,6 @@ export default function ResultsClient({ initialSeats = null, coursePath = null }
           </div>
         </div>
 
-        {/* Footer links */}
-        <div style={{ textAlign: "center", display: "flex", flexDirection: "column", gap: 12, fontSize: 15, fontWeight: 500, marginTop: 28 }}>
-          <Link href={`/diagnostic/${slug}`} style={{ color: C.blue }}>Take the {subject.title} skill check yourself →</Link>
-          <Link href="/diagnostic" style={{ color: C.sec2 }}>← Try a different track</Link>
-        </div>
       </div>
 
       <style>{`
