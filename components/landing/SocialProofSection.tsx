@@ -73,8 +73,9 @@ export function SocialProofSection({
           </p>
         </div>
 
-        {/* Founder note + founding offer — side by side */}
-        <div className="grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-6 lg:gap-8 items-stretch">
+        {/* Founder note + founding offer — side by side. items-start so the offer
+            card top-aligns beside the (longer) letter instead of force-stretching. */}
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-6 lg:gap-8 items-start">
 
           {/* LEFT — founder note */}
           <div
@@ -94,17 +95,37 @@ export function SocialProofSection({
 
             <div className="space-y-4 text-sm sm:text-base text-slate-700 leading-relaxed">
               <p>
-                I built Square 1 AI so people can{" "}
-                <span className="font-semibold text-slate-900">learn a concept, practice it in a real-life scenario,</span>{" "}
-                and then get hired — or start a business that impacts society positively.
+                I started Square 1 AI with one belief at its core:{" "}
+                <span className="font-semibold text-slate-900">that anyone — from anywhere, starting with anything — can learn, build, and change the direction of their life</span>{" "}
+                when they&apos;re given a real chance to practice and someone in their corner.
               </p>
               <p>
-                I want to teach people, and to help them become{" "}
+                For too long, learning has stopped at theory. You watch the videos, you
+                read the docs, you memorize the answers — and then you&apos;re left alone,
+                quietly wondering whether any of it truly works, or whether <em>you</em> are
+                truly ready. I lived that gap for years, and I built Square 1 to close it.
+              </p>
+              <p>
+                Here, you don&apos;t just learn a concept — you{" "}
+                <span className="font-semibold text-slate-900">practice it in real, real-world scenarios</span>,
+                get honest feedback on the work you actually produce, and walk away with
+                proof you can stand behind. From there, you go and get hired, or you start
+                the business you&apos;ve been dreaming about — and you begin to make a
+                genuine, positive impact on the world around you.
+              </p>
+              <p>
+                My goal was never only to teach skills. It&apos;s to help people become{" "}
                 <span className="font-semibold text-slate-900">dreamers, entrepreneurs, and creators of positivity</span>{" "}
-                for the future.
+                — the kind of people who look at the future and decide to build it, rather
+                than wait for it to arrive.
+              </p>
+              <p>
+                So wherever you&apos;re starting from, please know this: everyone starts at
+                square one. What matters is that you start — and I&apos;ll be right here, in
+                your corner, every step of the way.
               </p>
               <p className="text-base sm:text-lg font-semibold text-slate-900">
-                Let&apos;s make the world a better place.
+                Let&apos;s make the world a better place — together.
               </p>
             </div>
 
