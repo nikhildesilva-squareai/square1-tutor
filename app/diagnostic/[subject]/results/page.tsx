@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import { Inter_Tight, Figtree } from "next/font/google";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { FREE_ACCESS_CAP, freeWindowOpen } from "@/lib/free-access";
-import { getSubject, getDiagnostic, scoreDiagnostic, decodeAnswers } from "@/lib/diagnostic";
+import { getSubject, getDiagnostic, scoreDiagnostic, decodeAnswers, readinessBand } from "@/lib/diagnostic";
 import ResultsClient from "./ResultsClient";
 
 // Seat count resolved server-side so the "N of 500 seats left" pill renders on
@@ -44,7 +44,7 @@ export async function generateMetadata({ params, searchParams }: Props): Promise
   const result = answers ? scoreDiagnostic(questions, answers) : null;
 
   const title = result
-    ? `${result.level} in ${sub.title} — Square 1 AI Skill Snapshot`
+    ? `${readinessBand(result.score)} in ${sub.title} — Square 1 AI Skill Snapshot`
     : `${sub.title} Skill Snapshot — Square 1 AI`;
 
   const description = result

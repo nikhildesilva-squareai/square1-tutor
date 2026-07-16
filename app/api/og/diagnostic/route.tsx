@@ -1,5 +1,6 @@
 import { ImageResponse } from "next/og";
 import { type NextRequest } from "next/server";
+import { getDiagnostic, scoreDiagnostic, getTopicResults } from "@/lib/diagnostic";
 
 export const runtime = "edge";
 
@@ -39,18 +40,6 @@ const TOPICS: Record<string, string[]> = {
   "ai-product-management": ["Fundamentals", "Algorithms", "Tooling", "Code quality", "Testing"],
 };
 
-const CORRECT_ANSWERS: Record<string, number[]> = {
-  "generative-ai": [1, 1, 1, 1, 1],
-  "machine-learning": [1, 1, 2, 1, 1],
-  "fullstack-development": [1, 1, 1, 1, 1],
-  "cybersecurity": [1, 1, 1, 1, 1],
-  "data-science": [1, 0, 1, 1, 1],
-  "artificial-intelligence": [1, 1, 1, 1, 1],
-  "computer-vision": [1, 1, 2, 1, 1],
-  "llm-agent-architect": [1, 1, 1, 1, 1],
-  "ai-product-management": [1, 1, 0, 1, 1],
-};
-
 const BANDS = [
   { label: "Novice", min: 0, max: 1, color: "#EF4444" },
   { label: "Developing", min: 2, max: 2, color: "#F59E0B" },
@@ -73,15 +62,13 @@ function decodeAnswers(param: string | null): number[] | null {
 }
 
 function computeScore(subject: string, answers: number[]): { score: number; total: number; topicResults: { topic: string; correct: boolean }[] } {
-  const correct = CORRECT_ANSWERS[subject] ?? [1, 1, 1, 1, 1];
-  const topics = TOPICS[subject] ?? ["Topic 1", "Topic 2", "Topic 3", "Topic 4", "Topic 5"];
-  let score = 0;
-  const topicResults = topics.map((topic, i) => {
-    const isCorrect = answers[i] === correct[i];
-    if (isCorrect) score++;
-    return { topic, correct: isCorrect };
-  });
-  return { score, total: topics.length, topicResults };
+  // Use the SAME shuffled scoring the results page uses (getDiagnostic +
+  // scoreDiagnostic), so the shared image can never disagree with the page. A
+  // hardcoded answer key here went stale the moment the option-shuffle shipped.
+  const questions = getDiagnostic(subject);
+  const { score, total } = scoreDiagnostic(questions, answers);
+  const topicResults = getTopicResults(questions, answers).map((t) => ({ topic: t.topic, correct: t.correct }));
+  return { score, total, topicResults };
 }
 
 // Radar chart points for OG image (static SVG path)

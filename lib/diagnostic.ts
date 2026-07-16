@@ -327,6 +327,15 @@ export function scoreDiagnostic(questions: DiagQuestion[], answers: number[]): D
   return { score, total, level, weakTopics, blurb };
 }
 
+/** The 5-band readiness label (Novice → Expert) derived from the raw score. This
+ *  is the level the results page shows; the share text, the browser/OG title and
+ *  the shared OG image all use it too, so every surface agrees. (Distinct from
+ *  DiagResult.level, a coarser 3-tier ratio label kept for backwards-compat.) */
+export function readinessBand(score: number): string {
+  const bands = ["Novice", "Developing", "Competent", "Proficient", "Expert"];
+  return bands[Math.max(0, Math.min(4, score <= 1 ? 0 : score - 1))];
+}
+
 // ═══════════════════════════════════════════════════════════════════════════════
 // Subjects — the 9 world-class courses, shared by all diagnostic routes
 // ═══════════════════════════════════════════════════════════════════════════════

@@ -334,7 +334,7 @@ export default function ResultsClient({ initialSeats = null }: { initialSeats?: 
             <p style={{ fontSize: 13, color: C.sec2, margin: "0 0 14px" }}>Show friends where you stand — or dare them to beat it.</p>
             <ShareResultButton
               percentage={Math.round(pct * 100)}
-              level={result.level}
+              level={bandLabel}
               courseTitle={subject.title}
               shareUrl={shareUrl}
               subject={slug}
