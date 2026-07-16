@@ -214,7 +214,7 @@ export default function ResultsClient({ initialSeats = null }: { initialSeats?: 
         <Link href="/login" style={{ fontSize: 15, fontWeight: 500, color: C.sec }}>Sign in</Link>
       </header>
 
-      <div style={{ maxWidth: "min(1240px, 92vw)", margin: "0 auto", padding: "40px 20px 64px", display: "flex", flexDirection: "column", gap: 28 }}>
+      <div style={{ maxWidth: "min(760px, 94vw)", margin: "0 auto", padding: "40px 20px 64px", display: "flex", flexDirection: "column", gap: 24 }}>
 
         {/* ── Skill scan card ─────────────────────────────────────────────── */}
         <div style={cardStyle}>
@@ -238,10 +238,10 @@ export default function ResultsClient({ initialSeats = null }: { initialSeats?: 
               { label: "Score", big: `${result.score}`, small: `/${result.total}`, sub: "" },
               { label: "Readiness", big: readinessScore, small: "/10", sub: bandLabel },
             ].map((r, i) => (
-              <div key={r.label} style={{ padding: "26px 16px", textAlign: "center", borderRight: i === 0 ? `1px solid ${C.border}` : "none" }}>
-                <div style={{ ...eyebrow, marginBottom: 18 }}>{r.label}</div>
-                <div style={{ position: "relative", width: 164, height: 164, margin: "0 auto" }}>
-                  <svg viewBox="0 0 140 140" width={164} height={164}>
+              <div key={r.label} style={{ padding: "24px 16px", textAlign: "center", borderRight: i === 0 ? `1px solid ${C.border}` : "none" }}>
+                <div style={{ ...eyebrow, marginBottom: 16 }}>{r.label}</div>
+                <div style={{ position: "relative", width: 124, height: 124, margin: "0 auto" }}>
+                  <svg viewBox="0 0 140 140" width={124} height={124}>
                     <circle cx={70} cy={70} r={58} fill="none" stroke={C.border} strokeWidth={10} />
                     <circle cx={70} cy={70} r={58} fill="none" stroke={C.blue} strokeWidth={10} strokeLinecap="round" strokeDasharray={ringDash} transform="rotate(-90 70 70)" />
                   </svg>
