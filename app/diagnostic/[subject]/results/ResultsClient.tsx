@@ -409,6 +409,14 @@ export default function ResultsClient({ initialSeats = null, coursePath = null }
   const pct = result.score / result.total;
   const signupHref = `/signup?subject=${slug}`;
 
+  // Founding-plan pricing derived from the shared source: numeric per-month, the
+  // 3-mo baseline (highest rate), % saved vs baseline, and the billed total.
+  const foundingBase = Math.max(...FOUNDING_PLANS.map((p) => parseFloat(p.perMonth.replace(/[^0-9.]/g, ""))));
+  const foundingPlans = FOUNDING_PLANS.map((p) => {
+    const pm = parseFloat(p.perMonth.replace(/[^0-9.]/g, ""));
+    return { ...p, pm, savings: Math.round(((foundingBase - pm) / foundingBase) * 100), total: (pm * p.months).toFixed(2) };
+  });
+
   const RING_C = 2 * Math.PI * 58;
   const ringDash = `${(pct * RING_C).toFixed(1)} ${RING_C.toFixed(1)}`;
 
@@ -548,35 +556,76 @@ export default function ResultsClient({ initialSeats = null, coursePath = null }
             />
           </div>
 
-          {/* Offer band */}
-          <div className="lg:col-span-4" style={{ background: C.card, border: `2px solid ${C.blue}`, borderRadius: 14, boxShadow: "0 8px 24px -12px rgba(21,47,84,0.2)", padding: 24 }}>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 24, flexWrap: "wrap" }}>
-              <div style={{ minWidth: 260 }}>
-                <div style={{ display: "inline-flex", alignItems: "center", gap: 8, height: 30, padding: "0 14px", borderRadius: 999, border: `1px solid ${C.borderStrong}`, fontSize: 13, fontWeight: 700, color: C.success, background: C.tint, marginBottom: 12 }}>
-                  <span style={{ width: 8, height: 8, borderRadius: 999, background: C.success }} />
-                  {seats ? `Free early access — ${seats.left} of ${seats.cap} seats left` : "Free during early access"}
-                </div>
-                <h2 style={{ fontSize: 24, fontWeight: 700, letterSpacing: "-0.02em", margin: 0 }}>Unlock your full report — free</h2>
-                <p style={{ fontSize: 14, color: C.sec2, margin: "6px 0 0", maxWidth: 460 }}>
-                  20 questions incl. real code, AI-graded — plus the tracking, matrix, and projects above. Founding rate locked for life.
-                </p>
+          {/* Offer band — the conversion close: value stack + founding pricing + CTA */}
+          <div className="lg:col-span-4" style={{ border: `2px solid ${C.blue}`, borderRadius: 18, boxShadow: "0 20px 50px -24px rgba(0,86,206,0.4)", padding: 0, overflow: "hidden", background: "linear-gradient(180deg, #F3F8FF 0%, #FFFFFF 220px)" }}>
+            <div style={{ padding: "30px 28px 32px", textAlign: "center" }}>
+              {/* Urgency */}
+              <div style={{ display: "inline-flex", alignItems: "center", gap: 8, height: 32, padding: "0 16px", borderRadius: 999, border: `1px solid ${C.borderStrong}`, fontSize: 13, fontWeight: 700, color: C.success, background: C.card, marginBottom: 16 }}>
+                <span style={{ width: 8, height: 8, borderRadius: 999, background: C.success, boxShadow: `0 0 0 4px rgba(25,166,95,0.16)` }} />
+                {seats ? `Free early access — only ${seats.left} of ${seats.cap} seats left` : "Free during early access"}
               </div>
-              <div style={{ display: "flex", flexDirection: "column", gap: 12, minWidth: 260 }}>
-                <div style={{ display: "flex", gap: 8 }}>
-                  {FOUNDING_PLANS.map((p) => (
-                    <div key={p.months} style={{ position: "relative", flex: 1, background: C.card, border: p.popular ? `1.5px solid ${C.blue}` : `1px solid ${C.borderStrong}`, borderRadius: 10, padding: "12px 8px", textAlign: "center" }}>
-                      {p.popular && (
-                        <span style={{ position: "absolute", top: -9, left: "50%", transform: "translateX(-50%)", background: C.blue, color: "#FFFFFF", fontFamily: FIGTREE, fontWeight: 700, fontSize: 9, letterSpacing: "0.06em", textTransform: "uppercase", padding: "2px 8px", borderRadius: 999, whiteSpace: "nowrap" }}>Popular</span>
-                      )}
-                      <div style={{ fontWeight: 700, fontSize: 18, letterSpacing: "-0.02em" }}>{p.perMonth}</div>
-                      <div style={{ fontSize: 11, color: C.ter }}>{p.months}-mo</div>
+
+              {/* Hook */}
+              <h2 style={{ fontSize: 32, fontWeight: 800, letterSpacing: "-0.03em", lineHeight: 1.08, margin: "0 auto", maxWidth: 640 }}>
+                Turn this snapshot into a job‑ready plan.
+              </h2>
+              <p style={{ fontSize: 15.5, color: C.sec, margin: "10px auto 0", maxWidth: 560, lineHeight: 1.5 }}>
+                Your free skill scan is just the start. Unlock the full report and the whole {subject.title} track — free while early access lasts.
+              </p>
+
+              {/* Value stack */}
+              <div className="grid grid-cols-1 sm:grid-cols-2" style={{ gap: "10px 24px", maxWidth: 620, margin: "24px auto 0", textAlign: "left" }}>
+                {[
+                  ["Your full 20‑question assessment", "Real code, AI‑graded — your true proficiency, not a 5‑question taster."],
+                  ["A personalized path to job‑ready", "Every gap mapped to the exact lessons and projects that close it."],
+                  ["Nova, your 24/7 AI tutor", "Grades every answer and explains the why — the moment you're stuck."],
+                  ["Real projects + a certificate", "Auto‑graded, portfolio‑ready work that proves you can actually build."],
+                ].map(([title, body], i) => (
+                  <div key={i} style={{ display: "flex", gap: 10, alignItems: "flex-start" }}>
+                    <span style={{ flexShrink: 0, width: 22, height: 22, borderRadius: 999, background: "rgba(25,166,95,0.12)", display: "inline-flex", alignItems: "center", justifyContent: "center", marginTop: 1 }}>
+                      <svg viewBox="0 0 24 24" width={13} height={13} fill="none" stroke={C.success} strokeWidth={3} strokeLinecap="round" strokeLinejoin="round"><path d="m5 12 5 5 9-10" /></svg>
+                    </span>
+                    <div>
+                      <div style={{ fontSize: 14, fontWeight: 700, color: C.ink, lineHeight: 1.3 }}>{title}</div>
+                      <div style={{ fontSize: 12.5, color: C.sec2, lineHeight: 1.4, marginTop: 1 }}>{body}</div>
                     </div>
-                  ))}
-                </div>
-                <Link href={signupHref} style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8, height: 50, borderRadius: 10, background: CTA_GRADIENT, boxShadow: CTA_INSET, color: "#FFFFFF", fontWeight: 700, fontSize: 16 }}>
-                  Get my full report — free →
-                </Link>
+                  </div>
+                ))}
               </div>
+
+              {/* Pricing */}
+              <div style={{ ...eyebrow, color: C.sec2, marginTop: 28, marginBottom: 14 }}>Free now — lock your founding rate for life</div>
+              <div className="grid grid-cols-3" style={{ gap: 12, maxWidth: 560, margin: "0 auto", alignItems: "stretch" }}>
+                {foundingPlans.map((p) => (
+                  <div key={p.months} style={{
+                    position: "relative", background: C.card, textAlign: "center",
+                    border: p.popular ? `2px solid ${C.blue}` : `1px solid ${C.borderStrong}`,
+                    borderRadius: 14, padding: p.popular ? "22px 8px 16px" : "16px 8px",
+                    boxShadow: p.popular ? "0 12px 28px -14px rgba(0,86,206,0.45)" : "none",
+                    transform: p.popular ? "scale(1.04)" : "none", zIndex: p.popular ? 1 : 0,
+                  }}>
+                    {p.popular && (
+                      <span style={{ position: "absolute", top: -11, left: "50%", transform: "translateX(-50%)", background: CTA_GRADIENT, color: "#FFFFFF", fontFamily: FIGTREE, fontWeight: 700, fontSize: 9.5, letterSpacing: "0.08em", textTransform: "uppercase", padding: "3px 12px", borderRadius: 999, whiteSpace: "nowrap", boxShadow: "0 4px 10px -3px rgba(0,86,206,0.5)" }}>Most popular</span>
+                    )}
+                    <div style={{ fontFamily: FIGTREE, fontSize: 11, fontWeight: 700, letterSpacing: "0.04em", textTransform: "uppercase", color: C.ter }}>{p.months} months</div>
+                    <div style={{ display: "flex", alignItems: "baseline", justifyContent: "center", gap: 1, marginTop: 6 }}>
+                      <span style={{ fontSize: p.popular ? 30 : 26, fontWeight: 800, letterSpacing: "-0.03em", color: p.popular ? C.blue : C.ink }}>{p.perMonth}</span>
+                      <span style={{ fontSize: 12, color: C.ter, fontWeight: 600 }}>/mo</span>
+                    </div>
+                    {p.savings > 0
+                      ? <div style={{ display: "inline-block", marginTop: 8, fontFamily: FIGTREE, fontSize: 10.5, fontWeight: 700, color: C.success, background: "rgba(25,166,95,0.1)", padding: "2px 8px", borderRadius: 999 }}>Save {p.savings}%</div>
+                      : <div style={{ marginTop: 8, fontSize: 11, color: C.ter }}>Standard</div>}
+                  </div>
+                ))}
+              </div>
+
+              {/* CTA */}
+              <Link href={signupHref} style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8, height: 56, borderRadius: 12, background: CTA_GRADIENT, boxShadow: CTA_INSET, color: "#FFFFFF", fontWeight: 800, fontSize: 17, letterSpacing: "-0.01em", maxWidth: 420, margin: "22px auto 0" }}>
+                Get my full report — free →
+              </Link>
+              <p style={{ fontSize: 12.5, color: C.ter, margin: "12px 0 0" }}>
+                No card required to start · Free during early access · Founding rate locked for life
+              </p>
             </div>
           </div>
         </div>
