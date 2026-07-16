@@ -1,7 +1,13 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
+import { Inter_Tight, Figtree } from "next/font/google";
 import { getSubject, getDiagnostic, scoreDiagnostic, decodeAnswers } from "@/lib/diagnostic";
 import ResultsClient from "./ResultsClient";
+
+// Fonts for the redesigned (light) results page — self-hosted by next/font, so
+// no external request / CSP issue. Inter Tight = body+display, Figtree = eyebrows.
+const interTight = Inter_Tight({ subsets: ["latin"], weight: ["400", "500", "600", "700"], variable: "--font-inter-tight" });
+const figtree = Figtree({ subsets: ["latin"], weight: ["600", "700"], variable: "--font-figtree" });
 
 interface Props {
   params: Promise<{ subject: string }>;
@@ -50,8 +56,10 @@ export async function generateMetadata({ params, searchParams }: Props): Promise
 
 export default function DiagnosticResultsPage() {
   return (
-    <Suspense>
-      <ResultsClient />
-    </Suspense>
+    <div className={`${interTight.variable} ${figtree.variable}`}>
+      <Suspense>
+        <ResultsClient />
+      </Suspense>
+    </div>
   );
 }
