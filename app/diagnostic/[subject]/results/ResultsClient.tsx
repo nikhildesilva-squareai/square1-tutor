@@ -211,12 +211,12 @@ export default function ResultsClient({ initialSeats = null }: { initialSeats?: 
           <span style={{ width: 32, height: 32, borderRadius: 6, background: C.blue, display: "inline-flex", alignItems: "center", justifyContent: "center" }}>
             <svg viewBox="0 0 32 32" width={18} height={18} aria-hidden="true"><path d="M31.271 0 V9.349 H28.144 V3.085 H3.127 V27.766 H18.004 V30.851 H0 V0 H31.271 Z" fill="#FFFFFF" /></svg>
           </span>
-          <span style={{ fontWeight: 700, fontSize: 18, letterSpacing: "-0.01em", color: C.ink }}>Square1 Ai</span>
+          <span style={{ fontWeight: 700, fontSize: 18, letterSpacing: "-0.01em", color: C.ink }}>Square 1 AI</span>
         </Link>
         <Link href="/login" style={{ fontSize: 15, fontWeight: 500, color: C.sec }}>Sign in</Link>
       </header>
 
-      <div style={{ maxWidth: 1020, margin: "0 auto", padding: "40px 20px 64px", display: "flex", flexDirection: "column", gap: 28 }}>
+      <div style={{ maxWidth: "min(1240px, 92vw)", margin: "0 auto", padding: "40px 20px 64px", display: "flex", flexDirection: "column", gap: 28 }}>
 
         {/* ── Skill scan card ─────────────────────────────────────────────── */}
         <div style={cardStyle}>
@@ -240,10 +240,10 @@ export default function ResultsClient({ initialSeats = null }: { initialSeats?: 
               { label: "Score", big: `${result.score}`, small: `/${result.total}`, sub: "" },
               { label: "Readiness", big: readinessScore, small: "/10", sub: bandLabel },
             ].map((r, i) => (
-              <div key={r.label} style={{ padding: "32px 16px", textAlign: "center", borderRight: i === 0 ? `1px solid ${C.border}` : "none" }}>
-                <div style={{ ...eyebrow, marginBottom: 20 }}>{r.label}</div>
-                <div style={{ position: "relative", width: 140, height: 140, margin: "0 auto" }}>
-                  <svg viewBox="0 0 140 140" width={140} height={140}>
+              <div key={r.label} style={{ padding: "26px 16px", textAlign: "center", borderRight: i === 0 ? `1px solid ${C.border}` : "none" }}>
+                <div style={{ ...eyebrow, marginBottom: 18 }}>{r.label}</div>
+                <div style={{ position: "relative", width: 164, height: 164, margin: "0 auto" }}>
+                  <svg viewBox="0 0 140 140" width={164} height={164}>
                     <circle cx={70} cy={70} r={58} fill="none" stroke={C.border} strokeWidth={10} />
                     <circle cx={70} cy={70} r={58} fill="none" stroke={C.blue} strokeWidth={10} strokeLinecap="round" strokeDasharray={ringDash} transform="rotate(-90 70 70)" />
                   </svg>
