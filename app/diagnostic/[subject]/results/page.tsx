@@ -2,9 +2,64 @@ import { Suspense } from "react";
 import type { Metadata } from "next";
 import { Inter_Tight, Figtree } from "next/font/google";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { createClient } from "@/lib/supabase/server";
+import { learnableHours } from "@/lib/utils";
 import { FREE_ACCESS_CAP, freeWindowOpen } from "@/lib/free-access";
 import { getSubject, getDiagnostic, scoreDiagnostic, decodeAnswers, readinessBand } from "@/lib/diagnostic";
 import ResultsClient from "./ResultsClient";
+
+// The real course path for this track — modules (in order), the honest guided-
+// hours number (same learnableHours model the course page uses), lesson total
+// and project count. Powers the "Your path to job-ready" roadmap + role/coverage
+// tiles. Returns null on any error or if the track has no course row yet, and
+// the client hides the roadmap gracefully. Subject slug == course slug.
+export interface CoursePath {
+  modules: { title: string; lessons: number }[];
+  guidedHours: number;
+  totalLessons: number;
+  totalProjects: number;
+}
+
+async function getCoursePath(slug: string): Promise<CoursePath | null> {
+  try {
+    const supabase = await createClient();
+    const { data: course } = await supabase
+      .from("courses").select("id, total_projects")
+      .eq("slug", slug).is("parent_course_id", null).maybeSingle();
+    if (!course) return null;
+
+    const [{ data: mods }, { data: lessons }] = await Promise.all([
+      supabase.from("modules").select("title, order_index, lessons(count)")
+        .eq("course_id", course.id).order("order_index", { ascending: true }),
+      supabase.from("lessons").select("id, estimated_minutes").eq("course_id", course.id),
+    ]);
+
+    const modules = (mods ?? []).map((m) => ({
+      title: m.title as string,
+      lessons: (m.lessons as unknown as { count: number }[] | null)?.[0]?.count ?? 0,
+    }));
+    const lessonMinutes = (lessons ?? []).reduce((s, l) => s + ((l.estimated_minutes as number) ?? 0), 0);
+    const lessonIds = (lessons ?? []).map((l) => l.id as string);
+    const { data: exRows } = lessonIds.length
+      ? await supabase.from("exercises").select("type").in("lesson_id", lessonIds)
+      : { data: [] as { type: string }[] };
+    const ex = { mcq: 0, short: 0, code: 0 };
+    for (const r of (exRows ?? []) as { type: string }[]) {
+      if (r.type === "mcq") ex.mcq++;
+      else if (r.type === "short_answer") ex.short++;
+      else if (r.type === "code") ex.code++;
+    }
+
+    return {
+      modules,
+      guidedHours: learnableHours(lessonMinutes, ex),
+      totalLessons: modules.reduce((s, m) => s + m.lessons, 0),
+      totalProjects: (course.total_projects as number) ?? 0,
+    };
+  } catch {
+    return null;
+  }
+}
 
 // Seat count resolved server-side so the "N of 500 seats left" pill renders on
 // the first paint (no fallback flash from a client fetch). Returns null when the
@@ -72,12 +127,13 @@ export async function generateMetadata({ params, searchParams }: Props): Promise
   };
 }
 
-export default async function DiagnosticResultsPage() {
-  const initialSeats = await getInitialSeats();
+export default async function DiagnosticResultsPage({ params }: Props) {
+  const { subject } = await params;
+  const [initialSeats, coursePath] = await Promise.all([getInitialSeats(), getCoursePath(subject)]);
   return (
     <div className={`${interTight.variable} ${figtree.variable}`}>
       <Suspense>
-        <ResultsClient initialSeats={initialSeats} />
+        <ResultsClient initialSeats={initialSeats} coursePath={coursePath} />
       </Suspense>
     </div>
   );

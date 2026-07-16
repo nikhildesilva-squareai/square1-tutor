@@ -295,7 +295,106 @@ function SkillMatrixTile({ topics, relevance, score, total, className }: { topic
   );
 }
 
-export default function ResultsClient({ initialSeats = null }: { initialSeats?: { left: number; cap: number } | null }) {
+type CoursePath = { modules: { title: string; lessons: number }[]; guidedHours: number; totalLessons: number; totalProjects: number };
+
+/* ── Strengths & gaps — a donut of correct vs to-improve + edge/focus lines ─── */
+function StrengthsDonut({ topics, score, total, className }: { topics: { topic: string; correct: boolean }[]; score: number; total: number; className?: string }) {
+  const strong = topics.filter((t) => t.correct).map((t) => t.topic);
+  const weak = topics.filter((t) => !t.correct).map((t) => t.topic);
+  const R = 42, CIRC = 2 * Math.PI * R, frac = total ? score / total : 0;
+  return (
+    <div className={className} style={{ ...tileBase, padding: 20 }}>
+      <div style={{ ...eyebrow, marginBottom: 14 }}>Strengths &amp; gaps</div>
+      <div style={{ display: "flex", alignItems: "center", gap: 18, flexWrap: "wrap" }}>
+        <svg width={110} height={110} viewBox="0 0 110 110" style={{ flexShrink: 0 }} role="img" aria-label={`${score} of ${total} topics correct`}>
+          <circle cx={55} cy={55} r={R} fill="none" stroke={C.error} strokeOpacity={0.16} strokeWidth={12} />
+          <circle cx={55} cy={55} r={R} fill="none" stroke={C.success} strokeWidth={12} strokeLinecap="round"
+            strokeDasharray={`${(frac * CIRC).toFixed(1)} ${CIRC.toFixed(1)}`} transform="rotate(-90 55 55)" />
+          <text x={55} y={53} textAnchor="middle" fontSize={24} fontWeight={800} fill={C.ink}>{score}</text>
+          <text x={55} y={69} textAnchor="middle" fontSize={9.5} fontWeight={700} fill={C.ter} letterSpacing="0.08em">OF {total}</text>
+        </svg>
+        <div style={{ minWidth: 0, flex: "1 1 130px", display: "flex", flexDirection: "column", gap: 10 }}>
+          <div>
+            <div style={{ fontFamily: FIGTREE, fontSize: 10.5, fontWeight: 700, color: C.success, letterSpacing: "0.06em", textTransform: "uppercase" }}>Your edge</div>
+            <div style={{ fontSize: 12.5, color: C.sec, marginTop: 2 }}>{strong.length ? strong.join(" · ") : "Building the fundamentals"}</div>
+          </div>
+          <div>
+            <div style={{ fontFamily: FIGTREE, fontSize: 10.5, fontWeight: 700, color: C.error, letterSpacing: "0.06em", textTransform: "uppercase" }}>Your focus</div>
+            <div style={{ fontSize: 12.5, color: C.sec, marginTop: 2 }}>{weak.length ? weak.join(" · ") : "You're across all five — go deeper"}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ── Role readiness — how many core areas for the track's role are covered ──── */
+function RoleReadiness({ score, total, role, coursePath, className }: { score: number; total: number; role: string; coursePath: CoursePath | null; className?: string }) {
+  const frac = total ? score / total : 0;
+  return (
+    <div className={className} style={{ ...tileBase, padding: 20, display: "flex", flexDirection: "column" }}>
+      <div style={{ ...eyebrow, marginBottom: 6 }}>Role readiness</div>
+      <p style={{ fontSize: 13, color: C.sec2, margin: "0 0 14px" }}>Core areas a {role} is screened on.</p>
+      <div style={{ display: "flex", alignItems: "baseline", gap: 8, marginBottom: 9 }}>
+        <span style={{ fontSize: 26, fontWeight: 800, letterSpacing: "-0.02em", color: C.ink }}>{score}</span>
+        <span style={{ fontSize: 14, color: C.ter, fontWeight: 600 }}>of {total} covered</span>
+      </div>
+      <div style={{ height: 9, borderRadius: 999, background: "#EEF3F9", overflow: "hidden" }}>
+        <div style={{ width: `${frac * 100}%`, height: "100%", borderRadius: 999, background: CTA_GRADIENT }} />
+      </div>
+      {coursePath && (
+        <p style={{ fontSize: 12, color: C.ter, margin: "auto 0 0", paddingTop: 14 }}>
+          The full track goes far deeper — {coursePath.totalLessons} lessons across {coursePath.modules.length} modules.
+        </p>
+      )}
+    </div>
+  );
+}
+
+/* ── Roadmap — the real course path, flagging modules that hit a weak topic ───
+   Modules come straight from the DB (order + lesson counts). A module is flagged
+   "targets your gap" only on a confident keyword overlap (≥4-char shared word)
+   with a missed topic — conservative so we never claim a mapping that isn't real. */
+function Roadmap({ coursePath, weakTopics, track, className }: { coursePath: CoursePath; weakTopics: string[]; track: string; className?: string }) {
+  const { modules, guidedHours, totalProjects } = coursePath;
+  const weeks = Math.max(1, Math.round(guidedHours / 7)); // ~1h/day
+  const words = (s: string) => s.toLowerCase().replace(/[^a-z0-9 ]/g, " ").split(/\s+/).filter((w) => w.length >= 4);
+  const weakWords = new Set(weakTopics.flatMap(words));
+  return (
+    <div className={className} style={{ ...tileBase, padding: 24 }}>
+      <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 16, flexWrap: "wrap" }}>
+        <div>
+          <div style={{ ...eyebrow, marginBottom: 8 }}>Your path to job-ready</div>
+          <p style={{ fontSize: 14, color: C.sec2, margin: 0, maxWidth: 520 }}>
+            The real {track} track, in order.{weakTopics.length ? " Modules that target your gaps are flagged." : " Start at module one and build up."}
+          </p>
+        </div>
+        <div style={{ flexShrink: 0, textAlign: "right" }}>
+          <div style={{ fontSize: 26, fontWeight: 800, letterSpacing: "-0.02em", color: C.ink }}>~{guidedHours}h</div>
+          <div style={{ fontFamily: FIGTREE, fontSize: 10.5, fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase", color: C.ter, marginTop: 4 }}>
+            {totalProjects > 0 ? `+ ${totalProjects} projects · ` : ""}~{weeks} wks at 1h/day
+          </div>
+        </div>
+      </div>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))", gap: 10, marginTop: 18 }}>
+        {modules.map((m, i) => {
+          const hit = words(m.title).some((w) => weakWords.has(w));
+          return (
+            <div key={i} style={{ display: "flex", gap: 10, alignItems: "flex-start", padding: "11px 12px", borderRadius: 10, border: `1px solid ${hit ? C.borderStrong : C.border}`, background: hit ? "rgba(0,86,206,0.03)" : C.card }}>
+              <span style={{ flexShrink: 0, width: 22, height: 22, borderRadius: 999, background: hit ? C.blue : C.tint, color: hit ? "#FFFFFF" : C.sec2, border: hit ? "none" : `1px solid ${C.border}`, display: "inline-flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 800, fontFamily: FIGTREE }}>{i + 1}</span>
+              <div style={{ minWidth: 0 }}>
+                <div style={{ fontSize: 13, fontWeight: 600, color: C.ink }}>{m.title}</div>
+                <div style={{ fontSize: 11.5, color: hit ? C.blue : C.ter, marginTop: 1 }}>{m.lessons} lessons{hit ? " · targets your gap" : ""}</div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+export default function ResultsClient({ initialSeats = null, coursePath = null }: { initialSeats?: { left: number; cap: number } | null; coursePath?: CoursePath | null }) {
   const params = useParams<{ subject: string }>();
   const searchParams = useSearchParams();
   const slug = params.subject;
@@ -445,6 +544,17 @@ export default function ResultsClient({ initialSeats = null }: { initialSeats?: 
 
           {/* Skill matrix — measured from the diagnostic (was a locked preview) */}
           <SkillMatrixTile topics={topicResults} relevance={seo.topicRelevance} score={result.score} total={result.total} className="lg:col-span-2" />
+
+          {/* Strengths vs gaps donut */}
+          <StrengthsDonut topics={topicResults} score={result.score} total={result.total} className="lg:col-span-2" />
+
+          {/* Role readiness — core areas covered for the track's role */}
+          <RoleReadiness score={result.score} total={result.total} role={subject.role} coursePath={coursePath} className="lg:col-span-2" />
+
+          {/* Your path to job-ready — real curriculum roadmap (hidden if no course) */}
+          {coursePath && coursePath.modules.length > 0 && (
+            <Roadmap coursePath={coursePath} weakTopics={topicResults.filter((t) => !t.correct).map((t) => t.topic)} track={subject.title} className="lg:col-span-4" />
+          )}
 
           {/* Locked preview: progress over time — needs signup, no history yet */}
           <LockedTile title="Progress over time" href={signupHref} className="lg:col-span-2"><PreviewLine /></LockedTile>
