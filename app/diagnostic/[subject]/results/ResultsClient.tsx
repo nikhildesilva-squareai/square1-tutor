@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useSearchParams } from "next/navigation";
 import Link from "next/link";
+import { Logo } from "@/components/ui/logo";
 import { ShareResultButton } from "@/components/ShareResultButton";
 import { FOUNDING_PLANS } from "@/lib/founding";
 import {
@@ -207,11 +208,8 @@ export default function ResultsClient({ initialSeats = null }: { initialSeats?: 
     <div style={{ minHeight: "100vh", background: C.bg, color: C.ink, fontFamily: "var(--font-inter-tight), 'Inter Tight', system-ui, sans-serif" }}>
       {/* App bar */}
       <header style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "16px 24px", borderBottom: `1px solid ${C.border}`, background: C.card }}>
-        <Link href="/" style={{ display: "flex", alignItems: "center", gap: 12 }}>
-          <span style={{ width: 32, height: 32, borderRadius: 6, background: C.blue, display: "inline-flex", alignItems: "center", justifyContent: "center" }}>
-            <svg viewBox="0 0 32 32" width={18} height={18} aria-hidden="true"><path d="M31.271 0 V9.349 H28.144 V3.085 H3.127 V27.766 H18.004 V30.851 H0 V0 H31.271 Z" fill="#FFFFFF" /></svg>
-          </span>
-          <span style={{ fontWeight: 700, fontSize: 18, letterSpacing: "-0.01em", color: C.ink }}>Square 1 AI</span>
+        <Link href="/" style={{ display: "inline-flex", alignItems: "center" }} aria-label="Square 1 AI home">
+          <Logo variant="dark" size="md" />
         </Link>
         <Link href="/login" style={{ fontSize: 15, fontWeight: 500, color: C.sec }}>Sign in</Link>
       </header>
