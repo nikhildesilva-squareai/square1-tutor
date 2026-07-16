@@ -105,9 +105,9 @@ function LightRadar({ axes }: { axes: { label: string; pass: boolean }[] }) {
    result, not decoration. Correctness is encoded by BOTH brightness and fill-vs-
    hollow (never colour alone). Layout is deterministically seeded, so the same
    answers always draw the same brain and SSR/client never mismatch. */
-function AIBrain({ topics }: { topics: { topic: string; correct: boolean }[] }) {
+function AIBrain({ topics, maxWidth = 600 }: { topics: { topic: string; correct: boolean }[]; maxWidth?: number }) {
   const LIT = C.blue, LIT2 = C.blueBright, DIM = "#9AAEC6";
-  const CX = 120, CY = 80;
+  const CX = 170, CY = 92;
 
   // Tiny seeded PRNG (mulberry32) — deterministic, so no Math.random at render.
   const seeded = (seed: number) => {
@@ -123,8 +123,8 @@ function AIBrain({ topics }: { topics: { topic: string; correct: boolean }[] }) 
   // Brain-silhouette hub anchors (two frontal-tops, two lowers, a crown). Use the
   // first N; if a bank ever has >8 questions, wrap the extras onto an ellipse.
   const ANCHORS: [number, number][] = [
-    [58, 58], [92, 102], [120, 46], [150, 102], [182, 58],
-    [74, 88], [166, 88], [120, 114],
+    [82, 68], [134, 132], [170, 52], [206, 132], [258, 68],
+    [108, 104], [232, 104], [170, 138],
   ];
   const n = topics.length;
   const hubs = topics.map((t, i) => {
@@ -132,33 +132,36 @@ function AIBrain({ topics }: { topics: { topic: string; correct: boolean }[] }) 
     if (i < ANCHORS.length) { [x, y] = ANCHORS[i]; }
     else {
       const a = -Math.PI / 2 + (i / n) * Math.PI * 2;
-      x = CX + Math.cos(a) * 82; y = CY + Math.sin(a) * 46;
+      x = CX + Math.cos(a) * 112; y = CY + Math.sin(a) * 56;
     }
     const rnd = seeded(i * 1013 + 71);
-    const k = 4 + Math.floor(rnd() * 3); // 4–6 synapses per lobe
+    const k = 5 + Math.floor(rnd() * 3); // 5–7 synapses per lobe
     const sats = Array.from({ length: k }, (_, j) => {
       const ang = (j / k) * Math.PI * 2 + rnd() * 1.2;
-      const rad = 10 + rnd() * 11;
-      return { x: x + Math.cos(ang) * rad, y: y + Math.sin(ang) * rad * 0.82, r: 1.2 + rnd() * 1.1 };
+      const rad = 15 + rnd() * 15;
+      return { x: x + Math.cos(ang) * rad, y: y + Math.sin(ang) * rad * 0.82, r: 1.8 + rnd() * 1.5 };
     });
     return { x, y, correct: t.correct, sats };
   });
   const litCount = topics.filter((t) => t.correct).length;
 
   return (
-    <div style={{ width: "100%", maxWidth: 340 }}>
-      <svg viewBox="0 0 240 160" width="100%" role="img"
+    <div style={{ width: "100%", maxWidth, margin: "0 auto" }}>
+      <svg viewBox="0 0 340 184" width="100%" role="img"
         aria-label={`Neural map of your answers — ${litCount} of ${n} topics lit up.`}>
         <defs>
           <radialGradient id="brainGlow" cx="50%" cy="48%" r="58%">
-            <stop offset="0%" stopColor={LIT2} stopOpacity="0.20" />
+            <stop offset="0%" stopColor={LIT2} stopOpacity="0.22" />
             <stop offset="100%" stopColor={LIT2} stopOpacity="0" />
           </radialGradient>
+          <filter id="brainBlur" x="-70%" y="-70%" width="240%" height="240%">
+            <feGaussianBlur stdDeviation="4" />
+          </filter>
         </defs>
-        <ellipse cx={CX} cy={CY} rx="112" ry="66" fill="url(#brainGlow)" />
+        <ellipse cx={CX} cy={CY} rx="160" ry="82" fill="url(#brainGlow)" />
 
         {/* brain outline — hub-to-hub contour */}
-        <g stroke={C.border} strokeWidth={1}>
+        <g stroke={C.border} strokeWidth={1.2}>
           {hubs.map((h, i) => {
             const nh = hubs[(i + 1) % hubs.length];
             return <line key={`c${i}`} x1={h.x} y1={h.y} x2={nh.x} y2={nh.y} />;
@@ -166,11 +169,11 @@ function AIBrain({ topics }: { topics: { topic: string; correct: boolean }[] }) 
         </g>
 
         {/* core → hub axons (correct ones carry a flowing signal) */}
-        <g fill="none" strokeWidth={1.1}>
+        <g fill="none" strokeWidth={1.4}>
           {hubs.map((h, i) => (
             <line key={`a${i}`} x1={CX} y1={CY} x2={h.x} y2={h.y}
               stroke={h.correct ? LIT2 : DIM} opacity={h.correct ? 0.42 : 0.2}
-              strokeDasharray={h.correct ? "2 4" : undefined}
+              strokeDasharray={h.correct ? "2.5 5" : undefined}
               className={h.correct ? "axon-flow" : undefined} />
           ))}
         </g>
@@ -178,42 +181,34 @@ function AIBrain({ topics }: { topics: { topic: string; correct: boolean }[] }) 
         {/* per-lobe synapses + nodes */}
         {hubs.map((h, i) => (
           <g key={`h${i}`}>
-            <g stroke={h.correct ? LIT2 : DIM} strokeWidth={0.8} opacity={h.correct ? 0.45 : 0.26}>
+            {h.correct && <circle cx={h.x} cy={h.y} r={13} fill={LIT} opacity={0.16} filter="url(#brainBlur)" />}
+            <g stroke={h.correct ? LIT2 : DIM} strokeWidth={1} opacity={h.correct ? 0.48 : 0.26}>
               {h.sats.map((s, j) => <line key={j} x1={h.x} y1={h.y} x2={s.x} y2={s.y} />)}
             </g>
             {h.sats.map((s, j) =>
               h.correct
-                ? <circle key={j} cx={s.x} cy={s.y} r={s.r} fill={LIT} opacity={0.85} />
-                : <circle key={j} cx={s.x} cy={s.y} r={s.r} fill="none" stroke={DIM} strokeWidth={0.9} opacity={0.7} />
+                ? <circle key={j} cx={s.x} cy={s.y} r={s.r} fill={LIT} opacity={0.9} />
+                : <circle key={j} cx={s.x} cy={s.y} r={s.r} fill="none" stroke={DIM} strokeWidth={1.1} opacity={0.7} />
             )}
             {h.correct
-              ? <circle cx={h.x} cy={h.y} r={4.2} fill={LIT} className="brain-pulse" style={{ animationDelay: `${(i % 5) * 0.3}s` }} />
-              : <circle cx={h.x} cy={h.y} r={3.6} fill={C.card} stroke={DIM} strokeWidth={1.6} />}
+              ? <circle cx={h.x} cy={h.y} r={6.5} fill={LIT} className="brain-pulse" style={{ animationDelay: `${(i % 5) * 0.3}s` }} />
+              : <circle cx={h.x} cy={h.y} r={5.2} fill={C.card} stroke={DIM} strokeWidth={2} />}
           </g>
         ))}
 
         {/* AI core */}
-        <circle cx={CX} cy={CY} r={6.5} fill={C.card} stroke={LIT} strokeWidth={1.4} />
-        <circle cx={CX} cy={CY} r={3} fill={LIT} className="brain-pulse" />
+        <circle cx={CX} cy={CY} r={13} fill={LIT} opacity={0.16} filter="url(#brainBlur)" />
+        <circle cx={CX} cy={CY} r={9.5} fill={C.card} stroke={LIT} strokeWidth={2} />
+        <circle cx={CX} cy={CY} r={4.5} fill={LIT} className="brain-pulse" />
       </svg>
-
-      {/* legend — makes the mapping explicit + honest */}
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 16, marginTop: 6, fontSize: 11.5, color: C.sec2 }}>
-        <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
-          <span style={{ width: 9, height: 9, borderRadius: 999, background: LIT }} /> Nailed it
-        </span>
-        <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
-          <span style={{ width: 9, height: 9, borderRadius: 999, border: `1.6px solid ${DIM}`, background: C.card }} /> To strengthen
-        </span>
-      </div>
     </div>
   );
 }
 
 /* ── Locked preview tile — a marked preview of a full-report feature ───────── */
-function LockedTile({ title, href, children }: { title: string; href: string; children: React.ReactNode }) {
+function LockedTile({ title, href, children, className }: { title: string; href: string; children: React.ReactNode; className?: string }) {
   return (
-    <Link href={href} style={{ ...tileBase, position: "relative", padding: 16, display: "block", overflow: "hidden" }} className="locked-tile">
+    <Link href={href} style={{ ...tileBase, position: "relative", padding: 16, display: "block", overflow: "hidden" }} className={`locked-tile${className ? ` ${className}` : ""}`}>
       <div style={{ ...eyebrow, fontSize: 11, marginBottom: 10 }}>{title}</div>
       <div style={{ opacity: 0.32, pointerEvents: "none" }}>{children}</div>
       <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
@@ -360,25 +355,45 @@ export default function ResultsClient({ initialSeats = null }: { initialSeats?: 
             </div>
           </div>
 
-          {/* AI brain */}
-          <div className="lg:col-span-2" style={{ ...tileBase, padding: 22, display: "flex", alignItems: "center", gap: 18, flexWrap: "wrap" }}>
-            <div style={{ flex: "1 1 200px", minWidth: 180 }}>
-              <div style={{ ...eyebrow, marginBottom: 10 }}>Analysed by AI</div>
-              <div style={{ fontSize: 19, fontWeight: 700, letterSpacing: "-0.01em", lineHeight: 1.2 }}>Your answers, mapped.</div>
-              <p style={{ fontSize: 13.5, lineHeight: 1.5, color: C.sec2, margin: "8px 0 0" }}>
-                Each cluster is one of your {result.total} answers — lit where you nailed it. Nova scores every one and explains the gaps, 24/7 inside Square 1.
-              </p>
+          {/* AI brain — full-width hero band (mirrors the in-app Skill brain) */}
+          <div className="lg:col-span-4" style={{ ...tileBase, padding: 24 }}>
+            <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 16, flexWrap: "wrap" }}>
+              <div style={{ maxWidth: 560 }}>
+                <div style={{ ...eyebrow, marginBottom: 8 }}>Analysed by AI</div>
+                <p style={{ fontSize: 14.5, lineHeight: 1.5, color: C.sec2, margin: 0 }}>
+                  Each lobe is one of your {result.total} answers — the brighter it glows, the sharper the skill. Nova scores every one and explains the gaps.
+                </p>
+              </div>
+              <div style={{ flexShrink: 0, textAlign: "right" }}>
+                <div style={{ fontSize: 30, fontWeight: 800, lineHeight: 1, letterSpacing: "-0.02em", color: C.ink }}>
+                  {result.score}<span style={{ color: C.ter, fontWeight: 700 }}> / {result.total}</span>
+                </div>
+                <div style={{ fontFamily: FIGTREE, fontSize: 10.5, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: C.ter, marginTop: 5 }}>Topics lit</div>
+              </div>
             </div>
-            <div style={{ flex: "1 1 200px", minWidth: 160, display: "flex", justifyContent: "center" }}>
-              <AIBrain topics={topicResults} />
+
+            <div style={{ margin: "6px auto 0", maxWidth: 620, borderRadius: 14, background: "radial-gradient(58% 70% at 50% 46%, rgba(0,86,206,0.06), transparent 72%)" }}>
+              <AIBrain topics={topicResults} maxWidth={600} />
+            </div>
+
+            <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", justifyContent: "space-between", gap: 10, marginTop: 10 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 16, fontSize: 12, color: C.sec2 }}>
+                <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
+                  <span style={{ width: 10, height: 10, borderRadius: 999, background: C.blue }} /> Nailed it
+                </span>
+                <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
+                  <span style={{ width: 10, height: 10, borderRadius: 999, border: "1.6px solid #9AAEC6", background: C.card }} /> To strengthen
+                </span>
+              </div>
+              <span style={{ fontSize: 12, fontWeight: 600, color: C.sec }}>{result.score} of {result.total} correct</span>
             </div>
           </div>
 
           {/* Locked preview: progress over time */}
-          <LockedTile title="Progress over time" href={signupHref}><PreviewLine /></LockedTile>
+          <LockedTile title="Progress over time" href={signupHref} className="lg:col-span-2"><PreviewLine /></LockedTile>
 
           {/* Locked preview: skill matrix */}
-          <LockedTile title="Skill matrix" href={signupHref}><PreviewMatrix /></LockedTile>
+          <LockedTile title="Skill matrix" href={signupHref} className="lg:col-span-2"><PreviewMatrix /></LockedTile>
 
           {/* Topic breakdown */}
           <div className="lg:col-span-2" style={{ ...tileBase, padding: 20 }}>
