@@ -230,17 +230,68 @@ function PreviewLine() {
     </svg>
   );
 }
-function PreviewMatrix() {
-  const rows: [number, number][] = [[82, 155], [64, 120], [47, 88], [71, 133]];
+/* ── Topic mastery — a real bar chart of the student's per-topic result ──────
+   The diagnostic asks one question per topic, so a topic is either answered
+   correctly or not. Encoded as a full (correct) vs stub (missed) bar, sorted
+   correct-first so it reads as a ranked chart. No invented percentages — the
+   sub-note states the one-question-per-topic basis honestly. */
+function TopicMasteryBars({ topics, className }: { topics: { topic: string; correct: boolean }[]; className?: string }) {
+  const rows = [...topics].sort((a, b) => Number(b.correct) - Number(a.correct));
   return (
-    <svg viewBox="0 0 200 72" width="100%">
-      {rows.map(([pct, w], i) => (
-        <g key={i}>
-          <rect x={10} y={8 + i * 16} width={185} height={7} rx={3.5} fill={C.border} />
-          <rect x={10} y={8 + i * 16} width={w} height={7} rx={3.5} fill={i % 2 ? "#1871ED" : C.blue} />
-        </g>
-      ))}
-    </svg>
+    <div className={className} style={{ ...tileBase, padding: 20 }}>
+      <div style={{ ...eyebrow, marginBottom: 4 }}>Topic mastery</div>
+      <p style={{ fontSize: 12, color: C.sec2, margin: "0 0 16px" }}>One question per topic — a full bar means you nailed it.</p>
+      <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+        {rows.map((t, i) => {
+          const col = t.correct ? C.success : C.error;
+          return (
+            <div key={i}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 5 }}>
+                <span style={{ fontSize: 13, fontWeight: 600, color: C.ink }}>{t.topic}</span>
+                <span style={{ fontFamily: FIGTREE, fontSize: 10.5, fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase", color: col }}>{t.correct ? "Correct" : "Review"}</span>
+              </div>
+              <div style={{ height: 9, borderRadius: 999, background: "#EEF3F9", overflow: "hidden" }}>
+                <div style={{ width: t.correct ? "100%" : "15%", height: "100%", borderRadius: 999, background: col }} />
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+/* ── Skill matrix — the diagnostic's per-topic result as a competency grid ────
+   Each tested topic is a row tinted by result, with a Demonstrated / Not yet
+   status chip and the "why it matters" note. Binary status only (one question
+   per topic) — no fabricated proficiency levels. */
+function SkillMatrixTile({ topics, relevance, score, total, className }: { topics: { topic: string; correct: boolean }[]; relevance: Record<string, string>; score: number; total: number; className?: string }) {
+  return (
+    <div className={className} style={{ ...tileBase, padding: 20 }}>
+      <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 12, marginBottom: 12 }}>
+        <div style={{ ...eyebrow }}>Skill matrix</div>
+        <span style={{ fontFamily: FIGTREE, fontSize: 11, fontWeight: 700, color: C.sec }}>{score}/{total} demonstrated</span>
+      </div>
+      <div style={{ border: `1px solid ${C.border}`, borderRadius: 10, overflow: "hidden" }}>
+        {topics.map((t, i) => (
+          <div key={i} style={{
+            display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10,
+            padding: "10px 12px",
+            borderTop: i === 0 ? "none" : `1px solid ${C.border}`,
+            background: t.correct ? "rgba(25,166,95,0.05)" : "rgba(217,54,54,0.04)",
+          }}>
+            <div style={{ minWidth: 0 }}>
+              <div style={{ fontSize: 13, fontWeight: 600, color: C.ink }}>{t.topic}</div>
+              <div title={relevance[t.topic] ?? ""} style={{ fontSize: 11, color: C.ter, marginTop: 1, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", maxWidth: 220 }}>{relevance[t.topic] ?? ""}</div>
+            </div>
+            <span style={{ flexShrink: 0, display: "inline-flex", alignItems: "center", gap: 5, fontFamily: FIGTREE, fontSize: 10, fontWeight: 700, letterSpacing: "0.04em", textTransform: "uppercase", color: t.correct ? C.success : C.error, background: t.correct ? "rgba(25,166,95,0.1)" : "rgba(217,54,54,0.09)", padding: "3px 9px", borderRadius: 999 }}>
+              <span style={{ width: 7, height: 7, borderRadius: 999, background: t.correct ? C.success : C.error }} />
+              {t.correct ? "Demonstrated" : "Not yet"}
+            </span>
+          </div>
+        ))}
+      </div>
+    </div>
   );
 }
 
@@ -359,7 +410,7 @@ export default function ResultsClient({ initialSeats = null }: { initialSeats?: 
           <div className="lg:col-span-4" style={{ ...tileBase, padding: 24 }}>
             <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 16, flexWrap: "wrap" }}>
               <div style={{ maxWidth: 560 }}>
-                <div style={{ ...eyebrow, marginBottom: 8 }}>Analysed by AI</div>
+                <div style={{ ...eyebrow, marginBottom: 8 }}>Your AI Brain</div>
                 <p style={{ fontSize: 14.5, lineHeight: 1.5, color: C.sec2, margin: 0 }}>
                   Each lobe is one of your {result.total} answers — the brighter it glows, the sharper the skill. Nova scores every one and explains the gaps.
                 </p>
@@ -389,33 +440,14 @@ export default function ResultsClient({ initialSeats = null }: { initialSeats?: 
             </div>
           </div>
 
-          {/* Locked preview: progress over time */}
+          {/* Topic mastery — measured bar chart, straight after the brain */}
+          <TopicMasteryBars topics={topicResults} className="lg:col-span-2" />
+
+          {/* Skill matrix — measured from the diagnostic (was a locked preview) */}
+          <SkillMatrixTile topics={topicResults} relevance={seo.topicRelevance} score={result.score} total={result.total} className="lg:col-span-2" />
+
+          {/* Locked preview: progress over time — needs signup, no history yet */}
           <LockedTile title="Progress over time" href={signupHref} className="lg:col-span-2"><PreviewLine /></LockedTile>
-
-          {/* Locked preview: skill matrix */}
-          <LockedTile title="Skill matrix" href={signupHref} className="lg:col-span-2"><PreviewMatrix /></LockedTile>
-
-          {/* Topic breakdown */}
-          <div className="lg:col-span-2" style={{ ...tileBase, padding: 20 }}>
-            <div style={{ ...eyebrow, marginBottom: 14 }}>Topic breakdown</div>
-            <div className="grid grid-cols-1 sm:grid-cols-2" style={{ gap: 10 }}>
-              {topicResults.map((t, i) => (
-                <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
-                  <span style={{ width: 20, height: 20, borderRadius: 999, background: t.correct ? C.success : C.error, display: "inline-flex", alignItems: "center", justifyContent: "center", flexShrink: 0, marginTop: 1 }}>
-                    <svg viewBox="0 0 24 24" width={11} height={11} fill="none" stroke="#FFFFFF" strokeWidth={3} strokeLinecap="round" strokeLinejoin="round">
-                      <path d={t.correct ? "m5 12 5 5 9-10" : "M7 7l10 10 M17 7L7 17"} />
-                    </svg>
-                  </span>
-                  <div>
-                    <div style={{ fontWeight: 700, fontSize: 13.5 }}>{t.topic}</div>
-                    <p style={{ fontSize: 12, lineHeight: 1.45, color: C.sec2, margin: "1px 0 0" }}>
-                      {seo.topicRelevance[t.topic] ?? (t.correct ? "You've got this covered." : "Worth revisiting.")}
-                    </p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
 
           {/* Share */}
           <div className="lg:col-span-2" style={{ ...tileBase, padding: 20, textAlign: "center", display: "flex", flexDirection: "column", justifyContent: "center" }}>
