@@ -94,22 +94,17 @@ export function SocialProofSection({
 
             <div className="space-y-4 text-sm sm:text-base text-slate-700 leading-relaxed">
               <p>
-                I built Square 1 because of the thing that kept killing my own learning:
-                <span className="font-semibold text-slate-900"> nobody ever looked at my work.</span>{" "}
-                Courses gave me videos. Tutorials gave me copy-paste. Nothing told me
-                whether <em>my</em> code was good, or what to fix.
+                I built Square 1 AI so people can{" "}
+                <span className="font-semibold text-slate-900">learn a concept, practice it in a real-life scenario,</span>{" "}
+                and then get hired — or start a business that impacts society positively.
               </p>
               <p>
-                So every claim on this page is about what the product does — an AI that
-                grades your assessment, reviews every line of code you submit, and tutors
-                you on <em>your</em> gaps. You can verify all of it in the free assessment
-                before paying a cent.
+                I want to teach people, and to help them become{" "}
+                <span className="font-semibold text-slate-900">dreamers, entrepreneurs, and creators of positivity</span>{" "}
+                for the future.
               </p>
-              <p>
-                Student success stories will appear here when real students earn them —
-                with their public portfolios attached so you can check the receipts.
-                Until then, the product has to speak for itself.{" "}
-                <span className="font-semibold text-slate-900">I think it does.</span>
+              <p className="text-base sm:text-lg font-semibold text-slate-900">
+                Let&apos;s make the world a better place.
               </p>
             </div>
 
