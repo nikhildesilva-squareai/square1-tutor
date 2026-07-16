@@ -1,8 +1,6 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import Link from "next/link";
-import { BorderBeam } from "@/components/ui/border-beam";
 import { PrimaryCta } from "@/components/ui/primary-cta";
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -122,6 +120,9 @@ function useCountUp(target: number, isVisible: boolean, duration = 1600) {
 }
 
 // ─── Outcome card ─────────────────────────────────────────────────────────────
+// Calm, premium stat card: clean white surface, one hairline border, a whisper of
+// accent in the top corner, and the big gradient numeral as the single hero. No
+// animated border beam (it read as a distracting gradient line).
 function OutcomeCard({
   outcome,
   isVisible,
@@ -132,60 +133,51 @@ function OutcomeCard({
   delay: number;
 }) {
   const value = useCountUp(outcome.target, isVisible);
-  // Premium gradient — accent at corners, white in the middle for legibility
-  const cardBg = `
-    linear-gradient(135deg, ${outcome.accent}14 0%, #FFFFFF 45%, ${outcome.accent}08 100%),
-    radial-gradient(circle at top right, ${outcome.accent}10, transparent 60%)
-  `;
   return (
     <div
-      className="relative group rounded-3xl p-6 lg:p-8 transition-all duration-700 will-change-transform border overflow-hidden"
+      className="relative group rounded-2xl p-7 lg:p-8 bg-white border border-slate-200/70 overflow-hidden transition-all duration-500 will-change-transform hover:-translate-y-1"
       style={{
-        background: cardBg,
-        borderColor: `${outcome.accent}30`,
-        boxShadow: `0 10px 32px ${outcome.accent}15, 0 0 0 1px ${outcome.accent}10 inset`,
+        boxShadow: "0 1px 2px rgba(15,28,49,0.04), 0 10px 30px -18px rgba(15,28,49,0.16)",
         opacity: isVisible ? 1 : 0,
-        transform: isVisible ? "translateY(0)" : "translateY(30px)",
+        transform: isVisible ? "translateY(0)" : "translateY(24px)",
         transitionDelay: `${delay}ms`,
       }}
     >
-      {/* Decorative corner gradient blob */}
-      <div className="absolute -top-12 -right-12 w-32 h-32 rounded-full pointer-events-none opacity-50"
-        style={{ background: `radial-gradient(circle, ${outcome.accent}30 0%, transparent 70%)`, filter: "blur(16px)" }} />
+      {/* Whisper of accent in the top corner — no hard line */}
+      <div
+        className="absolute inset-0 rounded-2xl pointer-events-none"
+        style={{ background: `radial-gradient(130% 90% at 100% 0%, ${outcome.accent}12, transparent 52%)` }}
+      />
+      {/* Hover: lift the shadow + a faint accent ring */}
+      <div
+        className="absolute inset-0 rounded-2xl pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+        style={{ boxShadow: `0 20px 44px -20px ${outcome.accent}55, 0 0 0 1px ${outcome.accent}22 inset` }}
+      />
 
       {/* Number */}
-      <div className="relative z-10 mt-4 mb-4 flex items-baseline gap-0.5 leading-none">
+      <div className="relative z-10 mb-4 flex items-baseline gap-0.5 leading-none">
         <span
-          className="font-black tabular-nums tracking-tight"
+          className="font-black tabular-nums"
           style={{
-            fontSize: "clamp(56px, 7vw, 88px)",
-            background: `linear-gradient(180deg, #0F172A 0%, ${outcome.accent} 120%)`,
+            fontSize: "clamp(54px, 6.5vw, 84px)",
+            background: `linear-gradient(160deg, #0F172A 0%, ${outcome.accent} 135%)`,
             WebkitBackgroundClip: "text",
             WebkitTextFillColor: "transparent",
             backgroundClip: "text",
-            letterSpacing: "-0.04em",
+            letterSpacing: "-0.045em",
           }}
         >
           {value}
         </span>
         {outcome.suffix && (
-          <span className="text-2xl lg:text-3xl font-semibold text-slate-500 tabular-nums">
+          <span className="text-2xl lg:text-3xl font-semibold text-slate-400 tabular-nums">
             {outcome.suffix}
           </span>
         )}
       </div>
 
-      <p className="relative text-sm lg:text-base font-bold text-slate-900 mb-1.5">{outcome.label}</p>
-      <p className="relative text-xs text-slate-600 leading-relaxed">{outcome.sub}</p>
-
-      {/* Hover enhancement */}
-      <div
-        className="absolute inset-0 rounded-3xl pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-        style={{ boxShadow: `0 16px 48px ${outcome.accent}35, 0 0 0 1px ${outcome.accent}40 inset` }}
-      />
-
-      {/* Animated Square 1 blue border beam — staggered per card so they don't sync */}
-      <BorderBeam size={220} duration={8} delay={delay / 80} borderWidth={2} colorFrom="#3388FF" colorTo="#0056CE" />
+      <p className="relative z-10 text-sm lg:text-base font-bold text-slate-900 mb-1.5">{outcome.label}</p>
+      <p className="relative z-10 text-xs lg:text-[13px] text-slate-500 leading-relaxed">{outcome.sub}</p>
     </div>
   );
 }
