@@ -42,7 +42,7 @@ export async function POST(request: Request) {
       .from("students").select("id").eq("user_id", user.id).maybeSingle();
     if (!student) {
       const { data: created, error } = await supabase
-        .from("students").insert({ user_id: user.id, email: user.email ?? "" }).select("id").single();
+        .from("students").insert({ user_id: user.id, email: user.email ?? "", country: (user.user_metadata?.signup_country as string | undefined) ?? null }).select("id").single();
       if (error || !created) return NextResponse.json({ error: "Could not create your account" }, { status: 500 });
       student = created;
     }

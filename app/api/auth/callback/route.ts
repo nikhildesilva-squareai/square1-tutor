@@ -24,7 +24,31 @@ export async function GET(request: NextRequest) {
   if (code) {
     const supabase = await createClient();
     const { error } = await supabase.auth.exchangeCodeForSession(code);
-    if (!error) return NextResponse.redirect(`${origin}${next}`);
+    if (!error) {
+      // Capture the visitor's country from Vercel's IP geolocation. Both Google
+      // and email sign-ins pass through this callback, so this is the single
+      // place to record it (the sign-in form / OAuth never provide a country).
+      // Best-effort — country capture must NEVER block auth.
+      try {
+        const country = request.headers.get("x-vercel-ip-country");
+        if (country && country !== "XX") {
+          const { data: { user } } = await supabase.auth.getUser();
+          if (user) {
+            // Persist on the auth user so it's available when the student row is
+            // created (student rows are created lazily on first enrolment).
+            // Keep the first-seen country.
+            if (!user.user_metadata?.signup_country) {
+              await supabase.auth.updateUser({ data: { signup_country: country } });
+            }
+            // Backfill an existing student row that has no country yet.
+            await supabase.from("students").update({ country }).eq("user_id", user.id).is("country", null);
+          }
+        }
+      } catch {
+        /* ignore — never break sign-in over geolocation */
+      }
+      return NextResponse.redirect(`${origin}${next}`);
+    }
   }
   return NextResponse.redirect(`${origin}/login?error=auth_failed`);
 }
