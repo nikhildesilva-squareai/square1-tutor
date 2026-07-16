@@ -49,7 +49,6 @@ export default async function AdminOverviewPage() {
     courseEnrollmentsRes,
     recentSignupsRes,
     assessmentsRes,
-    countryRes,
   ] = await Promise.all([
     // Total students
     db.from("students").select("id", { count: "exact", head: true }),
@@ -73,8 +72,6 @@ export default async function AdminOverviewPage() {
     db.from("students").select("id, created_at").gte("created_at", thirtyDaysAgo),
     // Total assessments taken
     db.from("assessment_attempts").select("id, student_id, course_id, score, max_score").not("score", "is", null),
-    // Signup country (for the AU-vs-international / GST split)
-    db.from("students").select("country"),
   ]);
 
   const totalStudents = studentsRes.count ?? 0;
@@ -111,26 +108,6 @@ export default async function AdminOverviewPage() {
   // Conversion funnel
   const totalAssessments = (assessmentsRes.data ?? []).length;
   const uniqueAssessedStudents = new Set((assessmentsRes.data ?? []).map(a => a.student_id)).size;
-
-  // Signup country split (AU = GST applies; everyone else = no GST)
-  const countryRows = (countryRes.data ?? []) as { country: string | null }[];
-  const countryCounts = new Map<string, number>();
-  let auCount = 0, knownCount = 0;
-  for (const r of countryRows) {
-    const c = (r.country ?? "").toUpperCase();
-    if (!c) continue;
-    knownCount++;
-    if (c === "AU") auCount++;
-    countryCounts.set(c, (countryCounts.get(c) ?? 0) + 1);
-  }
-  const intlCount = knownCount - auCount;
-  const unknownCount = countryRows.length - knownCount;
-  const COUNTRY_NAMES: Record<string, string> = {
-    AU: "Australia", US: "United States", GB: "United Kingdom", IN: "India", CA: "Canada",
-    NZ: "New Zealand", SG: "Singapore", PH: "Philippines", NG: "Nigeria", PK: "Pakistan",
-    DE: "Germany", FR: "France", AE: "UAE", ZA: "South Africa", ID: "Indonesia",
-  };
-  const topCountries = [...countryCounts.entries()].sort((a, b) => b[1] - a[1]).slice(0, 6);
 
   return (
     <div className="min-h-full px-6 py-8 max-w-7xl mx-auto">
@@ -303,52 +280,6 @@ export default async function AdminOverviewPage() {
               </div>
             );
           })}
-        </div>
-      </div>
-
-      {/* ── Signups by country (GST split) ─────────────────────────────────── */}
-      <div className="mt-6 grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="bg-surface rounded-xl border border-border p-5 lg:col-span-1">
-          <p className="text-[10px] font-bold text-ink-muted uppercase tracking-widest mb-4">Signups by Country</p>
-          <div className="grid grid-cols-2 gap-3">
-            <div className="rounded-xl border border-border bg-surface-soft p-4">
-              <p className="text-2xl font-black text-ink">{auCount}</p>
-              <p className="text-[10px] font-semibold uppercase tracking-wider text-ink-muted mt-0.5">Australia</p>
-              <p className="text-[10px] text-amber-600 font-semibold mt-0.5">+ GST applies</p>
-            </div>
-            <div className="rounded-xl border border-border bg-surface-soft p-4">
-              <p className="text-2xl font-black text-ink">{intlCount}</p>
-              <p className="text-[10px] font-semibold uppercase tracking-wider text-ink-muted mt-0.5">International</p>
-              <p className="text-[10px] text-emerald-600 font-semibold mt-0.5">No GST</p>
-            </div>
-          </div>
-          {unknownCount > 0 && (
-            <p className="text-[10px] text-ink-muted mt-3">{unknownCount} unknown (pre-tracking signups — captured on next login)</p>
-          )}
-        </div>
-
-        <div className="bg-surface rounded-xl border border-border p-5 lg:col-span-2">
-          <p className="text-[10px] font-bold text-ink-muted uppercase tracking-widest mb-4">Top Countries</p>
-          {topCountries.length === 0 ? (
-            <p className="text-sm text-ink-muted">No country data yet — new signups are tracked from now on.</p>
-          ) : (
-            <div className="space-y-3">
-              {topCountries.map(([code, count]) => {
-                const maxC = Math.max(1, ...topCountries.map(([, n]) => n));
-                return (
-                  <div key={code}>
-                    <div className="flex items-center justify-between mb-1">
-                      <span className="text-sm text-ink font-medium">
-                        {COUNTRY_NAMES[code] ?? code} <span className="text-ink-muted text-xs">({code})</span>
-                      </span>
-                      <span className="text-sm font-bold text-brand shrink-0">{count}</span>
-                    </div>
-                    <Bar pct={(count / maxC) * 100} color={code === "AU" ? "#D97706" : "#0056CE"} />
-                  </div>
-                );
-              })}
-            </div>
-          )}
         </div>
       </div>
     </div>
