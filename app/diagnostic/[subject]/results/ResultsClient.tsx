@@ -98,41 +98,115 @@ function LightRadar({ axes }: { axes: { label: string; pass: boolean }[] }) {
   );
 }
 
-/* ── AI brain — the "analysed by AI" visual (neural node cloud) ─────────────── */
-function AIBrain() {
-  const nodes: [number, number, number][] = [
-    [40, 66, 3], [58, 44, 2.5], [84, 34, 3.5], [110, 40, 2.5], [98, 64, 3], [72, 76, 2.5],
-    [50, 90, 2.5], [80, 100, 3], [104, 86, 2.5], [128, 56, 3], [152, 42, 2.5], [176, 50, 3.5],
-    [190, 72, 2.5], [176, 92, 3], [150, 98, 2.5], [128, 84, 3], [122, 104, 2.5], [156, 114, 2.5],
-    [96, 116, 2.5], [112, 66, 4.5],
+/* ── AI brain — built from THIS student's answers ──────────────────────────────
+   One "lobe" per question: a hub node + a small synapse constellation. A lobe
+   lights up (bright, filled, pulsing) where they answered correctly and dims
+   (slate, hollow, still) where they missed — so the picture is literally their
+   result, not decoration. Correctness is encoded by BOTH brightness and fill-vs-
+   hollow (never colour alone). Layout is deterministically seeded, so the same
+   answers always draw the same brain and SSR/client never mismatch. */
+function AIBrain({ topics }: { topics: { topic: string; correct: boolean }[] }) {
+  const LIT = C.blue, LIT2 = C.blueBright, DIM = "#9AAEC6";
+  const CX = 120, CY = 80;
+
+  // Tiny seeded PRNG (mulberry32) — deterministic, so no Math.random at render.
+  const seeded = (seed: number) => {
+    let s = seed >>> 0;
+    return () => {
+      s = (s + 0x6d2b79f5) >>> 0;
+      let t = Math.imul(s ^ (s >>> 15), 1 | s);
+      t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  };
+
+  // Brain-silhouette hub anchors (two frontal-tops, two lowers, a crown). Use the
+  // first N; if a bank ever has >8 questions, wrap the extras onto an ellipse.
+  const ANCHORS: [number, number][] = [
+    [58, 58], [92, 102], [120, 46], [150, 102], [182, 58],
+    [74, 88], [166, 88], [120, 114],
   ];
-  const edges: [number, number][] = [
-    [0, 1], [1, 2], [2, 3], [3, 9], [0, 5], [5, 4], [4, 3], [5, 6], [6, 7], [7, 8], [8, 4],
-    [9, 10], [10, 11], [11, 12], [12, 13], [13, 14], [14, 15], [15, 9], [15, 16], [16, 17],
-    [16, 18], [18, 7], [19, 4], [19, 15], [19, 8], [3, 19], [9, 19], [19, 12],
-  ];
+  const n = topics.length;
+  const hubs = topics.map((t, i) => {
+    let x: number, y: number;
+    if (i < ANCHORS.length) { [x, y] = ANCHORS[i]; }
+    else {
+      const a = -Math.PI / 2 + (i / n) * Math.PI * 2;
+      x = CX + Math.cos(a) * 82; y = CY + Math.sin(a) * 46;
+    }
+    const rnd = seeded(i * 1013 + 71);
+    const k = 4 + Math.floor(rnd() * 3); // 4–6 synapses per lobe
+    const sats = Array.from({ length: k }, (_, j) => {
+      const ang = (j / k) * Math.PI * 2 + rnd() * 1.2;
+      const rad = 10 + rnd() * 11;
+      return { x: x + Math.cos(ang) * rad, y: y + Math.sin(ang) * rad * 0.82, r: 1.2 + rnd() * 1.1 };
+    });
+    return { x, y, correct: t.correct, sats };
+  });
+  const litCount = topics.filter((t) => t.correct).length;
+
   return (
-    <svg viewBox="0 0 230 150" width="100%" style={{ maxWidth: 300 }} aria-hidden="true">
-      <defs>
-        <radialGradient id="brainGlow" cx="50%" cy="46%" r="55%">
-          <stop offset="0%" stopColor={C.blueBright} stopOpacity="0.20" />
-          <stop offset="100%" stopColor={C.blueBright} stopOpacity="0" />
-        </radialGradient>
-      </defs>
-      <ellipse cx="114" cy="74" rx="104" ry="64" fill="url(#brainGlow)" />
-      <g stroke={C.blueBright} strokeWidth={1} opacity={0.32}>
-        {edges.map(([a, b], i) => (
-          <line key={i} x1={nodes[a][0]} y1={nodes[a][1]} x2={nodes[b][0]} y2={nodes[b][1]} />
+    <div style={{ width: "100%", maxWidth: 340 }}>
+      <svg viewBox="0 0 240 160" width="100%" role="img"
+        aria-label={`Neural map of your answers — ${litCount} of ${n} topics lit up.`}>
+        <defs>
+          <radialGradient id="brainGlow" cx="50%" cy="48%" r="58%">
+            <stop offset="0%" stopColor={LIT2} stopOpacity="0.20" />
+            <stop offset="100%" stopColor={LIT2} stopOpacity="0" />
+          </radialGradient>
+        </defs>
+        <ellipse cx={CX} cy={CY} rx="112" ry="66" fill="url(#brainGlow)" />
+
+        {/* brain outline — hub-to-hub contour */}
+        <g stroke={C.border} strokeWidth={1}>
+          {hubs.map((h, i) => {
+            const nh = hubs[(i + 1) % hubs.length];
+            return <line key={`c${i}`} x1={h.x} y1={h.y} x2={nh.x} y2={nh.y} />;
+          })}
+        </g>
+
+        {/* core → hub axons (correct ones carry a flowing signal) */}
+        <g fill="none" strokeWidth={1.1}>
+          {hubs.map((h, i) => (
+            <line key={`a${i}`} x1={CX} y1={CY} x2={h.x} y2={h.y}
+              stroke={h.correct ? LIT2 : DIM} opacity={h.correct ? 0.42 : 0.2}
+              strokeDasharray={h.correct ? "2 4" : undefined}
+              className={h.correct ? "axon-flow" : undefined} />
+          ))}
+        </g>
+
+        {/* per-lobe synapses + nodes */}
+        {hubs.map((h, i) => (
+          <g key={`h${i}`}>
+            <g stroke={h.correct ? LIT2 : DIM} strokeWidth={0.8} opacity={h.correct ? 0.45 : 0.26}>
+              {h.sats.map((s, j) => <line key={j} x1={h.x} y1={h.y} x2={s.x} y2={s.y} />)}
+            </g>
+            {h.sats.map((s, j) =>
+              h.correct
+                ? <circle key={j} cx={s.x} cy={s.y} r={s.r} fill={LIT} opacity={0.85} />
+                : <circle key={j} cx={s.x} cy={s.y} r={s.r} fill="none" stroke={DIM} strokeWidth={0.9} opacity={0.7} />
+            )}
+            {h.correct
+              ? <circle cx={h.x} cy={h.y} r={4.2} fill={LIT} className="brain-pulse" style={{ animationDelay: `${(i % 5) * 0.3}s` }} />
+              : <circle cx={h.x} cy={h.y} r={3.6} fill={C.card} stroke={DIM} strokeWidth={1.6} />}
+          </g>
         ))}
-      </g>
-      <g fill={C.blue}>
-        {nodes.map(([x, y, r], i) => (
-          <circle key={i} cx={x} cy={y} r={r}
-            className={i % 4 === 0 ? "brain-pulse" : undefined}
-            style={i % 4 === 0 ? { animationDelay: `${(i % 8) * 0.28}s` } : undefined} />
-        ))}
-      </g>
-    </svg>
+
+        {/* AI core */}
+        <circle cx={CX} cy={CY} r={6.5} fill={C.card} stroke={LIT} strokeWidth={1.4} />
+        <circle cx={CX} cy={CY} r={3} fill={LIT} className="brain-pulse" />
+      </svg>
+
+      {/* legend — makes the mapping explicit + honest */}
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 16, marginTop: 6, fontSize: 11.5, color: C.sec2 }}>
+        <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
+          <span style={{ width: 9, height: 9, borderRadius: 999, background: LIT }} /> Nailed it
+        </span>
+        <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
+          <span style={{ width: 9, height: 9, borderRadius: 999, border: `1.6px solid ${DIM}`, background: C.card }} /> To strengthen
+        </span>
+      </div>
+    </div>
   );
 }
 
@@ -290,13 +364,13 @@ export default function ResultsClient({ initialSeats = null }: { initialSeats?: 
           <div className="lg:col-span-2" style={{ ...tileBase, padding: 22, display: "flex", alignItems: "center", gap: 18, flexWrap: "wrap" }}>
             <div style={{ flex: "1 1 200px", minWidth: 180 }}>
               <div style={{ ...eyebrow, marginBottom: 10 }}>Analysed by AI</div>
-              <div style={{ fontSize: 19, fontWeight: 700, letterSpacing: "-0.01em", lineHeight: 1.2 }}>Graded and guided by AI.</div>
+              <div style={{ fontSize: 19, fontWeight: 700, letterSpacing: "-0.01em", lineHeight: 1.2 }}>Your answers, mapped.</div>
               <p style={{ fontSize: 13.5, lineHeight: 1.5, color: C.sec2, margin: "8px 0 0" }}>
-                Every answer scored and every gap explained by Nova — your 24/7 AI tutor inside Square 1.
+                Each cluster is one of your {result.total} answers — lit where you nailed it. Nova scores every one and explains the gaps, 24/7 inside Square 1.
               </p>
             </div>
             <div style={{ flex: "1 1 200px", minWidth: 160, display: "flex", justifyContent: "center" }}>
-              <AIBrain />
+              <AIBrain topics={topicResults} />
             </div>
           </div>
 
@@ -387,7 +461,9 @@ export default function ResultsClient({ initialSeats = null }: { initialSeats?: 
         .locked-tile:hover { border-color: ${C.blue} !important; box-shadow: 0 8px 20px -12px rgba(21,47,84,0.22); }
         @keyframes brainPulse { 0%,100% { opacity: 1; } 50% { opacity: 0.28; } }
         .brain-pulse { animation: brainPulse 2.6s ease-in-out infinite; }
-        @media (prefers-reduced-motion: reduce) { .brain-pulse { animation: none; } }
+        @keyframes axonFlow { to { stroke-dashoffset: -18; } }
+        .axon-flow { animation: axonFlow 1.4s linear infinite; }
+        @media (prefers-reduced-motion: reduce) { .brain-pulse, .axon-flow { animation: none; } }
       `}</style>
     </div>
   );
