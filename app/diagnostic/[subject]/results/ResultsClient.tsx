@@ -205,31 +205,6 @@ function AIBrain({ topics, maxWidth = 600 }: { topics: { topic: string; correct:
   );
 }
 
-/* ── Locked preview tile — a marked preview of a full-report feature ───────── */
-function LockedTile({ title, href, children, className }: { title: string; href: string; children: React.ReactNode; className?: string }) {
-  return (
-    <Link href={href} style={{ ...tileBase, position: "relative", padding: 16, display: "block", overflow: "hidden" }} className={`locked-tile${className ? ` ${className}` : ""}`}>
-      <div style={{ ...eyebrow, fontSize: 11, marginBottom: 10 }}>{title}</div>
-      <div style={{ opacity: 0.32, pointerEvents: "none" }}>{children}</div>
-      <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
-        <span style={{ display: "inline-flex", alignItems: "center", gap: 6, fontSize: 12, fontWeight: 600, color: C.blue, background: "rgba(0,86,206,0.08)", border: `1px solid rgba(0,86,206,0.18)`, padding: "5px 12px", borderRadius: 999 }}>
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2"><rect x="3" y="11" width="18" height="11" rx="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" /></svg>
-          Unlock
-        </span>
-      </div>
-    </Link>
-  );
-}
-
-function PreviewLine() {
-  return (
-    <svg viewBox="0 0 200 72" width="100%">
-      <g stroke={C.border} strokeWidth={1}><line x1="12" y1="24" x2="188" y2="24" /><line x1="12" y1="44" x2="188" y2="44" /><line x1="12" y1="62" x2="188" y2="62" /></g>
-      <path d="M16 60 L60 50 L104 36 L148 24 L184 12" fill="none" stroke={C.blue} strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round" />
-      <circle cx="184" cy="12" r="4" fill={C.blue} />
-    </svg>
-  );
-}
 /* ── Topic mastery — a real bar chart of the student's per-topic result ──────
    The diagnostic asks one question per topic, so a topic is either answered
    correctly or not. Encoded as a full (correct) vs stub (missed) bar, sorted
@@ -556,13 +531,13 @@ export default function ResultsClient({ initialSeats = null, coursePath = null }
             <Roadmap coursePath={coursePath} weakTopics={topicResults.filter((t) => !t.correct).map((t) => t.topic)} track={subject.title} className="lg:col-span-4" />
           )}
 
-          {/* Locked preview: progress over time — needs signup, no history yet */}
-          <LockedTile title="Progress over time" href={signupHref} className="lg:col-span-2"><PreviewLine /></LockedTile>
-
-          {/* Share */}
-          <div className="lg:col-span-2" style={{ ...tileBase, padding: 20, textAlign: "center", display: "flex", flexDirection: "column", justifyContent: "center" }}>
-            <div style={{ ...eyebrow, marginBottom: 4 }}>Share your result</div>
-            <p style={{ fontSize: 13, color: C.sec2, margin: "0 0 14px" }}>Show friends where you stand — or dare them to beat it.</p>
+          {/* Share — full-width band */}
+          <div className="lg:col-span-4" style={{ ...tileBase, padding: 26, textAlign: "center" }}>
+            <div style={{ ...eyebrow, marginBottom: 6 }}>Share your result</div>
+            <h3 style={{ fontSize: 20, fontWeight: 700, letterSpacing: "-0.01em", margin: "0 0 4px" }}>Show them where you stand.</h3>
+            <p style={{ fontSize: 13.5, color: C.sec2, margin: "0 auto 20px", maxWidth: 440 }}>
+              Post your {bandLabel} skill scan — or dare a friend to beat it.
+            </p>
             <ShareResultButton
               percentage={Math.round(pct * 100)}
               level={bandLabel}
