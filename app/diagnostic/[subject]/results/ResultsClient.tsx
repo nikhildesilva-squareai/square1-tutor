@@ -155,7 +155,7 @@ const SHOWCASE = [
   { title: "AI-scored projects", body: "Every line of code reviewed and scored.", Viz: VizCols },
 ];
 
-export default function ResultsClient() {
+export default function ResultsClient({ initialSeats = null }: { initialSeats?: { left: number; cap: number } | null }) {
   const params = useParams<{ subject: string }>();
   const searchParams = useSearchParams();
   const slug = params.subject;
@@ -163,7 +163,8 @@ export default function ResultsClient() {
   const seo = SUBJECT_SEO[slug];
   const answers = decodeAnswers(searchParams.get("a"));
 
-  const [seats, setSeats] = useState<{ left: number; cap: number } | null>(null);
+  // Seeded from the server (no fallback flash); the client re-fetch keeps it live.
+  const [seats, setSeats] = useState<{ left: number; cap: number } | null>(initialSeats);
   useEffect(() => {
     fetch("/api/free-access/status")
       .then((r) => r.json())
