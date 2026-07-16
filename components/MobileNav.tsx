@@ -23,6 +23,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { createClient } from "@/lib/supabase/client";
+import { COMMUNITY_ENABLED } from "@/lib/flags";
 import { Logo } from "@/components/ui/logo";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { useUnreadMessages } from "@/lib/hooks/useUnreadMessages";
@@ -37,7 +38,7 @@ const learnNav: { href: string; label: string; icon: LucideIcon }[] = [
 ];
 
 const connectNav: { href: string; label: string; icon: LucideIcon }[] = [
-  { href: "/community", label: "Community", icon: Users },
+  ...(COMMUNITY_ENABLED ? [{ href: "/community", label: "Community", icon: Users }] : []),
   { href: "/messages", label: "Messages", icon: MessagesSquare },
   { href: "/tutor", label: "Nova", icon: Sparkles },
 ];

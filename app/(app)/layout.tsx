@@ -8,6 +8,7 @@ import { BottomNav } from "@/components/BottomNav";
 import { QuickNotePanel } from "@/components/QuickNotePanel";
 import { FeedbackWidget } from "@/components/FeedbackWidget";
 import { CommunityOnboardingToast } from "@/components/CommunityOnboardingToast";
+import { COMMUNITY_ENABLED } from "@/lib/flags";
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
   const supabase = await createClient();
@@ -81,8 +82,9 @@ export default async function AppLayout({ children }: { children: React.ReactNod
       {/* Persistent in-app feedback launcher (bottom-left) */}
       <FeedbackWidget />
 
-      {/* Community onboarding toast — shows on first login */}
-      <CommunityOnboardingToast />
+      {/* Community onboarding toast — shows on first login (hidden while the
+          Community section is disabled for launch) */}
+      {COMMUNITY_ENABLED && <CommunityOnboardingToast />}
     </div>
   );
 }
