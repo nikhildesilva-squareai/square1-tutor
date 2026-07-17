@@ -31,6 +31,10 @@ const C = {
   tint: "#F8FAFC",
   border: "#E8EEF5",
   borderStrong: "#D8E2ED",
+  // Soft Square 1 blue used ONLY for the outline of each report tile — the grey
+  // border disappeared against the near-white page, so the sections read as one
+  // block. Kept light so it separates without shouting.
+  cardBorder: "#B5D4F4",
   ink: "#0F172A",
   sec: "#475569",
   sec2: "#64748B",
@@ -63,7 +67,7 @@ const eyebrow: React.CSSProperties = {
   textTransform: "uppercase", color: C.sec2,
 };
 const tileBase: React.CSSProperties = {
-  background: C.card, border: `1px solid ${C.border}`, borderRadius: 14, boxShadow: SHADOW_XS,
+  background: C.card, border: `1px solid ${C.cardBorder}`, borderRadius: 14, boxShadow: SHADOW_XS,
 };
 
 /* ── Topic-coverage radar (light) ─────────────────────────────────────────── */
@@ -621,10 +625,10 @@ export default function ResultsClient({ initialSeats = null, coursePath = null }
 
               {/* CTA */}
               <Link href={signupHref} style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8, height: 56, borderRadius: 12, background: CTA_GRADIENT, boxShadow: CTA_INSET, color: "#FFFFFF", fontWeight: 800, fontSize: 17, letterSpacing: "-0.01em", maxWidth: 420, margin: "22px auto 0" }}>
-                Get my full report — free →
+                Start free — it&apos;s free for now →
               </Link>
               <p style={{ fontSize: 12.5, color: C.ter, margin: "12px 0 0" }}>
-                No card required to start · Free during early access · Founding rate locked for life
+                Free for now — no card required · Get your full report, all {subject.title} courses, projects and Nova · Founding rate locked for life
               </p>
             </div>
           </div>
