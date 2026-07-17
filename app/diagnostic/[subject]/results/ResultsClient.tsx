@@ -6,6 +6,7 @@ import Link from "next/link";
 import { Logo } from "@/components/ui/logo";
 import { ShareResultButton } from "@/components/ShareResultButton";
 import { FOUNDING_PLANS } from "@/lib/founding";
+import { freeWindowOpen } from "@/lib/free-access";
 import {
   getDiagnostic,
   getSubject,
@@ -382,10 +383,19 @@ export default function ResultsClient({ initialSeats = null, coursePath = null }
   const answers = decodeAnswers(searchParams.get("a"));
 
   const [seats, setSeats] = useState<{ left: number; cap: number } | null>(initialSeats);
+  // While early access is open the whole track is free, so the founding price
+  // cards are hidden — "FREE NOW" next to $19.90/mo reads as a paywall and kills
+  // the click. Seeded from the shared NEXT_PUBLIC free-access window so there's
+  // no flash of prices, then corrected by the API (which also knows the cap).
+  // When the window closes, the cards come back automatically.
+  const [freeOpen, setFreeOpen] = useState<boolean>(freeWindowOpen());
   useEffect(() => {
     fetch("/api/free-access/status")
       .then((r) => r.json())
-      .then((d) => { if (d?.open && typeof d.remaining === "number") setSeats({ left: d.remaining, cap: d.cap ?? 500 }); })
+      .then((d) => {
+        if (typeof d?.open === "boolean") setFreeOpen(d.open);
+        if (d?.open && typeof d.remaining === "number") setSeats({ left: d.remaining, cap: d.cap ?? 500 });
+      })
       .catch(() => {});
   }, []);
 
@@ -597,8 +607,10 @@ export default function ResultsClient({ initialSeats = null, coursePath = null }
                 ))}
               </div>
 
-              {/* Pricing */}
-              <div style={{ ...eyebrow, color: C.sec2, marginTop: 28, marginBottom: 14 }}>Free now — lock your founding rate for life</div>
+              {/* Pricing — hidden while early access is free (see freeOpen above) */}
+              {!freeOpen && (
+              <>
+              <div style={{ ...eyebrow, color: C.sec2, marginTop: 28, marginBottom: 14 }}>Lock your founding rate for life</div>
               <div className="grid grid-cols-3" style={{ gap: 12, maxWidth: 560, margin: "0 auto", alignItems: "stretch" }}>
                 {foundingPlans.map((p) => (
                   <div key={p.months} style={{
@@ -622,6 +634,8 @@ export default function ResultsClient({ initialSeats = null, coursePath = null }
                   </div>
                 ))}
               </div>
+              </>
+              )}
 
               {/* CTA */}
               <Link href={signupHref} style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8, height: 56, borderRadius: 12, background: CTA_GRADIENT, boxShadow: CTA_INSET, color: "#FFFFFF", fontWeight: 800, fontSize: 17, letterSpacing: "-0.01em", maxWidth: 420, margin: "22px auto 0" }}>
