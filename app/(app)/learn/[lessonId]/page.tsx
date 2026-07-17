@@ -59,8 +59,8 @@ export default async function LearnPage({ params }: PageProps) {
   // Course-wide ordered lessons → previous/next navigation that flows across modules,
   // so a learner can always step back to review (or forward through) any lesson.
   const [{ data: allCourseLessons }, { data: allCourseModules }] = await Promise.all([
-    supabase.from("lessons").select("id, order_index, module_id").eq("course_id", lesson.course_id),
-    supabase.from("modules").select("id, order_index").eq("course_id", lesson.course_id),
+    supabase.from("lessons").select("id, order_index, module_id, title").eq("course_id", lesson.course_id),
+    supabase.from("modules").select("id, order_index, title").eq("course_id", lesson.course_id),
   ]);
   const modOrder = new Map((allCourseModules ?? []).map((m) => [m.id, m.order_index ?? 0]));
   const orderedLessons = (allCourseLessons ?? []).slice().sort((a, b) =>
@@ -69,6 +69,29 @@ export default async function LearnPage({ params }: PageProps) {
   const courseIdx = orderedLessons.findIndex((l) => l.id === lessonId);
   const prevLessonId = courseIdx > 0 ? orderedLessons[courseIdx - 1].id : null;
   const nextLessonId = courseIdx >= 0 && courseIdx < orderedLessons.length - 1 ? orderedLessons[courseIdx + 1].id : null;
+
+  // Full course outline for the in-lesson jump menu, with this student's completions
+  // marked, so any already-covered lesson is one click away from anywhere in the course.
+  const { data: courseCompletions } = await supabase
+    .from("lesson_completions")
+    .select("lesson_id")
+    .eq("student_id", student.id)
+    .in("lesson_id", orderedLessons.map((l) => l.id));
+
+  const completedIds = new Set((courseCompletions ?? []).map((c) => c.lesson_id));
+  const outline = (allCourseModules ?? [])
+    .slice()
+    .sort((a, b) => (a.order_index ?? 0) - (b.order_index ?? 0))
+    .map((m) => ({
+      id: m.id,
+      title: m.title,
+      orderIndex: m.order_index ?? 0,
+      lessons: (allCourseLessons ?? [])
+        .filter((l) => l.module_id === m.id)
+        .sort((a, b) => a.order_index - b.order_index)
+        .map((l) => ({ id: l.id, title: l.title, completed: completedIds.has(l.id) })),
+    }))
+    .filter((m) => m.lessons.length > 0);
 
   // Get exercises for this lesson
   const { data: exercises } = await supabase
@@ -130,6 +153,7 @@ export default async function LearnPage({ params }: PageProps) {
       totalLessonsInModule={totalLessonsInModule}
       prevLessonId={prevLessonId}
       nextLessonId={nextLessonId}
+      outline={outline}
       alreadyCompleted={!!completion}
       weakTopics={weakTopics}
       advancedCourse={advancedCourse}

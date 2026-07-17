@@ -215,6 +215,15 @@ export default async function CourseDetailPage({ params }: PageProps) {
     return modLessons.length > 0 && modLessons.every((l) => completedLessonIds.has(l.id));
   }
 
+  // Which module the learner has reached — everything before it is review material.
+  const currentModuleIndex = (() => {
+    if (!currentLessonId) return null;
+    const cur = lessonList.find((l) => l.id === currentLessonId);
+    if (!cur) return null;
+    const idx = moduleList.findIndex((m) => m.id === cur.module_id);
+    return idx >= 0 ? idx : null;
+  })();
+
   // Determine lesson status
   function getLessonStatus(lessonId: string, moduleIndex: number): "completed" | "current" | "open" | "locked" {
     if (completedLessonIds.has(lessonId)) return "completed";
@@ -224,6 +233,10 @@ export default async function CourseDetailPage({ params }: PageProps) {
     // Module 0 — the foundations on-ramp — is ALWAYS open: it's the beginner floor
     // and review material, accessible no matter where you are in the course.
     if (moduleIndex === 0) return "open";
+    // Any module the learner has already moved past stays fully open for review —
+    // including a lesson they never ticked off. Once you've been through a module,
+    // going back is never gated. Only what's still ahead of you stays locked.
+    if (currentModuleIndex !== null && moduleIndex < currentModuleIndex) return "open";
     return "locked";
   }
 

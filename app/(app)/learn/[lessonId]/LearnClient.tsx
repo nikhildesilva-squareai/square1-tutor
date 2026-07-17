@@ -30,10 +30,14 @@ interface ExerciseData {
 }
 interface ExerciseResult { exerciseId: string; correct: boolean; score: number; maxScore: number; feedback: string }
 
+interface OutlineLesson { id: string; title: string; completed: boolean }
+interface OutlineModule { id: string; title: string; orderIndex: number; lessons: OutlineLesson[] }
+
 interface LearnClientProps {
   lesson: LessonData; module: ModuleData | null; course: CourseData | null;
   exercises: ExerciseData[]; lessonPosition: number; totalLessonsInModule: number;
   prevLessonId: string | null; nextLessonId: string | null; alreadyCompleted: boolean;
+  outline: OutlineModule[];
   weakTopics: string[];
   advancedCourse?: { slug: string; title: string } | null;
 }
@@ -211,9 +215,18 @@ function parseTheoryIntoCards(theory: string, exercises: ExerciseData[], objecti
   const sections: { title: string; content: string }[] = [];
   const parts = theoryBody.split(/^## /gm);
 
-  for (const part of parts) {
+  parts.forEach((part, idx) => {
     const trimmed = part.trim();
-    if (!trimmed) continue;
+    if (!trimmed) return;
+    // Anything before the FIRST "## " is the lesson's lead-in paragraph, not a section
+    // heading. It must render as body copy: dropping it into the section <h2> would
+    // show the whole paragraph as one bold block with literal "**" markers, and leave
+    // the card body empty. (Only fires when parts[0] is non-empty — a lesson whose
+    // theory starts straight at "## " yields an empty parts[0], which is skipped.)
+    if (idx === 0) {
+      sections.push({ title: "Overview", content: trimmed });
+      return;
+    }
     const firstNewline = trimmed.indexOf("\n");
     const rawTitle = firstNewline === -1 ? trimmed : trimmed.substring(0, firstNewline);
     const title = rawTitle.replace(/^#+\s*/, "").trim();           // never show a literal "#"
@@ -224,7 +237,7 @@ function parseTheoryIntoCards(theory: string, exercises: ExerciseData[], objecti
       .replace(/^\s*-{3,}\s*(?:\r?\n)/, "")    // leading separator
       .trim();
     sections.push({ title, content });
-  }
+  });
 
   // 3. Add theory cards with inline quizzes after every 2 sections
   const mcqExercises = exercises.filter(e => e.type === "mcq");
@@ -296,10 +309,31 @@ function parseTheoryIntoCards(theory: string, exercises: ExerciseData[], objecti
 export function LearnClient({
   lesson, module, course, exercises,
   lessonPosition, totalLessonsInModule, prevLessonId, nextLessonId, alreadyCompleted,
-  weakTopics, advancedCourse,
+  outline, weakTopics, advancedCourse,
 }: LearnClientProps) {
   const router = useRouter();
   const styleRef = useRef(false);
+
+  // Jump menu — reach any lesson in the course (especially already-covered ones)
+  // from inside a lesson, without going back out to the course page.
+  const [jumpOpen, setJumpOpen] = useState(false);
+  const jumpRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!jumpOpen) return;
+    function onPointerDown(e: MouseEvent) {
+      if (jumpRef.current && !jumpRef.current.contains(e.target as Node)) setJumpOpen(false);
+    }
+    function onKey(e: KeyboardEvent) {
+      if (e.key === "Escape") setJumpOpen(false);
+    }
+    document.addEventListener("mousedown", onPointerDown);
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("mousedown", onPointerDown);
+      document.removeEventListener("keydown", onKey);
+    };
+  }, [jumpOpen]);
 
   // Parse theory into cards
   const references = lesson.reference_links ?? [];
@@ -562,11 +596,65 @@ export function LearnClient({
             <Link href={course ? `/courses/${course.slug}` : "/courses"} className="text-ink-muted hover:text-brand transition-colors shrink-0">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M19 12H5" /><polyline points="12 19 5 12 12 5" /></svg>
             </Link>
-            <div className="flex-1 min-w-0">
-              <p className="text-xs text-ink-muted truncate">
-                {module ? `Module ${module.order_index + 1}` : ""} · Lesson {lessonPosition}/{totalLessonsInModule}
-              </p>
-              <h1 className="text-sm font-bold text-ink truncate">{lesson.title}</h1>
+            <div ref={jumpRef} className="flex-1 min-w-0 relative">
+              <button onClick={() => setJumpOpen((v) => !v)}
+                aria-expanded={jumpOpen} aria-haspopup="true"
+                title="Jump to any lesson"
+                className="w-full text-left group">
+                <p className="text-xs text-ink-muted truncate flex items-center gap-1">
+                  {module ? `Module ${module.order_index + 1}` : ""} · Lesson {lessonPosition}/{totalLessonsInModule}
+                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"
+                    className={cn("transition-transform group-hover:text-brand", jumpOpen && "rotate-180")}>
+                    <polyline points="6 9 12 15 18 9" />
+                  </svg>
+                </p>
+                <h1 className="text-sm font-bold text-ink truncate group-hover:text-brand transition-colors">{lesson.title}</h1>
+              </button>
+
+              {jumpOpen && (
+                <div className="absolute left-0 top-full mt-2 w-[min(24rem,calc(100vw-2rem))] max-h-[60vh] overflow-y-auto bg-surface border border-border rounded-xl shadow-xl z-50">
+                  <div className="px-3 py-2 border-b border-border sticky top-0 bg-surface">
+                    <p className="text-[10px] font-bold uppercase tracking-wider text-ink-muted">Jump to lesson</p>
+                  </div>
+                  {outline.map((m) => (
+                    <div key={m.id} className="border-b border-border last:border-0">
+                      <p className="px-3 pt-2.5 pb-1 text-[10px] font-bold text-ink-muted uppercase tracking-wide truncate">
+                        {m.title}
+                      </p>
+                      {m.lessons.map((l, li) => {
+                        const isCurrent = l.id === lesson.id;
+                        return (
+                          <button key={l.id}
+                            onClick={() => { setJumpOpen(false); if (!isCurrent) router.push(`/learn/${l.id}`); }}
+                            className={cn(
+                              "w-full text-left px-3 py-2 flex items-center gap-2.5 transition-colors",
+                              isCurrent ? "bg-surface-tint" : "hover:bg-surface-alt",
+                            )}>
+                            <span className={cn(
+                              "w-5 h-5 rounded-md flex items-center justify-center shrink-0",
+                              l.completed ? "bg-emerald-100" : isCurrent ? "bg-brand" : "bg-surface-alt",
+                            )}>
+                              {l.completed ? (
+                                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#059669" strokeWidth="3"><polyline points="20 6 9 17 4 12" /></svg>
+                              ) : isCurrent ? (
+                                <svg width="8" height="8" viewBox="0 0 24 24" fill="white" stroke="white" strokeWidth="2"><polygon points="5 3 19 12 5 21 5 3" /></svg>
+                              ) : (
+                                <span className="text-[9px] font-bold text-ink-muted">{li + 1}</span>
+                              )}
+                            </span>
+                            <span className={cn("text-xs truncate flex-1", isCurrent ? "text-brand font-bold" : "text-ink-secondary")}>
+                              {l.title}
+                            </span>
+                            {l.completed && !isCurrent && (
+                              <span className="text-[9px] font-bold text-brand shrink-0">Review</span>
+                            )}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
             {/* Nova + Time + card counter */}
             <div className="flex items-center gap-3 shrink-0">
