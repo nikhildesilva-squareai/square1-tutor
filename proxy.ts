@@ -9,6 +9,7 @@ const PUBLIC_PATHS = [
   "/terms",
   "/about",
   "/diagnostic",
+  "/tools", // curated AI-tools directory (public discovery surface)
   "/try",
   "/business",
   "/careers",

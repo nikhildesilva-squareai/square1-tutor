@@ -29,8 +29,17 @@ interface ExerciseData {
   options: string[] | null; correct_answer: string | null;
 }
 interface ExerciseResult { exerciseId: string; correct: boolean; score: number; maxScore: number; feedback: string }
+// Prompt Lab: a short_answer exercise with language='prompt' — the student writes
+// the PROMPT they'd send an AI assistant for a scenario, and Nova grades the prompt.
+interface PromptGrade {
+  total: number;
+  dimensions: { key: string; label: string; score: number; tip: string }[];
+  strength: string;
+  improved_prompt: string;
+}
+const PROMPT_LAB_MAX_TRIES = 3;
 
-interface OutlineLesson { id: string; title: string; completed: boolean }
+interface OutlineLesson { id: string; title: string; completed: boolean; reachable: boolean }
 interface OutlineModule { id: string; title: string; orderIndex: number; lessons: OutlineLesson[] }
 
 interface LearnClientProps {
@@ -356,6 +365,42 @@ export function LearnClient({
   const [appliedAnswer, setAppliedAnswer] = useState("");
   const [appliedRevealed, setAppliedRevealed] = useState(false);
 
+  // ── Prompt Lab state ──
+  const [promptGrades, setPromptGrades] = useState<Record<string, PromptGrade>>({});
+  const [promptGrading, setPromptGrading] = useState<Record<string, boolean>>({});
+  const [promptTries, setPromptTries] = useState<Record<string, number>>({});
+  const [promptErrors, setPromptErrors] = useState<Record<string, string | null>>({});
+  const [promptImprovedOpen, setPromptImprovedOpen] = useState<Record<string, boolean>>({});
+
+  async function gradePromptDrill(exId: string) {
+    const text = (responses[exId]?.responseText ?? "").trim();
+    if (text.length < 10) {
+      setPromptErrors(p => ({ ...p, [exId]: "Write your prompt first (at least a sentence)." }));
+      return;
+    }
+    setPromptErrors(p => ({ ...p, [exId]: null }));
+    setPromptGrading(p => ({ ...p, [exId]: true }));
+    try {
+      const res = await fetch("/api/learn/grade-prompt", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ exerciseId: exId, promptText: text }),
+      });
+      const data = await res.json();
+      if (!res.ok || !data.grade) {
+        setPromptErrors(p => ({ ...p, [exId]: data.error ?? "Grading failed — try again." }));
+        return;
+      }
+      setPromptGrades(p => ({ ...p, [exId]: data.grade as PromptGrade }));
+      setPromptTries(p => ({ ...p, [exId]: (p[exId] ?? 0) + 1 }));
+      setPromptImprovedOpen(p => ({ ...p, [exId]: false }));
+    } catch {
+      setPromptErrors(p => ({ ...p, [exId]: "Network error — try again." }));
+    } finally {
+      setPromptGrading(p => ({ ...p, [exId]: false }));
+    }
+  }
+
   // ── Nova in-lesson panel ──
   const [novaOpen, setNovaOpen] = useState(false);
   const [novaSeed, setNovaSeed] = useState<{ text: string; nonce: number } | null>(null);
@@ -602,7 +647,9 @@ export function LearnClient({
                 title="Jump to any lesson"
                 className="w-full text-left group">
                 <p className="text-xs text-ink-muted truncate flex items-center gap-1">
-                  {module ? `Module ${module.order_index + 1}` : ""} · Lesson {lessonPosition}/{totalLessonsInModule}
+                  {/* order_index IS the module number (Module 0 = the foundations
+                      on-ramp); +1 would label Module 0 as "Module 1". */}
+                  {module ? `Module ${module.order_index}` : ""} · Lesson {lessonPosition}/{totalLessonsInModule}
                   <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"
                     className={cn("transition-transform group-hover:text-brand", jumpOpen && "rotate-180")}>
                     <polyline points="6 9 12 15 18 9" />
@@ -623,12 +670,17 @@ export function LearnClient({
                       </p>
                       {m.lessons.map((l, li) => {
                         const isCurrent = l.id === lesson.id;
+                        // Not yet reached — show it (so the shape of the course is
+                        // visible) but don't offer it.
+                        const locked = !l.reachable && !isCurrent;
                         return (
                           <button key={l.id}
-                            onClick={() => { setJumpOpen(false); if (!isCurrent) router.push(`/learn/${l.id}`); }}
+                            disabled={locked}
+                            title={locked ? "You'll unlock this as you progress" : undefined}
+                            onClick={() => { if (locked) return; setJumpOpen(false); if (!isCurrent) router.push(`/learn/${l.id}`); }}
                             className={cn(
                               "w-full text-left px-3 py-2 flex items-center gap-2.5 transition-colors",
-                              isCurrent ? "bg-surface-tint" : "hover:bg-surface-alt",
+                              locked ? "opacity-45 cursor-not-allowed" : isCurrent ? "bg-surface-tint" : "hover:bg-surface-alt",
                             )}>
                             <span className={cn(
                               "w-5 h-5 rounded-md flex items-center justify-center shrink-0",
@@ -647,6 +699,11 @@ export function LearnClient({
                             </span>
                             {l.completed && !isCurrent && (
                               <span className="text-[9px] font-bold text-brand shrink-0">Review</span>
+                            )}
+                            {locked && (
+                              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-ink-muted shrink-0">
+                                <rect x="3" y="11" width="18" height="11" rx="2" ry="2" /><path d="M7 11V7a5 5 0 0110 0v4" />
+                              </svg>
                             )}
                           </button>
                         );
@@ -1026,7 +1083,7 @@ export function LearnClient({
                   <div className="flex items-center gap-2 mb-5">
                     <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-violet-50 border border-violet-200 text-violet-700 text-xs font-bold">
                       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M12 20h9" /><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" /></svg>
-                      {ex.type === "code" ? "Build It" : "Explain"}
+                      {ex.type === "code" ? "Build It" : ex.type === "short_answer" && ex.language === "prompt" ? "Prompt Lab — Nova grades your prompt" : "Explain"}
                     </span>
                     <span className="text-xs text-ink-muted ml-auto">{ex.marks} marks</span>
                   </div>
@@ -1039,11 +1096,80 @@ export function LearnClient({
                         value={responses[ex.id]?.responseText ?? ""}
                         onChange={e => { if (!results) setResponses(p => ({...p, [ex.id]: {...p[ex.id], responseText: e.target.value}})); }}
                         disabled={!!results}
-                        placeholder="Write your answer..."
+                        placeholder={ex.language === "prompt" ? "Write the exact prompt you would send to the AI assistant..." : "Write your answer..."}
                         rows={5}
                         className="w-full px-5 py-4 rounded-xl border-2 border-border bg-surface text-ink text-sm focus:outline-none focus:border-brand resize-none"
                       />
                     )}
+
+                    {/* ── Prompt Lab: grade the prompt itself with Nova ── */}
+                    {ex.type === "short_answer" && ex.language === "prompt" && (() => {
+                      const grade = promptGrades[ex.id];
+                      const tries = promptTries[ex.id] ?? 0;
+                      const grading = !!promptGrading[ex.id];
+                      const triesLeft = PROMPT_LAB_MAX_TRIES - tries;
+                      return (
+                        <div className="mt-4">
+                          <div className="flex flex-wrap items-center gap-3">
+                            <button
+                              onClick={() => gradePromptDrill(ex.id)}
+                              disabled={grading || triesLeft <= 0 || !!results}
+                              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-brand text-white text-sm font-bold hover:bg-brand/90 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
+                              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" /></svg>
+                              {grading ? "Nova is grading..." : grade ? "Re-grade my prompt" : "Grade my prompt"}
+                            </button>
+                            <span className="text-[11px] text-ink-muted">
+                              {triesLeft > 0 ? `${triesLeft} ${triesLeft === 1 ? "try" : "tries"} left — improve and re-grade` : "No tries left for this drill"}
+                            </span>
+                          </div>
+                          {promptErrors[ex.id] && (
+                            <p className="mt-2 text-xs font-semibold text-red-600">{promptErrors[ex.id]}</p>
+                          )}
+
+                          {grade && (
+                            <div className="mt-4 rounded-xl border border-violet-200 bg-violet-50/40 p-5 card-fade-up">
+                              <div className="flex items-baseline justify-between mb-4">
+                                <p className="text-xs font-bold text-violet-700 uppercase tracking-widest">Nova&apos;s verdict</p>
+                                <p className="text-2xl font-black text-ink">{grade.total}<span className="text-sm font-bold text-ink-muted">/100</span></p>
+                              </div>
+                              <div className="space-y-2.5">
+                                {grade.dimensions.map(d => (
+                                  <div key={d.key}>
+                                    <div className="flex items-center justify-between mb-1">
+                                      <span className="text-xs font-bold text-ink">{d.label}</span>
+                                      <span className={cn("text-xs font-bold", d.score >= 15 ? "text-emerald-600" : d.score >= 9 ? "text-amber-600" : "text-red-500")}>{d.score}/20</span>
+                                    </div>
+                                    <div className="h-1.5 rounded-full bg-violet-100 overflow-hidden">
+                                      <div className={cn("h-full rounded-full transition-all", d.score >= 15 ? "bg-emerald-500" : d.score >= 9 ? "bg-amber-400" : "bg-red-400")} style={{ width: `${(d.score / 20) * 100}%` }} />
+                                    </div>
+                                    {d.tip && <p className="mt-1 text-[11.5px] leading-snug text-ink-secondary">{d.tip}</p>}
+                                  </div>
+                                ))}
+                              </div>
+                              {grade.strength && (
+                                <p className="mt-4 text-xs text-emerald-700 font-semibold">✓ {grade.strength}</p>
+                              )}
+                              {grade.improved_prompt && (
+                                <div className="mt-3">
+                                  <button
+                                    onClick={() => setPromptImprovedOpen(p => ({ ...p, [ex.id]: !p[ex.id] }))}
+                                    className="text-xs font-bold text-violet-700 hover:underline"
+                                  >
+                                    {promptImprovedOpen[ex.id] ? "Hide" : "Show"} a ~100-scoring version of your prompt
+                                  </button>
+                                  {promptImprovedOpen[ex.id] && (
+                                    <div className="mt-2 rounded-lg border border-violet-200 bg-white px-4 py-3 text-[12.5px] leading-relaxed text-ink-secondary whitespace-pre-wrap">
+                                      {grade.improved_prompt}
+                                    </div>
+                                  )}
+                                </div>
+                              )}
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })()}
 
                     {ex.type === "code" && (
                       <div className="rounded-xl border border-border overflow-hidden">
