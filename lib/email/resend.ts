@@ -207,6 +207,47 @@ export async function sendAssessmentNudge(to: string, name: string) {
   });
 }
 
+/* ─── Activation nudge — signed up, but hasn't started a single lesson ────────
+ * The highest-leverage lifecycle email: most signups stall before their first
+ * lesson. Points straight at "start learning" (no assessment gate) to match the
+ * dashboard's lesson-first CTA. */
+export async function sendActivationNudge(to: string, name: string) {
+  const r = getResend();
+  return r.emails.send({
+    from: FROM,
+    to,
+    subject: `${name}, your first lesson takes 5 minutes`,
+    html: `
+      <div style="font-family:system-ui,-apple-system,sans-serif;max-width:520px;margin:0 auto;padding:40px 20px;">
+        <div style="text-align:center;margin-bottom:32px;">
+          <img src="https://square1-tutor.vercel.app/logo-square1.png" alt="Square 1 AI" width="150" style="display:inline-block;margin-bottom:16px;max-width:150px;height:auto;" />
+          <h1 style="color:#0F172A;font-size:24px;font-weight:800;margin:0 0 8px;">Ready when you are, ${name} 👋</h1>
+          <p style="color:#64748B;font-size:14px;margin:0;">You created your account — now the good part. Your first lesson is waiting.</p>
+        </div>
+
+        <div style="background:#F8FAFC;border:1px solid #E2E8F0;border-radius:12px;padding:24px;margin-bottom:24px;">
+          <h3 style="color:#0F172A;font-size:16px;font-weight:700;margin:0 0 8px;">5 minutes. No test. No setup.</h3>
+          <p style="color:#334155;font-size:14px;line-height:1.6;margin:0;">
+            Jump straight into a real, interactive lesson — you read a bit, then write
+            and run code right there in the page. It's the fastest way to feel what
+            learning here is actually like. No credit card, no assessment first.
+          </p>
+        </div>
+
+        <div style="text-align:center;margin-bottom:32px;">
+          <a href="https://square1-tutor.vercel.app/dashboard" style="display:inline-block;background:#0056CE;color:white;font-weight:700;font-size:14px;text-decoration:none;padding:12px 32px;border-radius:12px;">
+            Start your first lesson →
+          </a>
+        </div>
+
+        <p style="color:#94A3B8;font-size:11px;text-align:center;">
+          <a href="https://square1-tutor.vercel.app/settings" style="color:#94A3B8;">Unsubscribe</a> · Square 1 AI
+        </p>
+      </div>
+    `,
+  });
+}
+
 /* ─── Weekly Progress Digest ─────────────────────────────────────────────── */
 export async function sendWeeklyDigest(to: string, name: string, stats: {
   lessonsCompleted: number;

@@ -3,6 +3,8 @@ import Link from "next/link";
 import { CourseSwitcher } from "@/components/CourseSwitcher";
 import { ActivityHeatmap } from "@/components/ActivityHeatmap";
 import { computeStreak } from "@/lib/streaks";
+import { SubjectSync } from "@/components/SubjectSync";
+import { DIAG_SUBJECTS } from "@/lib/diagnostic";
 
 // ─── Course career mapping ────────────────────────────────────────────────────
 const COURSES = [
@@ -112,8 +114,31 @@ export default async function DashboardPage({ searchParams }: DashboardProps) {
   /*  PRE-ENROLLMENT DASHBOARD — Onboarding funnel                         */
   /* ═══════════════════════════════════════════════════════════════════════ */
   if (currentEnrollments.length === 0 && finishedEnrollments.length === 0) {
+    // Zero-friction activation: let a brand-new user open a REAL lesson (Module 0,
+    // Lesson 1 — the Foundations on-ramp) immediately, with no assessment gate.
+    // /learn/[id] renders for any logged-in student. Default to the flagship course
+    // when we don't yet know their interest (subject_interest is captured
+    // post-signup and is often still null for fresh ad signups).
+    // Resolve the learner's chosen track to a course slug via the diagnostic
+    // subject map (exact title match — robust for every track, unlike the
+    // brittle substring match preferredCourse uses). Falls back to the flagship.
+    const interest = (student?.subject_interest ?? "").trim().toLowerCase();
+    const matchedSubject = DIAG_SUBJECTS.find((s) => s.title.toLowerCase() === interest);
+    const startSlug = matchedSubject?.slug ?? preferredCourse?.slug ?? "generative-ai";
+    let firstLessonId: string | null = null;
+    const { data: startCourseRow } = await supabase.from("courses").select("id").eq("slug", startSlug).maybeSingle();
+    if (startCourseRow?.id) {
+      const { data: m0 } = await supabase.from("modules").select("id").eq("course_id", startCourseRow.id).eq("order_index", 0).maybeSingle();
+      if (m0?.id) {
+        const { data: l1 } = await supabase.from("lessons").select("id").eq("module_id", m0.id).order("order_index", { ascending: true }).limit(1).maybeSingle();
+        firstLessonId = l1?.id ?? null;
+      }
+    }
+
     return (
       <div className="min-h-full px-4 sm:px-6 py-8 max-w-6xl mx-auto">
+        {/* Attach the diagnostic subject choice to this profile (once). */}
+        <SubjectSync />
 
         {/* Hero greeting */}
         <div className="relative rounded-2xl overflow-hidden mb-8 p-8 sm:p-10"
@@ -128,8 +153,16 @@ export default async function DashboardPage({ searchParams }: DashboardProps) {
               Welcome, {firstName}
             </h1>
             <p className="text-white/70 text-base max-w-md">
-              Your career in tech starts with one assessment. Pick a course, take the test, and see exactly where you stand.
+              Jump straight into your first lesson — free, no test, about 5 minutes.
+              Prefer a personalised plan? Take the assessment below.
             </p>
+            {firstLessonId && (
+              <Link href={`/learn/${firstLessonId}`}
+                className="mt-6 inline-flex items-center gap-2 px-6 h-12 rounded-xl bg-white text-brand text-sm font-bold hover:bg-white/90 transition-all shadow-lg">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden><polygon points="6 4 20 12 6 20 6 4" /></svg>
+                Start your first lesson — free
+              </Link>
+            )}
           </div>
         </div>
 
@@ -308,6 +341,8 @@ export default async function DashboardPage({ searchParams }: DashboardProps) {
 
   return (
     <div className="min-h-full px-4 sm:px-6 py-8 max-w-6xl mx-auto">
+      {/* Attach the diagnostic subject choice to this profile (once). */}
+      <SubjectSync />
 
       {/* ── Hero: Continue Learning (THE primary action) ──────────────── */}
       <div className="relative rounded-2xl overflow-hidden mb-6 p-6 sm:p-8"

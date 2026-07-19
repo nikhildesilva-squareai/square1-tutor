@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { runStreakReminders, runWeeklyDigest, runAssessmentNudges, runInviteReminders, runManagerDigests } from "@/lib/email/jobs";
+import { runStreakReminders, runWeeklyDigest, runActivationNudges, runInviteReminders, runManagerDigests } from "@/lib/email/jobs";
 import { checkAllIncompleteEnrollments } from "@/lib/enrollment-completion";
 
 export const maxDuration = 60;
@@ -13,7 +13,8 @@ export const maxDuration = 60;
  *                              completion criteria (lessons + projects + assessment)
  *  - streak reminders       → every day, students with an active enrollment who
  *                              haven't studied today
- *  - assessment nudges      → every day, signups >24h old with no enrollment (once ever)
+ *  - activation nudges      → every day, signups >24h old with 0 lessons done —
+ *                              "come start your first lesson" (once ever)
  *  - weekly digest          → Sundays only
  *
  * Protected by CRON_SECRET. Vercel cron sends it automatically as a Bearer
@@ -48,10 +49,13 @@ export async function GET(request: Request) {
     results.streakReminders = { error: err instanceof Error ? err.message : "failed" };
   }
 
+  // Activation nudge — the front-line "come start your first lesson" email for
+  // signups stalled at 0 lessons. Replaces the old assessment-first nudge; it
+  // also skips anyone already sent that one, so there's no double-send.
   try {
-    results.assessmentNudges = await runAssessmentNudges();
+    results.activationNudges = await runActivationNudges();
   } catch (err) {
-    results.assessmentNudges = { error: err instanceof Error ? err.message : "failed" };
+    results.activationNudges = { error: err instanceof Error ? err.message : "failed" };
   }
 
   // B2B: one reminder per team invite still pending after 3 days

@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { Logo } from "@/components/ui/logo";
 import { getSubject, SUBJECT_SEO } from "@/lib/diagnostic";
 import { DiagnosticExperience } from "./DiagnosticExperience";
+import { SubjectCapture } from "@/components/SubjectCapture";
 
 export const revalidate = 300;
 
@@ -48,6 +49,8 @@ export default async function SubjectDiagnosticPage({ params }: PageProps) {
 
   return (
     <div className="flex min-h-screen flex-col bg-white">
+      {/* Remember the chosen track so it can attach to the profile after signup. */}
+      <SubjectCapture subject={subject.title} />
       <header className="flex items-center justify-between px-6 py-5 sm:px-10">
         <Link href="/"><Logo variant="dark" size="md" /></Link>
         <Link href="/login" className="text-sm font-semibold text-slate-500 transition-colors hover:text-slate-900">

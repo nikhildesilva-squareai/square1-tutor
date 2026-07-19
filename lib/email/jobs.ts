@@ -5,6 +5,7 @@ import {
   sendStreakReminder,
   sendWeeklyDigest,
   sendAssessmentNudge,
+  sendActivationNudge,
   sendInviteReminder,
   sendManagerDigest,
 } from "@/lib/email/resend";
@@ -256,6 +257,66 @@ export async function runAssessmentNudges(): Promise<JobResult> {
     try {
       await sendAssessmentNudge(student.email, student.name ?? student.email.split("@")[0]);
       await logSend(supabase, student.id, "assessment_nudge");
+      result.sent++;
+    } catch (err) {
+      result.errors.push(`${student.email}: ${err instanceof Error ? err.message : "unknown"}`);
+    }
+  }
+
+  return result;
+}
+
+/* ─── Activation nudge — signed up >24h ago, hasn't started a single lesson ───
+ * The gap the assessment nudge misses: it only catches signups with NO
+ * enrolment, so people who enrolled (or assessed) but never opened a lesson get
+ * nothing. This targets the real activation cliff — 0 lessons completed — and
+ * points them at "start a lesson", not the assessment. One send per student,
+ * ever; also skips anyone already sent the old assessment nudge. */
+export async function runActivationNudges(): Promise<JobResult> {
+  const supabase = createAdminClient();
+  const result: JobResult = { sent: 0, skipped: 0, errors: [] };
+
+  const dayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+  // Don't blast the backlog the first time this runs; stale signups need a
+  // different (win-back) message anyway.
+  const fourteenDaysAgo = new Date(Date.now() - 14 * 24 * 60 * 60 * 1000).toISOString();
+
+  const { data: students } = await supabase
+    .from("students")
+    .select("id, name, email, email_opt_out, created_at")
+    .lt("created_at", dayAgo)
+    .gt("created_at", fourteenDaysAgo);
+
+  if (!students || students.length === 0) return result;
+
+  const studentIds = students.map((s) => s.id);
+
+  const [{ data: withLessons }, alreadyActivation, alreadyAssessment] = await Promise.all([
+    // Anyone with at least one completed lesson is already activated — skip.
+    supabase.from("lesson_completions").select("student_id").in("student_id", studentIds),
+    recentlySent(supabase, "activation_nudge", new Date(0).toISOString()),
+    recentlySent(supabase, "assessment_nudge", new Date(0).toISOString()),
+  ]);
+
+  const started = new Set((withLessons ?? []).map((c) => c.student_id));
+
+  for (const student of students) {
+    if (result.sent >= BATCH_CAP) break;
+
+    if (
+      !student.email ||
+      student.email_opt_out ||
+      started.has(student.id) ||
+      alreadyActivation.has(student.id) ||
+      alreadyAssessment.has(student.id)
+    ) {
+      result.skipped++;
+      continue;
+    }
+
+    try {
+      await sendActivationNudge(student.email, student.name ?? student.email.split("@")[0]);
+      await logSend(supabase, student.id, "activation_nudge");
       result.sent++;
     } catch (err) {
       result.errors.push(`${student.email}: ${err instanceof Error ? err.message : "unknown"}`);
