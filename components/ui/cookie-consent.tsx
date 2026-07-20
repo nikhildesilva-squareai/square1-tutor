@@ -1,13 +1,14 @@
 "use client";
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { readConsent, setConsent, type ConsentValue } from "@/lib/consent";
 
 export function CookieConsent() {
   const [visible, setVisible] = useState(false);
   const [animating, setAnimating] = useState(false);
 
   useEffect(() => {
-    if (!localStorage.getItem("sq1_cookie_consent")) {
+    if (!readConsent()) {
       // Delay appearance for smooth entrance
       const timer = setTimeout(() => { setVisible(true); setAnimating(true); }, 1500);
       return () => clearTimeout(timer);
@@ -16,8 +17,8 @@ export function CookieConsent() {
 
   if (!visible) return null;
 
-  function accept() {
-    localStorage.setItem("sq1_cookie_consent", "essential");
+  function choose(value: ConsentValue) {
+    setConsent(value);
     setAnimating(false);
     setTimeout(() => setVisible(false), 300);
   }
@@ -35,7 +36,10 @@ export function CookieConsent() {
 
           <div className="flex-1 min-w-0">
             <p className="text-sm text-slate-300 leading-relaxed">
-              We use <strong className="text-white font-semibold">essential cookies only</strong> to keep you signed in. No tracking, no ads.{" "}
+              <strong className="text-white font-semibold">Essential cookies</strong> keep you signed in.
+              May we also use <strong className="text-white font-semibold">analytics</strong> (Google
+              Analytics) to see which lessons actually work and improve them?{" "}
+              <span className="text-slate-400">No ads. We never sell your data.</span>{" "}
               <Link href="/privacy" className="text-slate-400 underline underline-offset-2 hover:text-white transition-colors">
                 Privacy Policy
               </Link>
@@ -45,10 +49,16 @@ export function CookieConsent() {
 
         <div className="flex items-center justify-end gap-2 mt-4">
           <button
-            onClick={accept}
+            onClick={() => choose("essential")}
+            className="h-9 px-4 rounded-xl bg-white/5 border border-white/10 text-slate-300 text-sm font-semibold hover:bg-white/10 hover:text-white transition-all"
+          >
+            Essential only
+          </button>
+          <button
+            onClick={() => choose("all")}
             className="h-9 px-5 rounded-xl bg-white text-[#0A0A0A] text-sm font-bold hover:bg-white/90 transition-all"
           >
-            Got it
+            Allow analytics
           </button>
         </div>
       </div>

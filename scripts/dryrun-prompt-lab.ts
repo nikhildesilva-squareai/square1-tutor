@@ -7,7 +7,8 @@
  *
  * Run: set -a && . ./.env.local && set +a && npx tsx scripts/dryrun-prompt-lab.ts
  */
-import { generate, providerFor, ossModelFor } from "../lib/ai/providers";
+import { generate, providerFor } from "../lib/ai/providers";
+const ossModelFor = (_f: string) => process.env.AI_OSS_MODEL_GRADING ?? process.env.AI_OSS_MODEL ?? "llama-3.3-70b-versatile";
 import { GRADING_SYSTEM_PROMPT } from "../lib/ai/prompts";
 import { extractJsonObject } from "../lib/ai/json";
 import { randomUUID } from "crypto";

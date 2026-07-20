@@ -2,7 +2,8 @@
 
 import Script from "next/script";
 import { usePathname, useSearchParams } from "next/navigation";
-import { useEffect, Suspense } from "react";
+import { useEffect, useState, Suspense } from "react";
+import { CONSENT_EVENT, analyticsAllowed } from "@/lib/consent";
 
 const GA_ID = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
 
@@ -20,7 +21,20 @@ function AnalyticsPageView() {
 }
 
 export function GoogleAnalytics() {
-  if (!GA_ID) return null;
+  // Analytics is opt-in: nothing loads until the visitor chooses "Allow
+  // analytics" in the consent banner. Undecided is not consent, so on a first
+  // visit no Google script is requested at all.
+  const [granted, setGranted] = useState(false);
+
+  useEffect(() => {
+    setGranted(analyticsAllowed());
+    // React to the banner without needing a reload.
+    const onConsent = (e: Event) => setGranted((e as CustomEvent).detail === "all");
+    window.addEventListener(CONSENT_EVENT, onConsent);
+    return () => window.removeEventListener(CONSENT_EVENT, onConsent);
+  }, []);
+
+  if (!GA_ID || !granted) return null;
 
   return (
     <>
@@ -38,7 +52,8 @@ export function GoogleAnalytics() {
             gtag('js', new Date());
             gtag('config', '${GA_ID}', {
               page_auto_event: true,
-              send_page_view: false
+              send_page_view: false,
+              anonymize_ip: true
             });
           `,
         }}

@@ -149,17 +149,30 @@ export default function PrivacyPage() {
             <section>
               <h2 className="text-xl font-bold text-ink mb-3">7. Cookies</h2>
               <p>
-                We use <strong>essential cookies only</strong>. These are required for authentication
-                (keeping you signed in) and are set by Supabase&apos;s authentication library.
+                <strong>Essential cookies</strong> are required for authentication (keeping you
+                signed in) and are set by Supabase&apos;s authentication library. These are always on
+                — without them you cannot log in.
+              </p>
+              <p className="mt-2">
+                <strong>Analytics cookies (optional, off by default).</strong> If you choose
+                &ldquo;Allow analytics&rdquo; in our cookie banner, we load{" "}
+                <strong>Google Analytics</strong> to understand how the product is used — which
+                lessons people finish, where they get stuck — so we can improve it. Google acts as
+                our analytics provider and receives your IP address (truncated) and page-view data.
+                We never load it until you opt in, and you can decline with one click.
               </p>
               <p className="mt-2">
                 We do <strong>not</strong> use:
               </p>
               <ul className="list-disc list-inside space-y-1 mt-1">
-                <li>Analytics cookies (no Google Analytics, no Mixpanel)</li>
-                <li>Advertising or tracking cookies</li>
-                <li>Third-party cookies</li>
+                <li>Advertising or ad-targeting cookies (no Meta pixel, no ad networks)</li>
+                <li>Any cookie that profiles you across other websites</li>
               </ul>
+              <p className="mt-3">
+                We do not sell your data, and we do not share it with third parties for advertising.
+                To change your choice, clear this site&apos;s cookies and site data in your browser
+                and the banner will ask again.
+              </p>
             </section>
 
             <section>

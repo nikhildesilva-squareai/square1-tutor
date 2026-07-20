@@ -6,6 +6,7 @@ import { Analytics } from "@vercel/analytics/next";
 import { CookieConsent } from "@/components/ui/cookie-consent";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { GoogleAnalytics } from "@/components/GoogleAnalytics";
+import { FirstPartyAnalytics } from "@/components/FirstPartyAnalytics";
 
 const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
 const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"] });
@@ -65,6 +66,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         </ThemeProvider>
         <CookieConsent />
         <GoogleAnalytics />
+        {/* First-party attribution → `events` table (own Supabase). Feeds the
+            internal dashboard's source/funnel views. */}
+        <FirstPartyAnalytics />
         {/* Vercel Web Analytics — route-level funnel: / → /diagnostic/[subject]
             → results → /signup → /dashboard. GA4 (above) activates separately
             once NEXT_PUBLIC_GA_MEASUREMENT_ID is set. */}

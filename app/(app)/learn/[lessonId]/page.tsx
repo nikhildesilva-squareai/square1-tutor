@@ -72,24 +72,58 @@ export default async function LearnPage({ params }: PageProps) {
 
   // Full course outline for the in-lesson jump menu, with this student's completions
   // marked, so any already-covered lesson is one click away from anywhere in the course.
-  const { data: courseCompletions } = await supabase
-    .from("lesson_completions")
-    .select("lesson_id")
-    .eq("student_id", student.id)
-    .in("lesson_id", orderedLessons.map((l) => l.id));
+  const [{ data: courseCompletions }, { data: enrollment }] = await Promise.all([
+    supabase
+      .from("lesson_completions")
+      .select("lesson_id")
+      .eq("student_id", student.id)
+      .in("lesson_id", orderedLessons.map((l) => l.id)),
+    supabase
+      .from("student_enrollments")
+      .select("current_lesson_id")
+      .eq("student_id", student.id)
+      .eq("course_id", lesson.course_id)
+      .maybeSingle(),
+  ]);
 
   const completedIds = new Set((courseCompletions ?? []).map((c) => c.lesson_id));
-  const outline = (allCourseModules ?? [])
+  const currentLessonId = enrollment?.current_lesson_id ?? null;
+
+  const sortedModules = (allCourseModules ?? [])
     .slice()
-    .sort((a, b) => (a.order_index ?? 0) - (b.order_index ?? 0))
-    .map((m) => ({
+    .sort((a, b) => (a.order_index ?? 0) - (b.order_index ?? 0));
+
+  // Which module the learner has reached — mirrors the course page's rule so the
+  // menu can't offer a lesson the course page shows as locked.
+  const curModuleIdx = (() => {
+    if (!currentLessonId) return null;
+    const cur = (allCourseLessons ?? []).find((l) => l.id === currentLessonId);
+    if (!cur) return null;
+    const i = sortedModules.findIndex((m) => m.id === cur.module_id);
+    return i >= 0 ? i : null;
+  })();
+
+  const outline = sortedModules
+    .map((m, mIdx) => ({
       id: m.id,
       title: m.title,
       orderIndex: m.order_index ?? 0,
       lessons: (allCourseLessons ?? [])
         .filter((l) => l.module_id === m.id)
         .sort((a, b) => a.order_index - b.order_index)
-        .map((l) => ({ id: l.id, title: l.title, completed: completedIds.has(l.id) })),
+        .map((l) => ({
+          id: l.id,
+          title: l.title,
+          completed: completedIds.has(l.id),
+          // Reachable = already done, where you are now, the Module 0 on-ramp,
+          // or anything in a module you've already moved past. What's still
+          // ahead is shown but not offered.
+          reachable:
+            completedIds.has(l.id) ||
+            l.id === currentLessonId ||
+            mIdx === 0 ||
+            (curModuleIdx !== null && mIdx < curModuleIdx),
+        })),
     }))
     .filter((m) => m.lessons.length > 0);
 
