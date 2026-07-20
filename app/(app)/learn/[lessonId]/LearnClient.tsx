@@ -358,6 +358,21 @@ export function LearnClient({
     exercises.forEach(ex => { init[ex.id] = { selectedOption: undefined, responseText: "", codeResponse: ex.starter_code ?? "" }; });
     return init;
   });
+  // MCQ options are stored with the correct answer overwhelmingly first — shuffle
+  // per mount so option order carries no signal. Grading compares option TEXT, so
+  // this is safe; computed once in the initializer so re-renders never reshuffle.
+  const [shuffledOptions] = useState<Record<string, string[]>>(() => {
+    const map: Record<string, string[]> = {};
+    exercises.forEach(ex => {
+      if (ex.type === "mcq" && ex.options) {
+        map[ex.id] = [...ex.options]
+          .map(o => ({ o, r: Math.random() }))
+          .sort((a, b) => a.r - b.r)
+          .map(x => x.o);
+      }
+    });
+    return map;
+  });
   const [quizAnswered, setQuizAnswered] = useState<Record<string, boolean>>({});
   const [quizCorrect, setQuizCorrect] = useState<Record<string, boolean>>({});
   const [quizAttempts, setQuizAttempts] = useState<Record<string, number>>({});
@@ -858,7 +873,7 @@ export function LearnClient({
 
                     {ex.options && (
                       <div className="grid gap-3">
-                        {ex.options.map((opt, i) => {
+                        {(shuffledOptions[ex.id] ?? ex.options).map((opt, i) => {
                           const isThis = lastPick === opt;
                           // Reveal correct only once locked
                           const correctOpt = answered && ex.correct_answer?.trim().toLowerCase() === opt.trim().toLowerCase();
