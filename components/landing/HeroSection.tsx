@@ -1,7 +1,7 @@
 "use client";
-import { useState } from "react";
+import { useState, type CSSProperties } from "react";
 import Link from "next/link";
-import { Menu, X, Check } from "lucide-react";
+import { Menu, X, Check, Rocket, Briefcase } from "lucide-react";
 import { Logo } from "@/components/ui/logo";
 import { PrimaryCta } from "@/components/ui/primary-cta";
 
@@ -13,6 +13,7 @@ const BLUE_GRADIENT = "linear-gradient(135deg, #3388FF 0%, #0056CE 55%, #01224F 
 const DOORS = [
   {
     key: "career",
+    icon: Rocket,
     eyebrow: "Career path",
     title: "Build a career in AI",
     subtitle:
@@ -27,8 +28,10 @@ const DOORS = [
   },
   {
     key: "work",
+    icon: Briefcase,
     eyebrow: "Work smarter",
-    title: "Use AI better at work — no code",
+    // NBSPs keep "— no code" wrapping as one unit (no orphaned "code" on line 2)
+    title: "Use AI better at work — no code",
     subtitle:
       "Your company already pays for Copilot. Get your money's worth. Practical AI skills for your actual job — no programming required.",
     bullets: [
@@ -41,33 +44,103 @@ const DOORS = [
   },
 ] as const;
 
+// Per-door visual identity. Career = the site's deep-blue family; Work = a
+// complementary emerald/teal lane. Same card anatomy, different accent system,
+// so the fork reads as "two doors into one product" — not two products.
+const EMERALD_GRADIENT = "linear-gradient(135deg, #2DD4BF 0%, #059669 55%, #064E3B 100%)";
+
+const DOOR_THEMES = {
+  career: {
+    eyebrowClass: "text-brand",
+    hoverBorderClass: "hover:border-brand/40",
+    topBar: "linear-gradient(90deg, #3388FF 0%, #0056CE 60%, #01224F 100%)",
+    wash: "linear-gradient(180deg, rgba(0,86,206,0.065) 0%, rgba(51,136,255,0.03) 60%, rgba(51,136,255,0) 100%)",
+    glow: "radial-gradient(ellipse at 50% 12%, rgba(0,86,206,0.16) 0%, transparent 65%)",
+    chip: BLUE_GRADIENT,
+    chipShadow: "0 8px 20px rgba(0,86,206,0.28), 0 0 0 1px rgba(255,255,255,0.18) inset",
+    ctaStyle: undefined as React.CSSProperties | undefined,
+  },
+  work: {
+    eyebrowClass: "text-emerald-600",
+    hoverBorderClass: "hover:border-emerald-500/40",
+    topBar: "linear-gradient(90deg, #2DD4BF 0%, #059669 60%, #064E3B 100%)",
+    wash: "linear-gradient(180deg, rgba(5,150,105,0.065) 0%, rgba(45,212,191,0.03) 60%, rgba(45,212,191,0) 100%)",
+    glow: "radial-gradient(ellipse at 50% 12%, rgba(5,150,105,0.14) 0%, transparent 65%)",
+    chip: EMERALD_GRADIENT,
+    chipShadow: "0 8px 20px rgba(5,150,105,0.28), 0 0 0 1px rgba(255,255,255,0.18) inset",
+    // Deliberate per-lane exception to the one-CTA-gradient rule: the work door
+    // carries its lane colour so the fork is unmistakable at a glance.
+    ctaStyle: {
+      background: EMERALD_GRADIENT,
+      boxShadow: "0 12px 32px rgba(5,150,105,0.32), 0 0 0 1px rgba(255,255,255,0.12) inset",
+    } as React.CSSProperties | undefined,
+  },
+} as const;
+
 function DoorCard({ door }: { door: (typeof DOORS)[number] }) {
+  const theme = DOOR_THEMES[door.key];
+  const Icon = door.icon;
+
   return (
-    <div className="group relative flex flex-col rounded-2xl bg-white border border-slate-200 p-7 sm:p-8 text-left transition-all duration-200 hover:border-brand/40 hover:-translate-y-1"
-      style={{ boxShadow: "0 16px 48px rgba(15,28,49,0.08), 0 0 0 1px rgba(15,28,49,0.02)" }}>
-      <p className="text-[10px] font-bold tracking-[0.25em] uppercase text-brand mb-3">{door.eyebrow}</p>
+    <div className="group relative h-full">
+      {/* Soft themed glow behind the card */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute -inset-4 rounded-[28px] opacity-70 blur-2xl transition-opacity duration-300 group-hover:opacity-100"
+        style={{ background: theme.glow }}
+      />
 
-      <h2 className="text-2xl sm:text-[28px] font-black tracking-tight text-slate-900 leading-tight mb-3">
-        {door.title}
-      </h2>
+      <div
+        className={`relative flex h-full flex-col overflow-hidden rounded-2xl bg-white border border-slate-200 text-left transition-all duration-200 motion-safe:group-hover:-translate-y-1 ${theme.hoverBorderClass}`}
+        style={{
+          boxShadow:
+            "0 1px 2px rgba(15,28,49,0.05), 0 16px 48px rgba(15,28,49,0.08), inset 0 1px 0 rgba(255,255,255,0.9)",
+        }}
+      >
+        {/* Lane accent bar */}
+        <div aria-hidden className="h-1 w-full shrink-0" style={{ background: theme.topBar }} />
 
-      <p className="text-sm text-slate-600 leading-relaxed mb-5">{door.subtitle}</p>
-
-      <ul className="space-y-2.5 mb-7">
-        {door.bullets.map((b) => (
-          <li key={b} className="flex items-start gap-2.5 text-[13px] text-slate-700 font-medium">
-            <span className="mt-0.5 w-[18px] h-[18px] rounded-full bg-blue-50 border border-blue-100 flex items-center justify-center shrink-0">
-              <Check size={10} strokeWidth={3.5} className="text-brand" aria-hidden />
+        {/* Tinted header zone: icon chip + eyebrow, title, subtitle */}
+        <div className="px-7 sm:px-8 pt-6 pb-6" style={{ background: theme.wash }}>
+          <div className="flex items-center justify-between gap-3 mb-4">
+            <span
+              className="w-11 h-11 rounded-xl flex items-center justify-center text-white shrink-0"
+              style={{ background: theme.chip, boxShadow: theme.chipShadow }}
+            >
+              <Icon size={20} strokeWidth={2.2} aria-hidden />
             </span>
-            {b}
-          </li>
-        ))}
-      </ul>
+            <p className={`text-[10px] font-bold tracking-[0.25em] uppercase ${theme.eyebrowClass}`}>
+              {door.eyebrow}
+            </p>
+          </div>
 
-      <div className="mt-auto">
-        <PrimaryCta href={door.href} className="w-full">
-          {door.cta}
-        </PrimaryCta>
+          <h2 className="text-2xl sm:text-[27px] font-black tracking-tight text-slate-900 leading-tight text-balance mb-3">
+            {door.title}
+          </h2>
+
+          <p className="text-sm text-slate-600 leading-relaxed">{door.subtitle}</p>
+        </div>
+
+        {/* Body: benefits grow to fill, CTA anchored at the bottom */}
+        <div className="flex flex-1 flex-col px-7 sm:px-8 pt-5 pb-7 sm:pb-8 border-t border-slate-100">
+          <ul className="flex-1 flex flex-col justify-center gap-3 mb-6">
+            {door.bullets.map((b) => (
+              <li key={b} className="flex items-start gap-3 text-[13px] text-slate-700 font-medium leading-snug">
+                <span
+                  className="mt-px w-[22px] h-[22px] rounded-full flex items-center justify-center shrink-0 text-white"
+                  style={{ background: theme.chip }}
+                >
+                  <Check size={12} strokeWidth={3.5} aria-hidden />
+                </span>
+                <span className="pt-0.5">{b}</span>
+              </li>
+            ))}
+          </ul>
+
+          <PrimaryCta href={door.href} className="w-full" style={theme.ctaStyle}>
+            {door.cta}
+          </PrimaryCta>
+        </div>
       </div>
     </div>
   );
