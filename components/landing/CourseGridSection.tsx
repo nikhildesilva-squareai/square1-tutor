@@ -39,25 +39,44 @@ const META: Record<string, CourseMeta> = {
   "default":                 { role: "Software Engineer",      salary: "$90–150k",  projects: ["Starter Project", "Mid-level Project", "Capstone"] },
 };
 
-function getMeta(slug: string): CourseMeta {
-  return META[slug] ?? META.default;
+// ─── Work role-tracks — outcome + what you build (NO salary; these are no-code) ─
+type WorkMeta = { role: string; items: string[] };
+const WORK_META: Record<string, WorkMeta> = {
+  "ai-foundations":          { role: "AI-Productive Pro",        items: ["The prompting patterns", "Across your real tools", "Your first workflows"] },
+  "ai-for-marketers":        { role: "AI-Productive Marketer",   items: ["Full campaign pack", "Reusable prompt library", "Nova-graded drills"] },
+  "ai-for-finance":          { role: "AI-Productive Finance Pro", items: ["Month-end pack", "Excel & analysis", "Verified reporting"] },
+  "ai-for-creators":         { role: "AI-Productive Creator",    items: ["Content pack", "Repurposing waterfall", "Voice-matched scripts"] },
+  "ai-for-founders":         { role: "AI-Productive Founder",    items: ["Operating pack", "Pitch & investor comms", "Reusable templates"] },
+  "ai-for-teachers":         { role: "AI-Productive Teacher",    items: ["Teaching pack", "Differentiated lessons", "AI-aware assessment"] },
+  "ai-for-project-managers": { role: "AI-Productive PM",         items: ["Delivery pack", "Status & risk register", "Stakeholder comms"] },
+  "ai-for-sales":            { role: "AI-Productive Seller",     items: ["Deal pack", "Outreach & discovery", "Objection practice"] },
+  "default":                 { role: "AI-Productive Pro",        items: ["Real work scenarios", "Prompt library", "Nova-graded practice"] },
+};
+
+// One resolver so the cards don't care which domain they're rendering.
+function resolveMeta(slug: string, isWork: boolean): { topRight: string; role: string; items: string[] } {
+  if (isWork) {
+    const w = WORK_META[slug] ?? WORK_META.default;
+    return { topRight: "No code", role: w.role, items: w.items };
+  }
+  const m = META[slug] ?? META.default;
+  return { topRight: m.salary, role: m.role, items: m.projects };
 }
 
 const BRAND = "#0056CE";
 
+const WORK_LANE_SLUGS = new Set([
+  "ai-foundations", "ai-for-marketers", "ai-for-finance", "ai-for-creators",
+  "ai-for-founders", "ai-for-teachers", "ai-for-project-managers", "ai-for-sales",
+]);
+
 // ─── Mobile card — compact tile ──────────────────────────────────────────────
 function MobileCourseCard({
-  course,
-  index,
-  isVisible,
-  onSelect,
+  course, index, isVisible, isWork, onSelect,
 }: {
-  course: Course;
-  index: number;
-  isVisible: boolean;
-  onSelect: (c: Course) => void;
+  course: Course; index: number; isVisible: boolean; isWork: boolean; onSelect: (c: Course) => void;
 }) {
-  const meta = getMeta(course.slug);
+  const meta = resolveMeta(course.slug, isWork);
 
   return (
     <button
@@ -72,7 +91,6 @@ function MobileCourseCard({
         transitionDelay: `${index * 60}ms`,
       }}
     >
-      {/* Top row: title + salary */}
       <div className="flex items-start justify-between gap-2 mb-2">
         <h3 className="text-sm font-black text-slate-900 leading-tight" style={{ letterSpacing: "-0.01em" }}>
           {course.title}
@@ -81,33 +99,30 @@ function MobileCourseCard({
           className="text-[8px] font-black tracking-wider uppercase px-1.5 py-0.5 rounded-full shrink-0 mt-0.5"
           style={{ background: `${BRAND}15`, color: BRAND }}
         >
-          {meta.salary}
+          {meta.topRight}
         </span>
       </div>
 
-      {/* Description — single line */}
-      <p className="text-[11px] text-slate-500 leading-snug mb-3 line-clamp-1">
-        {course.description}
-      </p>
+      <p className="text-[11px] text-slate-500 leading-snug mb-3 line-clamp-1">{course.description}</p>
 
-      {/* Bottom: role + stats */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-1.5">
           <svg width="10" height="10" viewBox="0 0 12 12" fill="none" className="shrink-0">
             <path d="M2 6h7M6 3l3 3-3 3" stroke={BRAND} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
-          <span className="text-[10px] font-bold" style={{ color: BRAND }}>
-            {meta.role}
-          </span>
+          <span className="text-[10px] font-bold" style={{ color: BRAND }}>{meta.role}</span>
         </div>
         <div className="flex items-center gap-2 text-[9px] text-slate-500">
           <span><span className="font-bold text-slate-600">{course.total_lessons}</span> lessons</span>
-          <span className="w-0.5 h-0.5 rounded-full bg-slate-300" />
-          <span><span className="font-bold text-slate-600">{course.total_projects}</span> projects</span>
+          {course.total_projects > 0 && (
+            <>
+              <span className="w-0.5 h-0.5 rounded-full bg-slate-300" />
+              <span><span className="font-bold text-slate-600">{course.total_projects}</span> projects</span>
+            </>
+          )}
         </div>
       </div>
 
-      {/* Thin accent line at bottom */}
       <div className="absolute bottom-0 left-0 right-0 h-0.5" style={{ background: `linear-gradient(90deg, ${BRAND}40, ${BRAND}10)` }} />
     </button>
   );
@@ -115,17 +130,11 @@ function MobileCourseCard({
 
 // ─── Desktop card — full rich card ───────────────────────────────────────────
 function DesktopCourseCard({
-  course,
-  index,
-  isVisible,
-  onSelect,
+  course, index, isVisible, isWork, onSelect,
 }: {
-  course: Course;
-  index: number;
-  isVisible: boolean;
-  onSelect: (c: Course) => void;
+  course: Course; index: number; isVisible: boolean; isWork: boolean; onSelect: (c: Course) => void;
 }) {
-  const meta = getMeta(course.slug);
+  const meta = resolveMeta(course.slug, isWork);
 
   return (
     <button
@@ -140,40 +149,33 @@ function DesktopCourseCard({
         transitionDelay: `${index * 90}ms`,
       }}
     >
-      {/* Top badge */}
       <div className="relative flex items-center justify-between mb-5 xl:mb-3">
         <div className="flex items-center gap-2">
           <span className="w-1.5 h-1.5 rounded-full" style={{ background: BRAND }} />
           <span className="text-[10px] tracking-[0.25em] uppercase font-bold" style={{ color: BRAND }}>
-            {course.status !== "active" ? "Coming Soon" : "Course"}
+            {course.status !== "active" ? "Coming Soon" : isWork ? "Role Track" : "Course"}
           </span>
         </div>
         <span
           className="text-[9px] font-black tracking-widest uppercase px-2 py-0.5 rounded-full"
           style={{ background: `${BRAND}15`, color: BRAND }}
         >
-          {meta.salary}
+          {meta.topRight}
         </span>
       </div>
 
-      {/* Course title */}
       <h3 className="relative text-2xl lg:text-3xl xl:text-xl font-black text-slate-900 leading-tight mb-2"
         style={{ letterSpacing: "-0.02em" }}>
         {course.title}
       </h3>
 
-      {/* Blurb */}
       <p className="relative text-xs sm:text-sm xl:text-xs text-slate-600 mb-5 xl:mb-3.5 leading-relaxed line-clamp-2">
         {course.description}
       </p>
 
-      {/* Sample projects */}
       <div className="relative space-y-1.5 mb-5 xl:mb-3.5">
-        {meta.projects.map((p, i) => (
-          <div
-            key={p}
-            className="flex items-center gap-2.5 xl:gap-2 px-3 py-2 xl:px-2.5 xl:py-1.5 rounded-lg bg-slate-50/80 border border-slate-200/80"
-          >
+        {meta.items.map((p, i) => (
+          <div key={p} className="flex items-center gap-2.5 xl:gap-2 px-3 py-2 xl:px-2.5 xl:py-1.5 rounded-lg bg-slate-50/80 border border-slate-200/80">
             <span className="text-[9px] font-mono font-bold tabular-nums" style={{ color: BRAND }}>
               {String(i + 1).padStart(2, "0")}
             </span>
@@ -182,27 +184,27 @@ function DesktopCourseCard({
         ))}
       </div>
 
-      {/* Schedule line */}
       <div className="relative flex items-center gap-3 mb-4 xl:mb-3 text-[10px] text-slate-500">
         <span><span className="font-bold text-slate-700 tabular-nums">{course.total_lessons}</span> lessons</span>
-        <span className="w-0.5 h-0.5 rounded-full bg-slate-300" />
-        <span><span className="font-bold text-slate-700 tabular-nums">{course.total_projects}</span> projects</span>
+        {course.total_projects > 0 && (
+          <>
+            <span className="w-0.5 h-0.5 rounded-full bg-slate-300" />
+            <span><span className="font-bold text-slate-700 tabular-nums">{course.total_projects}</span> projects</span>
+          </>
+        )}
       </div>
 
-      {/* Bottom — career role + progress bar */}
       <div className="relative pt-4 border-t" style={{ borderColor: `${BRAND}10` }}>
         <div className="flex items-center justify-between mb-2">
           <div className="flex items-center gap-1.5 min-w-0">
             <svg width="12" height="12" viewBox="0 0 12 12" fill="none" className="shrink-0">
               <path d="M2 6h7M6 3l3 3-3 3" stroke={BRAND} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
-            <span className="text-[10px] sm:text-[11px] font-bold truncate" style={{ color: BRAND }}>
-              {meta.role}
-            </span>
+            <span className="text-[10px] sm:text-[11px] font-bold truncate" style={{ color: BRAND }}>{meta.role}</span>
           </div>
           <span className="text-[10px] text-slate-500 font-semibold flex items-center gap-1">
             <span className="w-1 h-1 rounded-full bg-emerald-400" />
-            AI-graded track
+            {isWork ? "Nova-graded" : "AI-graded track"}
           </span>
         </div>
         <div className="h-1 rounded-full overflow-hidden" style={{ background: `${BRAND}12` }}>
@@ -221,8 +223,8 @@ function DesktopCourseCard({
 }
 
 // ─── Inline explorer modal — opens when a course card is clicked ──────────────
-function CourseExplorer({ course, onClose }: { course: Course; onClose: () => void }) {
-  const meta = getMeta(course.slug);
+function CourseExplorer({ course, isWork, onClose }: { course: Course; isWork: boolean; onClose: () => void }) {
+  const meta = resolveMeta(course.slug, isWork);
   const dialogRef = useRef<HTMLDivElement>(null);
   useFocusTrap(true, onClose, dialogRef);
   return (
@@ -230,7 +232,6 @@ function CourseExplorer({ course, onClose }: { course: Course; onClose: () => vo
       <div className="absolute inset-0 bg-slate-900/50 backdrop-blur-sm" onClick={onClose} />
       <div ref={dialogRef} role="dialog" aria-modal="true" aria-label={course.title}
         className="relative w-full sm:max-w-lg rounded-t-3xl sm:rounded-3xl bg-white shadow-2xl overflow-hidden animate-fade-in-up">
-        {/* Accent header */}
         <div className="p-6 sm:p-7" style={{ background: `linear-gradient(135deg, ${BRAND}10, #fff)` }}>
           <div className="flex items-start justify-between">
             <div>
@@ -240,7 +241,8 @@ function CourseExplorer({ course, onClose }: { course: Course; onClose: () => vo
               </span>
               <h3 className="mt-2 text-2xl font-black text-slate-900 leading-tight">{course.title}</h3>
               <p className="text-sm font-semibold mt-1" style={{ color: BRAND }}>
-                {meta.role} · <span style={{ color: "#10B981" }}>{meta.salary}</span>
+                {meta.role}{!isWork && <> · <span style={{ color: "#10B981" }}>{meta.topRight}</span></>}
+                {isWork && <> · <span className="text-slate-500">No code</span></>}
               </p>
             </div>
             <button onClick={onClose} className="w-8 h-8 rounded-lg hover:bg-black/5 flex items-center justify-center text-slate-500" aria-label="Close">
@@ -252,26 +254,25 @@ function CourseExplorer({ course, onClose }: { course: Course; onClose: () => vo
         <div className="p-6 sm:p-7 pt-5">
           <p className="text-sm text-slate-600 leading-relaxed mb-5">{course.description}</p>
 
-          <p className="text-[10px] tracking-widest uppercase font-bold text-slate-500 mb-3">Real projects you&apos;ll ship</p>
+          <p className="text-[10px] tracking-widest uppercase font-bold text-slate-500 mb-3">
+            {isWork ? "What you'll practise & build" : "Real projects you'll ship"}
+          </p>
           <div className="space-y-2 mb-6">
-            {meta.projects.map((p, i) => (
+            {meta.items.map((p, i) => (
               <div key={p} className="flex items-center gap-2.5 px-3 py-2 rounded-lg border bg-slate-50/60" style={{ borderColor: `${BRAND}15` }}>
                 <span className="text-[9px] font-mono font-bold tabular-nums" style={{ color: BRAND }}>{String(i + 1).padStart(2, "0")}</span>
                 <span className="text-sm font-semibold text-slate-700">{p}</span>
               </div>
             ))}
-            <p className="text-[11px] text-slate-500 pt-1">+ {Math.max(0, course.total_projects - meta.projects.length)} more · {course.total_lessons} lessons</p>
+            <p className="text-[11px] text-slate-500 pt-1">{course.total_lessons} lessons{course.total_projects > 0 ? ` · ${course.total_projects} projects` : ""}</p>
           </div>
 
-          {/* Two next steps */}
           <div className="flex flex-col gap-2.5">
-            <PrimaryCta href={`/try/${course.slug}`}>
-              Preview Lesson 1 — free
-            </PrimaryCta>
+            <PrimaryCta href={`/try/${course.slug}`}>Preview Lesson 1 — free</PrimaryCta>
             <Link href={`/diagnostic?subject=${course.slug}`}
               className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-bold text-sm border-2 transition-all hover:bg-slate-50"
               style={{ borderColor: `${BRAND}25`, color: "#334155" }}>
-              Get your free skill report
+              {isWork ? "Check your skills — free" : "Get your free skill report"}
             </Link>
           </div>
         </div>
@@ -280,17 +281,16 @@ function CourseExplorer({ course, onClose }: { course: Course; onClose: () => vo
   );
 }
 
-// Non-code work role-tracks live in their own WorkBlock section (they don't fit
-// this grid's salary/role framing). Exclude them here so this stays the CAREER
-// curriculum showcase and its count is correct.
-const WORK_LANE_SLUGS = new Set([
-  "ai-foundations", "ai-for-marketers", "ai-for-finance", "ai-for-creators",
-  "ai-for-founders", "ai-for-teachers", "ai-for-project-managers", "ai-for-sales",
-]);
-
 // ─── Main section ─────────────────────────────────────────────────────────────
 export function CourseGridSection({ courses: allCourses }: { courses: Course[] }) {
-  const courses = allCourses.filter((c) => !WORK_LANE_SLUGS.has(c.slug));
+  const engineering = allCourses.filter((c) => !WORK_LANE_SLUGS.has(c.slug));
+  const work = allCourses.filter((c) => WORK_LANE_SLUGS.has(c.slug));
+  const hasWork = work.length > 0;
+
+  const [view, setView] = useState<"career" | "work">("career");
+  const shown = view === "work" && hasWork ? work : engineering;
+  const isWork = view === "work" && hasWork;
+
   const sectionRef = useRef<HTMLDivElement>(null);
   const [selected, setSelected] = useState<Course | null>(null);
   const [visible, setVisible] = useState(false);
@@ -318,65 +318,79 @@ export function CourseGridSection({ courses: allCourses }: { courses: Course[] }
         `,
       }}
     >
-      {/* Drifting accent blobs — hidden on mobile for performance */}
       <div className="hidden sm:block pointer-events-none absolute top-0 left-1/4 w-[500px] h-[500px] rounded-full opacity-30 animate-blob-1"
         style={{ background: "radial-gradient(circle, rgba(0,86,206,0.15) 0%, transparent 70%)", filter: "blur(80px)" }} />
       <div className="hidden sm:block pointer-events-none absolute bottom-0 right-1/4 w-[600px] h-[500px] rounded-full opacity-25 animate-blob-2"
         style={{ background: "radial-gradient(circle, rgba(14,165,233,0.12) 0%, transparent 70%)", filter: "blur(90px)" }} />
 
       <div className="relative max-w-7xl mx-auto">
-        {/* Heading — tighter on mobile */}
-        <div className="text-center mb-8 sm:mb-16">
+        {/* Heading — adapts to the selected view */}
+        <div className="text-center mb-6 sm:mb-10">
           <span className="text-[10px] sm:text-[11px] tracking-[0.35em] uppercase text-slate-500 font-bold">
-            The Curriculum
+            {isWork ? "AI for your work — no code" : "The Curriculum"}
           </span>
           <h2 className="mt-3 sm:mt-4 font-black tracking-tight text-slate-900 leading-[0.95]"
             style={{ fontSize: "clamp(28px, 6vw, 80px)" }}>
-            {courses.length} subjects.
+            {isWork ? `${work.length} role tracks.` : `${engineering.length} subjects.`}
             <br />
-            <span style={{
-              background: "linear-gradient(135deg, #3388FF 0%, #0056CE 55%, #01224F 100%)",
-              WebkitBackgroundClip: "text",
-              WebkitTextFillColor: "transparent",
-              backgroundClip: "text",
-            }}>
-              One path to hired.
+            <span style={{ background: "linear-gradient(135deg, #3388FF 0%, #0056CE 55%, #01224F 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>
+              {isWork ? "Get more from AI at work." : "One path to hired."}
             </span>
           </h2>
           <p className="mt-3 sm:mt-4 text-xs sm:text-base text-slate-600 max-w-xl mx-auto">
-            Every course built around a real career outcome — with the salary to prove it.
+            {isWork
+              ? "Practise on real work scenarios in your role — graded by Nova, our AI tutor. No programming."
+              : "Every course built around a real career outcome — with the salary to prove it."}
           </p>
         </div>
 
-        {/* ── MOBILE: Compact 2-col grid (visible only on small screens) ──── */}
+        {/* ── Toggle: Career tracks / AI for your work ─────────────────────── */}
+        {hasWork && (
+          <div className="flex justify-center mb-8 sm:mb-14">
+            <div className="inline-flex rounded-full bg-slate-100 p-1">
+              <button
+                onClick={() => setView("career")}
+                className={["px-4 sm:px-5 py-2.5 rounded-full text-[13px] font-bold transition-all", view === "career" ? "bg-white text-brand shadow-sm" : "text-slate-500 hover:text-slate-700"].join(" ")}
+              >
+                Career tracks
+              </button>
+              <button
+                onClick={() => setView("work")}
+                className={["px-4 sm:px-5 py-2.5 rounded-full text-[13px] font-bold transition-all", view === "work" ? "bg-white text-brand shadow-sm" : "text-slate-500 hover:text-slate-700"].join(" ")}
+              >
+                AI for your work — no code
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* ── MOBILE grid ──────────────────────────────────────────────────── */}
         <div className="grid grid-cols-1 gap-2.5 sm:hidden">
-          {courses.map((course, i) => (
-            <MobileCourseCard key={course.id} course={course} index={i} isVisible={visible} onSelect={setSelected} />
+          {shown.map((course, i) => (
+            <MobileCourseCard key={course.id} course={course} index={i} isVisible={visible} isWork={isWork} onSelect={setSelected} />
           ))}
         </div>
 
-        {/* ── DESKTOP: Full rich card grid (hidden on small screens) ──────── */}
-        {/* 10 courses → xl shows 5 across = two clean rows (no orphan card) */}
-        <div className="hidden sm:grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-5 lg:gap-6 xl:gap-4">
-          {courses.map((course, i) => (
-            <DesktopCourseCard key={course.id} course={course} index={i} isVisible={visible} onSelect={setSelected} />
+        {/* ── DESKTOP grid ─────────────────────────────────────────────────── */}
+        <div className="hidden sm:grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 lg:gap-6 xl:gap-4">
+          {shown.map((course, i) => (
+            <DesktopCourseCard key={course.id} course={course} index={i} isVisible={visible} isWork={isWork} onSelect={setSelected} />
           ))}
         </div>
 
-        {/* Bottom callout */}
+        {/* Bottom callout — adapts to view */}
         <div className="mt-10 sm:mt-20 flex flex-col items-center gap-3 sm:gap-4">
           <p className="text-xs sm:text-sm text-slate-500 text-center max-w-md">
-            Not sure which track is right for you?{" "}
+            {isWork ? "Not sure where to start?" : "Not sure which track is right for you?"}{" "}
             <span className="font-semibold text-slate-700">The free 3-minute skill check shows you.</span>
           </p>
-          <PrimaryCta href="/diagnostic">
-            Get your free skill report
+          <PrimaryCta href={isWork ? "/diagnostic?goal=work" : "/diagnostic"}>
+            {isWork ? "Check your AI-at-work skills" : "Get your free skill report"}
           </PrimaryCta>
         </div>
       </div>
 
-      {/* Inline explorer */}
-      {selected && <CourseExplorer course={selected} onClose={() => setSelected(null)} />}
+      {selected && <CourseExplorer course={selected} isWork={isWork} onClose={() => setSelected(null)} />}
     </section>
   );
 }
