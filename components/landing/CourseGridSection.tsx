@@ -320,31 +320,10 @@ export function CourseGridSection({ courses: allCourses }: { courses: Course[] }
         style={{ background: "radial-gradient(circle, rgba(14,165,233,0.12) 0%, transparent 70%)", filter: "blur(90px)" }} />
 
       <div className="relative max-w-7xl mx-auto">
-        {/* ═══ SECTION 1 — Career / technical (salary framing) ═══════════════ */}
-        <div className="text-center mb-8 sm:mb-12">
-          <span className="text-[10px] sm:text-[11px] tracking-[0.35em] uppercase text-slate-500 font-bold">The Curriculum</span>
-          <h2 className="mt-3 sm:mt-4 font-black tracking-tight text-slate-900 leading-[0.95]" style={{ fontSize: "clamp(28px, 6vw, 80px)" }}>
-            {engineering.length} subjects.
-            <br />
-            <span style={{ background: "linear-gradient(135deg, #3388FF 0%, #0056CE 55%, #01224F 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>One path to hired.</span>
-          </h2>
-          <p className="mt-3 sm:mt-4 text-xs sm:text-base text-slate-600 max-w-xl mx-auto">Every course built around a real career outcome — with the salary to prove it.</p>
-        </div>
-        <div className="grid grid-cols-1 gap-2.5 sm:hidden">
-          {engineering.map((course, i) => (
-            <MobileCourseCard key={course.id} course={course} index={i} isVisible={visible} isWork={false} onSelect={setSelected} />
-          ))}
-        </div>
-        <div className="hidden sm:grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 lg:gap-6 xl:gap-4">
-          {engineering.map((course, i) => (
-            <DesktopCourseCard key={course.id} course={course} index={i} isVisible={visible} isWork={false} onSelect={setSelected} />
-          ))}
-        </div>
-
-        {/* ═══ SECTION 2 — AI for your work (no-code framing) ════════════════ */}
+        {/* ═══ SECTION 1 — AI for your work (no-code framing) — shown first ══ */}
         {hasWork && (
           <>
-            <div className="text-center mb-8 sm:mb-12 mt-16 sm:mt-28">
+            <div className="text-center mb-8 sm:mb-12">
               <span className="text-[10px] sm:text-[11px] tracking-[0.35em] uppercase font-bold text-brand">AI for your work — no code</span>
               <h2 className="mt-3 sm:mt-4 font-black tracking-tight text-slate-900 leading-[0.95]" style={{ fontSize: "clamp(28px, 6vw, 80px)" }}>
                 {work.length} role tracks.
@@ -365,6 +344,27 @@ export function CourseGridSection({ courses: allCourses }: { courses: Course[] }
             </div>
           </>
         )}
+
+        {/* ═══ SECTION 2 — Career / technical (salary framing) — shown second ═ */}
+        <div className={`text-center mb-8 sm:mb-12 ${hasWork ? "mt-16 sm:mt-28" : ""}`}>
+          <span className="text-[10px] sm:text-[11px] tracking-[0.35em] uppercase text-slate-500 font-bold">The Curriculum</span>
+          <h2 className="mt-3 sm:mt-4 font-black tracking-tight text-slate-900 leading-[0.95]" style={{ fontSize: "clamp(28px, 6vw, 80px)" }}>
+            {engineering.length} subjects.
+            <br />
+            <span style={{ background: "linear-gradient(135deg, #3388FF 0%, #0056CE 55%, #01224F 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>One path to hired.</span>
+          </h2>
+          <p className="mt-3 sm:mt-4 text-xs sm:text-base text-slate-600 max-w-xl mx-auto">Every course built around a real career outcome — with the salary to prove it.</p>
+        </div>
+        <div className="grid grid-cols-1 gap-2.5 sm:hidden">
+          {engineering.map((course, i) => (
+            <MobileCourseCard key={course.id} course={course} index={i} isVisible={visible} isWork={false} onSelect={setSelected} />
+          ))}
+        </div>
+        <div className="hidden sm:grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 lg:gap-6 xl:gap-4">
+          {engineering.map((course, i) => (
+            <DesktopCourseCard key={course.id} course={course} index={i} isVisible={visible} isWork={false} onSelect={setSelected} />
+          ))}
+        </div>
 
         {/* Bottom callout — one skill check for both */}
         <div className="mt-14 sm:mt-24 flex flex-col items-center gap-3 sm:gap-4">
