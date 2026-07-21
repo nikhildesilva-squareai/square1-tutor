@@ -20,11 +20,11 @@ export const metadata: Metadata = {
     template: "%s | Square 1 AI",
   },
   description:
-    "Get assessed. Get a personalised learning plan. Build 10–12 real deployed projects. Land the job or start your company. AI-powered tech education.",
+    "Two ways to learn AI: build a career in AI engineering with real deployed projects, or use AI better at your job — no code — with role tracks for marketers, finance, founders and more. Graded by Nova, our AI tutor.",
   keywords: [
-    "AI tutor", "learn to code", "tech education", "AI assessment",
-    "coding projects", "personalised learning", "Square 1 AI",
-    "online courses", "AI-powered education", "project-based learning",
+    "AI tutor", "learn AI", "AI for work", "no-code AI", "AI for marketers",
+    "AI for finance", "AI for founders", "prompt engineering", "tech education",
+    "AI assessment", "personalised learning", "Square 1 AI", "AI-powered education",
   ],
   authors: [{ name: "Square 1 AI" }],
   creator: "Square 1 AI",
@@ -34,12 +34,12 @@ export const metadata: Metadata = {
     locale: "en_AU",
     siteName: "Square 1 AI",
     title: "Square 1 AI — Learn it. Build it. Ship it.",
-    description: "AI-powered tech education. Get assessed, get a personalised learning plan, build real projects, and earn industry-recognised credentials.",
+    description: "Build a career in AI engineering, or use AI better at your job — no code. Personalised learning, real practice, graded by Nova.",
   },
   twitter: {
     card: "summary_large_image",
     title: "Square 1 AI — Learn it. Build it. Ship it.",
-    description: "AI-powered tech education. Get assessed, get a personalised learning plan, build real projects.",
+    description: "Build a career in AI, or use AI better at your job — no code. Two paths, graded by Nova, our AI tutor.",
   },
   robots: {
     index: true,

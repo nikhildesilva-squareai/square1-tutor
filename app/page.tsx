@@ -251,7 +251,7 @@ export default async function Home() {
         <div className="relative max-w-3xl mx-auto px-6 sm:px-8 pb-20 sm:pb-24 text-center">
           <h3 className="font-black tracking-tight text-slate-900 leading-[0.95] mb-5"
             style={{ fontSize: "clamp(36px, 6vw, 76px)" }}>
-            Your career starts
+            It starts
             <br />
             <span style={{
               background: "linear-gradient(135deg, #3388FF 0%, #0056CE 55%, #01224F 100%)",
@@ -259,29 +259,33 @@ export default async function Home() {
               WebkitTextFillColor: "transparent",
               backgroundClip: "text",
             }}>
-              with one test.
+              with one check.
             </span>
           </h3>
 
-          <p className="text-sm sm:text-base text-slate-600 max-w-md mx-auto mb-10">
-            30 minutes. Free forever. No credit card.
-            <br />Find out where you stand — and exactly how to get where you want to be.
+          <p className="text-sm sm:text-base text-slate-600 max-w-lg mx-auto mb-10">
+            A free skill check shows you where you stand and exactly what to learn next — whether
+            you&apos;re building a career in AI or getting more out of it at the job you already have.
+            No credit card.
           </p>
 
-          <div className="flex flex-col sm:flex-row gap-3 justify-center mb-6">
+          <div className="flex flex-col sm:flex-row gap-3 justify-center mb-5">
             <PrimaryCta href="/diagnostic" size="lg">
-              Get your free skill report
+              Build a career in AI
             </PrimaryCta>
             <Link
-              href="/login"
-              className="inline-flex items-center justify-center px-8 py-5 rounded-full text-slate-700 text-base font-semibold border border-slate-300 hover:border-slate-400 hover:bg-slate-50 transition-all"
+              href="/diagnostic?goal=work"
+              className="inline-flex items-center justify-center px-8 py-5 rounded-full text-brand text-base font-bold border-2 border-brand/25 hover:border-brand/50 hover:bg-brand/5 transition-all"
             >
-              Sign in
+              Use AI better at work — no code
             </Link>
           </div>
+          <Link href="/login" className="text-sm font-semibold text-slate-500 hover:text-slate-800 transition-colors">
+            Or sign in
+          </Link>
 
-          <p className="text-[10px] text-slate-600 tracking-widest uppercase">
-            {courses.length} subjects · 10+ projects per course · AI graded · Career-mapped
+          <p className="mt-8 text-[10px] text-slate-600 tracking-widest uppercase">
+            {courses.length} subjects · career + no-code tracks · AI graded · Free during early access
           </p>
         </div>
 
@@ -337,6 +341,11 @@ export default async function Home() {
                   <li>
                     <Link href="/diagnostic" className="text-sm text-slate-300 font-semibold hover:text-white transition-colors">
                       Free 3-min skill check
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href="/diagnostic?goal=work" className="text-sm text-slate-300 font-semibold hover:text-white transition-colors">
+                      AI for your work — no code
                     </Link>
                   </li>
                   {courses.map((c) => (
