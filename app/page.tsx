@@ -104,9 +104,9 @@ export default async function Home() {
 
       {/* ── CAREER DOMAIN anchor — everything from here to the comparison is the
              "build a career" proof (one of the two doors). ──────────────────── */}
-      <div className="bg-white pt-12 pb-2 text-center px-6">
+      <div className="bg-white pt-5 sm:pt-7 pb-1 text-center px-6">
         <span className="text-[11px] font-bold uppercase tracking-[0.22em] text-brand">Build a career in AI</span>
-        <p className="mt-2 text-sm text-slate-500 max-w-md mx-auto">The job-ready engineering track — get assessed, follow a plan, and ship graded projects. (Want AI for your current job instead? That&apos;s just below.)</p>
+        <p className="mt-2 text-sm text-slate-500 max-w-lg mx-auto">Job-ready engineering and data tracks — get assessed, follow a personalised plan, and ship graded projects employers can run.</p>
       </div>
 
       {/* ── 2. THE HOOK — outcome + proof: "Get hired as an [role]" + journey + employer view */}
