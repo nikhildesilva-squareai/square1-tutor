@@ -2,16 +2,18 @@ import { createClient } from "@/lib/supabase/server";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { LEARNING_PATHS } from "@/lib/learning-paths";
-import { ArrowRight, BookOpen, FolderGit2, GraduationCap, Sparkles } from "lucide-react";
+import { ArrowRight, BookOpen, FolderGit2, GraduationCap, Sparkles, type LucideIcon } from "lucide-react";
 import type { Course } from "@/types/database";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Courses",
-  description: "Explore 12 AI-powered tech courses. From web development to cybersecurity — personalised learning plans, real projects, and AI tutoring.",
+  description:
+    "Two ways to learn AI at Square 1 — build a career in AI engineering, or use AI better at work with no code. Real projects, role tracks, and AI tutoring.",
   openGraph: {
     title: "Courses — Square 1 AI",
-    description: "Explore 12 AI-powered tech courses with personalised learning, real projects, and AI tutoring.",
+    description:
+      "Build a career in AI engineering, or get more out of AI at your job — no code. Personalised learning, real projects, graded by Nova.",
   },
 };
 
@@ -30,6 +32,8 @@ function formatLevel(level: string): string {
 }
 
 const FALLBACK = "#0056CE";
+const CAT_ICON_BG = "linear-gradient(135deg, #3388FF 0%, #0056CE 60%, #01224F 100%)";
+
 // A course-coloured cover: diagonal gradient from the colour into a darker stop.
 function coverStyle(color?: string | null): React.CSSProperties {
   const c = color ?? FALLBACK;
@@ -43,9 +47,9 @@ function monogram(title: string): string {
 }
 
 // "AI for your work — no code" lane: non-technical, role-based courses.
-// These render in their own section above the technical catalog, and ONLY once
-// they are activated (status = "active") — so the lane auto-appears on launch
-// day with no code change, and renders nothing while they stay hidden.
+// These form the second category, and appear ONLY once activated
+// (status = "active") — so the lane auto-appears on launch day with no code
+// change, and renders nothing while the courses stay hidden.
 const WORK_LANE_SLUGS = new Set([
   "ai-foundations",
   "ai-for-marketers",
@@ -57,8 +61,46 @@ const WORK_LANE_SLUGS = new Set([
   "ai-for-sales",
 ]);
 
-// Shared course card — used by both the work lane and the technical grid so
-// the two sections stay visually identical.
+// ─── Category header — states the CATEGORY and its OUTCOME ────────────────────
+// The two categories exist to serve two different outcomes: an AI engineering
+// career vs. being more productive with AI at your current job. The outcome chip
+// makes that promise explicit at the top of each bucket.
+function CategoryHeader({
+  icon: Icon,
+  title,
+  outcome,
+  blurb,
+}: {
+  icon: LucideIcon;
+  title: string;
+  outcome: string;
+  blurb: string;
+}) {
+  return (
+    <div className="mb-7">
+      <div className="flex items-start gap-3.5">
+        <span
+          className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-white shadow-[0_8px_18px_-8px_rgba(0,86,206,0.6)]"
+          style={{ background: CAT_ICON_BG }}
+        >
+          <Icon className="h-[22px] w-[22px]" strokeWidth={2.2} aria-hidden />
+        </span>
+        <div className="min-w-0 flex-1">
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5">
+            <h2 className="text-xl font-black tracking-tight text-ink">{title}</h2>
+            <span className="inline-flex items-center gap-1 rounded-full bg-brand/10 px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-wide text-brand">
+              {outcome}
+            </span>
+          </div>
+          <p className="mt-1.5 max-w-2xl text-sm leading-relaxed text-ink-muted">{blurb}</p>
+        </div>
+      </div>
+      <div className="mt-5 h-px w-full bg-gradient-to-r from-border via-border to-transparent" />
+    </div>
+  );
+}
+
+// Shared course card — used by both categories so they stay visually identical.
 function CourseCard({
   course,
   isEnrolled,
@@ -187,58 +229,36 @@ export default async function CoursesPage() {
   const coursesBySlug = new Map((courses ?? []).map((c) => [c.slug, c] as const));
   const visibleCourses = (courses ?? []).filter((c) => !c.parent_course_id);
 
-  // Work lane: only activated lane courses appear (nothing renders pre-launch).
-  // The technical grid excludes lane slugs entirely to avoid duplicates.
+  // The two categories. Work lane = only activated lane courses (nothing pre-launch);
+  // engineering = everything else (the technical, career-outcome catalog).
   const workLaneCourses = visibleCourses.filter(
     (c) => WORK_LANE_SLUGS.has(c.slug) && c.status === "active",
   );
-  const technicalCourses = visibleCourses.filter((c) => !WORK_LANE_SLUGS.has(c.slug));
+  const engineeringCourses = visibleCourses.filter((c) => !WORK_LANE_SLUGS.has(c.slug));
 
   return (
     <div className="min-h-full bg-surface-soft">
       <div className="mx-auto max-w-6xl px-6 py-8">
         {/* ── Page header ─────────────────────────────────────────────── */}
-        <header className="mb-10">
-          <h1 className="text-3xl font-black tracking-tight text-ink">Choose your course</h1>
+        <header className="mb-11">
+          <h1 className="text-3xl font-black tracking-tight text-ink">Choose your path</h1>
           <p className="mt-2 max-w-2xl text-[15px] text-ink-secondary">
-            Pick a subject, take a quick placement check, and get a personalised learning plan — or follow a guided path to a role.
+            Two ways to learn AI — <span className="font-semibold text-ink">build a career in it</span>, or{" "}
+            <span className="font-semibold text-ink">get more out of it at your job</span>. Both are hands-on and graded by Nova, our AI tutor.
           </p>
         </header>
 
-        {/* ── AI for your work — no code ──────────────────────────────── */}
-        {workLaneCourses.length > 0 && (
-          <section className="mb-14">
-            <div className="mb-5 flex flex-col gap-1">
-              <div className="flex items-center gap-2.5">
-                <Sparkles className="h-5 w-5 text-brand" />
-                <h2 className="text-lg font-bold text-ink">AI for your work — no code</h2>
-              </div>
-              <p className="text-sm text-ink-muted">
-                Get real value from ChatGPT, Claude, Copilot and Gemini in your role — hands-on, graded by our AI tutor.
-              </p>
-            </div>
+        {/* ═══ CATEGORY 1 — AI Engineering (career outcome) ═══════════════ */}
+        <section className="mb-16">
+          <CategoryHeader
+            icon={GraduationCap}
+            title="AI Engineering — build a career"
+            outcome="Outcome: get hired"
+            blurb="Job-ready engineering and data tracks. Get assessed, follow a personalised plan, and ship graded projects employers can actually run."
+          />
 
-            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-              {workLaneCourses.map((course) => (
-                <CourseCard
-                  key={course.id}
-                  course={course}
-                  isEnrolled={enrolledCourseIds.has(course.id)}
-                  hasAssessment={assessmentCourseIds.has(course.id)}
-                />
-              ))}
-            </div>
-          </section>
-        )}
-
-        {/* ── Career paths ────────────────────────────────────────────── */}
-        <section className="mb-14">
-          <div className="mb-5 flex items-center gap-2.5">
-            <GraduationCap className="h-5 w-5 text-brand" />
-            <h2 className="text-lg font-bold text-ink">Career paths</h2>
-            <span className="text-sm text-ink-muted">— a guided sequence to a role</span>
-          </div>
-
+          {/* Guided paths to a role */}
+          <h3 className="mb-4 text-xs font-bold uppercase tracking-[0.14em] text-ink-secondary">Guided paths to a role</h3>
           <div className="grid grid-cols-1 items-start gap-5 lg:grid-cols-2">
             {LEARNING_PATHS.map((path) => {
               const steps = path.courseSlugs
@@ -309,29 +329,50 @@ export default async function CoursesPage() {
               );
             })}
           </div>
+
+          {/* All engineering courses */}
+          <div className="mb-4 mt-10 flex items-baseline gap-2.5">
+            <h3 className="text-xs font-bold uppercase tracking-[0.14em] text-ink-secondary">All engineering courses</h3>
+            <span className="text-sm text-ink-muted">{engineeringCourses.length} available</span>
+          </div>
+          {engineeringCourses.length === 0 ? (
+            <div className="rounded-2xl border border-dashed border-border bg-surface py-20 text-center">
+              <p className="text-ink-muted">No courses available yet. Check back soon.</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+              {engineeringCourses.map((course) => (
+                <CourseCard
+                  key={course.id}
+                  course={course}
+                  isEnrolled={enrolledCourseIds.has(course.id)}
+                  hasAssessment={assessmentCourseIds.has(course.id)}
+                />
+              ))}
+            </div>
+          )}
         </section>
 
-        {/* ── All courses ─────────────────────────────────────────────── */}
-        <div className="mb-5 flex items-baseline gap-2.5">
-          <h2 className="text-lg font-bold text-ink">All courses</h2>
-          <span className="text-sm text-ink-muted">{technicalCourses.length} available</span>
-        </div>
-
-        {technicalCourses.length === 0 ? (
-          <div className="rounded-2xl border border-dashed border-border bg-surface py-20 text-center">
-            <p className="text-ink-muted">No courses available yet. Check back soon.</p>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            {technicalCourses.map((course) => (
-              <CourseCard
-                key={course.id}
-                course={course}
-                isEnrolled={enrolledCourseIds.has(course.id)}
-                hasAssessment={assessmentCourseIds.has(course.id)}
-              />
-            ))}
-          </div>
+        {/* ═══ CATEGORY 2 — AI for your work, no code (productivity outcome) ═══ */}
+        {workLaneCourses.length > 0 && (
+          <section className="mb-8">
+            <CategoryHeader
+              icon={Sparkles}
+              title="AI for your work — no code"
+              outcome="Outcome: productive at work"
+              blurb="Get real value from ChatGPT, Claude, Copilot and Gemini in your role — practise on real work scenarios, graded by Nova. No programming required."
+            />
+            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+              {workLaneCourses.map((course) => (
+                <CourseCard
+                  key={course.id}
+                  course={course}
+                  isEnrolled={enrolledCourseIds.has(course.id)}
+                  hasAssessment={assessmentCourseIds.has(course.id)}
+                />
+              ))}
+            </div>
+          </section>
         )}
       </div>
     </div>
