@@ -2,7 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { LEARNING_PATHS } from "@/lib/learning-paths";
-import { ArrowRight, BookOpen, FolderGit2, GraduationCap } from "lucide-react";
+import { ArrowRight, BookOpen, FolderGit2, GraduationCap, Sparkles } from "lucide-react";
 import type { Course } from "@/types/database";
 import type { Metadata } from "next";
 
@@ -42,6 +42,119 @@ function monogram(title: string): string {
   return (words.length >= 2 ? words[0][0] + words[1][0] : title.slice(0, 2)).toUpperCase();
 }
 
+// "AI for your work — no code" lane: non-technical, role-based courses.
+// These render in their own section above the technical catalog, and ONLY once
+// they are activated (status = "active") — so the lane auto-appears on launch
+// day with no code change, and renders nothing while they stay hidden.
+const WORK_LANE_SLUGS = new Set([
+  "ai-foundations",
+  "ai-for-marketers",
+  "ai-for-finance",
+  "ai-for-creators",
+  "ai-for-founders",
+  "ai-for-teachers",
+  "ai-for-project-managers",
+  "ai-for-sales",
+]);
+
+// Shared course card — used by both the work lane and the technical grid so
+// the two sections stay visually identical.
+function CourseCard({
+  course,
+  isEnrolled,
+  hasAssessment,
+}: {
+  course: Course;
+  isEnrolled: boolean;
+  hasAssessment: boolean;
+}) {
+  const isComingSoon = course.status === "coming_soon";
+  return (
+    <div
+      className={[
+        "group flex flex-col overflow-hidden rounded-2xl border bg-surface shadow-card transition-[transform,box-shadow]",
+        isComingSoon
+          ? "border-border opacity-70"
+          : "border-border hover:-translate-y-1 hover:shadow-card-hover",
+      ].join(" ")}
+    >
+      {/* Course-coloured cover */}
+      <div className="relative h-20 overflow-hidden" style={coverStyle(course.color)}>
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 opacity-40"
+          style={{ backgroundImage: "radial-gradient(rgba(255,255,255,0.5) 1px, transparent 1px)", backgroundSize: "14px 14px", maskImage: "radial-gradient(70% 100% at 90% 0, #000, transparent 75%)", WebkitMaskImage: "radial-gradient(70% 100% at 90% 0, #000, transparent 75%)" }}
+        />
+        <span className="pointer-events-none absolute -bottom-3 right-3 select-none text-[64px] font-black leading-none text-white/20">
+          {monogram(course.title)}
+        </span>
+        {isEnrolled && (
+          <span className="absolute left-4 top-3.5 rounded-full bg-white/90 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-emerald-700">
+            Enrolled
+          </span>
+        )}
+        {isComingSoon && (
+          <span className="absolute left-4 top-3.5 rounded-full bg-black/30 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-white backdrop-blur-sm">
+            Soon
+          </span>
+        )}
+      </div>
+
+      {/* Body */}
+      <div className="flex flex-1 flex-col p-5">
+        <h3 className="text-base font-bold leading-snug text-ink">{course.title}</h3>
+
+        <div className="mt-2">
+          {isComingSoon ? (
+            <span className="rounded-full border border-border px-2 py-0.5 text-[10px] font-bold uppercase tracking-widest text-ink-muted">Coming soon</span>
+          ) : (
+            <Badge variant={levelVariant(course.level)} className="text-[10px]">
+              {formatLevel(course.level)}
+            </Badge>
+          )}
+        </div>
+
+        <p className="mt-3 line-clamp-2 text-xs leading-relaxed text-ink-muted">
+          {course.description}
+        </p>
+
+        {/* Footer — pinned to the bottom so the stats row and CTA
+            line up across every card, whatever the title/description length */}
+        <div className="mt-auto pt-4">
+          <div className="mb-4 flex items-center gap-4 text-xs text-ink-muted">
+            <span className="inline-flex items-center gap-1.5">
+              <BookOpen className="h-3.5 w-3.5" /> {course.total_lessons} lessons
+            </span>
+            <span className="inline-flex items-center gap-1.5">
+              <FolderGit2 className="h-3.5 w-3.5" /> {course.total_projects} projects
+            </span>
+          </div>
+          {isComingSoon ? (
+            <div className="flex h-10 w-full items-center justify-center rounded-xl bg-surface-alt text-xs font-semibold text-ink-muted">
+              Coming soon
+            </div>
+          ) : isEnrolled ? (
+            <Link
+              href={`/courses/${course.slug}`}
+              className="flex h-10 w-full items-center justify-center gap-1.5 rounded-xl border border-brand/30 bg-surface-tint text-sm font-semibold text-brand transition-colors hover:bg-brand hover:text-white"
+            >
+              Continue learning <ArrowRight className="h-4 w-4" />
+            </Link>
+          ) : (
+            <Link
+              href={`/courses/${course.slug}`}
+              className="flex h-10 w-full items-center justify-center gap-1.5 rounded-xl bg-brand text-sm font-semibold text-white transition-colors hover:bg-brand-dark"
+            >
+              {hasAssessment ? "Start assessment" : "View course"}
+              <ArrowRight className="h-4 w-4" />
+            </Link>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default async function CoursesPage() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
@@ -74,6 +187,13 @@ export default async function CoursesPage() {
   const coursesBySlug = new Map((courses ?? []).map((c) => [c.slug, c] as const));
   const visibleCourses = (courses ?? []).filter((c) => !c.parent_course_id);
 
+  // Work lane: only activated lane courses appear (nothing renders pre-launch).
+  // The technical grid excludes lane slugs entirely to avoid duplicates.
+  const workLaneCourses = visibleCourses.filter(
+    (c) => WORK_LANE_SLUGS.has(c.slug) && c.status === "active",
+  );
+  const technicalCourses = visibleCourses.filter((c) => !WORK_LANE_SLUGS.has(c.slug));
+
   return (
     <div className="min-h-full bg-surface-soft">
       <div className="mx-auto max-w-6xl px-6 py-8">
@@ -84,6 +204,32 @@ export default async function CoursesPage() {
             Pick a subject, take a quick placement check, and get a personalised learning plan — or follow a guided path to a role.
           </p>
         </header>
+
+        {/* ── AI for your work — no code ──────────────────────────────── */}
+        {workLaneCourses.length > 0 && (
+          <section className="mb-14">
+            <div className="mb-5 flex flex-col gap-1">
+              <div className="flex items-center gap-2.5">
+                <Sparkles className="h-5 w-5 text-brand" />
+                <h2 className="text-lg font-bold text-ink">AI for your work — no code</h2>
+              </div>
+              <p className="text-sm text-ink-muted">
+                Get real value from ChatGPT, Claude, Copilot and Gemini in your role — hands-on, graded by our AI tutor.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+              {workLaneCourses.map((course) => (
+                <CourseCard
+                  key={course.id}
+                  course={course}
+                  isEnrolled={enrolledCourseIds.has(course.id)}
+                  hasAssessment={assessmentCourseIds.has(course.id)}
+                />
+              ))}
+            </div>
+          </section>
+        )}
 
         {/* ── Career paths ────────────────────────────────────────────── */}
         <section className="mb-14">
@@ -168,105 +314,23 @@ export default async function CoursesPage() {
         {/* ── All courses ─────────────────────────────────────────────── */}
         <div className="mb-5 flex items-baseline gap-2.5">
           <h2 className="text-lg font-bold text-ink">All courses</h2>
-          <span className="text-sm text-ink-muted">{visibleCourses.length} available</span>
+          <span className="text-sm text-ink-muted">{technicalCourses.length} available</span>
         </div>
 
-        {visibleCourses.length === 0 ? (
+        {technicalCourses.length === 0 ? (
           <div className="rounded-2xl border border-dashed border-border bg-surface py-20 text-center">
             <p className="text-ink-muted">No courses available yet. Check back soon.</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            {visibleCourses.map((course) => {
-              const isComingSoon = course.status === "coming_soon";
-              const isEnrolled = enrolledCourseIds.has(course.id);
-              const cardHasAssessment = assessmentCourseIds.has(course.id);
-              return (
-                <div
-                  key={course.id}
-                  className={[
-                    "group flex flex-col overflow-hidden rounded-2xl border bg-surface shadow-card transition-[transform,box-shadow]",
-                    isComingSoon
-                      ? "border-border opacity-70"
-                      : "border-border hover:-translate-y-1 hover:shadow-card-hover",
-                  ].join(" ")}
-                >
-                  {/* Course-coloured cover */}
-                  <div className="relative h-20 overflow-hidden" style={coverStyle(course.color)}>
-                    <div
-                      aria-hidden
-                      className="pointer-events-none absolute inset-0 opacity-40"
-                      style={{ backgroundImage: "radial-gradient(rgba(255,255,255,0.5) 1px, transparent 1px)", backgroundSize: "14px 14px", maskImage: "radial-gradient(70% 100% at 90% 0, #000, transparent 75%)", WebkitMaskImage: "radial-gradient(70% 100% at 90% 0, #000, transparent 75%)" }}
-                    />
-                    <span className="pointer-events-none absolute -bottom-3 right-3 select-none text-[64px] font-black leading-none text-white/20">
-                      {monogram(course.title)}
-                    </span>
-                    {isEnrolled && (
-                      <span className="absolute left-4 top-3.5 rounded-full bg-white/90 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-emerald-700">
-                        Enrolled
-                      </span>
-                    )}
-                    {isComingSoon && (
-                      <span className="absolute left-4 top-3.5 rounded-full bg-black/30 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-white backdrop-blur-sm">
-                        Soon
-                      </span>
-                    )}
-                  </div>
-
-                  {/* Body */}
-                  <div className="flex flex-1 flex-col p-5">
-                    <h3 className="text-base font-bold leading-snug text-ink">{course.title}</h3>
-
-                    <div className="mt-2">
-                      {isComingSoon ? (
-                        <span className="rounded-full border border-border px-2 py-0.5 text-[10px] font-bold uppercase tracking-widest text-ink-muted">Coming soon</span>
-                      ) : (
-                        <Badge variant={levelVariant(course.level)} className="text-[10px]">
-                          {formatLevel(course.level)}
-                        </Badge>
-                      )}
-                    </div>
-
-                    <p className="mt-3 line-clamp-2 text-xs leading-relaxed text-ink-muted">
-                      {course.description}
-                    </p>
-
-                    {/* Footer — pinned to the bottom so the stats row and CTA
-                        line up across every card, whatever the title/description length */}
-                    <div className="mt-auto pt-4">
-                      <div className="mb-4 flex items-center gap-4 text-xs text-ink-muted">
-                        <span className="inline-flex items-center gap-1.5">
-                          <BookOpen className="h-3.5 w-3.5" /> {course.total_lessons} lessons
-                        </span>
-                        <span className="inline-flex items-center gap-1.5">
-                          <FolderGit2 className="h-3.5 w-3.5" /> {course.total_projects} projects
-                        </span>
-                      </div>
-                      {isComingSoon ? (
-                        <div className="flex h-10 w-full items-center justify-center rounded-xl bg-surface-alt text-xs font-semibold text-ink-muted">
-                          Coming soon
-                        </div>
-                      ) : isEnrolled ? (
-                        <Link
-                          href={`/courses/${course.slug}`}
-                          className="flex h-10 w-full items-center justify-center gap-1.5 rounded-xl border border-brand/30 bg-surface-tint text-sm font-semibold text-brand transition-colors hover:bg-brand hover:text-white"
-                        >
-                          Continue learning <ArrowRight className="h-4 w-4" />
-                        </Link>
-                      ) : (
-                        <Link
-                          href={`/courses/${course.slug}`}
-                          className="flex h-10 w-full items-center justify-center gap-1.5 rounded-xl bg-brand text-sm font-semibold text-white transition-colors hover:bg-brand-dark"
-                        >
-                          {cardHasAssessment ? "Start assessment" : "View course"}
-                          <ArrowRight className="h-4 w-4" />
-                        </Link>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
+            {technicalCourses.map((course) => (
+              <CourseCard
+                key={course.id}
+                course={course}
+                isEnrolled={enrolledCourseIds.has(course.id)}
+                hasAssessment={assessmentCourseIds.has(course.id)}
+              />
+            ))}
           </div>
         )}
       </div>
