@@ -6,6 +6,7 @@ import Link from "next/link";
 import { Search, TrendingUp, ArrowRight } from "lucide-react";
 import { Logo } from "@/components/ui/logo";
 import { DIAG_SUBJECTS as SUBJECTS } from "@/lib/diagnostic";
+import { GOAL_KEY } from "@/components/RoutingQuestion";
 import { CourseIcon } from "@/components/ui/course-icon";
 
 export default function DiagnosticPage() {
@@ -13,7 +14,17 @@ export default function DiagnosticPage() {
   const [query, setQuery] = useState("");
 
   useEffect(() => {
-    const slug = new URLSearchParams(window.location.search).get("subject");
+    const params = new URLSearchParams(window.location.search);
+    // The landing fork's "use AI at my job" door arrives as ?goal=work — stash it
+    // so the post-signup routing question can pre-answer "work" (see RoutingQuestion).
+    if (params.get("goal") === "work") {
+      try {
+        localStorage.setItem(GOAL_KEY, "work");
+      } catch {
+        /* storage blocked — non-critical */
+      }
+    }
+    const slug = params.get("subject");
     if (!slug) return;
     const match = SUBJECTS.find((s) => s.slug === slug);
     if (match) router.replace(`/diagnostic/${match.slug}`);

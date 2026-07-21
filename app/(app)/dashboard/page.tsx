@@ -4,6 +4,7 @@ import { CourseSwitcher } from "@/components/CourseSwitcher";
 import { ActivityHeatmap } from "@/components/ActivityHeatmap";
 import { computeStreak } from "@/lib/streaks";
 import { SubjectSync } from "@/components/SubjectSync";
+import { RoutingQuestion } from "@/components/RoutingQuestion";
 import { DIAG_SUBJECTS } from "@/lib/diagnostic";
 
 // ─── Course career mapping ────────────────────────────────────────────────────
@@ -135,10 +136,24 @@ export default async function DashboardPage({ searchParams }: DashboardProps) {
       }
     }
 
+    // Post-signup routing question ("What brings you here?") — shown once, only
+    // while the user has zero enrolments and hasn't answered yet. The answer
+    // lives on auth metadata (onboarding_goal), same mechanism as signup_subject.
+    // The work-lane card deep-links to AI Foundations once that course is live.
+    const goalAnswered = typeof user.user_metadata?.onboarding_goal === "string";
+    let workHref = "/courses";
+    if (!goalAnswered) {
+      const { data: aiFoundations } = await supabase.from("courses").select("status").eq("slug", "ai-foundations").maybeSingle();
+      if (aiFoundations?.status === "active") workHref = "/courses/ai-foundations";
+    }
+
     return (
       <div className="min-h-full px-4 sm:px-6 py-8 max-w-6xl mx-auto">
         {/* Attach the diagnostic subject choice to this profile (once). */}
         <SubjectSync />
+
+        {/* One-time routing question — renders nothing once answered/skipped. */}
+        {!goalAnswered && <RoutingQuestion workHref={workHref} />}
 
         {/* Hero greeting */}
         <div className="relative rounded-2xl overflow-hidden mb-8 p-8 sm:p-10"
