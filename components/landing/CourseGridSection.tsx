@@ -287,10 +287,6 @@ export function CourseGridSection({ courses: allCourses }: { courses: Course[] }
   const work = allCourses.filter((c) => WORK_LANE_SLUGS.has(c.slug));
   const hasWork = work.length > 0;
 
-  const [view, setView] = useState<"career" | "work">("career");
-  const shown = view === "work" && hasWork ? work : engineering;
-  const isWork = view === "work" && hasWork;
-
   const sectionRef = useRef<HTMLDivElement>(null);
   const [selected, setSelected] = useState<Course | null>(null);
   const [visible, setVisible] = useState(false);
@@ -324,73 +320,63 @@ export function CourseGridSection({ courses: allCourses }: { courses: Course[] }
         style={{ background: "radial-gradient(circle, rgba(14,165,233,0.12) 0%, transparent 70%)", filter: "blur(90px)" }} />
 
       <div className="relative max-w-7xl mx-auto">
-        {/* Heading — adapts to the selected view */}
-        <div className="text-center mb-6 sm:mb-10">
-          <span className="text-[10px] sm:text-[11px] tracking-[0.35em] uppercase text-slate-500 font-bold">
-            {isWork ? "AI for your work — no code" : "The Curriculum"}
-          </span>
-          <h2 className="mt-3 sm:mt-4 font-black tracking-tight text-slate-900 leading-[0.95]"
-            style={{ fontSize: "clamp(28px, 6vw, 80px)" }}>
-            {isWork ? `${work.length} role tracks.` : `${engineering.length} subjects.`}
+        {/* ═══ SECTION 1 — Career / technical (salary framing) ═══════════════ */}
+        <div className="text-center mb-8 sm:mb-12">
+          <span className="text-[10px] sm:text-[11px] tracking-[0.35em] uppercase text-slate-500 font-bold">The Curriculum</span>
+          <h2 className="mt-3 sm:mt-4 font-black tracking-tight text-slate-900 leading-[0.95]" style={{ fontSize: "clamp(28px, 6vw, 80px)" }}>
+            {engineering.length} subjects.
             <br />
-            <span style={{ background: "linear-gradient(135deg, #3388FF 0%, #0056CE 55%, #01224F 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>
-              {isWork ? "Get more from AI at work." : "One path to hired."}
-            </span>
+            <span style={{ background: "linear-gradient(135deg, #3388FF 0%, #0056CE 55%, #01224F 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>One path to hired.</span>
           </h2>
-          <p className="mt-3 sm:mt-4 text-xs sm:text-base text-slate-600 max-w-xl mx-auto">
-            {isWork
-              ? "Practise on real work scenarios in your role — graded by Nova, our AI tutor. No programming."
-              : "Every course built around a real career outcome — with the salary to prove it."}
-          </p>
+          <p className="mt-3 sm:mt-4 text-xs sm:text-base text-slate-600 max-w-xl mx-auto">Every course built around a real career outcome — with the salary to prove it.</p>
+        </div>
+        <div className="grid grid-cols-1 gap-2.5 sm:hidden">
+          {engineering.map((course, i) => (
+            <MobileCourseCard key={course.id} course={course} index={i} isVisible={visible} isWork={false} onSelect={setSelected} />
+          ))}
+        </div>
+        <div className="hidden sm:grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 lg:gap-6 xl:gap-4">
+          {engineering.map((course, i) => (
+            <DesktopCourseCard key={course.id} course={course} index={i} isVisible={visible} isWork={false} onSelect={setSelected} />
+          ))}
         </div>
 
-        {/* ── Toggle: Career tracks / AI for your work ─────────────────────── */}
+        {/* ═══ SECTION 2 — AI for your work (no-code framing) ════════════════ */}
         {hasWork && (
-          <div className="flex justify-center mb-8 sm:mb-14">
-            <div className="inline-flex rounded-full bg-slate-100 p-1">
-              <button
-                onClick={() => setView("career")}
-                className={["px-4 sm:px-5 py-2.5 rounded-full text-[13px] font-bold transition-all", view === "career" ? "bg-white text-brand shadow-sm" : "text-slate-500 hover:text-slate-700"].join(" ")}
-              >
-                Career tracks
-              </button>
-              <button
-                onClick={() => setView("work")}
-                className={["px-4 sm:px-5 py-2.5 rounded-full text-[13px] font-bold transition-all", view === "work" ? "bg-white text-brand shadow-sm" : "text-slate-500 hover:text-slate-700"].join(" ")}
-              >
-                AI for your work — no code
-              </button>
+          <>
+            <div className="text-center mb-8 sm:mb-12 mt-16 sm:mt-28">
+              <span className="text-[10px] sm:text-[11px] tracking-[0.35em] uppercase font-bold text-brand">AI for your work — no code</span>
+              <h2 className="mt-3 sm:mt-4 font-black tracking-tight text-slate-900 leading-[0.95]" style={{ fontSize: "clamp(28px, 6vw, 80px)" }}>
+                {work.length} role tracks.
+                <br />
+                <span style={{ background: "linear-gradient(135deg, #3388FF 0%, #0056CE 55%, #01224F 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>Get more from AI at work.</span>
+              </h2>
+              <p className="mt-3 sm:mt-4 text-xs sm:text-base text-slate-600 max-w-xl mx-auto">Practise on real work scenarios in your role — graded by Nova, our AI tutor. No programming.</p>
             </div>
-          </div>
+            <div className="grid grid-cols-1 gap-2.5 sm:hidden">
+              {work.map((course, i) => (
+                <MobileCourseCard key={course.id} course={course} index={i} isVisible={visible} isWork={true} onSelect={setSelected} />
+              ))}
+            </div>
+            <div className="hidden sm:grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 lg:gap-6 xl:gap-4">
+              {work.map((course, i) => (
+                <DesktopCourseCard key={course.id} course={course} index={i} isVisible={visible} isWork={true} onSelect={setSelected} />
+              ))}
+            </div>
+          </>
         )}
 
-        {/* ── MOBILE grid ──────────────────────────────────────────────────── */}
-        <div className="grid grid-cols-1 gap-2.5 sm:hidden">
-          {shown.map((course, i) => (
-            <MobileCourseCard key={course.id} course={course} index={i} isVisible={visible} isWork={isWork} onSelect={setSelected} />
-          ))}
-        </div>
-
-        {/* ── DESKTOP grid ─────────────────────────────────────────────────── */}
-        <div className="hidden sm:grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 lg:gap-6 xl:gap-4">
-          {shown.map((course, i) => (
-            <DesktopCourseCard key={course.id} course={course} index={i} isVisible={visible} isWork={isWork} onSelect={setSelected} />
-          ))}
-        </div>
-
-        {/* Bottom callout — adapts to view */}
-        <div className="mt-10 sm:mt-20 flex flex-col items-center gap-3 sm:gap-4">
+        {/* Bottom callout — one skill check for both */}
+        <div className="mt-14 sm:mt-24 flex flex-col items-center gap-3 sm:gap-4">
           <p className="text-xs sm:text-sm text-slate-500 text-center max-w-md">
-            {isWork ? "Not sure where to start?" : "Not sure which track is right for you?"}{" "}
+            Not sure which track is right for you?{" "}
             <span className="font-semibold text-slate-700">The free 3-minute skill check shows you.</span>
           </p>
-          <PrimaryCta href={isWork ? "/diagnostic?goal=work" : "/diagnostic"}>
-            {isWork ? "Check your AI-at-work skills" : "Get your free skill report"}
-          </PrimaryCta>
+          <PrimaryCta href="/diagnostic">Get your free skill report</PrimaryCta>
         </div>
       </div>
 
-      {selected && <CourseExplorer course={selected} isWork={isWork} onClose={() => setSelected(null)} />}
+      {selected && <CourseExplorer course={selected} isWork={WORK_LANE_SLUGS.has(selected.slug)} onClose={() => setSelected(null)} />}
     </section>
   );
 }
