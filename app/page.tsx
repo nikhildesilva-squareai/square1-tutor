@@ -13,6 +13,7 @@ import { PricingSection } from "@/components/landing/PricingSection";
 import { FAQSection } from "@/components/landing/FAQSection";
 import { JourneyHook } from "@/components/landing/JourneyHook";
 import { CourseGridSection } from "@/components/landing/CourseGridSection";
+import { WorkBlock } from "@/components/landing/WorkBlock";
 import { InlineDiagnostic } from "@/components/landing/InlineDiagnostic";
 import { CodeReviewSlider } from "@/components/landing/CodeReviewSlider";
 import { CookieConsent } from "@/components/ui/cookie-consent";
@@ -101,6 +102,13 @@ export default async function Home() {
       {/* ── 1. Hero (with goal-typer) ───────────────────────────────────────── */}
       <div data-s1-section="hero"><HeroSection courseCount={courses.length} seats={seats} /></div>
 
+      {/* ── CAREER DOMAIN anchor — everything from here to the comparison is the
+             "build a career" proof (one of the two doors). ──────────────────── */}
+      <div className="bg-white pt-12 pb-2 text-center px-6">
+        <span className="text-[11px] font-bold uppercase tracking-[0.22em] text-brand">Build a career in AI</span>
+        <p className="mt-2 text-sm text-slate-500 max-w-md mx-auto">The job-ready engineering track — get assessed, follow a plan, and ship graded projects. (Want AI for your current job instead? That&apos;s just below.)</p>
+      </div>
+
       {/* ── 2. THE HOOK — outcome + proof: "Get hired as an [role]" + journey + employer view */}
       <div data-s1-section="journey"><JourneyHook /></div>
 
@@ -123,6 +131,12 @@ export default async function Home() {
 
       {/* ── 6. Why Square 1 beats everything else ────────────────────────────── */}
       <div data-s1-section="comparison"><ComparisonSection /></div>
+
+      <SectionWave />
+
+      {/* ── 6b. WORK DOMAIN — "AI for your work, no code": the second door's proof
+             (Prompt Lab demo + role tracks). ─────────────────────────────────── */}
+      <div data-s1-section="work"><WorkBlock /></div>
 
       <SectionWave />
 

@@ -18,10 +18,10 @@ const FREE_FEATURES = [
 ];
 
 const FOUNDING_FEATURES = [
-  "Full curriculum — every subject",
-  "10+ real projects per track, deployed",
-  "Nova — an AI tutor that knows your code",
-  "Every submission reviewed line-by-line",
+  "Every course, both paths — career engineering tracks and no-code role tracks (Marketing, Finance, Founders and more)",
+  "Real, hands-on projects in every track",
+  "Nova — an AI tutor that adapts to whatever you're learning",
+  "Every submission reviewed and graded, with feedback",
   "Verified, shareable skill report",
 ];
 
@@ -57,8 +57,9 @@ export function PricingSection() {
             </span>
           </h2>
           <p className="mt-4 text-sm sm:text-base text-slate-600 max-w-lg mx-auto">
-            No credit card anywhere below. Founding members keep whatever they pay now —
-            the price never goes up on you.
+            One membership, one price — both paths included: the career engineering tracks
+            and the no-code role tracks. No credit card anywhere below. Founding members keep
+            whatever they pay now; the price never goes up on you.
           </p>
         </div>
 

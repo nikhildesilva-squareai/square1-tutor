@@ -280,8 +280,17 @@ function CourseExplorer({ course, onClose }: { course: Course; onClose: () => vo
   );
 }
 
+// Non-code work role-tracks live in their own WorkBlock section (they don't fit
+// this grid's salary/role framing). Exclude them here so this stays the CAREER
+// curriculum showcase and its count is correct.
+const WORK_LANE_SLUGS = new Set([
+  "ai-foundations", "ai-for-marketers", "ai-for-finance", "ai-for-creators",
+  "ai-for-founders", "ai-for-teachers", "ai-for-project-managers", "ai-for-sales",
+]);
+
 // ─── Main section ─────────────────────────────────────────────────────────────
-export function CourseGridSection({ courses }: { courses: Course[] }) {
+export function CourseGridSection({ courses: allCourses }: { courses: Course[] }) {
+  const courses = allCourses.filter((c) => !WORK_LANE_SLUGS.has(c.slug));
   const sectionRef = useRef<HTMLDivElement>(null);
   const [selected, setSelected] = useState<Course | null>(null);
   const [visible, setVisible] = useState(false);

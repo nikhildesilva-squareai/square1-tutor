@@ -43,6 +43,26 @@ function buildFaqs(courseCount: number) {
       q: "Is this a bootcamp or a video course?",
       a: "Neither. It's 100% code and zero videos — you learn by building, every line you write gets AI feedback, and Nova (your AI tutor) knows your code, your weak topics, and your current lesson.",
     },
+    {
+      q: "Do I need to know how to code?",
+      a: "No. The 'AI for your work' tracks are 100% no-code — you learn to use ChatGPT, Claude, Copilot and Gemini well in the job you already do. The career tracks are where you'd write code; the work tracks never ask you to.",
+    },
+    {
+      q: "Is this really for non-technical people?",
+      a: "Yes. There are role tracks for marketers, finance, founders, teachers, PMs, sales and more, all taught in plain English. You bring your job; we make you sharper at it with AI.",
+    },
+    {
+      q: "Which AI tools does it cover?",
+      a: "ChatGPT, Claude, Microsoft Copilot and Google Gemini, covered even-handedly. The point isn't one vendor — the prompting and judgment you build transfer across all of them.",
+    },
+    {
+      q: "How is the work track different from the career courses?",
+      a: "The career tracks make you job-ready as an engineer or data professional and involve real code. The work tracks make you more productive with AI in the role you already have — no code, just your day-to-day work done faster and better.",
+    },
+    {
+      q: "What does “graded by Nova” mean for a no-code course?",
+      a: "You practise on real work scenarios — a marketing brief, a finance model, a lesson plan — and Nova, your AI tutor, scores the prompts you write and gives specific feedback. It's hands-on practice with a coach, not slides to click through.",
+    },
   ];
 }
 
