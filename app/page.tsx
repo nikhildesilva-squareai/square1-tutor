@@ -102,6 +102,11 @@ export default async function Home() {
       {/* ── 1. Hero (with goal-typer) ───────────────────────────────────────── */}
       <div data-s1-section="hero"><HeroSection courseCount={courses.length} seats={seats} /></div>
 
+      {/* ── Courses first — the full curriculum right under the hero (both domains) ─ */}
+      <div data-s1-section="courses"><CourseGridSection courses={courses} /></div>
+
+      <SectionWave />
+
       {/* ── CAREER DOMAIN anchor — everything from here to the comparison is the
              "build a career" proof (one of the two doors). ──────────────────── */}
       <div className="bg-white pt-5 sm:pt-7 pb-1 text-center px-6">
@@ -137,11 +142,6 @@ export default async function Home() {
       {/* ── 6b. WORK DOMAIN — "AI for your work, no code": the second door's proof
              (Prompt Lab demo + role tracks). ─────────────────────────────────── */}
       <div data-s1-section="work"><WorkBlock /></div>
-
-      <SectionWave />
-
-      {/* ── 7. Courses — inline explorer (click → preview Lesson 1) ──────────── */}
-      <div data-s1-section="courses"><CourseGridSection courses={courses} /></div>
 
       <SectionWave />
 
