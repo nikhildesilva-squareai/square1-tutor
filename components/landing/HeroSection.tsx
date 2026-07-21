@@ -199,7 +199,7 @@ export function HeroSection({
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (
-    <section className="hero-section relative min-h-[92svh] flex flex-col overflow-hidden bg-white">
+    <section className="hero-section relative min-h-[78svh] flex flex-col overflow-hidden bg-white">
       {/* ── Soft Square 1 blue accents on white ───────────────────────────── */}
       <div className="pointer-events-none absolute -top-40 -left-40 w-[700px] h-[700px] rounded-full"
         style={{ background: "radial-gradient(circle, rgba(0,86,206,0.08) 0%, transparent 70%)", filter: "blur(90px)" }} />
@@ -268,7 +268,7 @@ export function HeroSection({
       </nav>
 
       {/* ── HERO BODY — goal-neutral headline + the two-door fork ─────────── */}
-      <div className="relative z-10 flex-1 flex flex-col items-center justify-center max-w-7xl mx-auto w-full px-6 sm:px-8 py-10 lg:py-14 text-center">
+      <div className="relative z-10 flex-1 flex flex-col items-center justify-center max-w-7xl mx-auto w-full px-6 sm:px-8 py-6 lg:py-8 text-center">
 
         <div className="mb-6 sm:mb-8">
           <span className="text-[10px] sm:text-xs font-bold tracking-[0.25em] uppercase text-brand border border-brand/20 bg-brand/5 px-3 py-1.5 rounded-full">
