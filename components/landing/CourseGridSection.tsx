@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import type { ReactNode, KeyboardEvent as ReactKeyboardEvent } from "react";
 import Link from "next/link";
 import { useFocusTrap } from "@/lib/hooks/useFocusTrap";
 import { PrimaryCta } from "@/components/ui/primary-cta";
@@ -281,6 +282,94 @@ function CourseExplorer({ course, isWork, onClose }: { course: Course; isWork: b
   );
 }
 
+// ─── Segmented lane toggle — sliding blue thumb, keyboard + ARIA ──────────────
+type Lane = "work" | "career";
+
+function LaneToggle({
+  value, onChange, workCount, careerCount,
+}: {
+  value: Lane; onChange: (l: Lane) => void; workCount: number; careerCount: number;
+}) {
+  const order: Lane[] = ["work", "career"];
+  const activeIndex = order.indexOf(value);
+
+  const TABS: { key: Lane; label: string; sub: string; count: number; icon: ReactNode }[] = [
+    {
+      key: "work", label: "AI for your work", sub: "No code", count: workCount,
+      icon: (
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+          <rect x="2" y="7" width="20" height="14" rx="2" /><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+        </svg>
+      ),
+    },
+    {
+      key: "career", label: "Career tracks", sub: "Code", count: careerCount,
+      icon: (
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+          <polyline points="16 18 22 12 16 6" /><polyline points="8 6 2 12 8 18" />
+        </svg>
+      ),
+    },
+  ];
+
+  function onKeyDown(e: ReactKeyboardEvent) {
+    if (e.key === "ArrowLeft" || e.key === "ArrowRight") {
+      e.preventDefault();
+      const dir = e.key === "ArrowRight" ? 1 : -1;
+      const next = order[(activeIndex + dir + order.length) % order.length];
+      onChange(next);
+    }
+  }
+
+  return (
+    <div
+      role="tablist"
+      aria-label="Choose a course lane"
+      onKeyDown={onKeyDown}
+      className="relative grid grid-cols-2 w-full max-w-md mx-auto p-1 rounded-full bg-white"
+      style={{ border: "1.5px solid #E2E8F0", boxShadow: "0 1px 3px rgba(0,0,0,0.06), 0 8px 24px -12px rgba(0,86,206,0.18)" }}
+    >
+      {/* Sliding thumb */}
+      <span
+        aria-hidden="true"
+        className="absolute inset-y-1 left-1 rounded-full will-change-transform motion-safe:transition-transform motion-safe:duration-300 motion-safe:ease-out"
+        style={{
+          width: "calc(50% - 4px)",
+          transform: activeIndex === 1 ? "translateX(100%)" : "translateX(0)",
+          background: "linear-gradient(135deg, #3388FF 0%, #0056CE 55%, #01224F 100%)",
+          boxShadow: "0 6px 16px -6px rgba(0,86,206,0.6)",
+        }}
+      />
+      {TABS.map((t) => {
+        const isActive = t.key === value;
+        return (
+          <button
+            key={t.key}
+            role="tab"
+            type="button"
+            aria-selected={isActive}
+            tabIndex={isActive ? 0 : -1}
+            onClick={() => onChange(t.key)}
+            className="relative z-10 flex items-center justify-center gap-2 rounded-full px-3 py-2.5 sm:py-3 text-sm font-bold transition-colors duration-200 outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#0056CE]"
+            style={{ color: isActive ? "#FFFFFF" : "#64748B", cursor: "pointer", touchAction: "manipulation" }}
+          >
+            <span className={isActive ? "text-white" : "text-slate-400"}>{t.icon}</span>
+            <span className="flex items-baseline gap-1.5">
+              <span className="whitespace-nowrap">{t.label}</span>
+              <span
+                className="hidden sm:inline text-[10px] font-black tabular-nums px-1.5 py-0.5 rounded-full leading-none"
+                style={{ background: isActive ? "rgba(255,255,255,0.22)" : "#F1F5F9", color: isActive ? "#FFFFFF" : "#0056CE" }}
+              >
+                {t.count}
+              </span>
+            </span>
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
 // ─── Main section ─────────────────────────────────────────────────────────────
 export function CourseGridSection({ courses: allCourses }: { courses: Course[] }) {
   const engineering = allCourses.filter((c) => !WORK_LANE_SLUGS.has(c.slug));
@@ -290,6 +379,10 @@ export function CourseGridSection({ courses: allCourses }: { courses: Course[] }
   const sectionRef = useRef<HTMLDivElement>(null);
   const [selected, setSelected] = useState<Course | null>(null);
   const [visible, setVisible] = useState(false);
+  const [lane, setLane] = useState<Lane>("work"); // no-code leads
+
+  const activeCourses = lane === "work" ? work : engineering;
+  const isWork = lane === "work";
 
   useEffect(() => {
     if (!sectionRef.current) return;
@@ -320,50 +413,44 @@ export function CourseGridSection({ courses: allCourses }: { courses: Course[] }
         style={{ background: "radial-gradient(circle, rgba(14,165,233,0.12) 0%, transparent 70%)", filter: "blur(90px)" }} />
 
       <div className="relative max-w-7xl mx-auto">
-        {/* ═══ SECTION 1 — AI for your work (no-code framing) — shown first ══ */}
-        {hasWork && (
-          <>
-            <div className="text-center mb-8 sm:mb-12">
-              <span className="text-[10px] sm:text-[11px] tracking-[0.35em] uppercase font-bold text-brand">AI for your work — no code</span>
-              <h2 className="mt-3 sm:mt-4 font-black tracking-tight text-slate-900 leading-[0.95]" style={{ fontSize: "clamp(28px, 6vw, 80px)" }}>
-                {work.length} role tracks.
-                <br />
-                <span style={{ background: "linear-gradient(135deg, #3388FF 0%, #0056CE 55%, #01224F 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>Get more from AI at work.</span>
-              </h2>
-              <p className="mt-3 sm:mt-4 text-xs sm:text-base text-slate-600 max-w-xl mx-auto">Practise on real work scenarios in your role — graded by Nova, our AI tutor. No programming.</p>
-            </div>
-            <div className="grid grid-cols-1 gap-2.5 sm:hidden">
-              {work.map((course, i) => (
-                <MobileCourseCard key={course.id} course={course} index={i} isVisible={visible} isWork={true} onSelect={setSelected} />
-              ))}
-            </div>
-            <div className="hidden sm:grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 lg:gap-6 xl:gap-4">
-              {work.map((course, i) => (
-                <DesktopCourseCard key={course.id} course={course} index={i} isVisible={visible} isWork={true} onSelect={setSelected} />
-              ))}
-            </div>
-          </>
-        )}
-
-        {/* ═══ SECTION 2 — Career / technical (salary framing) — shown second ═ */}
-        <div className={`text-center mb-8 sm:mb-12 ${hasWork ? "mt-16 sm:mt-28" : ""}`}>
+        {/* ═══ Header ══════════════════════════════════════════════════════ */}
+        <div className="text-center mb-6 sm:mb-8">
           <span className="text-[10px] sm:text-[11px] tracking-[0.35em] uppercase text-slate-500 font-bold">The Curriculum</span>
           <h2 className="mt-3 sm:mt-4 font-black tracking-tight text-slate-900 leading-[0.95]" style={{ fontSize: "clamp(28px, 6vw, 80px)" }}>
-            {engineering.length} subjects.
+            {isWork ? <>{work.length} role tracks.</> : <>{engineering.length} subjects.</>}
             <br />
-            <span style={{ background: "linear-gradient(135deg, #3388FF 0%, #0056CE 55%, #01224F 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>One path to hired.</span>
+            <span style={{ background: "linear-gradient(135deg, #3388FF 0%, #0056CE 55%, #01224F 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>
+              {isWork ? "Get more from AI at work." : "One path to hired."}
+            </span>
           </h2>
-          <p className="mt-3 sm:mt-4 text-xs sm:text-base text-slate-600 max-w-xl mx-auto">Every course built around a real career outcome — with the salary to prove it.</p>
         </div>
-        <div className="grid grid-cols-1 gap-2.5 sm:hidden">
-          {engineering.map((course, i) => (
-            <MobileCourseCard key={course.id} course={course} index={i} isVisible={visible} isWork={false} onSelect={setSelected} />
-          ))}
-        </div>
-        <div className="hidden sm:grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 lg:gap-6 xl:gap-4">
-          {engineering.map((course, i) => (
-            <DesktopCourseCard key={course.id} course={course} index={i} isVisible={visible} isWork={false} onSelect={setSelected} />
-          ))}
+
+        {/* ═══ Lane toggle ═════════════════════════════════════════════════ */}
+        {hasWork && (
+          <div className="mb-4 sm:mb-5">
+            <LaneToggle value={lane} onChange={setLane} workCount={work.length} careerCount={engineering.length} />
+          </div>
+        )}
+
+        {/* Lane subline — swaps with selection */}
+        <p key={`sub-${lane}`} className="text-center text-xs sm:text-base text-slate-600 max-w-xl mx-auto mb-8 sm:mb-12 motion-safe:animate-fade-in-up">
+          {isWork
+            ? "Practise on real work scenarios in your role — graded by Nova, our AI tutor. No programming."
+            : "Every course built around a real career outcome — with the salary to prove it."}
+        </p>
+
+        {/* ═══ Active lane grid — crossfades on switch (keyed) ═════════════ */}
+        <div role="tabpanel" aria-live="polite">
+          <div key={`m-${lane}`} className="grid grid-cols-1 gap-2.5 sm:hidden motion-safe:animate-fade-in-up">
+            {activeCourses.map((course, i) => (
+              <MobileCourseCard key={course.id} course={course} index={i} isVisible={visible} isWork={isWork} onSelect={setSelected} />
+            ))}
+          </div>
+          <div key={`d-${lane}`} className="hidden sm:grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 lg:gap-6 xl:gap-4 motion-safe:animate-fade-in-up">
+            {activeCourses.map((course, i) => (
+              <DesktopCourseCard key={course.id} course={course} index={i} isVisible={visible} isWork={isWork} onSelect={setSelected} />
+            ))}
+          </div>
         </div>
 
         {/* Bottom callout — one skill check for both */}
