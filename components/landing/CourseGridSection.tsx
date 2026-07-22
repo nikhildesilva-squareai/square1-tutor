@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useFocusTrap } from "@/lib/hooks/useFocusTrap";
 import { PrimaryCta } from "@/components/ui/primary-cta";
 import { CourseIcon } from "@/components/ui/course-icon";
+import { WORK_LANE_SLUGS } from "@/lib/work-lanes";
 
 type Course = {
   id: string;
@@ -66,10 +67,6 @@ function resolveMeta(slug: string, isWork: boolean): { topRight: string; role: s
 
 const BRAND = "#0056CE";
 
-const WORK_LANE_SLUGS = new Set([
-  "ai-foundations", "ai-for-marketers", "ai-for-finance", "ai-for-creators",
-  "ai-for-founders", "ai-for-teachers", "ai-for-project-managers", "ai-for-sales",
-]);
 
 // ─── Mobile card — compact tile ──────────────────────────────────────────────
 function MobileCourseCard({
