@@ -1,189 +1,156 @@
 "use client";
 import { useState } from "react";
 import Link from "next/link";
-import { Menu, X, Check, Rocket, Briefcase } from "lucide-react";
+import { Menu, X, Check, ArrowRight, Sparkles } from "lucide-react";
 import { Logo } from "@/components/ui/logo";
 
 const BLUE_GRADIENT = "linear-gradient(135deg, #3388FF 0%, #0056CE 55%, #01224F 100%)";
 
-// ─── The fork: two equal doors into the product ───────────────────────────────
-// Both doors stay in the Square 1 blue family — differentiated by TREATMENT, not
-// hue: the career door is a filled brand-blue card (the bold "gets you hired"
-// statement); the work door is a light card with blue accents (open, low-friction).
-// LEFT  = career-changers & builders   → existing courses/diagnostic flow
-// RIGHT = "use AI at my job, no code"  → diagnostic tagged with goal=work
-const DOORS = [
-  {
-    key: "career",
-    icon: Rocket,
-    eyebrow: "Career path",
-    badge: "Engineering · Data · AI",
-    title: "Build a career in AI",
-    subtitle:
-      "The AI tutor that gets you hired. Job-ready engineering & data tracks — get assessed, follow a personalised plan, and ship deployed projects employers can run.",
-    bullets: [
-      "Job-ready engineering & data tracks",
-      "Every project code-reviewed & graded",
-      "Certificates backed by a real skill report",
-    ],
-    cta: "Explore career tracks",
-    href: "/diagnostic",
+// ─── Hero interactive: "Spot the better prompt" ───────────────────────────────
+// The foot-in-the-door — one universal, one-tap question that works for a future
+// ML engineer AND a marketer, and demos the exact thing Nova grades. Deterministic
+// reveal (no AI call, no cost). Tapping opens the curiosity gap → the real check,
+// which is where the career-vs-work question is asked.
+const DIMS = ["Context", "Role & goal", "Constraints", "Specificity", "Would it work?"] as const;
+
+const PROMPTS = {
+  a: {
+    key: "a",
+    label: "Prompt A",
+    text: "write a launch email for our new product",
+    scores: [2, 2, 1, 2, 1],
+    better: false,
   },
-  {
-    key: "work",
-    icon: Briefcase,
-    eyebrow: "Work smarter",
-    badge: "Marketing · Finance · +6",
-    // NBSPs keep "— no code" wrapping as one unit (no orphaned "code" on line 2)
-    title: "Use AI better at work — no code",
-    subtitle:
-      "Your company already pays for Copilot. Get your money's worth. Practical AI skills for your actual job — no programming required.",
-    bullets: [
-      "Role tracks for marketers, finance, teachers, founders & more",
-      "Practise on real work scenarios, graded by Nova",
-      "No code, no setup — start in minutes",
-    ],
-    cta: "Start free — no code",
-    href: "/diagnostic?goal=work",
+  b: {
+    key: "b",
+    label: "Prompt B",
+    text:
+      "You're our copywriter. Write a 120-word launch email for the Terra serum ($54, ships Aug 1). Audience: existing customers, warm tone, no wellness clichés. One CTA: “Pre-order”. No discounts.",
+    scores: [19, 20, 19, 20, 18],
+    better: true,
   },
-] as const;
+} as const;
 
-function DoorCard({ door }: { door: (typeof DOORS)[number] }) {
-  const Icon = door.icon;
-  const filled = door.key === "career";
+type PromptKey = "a" | "b";
+const total = (s: readonly number[]) => s.reduce((a, x) => a + x, 0);
 
-  // ── Career: filled brand-blue card ──────────────────────────────────────────
-  if (filled) {
-    return (
-      <div className="group relative h-full">
-        <div
-          className="relative flex h-full flex-col overflow-hidden rounded-2xl p-7 sm:p-8 text-left transition-all duration-200 motion-safe:group-hover:-translate-y-1"
-          style={{
-            background: "linear-gradient(155deg, #2E7BF0 0%, #0056CE 52%, #01224F 100%)",
-            boxShadow: "0 1px 2px rgba(15,28,49,0.06), 0 22px 46px -20px rgba(0,86,206,0.55)",
-          }}
-        >
-          <div
-            aria-hidden
-            className="pointer-events-none absolute -top-24 -right-20 w-64 h-64 rounded-full"
-            style={{ background: "radial-gradient(circle, rgba(255,255,255,0.22) 0%, transparent 70%)" }}
-          />
+function PromptCheck() {
+  const [picked, setPicked] = useState<PromptKey | null>(null);
+  const answered = picked !== null;
+  const gotItRight = picked === "b";
 
-          <div className="relative flex items-center gap-3 mb-5">
-            <span
-              className="w-[50px] h-[50px] rounded-[14px] flex items-center justify-center text-white shrink-0"
-              style={{ background: "rgba(255,255,255,0.16)", border: "1px solid rgba(255,255,255,0.28)" }}
-            >
-              <Icon size={22} strokeWidth={2.1} aria-hidden />
-            </span>
-            <p className="text-[10px] font-bold tracking-[0.22em] uppercase" style={{ color: "#BFD9FF" }}>
-              {door.eyebrow}
-            </p>
-            <span
-              className="ml-auto text-[11px] font-semibold px-2.5 py-1 rounded-full text-white whitespace-nowrap"
-              style={{ background: "rgba(255,255,255,0.16)", border: "1px solid rgba(255,255,255,0.24)" }}
-            >
-              {door.badge}
-            </span>
-          </div>
-
-          <h2 className="relative text-2xl sm:text-[27px] font-black tracking-tight text-white leading-tight text-balance">
-            {door.title}
-          </h2>
-          <p className="relative mt-3 text-sm leading-relaxed" style={{ color: "#CBDDF7" }}>
-            {door.subtitle}
-          </p>
-
-          <ul className="relative flex-1 flex flex-col justify-center gap-3 my-6">
-            {door.bullets.map((b) => (
-              <li key={b} className="flex items-start gap-3 text-[13px] font-medium leading-snug" style={{ color: "#E4EEFB" }}>
-                <span className="mt-px w-[22px] h-[22px] rounded-full flex items-center justify-center shrink-0 bg-white">
-                  <Check size={12} strokeWidth={3.5} aria-hidden style={{ color: "#0056CE" }} />
-                </span>
-                <span className="pt-0.5">{b}</span>
-              </li>
-            ))}
-          </ul>
-
-          <Link
-            href={door.href}
-            className="relative flex items-center justify-center gap-2 h-14 rounded-[15px] bg-white text-[15px] font-bold transition-transform duration-150 motion-safe:hover:-translate-y-0.5"
-            style={{ color: "#0056CE", boxShadow: "0 12px 26px -12px rgba(0,0,0,0.35)" }}
-          >
-            {door.cta}
-            <span aria-hidden className="transition-transform duration-150 group-hover:translate-x-1">→</span>
-          </Link>
-        </div>
-      </div>
-    );
-  }
-
-  // ── Work: light card with blue accents ──────────────────────────────────────
   return (
-    <div className="group relative h-full">
-      <div
-        aria-hidden
-        className="pointer-events-none absolute -inset-3 rounded-[26px] opacity-70 blur-2xl transition-opacity duration-300 group-hover:opacity-100"
-        style={{ background: "radial-gradient(ellipse at 50% 10%, rgba(51,136,255,0.16) 0%, transparent 65%)" }}
-      />
-      <div
-        className="relative flex h-full flex-col overflow-hidden rounded-2xl border p-7 sm:p-8 text-left transition-all duration-200 motion-safe:group-hover:-translate-y-1"
-        style={{
-          background: "linear-gradient(180deg, #EFF5FF 0%, #FFFFFF 44%)",
-          borderColor: "#D8E7FC",
-          boxShadow: "0 1px 2px rgba(15,28,49,0.05), 0 18px 40px -24px rgba(15,28,49,0.20)",
-        }}
-      >
-        <div aria-hidden className="absolute inset-x-0 top-0 h-1" style={{ background: "linear-gradient(90deg, #3388FF, #0056CE)" }} />
-        <div
-          aria-hidden
-          className="pointer-events-none absolute -top-24 -right-20 w-56 h-56 rounded-full"
-          style={{ background: "radial-gradient(circle, rgba(51,136,255,0.14) 0%, transparent 70%)" }}
-        />
+    <div
+      className="relative w-full rounded-2xl border bg-white overflow-hidden"
+      style={{ borderColor: "#D8E7FC", boxShadow: "0 1px 2px rgba(15,28,49,0.05), 0 26px 60px -28px rgba(0,86,206,0.42)" }}
+    >
+      {/* Card header — Nova / Prompt Lab */}
+      <div className="flex items-center gap-2.5 px-5 py-3.5 border-b" style={{ borderColor: "#EEF3FB", background: "linear-gradient(180deg,#F5F9FF,#fff 80%)" }}>
+        <span className="w-6 h-6 rounded-full flex items-center justify-center text-white text-[11px] font-black shrink-0" style={{ background: BLUE_GRADIENT }}>N</span>
+        <span className="text-[11px] font-bold uppercase tracking-[0.14em] text-brand">Prompt Lab</span>
+        <span className="ml-auto text-[11px] font-semibold text-slate-400">Spot the better prompt</span>
+      </div>
 
-        <div className="relative flex items-center gap-3 mb-5 mt-1">
-          <span
-            className="w-[50px] h-[50px] rounded-[14px] flex items-center justify-center text-white shrink-0"
-            style={{ background: BLUE_GRADIENT, boxShadow: "0 8px 18px -8px rgba(0,86,206,0.6)" }}
-          >
-            <Icon size={22} strokeWidth={2.1} aria-hidden />
-          </span>
-          <p className="text-[10px] font-bold tracking-[0.22em] uppercase text-brand">{door.eyebrow}</p>
-          <span
-            className="ml-auto text-[11px] font-semibold px-2.5 py-1 rounded-full text-brand bg-white whitespace-nowrap"
-            style={{ border: "1px solid #D8E7FC" }}
-          >
-            {door.badge}
-          </span>
+      <div className="p-5">
+        <p className="text-[13px] sm:text-sm font-semibold text-slate-800 leading-snug mb-4">
+          You need AI to draft a product launch email. <span className="text-slate-500 font-medium">Which prompt gets a usable result?</span>
+        </p>
+
+        {/* Two prompt options */}
+        <div className="space-y-2.5">
+          {(["a", "b"] as const).map((k) => {
+            const p = PROMPTS[k];
+            const isPick = picked === k;
+            const revealWin = answered && p.better;
+            const revealWeak = answered && !p.better;
+            return (
+              <button
+                key={k}
+                onClick={() => !answered && setPicked(k)}
+                disabled={answered}
+                className="w-full text-left rounded-xl border-2 p-3.5 transition-all disabled:cursor-default motion-safe:hover:-translate-y-px"
+                style={{
+                  borderColor: revealWin ? "#10B981" : revealWeak ? "#E2E8F0" : isPick ? "#0056CE" : "#E2E8F0",
+                  background: revealWin ? "rgba(16,185,129,0.05)" : revealWeak ? "#F8FAFC" : "#fff",
+                  opacity: revealWeak ? 0.72 : 1,
+                }}
+              >
+                <div className="flex items-center justify-between mb-1.5">
+                  <span className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-wide"
+                    style={{ color: revealWin ? "#059669" : revealWeak ? "#94A3B8" : "#64748B" }}>
+                    <span className="w-5 h-5 rounded-full border-2 flex items-center justify-center text-[10px] font-black"
+                      style={{
+                        borderColor: revealWin ? "#10B981" : revealWeak ? "#CBD5E1" : isPick ? "#0056CE" : "#CBD5E1",
+                        color: revealWin ? "#10B981" : revealWeak ? "#94A3B8" : isPick ? "#0056CE" : "#94A3B8",
+                      }}>
+                      {revealWin ? "✓" : k.toUpperCase()}
+                    </span>
+                    {p.label}
+                  </span>
+                  {answered && (
+                    <span className="text-[13px] font-black tabular-nums motion-safe:animate-fade-in-up" style={{ color: p.better ? "#0056CE" : "#94A3B8" }}>
+                      {total(p.scores)}<span className="text-[10px] text-slate-400">/100</span>
+                    </span>
+                  )}
+                </div>
+                <p className="text-[12.5px] leading-relaxed" style={{ color: revealWeak ? "#94A3B8" : "#475569", display: "-webkit-box", WebkitLineClamp: answered && p.better ? 4 : 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
+                  {p.text}
+                </p>
+              </button>
+            );
+          })}
         </div>
 
-        <h2 className="relative text-2xl sm:text-[27px] font-black tracking-tight text-slate-900 leading-tight text-balance">
-          {door.title}
-        </h2>
-        <p className="relative mt-3 text-sm text-slate-600 leading-relaxed">{door.subtitle}</p>
+        {!answered && (
+          <p className="text-center text-[11px] text-slate-400 mt-3.5">Tap the one you'd trust — no signup.</p>
+        )}
 
-        <ul className="relative flex-1 flex flex-col justify-center gap-3 my-6">
-          {door.bullets.map((b) => (
-            <li key={b} className="flex items-start gap-3 text-[13px] text-slate-700 font-medium leading-snug">
-              <span
-                className="mt-px w-[22px] h-[22px] rounded-full flex items-center justify-center shrink-0 text-white"
-                style={{ background: BLUE_GRADIENT, boxShadow: "0 3px 7px -3px rgba(0,86,206,0.4)" }}
-              >
-                <Check size={12} strokeWidth={3.5} aria-hidden />
-              </span>
-              <span className="pt-0.5">{b}</span>
-            </li>
-          ))}
-        </ul>
+        {/* Reveal — Nova's breakdown of the strong prompt + curiosity gap */}
+        {answered && (
+          <div className="mt-4 motion-safe:animate-fade-in-up">
+            <p className="text-[13px] font-bold text-slate-900 mb-3">
+              {gotItRight
+                ? "Nailed it — Nova scores that 96/100."
+                : "Prompt B wins — Nova scores it 96 vs 8."}{" "}
+              <span className="font-medium text-slate-500">The difference is context, constraints and a clear goal.</span>
+            </p>
 
-        <Link
-          href={door.href}
-          className="relative flex items-center justify-center gap-2 h-14 rounded-[15px] text-white text-[15px] font-bold transition-transform duration-150 motion-safe:hover:-translate-y-0.5"
-          style={{ background: BLUE_GRADIENT, boxShadow: "0 12px 26px -10px rgba(0,86,206,0.55)" }}
-        >
-          {door.cta}
-          <span aria-hidden className="transition-transform duration-150 group-hover:translate-x-1">→</span>
-        </Link>
+            {/* 5-bar breakdown of the winning prompt */}
+            <div className="rounded-xl border p-3.5 mb-4" style={{ borderColor: "#EEF3FB", background: "#FBFDFF" }}>
+              <div className="flex items-center justify-between mb-2.5">
+                <span className="text-[10px] font-bold uppercase tracking-[0.14em] text-slate-500">Nova's score · Prompt B</span>
+                <span className="text-sm font-black tabular-nums text-brand">96<span className="text-[10px] text-slate-400">/100</span></span>
+              </div>
+              <div className="space-y-2">
+                {DIMS.map((d, i) => {
+                  const s = PROMPTS.b.scores[i];
+                  return (
+                    <div key={d}>
+                      <div className="flex items-center justify-between mb-0.5">
+                        <span className="text-[11px] font-semibold text-slate-600">{d}</span>
+                        <span className="text-[10px] font-bold tabular-nums text-emerald-600">{s}/20</span>
+                      </div>
+                      <div className="h-1.5 rounded-full bg-slate-200/70 overflow-hidden">
+                        <div className="h-full rounded-full motion-safe:transition-[width] motion-safe:duration-700"
+                          style={{ width: `${(s / 20) * 100}%`, background: "linear-gradient(90deg,#3388FF,#0056CE)", transitionDelay: `${i * 70}ms` }} />
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            <Link
+              href="/diagnostic"
+              className="flex items-center justify-center gap-2 h-12 rounded-xl text-white text-[15px] font-bold transition-transform duration-150 motion-safe:hover:-translate-y-0.5"
+              style={{ background: BLUE_GRADIENT, boxShadow: "0 14px 30px -12px rgba(0,86,206,0.55)" }}
+            >
+              See your full result — free
+              <ArrowRight className="h-4 w-4" />
+            </Link>
+            <p className="text-center text-[11px] text-slate-400 mt-2.5">3-minute check · maps your real level · no signup to start</p>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -199,7 +166,7 @@ export function HeroSection({
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (
-    <section className="hero-section relative min-h-[78svh] flex flex-col overflow-hidden bg-white">
+    <section className="hero-section relative flex flex-col overflow-hidden bg-white">
       {/* ── Soft Square 1 blue accents on white ───────────────────────────── */}
       <div className="pointer-events-none absolute -top-40 -left-40 w-[700px] h-[700px] rounded-full"
         style={{ background: "radial-gradient(circle, rgba(0,86,206,0.08) 0%, transparent 70%)", filter: "blur(90px)" }} />
@@ -267,57 +234,71 @@ export function HeroSection({
         )}
       </nav>
 
-      {/* ── HERO BODY — goal-neutral headline + the two-door fork ─────────── */}
-      <div className="relative z-10 flex-1 flex flex-col items-center justify-center max-w-7xl mx-auto w-full px-6 sm:px-8 py-6 lg:py-8 text-center">
+      {/* ── HERO BODY — single-focus: one promise, one CTA, one live demo ──── */}
+      <div className="relative z-10 flex-1 flex items-center max-w-7xl mx-auto w-full px-6 sm:px-8 py-8 lg:py-12">
+        <div className="grid grid-cols-1 lg:grid-cols-[1.05fr_0.95fr] gap-10 lg:gap-14 items-center w-full">
 
-        <div className="mb-6 sm:mb-8">
-          <span className="text-[10px] sm:text-xs font-bold tracking-[0.25em] uppercase text-brand border border-brand/20 bg-brand/5 px-3 py-1.5 rounded-full">
-            Proof, not promises
-          </span>
-        </div>
+          {/* LEFT — the promise */}
+          <div className="text-center lg:text-left">
+            <div className="mb-5 sm:mb-6">
+              <span className="inline-flex items-center gap-1.5 text-[10px] sm:text-xs font-bold tracking-[0.22em] uppercase text-brand border border-brand/20 bg-brand/5 px-3 py-1.5 rounded-full">
+                <Sparkles className="h-3.5 w-3.5" /> Proof, not promises
+              </span>
+            </div>
 
-        <h1 className="font-black leading-[0.98] tracking-tight text-slate-900 mb-5 sm:mb-6 max-w-4xl"
-          style={{ fontSize: "clamp(2.5rem, 5.5vw, 4.75rem)" }}>
-          Learn AI the way that{" "}
-          <span style={{ background: BLUE_GRADIENT, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>
-            fits your goal.
-          </span>
-        </h1>
+            <h1 className="font-black leading-[0.98] tracking-tight text-slate-900 mb-5"
+              style={{ fontSize: "clamp(2.6rem, 5.4vw, 4.9rem)" }}>
+              Get{" "}
+              <span style={{ background: BLUE_GRADIENT, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>
+                genuinely good
+              </span>{" "}
+              at AI.
+            </h1>
 
-        <p className="text-sm sm:text-base text-slate-600 leading-relaxed mb-10 sm:mb-12 max-w-xl mx-auto">
-          Switching into an AI career, or just done wrestling with Copilot at work?
-          Pick your door — both start free, both graded by Nova, our AI tutor.
-        </p>
+            <p className="text-sm sm:text-lg text-slate-600 leading-relaxed mb-8 max-w-xl mx-auto lg:mx-0">
+              Whether you're building a career in AI or getting more out of it at the job you already have —
+              you learn by doing, and Nova, our AI tutor, grades every rep.
+            </p>
 
-        {/* The fork — two equal doors, stacked on mobile */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 sm:gap-6 w-full max-w-4xl mx-auto">
-          {DOORS.map((door) => (
-            <DoorCard key={door.key} door={door} />
-          ))}
-        </div>
+            <div className="flex flex-col sm:flex-row items-center lg:items-start gap-3 sm:gap-4 justify-center lg:justify-start">
+              <Link
+                href="/diagnostic"
+                className="inline-flex items-center justify-center gap-2 h-14 px-7 rounded-[15px] text-white text-[15px] font-bold transition-transform duration-150 motion-safe:hover:-translate-y-0.5 w-full sm:w-auto"
+                style={{ background: BLUE_GRADIENT, boxShadow: "0 14px 30px -12px rgba(0,86,206,0.6)" }}
+              >
+                Start the free skill check
+                <ArrowRight className="h-4 w-4" />
+              </Link>
+              <span className="text-xs text-slate-500 sm:max-w-[9rem] text-center sm:text-left leading-snug">
+                Free · 3 minutes · no signup to start
+              </span>
+            </div>
 
-        <p className="mt-6 text-xs text-slate-500">
-          Free · No credit card · No commitment — just signal.
-        </p>
+            {/* Live early-access seat counter — real count, hidden when closed */}
+            {seats && (
+              <p className="mt-5 inline-flex items-center gap-2 text-xs font-bold text-slate-700">
+                <span className="relative flex w-2 h-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+                  <span className="relative inline-flex rounded-full w-2 h-2 bg-emerald-500" />
+                </span>
+                {seats.left} of {seats.cap} free early-access seats left
+              </p>
+            )}
 
-        {/* Live early-access seat counter — real count, hidden when closed */}
-        {seats && (
-          <p className="mt-2.5 inline-flex items-center gap-2 text-xs font-bold text-slate-700">
-            <span className="relative flex w-2 h-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-              <span className="relative inline-flex rounded-full w-2 h-2 bg-emerald-500" />
-            </span>
-            {seats.left} of {seats.cap} free early-access seats left
-          </p>
-        )}
+            {/* Mini trust bar — DB-driven course count */}
+            <div className="mt-6 flex items-center justify-center lg:justify-start gap-4 text-[10px] text-slate-500 uppercase tracking-widest font-semibold">
+              <span>{courseCount} Subjects</span>
+              <span className="w-1 h-1 rounded-full bg-slate-300" />
+              <span>Code + no-code</span>
+              <span className="w-1 h-1 rounded-full bg-slate-300" />
+              <span>AI graded</span>
+            </div>
+          </div>
 
-        {/* Mini trust bar — DB-driven course count */}
-        <div className="mt-7 flex items-center justify-center gap-4 text-[10px] text-slate-500 uppercase tracking-widest font-semibold">
-          <span>{courseCount} Subjects</span>
-          <span className="w-1 h-1 rounded-full bg-slate-300" />
-          <span>10+ Projects</span>
-          <span className="w-1 h-1 rounded-full bg-slate-300" />
-          <span>Public Proof</span>
+          {/* RIGHT — the live demo (foot-in-the-door) */}
+          <div className="w-full max-w-md mx-auto lg:mx-0 lg:justify-self-end">
+            <PromptCheck />
+          </div>
         </div>
       </div>
 
