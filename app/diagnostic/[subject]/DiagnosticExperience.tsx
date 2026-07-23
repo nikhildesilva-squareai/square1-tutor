@@ -1,9 +1,10 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { ArrowRight, Check } from "lucide-react";
 import { getDiagnostic, encodeAnswers, type DiagQuestion } from "@/lib/diagnostic";
+import { DiagnosticEvent } from "@/components/DiagnosticEvent";
 
 interface Mod { title: string; lessons: number }
 interface Props {
@@ -29,6 +30,16 @@ export function DiagnosticExperience({ slug, subject, seo, modules, totalProject
 
   const [started, setStarted] = useState(false);
   const [qIdx, setQIdx] = useState(0);
+
+  // Fast path: internal traffic (picker cards, course modals) arrives with
+  // ?start=1 and goes straight into question 1 — the landing-page version of
+  // this route exists for ORGANIC search arrivals, not visitors the homepage
+  // already convinced. useEffect (not initial state) so SSR/CSR markup match.
+  useEffect(() => {
+    try {
+      if (new URLSearchParams(window.location.search).get("start") === "1") setStarted(true);
+    } catch { /* ignore */ }
+  }, []);
   const [answers, setAnswers] = useState<number[]>([]);
   const [picked, setPicked] = useState<number | null>(null);
 
@@ -67,6 +78,9 @@ export function DiagnosticExperience({ slug, subject, seo, modules, totalProject
   if (started) {
     return (
       <main className="flex-1 px-4 py-10 sm:px-6" style={{ background: "linear-gradient(180deg,#F8FAFC,#fff)" }}>
+        {/* Fires once when the quiz mounts — the TRUE top of the quiz funnel
+            (the page-level "started" event is just a page view). */}
+        <DiagnosticEvent event="quiz_started" subject={slug} />
         <div key={qIdx} className="mx-auto max-w-xl animate-fade-in-up">
           <div className="mb-6 flex items-center justify-between">
             <span className="text-xs font-bold tracking-wide" style={{ color: accent }}>{subject.title}</span>

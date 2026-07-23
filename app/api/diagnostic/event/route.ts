@@ -6,13 +6,14 @@ import { rateLimit } from "@/lib/rate-limit";
 
 // Public, unauthenticated funnel logging for the (pre-signup) diagnostic. Writes
 // to diagnostic_events via the service-role client so the table stays RLS-locked.
-// "started" fires when a subject skill-check opens; "finished" when its results
-// page loads. Session-scoped (anonymous id) so we can count started vs finished.
+// "started" fires when a subject skill-check PAGE opens (a page view);
+// "quiz_started" when the visitor actually begins answering; "finished" when
+// the results page loads. Session-scoped (anonymous id) so we can count started vs finished.
 // Best-effort — analytics must never break the visitor's flow.
 
 const SUBJECT_SLUGS = new Set(DIAG_SUBJECTS.map((s) => s.slug));
 const schema = z.object({
-  event: z.enum(["started", "finished"]),
+  event: z.enum(["started", "quiz_started", "finished"]),
   subject: z.string().max(60).optional(),
   session_id: z.string().max(80).optional(),
   score: z.number().int().min(0).max(100).optional(),

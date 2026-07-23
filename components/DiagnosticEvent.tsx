@@ -22,7 +22,7 @@ export function DiagnosticEvent({
   event,
   subject,
 }: {
-  event: "started" | "finished";
+  event: "started" | "quiz_started" | "finished";
   subject: string;
 }) {
   useEffect(() => {
