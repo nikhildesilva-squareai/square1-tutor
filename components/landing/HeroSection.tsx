@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Menu, X, ArrowRight, Sparkles, Code2, Briefcase, ChevronDown } from "lucide-react";
 import { Logo } from "@/components/ui/logo";
@@ -33,6 +33,30 @@ const PROMPTS = {
 
 type PromptKey = "a" | "b";
 const total = (s: readonly number[]) => s.reduce((a, x) => a + x, 0);
+
+// Count-up on reveal — the score "arriving" reads as Nova actively grading,
+// which sells the product harder than a static number. Plain rAF (no motion
+// lib): ease-out cubic, ~700ms, and reduced-motion users get the final value
+// instantly.
+function CountUp({ to, duration = 700 }: { to: number; duration?: number }) {
+  const [n, setN] = useState(0);
+  useEffect(() => {
+    if (typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      setN(to);
+      return;
+    }
+    let raf = 0;
+    const t0 = performance.now();
+    const tick = (t: number) => {
+      const p = Math.min(1, (t - t0) / duration);
+      setN(Math.round(to * (1 - Math.pow(1 - p, 3))));
+      if (p < 1) raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [to, duration]);
+  return <>{n}</>;
+}
 
 function PromptCheck() {
   const [picked, setPicked] = useState<PromptKey | null>(null);
@@ -119,7 +143,7 @@ function PromptCheck() {
             <div className="rounded-xl border p-3.5 mb-4" style={{ borderColor: "#EEF3FB", background: "#FBFDFF" }}>
               <div className="flex items-center justify-between mb-2.5">
                 <span className="text-[10px] font-bold uppercase tracking-[0.14em] text-slate-500">Nova's score · Prompt B</span>
-                <span className="text-sm font-black tabular-nums text-brand">96<span className="text-[10px] text-slate-400">/100</span></span>
+                <span className="text-sm font-black tabular-nums text-brand"><CountUp to={total(PROMPTS.b.scores)} /><span className="text-[10px] text-slate-400">/100</span></span>
               </div>
               <div className="space-y-2">
                 {DIMS.map((d, i) => {
@@ -335,35 +359,42 @@ export function HeroSection({
               </span>
             </div>
 
-            <h1 className="font-black leading-[0.98] tracking-tight text-slate-900 mb-5"
-              style={{ fontSize: "clamp(2.6rem, 5.4vw, 4.9rem)" }}>
-              Get{" "}
+            {/* H1 leads with the pain (passive tutorials) then the outcome (provable
+                skill) — a contrast headline converts better than a capability claim
+                because the visitor self-identifies with the first clause. */}
+            <h1 className="font-black leading-[1.02] tracking-tight text-slate-900 mb-5"
+              style={{ fontSize: "clamp(2.3rem, 4.8vw, 4.2rem)" }}>
+              Stop watching tutorials.{" "}
               <span style={{ background: BLUE_GRADIENT, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>
-                genuinely good
-              </span>{" "}
-              at AI.
+                Build &amp; prove job-ready AI skills.
+              </span>
             </h1>
 
+            {/* Subhead names the differentiator (Nova grades code AND prompts) and
+                the proof artifact (portfolio, not certificate) in one breath. */}
             <p className="text-sm sm:text-lg text-slate-600 leading-relaxed mb-8 max-w-xl mx-auto lg:mx-0">
-              Whether you're building a career in AI or getting more out of it at the job you already have —
-              you learn by doing, and Nova, our AI tutor, grades every rep.
+              Learn by doing — code or no-code. Nova, our AI tutor, grades every rep against
+              real rubrics, and you graduate with a portfolio employers can run, not a certificate.
             </p>
 
             <div className="flex flex-col sm:flex-row items-center lg:items-start gap-3 sm:gap-4 justify-center lg:justify-start">
+              {/* "3-min" in the button label pre-answers the effort objection at the
+                  exact moment of the click decision. */}
               <Link
                 href="/diagnostic"
                 className="inline-flex items-center justify-center gap-2 h-14 px-7 rounded-[15px] text-white text-[15px] font-bold transition-transform duration-150 motion-safe:hover:-translate-y-0.5 w-full sm:w-auto"
                 style={{ background: BLUE_GRADIENT, boxShadow: "0 14px 30px -12px rgba(0,86,206,0.6)" }}
               >
-                Start the free skill check
+                Take the free 3-min skill check
                 <ArrowRight className="h-4 w-4" />
               </Link>
               <span className="text-xs text-slate-500 sm:max-w-[9rem] text-center sm:text-left leading-snug">
-                Free · 3 minutes · no signup to start
+                Free · no signup to start · no credit card
               </span>
             </div>
 
-            {/* Live early-access seat counter — real count, hidden when closed */}
+            {/* Live early-access seat counter — real count, hidden when closed.
+                Scarcity + the founding-rate promise beside the CTA, never above it. */}
             {seats && (
               <p className="mt-5 inline-flex items-center gap-2 text-xs font-bold text-slate-700">
                 <span className="relative flex w-2 h-2">
@@ -371,6 +402,7 @@ export function HeroSection({
                   <span className="relative inline-flex rounded-full w-2 h-2 bg-emerald-500" />
                 </span>
                 {seats.left} of {seats.cap} free early-access seats left
+                <span className="font-medium text-slate-500">· founding rate locked for life</span>
               </p>
             )}
 

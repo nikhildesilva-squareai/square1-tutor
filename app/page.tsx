@@ -15,10 +15,10 @@ import { JourneyHook } from "@/components/landing/JourneyHook";
 import { CourseGridSection } from "@/components/landing/CourseGridSection";
 import { WORK_LANE_SLUGS } from "@/lib/work-lanes";
 import { WorkBlock } from "@/components/landing/WorkBlock";
-import { InlineDiagnostic } from "@/components/landing/InlineDiagnostic";
 import { CodeReviewSlider } from "@/components/landing/CodeReviewSlider";
 import { CookieConsent } from "@/components/ui/cookie-consent";
 import { MobileStickyCta } from "@/components/landing/MobileStickyCta";
+import { StickyCtaBar } from "@/components/landing/StickyCtaBar";
 import { LandingEngagement } from "@/components/LandingEngagement";
 import { WavePath } from "@/components/ui/wave-path";
 
@@ -110,41 +110,29 @@ export default async function Home() {
 
       <SectionWave />
 
-      {/* ── CAREER DOMAIN anchor — everything from here to the comparison is the
-             "build a career" proof (one of the two doors). ──────────────────── */}
-      <div className="bg-white pt-5 sm:pt-7 pb-1 text-center px-6">
-        <span className="text-[11px] font-bold uppercase tracking-[0.22em] text-brand">Build a career in AI</span>
-        <p className="mt-2 text-sm text-slate-500 max-w-lg mx-auto">Job-ready engineering and data tracks — get assessed, follow a personalised plan, and ship graded projects employers can run.</p>
-      </div>
-
-      {/* ── 2. THE HOOK — outcome + proof: "Get hired as an [role]" + journey + employer view */}
-      <div data-s1-section="journey"><JourneyHook /></div>
-
-      <SectionWave />
-
-      {/* ── 3. Foot-in-the-door: one inline question → act by screen two ─────── */}
-      <div data-s1-section="diagnostic"><InlineDiagnostic /></div>
-
-      <SectionWave />
-
-      {/* ── 4. The 2026 wedge — slim stakes strip ────────────────────────────── */}
+      {/* ── 2. Stakes — why now (the 2026 wedge) ─────────────────────────────── */}
       <div data-s1-section="reality"><RealityBand /></div>
 
       <SectionWave />
 
-      {/* ── 5. Before/After — drag to see Nova review your code ──────────────── */}
+      {/* ── 3–4. Nova product proof, escalating: the hero teased prompt grading;
+             here the code-review depth, then prompt grading applied to real work.
+             (No career/work fork anywhere — one funnel, one CTA.) ─────────────── */}
       <div data-s1-section="code-review"><CodeReviewSlider /></div>
 
       <SectionWave />
 
-      {/* ── 6. Why Square 1 beats everything else ────────────────────────────── */}
-      <div data-s1-section="comparison"><ComparisonSection /></div>
+      <div data-s1-section="work"><WorkBlock /></div>
 
       <SectionWave />
 
-      {/* ── 6b. WORK DOMAIN — "AI for your work, no code": the second door's proof
-             (Prompt Lab demo + role tracks). ─────────────────────────────────── */}
-      <div data-s1-section="work"><WorkBlock /></div>
+      {/* ── 5. Outcomes — "Get hired as an [role]" journey + employer view ───── */}
+      <div data-s1-section="journey"><JourneyHook /></div>
+
+      <SectionWave />
+
+      {/* ── 6. Vs alternatives — portfolio over certificates ─────────────────── */}
+      <div data-s1-section="comparison"><ComparisonSection /></div>
 
       <SectionWave />
 
@@ -267,21 +255,26 @@ export default async function Home() {
           </h3>
 
           <p className="text-sm sm:text-base text-slate-600 max-w-lg mx-auto mb-10">
-            A free skill check shows you where you stand and exactly what to learn next — whether
-            you&apos;re building a career in AI or getting more out of it at the job you already have.
+            A free skill check shows you where you stand and exactly what to learn next — then
+            claim one of the free early-access seats and your founding rate is locked for life.
             No credit card.
           </p>
 
-          <div className="flex flex-col sm:flex-row gap-3 justify-center mb-5">
+          {/* One action — the same single funnel entry as everywhere else. The
+              career/work question is asked inside the check, not here. */}
+          <div className="flex flex-col items-center gap-4 mb-5">
             <PrimaryCta href="/diagnostic" size="lg">
-              Build a career in AI
+              Take the free 3-min skill check
             </PrimaryCta>
-            <Link
-              href="/diagnostic?goal=work"
-              className="inline-flex items-center justify-center px-8 py-5 rounded-full text-brand text-base font-bold border-2 border-brand/25 hover:border-brand/50 hover:bg-brand/5 transition-all"
-            >
-              Use AI better at work — no code
-            </Link>
+            {seats && (
+              <p className="inline-flex items-center gap-2 text-xs font-bold text-slate-600">
+                <span className="relative flex w-2 h-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+                  <span className="relative inline-flex rounded-full w-2 h-2 bg-emerald-500" />
+                </span>
+                {seats.left} of {seats.cap} free early-access seats left
+              </p>
+            )}
           </div>
           <Link href="/login" className="text-sm font-semibold text-slate-500 hover:text-slate-800 transition-colors">
             Or sign in
@@ -396,6 +389,7 @@ export default async function Home() {
       </section>
 
       <CookieConsent />
+      <StickyCtaBar seats={seats} />
       <MobileStickyCta seats={seats} />
       {/* Landing engagement: time-per-section + scroll depth → /api/track (prod only) */}
       <LandingEngagement />
