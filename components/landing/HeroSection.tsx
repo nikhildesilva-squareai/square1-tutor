@@ -220,10 +220,15 @@ export function HeroSection({
   return (
     <section className="hero-section relative flex flex-col overflow-hidden bg-white">
       {/* ── Soft Square 1 blue accents on white ───────────────────────────── */}
+      {/* Brand-blue aurora wash — three drifting layers (21st.dev-style
+          atmosphere, kept light-theme + restrained). Blob drift is already in
+          the reduced-motion guard. */}
       <div className="pointer-events-none absolute -top-40 -left-40 w-[700px] h-[700px] rounded-full animate-blob-1"
-        style={{ background: "radial-gradient(circle, rgba(0,86,206,0.08) 0%, transparent 70%)", filter: "blur(90px)" }} />
-      <div className="pointer-events-none absolute top-1/3 -right-40 w-[640px] h-[640px] rounded-full animate-blob-2"
-        style={{ background: "radial-gradient(circle, rgba(14,165,233,0.07) 0%, transparent 70%)", filter: "blur(90px)" }} />
+        style={{ background: "radial-gradient(circle, rgba(0,86,206,0.12) 0%, transparent 70%)", filter: "blur(90px)" }} />
+      <div className="pointer-events-none absolute top-1/4 -right-40 w-[680px] h-[680px] rounded-full animate-blob-2"
+        style={{ background: "radial-gradient(circle, rgba(14,165,233,0.11) 0%, transparent 70%)", filter: "blur(90px)" }} />
+      <div className="pointer-events-none absolute -bottom-56 left-1/3 w-[760px] h-[560px] rounded-full animate-blob-1"
+        style={{ background: "radial-gradient(ellipse, rgba(51,136,255,0.09) 0%, transparent 70%)", filter: "blur(100px)", animationDelay: "3s" }} />
       {/* Fine dot grid, faded at the edges — gives the white hero texture */}
       <div aria-hidden className="pointer-events-none absolute inset-0"
         style={{
