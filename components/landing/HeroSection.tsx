@@ -63,6 +63,29 @@ function PromptCheck() {
   const answered = picked !== null;
   const gotItRight = picked === "b";
 
+  // Prompt B types itself out on load: the visitor watches a good prompt
+  // being WRITTEN, so the product demo happens by itself. Interruptible
+  // (tapping completes it instantly); reduced-motion gets the full text.
+  const fullB = PROMPTS.b.text;
+  const [typedLen, setTypedLen] = useState(0);
+  const typingDone = typedLen >= fullB.length;
+  useEffect(() => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      setTypedLen(fullB.length);
+      return;
+    }
+    let i = 0;
+    let interval: ReturnType<typeof setInterval> | undefined;
+    const startDelay = setTimeout(() => {
+      interval = setInterval(() => {
+        i += 3;
+        setTypedLen(Math.min(i, fullB.length));
+        if (i >= fullB.length && interval) clearInterval(interval);
+      }, 30);
+    }, 900);
+    return () => { clearTimeout(startDelay); if (interval) clearInterval(interval); };
+  }, [fullB.length]);
+
   return (
     <div
       className="relative w-full rounded-2xl border bg-white overflow-hidden"
@@ -72,7 +95,10 @@ function PromptCheck() {
       <div className="flex items-center gap-2.5 px-5 py-3.5 border-b" style={{ borderColor: "#EEF3FB", background: "linear-gradient(180deg,#F5F9FF,#fff 80%)" }}>
         <span className="w-6 h-6 rounded-full flex items-center justify-center text-white text-[11px] font-black shrink-0" style={{ background: BLUE_GRADIENT }}>N</span>
         <span className="text-[11px] font-bold uppercase tracking-[0.14em] text-brand">Prompt Lab</span>
-        <span className="ml-auto text-[11px] font-semibold text-slate-400">Spot the better prompt</span>
+        <span className="ml-auto inline-flex items-center gap-1.5 text-[11px] font-semibold text-slate-400">
+          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse-dot" aria-hidden />
+          Spot the better prompt
+        </span>
       </div>
 
       <div className="p-5">
@@ -90,7 +116,7 @@ function PromptCheck() {
             return (
               <button
                 key={k}
-                onClick={() => !answered && setPicked(k)}
+                onClick={() => { if (!answered) { setPicked(k); setTypedLen(fullB.length); } }}
                 disabled={answered}
                 className="w-full text-left rounded-xl border-2 p-3.5 transition-all disabled:cursor-default motion-safe:hover:-translate-y-px"
                 style={{
@@ -117,8 +143,10 @@ function PromptCheck() {
                     </span>
                   )}
                 </div>
-                <p className="text-[12.5px] leading-relaxed" style={{ color: revealWeak ? "#94A3B8" : "#475569", display: "-webkit-box", WebkitLineClamp: answered && p.better ? 4 : 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
-                  {p.text}
+                <p className="text-[12.5px] leading-relaxed" style={{ color: revealWeak ? "#94A3B8" : "#475569", display: "-webkit-box", WebkitLineClamp: answered && p.better ? 4 : 2, WebkitBoxOrient: "vertical", overflow: "hidden", minHeight: k === "b" && !answered ? "2.6em" : undefined }}>
+                  {k === "b" && !answered && !typingDone
+                    ? <>{fullB.slice(0, typedLen)}<span className="cursor-blink" aria-hidden /></>
+                    : p.text}
                 </p>
               </button>
             );
@@ -192,9 +220,9 @@ export function HeroSection({
   return (
     <section className="hero-section relative flex flex-col overflow-hidden bg-white">
       {/* ── Soft Square 1 blue accents on white ───────────────────────────── */}
-      <div className="pointer-events-none absolute -top-40 -left-40 w-[700px] h-[700px] rounded-full"
+      <div className="pointer-events-none absolute -top-40 -left-40 w-[700px] h-[700px] rounded-full animate-blob-1"
         style={{ background: "radial-gradient(circle, rgba(0,86,206,0.08) 0%, transparent 70%)", filter: "blur(90px)" }} />
-      <div className="pointer-events-none absolute top-1/3 -right-40 w-[640px] h-[640px] rounded-full"
+      <div className="pointer-events-none absolute top-1/3 -right-40 w-[640px] h-[640px] rounded-full animate-blob-2"
         style={{ background: "radial-gradient(circle, rgba(14,165,233,0.07) 0%, transparent 70%)", filter: "blur(90px)" }} />
       {/* Fine dot grid, faded at the edges — gives the white hero texture */}
       <div aria-hidden className="pointer-events-none absolute inset-0"
@@ -272,7 +300,7 @@ export function HeroSection({
 
           {/* LEFT — the promise */}
           <div className="text-center lg:text-left">
-            <div className="mb-5 sm:mb-6">
+            <div className="mb-5 sm:mb-6 hero-enter">
               <span className="inline-flex items-center gap-1.5 text-[10px] sm:text-xs font-bold tracking-[0.22em] uppercase text-brand border border-brand/20 bg-brand/5 px-3 py-1.5 rounded-full">
                 <Sparkles className="h-3.5 w-3.5" /> Proof, not promises
               </span>
@@ -281,22 +309,22 @@ export function HeroSection({
             {/* H1 leads with the pain (passive tutorials) then the outcome (provable
                 skill) — a contrast headline converts better than a capability claim
                 because the visitor self-identifies with the first clause. */}
-            <h1 className="font-black leading-[1.02] tracking-tight text-slate-900 mb-5"
-              style={{ fontSize: "clamp(2.3rem, 4.8vw, 4.2rem)" }}>
+            <h1 className="font-black leading-[1.02] tracking-tight text-slate-900 mb-5 hero-enter"
+              style={{ fontSize: "clamp(2.3rem, 4.8vw, 4.2rem)", animationDelay: "90ms" }}>
               Stop watching tutorials.{" "}
-              <span style={{ background: BLUE_GRADIENT, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>
+              <span className="animate-text-sheen" style={{ background: BLUE_GRADIENT, backgroundSize: "200% auto", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>
                 Build &amp; prove job-ready AI skills.
               </span>
             </h1>
 
             {/* Subhead names the differentiator (Nova grades code AND prompts) and
                 the proof artifact (portfolio, not certificate) in one breath. */}
-            <p className="text-sm sm:text-lg text-slate-600 leading-relaxed mb-8 max-w-xl mx-auto lg:mx-0">
+            <p className="text-sm sm:text-lg text-slate-600 leading-relaxed mb-8 max-w-xl mx-auto lg:mx-0 hero-enter" style={{ animationDelay: "200ms" }}>
               Learn by doing — code or no-code. Nova, our AI tutor, grades every rep against
               real rubrics, and you graduate with a portfolio employers can run, not a certificate.
             </p>
 
-            <div className="flex flex-col sm:flex-row items-center lg:items-start gap-3 sm:gap-4 justify-center lg:justify-start">
+            <div className="flex flex-col sm:flex-row items-center lg:items-start gap-3 sm:gap-4 justify-center lg:justify-start hero-enter" style={{ animationDelay: "320ms" }}>
               {/* "3-min" in the button label pre-answers the effort objection at the
                   exact moment of the click decision. */}
               <Link
@@ -317,7 +345,7 @@ export function HeroSection({
                 bars + final CTA where it does the closing. */}
 
             {/* Mini trust bar — DB-driven course count */}
-            <div className="mt-6 flex items-center justify-center lg:justify-start gap-4 text-[10px] text-slate-500 uppercase tracking-widest font-semibold">
+            <div className="mt-6 flex items-center justify-center lg:justify-start gap-4 text-[10px] text-slate-500 uppercase tracking-widest font-semibold hero-enter" style={{ animationDelay: "440ms" }}>
               <span>{courseCount} Subjects</span>
               <span className="w-1 h-1 rounded-full bg-slate-300" />
               <span>Code + no-code</span>
@@ -327,7 +355,7 @@ export function HeroSection({
           </div>
 
           {/* RIGHT — the live demo (foot-in-the-door) */}
-          <div className="w-full max-w-md mx-auto lg:mx-0 lg:justify-self-end">
+          <div className="w-full max-w-md mx-auto lg:mx-0 lg:justify-self-end hero-enter" style={{ animationDelay: "280ms" }}>
             <PromptCheck />
           </div>
         </div>
