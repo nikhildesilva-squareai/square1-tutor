@@ -312,18 +312,9 @@ export function HeroSection({
               </span>
             </div>
 
-            {/* Live early-access seat counter — real count, hidden when closed.
-                Scarcity + the founding-rate promise beside the CTA, never above it. */}
-            {seats && (
-              <p className="mt-5 inline-flex items-center gap-2 text-xs font-bold text-slate-700">
-                <span className="relative flex w-2 h-2">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-                  <span className="relative inline-flex rounded-full w-2 h-2 bg-emerald-500" />
-                </span>
-                {seats.left} of {seats.cap} compute-capped free seats left
-                <span className="font-medium text-slate-500">· founding rate locked for life</span>
-              </p>
-            )}
+            {/* Seat counter deliberately NOT in the hero (user call): the first
+                screen stays pure promise + action. Scarcity lives in the sticky
+                bars + final CTA where it does the closing. */}
 
             {/* Mini trust bar — DB-driven course count */}
             <div className="mt-6 flex items-center justify-center lg:justify-start gap-4 text-[10px] text-slate-500 uppercase tracking-widest font-semibold">
