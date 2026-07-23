@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Menu, X, ArrowRight, Sparkles, Code2, Briefcase, ChevronDown } from "lucide-react";
+import { Menu, X, ArrowRight, Sparkles } from "lucide-react";
 import { Logo } from "@/components/ui/logo";
 
 const BLUE_GRADIENT = "linear-gradient(135deg, #3388FF 0%, #0056CE 55%, #01224F 100%)";
@@ -180,92 +180,11 @@ function PromptCheck() {
   );
 }
 
-// ─── The two lanes — a showcase, NOT a fork ───────────────────────────────────
-// Both cards scroll to the curriculum section. The single primary CTA above
-// stays the only funnel entry; these exist to make the offering legible at a
-// glance ("code career" vs "no-code work") without re-asking anyone to choose.
-function LaneShowcase({ careerCount, workCount }: { careerCount: number; workCount: number }) {
-  // Counts are DB-driven; never render a "0 tracks" card (e.g. static fallback).
-  const both = careerCount > 0 && workCount > 0;
-  if (!careerCount && !workCount) return null;
-  return (
-    <div className="mt-10 lg:mt-14 w-full">
-      <p className="text-center text-[10px] tracking-[0.32em] uppercase text-slate-400 font-bold mb-4">
-        {both ? "Two ways in · one membership" : "What's inside"}
-      </p>
-      <div className={`grid grid-cols-1 ${both ? "sm:grid-cols-2" : ""} gap-3.5 sm:gap-4 max-w-3xl mx-auto`}>
-
-        {/* Career lane — filled deep blue */}
-        {careerCount > 0 && (
-        <Link
-          href="#curriculum"
-          className="group relative overflow-hidden rounded-2xl p-5 flex items-center gap-4 transition-all duration-200 motion-safe:hover:-translate-y-1"
-          style={{
-            background: "linear-gradient(150deg, #2E7BF0 0%, #0056CE 55%, #01224F 100%)",
-            boxShadow: "0 1px 2px rgba(15,28,49,0.06), 0 20px 44px -20px rgba(0,86,206,0.55)",
-          }}
-        >
-          <span aria-hidden className="pointer-events-none absolute -top-14 -right-10 w-40 h-40 rounded-full"
-            style={{ background: "radial-gradient(circle, rgba(255,255,255,0.2) 0%, transparent 70%)" }} />
-          <span className="w-12 h-12 rounded-[14px] flex items-center justify-center text-white shrink-0"
-            style={{ background: "rgba(255,255,255,0.16)", border: "1px solid rgba(255,255,255,0.28)" }}>
-            <Code2 size={22} strokeWidth={2.1} aria-hidden />
-          </span>
-          <span className="flex-1 min-w-0 text-left">
-            <span className="block text-[15px] font-black text-white leading-tight">Build a career in AI</span>
-            <span className="block mt-1 text-[12px] font-medium leading-snug" style={{ color: "#BFD9FF" }}>
-              {careerCount} engineering &amp; data tracks — graded projects, real roles
-            </span>
-          </span>
-          <span className="shrink-0 flex items-center gap-1 text-[11px] font-bold text-white/90">
-            <span className="hidden sm:inline">See tracks</span>
-            <ChevronDown size={15} strokeWidth={2.5} className="transition-transform duration-150 group-hover:translate-y-0.5" aria-hidden />
-          </span>
-        </Link>
-        )}
-
-        {/* Work lane — light with blue accents */}
-        {workCount > 0 && (
-        <Link
-          href="#curriculum"
-          className="group relative overflow-hidden rounded-2xl border p-5 flex items-center gap-4 transition-all duration-200 motion-safe:hover:-translate-y-1"
-          style={{
-            background: "linear-gradient(180deg, #EFF5FF 0%, #FFFFFF 60%)",
-            borderColor: "#D8E7FC",
-            boxShadow: "0 1px 2px rgba(15,28,49,0.05), 0 18px 40px -24px rgba(15,28,49,0.20)",
-          }}
-        >
-          <span aria-hidden className="absolute inset-x-0 top-0 h-1" style={{ background: "linear-gradient(90deg, #3388FF, #0056CE)" }} />
-          <span className="w-12 h-12 rounded-[14px] flex items-center justify-center text-white shrink-0"
-            style={{ background: BLUE_GRADIENT, boxShadow: "0 8px 18px -8px rgba(0,86,206,0.6)" }}>
-            <Briefcase size={22} strokeWidth={2.1} aria-hidden />
-          </span>
-          <span className="flex-1 min-w-0 text-left">
-            <span className="block text-[15px] font-black text-slate-900 leading-tight">AI for your work — no&nbsp;code</span>
-            <span className="block mt-1 text-[12px] font-medium text-slate-500 leading-snug">
-              {workCount} role tracks — marketing, finance, founders &amp; more
-            </span>
-          </span>
-          <span className="shrink-0 flex items-center gap-1 text-[11px] font-bold text-brand">
-            <span className="hidden sm:inline">See tracks</span>
-            <ChevronDown size={15} strokeWidth={2.5} className="transition-transform duration-150 group-hover:translate-y-0.5" aria-hidden />
-          </span>
-        </Link>
-        )}
-      </div>
-    </div>
-  );
-}
-
 export function HeroSection({
   courseCount = 9,
-  careerCount = 10,
-  workCount = 8,
   seats = null,
 }: {
   courseCount?: number;
-  careerCount?: number;
-  workCount?: number;
   seats?: { left: number; cap: number } | null;
 }) {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -421,9 +340,6 @@ export function HeroSection({
             <PromptCheck />
           </div>
         </div>
-
-        {/* The two lanes — showcases both course types, funnels to the curriculum */}
-        <LaneShowcase careerCount={careerCount} workCount={workCount} />
       </div>
 
       {/* ── BOTTOM BAR ────────────────────────────────────────────────────── */}

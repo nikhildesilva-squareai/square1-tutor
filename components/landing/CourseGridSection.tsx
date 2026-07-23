@@ -8,7 +8,7 @@ import { PrimaryCta } from "@/components/ui/primary-cta";
 import { CourseIcon } from "@/components/ui/course-icon";
 import { WORK_LANE_SLUGS } from "@/lib/work-lanes";
 
-type Course = {
+export type Course = {
   id: string;
   slug: string;
   title: string;
@@ -221,7 +221,9 @@ function DesktopCourseCard({
 }
 
 // ─── Inline explorer modal — opens when a course card is clicked ──────────────
-function CourseExplorer({ course, isWork, onClose }: { course: Course; isWork: boolean; onClose: () => void }) {
+// Exported: LaneMapSection reuses it so a chip click anywhere opens the same
+// course detail + CTA experience.
+export function CourseExplorer({ course, isWork, onClose }: { course: Course; isWork: boolean; onClose: () => void }) {
   const meta = resolveMeta(course.slug, isWork);
   const dialogRef = useRef<HTMLDivElement>(null);
   useFocusTrap(true, onClose, dialogRef);

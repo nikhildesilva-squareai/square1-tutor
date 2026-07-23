@@ -12,8 +12,7 @@ import { SocialProofSection } from "@/components/landing/SocialProofSection";
 import { PricingSection } from "@/components/landing/PricingSection";
 import { FAQSection } from "@/components/landing/FAQSection";
 import { JourneyHook } from "@/components/landing/JourneyHook";
-import { CourseGridSection } from "@/components/landing/CourseGridSection";
-import { WORK_LANE_SLUGS } from "@/lib/work-lanes";
+import { LaneMapSection } from "@/components/landing/LaneMapSection";
 import { WorkBlock } from "@/components/landing/WorkBlock";
 import { CodeReviewSlider } from "@/components/landing/CodeReviewSlider";
 import { CookieConsent } from "@/components/ui/cookie-consent";
@@ -93,8 +92,6 @@ async function getFreeSeatsLeft(): Promise<{ left: number; cap: number } | null>
 export default async function Home() {
   const [dbCourses, seats] = await Promise.all([getCourses(), getFreeSeatsLeft()]);
   const courses = dbCourses.length > 0 ? dbCourses : FALLBACK_COURSES;
-  const workCount = courses.filter((c) => WORK_LANE_SLUGS.has(c.slug)).length;
-  const careerCount = courses.length - workCount;
 
   return (
     <main id="main" className="overflow-x-hidden">
@@ -103,10 +100,10 @@ export default async function Home() {
           section + scroll depth). Plain block wrappers — layout-neutral. */}
 
       {/* ── 1. Hero (with goal-typer) ───────────────────────────────────────── */}
-      <div data-s1-section="hero"><HeroSection courseCount={courses.length} careerCount={careerCount} workCount={workCount} seats={seats} /></div>
+      <div data-s1-section="hero"><HeroSection courseCount={courses.length} seats={seats} /></div>
 
-      {/* ── Courses first — the full curriculum right under the hero (both domains) ─ */}
-      <div data-s1-section="courses" id="curriculum" className="scroll-mt-16"><CourseGridSection courses={courses} /></div>
+      {/* ── The lane map — every course fanned out from its lane, right after the hero ─ */}
+      <div data-s1-section="courses" id="curriculum" className="scroll-mt-16"><LaneMapSection courses={courses} /></div>
 
       <SectionWave />
 
