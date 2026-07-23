@@ -1,242 +1,222 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { X, Check, FileX2, FolderGit2, BadgeCheck, Sparkles } from "lucide-react";
+import { PrimaryCta } from "@/components/ui/primary-cta";
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// The 2026 Reality — the wedge. Sets the stakes BEFORE the outcome hook: a degree
-// alone no longer gets you hired, the market hires on proof, and proof is exactly
-// what Square 1 Ai produces.
+// The 2026 Reality — the stakes. A cited market strip (real, sourced numbers
+// only) followed by a side-by-side candidate comparison: same market, two CVs.
+// The argument is visible at a glance instead of hidden behind a toggle, and
+// the "winning" card carries PRODUCT FACTS (10+ graded projects, live repos,
+// skill report) — no invented multipliers.
 //
-// Interactive: a "two candidates" toggle. The market stats (−65% postings, +40%
-// grads) NEVER change when you flip it — only the candidate stats do. That's the
-// argument in one gesture: same market, different odds. Count-ups re-run on flip.
-//
-// NOTE: The figures below are from 2026 labour-market reporting (secondary
-// sources). Verify + cite before relying on them publicly — they're isolated in
-// the stat constants so they're trivial to edit or swap for sourced numbers.
+// Stat sources (verified 2026-07):
+//  −65% entry-level software postings Jan 2022–Jan 2025 + ~40% more CS grads:
+//    Indeed Hiring Lab-based reporting (hiringlab.org; overall software dev
+//    postings −68.8% vs Feb 2022 peak).
+//  6.1% recent-CS-grad unemployment (~2× many majors): Federal Reserve Bank of
+//    New York labour-market data for recent graduates.
 // ═══════════════════════════════════════════════════════════════════════════════
 
-type Stat = {
-  prefix?: string;
-  target?: number;       // when set → count-up
-  staticValue?: string;  // when set → shown verbatim (e.g. a range)
-  suffix?: string;
-  bar: number;           // 0..100 magnitude-bar fill
-  label: string;
-  accent: string;
-};
+const BLUE_GRADIENT = "linear-gradient(135deg, #3388FF 0%, #0056CE 55%, #01224F 100%)";
 
-type Mode = "degree" | "proof";
+// ─── Cited market stats — the only place a number is allowed to be scary ──────
+const MARKET_STATS = [
+  { prefix: "−", target: 65, suffix: "%", label: "entry-level software postings, Jan 2022 – Jan 2025", accent: "#DC2626" },
+  { prefix: "+", target: 40, suffix: "%", label: "more CS graduates competing for them", accent: "#0056CE" },
+  { staticValue: "6.1%", label: "unemployment among recent CS grads — nearly 2× many other majors", accent: "#01224F" },
+] as const;
 
-// The market — identical in both views, by design.
-const MARKET_STATS: Stat[] = [
-  { prefix: "−", target: 65, suffix: "%", bar: 65, label: "drop in entry-level dev job postings, 2022–2025", accent: "#F87171" },
-  { prefix: "+", target: 40, suffix: "%", bar: 40, label: "more CS grads competing for them",                accent: "#0EA5E9" },
-];
-
-// The candidate — what flipping the toggle changes.
-const CANDIDATE_STATS: Record<Mode, Stat[]> = {
-  degree: [
-    { staticValue: "1×", bar: 24, label: "baseline offer rate on credentials alone",   accent: "#94A3B8" },
-    { target: 0,         bar: 6,  label: "deployed projects on the typical grad CV",   accent: "#94A3B8" },
-  ],
-  proof: [
-    { staticValue: "2–3×", bar: 72,  label: "higher offer rate with real, deployed project experience", accent: "#34D399" },
-    { staticValue: "10+",  bar: 100, label: "deployed, code-reviewed projects on your CV",              accent: "#3388FF" },
-  ],
-};
-
-// ─── Count-up on scroll ─────────────────────────────────────────────────────────
-function useCountUp(target: number, isVisible: boolean, duration = 1400) {
+function useCountUp(target: number, run: boolean, duration = 1200) {
   const [v, setV] = useState(0);
   useEffect(() => {
-    if (!isVisible) return;
+    if (!run) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) { setV(target); return; }
     const start = performance.now();
     let raf = 0;
-    function tick(now: number) {
+    const tick = (now: number) => {
       const t = Math.min(1, (now - start) / duration);
-      const eased = 1 - Math.pow(1 - t, 3);
-      setV(Math.round(target * eased));
+      setV(Math.round(target * (1 - Math.pow(1 - t, 3))));
       if (t < 1) raf = requestAnimationFrame(tick);
-    }
+    };
     raf = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(raf);
-  }, [target, isVisible, duration]);
+  }, [target, run, duration]);
   return v;
 }
 
-// ─── Interactive stat tile ──────────────────────────────────────────────────────
-function StatTile({ stat, visible, delay, dimmed = false }: { stat: Stat; visible: boolean; delay: number; dimmed?: boolean }) {
-  const counted = useCountUp(stat.target ?? 0, visible);
-  const display = stat.staticValue ?? `${stat.prefix ?? ""}${counted}${stat.suffix ?? ""}`;
+function MarketStat({ stat, visible, delay }: { stat: (typeof MARKET_STATS)[number]; visible: boolean; delay: number }) {
+  const counted = useCountUp("target" in stat && stat.target ? stat.target : 0, visible);
+  const display = "staticValue" in stat && stat.staticValue ? stat.staticValue : `${stat.prefix ?? ""}${counted}${stat.suffix ?? ""}`;
   return (
     <div
-      className="group relative rounded-2xl border p-5 sm:p-6 text-center overflow-hidden transition-all duration-700 hover:-translate-y-1.5"
-      style={{
-        background: "#FFFFFF",
-        borderColor: visible ? `${stat.accent}33` : "#E2E8F0",
-        boxShadow: "0 4px 16px rgba(15,28,49,0.05)",
-        opacity: visible ? (dimmed ? 0.55 : 1) : 0,
-        transform: visible ? "translateY(0)" : "translateY(28px)",
-        transitionDelay: `${delay}ms`,
-      }}
+      className="flex-1 min-w-0 px-5 py-4 text-center transition-all duration-700"
+      style={{ opacity: visible ? 1 : 0, transform: visible ? "translateY(0)" : "translateY(16px)", transitionDelay: `${delay}ms` }}
     >
-      {/* Hover glow ring */}
-      <div
-        className="absolute inset-0 rounded-2xl pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-        style={{ boxShadow: `0 16px 44px ${stat.accent}22, 0 0 0 1px ${stat.accent}45 inset` }}
-      />
-      {/* Corner blob on hover */}
-      <div
-        className="absolute -top-10 -right-10 w-28 h-28 rounded-full pointer-events-none opacity-0 group-hover:opacity-60 transition-opacity duration-500"
-        style={{ background: `radial-gradient(circle, ${stat.accent}40 0%, transparent 70%)`, filter: "blur(20px)" }}
-      />
-
-      <p
-        className="relative font-black tabular-nums leading-none transition-transform duration-500 group-hover:scale-105"
-        style={{ fontSize: "clamp(30px, 4vw, 46px)", letterSpacing: "-0.04em", color: stat.accent }}
-      >
+      <p className="font-black tabular-nums leading-none" style={{ fontSize: "clamp(26px, 3vw, 38px)", letterSpacing: "-0.03em", color: stat.accent }}>
         {display}
       </p>
-
-      {/* Animated magnitude bar */}
-      <div className="relative mt-3.5 mx-auto h-1 w-14 rounded-full overflow-hidden" style={{ background: "#E2E8F0" }}>
-        <div
-          className="h-full rounded-full transition-[width] duration-1000 ease-out"
-          style={{ width: visible ? `${stat.bar}%` : "0%", background: stat.accent, transitionDelay: `${delay + 250}ms` }}
-        />
-      </div>
-
-      <p className="relative mt-3.5 text-[11px] sm:text-xs text-slate-500 leading-relaxed">{stat.label}</p>
+      <p className="mt-2 text-[11px] sm:text-xs text-slate-500 leading-snug max-w-[220px] mx-auto">{stat.label}</p>
     </div>
   );
 }
 
-// ═══════════════════════════════════════════════════════════════════════════════
-// MAIN
-// ═══════════════════════════════════════════════════════════════════════════════
+// ─── The two candidates ────────────────────────────────────────────────────────
+const CANDIDATE_A = [
+  { icon: FileX2, text: "A certificate PDF employers can't verify" },
+  { icon: X,      text: "No public code for anyone to review" },
+  { icon: X,      text: "The same CV as thousands of other grads" },
+  { icon: X,      text: "Waits in the pile, hopes for a callback" },
+];
+
+const CANDIDATE_B = [
+  { icon: FolderGit2, text: "10+ deployed, code-reviewed projects" },
+  { icon: Check,      text: "Live GitHub repos employers can actually run" },
+  { icon: BadgeCheck, text: "A skill report that shows your real level" },
+  { icon: Sparkles,   text: "Every rep graded by Nova before it ships" },
+];
+
 export function RealityBand() {
   const ref = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(false);
-  const [mode, setMode] = useState<Mode>("degree");
-  const [touched, setTouched] = useState(false); // stops the affordance pulse
 
   useEffect(() => {
-    const obs = new IntersectionObserver(([e]) => e.isIntersecting && setVisible(true), { threshold: 0.2 });
+    const obs = new IntersectionObserver(([e]) => e.isIntersecting && setVisible(true), { threshold: 0.15 });
     if (ref.current) obs.observe(ref.current);
     return () => obs.disconnect();
   }, []);
 
-  const pick = (m: Mode) => {
-    setMode(m);
-    setTouched(true);
-  };
-
-  const candidate = CANDIDATE_STATS[mode];
-  const isProof = mode === "proof";
-
   return (
-    <section ref={ref} className="relative overflow-hidden py-14 sm:py-16 px-4 sm:px-6 lg:px-8" style={{ background: "linear-gradient(180deg, #FFFFFF 0%, #F8FAFC 100%)" }}>
+    <section ref={ref} className="relative overflow-hidden py-16 sm:py-24 px-4 sm:px-6 lg:px-8"
+      style={{ background: "linear-gradient(180deg, #FFFFFF 0%, #F6F9FE 100%)" }}>
       {/* Accent glows — Square 1 blue */}
-      <div
-        className="pointer-events-none absolute top-0 right-1/4 w-[600px] h-[600px] rounded-full opacity-[0.06]"
-        style={{ background: "radial-gradient(circle, #0EA5E9 0%, transparent 70%)", filter: "blur(110px)" }}
-      />
-      <div
-        className="pointer-events-none absolute bottom-0 left-1/4 w-[600px] h-[600px] rounded-full opacity-[0.06]"
-        style={{ background: "radial-gradient(circle, #0056CE 0%, transparent 70%)", filter: "blur(110px)" }}
-      />
+      <div className="pointer-events-none absolute top-0 right-1/4 w-[600px] h-[600px] rounded-full opacity-[0.06]"
+        style={{ background: "radial-gradient(circle, #0EA5E9 0%, transparent 70%)", filter: "blur(110px)" }} />
+      <div className="pointer-events-none absolute bottom-0 left-1/4 w-[600px] h-[600px] rounded-full opacity-[0.06]"
+        style={{ background: "radial-gradient(circle, #0056CE 0%, transparent 70%)", filter: "blur(110px)" }} />
 
       <div className="relative max-w-5xl mx-auto">
-        {/* Eyebrow */}
+        {/* Eyebrow + headline */}
         <div className="text-center">
-          <span className="text-[10px] sm:text-[11px] tracking-[0.35em] uppercase text-slate-500 font-bold">
-            The 2026 reality
-          </span>
+          <span className="text-[10px] sm:text-[11px] tracking-[0.35em] uppercase text-slate-500 font-bold">The 2026 reality</span>
         </div>
-
-        {/* Headline */}
-        <h2
-          className="mt-4 text-center font-black tracking-tight text-slate-900 leading-[1.0] max-w-3xl mx-auto"
-          style={{ fontSize: "clamp(26px, 4vw, 46px)", letterSpacing: "-0.03em" }}
-        >
+        <h2 className="mt-4 text-center font-black tracking-tight text-slate-900 leading-[1.0] max-w-3xl mx-auto"
+          style={{ fontSize: "clamp(26px, 4vw, 46px)", letterSpacing: "-0.03em" }}>
           A degree used to be enough.{" "}
-          <span
-            style={{
-              background: "linear-gradient(135deg, #3388FF 0%, #0056CE 55%, #01224F 100%)",
-              WebkitBackgroundClip: "text",
-              WebkitTextFillColor: "transparent",
-              backgroundClip: "text",
-            }}
-          >
+          <span style={{ background: BLUE_GRADIENT, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>
             Not anymore.
           </span>
         </h2>
-
         <p className="mt-5 text-center text-sm sm:text-base text-slate-600 leading-relaxed max-w-2xl mx-auto">
           Hundreds of applications, no callbacks — it&apos;s not a you problem, it&apos;s a{" "}
           <span className="text-slate-900 font-semibold">proof problem</span>. Your degree gets you
           shortlisted — <span className="text-slate-900 font-semibold">deployed proof gets you picked</span>.
         </p>
 
-        {/* ── Two-candidates toggle — the market never changes, the candidate does ── */}
-        <div className="mt-8 flex justify-center">
-          <div className="inline-flex items-center gap-1 p-1 rounded-full bg-slate-100 border border-slate-200" role="group" aria-label="Compare two candidates in the same market">
-            {([
-              ["degree", "Degree only"],
-              ["proof", "Degree + deployed projects"],
-            ] as [Mode, string][]).map(([m, label]) => {
-              const active = mode === m;
-              return (
-                <button
-                  key={m}
-                  onClick={() => pick(m)}
-                  aria-pressed={active}
-                  className={`relative h-11 px-4 sm:px-5 rounded-full text-xs sm:text-sm font-bold transition-all ${
-                    active ? "bg-white text-slate-900 shadow-sm" : "text-slate-500 hover:text-slate-700"
-                  }`}
-                >
-                  {label}
-                  {/* Affordance pulse on the unexplored option until first interaction */}
-                  {!active && !touched && m === "proof" && (
-                    <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full animate-ping" style={{ background: "#3388FF" }} />
-                  )}
-                  {!active && !touched && m === "proof" && (
-                    <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full" style={{ background: "#3388FF" }} />
-                  )}
-                </button>
-              );
-            })}
+        {/* ── Market strip — cited numbers in one slim band ────────────────── */}
+        <div className="mt-9 rounded-2xl border border-slate-200/80 bg-white/80 backdrop-blur-sm shadow-[0_8px_30px_-16px_rgba(15,28,49,0.15)]">
+          <div className="flex flex-col sm:flex-row sm:divide-x divide-y sm:divide-y-0 divide-slate-100">
+            {MARKET_STATS.map((s, i) => (
+              <MarketStat key={s.label} stat={s} visible={visible} delay={i * 120} />
+            ))}
+          </div>
+          <p className="px-5 pb-3 pt-1 text-center text-[10px] text-slate-400">
+            Sources:{" "}
+            <a href="https://www.hiringlab.org" target="_blank" rel="noopener noreferrer" className="underline decoration-dotted hover:text-slate-600">Indeed Hiring Lab</a>
+            {" · "}
+            <a href="https://www.newyorkfed.org/research/college-labor-market" target="_blank" rel="noopener noreferrer" className="underline decoration-dotted hover:text-slate-600">Federal Reserve Bank of New York</a>
+          </p>
+        </div>
+
+        {/* ── Same market, two CVs — the visible argument ──────────────────── */}
+        <div className="mt-12 sm:mt-14 grid grid-cols-1 lg:grid-cols-[1fr_auto_1fr] items-stretch gap-5 lg:gap-0">
+
+          {/* CANDIDATE A — degree only (deliberately flat + muted: the "before") */}
+          <div
+            className="relative rounded-2xl border p-6 sm:p-7 transition-all duration-700 lg:mr-[-8px] lg:my-4"
+            style={{
+              background: "#F8FAFC",
+              borderColor: "#E2E8F0",
+              opacity: visible ? 0.92 : 0,
+              transform: visible ? "translateY(0) scale(1)" : "translateY(24px) scale(0.98)",
+            }}
+          >
+            <p className="text-[10px] font-bold tracking-[0.22em] uppercase text-slate-400">Candidate A</p>
+            <h3 className="mt-1.5 text-xl sm:text-2xl font-black tracking-tight text-slate-500">Degree only</h3>
+            <ul className="mt-5 space-y-3.5">
+              {CANDIDATE_A.map(({ icon: Icon, text }) => (
+                <li key={text} className="flex items-start gap-3 text-[13px] sm:text-sm text-slate-500 leading-snug">
+                  <span className="mt-px w-[22px] h-[22px] rounded-full flex items-center justify-center shrink-0 border border-slate-300 text-slate-400 bg-white">
+                    <Icon size={12} strokeWidth={2.5} aria-hidden />
+                  </span>
+                  <span className="pt-0.5">{text}</span>
+                </li>
+              ))}
+            </ul>
+            <p className="mt-6 pt-4 border-t border-slate-200 text-[11px] text-slate-400 font-medium">
+              Shortlisted, maybe. Picked on faith.
+            </p>
+          </div>
+
+          {/* VS medallion */}
+          <div className="relative z-10 flex lg:flex-col items-center justify-center">
+            <span
+              className="w-12 h-12 rounded-full flex items-center justify-center text-[13px] font-black text-white shadow-lg"
+              style={{ background: BLUE_GRADIENT, boxShadow: "0 10px 24px -8px rgba(0,86,206,0.6), 0 0 0 6px #FFFFFF" }}
+              aria-hidden
+            >
+              VS
+            </span>
+          </div>
+
+          {/* CANDIDATE B — degree + deployed proof (elevated: the "after") */}
+          <div
+            className="relative rounded-2xl p-6 sm:p-7 overflow-hidden transition-all duration-700 lg:ml-[-8px]"
+            style={{
+              background: "linear-gradient(155deg, #2E7BF0 0%, #0056CE 52%, #01224F 100%)",
+              boxShadow: "0 1px 2px rgba(15,28,49,0.06), 0 28px 60px -24px rgba(0,86,206,0.6)",
+              opacity: visible ? 1 : 0,
+              transform: visible ? "translateY(0) scale(1)" : "translateY(24px) scale(0.98)",
+              transitionDelay: "140ms",
+            }}
+          >
+            <div aria-hidden className="pointer-events-none absolute -top-20 -right-16 w-56 h-56 rounded-full"
+              style={{ background: "radial-gradient(circle, rgba(255,255,255,0.22) 0%, transparent 70%)" }} />
+            <div className="relative flex items-center justify-between">
+              <p className="text-[10px] font-bold tracking-[0.22em] uppercase" style={{ color: "#BFD9FF" }}>Candidate B</p>
+              <span className="text-[10px] font-black tracking-widest uppercase px-2.5 py-1 rounded-full text-white"
+                style={{ background: "rgba(255,255,255,0.16)", border: "1px solid rgba(255,255,255,0.24)" }}>
+                Proof attached
+              </span>
+            </div>
+            <h3 className="relative mt-1.5 text-xl sm:text-2xl font-black tracking-tight text-white">
+              Degree + deployed proof
+            </h3>
+            <ul className="relative mt-5 space-y-3.5">
+              {CANDIDATE_B.map(({ icon: Icon, text }) => (
+                <li key={text} className="flex items-start gap-3 text-[13px] sm:text-sm leading-snug" style={{ color: "#E4EEFB" }}>
+                  <span className="mt-px w-[22px] h-[22px] rounded-full flex items-center justify-center shrink-0 bg-white">
+                    <Icon size={12} strokeWidth={2.5} aria-hidden style={{ color: "#0056CE" }} />
+                  </span>
+                  <span className="pt-0.5 font-medium">{text}</span>
+                </li>
+              ))}
+            </ul>
+            <p className="relative mt-6 pt-4 text-[11px] font-medium" style={{ borderTop: "1px solid rgba(255,255,255,0.18)", color: "#BFD9FF" }}>
+              Same market. A CV employers can click, run and verify.
+            </p>
           </div>
         </div>
 
-        {/* Stat tiles: market pair (constant) + candidate pair (flips) */}
-        <div className="mt-7 grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-          {MARKET_STATS.map((s, i) => (
-            <StatTile key={s.label} stat={s} visible={visible} delay={i * 130} dimmed={isProof} />
-          ))}
-          {candidate.map((s, i) => (
-            // Keyed by mode so the entrance animation + count-up replay on flip
-            <div key={`${mode}-${i}`} className="animate-fade-in-up">
-              <StatTile stat={s} visible={visible} delay={touched ? i * 80 : (i + 2) * 130} />
-            </div>
-          ))}
+        {/* Resolution + CTA — hand the tension to the funnel */}
+        <div className="mt-11 flex flex-col items-center gap-4">
+          <p className="text-center text-sm sm:text-base text-slate-600 leading-relaxed max-w-xl">
+            Square 1 turns you into Candidate B —{" "}
+            <span className="font-bold text-slate-900">project by graded project.</span>
+          </p>
+          <PrimaryCta href="/diagnostic">Start building proof — free 3-min skill check</PrimaryCta>
         </div>
-
-        {/* Resolution — responds to the toggle */}
-        {isProof ? (
-          <p className="mt-9 text-center text-sm sm:text-base text-slate-600 leading-relaxed max-w-2xl mx-auto">
-            Same market — different candidate. Square 1 Ai gets you there with{" "}
-            <span className="font-bold text-slate-900">10+ deployed, code-reviewed projects employers can actually click on.</span>
-          </p>
-        ) : (
-          <p className="mt-9 text-center text-sm sm:text-base text-slate-600 leading-relaxed max-w-2xl mx-auto">
-            That&apos;s the squeeze on credentials alone.{" "}
-            <button onClick={() => pick("proof")} className="font-bold text-brand hover:underline">
-              See the same market with deployed proof →
-            </button>
-          </p>
-        )}
       </div>
     </section>
   );
