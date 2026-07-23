@@ -48,7 +48,7 @@ export function StickyCtaBar({ seats = null }: { seats?: { left: number; cap: nu
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
                 <span className="relative inline-flex rounded-full w-2 h-2 bg-emerald-500" />
               </span>
-              {seats.left} of {seats.cap} free early-access seats left
+              {seats.left} of {seats.cap} compute-capped free seats left
             </p>
           )}
           <Link

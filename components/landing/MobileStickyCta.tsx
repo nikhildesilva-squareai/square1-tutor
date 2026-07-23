@@ -30,7 +30,7 @@ export function MobileStickyCta({ seats = null }: { seats?: { left: number; cap:
     >
       {seats && (
         <p className="mb-1.5 text-center text-[10px] font-bold text-slate-600">
-          {seats.left} of {seats.cap} free early-access seats left
+          {seats.left} of {seats.cap} compute-capped free seats left
         </p>
       )}
       <PrimaryCta href="/diagnostic" className="w-full">

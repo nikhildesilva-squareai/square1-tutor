@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Menu, X, ArrowRight, Sparkles } from "lucide-react";
+import { Menu, X, ArrowRight, Sparkles, ChevronDown } from "lucide-react";
 import { Logo } from "@/components/ui/logo";
 
 const BLUE_GRADIENT = "linear-gradient(135deg, #3388FF 0%, #0056CE 55%, #01224F 100%)";
@@ -267,7 +267,7 @@ export function HeroSection({
       </nav>
 
       {/* ── HERO BODY — single-focus: one promise, one CTA, one live demo ──── */}
-      <div className="relative z-10 flex-1 flex flex-col justify-center max-w-7xl mx-auto w-full px-6 sm:px-8 py-8 lg:py-12">
+      <div className="relative z-10 flex-1 flex flex-col justify-center max-w-7xl mx-auto w-full px-6 sm:px-8 py-6 lg:py-10">
         <div className="grid grid-cols-1 lg:grid-cols-[1.05fr_0.95fr] gap-10 lg:gap-14 items-center w-full">
 
           {/* LEFT — the promise */}
@@ -320,7 +320,7 @@ export function HeroSection({
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
                   <span className="relative inline-flex rounded-full w-2 h-2 bg-emerald-500" />
                 </span>
-                {seats.left} of {seats.cap} free early-access seats left
+                {seats.left} of {seats.cap} compute-capped free seats left
                 <span className="font-medium text-slate-500">· founding rate locked for life</span>
               </p>
             )}
@@ -342,17 +342,15 @@ export function HeroSection({
         </div>
       </div>
 
-      {/* ── BOTTOM BAR ────────────────────────────────────────────────────── */}
-      <div className="relative z-20 w-full border-t border-slate-100">
-        <div className="max-w-7xl mx-auto px-6 sm:px-8 py-4 flex items-center gap-4">
-          <span className="text-slate-300 text-xs font-light">+</span>
-          <div className="flex-1 h-px bg-slate-100" />
-          <span className="text-[9px] sm:text-[10px] tracking-[0.3em] uppercase text-slate-500 font-medium whitespace-nowrap">
-            Scroll to explore
-          </span>
-          <div className="flex-1 h-px bg-slate-100" />
-          <span className="text-slate-300 text-xs font-light">+</span>
-        </div>
+      {/* ── Scroll cue — a real affordance instead of a dead divider band.
+             Smaller footprint = the lane map's header peeks over the fold on
+             most laptops, which is the actual scroll trigger. ─────────────── */}
+      <div className="relative z-20 w-full pb-3 flex justify-center">
+        <a href="#curriculum" aria-label="Scroll to the curriculum"
+          className="inline-flex flex-col items-center gap-0.5 text-slate-400 hover:text-brand transition-colors">
+          <span className="text-[9px] tracking-[0.3em] uppercase font-medium">Explore</span>
+          <ChevronDown size={18} className="motion-safe:animate-bounce" aria-hidden />
+        </a>
       </div>
     </section>
   );

@@ -26,7 +26,7 @@ const COMPARISONS: Comparison[] = [
     : { category: "Cost", oldValue: "$15,000+", oldNumber: 15000, oldPrefix: "$", oldSuffix: "+", oldLabel: "bootcamp tuition", newValue: "$0", newNumber: 0, newPrefix: "$", newLabel: "to start — free assessment" },
   { category: "Time to job-ready", oldValue: "3 years", oldNumber: 3, oldSuffix: " yrs", oldLabel: "tutorials, alone", newValue: "6 months", newNumber: 6, newSuffix: " mo", newLabel: "one focused track" },
   { category: "Real projects deployed", oldValue: "2", oldNumber: 2, oldLabel: "toy apps · maybe", newValue: "10+", newNumber: 10, newSuffix: "+", newLabel: "live on GitHub" },
-  { category: "Code feedback", oldValue: "0", oldNumber: 0, oldLabel: "you guess", newValue: "Every line", newLabel: "AI-graded by Claude" },
+  { category: "Code feedback", oldValue: "0", oldNumber: 0, oldLabel: "you guess", newValue: "Every line", newLabel: "graded by Nova, our AI tutor" },
 ];
 
 // ─── Count-up hook (runs once the table scrolls into view) ────────────────────
