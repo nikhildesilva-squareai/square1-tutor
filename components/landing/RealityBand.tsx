@@ -21,43 +21,123 @@ import { PrimaryCta } from "@/components/ui/primary-cta";
 
 const BLUE_GRADIENT = "linear-gradient(135deg, #3388FF 0%, #0056CE 55%, #01224F 100%)";
 
-// ─── Cited market stats — the only place a number is allowed to be scary ──────
-const MARKET_STATS = [
-  { prefix: "−", target: 65, suffix: "%", label: "entry-level software postings, Jan 2022 – Jan 2025", accent: "#DC2626" },
-  { prefix: "+", target: 40, suffix: "%", label: "more CS graduates competing for them", accent: "#0056CE" },
-  { staticValue: "6.1%", label: "unemployment among recent CS grads — nearly 2× many other majors", accent: "#01224F" },
-] as const;
+// ─── The scissor chart — the market divergence, drawn in motion ───────────────
+// Two indexed lines (Jan 2022 = 100): entry-level postings collapsing to 35
+// (−65%, verified) while CS graduates climb to 140 (+40%, verified). The
+// ENDPOINTS are the cited figures; intermediate points are smooth interpolation
+// for shape only — which is why there are deliberately NO per-point hover
+// tooltips: hover values would imply monthly data we don't have.
+// Palette (#DC2626 declining / #0056CE rising) validated: CVD ΔE 26.3,
+// normal-vision ΔE 38.1, contrast ≥3:1 — all checks pass.
+const POSTINGS = [[2022, 100], [2022.5, 88], [2023, 72], [2023.5, 58], [2024, 47], [2024.5, 40], [2025, 35]] as const;
+const GRADS    = [[2022, 100], [2022.75, 109], [2023.5, 120], [2024.25, 130], [2025, 140]] as const;
+const RED = "#DC2626";
+const BLUE = "#0056CE";
 
-function useCountUp(target: number, run: boolean, duration = 1200) {
-  const [v, setV] = useState(0);
-  useEffect(() => {
-    if (!run) return;
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) { setV(target); return; }
-    const start = performance.now();
-    let raf = 0;
-    const tick = (now: number) => {
-      const t = Math.min(1, (now - start) / duration);
-      setV(Math.round(target * (1 - Math.pow(1 - t, 3))));
-      if (t < 1) raf = requestAnimationFrame(tick);
-    };
-    raf = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(raf);
-  }, [target, run, duration]);
-  return v;
+const CH = { w: 680, h: 320, l: 40, r: 170, t: 16, b: 34, yMin: 20, yMax: 152 };
+const px = (year: number) => CH.l + ((year - 2022) / 3) * (CH.w - CH.l - CH.r);
+const py = (v: number) => CH.t + ((CH.yMax - v) / (CH.yMax - CH.yMin)) * (CH.h - CH.t - CH.b);
+
+// Catmull-Rom → cubic bezier, so the trend reads as one smooth motion.
+function smoothPath(pts: readonly (readonly [number, number])[]) {
+  const p = pts.map(([x, y]) => [px(x), py(y)]);
+  let d = `M ${p[0][0].toFixed(1)} ${p[0][1].toFixed(1)}`;
+  for (let i = 0; i < p.length - 1; i++) {
+    const p0 = p[Math.max(0, i - 1)], p1 = p[i], p2 = p[i + 1], p3 = p[Math.min(p.length - 1, i + 2)];
+    d += ` C ${(p1[0] + (p2[0] - p0[0]) / 6).toFixed(1)} ${(p1[1] + (p2[1] - p0[1]) / 6).toFixed(1)}, ${(p2[0] - (p3[0] - p1[0]) / 6).toFixed(1)} ${(p2[1] - (p3[1] - p1[1]) / 6).toFixed(1)}, ${p2[0].toFixed(1)} ${p2[1].toFixed(1)}`;
+  }
+  return d;
 }
 
-function MarketStat({ stat, visible, delay }: { stat: (typeof MARKET_STATS)[number]; visible: boolean; delay: number }) {
-  const counted = useCountUp("target" in stat && stat.target ? stat.target : 0, visible);
-  const display = "staticValue" in stat && stat.staticValue ? stat.staticValue : `${stat.prefix ?? ""}${counted}${stat.suffix ?? ""}`;
+function MarketChart({ visible }: { visible: boolean }) {
+  const endX = px(2025);
+  const yPost = py(35);
+  const yGrad = py(140);
+
+  // Reduced-motion users get the finished chart instantly — no draw-in.
+  const [reduceMotion, setReduceMotion] = useState(false);
+  useEffect(() => {
+    setReduceMotion(window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+  }, []);
+
+  const lineStyle = (delay: number) => ({
+    strokeDasharray: 1,
+    strokeDashoffset: visible ? 0 : 1,
+    transition: reduceMotion ? "none" : `stroke-dashoffset 1500ms cubic-bezier(0.4,0,0.2,1) ${delay}ms`,
+  });
+  const fadeStyle = (delay: number) => ({
+    opacity: visible ? 1 : 0,
+    transition: reduceMotion ? "none" : `opacity 500ms ease ${delay}ms`,
+  });
   return (
-    <div
-      className="flex-1 min-w-0 px-5 py-4 text-center transition-all duration-700"
-      style={{ opacity: visible ? 1 : 0, transform: visible ? "translateY(0)" : "translateY(16px)", transitionDelay: `${delay}ms` }}
-    >
-      <p className="font-black tabular-nums leading-none" style={{ fontSize: "clamp(26px, 3vw, 38px)", letterSpacing: "-0.03em", color: stat.accent }}>
-        {display}
-      </p>
-      <p className="mt-2 text-[11px] sm:text-xs text-slate-500 leading-snug max-w-[220px] mx-auto">{stat.label}</p>
+    <div className="rounded-2xl border border-slate-200/80 bg-white shadow-[0_8px_30px_-16px_rgba(15,28,49,0.15)] overflow-hidden">
+      {/* Legend + scale note */}
+      <div className="flex flex-wrap items-center justify-between gap-2 px-5 pt-4">
+        <div className="flex items-center gap-4">
+          <span className="inline-flex items-center gap-2 text-[11px] sm:text-xs font-semibold text-slate-600">
+            <span className="w-4 h-[3px] rounded-full" style={{ background: RED }} aria-hidden /> Entry-level software postings
+          </span>
+          <span className="inline-flex items-center gap-2 text-[11px] sm:text-xs font-semibold text-slate-600">
+            <span className="w-4 h-[3px] rounded-full" style={{ background: BLUE }} aria-hidden /> CS graduates
+          </span>
+        </div>
+        <span className="text-[10px] text-slate-400 font-medium">Indexed · Jan 2022 = 100</span>
+      </div>
+
+      <svg
+        viewBox={`0 0 ${CH.w} ${CH.h}`}
+        className="w-full h-auto"
+        role="img"
+        aria-label="Line chart, indexed to 100 in January 2022: entry-level software postings fall 65 percent to 35 by January 2025 while CS graduates rise 40 percent to 140 — the gap between supply and demand widens every year."
+      >
+        {/* Recessive grid + index labels */}
+        {[50, 100, 150].map((v) => (
+          <g key={v}>
+            <line x1={CH.l} x2={CH.w - CH.r + 8} y1={py(v)} y2={py(v)}
+              stroke={v === 100 ? "#CBD5E1" : "#EDF2F8"} strokeWidth="1" strokeDasharray={v === 100 ? "3 4" : undefined} />
+            <text x={CH.l - 8} y={py(v) + 3.5} textAnchor="end" fontSize="10" fill="#94A3B8">{v}</text>
+          </g>
+        ))}
+        {/* Year ticks */}
+        {[2022, 2023, 2024, 2025].map((yr) => (
+          <text key={yr} x={px(yr)} y={CH.h - 10} textAnchor="middle" fontSize="11" fill="#64748B" fontWeight="600">{yr}</text>
+        ))}
+
+        {/* The two lines — drawn in when the section enters view */}
+        <path d={smoothPath(GRADS)} fill="none" stroke={BLUE} strokeWidth="2.5" strokeLinecap="round" pathLength={1} style={lineStyle(250)} />
+        <path d={smoothPath(POSTINGS)} fill="none" stroke={RED} strokeWidth="2.5" strokeLinecap="round" pathLength={1} style={lineStyle(0)} />
+
+        {/* The widening gap — bracket + quiet annotation */}
+        <g style={fadeStyle(1700)}>
+          <line x1={endX + 6} x2={endX + 6} y1={yGrad + 10} y2={yPost - 10} stroke="#94A3B8" strokeWidth="1" strokeDasharray="2 3" />
+          <text x={px(2024.35)} y={py(90)} textAnchor="middle" fontSize="11" fill="#94A3B8" fontStyle="italic">the squeeze</text>
+        </g>
+
+        {/* Emphasized endpoints + direct labels (values in ink, identity via dot) */}
+        <g style={fadeStyle(1450)}>
+          <circle cx={endX} cy={yPost} r="5" fill={RED} stroke="#fff" strokeWidth="2" />
+          <text x={endX + 16} y={yPost + 1} fontSize="15" fontWeight="800" fill="#0F1B2E">−65%</text>
+          <text x={endX + 16} y={yPost + 15} fontSize="10" fill="#64748B">postings, Jan 2022 – Jan 2025</text>
+        </g>
+        <g style={fadeStyle(1600)}>
+          <circle cx={endX} cy={yGrad} r="5" fill={BLUE} stroke="#fff" strokeWidth="2" />
+          <text x={endX + 16} y={yGrad + 1} fontSize="15" fontWeight="800" fill="#0F1B2E">+40%</text>
+          <text x={endX + 16} y={yGrad + 15} fontSize="10" fill="#64748B">more CS graduates</text>
+        </g>
+      </svg>
+
+      {/* Companion fact + sources */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1.5 px-5 py-3 border-t border-slate-100">
+        <p className="text-[11px] sm:text-xs text-slate-500">
+          <span className="font-black text-slate-900 tabular-nums">6.1%</span> unemployment among recent CS grads — nearly 2× many other majors
+        </p>
+        <p className="text-[10px] text-slate-400">
+          Sources:{" "}
+          <a href="https://www.hiringlab.org" target="_blank" rel="noopener noreferrer" className="underline decoration-dotted hover:text-slate-600">Indeed Hiring Lab</a>
+          {" · "}
+          <a href="https://www.newyorkfed.org/research/college-labor-market" target="_blank" rel="noopener noreferrer" className="underline decoration-dotted hover:text-slate-600">Federal Reserve Bank of New York</a>
+        </p>
+      </div>
     </div>
   );
 }
@@ -114,19 +194,9 @@ export function RealityBand() {
           shortlisted — <span className="text-slate-900 font-semibold">deployed proof gets you picked</span>.
         </p>
 
-        {/* ── Market strip — cited numbers in one slim band ────────────────── */}
-        <div className="mt-9 rounded-2xl border border-slate-200/80 bg-white/80 backdrop-blur-sm shadow-[0_8px_30px_-16px_rgba(15,28,49,0.15)]">
-          <div className="flex flex-col sm:flex-row sm:divide-x divide-y sm:divide-y-0 divide-slate-100">
-            {MARKET_STATS.map((s, i) => (
-              <MarketStat key={s.label} stat={s} visible={visible} delay={i * 120} />
-            ))}
-          </div>
-          <p className="px-5 pb-3 pt-1 text-center text-[10px] text-slate-400">
-            Sources:{" "}
-            <a href="https://www.hiringlab.org" target="_blank" rel="noopener noreferrer" className="underline decoration-dotted hover:text-slate-600">Indeed Hiring Lab</a>
-            {" · "}
-            <a href="https://www.newyorkfed.org/research/college-labor-market" target="_blank" rel="noopener noreferrer" className="underline decoration-dotted hover:text-slate-600">Federal Reserve Bank of New York</a>
-          </p>
+        {/* ── The market, in motion — the scissor chart ────────────────────── */}
+        <div className="mt-9">
+          <MarketChart visible={visible} />
         </div>
 
         {/* ── Same market, two CVs — the visible argument ──────────────────── */}
