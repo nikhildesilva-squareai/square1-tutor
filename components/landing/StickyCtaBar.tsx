@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { Logo } from "@/components/ui/logo";
@@ -15,8 +15,33 @@ import { Logo } from "@/components/ui/logo";
 
 const BLUE_GRADIENT = "linear-gradient(135deg, #3388FF 0%, #0056CE 55%, #01224F 100%)";
 
+
+// Seat counter rolls cap -> left when the bar first reveals (21st.dev
+// "animated counter" pattern) - dramatizes the REAL claimed count, no
+// invented events. Runs once; reduced-motion gets the final value instantly.
+function useSeatRoll(target: number, from: number, run: boolean) {
+  const [v, setV] = useState(from);
+  const done = useRef(false);
+  useEffect(() => {
+    if (!run || done.current) return;
+    done.current = true;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) { setV(target); return; }
+    const t0 = performance.now();
+    let raf = 0;
+    const tick = (t: number) => {
+      const p = Math.min(1, (t - t0) / 900);
+      setV(Math.round(from + (target - from) * (1 - Math.pow(1 - p, 3))));
+      if (p < 1) raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [run, target, from]);
+  return v;
+}
+
 export function StickyCtaBar({ seats = null }: { seats?: { left: number; cap: number } | null }) {
   const [show, setShow] = useState(false);
+  const rolledLeft = useSeatRoll(seats?.left ?? 0, seats?.cap ?? 0, show && seats !== null);
 
   useEffect(() => {
     const onScroll = () => setShow(window.scrollY > window.innerHeight * 1.1);
@@ -48,7 +73,7 @@ export function StickyCtaBar({ seats = null }: { seats?: { left: number; cap: nu
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
                 <span className="relative inline-flex rounded-full w-2 h-2 bg-emerald-500" />
               </span>
-              {seats.left} of {seats.cap} compute-capped free seats left
+              {rolledLeft} of {seats.cap} compute-capped free seats left
             </p>
           )}
           <Link

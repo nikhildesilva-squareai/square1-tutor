@@ -574,6 +574,10 @@ function JourneyFlow() {
   const [active, setActive] = useState(0);
   const [paused, setPaused] = useState(false);
   const [visible, setVisible] = useState(false);
+  // Once the visitor drives the flow themselves, auto-play never resumes -
+  // hover-pause only protected mouse users; on touch the timer yanked away
+  // the step they had just chosen to read.
+  const [userDrove, setUserDrove] = useState(false);
 
   const last = STEPS.length - 1;
   const accent = FLOW_ACCENTS[active] ?? "#0056CE";
@@ -590,14 +594,18 @@ function JourneyFlow() {
     return () => obs.disconnect();
   }, []);
 
-  // Auto-advance through the flow; pauses while the user is interacting.
+  // Auto-advance through the flow; pauses on hover, stops for good once the
+  // visitor navigates manually.
   useEffect(() => {
-    if (!visible || paused) return;
+    if (!visible || paused || userDrove) return;
     const t = setInterval(() => setActive((a) => (a + 1) % STEPS.length), 3600);
     return () => clearInterval(t);
-  }, [visible, paused]);
+  }, [visible, paused, userDrove]);
 
-  const go = (i: number) => setActive(((i % STEPS.length) + STEPS.length) % STEPS.length);
+  const go = (i: number) => {
+    setUserDrove(true);
+    setActive(((i % STEPS.length) + STEPS.length) % STEPS.length);
+  };
 
   return (
     <div ref={ref} onMouseEnter={() => setPaused(true)} onMouseLeave={() => setPaused(false)}>
