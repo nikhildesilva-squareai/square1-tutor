@@ -13,6 +13,7 @@ import { PricingSection } from "@/components/landing/PricingSection";
 import { FAQSection } from "@/components/landing/FAQSection";
 import { JourneyHook } from "@/components/landing/JourneyHook";
 import { LaneMapSection } from "@/components/landing/LaneMapSection";
+import { BuildPremiseSection } from "@/components/landing/BuildPremiseSection";
 import { WorkBlock } from "@/components/landing/WorkBlock";
 import { CodeReviewSlider } from "@/components/landing/CodeReviewSlider";
 import { CookieConsent } from "@/components/ui/cookie-consent";
@@ -109,6 +110,12 @@ export default async function Home() {
 
       {/* ── 2. Stakes — why now (the 2026 wedge) ─────────────────────────────── */}
       <div data-s1-section="reality"><RealityBand /></div>
+
+      <SectionWave />
+
+      {/* ── 2b. The premise — practice-first: 10 real projects per track.
+             Answers RealityBand's closing line ("project by graded project"). ── */}
+      <div data-s1-section="build-premise"><BuildPremiseSection /></div>
 
       <SectionWave />
 
