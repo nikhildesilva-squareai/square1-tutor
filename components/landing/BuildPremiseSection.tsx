@@ -131,80 +131,31 @@ export function BuildPremiseSection({ tracks }: { tracks?: RailTrack[] }) {
           </div>
         )}
 
-        {/* ── Desktop rail — every stop is a real project, and the full syllabus
-               is laid out in cards below (visible by default, user call:
-               nothing hidden behind hover). Hover cross-highlights card ↔ dot. ── */}
+        {/* ── Desktop: sequential timeline — every card anchored to its own stop,
+               alternating above/below the rail (metro-map zigzag) so the eye
+               walks 01→10 along one line. Cards, stubs, and dots share the same
+               N-column grid geometry, so everything lines up on the stops.
+               Hover cross-highlights card ↔ dot. ── */}
         <div className="hidden md:block mt-12">
-          <div className="relative px-2">
-            {/* Track line */}
-            <div className="relative h-1.5 rounded-full overflow-hidden" style={{ background: "#E2E8F0" }}>
-              <div className="h-full rounded-full motion-reduce:transition-none"
-                style={{
-                  width: visible ? "100%" : "0%",
-                  background: BLUE_GRADIENT,
-                  transition: "width 1800ms cubic-bezier(0.4,0,0.2,1) 200ms",
-                }} />
-            </div>
-
-            {/* Dots — one per real project, all interactive */}
-            <div className="absolute inset-x-2 top-1/2 -translate-y-1/2 flex justify-between">
-              {track.projects.map((p, i) => {
-                const isShown = shown === i;
-                return (
-                  <button
-                    key={`${track.slug}-${p.n}`}
-                    onClick={() => setPinned(pinned === i ? null : i)}
-                    onMouseEnter={() => setHovered(i)}
-                    onMouseLeave={() => setHovered(null)}
-                    onFocus={() => setHovered(i)}
-                    onBlur={() => setHovered(null)}
-                    aria-label={`Project ${p.n}: ${p.title}`}
-                    className="relative rounded-full border-2 border-white cursor-pointer active:scale-90 motion-reduce:transition-none"
-                    style={{
-                      width: isShown ? 20 : 14,
-                      height: isShown ? 20 : 14,
-                      background: isShown ? "#01224F" : pinned === i ? "#0056CE" : "#3388FF",
-                      boxShadow: isShown
-                        ? "0 4px 14px rgba(0,86,206,0.55), 0 0 0 4px rgba(51,136,255,0.2)"
-                        : "0 2px 8px rgba(0,86,206,0.35)",
-                      opacity: visible ? 1 : 0,
-                      transform: visible ? "scale(1)" : "scale(0)",
-                      transition: `opacity 300ms ease ${200 + i * 90}ms, transform 200ms cubic-bezier(0.34,1.56,0.64,1) ${visible ? 0 : 200 + i * 90}ms, width 180ms ease, height 180ms ease, background 180ms ease, box-shadow 180ms ease`,
-                    }} />
-                );
-              })}
-            </div>
-          </div>
-
-          {/* Numbers under the stops */}
-          <div className="mt-5 flex justify-between px-2">
-            {track.projects.map((p, i) => (
-              <span key={`${track.slug}-n-${p.n}`}
-                className="text-[10px] font-mono font-bold tabular-nums w-5 text-center transition-colors"
-                style={{ color: shown === i ? "#0056CE" : "#94A3B8" }}>
-                {String(p.n).padStart(2, "0")}
-              </span>
-            ))}
-          </div>
-
-          {/* The full syllabus, visible by default — one card per real project
-              (user call: don't hide the projects behind hover). Hovering a card
-              or its dot highlights both ends of the link. */}
-          <div className={`mt-7 grid gap-2.5 ${N % 6 === 0 ? "grid-cols-6" : "grid-cols-5"}`}>
-            {track.projects.map((p, i) => {
+          {(() => {
+            const cols = { gridTemplateColumns: `repeat(${N}, minmax(0, 1fr))` };
+            // Card spans its own column plus half of each empty neighbor
+            // (same-row cards are 2 columns apart), so no width fits all:
+            // 200% of the column minus a gutter, capped for very wide screens.
+            const Card = ({ p, i }: { p: RailProject; i: number }) => {
               const isShown = shown === i;
               return (
                 <div
-                  key={`${track.slug}-c-${p.n}`}
                   onMouseEnter={() => setHovered(i)}
                   onMouseLeave={() => setHovered(null)}
                   className="rounded-xl border bg-white p-3 cursor-default motion-reduce:transition-none"
                   style={{
+                    width: "min(calc(200% - 14px), 190px)",
                     borderColor: isShown ? "#3388FF" : "#E2E8F0",
                     boxShadow: isShown ? "0 12px 26px -12px rgba(0,86,206,0.4)" : "0 1px 2px rgba(15,28,49,0.04)",
                     transform: isShown ? "translateY(-3px)" : "translateY(0)",
                     opacity: visible ? 1 : 0,
-                    transition: `opacity 400ms ease ${300 + i * 60}ms, transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease`,
+                    transition: `opacity 400ms ease ${250 + i * 70}ms, transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease`,
                   }}
                 >
                   <p className="text-[9.5px] font-mono font-bold tabular-nums transition-colors"
@@ -215,8 +166,84 @@ export function BuildPremiseSection({ tracks }: { tracks?: RailTrack[] }) {
                   <p className="mt-1 text-[10px] text-slate-500 leading-snug">{p.stack}</p>
                 </div>
               );
-            })}
-          </div>
+            };
+            const Stub = ({ i }: { i: number }) => (
+              <span aria-hidden className="w-[2px] h-[16px] motion-reduce:transition-none"
+                style={{
+                  background: shown === i ? "#3388FF" : "#BFD9FC",
+                  opacity: visible ? 1 : 0,
+                  transition: `opacity 400ms ease ${250 + i * 70}ms, background 180ms ease`,
+                }} />
+            );
+            return (
+              <>
+                {/* Cards above the rail — stops 01, 03, 05, … */}
+                <div className="grid items-end" style={cols}>
+                  {track.projects.map((p, i) => i % 2 === 0 && (
+                    <div key={`${track.slug}-t-${p.n}`}
+                      className="flex flex-col items-center"
+                      style={{ gridColumn: i + 1, gridRow: 1 }}>
+                      <Card p={p} i={i} />
+                      <Stub i={i} />
+                    </div>
+                  ))}
+                </div>
+
+                {/* Track line + dots (dots centered on the same grid columns) */}
+                <div className="relative">
+                  <div className="relative h-1.5 rounded-full overflow-hidden" style={{ background: "#E2E8F0" }}>
+                    <div className="h-full rounded-full motion-reduce:transition-none"
+                      style={{
+                        width: visible ? "100%" : "0%",
+                        background: BLUE_GRADIENT,
+                        transition: "width 1800ms cubic-bezier(0.4,0,0.2,1) 200ms",
+                      }} />
+                  </div>
+                  <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 grid" style={cols}>
+                    {track.projects.map((p, i) => {
+                      const isShown = shown === i;
+                      return (
+                        <button
+                          key={`${track.slug}-${p.n}`}
+                          onClick={() => setPinned(pinned === i ? null : i)}
+                          onMouseEnter={() => setHovered(i)}
+                          onMouseLeave={() => setHovered(null)}
+                          onFocus={() => setHovered(i)}
+                          onBlur={() => setHovered(null)}
+                          aria-label={`Project ${p.n}: ${p.title}`}
+                          className="relative rounded-full border-2 border-white cursor-pointer active:scale-90 justify-self-center motion-reduce:transition-none"
+                          style={{
+                            gridColumn: i + 1,
+                            gridRow: 1,
+                            width: isShown ? 20 : 14,
+                            height: isShown ? 20 : 14,
+                            background: isShown ? "#01224F" : pinned === i ? "#0056CE" : "#3388FF",
+                            boxShadow: isShown
+                              ? "0 4px 14px rgba(0,86,206,0.55), 0 0 0 4px rgba(51,136,255,0.2)"
+                              : "0 2px 8px rgba(0,86,206,0.35)",
+                            opacity: visible ? 1 : 0,
+                            transform: visible ? "scale(1)" : "scale(0)",
+                            transition: `opacity 300ms ease ${200 + i * 90}ms, transform 200ms cubic-bezier(0.34,1.56,0.64,1) ${visible ? 0 : 200 + i * 90}ms, width 180ms ease, height 180ms ease, background 180ms ease, box-shadow 180ms ease`,
+                          }} />
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Cards below the rail — stops 02, 04, 06, … */}
+                <div className="grid items-start" style={cols}>
+                  {track.projects.map((p, i) => i % 2 === 1 && (
+                    <div key={`${track.slug}-b-${p.n}`}
+                      className="flex flex-col items-center"
+                      style={{ gridColumn: i + 1, gridRow: 1 }}>
+                      <Stub i={i} />
+                      <Card p={p} i={i} />
+                    </div>
+                  ))}
+                </div>
+              </>
+            );
+          })()}
         </div>
 
         {/* ── Mobile: the full real syllabus as a vertical rail ─────────────── */}
