@@ -284,14 +284,28 @@ export function BuildPremiseSection({ tracks }: { tracks?: RailTrack[] }) {
                 transform: visible ? "translateY(0)" : "translateY(20px)",
                 transition: `opacity 500ms ease ${600 + i * 120}ms, transform 500ms ease ${600 + i * 120}ms`,
               }}>
-              <div className="h-full rounded-2xl border bg-white p-6 transition-all duration-200 motion-safe:hover:-translate-y-1 hover:shadow-[0_16px_36px_-16px_rgba(0,86,206,0.3)] hover:border-[#BFD9FC]"
-                style={{ borderColor: "#E2E8F0", boxShadow: "0 4px 16px rgba(15,28,49,0.05)" }}>
-                <span className="w-11 h-11 rounded-[13px] flex items-center justify-center text-white"
-                  style={{ background: BLUE_GRADIENT, boxShadow: "0 8px 18px -8px rgba(0,86,206,0.6)" }}>
-                  <Icon size={20} strokeWidth={2.1} aria-hidden />
-                </span>
-                <h3 className="mt-4 text-base font-black tracking-tight text-slate-900">{title}</h3>
-                <p className="mt-2 text-[13px] text-slate-600 leading-relaxed">{desc}</p>
+              <div
+                className="spotlight-card h-full"
+                onMouseMove={(e) => {
+                  const r = e.currentTarget.getBoundingClientRect();
+                  e.currentTarget.style.setProperty("--mx", `${e.clientX - r.left}px`);
+                  e.currentTarget.style.setProperty("--my", `${e.clientY - r.top}px`);
+                }}
+              >
+                <div className="spotlight-card-inner p-6">
+                  <div className="spotlight-card-glow" aria-hidden />
+                  <div className="relative flex items-start justify-between">
+                    <span className="benefit-icon w-11 h-11 rounded-[13px] flex items-center justify-center text-white"
+                      style={{ background: BLUE_GRADIENT, boxShadow: "0 8px 18px -8px rgba(0,86,206,0.6)" }}>
+                      <Icon size={20} strokeWidth={2.1} aria-hidden />
+                    </span>
+                    <span className="text-[11px] font-mono font-bold tabular-nums text-slate-300 select-none">
+                      {String(i + 1).padStart(2, "0")}
+                    </span>
+                  </div>
+                  <h3 className="relative mt-4 text-base font-black tracking-tight text-slate-900">{title}</h3>
+                  <p className="relative mt-2 text-[13px] text-slate-600 leading-relaxed">{desc}</p>
+                </div>
               </div>
             </div>
           ))}

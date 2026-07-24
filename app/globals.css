@@ -306,6 +306,53 @@ body {
 }
 .promptlab-frame.is-answered { animation-duration: 18s; }
 .promptlab-frame.is-answered::before { opacity: 0.26; animation-duration: 18s; }
+/* Benefit cards — mouse-tracking spotlight border + interior glow (MagicCard
+   pattern, hand-built blue-only). --mx/--my are set per-card in JS. */
+.spotlight-card {
+  position: relative;
+  border-radius: 16px;
+  padding: 1px;
+  background: #E2E8F0;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.spotlight-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(220px circle at var(--mx, 50%) var(--my, 50%), rgba(51,136,255,0.9), rgba(0,86,206,0.3) 45%, transparent 72%);
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+.spotlight-card:hover::before { opacity: 1; }
+.spotlight-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 22px 44px -20px rgba(0,86,206,0.4);
+}
+.spotlight-card-inner {
+  position: relative;
+  z-index: 1;
+  height: 100%;
+  border-radius: 15px;
+  background: linear-gradient(180deg, #FFFFFF 0%, #FBFDFF 100%);
+  overflow: hidden;
+}
+.spotlight-card-glow {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(260px circle at var(--mx, 50%) var(--my, 50%), rgba(51,136,255,0.09), transparent 70%);
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+.spotlight-card:hover .spotlight-card-glow { opacity: 1; }
+.benefit-icon { transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1); }
+.spotlight-card:hover .benefit-icon { transform: rotate(-6deg) scale(1.07); }
+@media (prefers-reduced-motion: reduce) {
+  .spotlight-card, .spotlight-card:hover { transform: none; }
+  .spotlight-card:hover .benefit-icon { transform: none; }
+}
+
 /* Prompt options — periodic idle nudge so the two choices read as tappable.
    Card B staggers via inline animation-delay; the class drops off once answered. */
 @keyframes option-nudge {
