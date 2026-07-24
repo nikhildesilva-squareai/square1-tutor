@@ -334,28 +334,7 @@ export function RealityBand() {
               ))}
             </ul>
 
-            {/* The proof, clickable — a live public starter repo an employer
-                (or a skeptical visitor) can open and clone right now. */}
-            <a
-              href="https://github.com/nikhildesilva-squareai/square1-starter-genai-02-rag-doc-qa"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="relative mt-5 flex items-center gap-3 rounded-xl px-3.5 py-3 bg-white/10 border border-white/20 hover:bg-white/[0.17] transition-colors"
-            >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/logos/github-white.svg" alt="" className="h-5 w-5 shrink-0" />
-              <span className="min-w-0 flex-1">
-                <span className="block truncate font-mono text-[11.5px] font-semibold text-white">
-                  square1-starter-genai-02-rag-doc-qa
-                </span>
-                <span className="block text-[10.5px]" style={{ color: "#BFD9FF" }}>
-                  Smart Document Q&amp;A (RAG) · public template — open it, clone it, run it
-                </span>
-              </span>
-              <ArrowUpRight className="h-4 w-4 shrink-0" style={{ color: "#BFD9FF" }} aria-hidden />
-            </a>
-
-            <p className="relative mt-5 pt-4 text-[11px] font-medium" style={{ borderTop: "1px solid rgba(255,255,255,0.18)", color: "#BFD9FF" }}>
+            <p className="relative mt-6 pt-4 text-[11px] font-medium" style={{ borderTop: "1px solid rgba(255,255,255,0.18)", color: "#BFD9FF" }}>
               Same market. A CV employers can click, run and verify.
             </p>
 
