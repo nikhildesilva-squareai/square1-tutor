@@ -131,29 +131,11 @@ export function BuildPremiseSection({ tracks }: { tracks?: RailTrack[] }) {
           </div>
         )}
 
-        {/* ── Desktop rail — every stop is a real project; hover previews, click pins ── */}
+        {/* ── Desktop rail — every stop is a real project, and the full syllabus
+               is laid out in cards below (visible by default, user call:
+               nothing hidden behind hover). Hover cross-highlights card ↔ dot. ── */}
         <div className="hidden md:block mt-12">
-          {/* Popover layer sits above the rail so cards never overlap the dots */}
           <div className="relative px-2">
-            {shown !== null && track.projects[shown] && (
-              <div
-                className="pointer-events-none absolute bottom-full mb-4 z-20 motion-safe:animate-fade-in-up"
-                style={{
-                  left: `${(shown / (N - 1)) * 100}%`,
-                  transform: shown === 0 ? "translateX(0)" : shown === N - 1 ? "translateX(-100%)" : "translateX(-50%)",
-                }}
-              >
-                <div className="w-[230px] rounded-xl border bg-white p-3.5"
-                  style={{ borderColor: "#D8E7FC", boxShadow: "0 16px 40px -16px rgba(0,86,206,0.35)" }}>
-                  <p className="text-[10px] font-mono font-bold tabular-nums text-brand">
-                    PROJECT {String(track.projects[shown].n).padStart(2, "0")}
-                  </p>
-                  <p className="mt-1 text-[13px] font-bold text-slate-900 leading-tight">{track.projects[shown].title}</p>
-                  <p className="mt-1 text-[10.5px] text-slate-500 leading-snug">{track.projects[shown].stack}</p>
-                </div>
-              </div>
-            )}
-
             {/* Track line */}
             <div className="relative h-1.5 rounded-full overflow-hidden" style={{ background: "#E2E8F0" }}>
               <div className="h-full rounded-full motion-reduce:transition-none"
@@ -205,9 +187,36 @@ export function BuildPremiseSection({ tracks }: { tracks?: RailTrack[] }) {
             ))}
           </div>
 
-          <p className="mt-4 text-center text-[11px] text-slate-400">
-            {shown === null ? "Hover any stop — every one is a real project from this track." : " "}
-          </p>
+          {/* The full syllabus, visible by default — one card per real project
+              (user call: don't hide the projects behind hover). Hovering a card
+              or its dot highlights both ends of the link. */}
+          <div className={`mt-7 grid gap-2.5 ${N % 6 === 0 ? "grid-cols-6" : "grid-cols-5"}`}>
+            {track.projects.map((p, i) => {
+              const isShown = shown === i;
+              return (
+                <div
+                  key={`${track.slug}-c-${p.n}`}
+                  onMouseEnter={() => setHovered(i)}
+                  onMouseLeave={() => setHovered(null)}
+                  className="rounded-xl border bg-white p-3 cursor-default motion-reduce:transition-none"
+                  style={{
+                    borderColor: isShown ? "#3388FF" : "#E2E8F0",
+                    boxShadow: isShown ? "0 12px 26px -12px rgba(0,86,206,0.4)" : "0 1px 2px rgba(15,28,49,0.04)",
+                    transform: isShown ? "translateY(-3px)" : "translateY(0)",
+                    opacity: visible ? 1 : 0,
+                    transition: `opacity 400ms ease ${300 + i * 60}ms, transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease`,
+                  }}
+                >
+                  <p className="text-[9.5px] font-mono font-bold tabular-nums transition-colors"
+                    style={{ color: isShown ? "#0056CE" : "#94A3B8" }}>
+                    {String(p.n).padStart(2, "0")}
+                  </p>
+                  <p className="mt-1 text-[12px] font-bold text-slate-900 leading-tight">{p.title}</p>
+                  <p className="mt-1 text-[10px] text-slate-500 leading-snug">{p.stack}</p>
+                </div>
+              );
+            })}
+          </div>
         </div>
 
         {/* ── Mobile: the full real syllabus as a vertical rail ─────────────── */}
