@@ -4,8 +4,8 @@ import { Marquee } from "@/components/ui/marquee";
 // Tool strip — a slim marquee of the tools the curriculum actually trains on
 // (product fact: every logo here appears in live course exercises/projects).
 // Sits between the hero and the lane map: answers "will I learn real tools?"
-// before the course fan-out makes the same case in detail. Icons are grayscale
-// at rest (keeps the page blue-only) and take their brand color on hover.
+// before the course fan-out makes the same case in detail. Icons render in
+// full brand color (user call 2026-07-24 — grayscale looked flat).
 // Logos: svgl.app via the 21st.dev logo library, served from /public/logos.
 // ═══════════════════════════════════════════════════════════════════════════════
 
@@ -35,7 +35,7 @@ export function ToolsMarquee() {
           {TOOLS.map((t) => (
             <span
               key={t.name}
-              className="flex items-center gap-2.5 shrink-0 grayscale opacity-60 transition-all duration-200 hover:grayscale-0 hover:opacity-100"
+              className="flex items-center gap-2.5 shrink-0 opacity-90 transition-opacity duration-200 hover:opacity-100"
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={t.src} alt="" className="h-6 w-6 object-contain" loading="lazy" />

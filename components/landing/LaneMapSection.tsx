@@ -18,7 +18,7 @@ import { CourseExplorer, type Course } from "@/components/landing/CourseGridSect
 
 const BLUE_GRADIENT = "linear-gradient(135deg, #3388FF 0%, #0056CE 55%, #01224F 100%)";
 
-type Path = { d: string };
+type Path = { d: string; slug: string; lane: "career" | "work" };
 
 function LaneCard({ lane, count }: { lane: "career" | "work"; count: number }) {
   const filled = lane === "career";
@@ -40,8 +40,10 @@ function LaneCard({ lane, count }: { lane: "career" | "work"; count: number }) {
         </span>
         <span className="flex-1 min-w-0 text-left">
           <span className="block text-[15px] font-black text-white leading-tight">Build a career in AI</span>
+          {/* Template literal: this Next version's JSX whitespace handling eats
+              the space between {count} and the following text node. */}
           <span className="block mt-1 text-[12px] font-medium leading-snug" style={{ color: "#BFD9FF" }}>
-            {count} engineering &amp; data tracks — graded projects, real roles
+            {`${count} engineering & data tracks — graded projects, real roles`}
           </span>
         </span>
       </div>
@@ -64,7 +66,7 @@ function LaneCard({ lane, count }: { lane: "career" | "work"; count: number }) {
       <span className="flex-1 min-w-0 text-left">
         <span className="block text-[15px] font-black text-slate-900 leading-tight">AI for your work — no&nbsp;code</span>
         <span className="block mt-1 text-[12px] font-medium text-slate-500 leading-snug">
-          {count} role tracks — marketing, finance, founders &amp; more
+          {`${count} role tracks — marketing, finance, founders & more`}
         </span>
       </span>
     </div>
@@ -72,19 +74,30 @@ function LaneCard({ lane, count }: { lane: "career" | "work"; count: number }) {
 }
 
 function Chip({
-  course, align, onSelect, chipRef,
+  course, onSelect, chipRef, active = false, dimmed = false, onHover = () => {},
 }: {
-  course: Course; align: "right" | "left"; onSelect: (c: Course) => void;
+  course: Course; onSelect: (c: Course) => void;
   chipRef: (el: HTMLButtonElement | null) => void;
+  active?: boolean; dimmed?: boolean; onHover?: (slug: string | null) => void;
 }) {
   return (
     <button
       ref={chipRef}
       onClick={() => onSelect(course)}
-      className={`group inline-flex items-center gap-1.5 rounded-full border bg-white px-3.5 py-2 text-[12.5px] font-semibold text-slate-700 transition-all motion-safe:hover:-translate-y-px hover:text-brand ${align === "right" ? "self-end" : "self-start"}`}
-      style={{ borderColor: "#D8E7FC", boxShadow: "0 1px 2px rgba(15,28,49,0.04)" }}
+      onMouseEnter={() => onHover(course.slug)}
+      onMouseLeave={() => onHover(null)}
+      onFocus={() => onHover(course.slug)}
+      onBlur={() => onHover(null)}
+      className="group inline-flex items-center gap-1.5 rounded-full border bg-white px-3.5 py-2 text-[12.5px] font-semibold text-slate-700 hover:text-brand active:scale-[0.97]"
+      style={{
+        borderColor: active ? "#3388FF" : "#D8E7FC",
+        boxShadow: active ? "0 10px 22px -10px rgba(0,86,206,0.45)" : "0 1px 2px rgba(15,28,49,0.04)",
+        opacity: dimmed ? 0.45 : 1,
+        transform: active ? "translateY(-2px)" : undefined,
+        transition: "opacity 200ms ease, transform 200ms ease, border-color 200ms ease, box-shadow 200ms ease, color 200ms ease",
+      }}
     >
-      <span className="w-1.5 h-1.5 rounded-full shrink-0 transition-colors" style={{ background: "#8FB8F1" }} aria-hidden />
+      <span className="w-1.5 h-1.5 rounded-full shrink-0 transition-colors" style={{ background: active ? "#0056CE" : "#8FB8F1" }} aria-hidden />
       {course.title}
     </button>
   );
@@ -102,6 +115,10 @@ export function LaneMapSection({ courses }: { courses: Course[] }) {
   const [paths, setPaths] = useState<Path[]>([]);
   const [selected, setSelected] = useState<Course | null>(null);
   const [visible, setVisible] = useState(false);
+  // Hover focus: a chip highlights its own connector; a lane card highlights
+  // its whole side. Everything else recedes so the link reads instantly.
+  const [hoverSlug, setHoverSlug] = useState<string | null>(null);
+  const [hoverLane, setHoverLane] = useState<"career" | "work" | null>(null);
 
   // Measure card + chip positions → cubic-bezier connector paths. Re-measured
   // on any container resize so the lines track the layout exactly.
@@ -114,7 +131,7 @@ export function LaneMapSection({ courses }: { courses: Course[] }) {
       const cRect = cont.getBoundingClientRect();
       if (cRect.width === 0) return;
       const next: Path[] = [];
-      const connect = (cardEl: HTMLElement | null, chipList: Course[], side: "left" | "right") => {
+      const connect = (cardEl: HTMLElement | null, chipList: Course[], side: "left" | "right", lane: "career" | "work") => {
         if (!cardEl) return;
         const f = cardEl.getBoundingClientRect();
         const x1 = (side === "left" ? f.left : f.right) - cRect.left;
@@ -126,11 +143,11 @@ export function LaneMapSection({ courses }: { courses: Course[] }) {
           const x2 = (side === "left" ? t.right : t.left) - cRect.left;
           const y2 = t.top + t.height / 2 - cRect.top;
           const mx = (x1 + x2) / 2;
-          next.push({ d: `M ${x1} ${y1} C ${mx} ${y1}, ${mx} ${y2}, ${x2} ${y2}` });
+          next.push({ d: `M ${x1} ${y1} C ${mx} ${y1}, ${mx} ${y2}, ${x2} ${y2}`, slug: c.slug, lane });
         }
       };
-      connect(careerCardRef.current, career, "left");
-      connect(workCardRef.current, work, "right");
+      connect(careerCardRef.current, career, "left", "career");
+      connect(workCardRef.current, work, "right", "work");
       setPaths(next);
     };
 
@@ -184,46 +201,65 @@ export function LaneMapSection({ courses }: { courses: Course[] }) {
         <div ref={containerRef} className="relative hidden lg:grid grid-cols-[220px_1fr_1fr_220px] gap-x-12 items-center">
           {/* Connector lines */}
           <svg className="absolute inset-0 w-full h-full pointer-events-none" aria-hidden>
-            {paths.map((p, i) => (
-              <path
-                key={i}
-                d={p.d}
-                fill="none"
-                stroke="#3388FF"
-                strokeWidth="1.5"
-                strokeOpacity="0.38"
-                strokeLinecap="round"
-                pathLength={1}
-                style={{
-                  strokeDasharray: 1,
-                  strokeDashoffset: visible ? 0 : 1,
-                  transition: `stroke-dashoffset 800ms cubic-bezier(0.2,0.7,0.2,1) ${i * 55}ms`,
-                }}
-              />
-            ))}
+            {paths.map((p, i) => {
+              const focused = hoverSlug !== null || hoverLane !== null;
+              const active = hoverSlug === p.slug || hoverLane === p.lane;
+              return (
+                <path
+                  key={i}
+                  d={p.d}
+                  fill="none"
+                  stroke={active ? "#0056CE" : "#3388FF"}
+                  strokeWidth={active ? 2.5 : 1.5}
+                  strokeOpacity={active ? 0.85 : focused ? 0.12 : 0.38}
+                  strokeLinecap="round"
+                  pathLength={1}
+                  style={{
+                    strokeDasharray: 1,
+                    strokeDashoffset: visible ? 0 : 1,
+                    transition: `stroke-dashoffset 800ms cubic-bezier(0.2,0.7,0.2,1) ${i * 55}ms, stroke-opacity 200ms ease, stroke-width 200ms ease, stroke 200ms ease`,
+                  }}
+                />
+              );
+            })}
           </svg>
 
-          {/* Career chips — right-aligned toward their card */}
+          {/* Career chips — right-aligned toward their card. Wrapper divs own the
+              staggered entrance (opacity-only: transforms would skew the line
+              measurements); the buttons own the hover treatment. */}
           <div className="relative flex flex-col gap-2.5 items-end">
-            {career.map((c) => (
-              <Chip key={c.id} course={c} align="right" onSelect={setSelected}
-                chipRef={(el) => { chipEls.current[c.slug] = el; }} />
+            {career.map((c, i) => (
+              <div key={c.id} className={visible ? "chip-enter" : "opacity-0"} style={{ animationDelay: `${120 + i * 55}ms` }}>
+                <Chip course={c} onSelect={setSelected}
+                  chipRef={(el) => { chipEls.current[c.slug] = el; }}
+                  active={hoverSlug === c.slug || hoverLane === "career"}
+                  dimmed={(hoverSlug !== null || hoverLane !== null) && hoverSlug !== c.slug && hoverLane !== "career"}
+                  onHover={setHoverSlug} />
+              </div>
             ))}
           </div>
 
-          {/* The two lane cards — a lane with no courses (DB fallback) renders nothing */}
-          <div ref={careerCardRef} className="relative z-10 self-center">
+          {/* The two lane cards — a lane with no courses (DB fallback) renders nothing.
+              Hovering a card lights up its whole side of the map. */}
+          <div ref={careerCardRef} className="relative z-10 self-center"
+            onMouseEnter={() => setHoverLane("career")} onMouseLeave={() => setHoverLane(null)}>
             {career.length > 0 && <LaneCard lane="career" count={career.length} />}
           </div>
-          <div ref={workCardRef} className="relative z-10 self-center">
+          <div ref={workCardRef} className="relative z-10 self-center"
+            onMouseEnter={() => setHoverLane("work")} onMouseLeave={() => setHoverLane(null)}>
             {work.length > 0 && <LaneCard lane="work" count={work.length} />}
           </div>
 
           {/* Work chips — left-aligned toward their card */}
           <div className="relative flex flex-col gap-2.5 items-start">
-            {work.map((c) => (
-              <Chip key={c.id} course={c} align="left" onSelect={setSelected}
-                chipRef={(el) => { chipEls.current[c.slug] = el; }} />
+            {work.map((c, i) => (
+              <div key={c.id} className={visible ? "chip-enter" : "opacity-0"} style={{ animationDelay: `${120 + i * 55}ms` }}>
+                <Chip course={c} onSelect={setSelected}
+                  chipRef={(el) => { chipEls.current[c.slug] = el; }}
+                  active={hoverSlug === c.slug || hoverLane === "work"}
+                  dimmed={(hoverSlug !== null || hoverLane !== null) && hoverSlug !== c.slug && hoverLane !== "work"}
+                  onHover={setHoverSlug} />
+              </div>
             ))}
           </div>
         </div>
@@ -235,7 +271,7 @@ export function LaneMapSection({ courses }: { courses: Course[] }) {
               <LaneCard lane="career" count={career.length} />
               <div className="mt-3.5 flex flex-wrap gap-2">
                 {career.map((c) => (
-                  <Chip key={c.id} course={c} align="left" onSelect={setSelected} chipRef={() => {}} />
+                  <Chip key={c.id} course={c} onSelect={setSelected} chipRef={() => {}} />
                 ))}
               </div>
             </div>
@@ -245,7 +281,7 @@ export function LaneMapSection({ courses }: { courses: Course[] }) {
               <LaneCard lane="work" count={work.length} />
               <div className="mt-3.5 flex flex-wrap gap-2">
                 {work.map((c) => (
-                  <Chip key={c.id} course={c} align="left" onSelect={setSelected} chipRef={() => {}} />
+                  <Chip key={c.id} course={c} onSelect={setSelected} chipRef={() => {}} />
                 ))}
               </div>
             </div>
