@@ -127,12 +127,16 @@ export default async function DashboardPage({ searchParams }: DashboardProps) {
     const matchedSubject = DIAG_SUBJECTS.find((s) => s.title.toLowerCase() === interest);
     const startSlug = matchedSubject?.slug ?? preferredCourse?.slug ?? "generative-ai";
     let firstLessonId: string | null = null;
-    const { data: startCourseRow } = await supabase.from("courses").select("id").eq("slug", startSlug).maybeSingle();
+    let firstLessonTitle: string | null = null;
+    let startCourseTitle: string | null = null;
+    const { data: startCourseRow } = await supabase.from("courses").select("id,title").eq("slug", startSlug).maybeSingle();
     if (startCourseRow?.id) {
+      startCourseTitle = startCourseRow.title ?? null;
       const { data: m0 } = await supabase.from("modules").select("id").eq("course_id", startCourseRow.id).eq("order_index", 0).maybeSingle();
       if (m0?.id) {
-        const { data: l1 } = await supabase.from("lessons").select("id").eq("module_id", m0.id).order("order_index", { ascending: true }).limit(1).maybeSingle();
+        const { data: l1 } = await supabase.from("lessons").select("id,title").eq("module_id", m0.id).order("order_index", { ascending: true }).limit(1).maybeSingle();
         firstLessonId = l1?.id ?? null;
+        firstLessonTitle = l1?.title ?? null;
       }
     }
 
@@ -155,27 +159,45 @@ export default async function DashboardPage({ searchParams }: DashboardProps) {
         {/* One-time routing question — renders nothing once answered/skipped. */}
         {!goalAnswered && <RoutingQuestion workHref={workHref} />}
 
-        {/* Hero greeting */}
+        {/* Hero greeting — the activation moment. ONE concrete action: a named
+            first lesson with a 5-minute promise, framed as a card that already
+            belongs to the learner ("your first win"). Brand blue only. */}
         <div className="relative rounded-2xl overflow-hidden mb-8 p-8 sm:p-10"
-          style={{ background: "linear-gradient(135deg, #0056CE 0%, #4F46E5 50%, #7C3AED 100%)" }}>
+          style={{ background: "linear-gradient(135deg, #3388FF 0%, #0056CE 55%, #01224F 100%)" }}>
           <div className="absolute top-0 right-0 w-64 h-64 rounded-full opacity-20"
             style={{ background: "radial-gradient(circle, white 0%, transparent 70%)", transform: "translate(30%, -30%)" }} />
           <div className="absolute bottom-0 left-0 w-48 h-48 rounded-full opacity-10"
             style={{ background: "radial-gradient(circle, white 0%, transparent 70%)", transform: "translate(-30%, 30%)" }} />
-          <div className="relative">
-            <p className="text-white/60 text-sm font-medium mb-1">{greeting}</p>
-            <h1 className="text-3xl sm:text-4xl font-black text-white tracking-tight mb-3">
-              Welcome, {firstName}
-            </h1>
-            <p className="text-white/70 text-base max-w-md">
-              Jump straight into your first lesson — free, no test, about 5 minutes.
-              Prefer a personalised plan? Take the assessment below.
-            </p>
+          <div className="relative grid gap-6 lg:grid-cols-[1fr_auto] lg:items-center">
+            <div>
+              <p className="text-white/60 text-sm font-medium mb-1">{greeting}</p>
+              <h1 className="text-3xl sm:text-4xl font-black text-white tracking-tight mb-3">
+                Welcome, {firstName}
+              </h1>
+              <p className="text-white/70 text-base max-w-md">
+                Your first lesson is ready — free, no test, about 5 minutes. Finish it
+                and you&apos;re already ahead of most people who sign up anywhere.
+              </p>
+            </div>
+
+            {/* The first-win card — a named lesson, not an abstract ask */}
             {firstLessonId && (
               <Link href={`/learn/${firstLessonId}`}
-                className="mt-6 inline-flex items-center gap-2 px-6 h-12 rounded-xl bg-white text-brand text-sm font-bold hover:bg-white/90 transition-all shadow-lg">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden><polygon points="6 4 20 12 6 20 6 4" /></svg>
-                Start your first lesson — free
+                className="group block w-full lg:w-[340px] rounded-2xl bg-white p-5 shadow-[0_18px_44px_-16px_rgba(1,34,79,0.55)] transition-transform motion-safe:hover:-translate-y-1">
+                <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-brand">
+                  Your first win · ~5 min
+                </p>
+                <p className="mt-2 text-base font-black text-slate-900 leading-snug">
+                  {firstLessonTitle ?? "Lesson 1 — your on-ramp"}
+                </p>
+                {startCourseTitle && (
+                  <p className="mt-0.5 text-xs text-slate-500">{startCourseTitle} · Module 0</p>
+                )}
+                <span className="mt-4 inline-flex items-center justify-center gap-2 w-full h-11 rounded-xl text-white text-sm font-bold transition-transform"
+                  style={{ background: "linear-gradient(135deg, #3388FF 0%, #0056CE 100%)" }}>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden><polygon points="6 4 20 12 6 20 6 4" /></svg>
+                  Start now — free
+                </span>
               </Link>
             )}
           </div>
@@ -192,8 +214,10 @@ export default async function DashboardPage({ searchParams }: DashboardProps) {
             <p className="text-sm text-ink-muted mb-5 leading-relaxed">
               Every subject leads to a real career with a real salary.
             </p>
+            {/* Quiet link, not a filled button — the first-lesson card above is
+                the screen's ONE primary action; this must not compete. */}
             <Link href="/courses"
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold text-white bg-brand hover:bg-brand/90 transition-all">
+              className="inline-flex items-center gap-1.5 text-sm font-semibold text-brand hover:underline">
               Browse courses
               <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M6 3l5 5-5 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
             </Link>
