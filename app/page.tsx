@@ -15,6 +15,7 @@ import { JourneyHook } from "@/components/landing/JourneyHook";
 import { LaneMapSection } from "@/components/landing/LaneMapSection";
 import { BuildPremiseSection } from "@/components/landing/BuildPremiseSection";
 import { WorkBlock } from "@/components/landing/WorkBlock";
+import { ToolsMarquee } from "@/components/landing/ToolsMarquee";
 import { CodeReviewSlider } from "@/components/landing/CodeReviewSlider";
 import { CookieConsent } from "@/components/ui/cookie-consent";
 import { MobileStickyCta } from "@/components/landing/MobileStickyCta";
@@ -102,6 +103,9 @@ export default async function Home() {
 
       {/* ── 1. Hero (with goal-typer) ───────────────────────────────────────── */}
       <div data-s1-section="hero"><HeroSection courseCount={courses.length} seats={seats} /></div>
+
+      {/* ── Tool strip — the tools the curriculum trains on, drifting marquee ── */}
+      <div data-s1-section="tools"><ToolsMarquee /></div>
 
       {/* ── The lane map — every course fanned out from its lane, right after the hero ─ */}
       <div data-s1-section="courses" id="curriculum" className="scroll-mt-16"><LaneMapSection courses={courses} /></div>

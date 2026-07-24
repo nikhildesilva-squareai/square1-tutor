@@ -87,9 +87,15 @@ function PromptCheck() {
   }, [fullB.length]);
 
   return (
+    <div className={`promptlab-frame${answered ? " is-answered" : ""}`}>
+      {!answered && (
+        <span className="promptlab-badge">
+          <Sparkles className="h-3 w-3" aria-hidden /> Try it — takes 10 seconds
+        </span>
+      )}
     <div
-      className="relative w-full rounded-2xl border bg-white overflow-hidden"
-      style={{ borderColor: "#D8E7FC", boxShadow: "0 1px 2px rgba(15,28,49,0.05), 0 26px 60px -28px rgba(0,86,206,0.42)" }}
+      className="relative w-full rounded-2xl bg-white overflow-hidden"
+      style={{ borderRadius: 16, boxShadow: "0 1px 2px rgba(15,28,49,0.05), 0 26px 60px -28px rgba(0,86,206,0.42)" }}
     >
       {/* Card header — Nova / Prompt Lab */}
       <div className="flex items-center gap-2.5 px-5 py-3.5 border-b" style={{ borderColor: "#EEF3FB", background: "linear-gradient(180deg,#F5F9FF,#fff 80%)" }}>
@@ -204,6 +210,7 @@ function PromptCheck() {
           </div>
         )}
       </div>
+    </div>
     </div>
   );
 }

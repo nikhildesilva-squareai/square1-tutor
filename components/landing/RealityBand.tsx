@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { X, Check, FileX2, FolderGit2, BadgeCheck, Sparkles } from "lucide-react";
 import { PrimaryCta } from "@/components/ui/primary-cta";
+import { NumberTicker, useNumberTicker } from "@/components/ui/number-ticker";
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // The 2026 Reality — the stakes. The market divergence drawn as a "scissor"
@@ -50,6 +51,10 @@ function smoothPath(c: ChartCfg, pts: readonly (readonly [number, number])[]) {
 }
 
 function ChartSvg({ c, visible, reduceMotion }: { c: ChartCfg; visible: boolean; reduceMotion: boolean }) {
+  // Endpoint figures tick up as their fade-in lands (same trigger + delays), so
+  // the cited numbers "arrive" with the lines instead of appearing pre-printed.
+  const postTick = useNumberTicker({ target: 65, start: visible, delay: 1450, duration: 900 });
+  const gradTick = useNumberTicker({ target: 40, start: visible, delay: 1600, duration: 900 });
   const endX = px(c, 2025);
   const yPost = py(c, 35);
   const yGrad = py(c, 140);
@@ -102,11 +107,11 @@ function ChartSvg({ c, visible, reduceMotion }: { c: ChartCfg; visible: boolean;
             <text x={px(c, 2024.35)} y={py(c, 90)} textAnchor="middle" fontSize="11" fill="#94A3B8" fontStyle="italic">the squeeze</text>
           </g>
           <g style={fadeStyle(1450)}>
-            <text x={endX + 16} y={yPost + 1} fontSize="15" fontWeight="800" fill="#0F1B2E">−65%</text>
+            <text x={endX + 16} y={yPost + 1} fontSize="15" fontWeight="800" fill="#0F1B2E" style={{ fontVariantNumeric: "tabular-nums" }}>−{postTick}%</text>
             <text x={endX + 16} y={yPost + 15} fontSize="10" fill="#64748B">postings, Jan 2022 – Jan 2025</text>
           </g>
           <g style={fadeStyle(1600)}>
-            <text x={endX + 16} y={yGrad + 1} fontSize="15" fontWeight="800" fill="#0F1B2E">+40%</text>
+            <text x={endX + 16} y={yGrad + 1} fontSize="15" fontWeight="800" fill="#0F1B2E" style={{ fontVariantNumeric: "tabular-nums" }}>+{gradTick}%</text>
             <text x={endX + 16} y={yGrad + 15} fontSize="10" fill="#64748B">more CS graduates</text>
           </g>
         </>
@@ -146,12 +151,12 @@ function MarketChart({ visible }: { visible: boolean }) {
         <div className="flex items-center justify-center gap-6 px-4 pb-2 -mt-1">
           <span className="inline-flex items-baseline gap-1.5">
             <span className="w-2 h-2 rounded-full self-center" style={{ background: RED }} aria-hidden />
-            <span className="text-sm font-black tabular-nums text-slate-900">−65%</span>
+            <NumberTicker target={65} start={visible} delay={1450} prefix="−" suffix="%" className="text-sm font-black tabular-nums text-slate-900" />
             <span className="text-[11px] text-slate-500">postings</span>
           </span>
           <span className="inline-flex items-baseline gap-1.5">
             <span className="w-2 h-2 rounded-full self-center" style={{ background: BLUE }} aria-hidden />
-            <span className="text-sm font-black tabular-nums text-slate-900">+40%</span>
+            <NumberTicker target={40} start={visible} delay={1600} prefix="+" suffix="%" className="text-sm font-black tabular-nums text-slate-900" />
             <span className="text-[11px] text-slate-500">CS grads</span>
           </span>
         </div>
@@ -160,7 +165,7 @@ function MarketChart({ visible }: { visible: boolean }) {
       {/* Companion fact + sources */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1.5 px-5 py-3 border-t border-slate-100">
         <p className="text-[11px] sm:text-xs text-slate-500">
-          <span className="font-black text-slate-900 tabular-nums">6.1%</span> unemployment among recent CS grads — nearly 2× many other majors
+          <NumberTicker target={6.1} decimals={1} start={visible} delay={1700} suffix="%" className="font-black text-slate-900 tabular-nums" /> unemployment among recent CS grads — nearly 2× many other majors
         </p>
         <p className="text-[10px] text-slate-400">
           Sources:{" "}
