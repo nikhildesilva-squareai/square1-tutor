@@ -13,7 +13,7 @@ import { PricingSection } from "@/components/landing/PricingSection";
 import { FAQSection } from "@/components/landing/FAQSection";
 import { JourneyHook } from "@/components/landing/JourneyHook";
 import { LaneMapSection } from "@/components/landing/LaneMapSection";
-import { BuildPremiseSection } from "@/components/landing/BuildPremiseSection";
+import { BuildPremiseSection, type RailTrack } from "@/components/landing/BuildPremiseSection";
 import { WorkBlock } from "@/components/landing/WorkBlock";
 import { ToolsMarquee } from "@/components/landing/ToolsMarquee";
 import { CodeReviewSlider } from "@/components/landing/CodeReviewSlider";
@@ -73,6 +73,41 @@ const FALLBACK_COURSES: CourseRow[] = [
   { id: "9",  slug: "ai-product-management",   title: "AI Product Management",  description: "Ship AI products — strategy, roadmapping, and go-to-market.",  icon: "📋", color: "#0EA5E9", total_lessons: 40, total_projects: 10, status: "active" },
 ];
 
+// Real syllabi for the project-rail track explorer: each tab is a career
+// track, each stop a real project (title + tech stack) from the DB. On any
+// failure return [] — BuildPremiseSection falls back to a static snapshot.
+const RAIL_TRACK_LABELS: [slug: string, label: string][] = [
+  ["machine-learning", "Machine Learning"],
+  ["data-science", "Data Science"],
+  ["cybersecurity", "Cybersecurity"],
+  ["fullstack-development", "Full Stack"],
+];
+
+async function getRailTracks(): Promise<RailTrack[]> {
+  try {
+    const supabase = await createClient();
+    const { data } = await supabase
+      .from("projects")
+      .select("order_index,title,tech_stack,courses!inner(slug)")
+      .in("courses.slug", RAIL_TRACK_LABELS.map(([slug]) => slug))
+      .order("order_index");
+    if (!data) return [];
+    return RAIL_TRACK_LABELS.flatMap(([slug, label]) => {
+      const projects = data
+        .filter((p) => (p.courses as unknown as { slug: string }).slug === slug)
+        .map((p) => ({
+          n: p.order_index as number,
+          title: p.title as string,
+          stack: ((p.tech_stack as string[] | null) ?? []).slice(0, 3).join(" · "),
+        }));
+      // A track with a partial syllabus would make the rail lie — skip it.
+      return projects.length >= 6 ? [{ slug, label, projects }] : [];
+    });
+  } catch {
+    return [];
+  }
+}
+
 // How many of the 100 free early-access seats are still open. Null (→ hidden
 // in the UI) when the window is closed or the count can't be read — the
 // counter must never show a made-up number.
@@ -92,7 +127,7 @@ async function getFreeSeatsLeft(): Promise<{ left: number; cap: number } | null>
 
 // ─── PAGE ─────────────────────────────────────────────────────────────────────
 export default async function Home() {
-  const [dbCourses, seats] = await Promise.all([getCourses(), getFreeSeatsLeft()]);
+  const [dbCourses, seats, railTracks] = await Promise.all([getCourses(), getFreeSeatsLeft(), getRailTracks()]);
   const courses = dbCourses.length > 0 ? dbCourses : FALLBACK_COURSES;
 
   return (
@@ -119,7 +154,7 @@ export default async function Home() {
 
       {/* ── 2b. The premise — practice-first: 10 real projects per track.
              Answers RealityBand's closing line ("project by graded project"). ── */}
-      <div data-s1-section="build-premise"><BuildPremiseSection /></div>
+      <div data-s1-section="build-premise"><BuildPremiseSection tracks={railTracks} /></div>
 
       <SectionWave />
 
