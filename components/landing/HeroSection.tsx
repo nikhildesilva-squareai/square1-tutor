@@ -124,11 +124,12 @@ function PromptCheck() {
                 key={k}
                 onClick={() => { if (!answered) { setPicked(k); setTypedLen(fullB.length); } }}
                 disabled={answered}
-                className="w-full text-left rounded-xl border-2 p-3.5 transition-all disabled:cursor-default motion-safe:hover:-translate-y-px"
+                className={`w-full text-left rounded-xl border-2 p-3.5 transition-all disabled:cursor-default motion-safe:hover:-translate-y-px${answered ? "" : " prompt-option-idle"}`}
                 style={{
-                  borderColor: revealWin ? "#10B981" : revealWeak ? "#E2E8F0" : isPick ? "#0056CE" : "#E2E8F0",
+                  borderColor: revealWin ? "#10B981" : revealWeak ? "#E2E8F0" : isPick ? "#0056CE" : undefined,
                   background: revealWin ? "rgba(16,185,129,0.05)" : revealWeak ? "#F8FAFC" : "#fff",
                   opacity: revealWeak ? 0.72 : 1,
+                  animationDelay: answered ? undefined : k === "b" ? "1.6s" : "0s",
                 }}
               >
                 <div className="flex items-center justify-between mb-1.5">
@@ -312,20 +313,14 @@ export function HeroSection({
 
           {/* LEFT — the promise */}
           <div className="text-center lg:text-left">
-            <div className="mb-5 sm:mb-6 hero-enter">
-              <span className="inline-flex items-center gap-1.5 text-[10px] sm:text-xs font-bold tracking-[0.22em] uppercase text-brand border border-brand/20 bg-brand/5 px-3 py-1.5 rounded-full">
-                <Sparkles className="h-3.5 w-3.5" /> Proof, not promises
-              </span>
-            </div>
-
-            {/* H1 leads with the pain (passive tutorials) then the outcome (provable
-                skill) — a contrast headline converts better than a capability claim
-                because the visitor self-identifies with the first clause. */}
+            {/* H1: three short beats, instantly parseable — what you do, what you
+                get, why it matters. Eyebrow pill removed (user call 2026-07-24):
+                the headline IS the message, nothing above it to slow the eye. */}
             <h1 className="font-black leading-[1.02] tracking-tight text-slate-900 mb-5 hero-enter"
-              style={{ fontSize: "clamp(2.3rem, 4.8vw, 4.2rem)", animationDelay: "90ms" }}>
-              Stop watching tutorials.{" "}
+              style={{ fontSize: "clamp(2.5rem, 5.4vw, 4.6rem)", animationDelay: "90ms" }}>
+              Learn AI. Build proof.{" "}
               <span className="animate-text-sheen" style={{ background: BLUE_GRADIENT, backgroundSize: "200% auto", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>
-                Build &amp; prove job-ready AI skills.
+                Get hired.
               </span>
             </h1>
 

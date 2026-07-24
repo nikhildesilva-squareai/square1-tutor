@@ -1,9 +1,10 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { X, Check, FileX2, FolderGit2, BadgeCheck, Sparkles } from "lucide-react";
+import { X, Check, FileX2, FolderGit2, BadgeCheck, Sparkles, ArrowUpRight } from "lucide-react";
 import { PrimaryCta } from "@/components/ui/primary-cta";
 import { NumberTicker, useNumberTicker } from "@/components/ui/number-ticker";
+import { BorderBeam } from "@/components/ui/border-beam";
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // The 2026 Reality — the stakes. The market divergence drawn as a "scissor"
@@ -196,8 +197,13 @@ const CANDIDATE_B = [
 export function RealityBand() {
   const ref = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(false);
+  // Mouse-follow glare on the winning card (premium-card sheen). Kept as plain
+  // state + radial-gradient — no motion lib, pointer-events none, hover-only.
+  const [glare, setGlare] = useState<{ x: number; y: number } | null>(null);
+  const [reduceMotion, setReduceMotion] = useState(false);
 
   useEffect(() => {
+    setReduceMotion(window.matchMedia("(prefers-reduced-motion: reduce)").matches);
     const obs = new IntersectionObserver(([e]) => e.isIntersecting && setVisible(true), { threshold: 0.15 });
     if (ref.current) obs.observe(ref.current);
     return () => obs.disconnect();
@@ -286,7 +292,16 @@ export function RealityBand() {
               transform: visible ? "translateY(0) scale(1)" : "translateY(24px) scale(0.98)",
               transitionDelay: "140ms",
             }}
+            onMouseMove={(e) => {
+              const r = e.currentTarget.getBoundingClientRect();
+              setGlare({ x: e.clientX - r.left, y: e.clientY - r.top });
+            }}
+            onMouseLeave={() => setGlare(null)}
           >
+            {/* Travelling light on the winning card's edge — blue family only */}
+            {!reduceMotion && (
+              <BorderBeam size={140} duration={9} borderWidth={1.5} colorFrom="#9CC5FF" colorTo="#3388FF" />
+            )}
             <div aria-hidden className="pointer-events-none absolute -top-20 -right-16 w-56 h-56 rounded-full"
               style={{ background: "radial-gradient(circle, rgba(255,255,255,0.22) 0%, transparent 70%)" }} />
             <div className="relative flex items-center justify-between">
@@ -300,18 +315,61 @@ export function RealityBand() {
               Degree + deployed proof
             </h3>
             <ul className="relative mt-5 space-y-3.5">
-              {CANDIDATE_B.map(({ icon: Icon, text }) => (
+              {CANDIDATE_B.map(({ icon: Icon, text }, bi) => (
                 <li key={text} className="flex items-start gap-3 text-[13px] sm:text-sm leading-snug" style={{ color: "#E4EEFB" }}>
                   <span className="mt-px w-[22px] h-[22px] rounded-full flex items-center justify-center shrink-0 bg-white">
                     <Icon size={12} strokeWidth={2.5} aria-hidden style={{ color: "#0056CE" }} />
                   </span>
-                  <span className="pt-0.5 font-medium">{text}</span>
+                  <span className="pt-0.5 font-medium">
+                    {bi === 0 ? (
+                      <>
+                        <NumberTicker target={10} start={visible} delay={500} duration={700} className="tabular-nums" />
+                        + deployed, code-reviewed projects
+                      </>
+                    ) : (
+                      text
+                    )}
+                  </span>
                 </li>
               ))}
             </ul>
-            <p className="relative mt-6 pt-4 text-[11px] font-medium" style={{ borderTop: "1px solid rgba(255,255,255,0.18)", color: "#BFD9FF" }}>
+
+            {/* The proof, clickable — a live public starter repo an employer
+                (or a skeptical visitor) can open and clone right now. */}
+            <a
+              href="https://github.com/nikhildesilva-squareai/square1-starter-genai-02-rag-doc-qa"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="relative mt-5 flex items-center gap-3 rounded-xl px-3.5 py-3 bg-white/10 border border-white/20 hover:bg-white/[0.17] transition-colors"
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/logos/github-white.svg" alt="" className="h-5 w-5 shrink-0" />
+              <span className="min-w-0 flex-1">
+                <span className="block truncate font-mono text-[11.5px] font-semibold text-white">
+                  square1-starter-genai-02-rag-doc-qa
+                </span>
+                <span className="block text-[10.5px]" style={{ color: "#BFD9FF" }}>
+                  Smart Document Q&amp;A (RAG) · public template — open it, clone it, run it
+                </span>
+              </span>
+              <ArrowUpRight className="h-4 w-4 shrink-0" style={{ color: "#BFD9FF" }} aria-hidden />
+            </a>
+
+            <p className="relative mt-5 pt-4 text-[11px] font-medium" style={{ borderTop: "1px solid rgba(255,255,255,0.18)", color: "#BFD9FF" }}>
               Same market. A CV employers can click, run and verify.
             </p>
+
+            {/* Mouse-follow glare (on top, pointer-transparent) */}
+            <div
+              aria-hidden
+              className="pointer-events-none absolute inset-0 transition-opacity duration-300"
+              style={{
+                opacity: glare && !reduceMotion ? 1 : 0,
+                background: glare
+                  ? `radial-gradient(320px circle at ${glare.x}px ${glare.y}px, rgba(255,255,255,0.14), transparent 65%)`
+                  : undefined,
+              }}
+            />
           </div>
         </div>
 
@@ -322,6 +380,18 @@ export function RealityBand() {
             <span className="font-bold text-slate-900">project by graded project.</span>
           </p>
           <PrimaryCta href="/diagnostic">Start building proof — free 3-min skill check</PrimaryCta>
+          {/* Third-party-verifiable proof, not a testimonial: every claim above
+              is checkable on GitHub right now. (No real student quotes exist
+              yet — nothing gets invented.) */}
+          <a
+            href="https://github.com/nikhildesilva-squareai?tab=repositories"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-500 hover:text-brand transition-colors"
+          >
+            Don&apos;t take our word for it — browse the 152 public starter repos on GitHub
+            <ArrowUpRight className="h-3.5 w-3.5" aria-hidden />
+          </a>
         </div>
       </div>
     </section>
