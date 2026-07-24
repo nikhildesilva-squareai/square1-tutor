@@ -109,27 +109,26 @@ export function FirstPartyAnalytics() {
         .from("events")
         .insert(rows)
         .then(() => {
-          // identify once per session, after we know who they are
+          // Identify once per session — SERVER-side. The old browser chain
+          // (client getUser → RLS student select → client insert) never fired
+          // once in production; the API route reads the auth cookie itself and
+          // writes with the service role. getSession() is a local cookie read,
+          // so anonymous visitors never generate a request.
           if (sessionStorage.getItem("s1_identified")) return;
-          void supabase.auth.getUser().then(({ data }) => {
-            const uid = data.user?.id;
-            if (!uid) return;
-            void supabase
-              .from("students")
-              .select("id")
-              .eq("user_id", uid)
-              .maybeSingle()
-              .then(({ data: student }) => {
-                if (!student?.id) return;
-                sessionStorage.setItem("s1_identified", "1");
-                void supabase.from("events").insert({
-                  anonymous_id,
-                  session_id,
-                  student_id: student.id,
-                  type: "identify",
-                  path: pathname,
-                });
-              });
+          void supabase.auth.getSession().then(({ data }) => {
+            if (!data.session) return;
+            fetch("/api/track/identify", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ anonymous_id, session_id, path: pathname }),
+              keepalive: true,
+            })
+              .then((r) => r.json().catch(() => null))
+              .then((res) => {
+                // Only stop retrying once the link is actually written.
+                if (res?.ok) sessionStorage.setItem("s1_identified", "1");
+              })
+              .catch(() => {});
           });
         });
     } catch {
