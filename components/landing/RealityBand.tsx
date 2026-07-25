@@ -236,8 +236,11 @@ export function RealityBand() {
           shortlisted — <span className="text-slate-900 font-semibold">deployed proof gets you picked</span>.
         </p>
 
-        {/* ── The market, in motion — the scissor chart ────────────────────── */}
-        <div className="mt-9">
+        {/* ── The market, in motion — the scissor chart ────────────────────────
+               Width-capped: the SVG scales with its container, and at the full
+               5xl width the chart (and its in-chart labels) render ~1.5× their
+               designed size — 3xl keeps it near-native. ── */}
+        <div className="mt-9 max-w-3xl mx-auto">
           <MarketChart visible={visible} />
         </div>
 
