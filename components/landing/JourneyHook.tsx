@@ -454,7 +454,7 @@ function JourneyFlow() {
   // visitor navigates manually.
   useEffect(() => {
     if (!visible || paused || userDrove) return;
-    const t = setInterval(() => setActive((a) => (a + 1) % STEPS.length), 3600);
+    const t = setInterval(() => setActive((a) => (a + 1) % STEPS.length), 2400);
     return () => clearInterval(t);
   }, [visible, paused, userDrove]);
 
@@ -471,8 +471,8 @@ function JourneyFlow() {
         <div className="absolute top-7 left-[10%] right-[10%] h-[3px] -translate-y-1/2 rounded-full bg-slate-200" />
         {/* filled portion up to the active node */}
         <div
-          className="absolute top-7 left-[10%] h-[3px] -translate-y-1/2 rounded-full transition-all duration-500 ease-out"
-          style={{ width: `${(active / last) * 80}%`, background: "linear-gradient(90deg,#3388FF,#0056CE)" }}
+          className="absolute top-7 left-[10%] h-[3px] -translate-y-1/2 rounded-full transition-all duration-300"
+          style={{ width: `${(active / last) * 80}%`, background: "linear-gradient(90deg,#3388FF,#0056CE)", transitionTimingFunction: "cubic-bezier(0.3, 0.9, 0.4, 1)" }}
         />
         {/* nodes */}
         <div className="relative z-10 flex justify-between">
@@ -489,10 +489,10 @@ function JourneyFlow() {
                 aria-current={isActive ? "step" : undefined}
               >
                 <span
-                  className="relative w-12 h-12 sm:w-14 sm:h-14 rounded-full flex items-center justify-center font-black text-xs sm:text-sm transition-all duration-300"
+                  className="relative w-12 h-12 sm:w-14 sm:h-14 rounded-full flex items-center justify-center font-black text-xs sm:text-sm transition-all duration-200"
                   style={
                     isActive
-                      ? { background: a, color: "#fff", boxShadow: `0 0 0 6px ${a}1f, 0 8px 24px ${a}55`, transform: "scale(1.08)" }
+                      ? { background: a, color: "#fff", boxShadow: `0 0 0 6px ${a}1f, 0 8px 24px ${a}55`, transform: "scale(1.14)", transitionTimingFunction: "cubic-bezier(0.34, 1.56, 0.64, 1)" }
                       : isDone
                         ? { background: a, color: "#fff" }
                         : { background: "#fff", color: "#94A3B8", border: "2px solid #E2E8F0" }
@@ -505,7 +505,7 @@ function JourneyFlow() {
                   )}
                 </span>
                 <span
-                  className="text-[9px] sm:text-[11px] font-bold tracking-wide text-center transition-colors duration-300"
+                  className="text-[9px] sm:text-[11px] font-bold tracking-wide text-center transition-colors duration-200"
                   style={{ color: isActive ? a : isDone ? "#475569" : "#94A3B8" }}
                 >
                   {s.label}
@@ -527,15 +527,15 @@ function JourneyFlow() {
             <button
               key={s.n}
               onClick={() => go(i)}
-              className="text-left rounded-2xl border p-5 transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand/40"
+              className="text-left rounded-2xl border p-5 transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand/40"
               style={
                 isActive
-                  ? { borderColor: `${a}55`, background: `${a}0A`, boxShadow: `0 12px 32px ${a}1F`, transform: "translateY(-4px)" }
+                  ? { borderColor: `${a}55`, background: `${a}0A`, boxShadow: `0 12px 32px ${a}1F`, transform: "translateY(-6px)", transitionTimingFunction: "cubic-bezier(0.34, 1.56, 0.64, 1)" }
                   : { borderColor: "#E2E8F0", background: "#FFFFFF" }
               }
             >
               <div className="flex items-baseline justify-between mb-3">
-                <span className="text-2xl font-black tabular-nums transition-colors duration-300"
+                <span className="text-2xl font-black tabular-nums transition-colors duration-200"
                   style={{ color: isActive ? a : "#CBD5E1" }}>
                   {s.n}
                 </span>
