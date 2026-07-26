@@ -4,4 +4,5 @@
 export const WORK_LANE_SLUGS = new Set([
   "ai-foundations", "ai-for-marketers", "ai-for-finance", "ai-for-creators",
   "ai-for-founders", "ai-for-teachers", "ai-for-project-managers", "ai-for-sales",
+  "ai-for-operations",
 ]);
