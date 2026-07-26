@@ -398,6 +398,12 @@ export default function AboutPage() {
         </div>
       </section>
 
+      {/* ── A NOTE FROM OUR FOUNDER ──────────────────────────────────────────── */}
+      <section className="relative overflow-hidden py-20 sm:py-28 px-4 sm:px-6 lg:px-8"
+        style={{ background: "linear-gradient(180deg, #FFFFFF 0%, #F6F9FE 100%)" }}>
+        <FounderNote />
+      </section>
+
       {/* ── OUR PROMISE + CTA ────────────────────────────────────────────────── */}
       <section className="relative overflow-hidden py-20 sm:py-28 px-4 sm:px-6 lg:px-8"
         style={{ background: "linear-gradient(180deg, #F8FAFC 0%, #FFFFFF 50%, #F4F8FF 100%)" }}>
@@ -406,6 +412,45 @@ export default function AboutPage() {
         <PromiseContent />
       </section>
     </main>
+  );
+}
+
+// ─── A note from our founder — verbatim letter (user-supplied 2026-07-26) ─────
+function FounderNote() {
+  const { ref, visible } = useReveal(0.15);
+  const fade = (delay: number) => ({
+    opacity: visible ? 1 : 0,
+    transform: visible ? "translateY(0)" : "translateY(20px)",
+    transition: "opacity .6s ease-out, transform .6s ease-out",
+    transitionDelay: `${delay}ms`,
+  });
+  const paragraphs = [
+    <>I started Square 1 AI with a single, foundational belief: anyone — from anywhere, starting with anything — can learn, build, and completely change the direction of their life when given a true opportunity to practice and someone in their corner.</>,
+    <>For too long, technical education has stopped at theory. You watch the videos, you read the documentation, and you memorize the frameworks. But eventually, you are left alone in the quiet gap between knowing and doing, wondering if you are truly ready for the real world. I lived that gap firsthand. I built Square 1 AI to close it permanently.</>,
+    <>Here, learning is active, not passive. You don&apos;t just study a concept; you apply it to real-world scenarios, receive rigorous feedback on the work you produce, and walk away with a portfolio you can proudly stand behind. Whether your goal is to step into a high-impact engineering role, launch a startup, or solve a complex problem in your community, we give you the foundation to make it happen.</>,
+    <>Our mission goes beyond teaching technical skills. We are here to cultivate creators, entrepreneurs, and problem-solvers — the kind of people who look at the future not with hesitation, but with the intent to build it.</>,
+    <>So wherever you are starting from today, remember this: <span className="font-bold text-slate-900">everyone starts at square one.</span> What matters is that you take that first step. And we will be right here, in your corner, every step of the way.</>,
+  ];
+  return (
+    <div ref={ref} className="relative max-w-3xl mx-auto">
+      <div className="text-center mb-10 sm:mb-12" style={fade(0)}>
+        <span className="text-[10px] sm:text-[11px] tracking-[0.35em] uppercase text-brand font-bold">A note from our founder</span>
+        <h2 className="mt-3 font-black tracking-tight text-slate-900 leading-[1.03]" style={{ fontSize: "clamp(30px, 5vw, 56px)", letterSpacing: "-0.02em" }}>
+          Everyone starts at <span style={accentText}>square one.</span>
+        </h2>
+      </div>
+      <div className="relative rounded-3xl border border-slate-200 bg-white p-7 sm:p-10 overflow-hidden" style={{ boxShadow: "0 10px 40px rgba(15,28,49,0.07)", ...fade(120) }}>
+        <span aria-hidden className="absolute inset-x-0 top-0 h-1" style={{ background: "linear-gradient(90deg, #3388FF, #0056CE)" }} />
+        <div className="space-y-5 text-[15px] sm:text-base text-slate-700 leading-relaxed">
+          {paragraphs.map((p, i) => <p key={i}>{p}</p>)}
+          <p className="font-bold text-slate-900">Let&apos;s build a better world — together.</p>
+        </div>
+        <div className="mt-8 pt-6 border-t border-slate-100">
+          <p className="text-sm font-black text-slate-900">Nikhil De Silva</p>
+          <p className="text-xs text-slate-500 mt-0.5">Founder, Square 1 AI</p>
+        </div>
+      </div>
+    </div>
   );
 }
 
