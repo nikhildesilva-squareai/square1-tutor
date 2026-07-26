@@ -79,8 +79,14 @@ const FALLBACK_COURSES: CourseRow[] = [
 const RAIL_TRACK_LABELS: [slug: string, label: string][] = [
   ["machine-learning", "Machine Learning"],
   ["data-science", "Data Science"],
+  ["generative-ai", "Generative AI"],
+  ["agentic-ai", "Agentic AI"],
+  ["llm-agent-architect", "LLM Agents"],
+  ["artificial-intelligence", "Artificial Intelligence"],
+  ["computer-vision", "Computer Vision"],
   ["cybersecurity", "Cybersecurity"],
   ["fullstack-development", "Full Stack"],
+  ["ai-product-management", "AI Product Management"],
 ];
 
 async function getRailTracks(): Promise<RailTrack[]> {
