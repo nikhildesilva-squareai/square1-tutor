@@ -1,5 +1,6 @@
 import { Check } from "lucide-react";
-import { FOUNDING_PRICE } from "@/lib/founding";
+import { foundingPriceLabel } from "@/lib/founding";
+import type { RegionKey } from "@/lib/pricing";
 import { PrimaryCta } from "@/components/ui/primary-cta";
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -9,7 +10,9 @@ import { PrimaryCta } from "@/components/ui/primary-cta";
 // with verifiable portfolios attached.
 // ═══════════════════════════════════════════════════════════════════════════════
 
-const FOUNDING_PERKS = [
+function foundingPerksFor(region: RegionKey) {
+  const FOUNDING_PRICE = foundingPriceLabel(region);
+  return [
   {
     title: FOUNDING_PRICE ? `Founding pricing — ${FOUNDING_PRICE}, locked` : "Founding pricing, locked",
     desc:  "Whatever you pay now is your price for life — it never goes up on you.",
@@ -25,15 +28,19 @@ const FOUNDING_PERKS = [
     desc:  "Early students decide what gets built next. Your gaps set the roadmap.",
     accent: "#3388FF",
   },
-];
+  ];
+}
 
 export function SocialProofSection({
   courseCount = 9,
   seats = null,
+  region = "global",
 }: {
   courseCount?: number;
   seats?: { left: number; cap: number } | null;
+  region?: RegionKey;
 }) {
+  const FOUNDING_PERKS = foundingPerksFor(region);
   return (
     <section
       className="relative overflow-hidden pt-20 sm:pt-28 lg:pt-32 pb-14 sm:pb-16 px-4 sm:px-6 lg:px-8"

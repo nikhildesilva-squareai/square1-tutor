@@ -5,7 +5,8 @@ import { useParams, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Logo } from "@/components/ui/logo";
 import { ShareResultButton } from "@/components/ShareResultButton";
-import { FOUNDING_PLANS } from "@/lib/founding";
+import { foundingPlansFor } from "@/lib/founding";
+import type { RegionKey } from "@/lib/pricing";
 import { freeWindowOpen } from "@/lib/free-access";
 import {
   getDiagnostic,
@@ -374,7 +375,7 @@ function Roadmap({ coursePath, weakTopics, track, className }: { coursePath: Cou
   );
 }
 
-export default function ResultsClient({ initialSeats = null, coursePath = null }: { initialSeats?: { left: number; cap: number } | null; coursePath?: CoursePath | null }) {
+export default function ResultsClient({ initialSeats = null, coursePath = null, region = "global" }: { initialSeats?: { left: number; cap: number } | null; coursePath?: CoursePath | null; region?: RegionKey }) {
   const params = useParams<{ subject: string }>();
   const searchParams = useSearchParams();
   const slug = params.subject;
@@ -425,8 +426,9 @@ export default function ResultsClient({ initialSeats = null, coursePath = null }
 
   // Founding-plan pricing derived from the shared source: numeric per-month, the
   // 3-mo baseline (highest rate), % saved vs baseline, and the billed total.
-  const foundingBase = Math.max(...FOUNDING_PLANS.map((p) => parseFloat(p.perMonth.replace(/[^0-9.]/g, ""))));
-  const foundingPlans = FOUNDING_PLANS.map((p) => {
+  const regionPlans = foundingPlansFor(region);
+  const foundingBase = Math.max(...regionPlans.map((p) => parseFloat(p.perMonth.replace(/[^0-9.]/g, ""))));
+  const foundingPlans = regionPlans.map((p) => {
     const pm = parseFloat(p.perMonth.replace(/[^0-9.]/g, ""));
     return { ...p, pm, savings: Math.round(((foundingBase - pm) / foundingBase) * 100), total: (pm * p.months).toFixed(2) };
   });

@@ -1,5 +1,6 @@
 import { ChevronDown } from "lucide-react";
-import { FOUNDING_PLANS } from "@/lib/founding";
+import { foundingPlansFor } from "@/lib/founding";
+import type { RegionKey } from "@/lib/pricing";
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // FAQ — answers the objections that stall signups, and doubles as an SEO
@@ -9,7 +10,7 @@ import { FOUNDING_PLANS } from "@/lib/founding";
 // Every answer states verifiable product facts only. No invented policies.
 // ═══════════════════════════════════════════════════════════════════════════════
 
-function buildFaqs(courseCount: number) {
+function buildFaqs(courseCount: number, region: RegionKey) {
   return [
     {
       q: "What's the difference between the skill check and the full assessment?",
@@ -17,7 +18,7 @@ function buildFaqs(courseCount: number) {
     },
     {
       q: "Is Square 1 really free right now?",
-      a: `Yes. Cohort 01 early access is free with no credit card required. When paid plans open, founding rates are ${FOUNDING_PLANS.map((p) => `${p.perMonth}/mo on the ${p.months}-month track`).join(", ")} — and founding members lock their rate for life. It never goes up on you.`,
+      a: `Yes. Cohort 01 early access is free with no credit card required. When paid plans open, founding rates are ${foundingPlansFor(region).map((p) => `${p.perMonth}/mo on the ${p.months}-month track`).join(", ")} — and founding members lock their rate for life. It never goes up on you.`,
     },
     {
       q: "How does the AI code review actually work?",
@@ -66,8 +67,8 @@ function buildFaqs(courseCount: number) {
   ];
 }
 
-export function FAQSection({ courseCount = 9 }: { courseCount?: number }) {
-  const faqs = buildFaqs(courseCount);
+export function FAQSection({ courseCount = 9, region = "global" }: { courseCount?: number; region?: RegionKey }) {
+  const faqs = buildFaqs(courseCount, region);
 
   return (
     <section id="faq" className="relative overflow-hidden py-20 sm:py-28 px-4 sm:px-6 lg:px-8 bg-white">

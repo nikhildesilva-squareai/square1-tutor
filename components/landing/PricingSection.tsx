@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { Check } from "lucide-react";
-import { FOUNDING_PLANS, FOUNDING_PRICE_FROM } from "@/lib/founding";
+import { foundingPlansFor, foundingPriceFrom } from "@/lib/founding";
+import type { RegionKey } from "@/lib/pricing";
+import { RegionSelector } from "@/components/landing/RegionSelector";
 import { PrimaryCta } from "@/components/ui/primary-cta";
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -31,7 +33,10 @@ const TEAM_FEATURES = [
   "Team skill reporting",
 ];
 
-export function PricingSection() {
+export function PricingSection({ region = "global" }: { region?: RegionKey }) {
+  // One region per render — every price on the page comes from this table.
+  const plans = foundingPlansFor(region);
+  const priceFrom = foundingPriceFrom(region);
   return (
     <section id="pricing" className="relative overflow-hidden py-20 sm:py-28 px-4 sm:px-6 lg:px-8"
       style={{ background: "linear-gradient(180deg,#FFFFFF 0%,#F8FAFC 55%,#F4F8FF 100%)" }}>
@@ -61,6 +66,11 @@ export function PricingSection() {
             and the no-code role tracks. No credit card anywhere below. Founding members keep
             whatever they pay now; the price never goes up on you.
           </p>
+        
+          {/* Detected region — always visible and changeable (IP geo is a guess) */}
+          <div className="mt-6 flex justify-center">
+            <RegionSelector region={region} />
+          </div>
         </div>
 
         {/* Tiers */}
@@ -106,7 +116,7 @@ export function PricingSection() {
               </span>
             </div>
             <p className="relative font-black leading-none" style={{ fontSize: 40 }}>
-              from {FOUNDING_PRICE_FROM}
+              from {priceFrom}
               <span className="text-base font-bold text-slate-400">/mo</span>
             </p>
             <p className="relative text-xs text-slate-400 mt-1.5 mb-5">
@@ -115,7 +125,7 @@ export function PricingSection() {
 
             {/* Plan rates by track length */}
             <div className="relative rounded-2xl border border-white/10 divide-y divide-white/10 mb-6 overflow-hidden">
-              {FOUNDING_PLANS.map((p) => (
+              {plans.map((p) => (
                 <div key={p.months}
                   className="flex items-center justify-between px-4 py-2.5"
                   style={p.popular ? { background: "rgba(51,136,255,0.10)" } : undefined}>

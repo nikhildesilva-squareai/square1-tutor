@@ -5,6 +5,7 @@ import { PrimaryCta } from "@/components/ui/primary-cta";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { FREE_ACCESS_CAP, freeWindowOpen } from "@/lib/free-access";
+import { getRegion } from "@/lib/pricing-server";
 import { HeroSection } from "@/components/landing/HeroSection";
 import { RealityBand } from "@/components/landing/RealityBand";
 import { ComparisonSection } from "@/components/landing/ComparisonSection";
@@ -134,6 +135,8 @@ async function getFreeSeatsLeft(): Promise<{ left: number; cap: number } | null>
 // ─── PAGE ─────────────────────────────────────────────────────────────────────
 export default async function Home() {
   const [dbCourses, seats, railTracks] = await Promise.all([getCourses(), getFreeSeatsLeft(), getRailTracks()]);
+  // One pricing region per request — every price surface below reads it.
+  const region = await getRegion();
   const courses = dbCourses.length > 0 ? dbCourses : FALLBACK_COURSES;
 
   return (
@@ -181,22 +184,22 @@ export default async function Home() {
       <SectionWave />
 
       {/* ── 6. Vs alternatives — portfolio over certificates ─────────────────── */}
-      <div data-s1-section="comparison"><ComparisonSection /></div>
+      <div data-s1-section="comparison"><ComparisonSection region={region} /></div>
 
       <SectionWave />
 
       {/* ── 8. Honest proof — founder note + founding offer ──────────────────── */}
-      <div data-s1-section="social-proof"><SocialProofSection courseCount={courses.length} seats={seats} /></div>
+      <div data-s1-section="social-proof"><SocialProofSection courseCount={courses.length} seats={seats} region={region} /></div>
 
       <SectionWave />
 
       {/* ── 9. Pricing — free start, founding rate locked for life ───────────── */}
-      <div data-s1-section="pricing"><PricingSection /></div>
+      <div data-s1-section="pricing"><PricingSection region={region} /></div>
 
       <SectionWave />
 
       {/* ── 10. FAQ — objections answered + FAQPage structured data ──────────── */}
-      <div data-s1-section="faq"><FAQSection courseCount={courses.length} /></div>
+      <div data-s1-section="faq"><FAQSection courseCount={courses.length} region={region} /></div>
 
       <SectionWave />
 

@@ -8,6 +8,7 @@ import { FREE_ACCESS_CAP, freeWindowOpen } from "@/lib/free-access";
 import { getSubject, getDiagnostic, scoreDiagnostic, decodeAnswers, readinessBand } from "@/lib/diagnostic";
 import ResultsClient from "./ResultsClient";
 import { DiagnosticEvent } from "@/components/DiagnosticEvent";
+import { getRegion } from "@/lib/pricing-server";
 
 // The real course path for this track — modules (in order), the honest guided-
 // hours number (same learnableHours model the course page uses), lesson total
@@ -131,12 +132,14 @@ export async function generateMetadata({ params, searchParams }: Props): Promise
 export default async function DiagnosticResultsPage({ params }: Props) {
   const { subject } = await params;
   const [initialSeats, coursePath] = await Promise.all([getInitialSeats(), getCoursePath(subject)]);
+  const region = await getRegion();
+
   return (
     <div className={`${interTight.variable} ${figtree.variable}`}>
       {/* Funnel logging: this visitor finished the skill check (reached results). */}
       <DiagnosticEvent event="finished" subject={subject} />
       <Suspense>
-        <ResultsClient initialSeats={initialSeats} coursePath={coursePath} />
+        <ResultsClient initialSeats={initialSeats} coursePath={coursePath} region={region} />
       </Suspense>
     </div>
   );

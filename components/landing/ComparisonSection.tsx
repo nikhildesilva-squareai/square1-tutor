@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { FOUNDING_PRICE } from "@/lib/founding";
+import { foundingPriceLabel } from "@/lib/founding";
+import type { RegionKey } from "@/lib/pricing";
 
 // ─── The 4 money-shot comparisons ─────────────────────────────────────────────
 type Comparison = {
@@ -18,7 +19,9 @@ type Comparison = {
   newLabel: string;
 };
 
-const COMPARISONS: Comparison[] = [
+function comparisonsFor(region: RegionKey): Comparison[] {
+  const FOUNDING_PRICE = foundingPriceLabel(region);
+  return [
   // Cost: once FOUNDING_PRICE is set (lib/founding.ts) this shows the real
   // founding rate — an honest like-for-like against bootcamp tuition.
   FOUNDING_PRICE
@@ -27,7 +30,8 @@ const COMPARISONS: Comparison[] = [
   { category: "Time to job-ready", oldValue: "3 years", oldNumber: 3, oldSuffix: " yrs", oldLabel: "tutorials, alone", newValue: "6 months", newNumber: 6, newSuffix: " mo", newLabel: "one focused track" },
   { category: "Real projects deployed", oldValue: "2", oldNumber: 2, oldLabel: "toy apps · maybe", newValue: "10+", newNumber: 10, newSuffix: "+", newLabel: "live on GitHub" },
   { category: "Code feedback", oldValue: "0", oldNumber: 0, oldLabel: "you guess", newValue: "Every line", newLabel: "graded by Nova, our AI tutor" },
-];
+  ];
+}
 
 // ─── Count-up hook (runs once the table scrolls into view) ────────────────────
 function useCountUp(target: number | undefined, run: boolean, duration = 1100) {
@@ -88,7 +92,8 @@ function Row({ comp, visible, last }: { comp: Comparison; visible: boolean; last
 }
 
 // ─── Main section ─────────────────────────────────────────────────────────────
-export function ComparisonSection() {
+export function ComparisonSection({ region = "global" }: { region?: RegionKey }) {
+  const COMPARISONS = comparisonsFor(region);
   const ref = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(false);
 

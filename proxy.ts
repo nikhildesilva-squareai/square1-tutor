@@ -1,5 +1,6 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
+import { S1_REGION_COOKIE, parseRegion, regionForCountry } from "@/lib/pricing";
 
 const PUBLIC_PATHS = [
   "/",
@@ -50,6 +51,25 @@ export async function proxy(request: NextRequest) {
   const {
     data: { user },
   } = await supabase.auth.getUser();
+
+  // ── Regional pricing: resolve the visitor's region once, at the edge ───────
+  // Vercel's IP geolocation header is only available here and in route
+  // handlers, so we translate it to a region cookie that every server
+  // component can read cheaply. An EXISTING cookie is never overwritten — a
+  // manual override (or a stale-but-chosen region) must always beat IP geo.
+  // Set on request.cookies too, so the very first render already sees it.
+  const existingRegion = parseRegion(request.cookies.get(S1_REGION_COOKIE)?.value);
+  if (!existingRegion) {
+    const region = regionForCountry(request.headers.get("x-vercel-ip-country"));
+    request.cookies.set(S1_REGION_COOKIE, region);
+    supabaseResponse.cookies.set(S1_REGION_COOKIE, region, {
+      path: "/",
+      maxAge: 60 * 60 * 24 * 365,
+      sameSite: "lax",
+      // Readable by the client region selector; carries no personal data.
+      httpOnly: false,
+    });
+  }
 
   const { pathname } = request.nextUrl;
 
