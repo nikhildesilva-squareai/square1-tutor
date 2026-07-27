@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import Link from "next/link";
 import { CourseSwitcher } from "@/components/CourseSwitcher";
+import { CourseRoadmap } from "@/components/CourseRoadmap";
 import { ActivityHeatmap } from "@/components/ActivityHeatmap";
 import { computeStreak } from "@/lib/streaks";
 import { SubjectSync } from "@/components/SubjectSync";
@@ -358,6 +359,12 @@ export default async function DashboardPage({ searchParams }: DashboardProps) {
     lessonsByModule.set(l.module_id, list);
   }
 
+  // Which module the current lesson sits in — named in the hero so the learner
+  // always knows WHERE they are ("Module 0 · Foundations"), not just which
+  // lesson. On day one this is what tells them Module 0 is the starting point.
+  const currentModule = (modules ?? []).find(m => m.id === currentLesson?.module_id) ?? null;
+  const hasStarted = lessonsCompleted > 0;
+
   // Weekly streak
   const weekDays = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
   const today = now.getDay();
@@ -411,15 +418,22 @@ export default async function DashboardPage({ searchParams }: DashboardProps) {
             {currentLesson ? (
               <>
                 <h1 className="text-3xl sm:text-4xl font-black text-white tracking-tight mb-2">
-                  Continue Learning
+                  {hasStarted ? "Continue Learning" : "Start here"}
                 </h1>
+                {/* Name the module, then the lesson — the learner should never
+                    have to guess where they are in the course. */}
+                {currentModule && (
+                  <p className="text-white/60 text-[11px] font-bold uppercase tracking-[0.15em] mb-1.5">
+                    {currentModule.title}
+                  </p>
+                )}
                 <p className="text-white/80 text-base mb-6">
                   {currentLesson.title}
                 </p>
                 <div className="flex items-center gap-4 flex-wrap">
                   <Link href={`/learn/${currentLesson.id}`}
                     className="inline-flex items-center gap-2.5 pl-6 pr-5 py-3.5 rounded-xl text-sm font-bold bg-white text-ink hover:bg-white/90 hover:-translate-y-0.5 transition-all shadow-lg">
-                    Resume Lesson
+                    {hasStarted ? "Resume Lesson" : "Start Lesson 1"}
                     <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><polygon points="6 4 20 12 6 20 6 4" /></svg>
                   </Link>
                   <span className="text-white/75 text-sm flex items-center gap-1.5">
@@ -657,79 +671,30 @@ export default async function DashboardPage({ searchParams }: DashboardProps) {
 
           {/* Module roadmap */}
           <div className="bg-surface rounded-2xl border border-border shadow-card p-5">
-            <div className="flex items-center justify-between mb-5">
-              <p className="text-[10px] font-bold text-ink-muted uppercase tracking-widest">Course Roadmap</p>
-              <div className="flex items-center gap-3">
-                <Link href={`/courses/${courseSlug}/schedule`} className="text-xs text-brand font-semibold hover:underline">Schedule &amp; deadlines</Link>
-                <Link href={`/courses/${courseSlug}`} className="text-xs text-ink-muted font-semibold hover:underline">View course</Link>
+            <div className="flex items-start justify-between gap-3 mb-4">
+              <div>
+                <p className="text-[10px] font-bold text-ink-muted uppercase tracking-widest">Course Roadmap</p>
+                <p className="text-xs text-ink-secondary mt-1">
+                  Tap any module to open its lessons — finished ones stay open to review.
+                </p>
               </div>
+              <Link href={`/courses/${courseSlug}/schedule`} className="text-xs text-brand font-semibold hover:underline shrink-0 pt-0.5">Schedule</Link>
             </div>
 
-            <div className="space-y-3">
-              {(modules ?? []).map((mod) => {
-                const modLessons = lessonsByModule.get(mod.id) ?? [];
-                const modCompleted = modLessons.filter(l => l.completed).length;
-                const modTotal = modLessons.length;
-                const modPct = modTotal > 0 ? modCompleted / modTotal : 0;
-                const isCurrentModule = currentLesson && currentLesson.module_id === mod.id;
-                const isDone = modPct === 1;
-
-                return (
-                  <div key={mod.id} className={[
-                    "flex items-center gap-4 px-4 py-3 rounded-xl border transition-all",
-                    isCurrentModule
-                      ? "border-brand/30 bg-surface-tint"
-                      : isDone
-                      ? "border-emerald-200 bg-emerald-50/50"
-                      : "border-border",
-                  ].join(" ")}>
-                    {/* Module number */}
-                    <div className={[
-                      "w-9 h-9 rounded-xl flex items-center justify-center text-sm font-bold shrink-0",
-                      isDone
-                        ? "bg-emerald-100 text-emerald-600"
-                        : isCurrentModule
-                        ? "bg-brand text-white"
-                        : "bg-surface-alt text-ink-muted",
-                    ].join(" ")}>
-                      {isDone ? (
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><polyline points="20 6 9 17 4 12" /></svg>
-                      ) : mod.week_number}
-                    </div>
-
-                    {/* Module info */}
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2">
-                        <p className={[
-                          "text-sm font-semibold truncate",
-                          isCurrentModule ? "text-brand" : isDone ? "text-emerald-700" : "text-ink",
-                        ].join(" ")}>
-                          {mod.title}
-                        </p>
-                        {isCurrentModule && (
-                          <span className="text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-brand/10 text-brand border border-brand/20">
-                            Current
-                          </span>
-                        )}
-                      </div>
-                      <p className="text-[10px] text-ink-muted mt-0.5">
-                        Week {mod.week_number} · {modCompleted}/{modTotal} lessons
-                      </p>
-                    </div>
-
-                    {/* Progress bar */}
-                    <div className="w-20 shrink-0">
-                      <div className="w-full h-1.5 rounded-full bg-surface-alt overflow-hidden">
-                        <div className="h-full rounded-full transition-all duration-500" style={{
-                          width: `${modPct * 100}%`,
-                          background: isDone ? "#059669" : isCurrentModule ? courseColor : "#CBD5E1",
-                        }} />
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
+            {/* Interactive: expand any reachable module, open any lesson.
+                Module 0 is always available, finished lessons stay open for
+                review, and the next module surfaces its own Start CTA. */}
+            <CourseRoadmap
+              modules={(modules ?? []).map((mod) => ({
+                id: mod.id,
+                title: mod.title,
+                week_number: mod.week_number,
+                lessons: lessonsByModule.get(mod.id) ?? [],
+              }))}
+              currentLessonId={currentLesson?.id ?? null}
+              courseColor={courseColor}
+              courseSlug={courseSlug}
+            />
           </div>
         </div>
 
