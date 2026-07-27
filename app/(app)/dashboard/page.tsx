@@ -7,6 +7,7 @@ import { computeStreak } from "@/lib/streaks";
 import { SubjectSync } from "@/components/SubjectSync";
 import { RoutingQuestion } from "@/components/RoutingQuestion";
 import { CodingExperienceQuestion } from "@/components/CodingExperienceQuestion";
+import { WelcomeTour } from "@/components/WelcomeTour";
 import { DIAG_SUBJECTS } from "@/lib/diagnostic";
 
 // ─── Course career mapping ────────────────────────────────────────────────────
@@ -161,6 +162,10 @@ export default async function DashboardPage({ searchParams }: DashboardProps) {
       <div className="min-h-full px-4 sm:px-6 py-8 max-w-6xl mx-auto">
         {/* Attach the diagnostic subject choice to this profile (once). */}
         <SubjectSync />
+
+        {/* Whole-product walkthrough on first visit — orientation before any
+            feature detail. Renders nothing once completed. */}
+        <WelcomeTour firstName={firstName} />
 
         {/* One-time routing question — renders nothing once answered/skipped. */}
         {!goalAnswered && <RoutingQuestion workHref={workHref} />}
@@ -400,6 +405,10 @@ export default async function DashboardPage({ searchParams }: DashboardProps) {
     <div className="min-h-full px-4 sm:px-6 py-8 max-w-6xl mx-auto">
       {/* Attach the diagnostic subject choice to this profile (once). */}
       <SubjectSync />
+
+      {/* Whole-product walkthrough — also runs here, because a learner who
+          enrolled straight from the diagnostic lands on this branch first. */}
+      <WelcomeTour firstName={firstName} />
 
       {/* ── Hero: Continue Learning (THE primary action) ──────────────── */}
       <div className="relative rounded-2xl overflow-hidden mb-6 p-6 sm:p-8"

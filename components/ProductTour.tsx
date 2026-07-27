@@ -30,6 +30,18 @@ export interface TourStep {
 
 const seenKey = (id: string) => `sq1_tour_${id}`;
 
+/**
+ * A target counts only if it is actually on screen. Presence in the DOM is not
+ * enough: the sidebar is `hidden lg:flex`, so on a phone its rows exist but
+ * render at zero size — pointing a spotlight at them would highlight nothing.
+ */
+function isTargetVisible(key: string): boolean {
+  const el = document.querySelector(`[data-tour="${key}"]`) as HTMLElement | null;
+  if (!el) return false;
+  const r = el.getBoundingClientRect();
+  return r.width > 0 && r.height > 0;
+}
+
 export function hasSeenTour(id: string): boolean {
   try {
     return localStorage.getItem(seenKey(id)) === "done";
@@ -78,9 +90,7 @@ export function ProductTour({
     if (hasSeenTour(id)) return;
     // Let the page paint before measuring anything.
     const t = setTimeout(() => {
-      visibleSteps.current = steps.filter(
-        (s) => !s.target || document.querySelector(`[data-tour="${s.target}"]`),
-      );
+      visibleSteps.current = steps.filter((s) => !s.target || isTargetVisible(s.target));
       if (visibleSteps.current.length > 0) {
         setI(0);
         setActive(true);

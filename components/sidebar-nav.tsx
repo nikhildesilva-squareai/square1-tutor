@@ -77,8 +77,11 @@ export function SidebarNav({ userEmail, userName, isManager = false, isAdmin = f
       .join("")
       .toUpperCase() || "?";
 
+  // data-tour keys let the welcome walkthrough point at real navigation rows
+  // (see components/ProductTour.tsx). Derived from the href so they stay in
+  // step automatically if the nav changes.
   const NavRow = ({ href, label, icon: Icon, badge }: { href: string; label: string; icon: LucideIcon; badge?: number }) => (
-    <Link href={href} className={cn(ROW, isActive(href) ? ROW_ACTIVE : ROW_INACTIVE)}>
+    <Link href={href} data-tour={`nav-${href.replace(/^\//, "")}`} className={cn(ROW, isActive(href) ? ROW_ACTIVE : ROW_INACTIVE)}>
       <Icon className="w-[18px] h-[18px] shrink-0" />
       <span className="flex-1">{label}</span>
       {badge ? (
