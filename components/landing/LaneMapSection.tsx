@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { Code2, Briefcase } from "lucide-react";
 import { PrimaryCta } from "@/components/ui/primary-cta";
 import { WORK_LANE_SLUGS } from "@/lib/work-lanes";
+import { ON_RAMP_SLUG } from "@/lib/onramp";
 import { CourseExplorer, type Course } from "@/components/landing/CourseGridSection";
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -104,7 +105,11 @@ function Chip({
 }
 
 export function LaneMapSection({ courses }: { courses: Course[] }) {
-  const career = courses.filter((c) => !WORK_LANE_SLUGS.has(c.slug));
+  // The on-ramp is a prerequisite, not a career track — it has no role or salary
+  // outcome, so listing it beside Machine Learning misrepresents both. Learners
+  // reach it through the coding-experience recommendation, the Module 0
+  // prerequisite notice, and the full catalogue instead.
+  const career = courses.filter((c) => !WORK_LANE_SLUGS.has(c.slug) && c.slug !== ON_RAMP_SLUG);
   const work = courses.filter((c) => WORK_LANE_SLUGS.has(c.slug));
 
   const containerRef = useRef<HTMLDivElement>(null);
@@ -187,7 +192,9 @@ export function LaneMapSection({ courses }: { courses: Course[] }) {
           </span>
           <h2 className="mt-3 font-black tracking-tight text-slate-900 leading-[1.0]"
             style={{ fontSize: "clamp(26px, 4.4vw, 52px)" }}>
-            {courses.length} courses.{" "}
+            {/* Count the lanes actually drawn — the on-ramp is excluded above,
+                so courses.length would overstate by one. */}
+            {career.length + work.length} courses.{" "}
             <span style={{ background: BLUE_GRADIENT, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>
               Pick your lane.
             </span>
