@@ -338,10 +338,10 @@ export default async function Home() {
         {/* Stays deep Square 1 navy — the page anchor under the white content */}
         <footer className="relative border-t border-white/[0.06]" style={{ background: "#00183A" }}>
           <div className="max-w-6xl mx-auto px-6 sm:px-8 py-12 sm:py-16">
-            <div className="grid grid-cols-1 md:grid-cols-[1.3fr_1fr_1fr_1fr] gap-10 md:gap-8">
+            <div className="grid grid-cols-2 md:grid-cols-[1.3fr_1fr_1fr_1fr] gap-10 md:gap-8">
 
               {/* Col 1 — Brand + Social */}
-              <div>
+              <div className="col-span-2 md:col-span-1">
                 <Logo variant="light" size="md" />
                 <p className="mt-4 text-xs text-slate-400 leading-relaxed max-w-xs">
                   The AI-powered learn-to-launch platform.
@@ -379,23 +379,25 @@ export default async function Home() {
                 </div>
               </div>
 
-              {/* Col 2 — Learn (DB-driven course links) */}
-              <div>
+              {/* Col 2 — Learn (DB-driven course links). Mobile: spans both
+                  columns with the ~20 course links in two sub-columns (was one
+                  1,600px file of 18px-tall links); links get py-1 tap padding. */}
+              <div className="col-span-2 md:col-span-1">
                 <h5 className="text-[10px] tracking-[0.3em] uppercase text-slate-400 font-bold mb-4">Learn</h5>
-                <ul className="space-y-2.5">
+                <ul className="grid grid-cols-2 md:grid-cols-1 gap-x-4 gap-y-1">
                   <li>
-                    <Link href="/diagnostic" className="text-sm text-slate-300 font-semibold hover:text-white transition-colors">
+                    <Link href="/diagnostic" className="inline-block py-1 text-sm text-slate-300 font-semibold hover:text-white transition-colors">
                       Free 3-min skill check
                     </Link>
                   </li>
                   <li>
-                    <Link href="/diagnostic?goal=work" className="text-sm text-slate-300 font-semibold hover:text-white transition-colors">
+                    <Link href="/diagnostic?goal=work" className="inline-block py-1 text-sm text-slate-300 font-semibold hover:text-white transition-colors">
                       AI for your work — no code
                     </Link>
                   </li>
                   {courses.map((c) => (
                     <li key={c.slug}>
-                      <Link href={`/try/${c.slug}`} className="text-sm text-slate-400 hover:text-white transition-colors">
+                      <Link href={`/try/${c.slug}`} className="inline-block py-1 text-sm text-slate-400 hover:text-white transition-colors">
                         {c.title}
                       </Link>
                     </li>
@@ -406,23 +408,23 @@ export default async function Home() {
               {/* Col 3 — Company */}
               <div>
                 <h5 className="text-[10px] tracking-[0.3em] uppercase text-slate-400 font-bold mb-4">Company</h5>
-                <ul className="space-y-2.5">
-                  <li><Link href="/#pricing" className="text-sm text-slate-400 hover:text-white transition-colors">Pricing</Link></li>
-                  <li><Link href="/#faq" className="text-sm text-slate-400 hover:text-white transition-colors">FAQ</Link></li>
-                  <li><Link href="/research" className="text-sm text-slate-400 hover:text-white transition-colors">Research</Link></li>
-                  <li><Link href="/business" className="text-sm text-slate-400 hover:text-white transition-colors">For Teams</Link></li>
-                  <li><Link href="/about" className="text-sm text-slate-400 hover:text-white transition-colors">About Us</Link></li>
-                  <li><Link href="/careers" className="text-sm text-slate-400 hover:text-white transition-colors">Careers</Link></li>
-                  <li><Link href="/contact" className="text-sm text-slate-400 hover:text-white transition-colors">Contact</Link></li>
+                <ul className="space-y-1">
+                  <li><Link href="/#pricing" className="inline-block py-1 text-sm text-slate-400 hover:text-white transition-colors">Pricing</Link></li>
+                  <li><Link href="/#faq" className="inline-block py-1 text-sm text-slate-400 hover:text-white transition-colors">FAQ</Link></li>
+                  <li><Link href="/research" className="inline-block py-1 text-sm text-slate-400 hover:text-white transition-colors">Research</Link></li>
+                  <li><Link href="/business" className="inline-block py-1 text-sm text-slate-400 hover:text-white transition-colors">For Teams</Link></li>
+                  <li><Link href="/about" className="inline-block py-1 text-sm text-slate-400 hover:text-white transition-colors">About Us</Link></li>
+                  <li><Link href="/careers" className="inline-block py-1 text-sm text-slate-400 hover:text-white transition-colors">Careers</Link></li>
+                  <li><Link href="/contact" className="inline-block py-1 text-sm text-slate-400 hover:text-white transition-colors">Contact</Link></li>
                 </ul>
               </div>
 
               {/* Col 4 — Legal */}
               <div>
                 <h5 className="text-[10px] tracking-[0.3em] uppercase text-slate-400 font-bold mb-4">Legal</h5>
-                <ul className="space-y-2.5">
-                  <li><Link href="/privacy" className="text-sm text-slate-400 hover:text-white transition-colors">Privacy Policy</Link></li>
-                  <li><Link href="/terms" className="text-sm text-slate-400 hover:text-white transition-colors">Terms of Service</Link></li>
+                <ul className="space-y-1">
+                  <li><Link href="/privacy" className="inline-block py-1 text-sm text-slate-400 hover:text-white transition-colors">Privacy Policy</Link></li>
+                  <li><Link href="/terms" className="inline-block py-1 text-sm text-slate-400 hover:text-white transition-colors">Terms of Service</Link></li>
                 </ul>
               </div>
             </div>

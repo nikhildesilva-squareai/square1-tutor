@@ -268,6 +268,10 @@ body {
   animation: cursor-blink 1s step-end infinite;
 }
 
+/* Horizontal scroll strips (mobile tab rows) — scroll without a visible bar */
+.no-scrollbar { scrollbar-width: none; -ms-overflow-style: none; }
+.no-scrollbar::-webkit-scrollbar { display: none; }
+
 /* ─── Marquee (Magic UI port via 21st.dev — components/ui/marquee.tsx) ───────
    Namespaced `mq-scroll`: JourneyHook already owns `.animate-marquee`/`marquee`
    (22s, translateX(-50%)) further down this file — do not collide with it. */

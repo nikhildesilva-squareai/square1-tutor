@@ -111,7 +111,9 @@ export function BuildPremiseSection({ tracks }: { tracks?: RailTrack[] }) {
 
         {/* ── Track tabs — swap in a real track's real syllabus ─────────────── */}
         {rail.length > 1 && (
-          <div className="mt-10 flex flex-wrap justify-center gap-2">
+          /* Mobile: one swipeable row (10 wrapped pills ate ~250px of screen);
+             sm+: centred wrap as before. */
+          <div className="mt-10 flex gap-2 overflow-x-auto no-scrollbar -mx-4 px-4 pb-1 sm:mx-0 sm:px-0 sm:pb-0 sm:flex-wrap sm:justify-center sm:overflow-visible">
             {rail.map((t) => {
               const active = t.slug === activeSlug;
               return (
@@ -119,7 +121,7 @@ export function BuildPremiseSection({ tracks }: { tracks?: RailTrack[] }) {
                   key={t.slug}
                   onClick={() => switchTrack(t.slug)}
                   aria-pressed={active}
-                  className="rounded-full px-4 py-2 text-xs font-bold transition-all active:scale-[0.97]"
+                  className="shrink-0 whitespace-nowrap rounded-full px-4 py-2 text-xs font-bold transition-all active:scale-[0.97]"
                   style={active
                     ? { background: BLUE_GRADIENT, color: "#fff", boxShadow: "0 8px 20px -8px rgba(0,86,206,0.5)" }
                     : { background: "#fff", color: "#475569", border: "1px solid #D8E7FC", boxShadow: "0 1px 2px rgba(15,28,49,0.04)" }}
