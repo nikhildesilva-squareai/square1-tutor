@@ -4,6 +4,8 @@ import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { learnableHours } from "@/lib/utils";
 import { DirectEnrolButton } from "./DirectEnrolButton";
+import { ON_RAMP_SLUG } from "@/lib/onramp";
+import { WORK_LANE_SLUGS } from "@/lib/work-lanes";
 import type { Metadata } from "next";
 import type { Course, Module, Lesson, Project } from "@/types/database";
 
@@ -259,6 +261,19 @@ export default async function CourseDetailPage({ params }: PageProps) {
   }
 
   const isEnrolled = !!studentId && !!currentLessonId;
+
+  // Show the beginner prerequisite notice only where it is true and useful:
+  // a technical-lane course (the no-code work lane assumes no programming at
+  // all), not the on-ramp itself, only before enrolling, and only once the
+  // on-ramp is actually live to link to.
+  const { data: onRampCourse } = await supabase
+    .from("courses").select("status").eq("slug", ON_RAMP_SLUG).maybeSingle();
+  const showPrerequisite =
+    !isEnrolled &&
+    slug !== ON_RAMP_SLUG &&
+    !WORK_LANE_SLUGS.has(slug) &&
+    moduleList.length > 0 &&
+    onRampCourse?.status === "active";
   const completedCount = completedLessonIds.size;
   const progressPct = lessonList.length > 0 ? Math.round((completedCount / lessonList.length) * 100) : 0;
 
@@ -335,6 +350,34 @@ export default async function CourseDetailPage({ params }: PageProps) {
 
       {/* ── Content ─────────────────────────────────────────────────── */}
       <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8">
+
+        {/* Prerequisite notice — this course's "Module 0 — Foundations" is a
+            refresher that assumes prior coding (its Python/NumPy/terminal/Git
+            lessons start mid-stream), so a true beginner previously discovered
+            the gap by failing. Orientation, not a warning label, and it never
+            blocks enrolment — the CTA above stays one click. */}
+        {showPrerequisite && (
+          <div className="mb-6 rounded-2xl border p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4"
+            style={{ borderColor: "#D8E7FC", background: "#F5F9FF" }}>
+            <span className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 text-lg" style={{ background: "#E4EEFB" }} aria-hidden>
+              🧱
+            </span>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-bold text-ink">New to coding? Start one step earlier.</p>
+              <p className="text-xs text-ink-secondary leading-relaxed mt-0.5">
+                This track&apos;s Module 0 is a fast refresher — it assumes you can already read Python,
+                use a terminal and commit with Git. <span className="font-semibold text-ink">Programming from Zero</span> teaches
+                exactly those from nothing, then you come back here.
+              </p>
+            </div>
+            <Link href={`/courses/${ON_RAMP_SLUG}`}
+              className="shrink-0 inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl text-sm font-bold text-white bg-brand hover:-translate-y-0.5 transition-transform">
+              Take a look
+              <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden><path d="M6 3l5 5-5 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+            </Link>
+          </div>
+        )}
+
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
           {/* Left: Curriculum (2/3) */}

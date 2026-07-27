@@ -6,6 +6,7 @@ import { ActivityHeatmap } from "@/components/ActivityHeatmap";
 import { computeStreak } from "@/lib/streaks";
 import { SubjectSync } from "@/components/SubjectSync";
 import { RoutingQuestion } from "@/components/RoutingQuestion";
+import { CodingExperienceQuestion } from "@/components/CodingExperienceQuestion";
 import { DIAG_SUBJECTS } from "@/lib/diagnostic";
 
 // ─── Course career mapping ────────────────────────────────────────────────────
@@ -145,7 +146,11 @@ export default async function DashboardPage({ searchParams }: DashboardProps) {
     // while the user has zero enrolments and hasn't answered yet. The answer
     // lives on auth metadata (onboarding_goal), same mechanism as signup_subject.
     // The work-lane card deep-links to AI Foundations once that course is live.
-    const goalAnswered = typeof user.user_metadata?.onboarding_goal === "string";
+    const onboardingGoal = user.user_metadata?.onboarding_goal;
+    const goalAnswered = typeof onboardingGoal === "string";
+    // Anyone heading for a technical track needs the coding-experience question;
+    // the no-code work lane assumes no programming, so it is skipped there.
+    const wantsTechnical = onboardingGoal === "career" || onboardingGoal === "explore";
     let workHref = "/courses";
     if (!goalAnswered) {
       const { data: aiFoundations } = await supabase.from("courses").select("status").eq("slug", "ai-foundations").maybeSingle();
@@ -159,6 +164,12 @@ export default async function DashboardPage({ searchParams }: DashboardProps) {
 
         {/* One-time routing question — renders nothing once answered/skipped. */}
         {!goalAnswered && <RoutingQuestion workHref={workHref} />}
+
+        {/* Coding-experience question — the diagnostic scores subject knowledge
+            only, so without this the product cannot tell "cannot code yet" from
+            "does not know this subject yet" and sends both to a Module 0 that
+            assumes prior coding. Recommendation only; never a gate. */}
+        {wantsTechnical && <CodingExperienceQuestion intendedTrackTitle={startCourseTitle} />}
 
         {/* Hero greeting — the activation moment. ONE concrete action: a named
             first lesson with a 5-minute promise, framed as a card that already
