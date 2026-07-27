@@ -1,9 +1,10 @@
-"use client";
+﻿"use client";
 
 import { useState, useRef, useCallback, useEffect, useMemo } from "react";
 import { cn } from "@/lib/utils";
 import { intervalLabel } from "@/lib/srs";
 import { NoteContent } from "@/components/ui/note-content";
+import { ProductTour } from "@/components/ProductTour";
 
 interface Note {
   id: string; type: string; title: string | null; content: string; color: string;
@@ -123,6 +124,8 @@ export function StudyHubClient({ initialNotes, stats, totalCount }: Props) {
   const [notes, setNotes] = useState(initialNotes);
   const [counts, setCounts] = useState<Stats>(stats);
   const [filter, setFilter] = useState<Filter>("all");
+  // Replay counter for the walkthrough ("How this works" button).
+  const [tourSignal, setTourSignal] = useState(0);
   const [search, setSearch] = useState("");
   const [sort, setSort] = useState<Sort>("newest");
   const [showNewNote, setShowNewNote] = useState(false);
@@ -514,6 +517,44 @@ export function StudyHubClient({ initialNotes, stats, totalCount }: Props) {
 
   return (
     <div className="min-h-full px-4 sm:px-6 py-8 max-w-5xl mx-auto">
+      {/* Walkthrough — the Study Hub's value is a loop (finish lesson → cards
+          appear → review daily) that nobody discovers by clicking around. */}
+      <ProductTour
+        id="study-hub"
+        startSignal={tourSignal}
+        steps={[
+          {
+            title: "Your Study Hub fills itself",
+            body: "Every lesson you finish turns its quiz questions into flashcards here automatically, due the next day. You do not have to make them — they arrive as you learn.",
+          },
+          {
+            target: "hub-review",
+            title: "Review what is due",
+            body: "This button appears when cards are ready. You see the question, flip it, then grade yourself Hard, Good or Easy. Hard brings the card back sooner; Easy pushes it further away. A few minutes a day is the whole method.",
+          },
+          {
+            target: "hub-filters",
+            title: "Everything you save, in one place",
+            body: "Filter by type: your own notes, highlights from lessons, code snippets, flashcards, answers saved from Nova chats, and auto summaries. The number on each tab is how many you have.",
+          },
+          {
+            target: "hub-new",
+            title: "Write your own notes",
+            body: "Add a note any time — and you can paste a screenshot straight in with Ctrl+V, which is useful for diagrams and error screens.",
+          },
+          {
+            target: "hub-error",
+            title: "Log the bugs you solve",
+            body: "Record what broke, why it broke, and the fix. These make the best flashcards you will ever have, because they came from a mistake you actually made.",
+          },
+          {
+            target: "hub-cheatsheet",
+            title: "Revise it all at once",
+            body: "The cheatsheet condenses everything you have saved into a single page — good before an assessment or an interview.",
+          },
+        ]}
+      />
+
       {/* Header */}
       <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
         <div className="flex items-center gap-3">
@@ -529,24 +570,29 @@ export function StudyHubClient({ initialNotes, stats, totalCount }: Props) {
         </div>
 
         <div className="flex items-center gap-2">
-          <a href="/notes/cheatsheet"
+          <button onClick={() => setTourSignal((n) => n + 1)}
+            className="h-9 px-4 rounded-xl border border-border text-xs font-bold text-ink-muted hover:text-brand hover:border-brand/30 transition-all flex items-center gap-1.5">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="10" /><path d="M9.1 9a3 3 0 115 2.2c-.9.7-1.6 1.2-1.6 2.3" /><line x1="12" y1="17" x2="12.01" y2="17" /></svg>
+            How this works
+          </button>
+          <a href="/notes/cheatsheet" data-tour="hub-cheatsheet"
             className="h-9 px-4 rounded-xl border border-border text-xs font-bold text-ink-muted hover:text-brand hover:border-brand/30 transition-all flex items-center gap-1.5">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M16 18l6-6-6-6M8 6l-6 6 6 6" /></svg>
             Cheatsheet
           </a>
-          <button onClick={() => { setShowErrorForm(v => !v); setShowNewNote(false); }}
+          <button data-tour="hub-error" onClick={() => { setShowErrorForm(v => !v); setShowNewNote(false); }}
             className="h-9 px-4 rounded-xl border border-border text-xs font-bold text-ink-muted hover:text-red-500 hover:border-red-300 transition-all flex items-center gap-1.5">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M9 18h6M10 22h4M12 2v1M12 7a4 4 0 014 4c0 1.5-.8 2.8-2 3.4V16H10v-1.6C8.8 13.8 8 12.5 8 11a4 4 0 014-4z" /></svg>
             Log error
           </button>
           {counts.dueFlashcards > 0 && (
-            <button onClick={startReview}
+            <button data-tour="hub-review" onClick={startReview}
               className="h-9 px-4 rounded-xl bg-emerald-600 text-white text-xs font-bold hover:bg-emerald-700 transition-all flex items-center gap-1.5">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><rect x="2" y="4" width="20" height="16" rx="2" /><path d="M12 4v16" /></svg>
               Review ({counts.dueFlashcards})
             </button>
           )}
-          <button onClick={() => setShowNewNote(!showNewNote)}
+          <button data-tour="hub-new" onClick={() => setShowNewNote(!showNewNote)}
             className="h-9 px-4 rounded-xl bg-brand text-white text-xs font-bold hover:bg-brand/90 transition-all flex items-center gap-1.5">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></svg>
             New Note
@@ -830,7 +876,7 @@ export function StudyHubClient({ initialNotes, stats, totalCount }: Props) {
 
       {/* ── Filters + Search + Sort ────────────────────── */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 mb-6">
-        <div className="flex items-center gap-1 overflow-x-auto scrollbar-none">
+        <div data-tour="hub-filters" className="flex items-center gap-1 overflow-x-auto scrollbar-none">
           {FILTERS.map(f => (
             <button key={f.id} onClick={() => setFilter(f.id)}
               className={cn("shrink-0 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all",
