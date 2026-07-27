@@ -1,0 +1,470 @@
+{
+  "week": 4,
+  "lessons": [
+    {
+      "order_index": 10,
+      "title": "Saving your code in a file and running it",
+      "theory_md": "Everything you have written so far has lived somewhere temporary. You typed it into a box, you ran it, you saw the answer — and when the page closed, the code went with it. That is fine for practising. It is no way to build anything you can come back to.\n\nThis week you move your code onto your own machine, where it stays. This is the week that quietly defeats a lot of self-taught beginners, and it is worth knowing why: nothing here is hard, but three or four small unfamiliar things arrive at once. We will take them one at a time.\n\nStart with the most reassuring fact in programming: **code is text**. That is all it is. A program is a plain text file with instructions written in it. The machine does not care what the file is called, or what colour your editor paints the words. It cares that the text is saved, and that you can point Python at it.\n\n## The three pieces you need\n\n**A text editor.** A program for typing plain text. Notepad on Windows or TextEdit on a Mac can do it, but a *code editor* is kinder to you. Most beginners use Visual Studio Code, which is free. A code editor colours your code so mistakes stand out, keeps your indentation lined up, and flags obvious typing errors before you run anything.\n\nWhat you must not use is a word processor such as Microsoft Word or Google Docs. Those save hidden formatting alongside your words, and they helpfully turn straight quote marks into curly ones. Python cannot read either.\n\n**A file whose name ends in `.py`.** The part after the dot is called the *file extension*. It does not change the file — it labels it. `.py` says \"this is Python code\" to you, to your editor, and to the tools you use.\n\n**The interpreter.** When you installed Python, you installed a program called `python`. That program is the interpreter. Hand it a file and it reads your file from the top, one line at a time, carrying out each instruction as it goes. Your `.py` file is a set of instructions; `python` is the thing that follows them.\n\nTo hand a file to the interpreter you need a *terminal*: a window where you type commands to your machine instead of clicking. On Windows, open the Start menu and type \"PowerShell\". On a Mac, open Applications, then Utilities, then Terminal. Week 5 teaches the terminal properly. For now you need exactly two commands: `cd` (short for \"change directory\") to move into the folder your file is in, and `python yourfile.py` to run it.\n\n## Worked example 1 — your first saved program\n\nMake a folder on your Desktop called `first-python`. In your editor, type this and save it in that folder as `hello.py`:\n\n```python\nname = \"Ada\"\nprint(\"Hello,\", name)\nprint(\"Your name has\", len(name), \"letters.\")\n```\n\nNow open a terminal and type these two lines, pressing Enter after each:\n\n```\ncd Desktop/first-python\npython hello.py\n```\n\nWhat appears is exactly this:\n\n```\nHello, Ada\nYour name has 3 letters.\n```\n\nThat is it. That is running real code. If `python` is not recognised, try `python3` — some machines use that name. If the terminal cannot find your file, the next section is for you.\n\n## Worked example 2 — the script that says nothing\n\nSave this in the same folder as `sums.py`:\n\n```python\ntotal = 0\nfor number in [3, 5, 8]:\n    total = total + number\ntotal\n```\n\nRun it with `python sums.py`. Here is the exact output:\n\n```\n```\n\nNothing. Not an error — nothing at all. The script worked perfectly and told you nothing, because a script prints only what you ask it to print. That last line, `total`, calculates a value and then throws it away.\n\nChange the last line to `print(total)` and run it again:\n\n```\n16\n```\n\nThis catches almost everyone, because it is the one place where a notebook behaves differently from a file. Remember it: **in a saved script, nothing appears unless you print it.**\n\n## Notebooks, and when they beat scripts\n\nA *notebook* is another way of running the same language. Instead of one file that runs top to bottom, you get a page split into *cells* — small blocks holding a few lines each. You run one cell, its result appears underneath it, and you carry on. Jupyter and Google Colab are the two you will meet most often, and the technical tracks after this course use them constantly.\n\nNotebooks are better when you are exploring: poking at data, drawing a chart, trying one line to see what it does, keeping notes beside your working. The result sits next to the code that made it, which is wonderful for learning and for showing someone what you found.\n\nScripts are better when the running matters more than the exploring: something that must run the same way every time, something a colleague will run without you, something that runs on a schedule at 6am.\n\nNotebooks have one real trap. You can run cells in any order, so what you see on screen may not be what a fresh run from the top would produce. The variable your chart depends on might come from a cell you deleted ten minutes ago. Before you trust a notebook, restart it and run every cell from the top.\n\n## Mistakes beginners actually make here\n\n**The file is secretly called `hello.py.txt`.** Windows hides file extensions by default, so Notepad quietly adds `.txt`. The symptom is `python: can't open file 'hello.py': [Errno 2] No such file or directory`. Turn on file extensions in your folder view, or save from a code editor.\n\n**You are in the wrong folder.** The terminal is always sitting in one folder, and `python hello.py` looks in that folder only. Same error message as above. Check where you are, then `cd` into the right place.\n\n**You expected output and did not print.** Covered above, and worth expecting twice.\n\n**Curly quotes.** Text copied from a document or a chat window sometimes carries \"smart\" quote marks that look almost identical to straight ones. Python answers with a `SyntaxError`. Retype the quotes inside your editor.\n\n## Try this yourself\n\nMake a file called `about_me.py`. Put in three variables — your name, the town you live in, and the number of days you have been learning to code — and print a sentence using all three. Save it, run it with `python about_me.py`, and then break it on purpose: delete the closing bracket of one `print` and run it again to see which error you get. Put it back. You now own a program that lives on your machine, and you can run it again tomorrow.\n",
+      "estimated_minutes": 30,
+      "learning_objectives": [
+        "Save Python code as a plain text .py file and run it from a terminal",
+        "Explain what the Python interpreter does with a file you hand it",
+        "Choose between a script and a notebook for a given piece of work",
+        "Diagnose the two commonest reasons a saved script will not run"
+      ],
+      "case_study": "**Donald Knuth — literate programming and the WEB system (1984)**\n\nIn 1984 Donald Knuth, a computer scientist at Stanford, published a paper called \"Literate Programming\" in *The Computer Journal*. His complaint was about the shape of source files. Programs, he argued, were written in the order the machine wanted them, not in the order a human being would explain them to another human being. The result was code that ran correctly and taught nobody anything.\n\nHis answer was a system called WEB. You wrote one file that mixed prose and code together, in whatever order made the idea clearest. Two tools then read that file: one produced the plain source file the computer compiled, and the other produced a typeset document for people to read. Knuth wrote his typesetting system TeX this way, and later published its full source code as a book meant to be read cover to cover.\n\nThat is the exact tension in this lesson. A script is written for the machine: top to bottom, no commentary needed, the same every time. A notebook is written for the person: prose, code and results in reading order. Knuth saw decades before the notebook existed that serious work needs both audiences served, and that the mistake is pretending you only have one.\n\nThere is a second lesson in it, and it is the one that keeps you out of trouble. Knuth's beautiful documents were not what the compiler read. The machine always got a plain source file, generated from the same source of truth. When your result has to be reproducible — when a colleague must get your numbers without you in the room — the saved `.py` file is the thing that counts, however lovely the notebook was.\n",
+      "exercises": [
+        {
+          "order_index": 1,
+          "type": "mcq",
+          "language": null,
+          "marks": 2,
+          "title": "What the .py ending actually does",
+          "prompt_md": "You save your code in a file called `analysis.py`. A friend looks over your shoulder and asks what the `.py` at the end of the name is doing for the machine. Which answer is correct?",
+          "options": [
+            "It is part of the file name that labels the file as Python code for you and your tools",
+            "It converts the file into a program that can run on its own without Python installed",
+            "It compresses the file so that the interpreter can read it more quickly",
+            "It tells Python which version of the language should be used for that file"
+          ],
+          "correct_answer": "It is part of the file name that labels the file as Python code for you and your tools"
+        },
+        {
+          "order_index": 2,
+          "type": "mcq",
+          "language": null,
+          "marks": 2,
+          "title": "The script that shows nothing",
+          "prompt_md": "You write a script that adds three numbers together and stores the answer in a variable called `total`. You run it with `python sums.py` and absolutely nothing appears in the terminal — no error, no number. What is the most likely reason?",
+          "options": [
+            "The script never printed anything, and a saved script shows nothing unless you ask it to print",
+            "The script failed silently, because errors are hidden when you run a file instead of a cell",
+            "The answer was a small number, and small results are rounded away before they are shown",
+            "Variables are private to the file they live in, so their values can never be shown at all"
+          ],
+          "correct_answer": "The script never printed anything, and a saved script shows nothing unless you ask it to print"
+        },
+        {
+          "order_index": 3,
+          "type": "mcq",
+          "language": null,
+          "marks": 2,
+          "title": "What the interpreter is doing",
+          "prompt_md": "Someone tells you that Python is an interpreted language, and that typing `python hello.py` starts the interpreter. In plain terms, what is the interpreter doing once you press Enter?",
+          "options": [
+            "Reading your file line by line and carrying out each instruction as it goes",
+            "Turning your file into a permanent application that runs without Python installed",
+            "Translating your file into another language and saving that translation next to it",
+            "Copying your file into the folder where Python keeps every program it is allowed to run"
+          ],
+          "correct_answer": "Reading your file line by line and carrying out each instruction as it goes"
+        },
+        {
+          "order_index": 4,
+          "type": "mcq",
+          "language": null,
+          "marks": 2,
+          "title": "Typed in a word processor",
+          "prompt_md": "A learner types their code in Microsoft Word, saves it, renames the file to `hello.py`, and then gets a wall of errors the moment they run it. What is the underlying problem?",
+          "options": [
+            "A word processor saves hidden formatting alongside the words, so the file is not plain text",
+            "Microsoft Word is not allowed to save files ending in py, so the file never really changed",
+            "Python refuses to open any file that was first created by a different program",
+            "The file has to be saved on the desktop before the interpreter is permitted to read it"
+          ],
+          "correct_answer": "A word processor saves hidden formatting alongside the words, so the file is not plain text"
+        },
+        {
+          "order_index": 5,
+          "type": "mcq",
+          "language": null,
+          "marks": 2,
+          "title": "Notebook or script for a weekly job",
+          "prompt_md": "You have to produce the same sales summary every Monday morning, and a colleague will need to run it in the weeks you are away. Should the work live in a notebook or in a saved script, and why?",
+          "options": [
+            "A script, because it runs from top to bottom the same way every time for whoever runs it",
+            "A notebook, because cells can be run in any order and that makes the result more dependable",
+            "A script, because notebooks are unable to use variables, loops or functions",
+            "A notebook, because a script has to be written again from scratch each time it is run"
+          ],
+          "correct_answer": "A script, because it runs from top to bottom the same way every time for whoever runs it"
+        },
+        {
+          "order_index": 6,
+          "type": "short_answer",
+          "language": null,
+          "marks": 3,
+          "title": "From Enter to output",
+          "prompt_md": "In your own words, describe what happens between pressing Enter on `python hello.py` and seeing text appear in the terminal. Two or three sentences is plenty.",
+          "correct_answer": "The terminal starts the program called python and hands it the name of my file. Python opens hello.py, reads it from the top one line at a time, and carries out each instruction in order. Whenever it reaches a print instruction it writes that text into the terminal window. When it runs out of lines it stops, and the terminal gives me my prompt back."
+        },
+        {
+          "order_index": 7,
+          "type": "short_answer",
+          "language": null,
+          "marks": 3,
+          "title": "No such file or directory",
+          "prompt_md": "You run your file and get:\n\n```\npython: can't open file 'hello.py': [Errno 2] No such file or directory\n```\n\nGive two different causes for this message and explain how you would tell which one you are looking at.",
+          "correct_answer": "Either the terminal is sitting in a different folder from the one holding my file, or the file is not called what I think it is because Windows hid the extension and it is really hello.py.txt. I would check the first by listing the contents of the folder the terminal is in, or by changing into the folder where I saved the file and trying again. I would check the second by turning on file extensions in the folder view, or by opening the folder in a code editor which always shows the true name."
+        },
+        {
+          "order_index": 8,
+          "type": "short_answer",
+          "language": null,
+          "marks": 3,
+          "title": "It worked in my notebook",
+          "prompt_md": "Your notebook shows a chart and the numbers look right. A colleague opens the same notebook, runs every cell from the top, and gets an error. What has probably happened, and what habit would have caught it?",
+          "correct_answer": "I most likely ran my cells out of order, so my chart depended on a variable created by a cell I later changed or deleted. My screen showed a result that a clean run cannot reproduce. The habit that prevents this is restarting the notebook and running every cell from the top before I trust or share the result, and moving anything that must run reliably into a saved script."
+        },
+        {
+          "order_index": 9,
+          "type": "short_answer",
+          "language": null,
+          "marks": 3,
+          "title": "Are notebooks only for beginners?",
+          "prompt_md": "A friend tells you that notebooks are training wheels and that real programmers only use scripts. Write a fair reply that says where each tool genuinely wins.",
+          "correct_answer": "Notebooks and scripts answer different questions, so neither is the grown-up version of the other. A notebook wins while I am exploring, because I can run one line at a time and keep the result and my notes next to the code that made them. A script wins when the running matters more than the exploring, because it goes top to bottom the same way for anyone, every time. Plenty of professionals explore in a notebook and then move the settled work into a script."
+        },
+        {
+          "order_index": 10,
+          "type": "short_answer",
+          "language": null,
+          "marks": 3,
+          "title": "It ran yesterday",
+          "prompt_md": "A script you saved yesterday will not run today. Describe the first two things you would check, and say what each one would tell you.",
+          "correct_answer": "First I would check which folder my terminal is in, because python only looks for the file in the folder it is sitting in, and a wrong folder gives a no such file message rather than a problem with my code. Second I would read the error text itself and look at the file name and line number it points to, because that tells me whether Python failed to find the file at all or found it and objected to a specific line. Those two checks separate a missing file from a broken line before I change anything."
+        },
+        {
+          "order_index": 11,
+          "type": "short_answer",
+          "language": "python",
+          "marks": 5,
+          "title": "Write and run a receipt script",
+          "prompt_md": "Finish this script so that it prints one line for each price and then the total, rounded to two decimal places.\n\nSave it as `receipt.py` and run it with `python receipt.py`. When it is right, the output is exactly:\n\n```\nItem: 4.5\nItem: 2.25\nItem: 9.99\nTotal: 16.74\n```\n\nWrite the complete finished file as your answer.",
+          "starter_code": "# Save as receipt.py and run with:  python receipt.py\n\nprices = [4.50, 2.25, 9.99]\n\n\ndef total(numbers):\n    \"\"\"Add up every number in the list and return the answer.\"\"\"\n    # TODO: add the numbers up and return the total instead of 0\n    return 0\n\n\ndef print_receipt(numbers):\n    \"\"\"Print one line per price, then the total rounded to 2 decimal places.\"\"\"\n    # TODO: print each price on its own line, then print the total\n    print(\"TODO: print each price\")\n\n\nprint_receipt(prices)\n",
+          "correct_answer": "# Save as receipt.py and run with:  python receipt.py\n\nprices = [4.50, 2.25, 9.99]\n\n\ndef total(numbers):\n    \"\"\"Add up every number in the list and return the answer.\"\"\"\n    running = 0\n    for number in numbers:\n        running = running + number\n    return running\n\n\ndef print_receipt(numbers):\n    \"\"\"Print one line per price, then the total rounded to 2 decimal places.\"\"\"\n    for number in numbers:\n        print(\"Item:\", number)\n    print(\"Total:\", round(total(numbers), 2))\n\n\nprint_receipt(prices)\n",
+          "solution_code": "# Save as receipt.py and run with:  python receipt.py\n\nprices = [4.50, 2.25, 9.99]\n\n\ndef total(numbers):\n    \"\"\"Add up every number in the list and return the answer.\"\"\"\n    running = 0\n    for number in numbers:\n        running = running + number\n    return running\n\n\ndef print_receipt(numbers):\n    \"\"\"Print one line per price, then the total rounded to 2 decimal places.\"\"\"\n    for number in numbers:\n        print(\"Item:\", number)\n    print(\"Total:\", round(total(numbers), 2))\n\n\nprint_receipt(prices)\n"
+        },
+        {
+          "order_index": 12,
+          "type": "short_answer",
+          "language": "prompt",
+          "marks": 5,
+          "title": "Prompt Lab: get an error explained, not solved",
+          "prompt_md": "You saved `hello.py` on your Desktop, opened a terminal, typed `python hello.py`, and got:\n\n```\npython: can't open file 'C:\\Users\\me\\hello.py': [Errno 2] No such file or directory\n```\n\nWrite the message you would send an AI assistant (ChatGPT, Claude, Copilot, Gemini — any of them) to get this **explained** rather than fixed for you. A strong prompt says who you are, quotes the error exactly, states what you already tried, and asks for checks you can run yourself.",
+          "correct_answer": "I am four weeks into learning Python and this is the first file I have run from a terminal, so please assume I know almost no terminal commands beyond cd.\n\nI saved a file in my editor called hello.py on my Windows Desktop. I opened PowerShell and typed:\n\npython hello.py\n\nI got exactly this back:\n\npython: can't open file 'C:\\Users\\me\\hello.py': [Errno 2] No such file or directory\n\nPlease do not give me the fix yet. First, take the message apart for me one piece at a time and tell me in plain English what each piece means: what can't open file is claiming, what the full path in quotation marks tells me about where Python looked, and what Errno 2 refers to. I want to understand what the machine is reporting, not memorise a command.\n\nThen give me a short checklist of three things I can check myself, written as questions with what I would see in each case. If one of them depends on Windows hiding file extensions, tell me how to find out whether mine are hidden. Do not tell me which one is the cause.\n\nI will run your checks and come back with what I found, and then we can work out the fix together."
+        }
+      ]
+    },
+    {
+      "order_index": 11,
+      "title": "Importing code other people have written",
+      "theory_md": "There is a belief that quietly slows a lot of beginners down: that using code somebody else wrote is a kind of cheating, and that a proper programmer builds everything from nothing. Nobody works that way. Professional code is mostly a thin layer of your own decisions sitting on top of a great deal of borrowed machinery, and learning to borrow well is a skill in itself. This lesson is that skill.\n\n## A module is a file\n\nStart with the smallest idea. A *module* is a file of Python code that you can use from another file. That is the whole definition. Someone wrote a file full of useful functions; `import` is how you reach into it.\n\nPython arrives with a large collection of these files already installed. That collection is called the **standard library**. It is there the moment Python is, with nothing to download. Some of the ones you will meet early:\n\n- `math` — square roots, rounding, the value of pi\n- `random` — shuffling, dice rolls, random choices\n- `datetime` — dates, times, differences between them\n- `csv` and `json` — reading and writing two very common file formats\n\nThere are two ways to reach into a module, and you will see both everywhere:\n\n```python\nimport math\nprint(math.sqrt(144))\n```\n\n`import math` brings in the whole module, and afterwards you say `math.sqrt` — the module name, a dot, then the thing you want. The alternative pulls out one named piece:\n\n```python\nfrom math import sqrt\nprint(sqrt(144))\n```\n\nBoth print `12.0`. The first form is a little longer to type and much clearer to read, because `math.sqrt` tells the reader where `sqrt` came from. Prefer it while you are learning.\n\n## Worked example 1 — the standard library\n\nSave this as `circle.py`:\n\n```python\nimport math\n\nradius = 3\narea = math.pi * radius * radius\n\nprint(\"Pi is roughly\", round(math.pi, 4))\nprint(\"Area:\", round(area, 2))\n```\n\nRun it with `python circle.py` and you get exactly:\n\n```\nPi is roughly 3.1416\nArea: 28.27\n```\n\nYou did not write the value of pi and you did not have to look it up. That is the point.\n\n## Worked example 2 — importing your own file\n\nModules are not special. Any file you write is one. Put these two files in the same folder.\n\n`greetings.py`:\n\n```python\ndef welcome(name):\n    return \"Welcome, \" + name + \"!\"\n```\n\n`main.py`:\n\n```python\nfrom greetings import welcome\n\nprint(welcome(\"Sam\"))\nprint(welcome(\"Ada\"))\n```\n\nRun `python main.py` and the output is exactly:\n\n```\nWelcome, Sam!\nWelcome, Ada!\n```\n\nNotice the import uses `greetings`, not `greetings.py`. You name the module, not the file name. This is how a program grows past one file: related functions move into their own file, and the file that runs imports what it needs.\n\n## Packages, PyPI and pip\n\nThe standard library is generous but it is not everything. Anything else lives on a huge public shelf called the **Python Package Index**, usually written PyPI. Hundreds of thousands of *packages* sit there — a package being a bundle of modules that someone published for anyone to use.\n\nTo bring one down onto your machine you use **pip**, a program that comes with Python. Type this in the terminal, not inside Python:\n\n```\npip install requests\n```\n\nYou will see a few lines of progress and finish with something like:\n\n```\nSuccessfully installed requests-2.32.3\n```\n\nThe version number will differ from mine, and that is fine. Now `requests` — a package for fetching things over the web — behaves exactly like a standard library module:\n\n```python\nimport requests\n\nresponse = requests.get(\"https://example.com\")\nprint(response.status_code)\n```\n\nWith a working internet connection that prints:\n\n```\n200\n```\n\n`200` is the number web servers send to mean \"here you are, no problem\". You have now used code written by strangers, downloaded by a tool, on your own machine.\n\n## Reading the documentation enough to use it\n\nEvery serious package has *documentation* — its written instructions, usually a website. You do not read it like a book. You do this:\n\n1. **Find the quickstart.** Look for a page called Quickstart, Getting Started or Usage. Copy the smallest example there and run it before you change a single character. Getting one thing to work first is the fastest route to understanding.\n2. **Read the signature.** Docs describe a function like `get(url, timeout=None)`. The names inside the brackets are what you can pass in. Anything with an `=` has a default, so you may leave it out. The docs will also state what comes back — that tells you whether you have something to store in a variable.\n3. **Check the import name.** Good docs show the exact `import` line. Use theirs, not your guess.\n\n## Mistakes beginners actually make here\n\n**Typing `pip install` inside Python.** At the `>>>` prompt, `pip install requests` gives a `SyntaxError`, because that is a terminal command and not a line of Python. Leave Python first.\n\n**Assuming the install name and the import name match.** Often they do. Sometimes they do not, and it is jarring the first time: `pip install beautifulsoup4` then `import bs4`; `pip install pillow` then `import PIL`; `pip install scikit-learn` then `import sklearn`. When an import fails right after a successful install, this is the first thing to check.\n\n**Misreading `ModuleNotFoundError`.** `ModuleNotFoundError: No module named 'reqests'` means Python looked and found nothing under that name. Three causes cover nearly every case: you spelled it wrongly, you have not installed it, or you installed it somewhere your Python is not looking. The third is the whole subject of the next lesson, so if a package you definitely installed still cannot be found, you are not going mad.\n\n**Naming your own file after a module.** Save a file called `random.py` in your project and then `import random` finds *your* file first. The errors that follow are baffling because they look like the real module has gone wrong. Rename your file to something else, such as `dice_game.py`.\n\n## Try this yourself\n\nWrite a file called `birthday.py`. Use `from datetime import date` to get today with `date.today()`, print it, and print how many days it is until a date you choose. Then install one package you are curious about with `pip install`, open its documentation, and run the very first example on its quickstart page without changing it. Getting a stranger's example to run untouched is a real milestone.\n",
+      "estimated_minutes": 32,
+      "learning_objectives": [
+        "Import modules from the standard library using both import forms",
+        "Split your own code across two files and import one from the other",
+        "Install a third-party package from PyPI using pip in the terminal",
+        "Read a package quickstart and function signature well enough to use it"
+      ],
+      "case_study": "**Kenneth Reitz — Requests, HTTP for Humans (2011)**\n\nIn 2011, fetching a web page in Python meant using `urllib2`, a module in the standard library. It was capable and it was correct, and almost everyone found it miserable for the ordinary case. Getting one page took several lines and asked you to understand a handful of concepts you had no interest in. The tool was free, installed already, and still stood between people and the thing they wanted to do.\n\nKenneth Reitz released Requests on 17 August 2011 under the tagline \"Python HTTP for Humans\". It did the same job. What changed was the design: the interface was shaped around the person typing rather than around the protocol underneath. The documentation opened with a quickstart you could copy in one line and see work immediately. Requests went on to become one of the most downloaded packages in the language, and its design was borrowed by web libraries in other languages.\n\nTwo things in that story matter for you. The first is that \"it comes with Python\" and \"it is the right tool\" are different claims. A third-party package can genuinely be worth installing, and choosing one is not laziness — it is the normal judgement of a working programmer. The second is that Requests won partly on its documentation. Docs are not a bonus wrapped around a package; for anyone deciding whether to use it, they are part of the package.\n\nThere is a cost on the other side of the ledger, and it is honest to name it. Every package you install is one more thing your program depends on, and one more thing that has to be present on every machine that runs your code. The standard library needs nothing. A third-party package needs installing, correctly, everywhere. Managing exactly that is the subject of the next lesson.\n",
+      "exercises": [
+        {
+          "order_index": 1,
+          "type": "mcq",
+          "language": null,
+          "marks": 2,
+          "title": "Which one needs installing",
+          "prompt_md": "You want to work out a square root using `math`, and you also want to fetch a web page using `requests`. One of those two needs to be installed first and one does not. Which statement is right?",
+          "options": [
+            "math arrives with Python and needs no install, while requests has to be installed with pip",
+            "Both math and requests have to be installed with pip before either of them can be imported",
+            "Neither one needs installing, because pip downloads any package the first time it is imported",
+            "math has to be installed with pip, while requests is part of the standard library already"
+          ],
+          "correct_answer": "math arrives with Python and needs no install, while requests has to be installed with pip"
+        },
+        {
+          "order_index": 2,
+          "type": "mcq",
+          "language": null,
+          "marks": 2,
+          "title": "pip in the wrong place",
+          "prompt_md": "At the `>>>` prompt inside Python you type `pip install requests` and Python answers with a `SyntaxError` instead of installing anything. Why did that happen?",
+          "options": [
+            "pip is a command for the terminal, so Python read it as a broken line of Python code",
+            "pip has to be installed using pip itself before it is able to install anything else",
+            "The name of the package has to be written inside quotation marks when installing",
+            "Installing is only permitted on the very first line of a saved Python file"
+          ],
+          "correct_answer": "pip is a command for the terminal, so Python read it as a broken line of Python code"
+        },
+        {
+          "order_index": 3,
+          "type": "mcq",
+          "language": null,
+          "marks": 2,
+          "title": "Installed fine, import fails",
+          "prompt_md": "You run `pip install beautifulsoup4`, it reports that the install succeeded, and then `import beautifulsoup4` fails with `ModuleNotFoundError`. What is going on here?",
+          "options": [
+            "The name you install and the name you import are not always the same, and this one imports as bs4",
+            "The install did not really succeed, because pip reports success whether or not it worked",
+            "Package names containing numbers cannot be imported until the package has been renamed",
+            "A package has to be imported inside a function before Python is able to find it"
+          ],
+          "correct_answer": "The name you install and the name you import are not always the same, and this one imports as bs4"
+        },
+        {
+          "order_index": 4,
+          "type": "mcq",
+          "language": null,
+          "marks": 2,
+          "title": "A file named after a module",
+          "prompt_md": "A learner saves a file called `random.py` in their project folder. Another file in the same folder runs `import random` and then fails in a way that makes no sense to them. What is the cause?",
+          "options": [
+            "Python found their own file first, so the name random now points at their file rather than the module",
+            "Python does not allow two files in one folder to contain the same import statement",
+            "Any file that shares a name with a module is deleted automatically when Python starts",
+            "The random module can only be imported from a file whose name begins with main"
+          ],
+          "correct_answer": "Python found their own file first, so the name random now points at their file rather than the module"
+        },
+        {
+          "order_index": 5,
+          "type": "mcq",
+          "language": null,
+          "marks": 2,
+          "title": "Reading a signature in the docs",
+          "prompt_md": "The documentation for a function shows the line `sleep(seconds)` and adds that it returns `None`. What does that tell you before you have written a single line of code?",
+          "options": [
+            "It takes one piece of information, a number of seconds, and hands nothing back for you to store",
+            "It takes no information at all and hands back the word None as a piece of text",
+            "It has to be given a variable that is actually called seconds, or it will refuse to run",
+            "It returns nothing because the authors have not finished writing that function yet"
+          ],
+          "correct_answer": "It takes one piece of information, a number of seconds, and hands nothing back for you to store"
+        },
+        {
+          "order_index": 6,
+          "type": "short_answer",
+          "language": null,
+          "marks": 3,
+          "title": "Two ways to import",
+          "prompt_md": "Explain in your own words the difference between `import math` and `from math import sqrt`, and say which you would choose while you are still learning, and why.",
+          "correct_answer": "The first brings in the whole module under the name math, so afterwards I write math.sqrt to reach anything inside it. The second reaches into the module and pulls out one name, so afterwards I write sqrt on its own and nothing else from math is available. While learning I would use import math, because math.sqrt tells a reader exactly where that function came from and stops me confusing it with a function of my own."
+        },
+        {
+          "order_index": 7,
+          "type": "short_answer",
+          "language": null,
+          "marks": 3,
+          "title": "Is borrowing code cheating?",
+          "prompt_md": "A friend starting out says that installing packages is cheating and that they want to write everything themselves. Give a fair reply that also names the real cost of adding a package.",
+          "correct_answer": "Using published packages is normal professional practice, not a shortcut, because rewriting well tested code by hand wastes time and usually produces something worse. The skill being tested is choosing a sensible package and reading its documentation well enough to use it correctly. The real cost is that every package is one more thing my program depends on, which has to be installed on every machine that runs my code and may change or be abandoned later."
+        },
+        {
+          "order_index": 8,
+          "type": "short_answer",
+          "language": null,
+          "marks": 3,
+          "title": "Three causes of ModuleNotFoundError",
+          "prompt_md": "You run a script and get `ModuleNotFoundError: No module named 'pandas'`. List three different causes for that message and say how you would check each one.",
+          "correct_answer": "First, I may have spelled the name wrongly, which I check by reading the message character by character against the documentation. Second, I may never have installed it, which I check by running pip install pandas and reading what pip reports. Third, I may have installed it for a different Python from the one running my script, which I check by looking at which Python I am running and whether an environment is active. All three produce the same message, so I check them in that order."
+        },
+        {
+          "order_index": 9,
+          "type": "short_answer",
+          "language": null,
+          "marks": 3,
+          "title": "First contact with unfamiliar docs",
+          "prompt_md": "You have installed a package you have never used before and its documentation site has a dozen pages. Describe the order in which you would work through it to get something running.",
+          "correct_answer": "I would look for the quickstart or getting started page first and copy its smallest example exactly as written, running it before I change anything. Once that works I would read the signature of the function I used, so I know which arguments it takes, which have defaults, and what it hands back. Only then would I change one thing at a time towards what I actually need, running it after each change so I know which edit broke it."
+        },
+        {
+          "order_index": 10,
+          "type": "short_answer",
+          "language": null,
+          "marks": 3,
+          "title": "Standard library or third party",
+          "prompt_md": "You need to read a CSV file and you also need to make a pretty chart. The standard library covers one of these and not the other. Explain how you would decide what to use in each case.",
+          "correct_answer": "Reading a CSV file is covered by the csv module in the standard library, so I would use that first because it needs no install and works on every machine that has Python. Charting is not in the standard library, so I would install a published package such as matplotlib. My rule is to prefer the standard library when it does the job well enough, and to accept a third party package when it saves real work, checking that it is widely used and has documentation I can follow."
+        },
+        {
+          "order_index": 11,
+          "type": "short_answer",
+          "language": "python",
+          "marks": 5,
+          "title": "Use an imported module in a script",
+          "prompt_md": "Finish this script so that it imports the `math` module and prints a small report for two circles.\n\nSave it as `circles.py` and run it with `python circles.py`. When it is right, the output is exactly:\n\n```\nRadius: 3\nArea: 28.27\nRadius: 10\nArea: 314.16\n```\n\nDo not type the value of pi yourself — take it from `math`. Write the complete finished file as your answer.",
+          "starter_code": "# Save as circles.py and run with:  python circles.py\n\n# TODO: import the math module here\n\n\ndef circle_area(radius):\n    \"\"\"Return the area of a circle: pi times radius times radius.\"\"\"\n    # TODO: use the value of pi from the math module\n    return 0\n\n\ndef circle_report(radius):\n    \"\"\"Print the radius, then the area rounded to 2 decimal places.\"\"\"\n    # TODO: print the two lines described above\n    print(\"TODO: print the report\")\n\n\ncircle_report(3)\ncircle_report(10)\n",
+          "correct_answer": "# Save as circles.py and run with:  python circles.py\n\nimport math\n\n\ndef circle_area(radius):\n    \"\"\"Return the area of a circle: pi times radius times radius.\"\"\"\n    return math.pi * radius * radius\n\n\ndef circle_report(radius):\n    \"\"\"Print the radius, then the area rounded to 2 decimal places.\"\"\"\n    print(\"Radius:\", radius)\n    print(\"Area:\", round(circle_area(radius), 2))\n\n\ncircle_report(3)\ncircle_report(10)\n",
+          "solution_code": "# Save as circles.py and run with:  python circles.py\n\nimport math\n\n\ndef circle_area(radius):\n    \"\"\"Return the area of a circle: pi times radius times radius.\"\"\"\n    return math.pi * radius * radius\n\n\ndef circle_report(radius):\n    \"\"\"Print the radius, then the area rounded to 2 decimal places.\"\"\"\n    print(\"Radius:\", radius)\n    print(\"Area:\", round(circle_area(radius), 2))\n\n\ncircle_report(3)\ncircle_report(10)\n"
+        },
+        {
+          "order_index": 12,
+          "type": "short_answer",
+          "language": "prompt",
+          "marks": 5,
+          "title": "Prompt Lab: understand an import error",
+          "prompt_md": "You ran `pip install beautifulsoup4`, it said the install succeeded, and then your script failed with:\n\n```\nModuleNotFoundError: No module named 'beautifulsoup4'\n```\n\nWrite the message you would send an AI assistant (ChatGPT, Claude, Copilot, Gemini — any of them) to have this **explained** so you could recognise it again, rather than handed a line to paste. Quote the error, say what you already did, and ask for checks you can run yourself.",
+          "correct_answer": "I am a beginner, four weeks into Python. I am working in a folder on my Desktop and running my file with python scrape.py from PowerShell.\n\nI ran this in the terminal:\n\npip install beautifulsoup4\n\nand pip told me the install succeeded. My script then failed with exactly this:\n\nModuleNotFoundError: No module named 'beautifulsoup4'\n\nPlease do not paste me a working import line yet. First explain what ModuleNotFoundError actually means about what Python did when it reached my import line, in plain English and without assuming I know how Python searches for modules.\n\nThen list the possible causes of an import failing straight after a successful install, ordered from most to least likely for a beginner, with one sentence each on why it happens. For each cause, give me a check I can run myself and tell me what I would see if that cause is the real one. If one of the causes is that the name used to install a package can differ from the name used to import it, explain why that is allowed to happen rather than only telling me the correct name.\n\nI will run your checks and tell you what I saw, then we can decide on the fix together."
+        }
+      ]
+    },
+    {
+      "order_index": 12,
+      "title": "Giving each project its own environment",
+      "theory_md": "\"It works on my machine.\" Four words that have caused more late evenings than any bug. Your code runs perfectly. You send it to a colleague, or move it to another laptop, or come back to it in March, and it falls over on the very first line. Nothing was edited. Something around the code changed.\n\nThis lesson is about that something, and about the small habit that removes the problem for good.\n\n## Where installed packages actually go\n\nWhen you run `pip install requests`, the files land in one shared place attached to the Python installed on your machine. Every project you have ever written shares that one pile. Two problems grow out of that.\n\nThe first is that the pile is invisible in your project. Your code says `import requests`, but nothing in your folder records that requests is needed at all. Send the folder to somebody else and they get your code without the thing it depends on. A package your code needs is called a **dependency**, and undeclared dependencies are the main reason working code fails elsewhere.\n\nThe second is sharper. Say a project you wrote last year needs version 1 of some package, and the one you start today needs version 2. One shared pile can hold one version at a time. Upgrading for the new project breaks the old one. You are now stuck between two working programs, forced to pick.\n\n## A virtual environment is a folder\n\nThe fix has an intimidating name and a plain reality. A **virtual environment** is a folder that holds its own copy of Python and its own installed packages. That is it. No magic, no background service — a folder.\n\n*Activating* it tells your terminal to use that folder's Python and that folder's packages instead of the shared pile. Every `pip install` you run afterwards lands inside the folder. One environment per project, kept next to the project. Two projects, two folders, two entirely separate piles, and no argument between them.\n\n## Worked example 1 — make one and prove it works\n\nSuppose your project lives in `Desktop/weather`. In your terminal:\n\n```\ncd Desktop/weather\npython -m venv .venv\n```\n\n`python -m venv` runs the environment-making tool that comes with Python, and `.venv` is the name of the folder to create. That name is a convention, not a rule; using the same one everywhere means everybody recognises it.\n\nNow activate it. On Windows in PowerShell:\n\n```\n.venv\\Scripts\\Activate.ps1\n```\n\nOn a Mac or Linux:\n\n```\nsource .venv/bin/activate\n```\n\nYour prompt changes. It gains a bracketed name at the front, like this:\n\n```\n(.venv) PS C:\\Users\\you\\Desktop\\weather>\n```\n\nThat prefix is your proof. No prefix, no environment. To see it from inside Python, save this as `check.py`:\n\n```python\nimport sys\n\nprint(sys.prefix)\n```\n\n`sys` is a standard library module about Python itself, and `sys.prefix` is the folder Python is currently living in. Run `python check.py` with the environment active and you get the path to your environment folder:\n\n```\nC:\\Users\\you\\Desktop\\weather\\.venv\n```\n\nYour path will show your own user name and folder, but the ending — `\\.venv` — is the part that matters. Run the same file with the environment switched off, using `deactivate`, and the path points at the shared Python installation instead. Same file, two answers. That is the whole idea, made visible.\n\n## Worked example 2 — writing down what your project needs\n\nWith the environment active, install something and then record it:\n\n```\npip install requests\npip freeze > requirements.txt\n```\n\n`pip freeze` lists every package installed in this environment together with its exact version. The `>` sends that list into a file instead of onto the screen. Open `requirements.txt` and you will see something close to:\n\n```\ncertifi==2024.7.4\ncharset-normalizer==3.3.2\nidna==3.7\nrequests==2.32.3\nurllib3==2.2.2\n```\n\nYou installed one package and five appeared. The other four are packages that requests itself needs — its own dependencies, brought along automatically. Your version numbers will differ from these; that is expected.\n\nThat file is the honest answer to \"works on my machine\". Anyone with your project folder now runs three lines:\n\n```\npython -m venv .venv\nsource .venv/bin/activate\npip install -r requirements.txt\n```\n\n(Windows users activate with `.venv\\Scripts\\Activate.ps1` instead.) `-r` means \"read this file and install everything listed in it\". Same packages, same versions, same behaviour. The `==` pins each package to one exact version, which is why the copy matches rather than merely resembling yours.\n\n## Mistakes beginners actually make here\n\n**Forgetting to activate.** You open a terminal the next morning, install something, and it lands in the shared pile. Your project seems fine until someone else runs it. The tell is the prompt: look for `(.venv)` before you type `pip install`. Activation lasts for that terminal window only, so a new window means activating again.\n\n**Copying the `.venv` folder to another machine.** It will not work. That folder contains a copy of Python and file paths baked in for your machine. Share the code and `requirements.txt`; never the environment folder. When you learn Git next week, `.venv` is one of the first things you tell it to ignore.\n\n**Treating the folder as precious.** It is disposable, and deleting it is a normal repair. If an environment gets into a strange state, delete `.venv`, create it again, reinstall from `requirements.txt`, and carry on. Nothing of yours lives in there — which is also why you never save your own code inside it.\n\n**A refusal on Windows.** Activation is sometimes blocked with a message about scripts being disabled on this system. That is a machine permission setting rather than a fault in your code. It is a known, documented situation with a standard answer — look it up for your version of Windows or ask for help, and do not read it as a sign you have broken something.\n\n**Assuming one environment for everything is fine.** It is, right up until the day it is not, and that day arrives with two projects and one impossible version number.\n\n## Try this yourself\n\nMake a folder called `env-test`, create an environment inside it, activate it, and confirm the `(.venv)` prefix appears. Run the `check.py` file above and read the path. Install one package, run `pip freeze > requirements.txt`, and open the file in your editor. Then `deactivate`, run `check.py` once more, and watch the path change. Every technical track after this course begins with these steps, so this small ritual is about to become muscle memory.\n",
+      "estimated_minutes": 32,
+      "learning_objectives": [
+        "Explain why identical code can fail on a different machine",
+        "Create and activate a virtual environment for a single project",
+        "Record dependencies in a requirements file and reinstall from it",
+        "Recognise the signs that an environment is not active"
+      ],
+      "case_study": "**Ian Bicking — virtualenv, and the standard venv that followed (2007, 2012)**\n\nIn the early years of Python there was one pile of installed packages per machine, and everything on that machine shared it. For a hobbyist with one project this was fine. For anyone maintaining several, it was a slow grind: upgrading a package because one project needed a new feature could silently break another project that had been working for a year. There was no way to say \"this project, these versions\" and be believed.\n\nIn 2007 Ian Bicking published a tool called virtualenv to the Python Package Index. It created a folder containing its own Python and its own packages, so a project could be given exactly the versions it needed without consulting anything else on the machine. Nobody mandated it and no committee approved it. It spread because it removed a daily pain, and within a few years it was the way serious Python work was done.\n\nThe idea then travelled the other way. In June 2011 a proposal known as PEP 405, written by Carl Meyer, argued that virtual environments should be supported by Python itself rather than bolted on. It shipped in Python 3.3, released in September 2012, as the `venv` module — a smaller version of what virtualenv did, built in. The proposal was explicit that virtualenv had already proved the behaviour worked in practice.\n\nThis is worth knowing when the ritual feels like fuss. Isolating a project is not caution invented for teaching; it is the accumulated experience of a large community, tried as a third-party tool for five years and then argued into the language itself. When you type `python -m venv .venv`, you are using something thousands of people wanted badly enough to standardise.\n",
+      "exercises": [
+        {
+          "order_index": 1,
+          "type": "mcq",
+          "language": null,
+          "marks": 2,
+          "title": "What a virtual environment actually is",
+          "prompt_md": "Someone tells you to create a virtual environment before you install anything for a new project. Stripped of the intimidating name, what is a virtual environment?",
+          "options": [
+            "A folder holding its own copy of Python and its own installed packages for one project",
+            "A second computer running inside your computer that keeps your work separated",
+            "An online service that stores your packages so they can be downloaded again later",
+            "A setting inside Python that hides packages you are not currently importing"
+          ],
+          "correct_answer": "A folder holding its own copy of Python and its own installed packages for one project"
+        },
+        {
+          "order_index": 2,
+          "type": "mcq",
+          "language": null,
+          "marks": 2,
+          "title": "Where did that package go",
+          "prompt_md": "You open a fresh terminal in the morning, go into your project folder, and run `pip install pandas` without doing anything else first. Where does pandas end up?",
+          "options": [
+            "In the shared pile for the whole machine, because no environment was activated in that window",
+            "In the project environment, because pip always installs into the folder you are standing in",
+            "Nowhere, because pip refuses to install anything until an environment has been activated",
+            "In both places at once, so that the package is available whichever way you run your code"
+          ],
+          "correct_answer": "In the shared pile for the whole machine, because no environment was activated in that window"
+        },
+        {
+          "order_index": 3,
+          "type": "mcq",
+          "language": null,
+          "marks": 2,
+          "title": "Sending a project to a colleague",
+          "prompt_md": "A colleague needs to run your project on their own laptop. You want them to end up with the same packages at the same versions. What should you send them?",
+          "options": [
+            "Your code and the requirements file, and let them create their own environment from it",
+            "Your code and a copy of your .venv folder, so nothing needs installing on their side",
+            "Your code on its own, because pip installs whatever is missing the first time it runs",
+            "A written list of package names in an email, without any version numbers attached"
+          ],
+          "correct_answer": "Your code and the requirements file, and let them create their own environment from it"
+        },
+        {
+          "order_index": 4,
+          "type": "mcq",
+          "language": null,
+          "marks": 2,
+          "title": "Two projects, two versions",
+          "prompt_md": "A project from last year needs version 1 of a package, and a project you started today needs version 2 of the same package. Both must keep working on one laptop. What makes that possible?",
+          "options": [
+            "Giving each project its own environment, so each holds the version that project needs",
+            "Installing both versions into the shared pile and importing whichever one you want",
+            "Upgrading to version 2 everywhere and editing the older project to match it",
+            "Keeping the two projects in different folders, which separates their packages automatically"
+          ],
+          "correct_answer": "Giving each project its own environment, so each holds the version that project needs"
+        },
+        {
+          "order_index": 5,
+          "type": "mcq",
+          "language": null,
+          "marks": 2,
+          "title": "What pip freeze produces",
+          "prompt_md": "Inside an activated environment you run `pip freeze > requirements.txt` and then open the file. What have you created, and why are the version numbers there?",
+          "options": [
+            "A list of the packages in this environment with exact versions, so a copy can be rebuilt to match",
+            "A backup of the package files themselves, so they need not be downloaded again later",
+            "A record of the packages your code imports, worked out by reading through your files",
+            "A frozen copy of the environment that stops any further packages being installed into it"
+          ],
+          "correct_answer": "A list of the packages in this environment with exact versions, so a copy can be rebuilt to match"
+        },
+        {
+          "order_index": 6,
+          "type": "short_answer",
+          "language": null,
+          "marks": 3,
+          "title": "Explain works on my machine",
+          "prompt_md": "In your own words, explain to someone who has never programmed why code that runs perfectly for you can fail on another machine, even though the code itself is identical.",
+          "correct_answer": "The code is only half of what makes a program run. The other half is everything installed around it, including the version of Python and any packages it imports. Those live on the machine rather than in the project folder, so a machine without them, or with different versions of them, cannot run the same file. Recording exactly what is needed and installing it on the other machine is what closes the gap."
+        },
+        {
+          "order_index": 7,
+          "type": "short_answer",
+          "language": null,
+          "marks": 3,
+          "title": "The missing prefix",
+          "prompt_md": "You installed a package yesterday inside your project environment. Today your script cannot find it. Your prompt reads `PS C:\\Users\\you\\weather>` with nothing in front of it. Explain what has happened and what you would do.",
+          "correct_answer": "The missing bracketed prefix tells me the environment is not active in this terminal window, because activation applies only to the window it was run in and does not survive closing it. Python is therefore the shared installation, which does not have yesterday package installed in it. I would activate the environment again with the activate command for my system, check that the prefix appears, and run the script once more."
+        },
+        {
+          "order_index": 8,
+          "type": "short_answer",
+          "language": null,
+          "marks": 3,
+          "title": "Why not send the folder",
+          "prompt_md": "A teammate suggests zipping up your `.venv` folder and emailing it, so nobody has to install anything. Explain why that is a poor idea and what you would do instead.",
+          "correct_answer": "The environment folder contains a copy of Python and file paths that were written for my machine, so it will not work reliably on a different one and may be very large. It is also disposable by design, which makes it the wrong thing to treat as a deliverable. Instead I would send the code together with a requirements file, and let them create a fresh environment and install from it, which reproduces the same versions in a way that works on their system."
+        },
+        {
+          "order_index": 9,
+          "type": "short_answer",
+          "language": null,
+          "marks": 3,
+          "title": "Starting on a new laptop",
+          "prompt_md": "You have a new laptop and a project folder containing your code and a `requirements.txt`. Describe, in order, the steps you would take to get the project running, and say what you would check after each one.",
+          "correct_answer": "First I would open a terminal in the project folder and create an environment with python -m venv .venv, checking afterwards that a .venv folder now exists. Second I would activate it and check that the bracketed prefix has appeared at the front of my prompt, because everything after this depends on it. Third I would run pip install -r requirements.txt and read the summary pip prints to confirm the packages installed without errors. Finally I would run the script itself, since a clean run is the only real proof."
+        },
+        {
+          "order_index": 10,
+          "type": "short_answer",
+          "language": null,
+          "marks": 3,
+          "title": "A broken environment",
+          "prompt_md": "Your environment has got into a confusing state after a failed install and imports are behaving oddly. A friend suggests deleting the whole `.venv` folder. Is that reasonable? Explain your reasoning.",
+          "correct_answer": "Yes, it is reasonable, because the environment folder holds only Python and installed packages and none of my own work should ever be saved inside it. Deleting it loses nothing I cannot rebuild, provided my requirements file is up to date. I would create the environment again, activate it, install from requirements.txt, and run my code to confirm. If I had saved anything of my own in there, that is the thing to move out first and the habit to correct."
+        },
+        {
+          "order_index": 11,
+          "type": "short_answer",
+          "language": "python",
+          "marks": 5,
+          "title": "Report on a requirements list",
+          "prompt_md": "A requirements file is a list of lines shaped like `requests==2.31.0`. Finish this script so that it turns such a list into a dictionary and then reports on the packages the project needs.\n\nSave it as `env_report.py` and run it with `python env_report.py`. When it is right, the output is exactly:\n\n```\nrequests is installed, version 2.31.0\npandas is installed, version 2.2.2\nmatplotlib is MISSING from this environment\n```\n\nWrite the complete finished file as your answer.",
+          "starter_code": "# Save as env_report.py and run with:  python env_report.py\n\ninstalled = [\"requests==2.31.0\", \"pandas==2.2.2\", \"rich==13.7.1\"]\nneeded = [\"requests\", \"pandas\", \"matplotlib\"]\n\n\ndef read_requirements(lines):\n    \"\"\"Turn a list like [\"name==version\"] into a dictionary {name: version}.\"\"\"\n    versions = {}\n    # TODO: loop over lines, split each one on \"==\", and add it to versions\n    return versions\n\n\ndef report(versions, wanted):\n    \"\"\"Print one line per wanted package: its version, or that it is missing.\"\"\"\n    # TODO: loop over wanted and print the right message for each name\n    print(\"TODO: report on each needed package\")\n\n\nversions = read_requirements(installed)\nreport(versions, needed)\n",
+          "correct_answer": "# Save as env_report.py and run with:  python env_report.py\n\ninstalled = [\"requests==2.31.0\", \"pandas==2.2.2\", \"rich==13.7.1\"]\nneeded = [\"requests\", \"pandas\", \"matplotlib\"]\n\n\ndef read_requirements(lines):\n    \"\"\"Turn a list like [\"name==version\"] into a dictionary {name: version}.\"\"\"\n    versions = {}\n    for line in lines:\n        parts = line.split(\"==\")\n        name = parts[0]\n        version = parts[1]\n        versions[name] = version\n    return versions\n\n\ndef report(versions, wanted):\n    \"\"\"Print one line per wanted package: its version, or that it is missing.\"\"\"\n    for name in wanted:\n        if name in versions:\n            print(name + \" is installed, version \" + versions[name])\n        else:\n            print(name + \" is MISSING from this environment\")\n\n\nversions = read_requirements(installed)\nreport(versions, needed)\n",
+          "solution_code": "# Save as env_report.py and run with:  python env_report.py\n\ninstalled = [\"requests==2.31.0\", \"pandas==2.2.2\", \"rich==13.7.1\"]\nneeded = [\"requests\", \"pandas\", \"matplotlib\"]\n\n\ndef read_requirements(lines):\n    \"\"\"Turn a list like [\"name==version\"] into a dictionary {name: version}.\"\"\"\n    versions = {}\n    for line in lines:\n        parts = line.split(\"==\")\n        name = parts[0]\n        version = parts[1]\n        versions[name] = version\n    return versions\n\n\ndef report(versions, wanted):\n    \"\"\"Print one line per wanted package: its version, or that it is missing.\"\"\"\n    for name in wanted:\n        if name in versions:\n            print(name + \" is installed, version \" + versions[name])\n        else:\n            print(name + \" is MISSING from this environment\")\n\n\nversions = read_requirements(installed)\nreport(versions, needed)\n"
+        },
+        {
+          "order_index": 12,
+          "type": "short_answer",
+          "language": "prompt",
+          "marks": 5,
+          "title": "Prompt Lab: understand an activation failure",
+          "prompt_md": "You created an environment on Windows and tried to activate it. PowerShell answered:\n\n```\n.venv\\Scripts\\Activate.ps1 : File C:\\Users\\me\\weather\\.venv\\Scripts\\Activate.ps1 cannot be loaded because running scripts is disabled on this system.\n```\n\nWrite the message you would send an AI assistant (ChatGPT, Claude, Copilot, Gemini — any of them) to have this **explained** — what it means, why it is happening, and what your options are — rather than being handed a command to paste blindly. This one touches a machine setting, so ask about the trade-off too.",
+          "correct_answer": "I am a beginner learning Python, working on Windows 11 in PowerShell. I made a project folder called weather and created an environment inside it with python -m venv .venv, which appeared to work. When I then ran .venv\\Scripts\\Activate.ps1 I got exactly this:\n\n.venv\\Scripts\\Activate.ps1 : File C:\\Users\\me\\weather\\.venv\\Scripts\\Activate.ps1 cannot be loaded because running scripts is disabled on this system.\n\nPlease do not give me a command to paste yet. First explain in plain English what this message is telling me: what is refusing, what it means that running scripts is disabled, and whether this is a problem with my environment, my Python installation, or a setting on the computer. I want to know whether I have broken anything.\n\nThen lay out the options a beginner realistically has here, including any that do not involve changing a machine wide setting. For each option, tell me what it changes, how long the change lasts, and what I would be giving up in exchange, because I do not want to weaken a security setting on my laptop without understanding it. Please flag anything I should check with an IT administrator if this is a work machine.\n\nFinally, tell me what I should see on screen once activation has succeeded, so I can confirm it myself rather than guessing."
+        }
+      ]
+    }
+  ]
+}

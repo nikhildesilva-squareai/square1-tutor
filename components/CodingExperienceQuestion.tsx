@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import {
-  recommendOnRamp,
+  guideStart,
   isCodingExperience,
   CODING_EXPERIENCE_KEY,
   type CodingExperience,
@@ -59,8 +59,7 @@ export function CodingExperienceQuestion({ intendedTrackTitle }: { intendedTrack
 
   function choose(value: CodingExperience) {
     persist(value);
-    const rec = recommendOnRamp(value, intendedTrackTitle);
-    if (!rec.recommend) {
+    if (!guideStart(value, intendedTrackTitle).show) {
       // Experienced — straight through, exactly as before this question existed.
       setVisible(false);
       router.push("/courses");
@@ -71,39 +70,36 @@ export function CodingExperienceQuestion({ intendedTrackTitle }: { intendedTrack
 
   if (!visible) return null;
 
-  // ── Recommendation state ──────────────────────────────────────────────────
+  // ── Guidance state — where to start inside their own track ────────────────
   if (answer) {
-    const rec = recommendOnRamp(answer, intendedTrackTitle);
+    const g = guideStart(answer, intendedTrackTitle);
     return (
       <div className="mb-8 rounded-2xl border border-border bg-surface shadow-card p-6">
         <p className="text-[10px] font-bold uppercase tracking-widest text-brand mb-2">
-          {rec.strength === "start-here" ? "Recommended starting point" : "Worth a look first"}
+          {g.strength === "start-at-the-beginning" ? "Where to start" : "How to approach it"}
         </p>
-        <h2 className="text-xl sm:text-2xl font-black text-ink tracking-tight mb-2">{rec.headline}</h2>
-        <p className="text-sm text-ink-secondary leading-relaxed mb-5 max-w-2xl">{rec.body}</p>
+        <h2 className="text-xl sm:text-2xl font-black text-ink tracking-tight mb-2">{g.headline}</h2>
+        <p className="text-sm text-ink-secondary leading-relaxed mb-5 max-w-2xl">{g.body}</p>
 
         <div className="flex flex-col sm:flex-row sm:items-center gap-3">
           <Link
-            href={`/courses/${rec.courseSlug}`}
+            href="/courses"
+            onClick={() => setVisible(false)}
             className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl text-sm font-bold text-white bg-brand hover:-translate-y-0.5 transition-transform shadow-sm"
           >
-            Open Programming from Zero
+            Pick your track
             <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden>
               <path d="M6 3l5 5-5 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
           </Link>
 
-          {/* The escape hatch — deliberately plain, prominent, and never apologetic. */}
-          <Link
-            href="/courses"
+          <button
+            type="button"
             onClick={() => setVisible(false)}
             className="inline-flex items-center justify-center gap-1.5 text-sm font-semibold text-ink-secondary hover:text-brand transition-colors"
           >
-            {rec.skipLabel}
-            <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden>
-              <path d="M6 3l5 5-5 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-          </Link>
+            {g.altLabel}
+          </button>
         </div>
       </div>
     );

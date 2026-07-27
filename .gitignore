@@ -42,3 +42,6 @@ next-env.d.ts
 
 .vercel
 .env*
+
+# Generated course SQL - rebuild with scripts/generate-module0-programming.js
+content/programming-foundations/sql/

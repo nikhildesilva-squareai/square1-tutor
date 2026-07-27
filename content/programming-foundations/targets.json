@@ -1,0 +1,12 @@
+[
+  { "slug": "agentic-ai", "course_id": "6b423e2a-19c7-4bd7-966a-00d3914b446f", "module0_id": "9ef48637-f743-48b6-82b9-e0cee8e26cfc" },
+  { "slug": "ai-product-management", "course_id": "4927f939-0904-40a8-bc35-2cf8eec76991", "module0_id": "af9d59f9-1ad2-49e4-bc33-25cc86832e8d" },
+  { "slug": "artificial-intelligence", "course_id": "25eec55c-2409-4cb5-949c-366bec19b719", "module0_id": "8112af2a-b08a-4c6b-9120-e849638d2a4d" },
+  { "slug": "computer-vision", "course_id": "f8b574a6-533e-4abe-982f-28cb49ca4cff", "module0_id": "eed1dab0-e45e-4183-99b7-b36cd9c78f0c" },
+  { "slug": "cybersecurity", "course_id": "451ba71c-72ca-4136-b0b8-2ec59aad2408", "module0_id": "cbd2bd56-4546-4ca2-97fe-e91e1a3fcd57" },
+  { "slug": "data-science", "course_id": "5d0859be-5bbd-4fb5-8290-6ff33cc69cd0", "module0_id": "1af42ead-01eb-4d34-9b6d-106aa6c92c7f" },
+  { "slug": "fullstack-development", "course_id": "07ca4c2b-072b-4d9e-83eb-46621755c815", "module0_id": "29be48f3-e434-401b-af62-5229a66b0c58" },
+  { "slug": "generative-ai", "course_id": "097297ad-cde4-4906-8d8d-1d2bfa138e63", "module0_id": "d9b32564-85c6-4e78-8be6-5ea1f16ed28e" },
+  { "slug": "llm-agent-architect", "course_id": "4be79b60-fca1-43e8-a2b4-cd94a7dcb225", "module0_id": "ea06a9d7-765e-431d-9a61-3a34939ff803" },
+  { "slug": "machine-learning", "course_id": "3e461063-a011-46af-a122-2744c357d6cd", "module0_id": "8abb8de5-b036-4984-a3fd-e5890e8a4191" }
+]

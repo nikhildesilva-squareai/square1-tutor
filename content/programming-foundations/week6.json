@@ -1,0 +1,470 @@
+{
+  "week": 6,
+  "lessons": [
+    {
+      "order_index": 16,
+      "title": "What an array is, and why a list is not enough",
+      "theory_md": "You open the first Foundations lesson of a Computer Vision course. The very first line of code is `import numpy as np`. The second line does something to a photograph using square brackets, numbers and colons. Nobody explains either one.\n\nThat moment is where a lot of people quietly close the tab and decide they are not a maths person. They are wrong. Nothing was explained to them, that is all. This week fixes it, and by the end of it you will read those lines and know exactly what they do.\n\n## A list is a shopping bag. An array is an egg box.\n\nYou already know a Python list. A list is a shopping bag: you can drop anything into it, in any order.\n\n```python\nbag = [\"milk\", 3, True, [1, 2]]\nprint(bag)\nprint(len(bag))\n```\n\nOutput:\n\n```\n['milk', 3, True, [1, 2]]\n4\n```\n\nThat flexibility has a price. When Python adds up a list of a million numbers, it stops at every single item and asks \"what are you? a whole number? a decimal? text?\" before it can do anything. A million questions take time.\n\nAn array is an egg box instead. Every slot holds the same kind of value, every slot is the same size, and the slots sit side by side in the computer's memory. Because the machine is told once, up front, that all million values are numbers of the same kind, it never has to ask again. It works straight through them.\n\nTwo rules follow from that, and they are the whole difference:\n\n1. **One type throughout.** An array of numbers cannot quietly contain a word.\n2. **A fixed shape.** An array knows it is 4 values long, or 3 rows by 5 columns, and it holds on to that.\n\nArrays do not come with Python. They come from a package called **NumPy** (say it \"num-pie\"), which you install once.\n\n## Installing and importing NumPy\n\nIn your terminal, with your virtual environment active if you made one:\n\n```\npython -m pip install numpy\n```\n\nThe last line of the output ends with something like `Successfully installed numpy-2.1.3`. Now in a Python file:\n\n```python\nimport numpy as np\n\nprint(np.__version__)\n```\n\nOutput (your version number may be higher, which is fine):\n\n```\n2.1.3\n```\n\n`import numpy as np` means \"fetch NumPy and let me call it `np` for short\". You could write `import numpy` and then type `numpy.array(...)` every time, and it would work. Nobody does. Every book, every tutorial and every Module 0 you are about to read writes `np`, so write `np` too.\n\n## Worked example one: make an array and ask it questions\n\n```python\nimport numpy as np\n\ntemps = np.array([18, 21, 19, 25])\nprint(temps)\nprint(temps.shape)\nprint(temps.dtype)\n```\n\nOutput:\n\n```\n[18 21 19 25]\n(4,)\nint64\n```\n\nThree things to notice. The printed array has **no commas** between the values, which is how you can tell at a glance that you are looking at an array and not a list. `shape` is `(4,)`: one axis, four values long. The lonely comma is Python punctuation for a one-item tuple; ignore it. `dtype` is `int64`, meaning \"whole numbers, 64 bits of space each\". On some Windows setups you will see `int32` instead. Same idea, smaller boxes.\n\n`shape` and `dtype` have no brackets after them, because they are facts the array carries around, not jobs it does.\n\n## Worked example two: two dimensions\n\n```python\nimport numpy as np\n\ngrid = np.array([[1, 2, 3],\n                 [4, 5, 6]])\nprint(grid)\nprint(grid.shape)\nprint(np.zeros(5))\nprint(np.arange(0, 10, 2))\n```\n\nOutput:\n\n```\n[[1 2 3]\n [4 5 6]]\n(2, 3)\n[0. 0. 0. 0. 0.]\n[0 2 4 6 8]\n```\n\n`grid` is a table: 2 rows, 3 columns, written as `(2, 3)`. **Rows come first.** Hold on to that, because next lesson it decides whether you are looking at the right part of a photograph.\n\n`np.zeros(5)` builds five zeros for you, and prints them as `0.` with a trailing dot because they are decimals. `np.arange(0, 10, 2)` counts from 0 up to but not including 10, in steps of 2.\n\n## Worked example three: why anyone bothers\n\n```python\nimport numpy as np\nimport time\n\nvalues = list(range(5_000_000))\nstart = time.time()\ntotal = 0\nfor v in values:\n    total = total + v\nprint(\"loop total:\", total)\nprint(\"loop seconds:\", round(time.time() - start, 3))\n\narr = np.arange(5_000_000)\nstart = time.time()\nprint(\"numpy total:\", arr.sum())\nprint(\"numpy seconds:\", round(time.time() - start, 3))\n```\n\nOutput from one run on an ordinary laptop (your seconds will differ, the gap is the point):\n\n```\nloop total: 12499997500000\nloop seconds: 1.152\nnumpy total: 12499997500000\nnumpy seconds: 0.007\n```\n\nSame answer. Roughly a hundred and fifty times less waiting. When a photograph is two million pixels and a dataset is ten million rows, that gap is the difference between a tool you use and a tool you abandon.\n\n## The mistakes people actually make here\n\n**`ModuleNotFoundError: No module named 'numpy'`.** This almost never means NumPy is broken. It means the Python running your file is not the Python you installed NumPy into, usually because a virtual environment is not active. Run `python -m pip install numpy` with the same `python` you use to run the file.\n\n**Mixing types by accident.** Try this:\n\n```python\nimport numpy as np\n\nmixed = np.array([1, 2, \"three\"])\nprint(mixed)\nprint(mixed.dtype)\n```\n\nOutput:\n\n```\n['1' '2' 'three']\n<U21\n```\n\nNo error. NumPy obeyed rule one and turned *everything* into text, quietly. `<U21` means \"text, up to 21 characters\". If your maths later behaves strangely, check `dtype` first.\n\n**Calling `shape` like a function.** `temps.shape()` gives `TypeError: 'tuple' object is not callable`. Drop the brackets.\n\n**Assigning a decimal into a whole-number array.** `temps[0] = 3.9` stores `3`. The array will not change its type to suit you.\n\n**Using `len()` on a table.** For a 3-row grid, `len(grid)` is 3: it counts rows only. Use `.shape` when you want the full picture.\n\n## Try this yourself\n\nOpen a file called `arrays.py` and write it:\n\n1. Make an array of the last five days of rainfall in millimetres.\n2. Print the array, its `shape` and its `dtype`.\n3. Add one text value to the list before you build the array, and look at the `dtype` again.\n4. Make a 3-by-4 grid with `np.zeros((3, 4))` and print its shape.\n\nRun it. Break it. Read what it says. That is the whole job.\n",
+      "estimated_minutes": 32,
+      "learning_objectives": [
+        "Explain in plain language how a NumPy array differs from a Python list",
+        "Install NumPy and import it using the standard np nickname",
+        "Create one-dimensional and two-dimensional arrays and read their shape and dtype",
+        "Describe why array operations run far faster than looping over a list"
+      ],
+      "case_study": "**NumPy and Travis Oliphant — one array package instead of two (2005–2006)**\n\nBy the early 2000s, scientific Python had a problem that would sound very familiar to anyone who has fought with two half-compatible tools. There were two array packages. The older one, Numeric, had been around since the mid-1990s and was fast on small arrays. The newer one, numarray, had been built at the Space Telescope Science Institute - the people who handle the flood of data coming down from the Hubble Space Telescope - and it was better on very large arrays. Code written for one would not run on the other.\n\nThe community was splitting in two. Library authors had to pick a side or maintain both. In 2005 Travis Oliphant, then a professor at Brigham Young University, decided the split was the real bug. He went back to the Numeric code, rewrote its internals to be more flexible, and folded in the features that made numarray worth having. The result was NumPy. Version 1.0 was released on 26 October 2006, and Oliphant documented the whole thing in a book, Guide to NumPy, dated December 2006.\n\nWhat makes this worth your attention is not the engineering. It is that almost everything you are about to learn in a technical track rests on that one decision to unify. Pandas, scikit-learn, OpenCV, PyTorch, TensorFlow, Matplotlib - they all speak NumPy arrays. When a Computer Vision lesson writes `import numpy as np` without explaining it, that is why: it is the shared floor everyone stands on, and it became the shared floor because somebody took the trouble to merge two rivals instead of building a third.\n\nThere is a lesson in it for you as well. Oliphant did not start by inventing something new. He read a lot of existing code, understood it properly, and made it fit together. That is what most real programming looks like.\n",
+      "exercises": [
+        {
+          "order_index": 1,
+          "type": "mcq",
+          "language": null,
+          "marks": 2,
+          "title": "What actually makes an array different",
+          "prompt_md": "The lesson compared a Python list to a shopping bag and a NumPy array to an egg box. Which statement best describes the real difference between the two?",
+          "options": [
+            "Every value in an array has the same type, and the values sit side by side in memory",
+            "An array can hold text, numbers, booleans and other lists all mixed together freely",
+            "An array is a list that has already been sorted into ascending order before you use it",
+            "An array can only ever hold whole numbers, never decimals and never anything else"
+          ],
+          "correct_answer": "Every value in an array has the same type, and the values sit side by side in memory"
+        },
+        {
+          "order_index": 2,
+          "type": "mcq",
+          "language": null,
+          "marks": 2,
+          "title": "Reading a shape",
+          "prompt_md": "You print `data.shape` for a two-dimensional array and the output is `(3, 5)`. What does that tell you about how the values are arranged?",
+          "options": [
+            "There are three rows and five columns, because shape reports rows before columns",
+            "There are five rows and three columns, because shape reports columns before rows",
+            "There are three separate arrays, and each one of them holds five smaller arrays inside",
+            "There are three values in total, and each of those values is five digits long"
+          ],
+          "correct_answer": "There are three rows and five columns, because shape reports rows before columns"
+        },
+        {
+          "order_index": 3,
+          "type": "mcq",
+          "language": null,
+          "marks": 2,
+          "title": "Mixing types into one array",
+          "prompt_md": "In the lesson you ran `np.array([1, 2, \"three\"])` and then printed the dtype, which came back as `<U21`. What happened when that array was built?",
+          "options": [
+            "All three values were turned into text, because an array must hold a single type",
+            "The array kept two numbers and one piece of text side by side, exactly as written",
+            "Python raised an error straight away, because arrays refuse to accept mixed input",
+            "The text value was dropped, and the array quietly kept only the two numbers"
+          ],
+          "correct_answer": "All three values were turned into text, because an array must hold a single type"
+        },
+        {
+          "order_index": 4,
+          "type": "mcq",
+          "language": null,
+          "marks": 2,
+          "title": "Reading a missing-module error",
+          "prompt_md": "You run your script and Python stops with `ModuleNotFoundError: No module named 'numpy'`. Based on the lesson, what is the most likely explanation for that message?",
+          "options": [
+            "NumPy is not installed for the particular Python that is running your file right now",
+            "NumPy is installed correctly, but the file you wrote has been given the wrong extension",
+            "Your computer is too old to run NumPy and will need a hardware upgrade to continue",
+            "You have misspelled one of your array variable names further down inside the script"
+          ],
+          "correct_answer": "NumPy is not installed for the particular Python that is running your file right now"
+        },
+        {
+          "order_index": 5,
+          "type": "mcq",
+          "language": null,
+          "marks": 2,
+          "title": "Where the speed comes from",
+          "prompt_md": "Adding five million numbers took about a second with a Python loop and a small fraction of a second with `arr.sum()`. What is the main reason for that difference?",
+          "options": [
+            "The machine already knows every value is the same type, so it skips checking each one",
+            "NumPy quietly sends your calculation to a remote server that is far more powerful",
+            "NumPy sorts the values first, and a sorted set of values is always faster to add up",
+            "An array holds far fewer values than a list does, so there is far less work to do overall"
+          ],
+          "correct_answer": "The machine already knows every value is the same type, so it skips checking each one"
+        },
+        {
+          "order_index": 6,
+          "type": "short_answer",
+          "language": null,
+          "marks": 3,
+          "title": "Explain it to a friend",
+          "prompt_md": "A friend who has only ever used lists asks why anyone would install a whole extra package to hold numbers. In your own words, explain why a plain Python list is not enough once you have a million temperature readings to work with.",
+          "correct_answer": "A list can hold anything, so Python has to check the type of every single item before it can do maths on it, and a million checks takes real time. A NumPy array stores one type of value in one continuous block of memory, so the machine can work straight through all of them without stopping to ask questions. That is why the same sum took about a second as a loop and a fraction of a second with an array. Lists are still fine for small mixed collections; arrays are for lots of numbers of the same kind."
+        },
+        {
+          "order_index": 7,
+          "type": "short_answer",
+          "language": null,
+          "marks": 3,
+          "title": "First two checks on a missing module",
+          "prompt_md": "You run `python analysis.py` and get `ModuleNotFoundError: No module named 'numpy'`. Describe the first two things you would check, and say why each one is worth checking before you try anything else.",
+          "correct_answer": "First I would check whether my virtual environment is actually active, because installing NumPy into one environment and running the file from another produces exactly this error. Second I would install with the same interpreter I am using to run the file, by typing python -m pip install numpy rather than a bare pip, so there is no chance of the two being different Pythons. Both checks are about which Python is running, which is the usual cause. Only if both look right would I suspect a genuinely failed install."
+        },
+        {
+          "order_index": 8,
+          "type": "short_answer",
+          "language": null,
+          "marks": 3,
+          "title": "shape against len",
+          "prompt_md": "You have a two-dimensional array called `grid` with 3 rows and 4 columns. Explain what `len(grid)` gives you, what `grid.shape` gives you, and when you would reach for each one.",
+          "correct_answer": "len(grid) returns 3, because it only counts the items along the first axis, which for a table means the number of rows. grid.shape returns the tuple (3, 4), which tells you rows and columns together. I would use shape whenever I care about the full layout, which for arrays is nearly always. len is only safe when I genuinely want a count along the first axis and nothing more."
+        },
+        {
+          "order_index": 9,
+          "type": "short_answer",
+          "language": null,
+          "marks": 3,
+          "title": "Does dtype really matter",
+          "prompt_md": "A colleague says: \"dtype is NumPy being fussy, a number is a number.\" Using an example from the lesson, explain why the dtype of an array is worth checking before you trust your results.",
+          "correct_answer": "The dtype decides what the array is allowed to store, and NumPy will change your data to obey it rather than warn you. Building np.array([1, 2, \"three\"]) gives a dtype of <U21, which means all three values silently became text and no maths will work as expected. Storing 3.9 into a whole-number array quietly saves 3, losing the decimal part. Printing dtype takes one line and catches both problems immediately."
+        },
+        {
+          "order_index": 10,
+          "type": "short_answer",
+          "language": null,
+          "marks": 3,
+          "title": "Unpacking the import line",
+          "prompt_md": "Explain what each part of the line `import numpy as np` does, and say why nearly every tutorial and course you will meet writes it this way rather than plain `import numpy`.",
+          "correct_answer": "import numpy loads the NumPy package so your file can use it, and as np gives it a short nickname for the rest of that file. After it, np.array works and numpy.array is no longer the name in use. Everyone writes np because it has become the shared convention, so example code you copy from documentation, books or a course Module 0 will assume it. Matching the convention means less translation when you read other people's code."
+        },
+        {
+          "order_index": 11,
+          "type": "short_answer",
+          "language": "python",
+          "marks": 5,
+          "title": "Build an array and report on it",
+          "prompt_md": "Complete the script so that it builds a NumPy array from the six rainfall readings, then prints, each on its own line: the array itself, its shape, its dtype, and finally a decimal version of the same array made with `.astype(float)`.\n\nExpected output:\n\n```\n[ 4 12  0  7 21  3]\n(6,)\nint64\n[ 4. 12.  0.  7. 21.  3.]\n```\n\n(If your machine prints `int32` instead of `int64`, that is fine.)",
+          "starter_code": "import numpy as np\n\nreadings = [4, 12, 0, 7, 21, 3]\n\n# 1. Turn readings into a NumPy array called rainfall\nrainfall = \n\n# 2. Print the array\n\n# 3. Print its shape\n\n# 4. Print its dtype\n\n# 5. Print a decimal version using .astype(float)\n",
+          "correct_answer": "import numpy as np\n\nreadings = [4, 12, 0, 7, 21, 3]\n\n# 1. Turn readings into a NumPy array called rainfall\nrainfall = np.array(readings)\n\n# 2. Print the array\nprint(rainfall)\n\n# 3. Print its shape\nprint(rainfall.shape)\n\n# 4. Print its dtype\nprint(rainfall.dtype)\n\n# 5. Print a decimal version using .astype(float)\nprint(rainfall.astype(float))\n",
+          "solution_code": "import numpy as np\n\nreadings = [4, 12, 0, 7, 21, 3]\n\n# 1. Turn readings into a NumPy array called rainfall\nrainfall = np.array(readings)\n\n# 2. Print the array\nprint(rainfall)\n\n# 3. Print its shape\nprint(rainfall.shape)\n\n# 4. Print its dtype\nprint(rainfall.dtype)\n\n# 5. Print a decimal version using .astype(float)\nprint(rainfall.astype(float))\n"
+        },
+        {
+          "order_index": 12,
+          "type": "short_answer",
+          "language": "prompt",
+          "marks": 5,
+          "title": "Prompt Lab: get an error explained, not solved",
+          "prompt_md": "You have run your first NumPy script and it stopped with:\n\n```\nTraceback (most recent call last):\n  File \"arrays.py\", line 1, in <module>\n    import numpy as np\nModuleNotFoundError: No module named 'numpy'\n```\n\nWrite the prompt you would send to an AI assistant (ChatGPT, Claude, Copilot, Gemini - any of them) so that it **explains what the error means and how to investigate it**, without handing you a command to paste. Include the context the assistant needs to be useful.",
+          "correct_answer": "I am a complete beginner learning Python. I wrote a file called arrays.py whose first line is `import numpy as np`, and I run it with `python arrays.py` in the terminal on Windows. It stops with this error:\n\nTraceback (most recent call last):\n  File \"arrays.py\", line 1, in <module>\n    import numpy as np\nModuleNotFoundError: No module named 'numpy'\n\nPlease do NOT give me a command to paste. Instead:\n1. Explain in plain English, line by line, what this traceback is telling me and which part is the actual error.\n2. Explain what a module is and what Python is looking for when it fails to find one.\n3. List the two or three most common causes of this specific error for a beginner, in order of likelihood.\n4. For each cause, tell me a command or check I can run to find out whether that is my problem, and describe what output would confirm or rule it out.\n5. Finish with one sentence on how I could recognise this same class of error next time on my own.\n\nAssume I know how to open a terminal and run python, but nothing about virtual environments beyond having heard the phrase."
+        }
+      ]
+    },
+    {
+      "order_index": 17,
+      "title": "Picking out pieces: indexing and slicing, including two dimensions",
+      "theory_md": "Here is the line that ends more beginner Computer Vision attempts than any other. It turns up in the fourth lesson of a Foundations module, with no explanation at all:\n\n```\npatch = img[10:20, 30:40]\n```\n\nSquare brackets, two numbers, a colon, a comma, two more numbers. It looks like a password. It is actually one of the simplest ideas in this course, and once you have seen it done slowly you will never be confused by it again.\n\n## Counting from zero, and the door frame\n\nEvery position in an array has a number, and the numbering starts at **0**. The first value is at 0, the second at 1, the third at 2. This trips up everybody at first, so say it out loud once: the first item is item zero.\n\n```python\nimport numpy as np\n\nscores = np.array([10, 20, 30, 40, 50, 60])\nprint(scores[0])\nprint(scores[2])\nprint(scores[-1])\n```\n\nOutput:\n\n```\n10\n30\n60\n```\n\n`scores[-1]` is the last one. Negative numbers count backwards from the end, which saves you working out how long the array is.\n\nA **slice** takes a run of values instead of one, and is written `start:stop`.\n\n```python\nimport numpy as np\n\nscores = np.array([10, 20, 30, 40, 50, 60])\nprint(scores[1:4])\nprint(scores[:3])\nprint(scores[3:])\nprint(scores[::2])\n```\n\nOutput:\n\n```\n[20 30 40]\n[10 20 30]\n[40 50 60]\n[10 30 50]\n```\n\n`scores[1:4]` gave you positions 1, 2 and 3 - **not** 4. The stop number is where you stop, not the last one you take. Think of a door frame: you walk up to it and stop; you do not walk through it. Leave the start off and it means \"from the beginning\". Leave the stop off and it means \"to the end\". A second colon adds a step, so `::2` takes every other value.\n\nThat one rule - stop is excluded - explains why `1:4` gives you three values. Stop minus start is always how many you get.\n\n## Two dimensions: the comma is the important bit\n\nA table has rows and columns, so you need two numbers. They go inside one set of square brackets, separated by a comma. **Rows first, columns second.**\n\n```python\nimport numpy as np\n\ngrid = np.array([[1, 2, 3, 4],\n                 [5, 6, 7, 8],\n                 [9, 10, 11, 12]])\nprint(grid.shape)\nprint(grid[1, 2])\nprint(grid[0])\nprint(grid[:, 1])\nprint(grid[0:2, 1:3])\n```\n\nOutput:\n\n```\n(3, 4)\n7\n[1 2 3 4]\n[ 2  6 10]\n[[2 3]\n [6 7]]\n```\n\nWork through each one:\n\n- `grid[1, 2]` is row 1, column 2. Counting from zero, that is the second row and the third column, so `7`.\n- `grid[0]` with no comma gives the whole of row 0.\n- `grid[:, 1]` is the bare colon meaning \"every row\", then column 1. That is a whole column: `2`, `6`, `10`.\n- `grid[0:2, 1:3]` slices both axes at once. Rows 0 and 1, columns 1 and 2. You get a small rectangle cut out of the middle.\n\nThat last one is the whole trick. Everything else is bigger numbers.\n\n## So what is `img[10:20, 30:40]`?\n\nAn image on a computer is a grid of numbers, one per pixel, where the number is the brightness. Load a photograph with any imaging library and you get a NumPy array. Its `shape` is `(height, width)` for a black-and-white image, because rows come first.\n\n```python\nimport numpy as np\n\nimg = np.arange(50 * 60).reshape(50, 60)\nprint(img.shape)\n\npatch = img[10:20, 30:40]\nprint(patch.shape)\nprint(patch[0, 0])\nprint(patch[-1, -1])\n```\n\nOutput:\n\n```\n(50, 60)\n(10, 10)\n630\n1179\n```\n\n`img[10:20, 30:40]` means: rows 10 to 19, columns 30 to 39. Ten rows, ten columns, so a 10-by-10 square cut out of the picture. Nothing more mysterious than that.\n\nNow the part that catches people who remember school graphs. In images the convention is **[row, column]**, which is the same as **[y, x]** - vertical first, horizontal second. And `y` counts **downwards from the top-left corner**, not upwards from the bottom. So `img[10:20, 30:40]` is a patch that starts 10 pixels down and 30 pixels across.\n\nIt is not `[x, y]`. If you swap them your code still runs, produces an array of the right size, and shows you completely the wrong part of the picture. That is the worst kind of bug: a quiet one.\n\n## A slice is a window, not a photocopy\n\n```python\nimport numpy as np\n\na = np.array([1, 2, 3, 4])\nb = a[0:2]\nb[0] = 99\nprint(a)\n\nc = a[0:2].copy()\nc[0] = 7\nprint(a)\n```\n\nOutput:\n\n```\n[99  2  3  4]\n[99  2  3  4]\n```\n\nChanging `b` changed `a`, because a slice is a **view**: a window onto the original data, not a new copy of it. This is deliberate - it is what makes slicing a huge image instant. When you want a genuinely separate copy, ask for one with `.copy()`, as `c` did.\n\n## The mistakes people actually make here\n\n**Expecting the stop value to be included.** `scores[1:4]` does not include position 4. If you are one item short, this is why.\n\n**Swapping the two axes.** `img[30:40, 10:20]` runs perfectly and is wrong. When something looks odd, print `patch.shape` and check it against what you meant.\n\n**Forgetting the comma.** `grid[1][2]` does give `7`, because it takes row 1 and then item 2 of it. But `grid[0:2][1:3]` does *not* slice rows and columns - it slices the rows twice. Use the comma form for tables.\n\n**Index errors, but silent slices.** `grid[2, 0]` on a 2-row array raises `IndexError: index 2 is out of bounds for axis 0 with size 2`. But `scores[2:99]` raises nothing at all and returns whatever exists. Slices forgive; single indexes do not.\n\n**Editing a view by accident.** If a value changed in an array you never touched, look for a slice you saved earlier.\n\n## Try this yourself\n\n```python\nimport numpy as np\n\nimg = np.arange(100).reshape(10, 10)\nprint(img)\n```\n\nThen, one line at a time, predict the answer *before* you run it: `img[0, 0]`, `img[9, 9]`, `img[0:3, 0:3]`, `img[:, 0]`, `img[5:8, 2:6].shape`. Getting one wrong is the fastest way to learn this. Write down why you were wrong before you move on.\n",
+      "estimated_minutes": 34,
+      "learning_objectives": [
+        "Index single values in an array using positions that start at zero",
+        "Slice a run of values with start and stop, knowing that stop is excluded",
+        "Slice both axes of a two-dimensional array using the row, column form",
+        "Explain why images use the row, column convention and how to check a patch is right"
+      ],
+      "case_study": "**The Hubble Space Telescope mirror — measured perfectly against the wrong ruler (1990)**\n\nWhen the Hubble Space Telescope reached orbit in April 1990, its primary mirror was the most precisely polished large mirror ever made. It was also the wrong shape. On 27 June 1990 NASA announced that the telescope suffered from spherical aberration: light striking the edge of the 2.4-metre mirror came to a focus in a slightly different place from light striking the middle. The images came back blurred. A telescope that had taken years and enormous public money to build could not do the job it was launched for.\n\nThe mirror was ground too flat at its edge by about 2.2 micrometres - roughly one-fiftieth the width of a human hair. The cause was not sloppy polishing. It was the measuring device. The mirror had been checked during grinding with an instrument called a null corrector, and that instrument had been assembled with a lens spacing error of about 1.3 millimetres. NASA traced the error to a measuring laser that had reflected off a spot of chipped paint rather than the surface it was aimed at. The mirror was then polished, faithfully and superbly, to match a ruler that was itself wrong. Other tests had hinted at a problem and were set aside in favour of the trusted instrument. The flaw was only confirmed once the telescope was in space, and it took a shuttle mission in December 1993, fitting corrective optics, to put it right.\n\nHold that thought next to `img[10:20, 30:40]`. Slicing an array is an act of measurement. If you write `[x, y]` when the convention is `[row, column]`, your code does not crash, your patch is exactly the size you asked for, and everything downstream looks healthy. You are polishing beautifully against the wrong ruler.\n\nThe habit that protects you is small and cheap: after any slice, print `.shape`, and check one value you can verify by eye against the original. Hubble is the most expensive reminder in computing history that a result which looks fine is not the same as a result that has been checked.\n",
+      "exercises": [
+        {
+          "order_index": 1,
+          "type": "mcq",
+          "language": null,
+          "marks": 2,
+          "title": "Where a slice stops",
+          "prompt_md": "Given `scores = np.array([10, 20, 30, 40, 50, 60])`, you run `print(scores[1:4])` and see `[20 30 40]`. Which statement correctly describes the rule at work?",
+          "options": [
+            "The slice includes position 1 up to but not including position 4, giving three values",
+            "The slice includes positions 1 through 4 inclusive, and one value happens to be missing",
+            "The slice starts at the first value and takes the next four values along the array",
+            "The slice takes four values beginning at position 1, counting the first value as one"
+          ],
+          "correct_answer": "The slice includes position 1 up to but not including position 4, giving three values"
+        },
+        {
+          "order_index": 2,
+          "type": "mcq",
+          "language": null,
+          "marks": 2,
+          "title": "Reading a two-axis slice",
+          "prompt_md": "An image array called `img` has shape `(50, 60)`. You write `patch = img[10:20, 30:40]` and then print `patch.shape`. What appears, and which part of the image have you taken?",
+          "options": [
+            "It prints (10, 10), and the patch covers rows 10 to 19 and columns 30 to 39",
+            "It prints (10, 10), and the patch covers columns 10 to 19 and rows 30 to 39",
+            "It prints (20, 40), because the shape reports the two stopping positions you gave",
+            "It prints (50, 60), because slicing a view never changes the shape of the original"
+          ],
+          "correct_answer": "It prints (10, 10), and the patch covers rows 10 to 19 and columns 30 to 39"
+        },
+        {
+          "order_index": 3,
+          "type": "mcq",
+          "language": null,
+          "marks": 2,
+          "title": "The image coordinate convention",
+          "prompt_md": "The lesson stressed that for images the convention inside the square brackets is [row, column]. Which sentence states that convention correctly for a black-and-white photograph?",
+          "options": [
+            "The first number is the vertical position, counted downwards from the top-left corner",
+            "The first number is the horizontal position, counted rightwards from the top-left corner",
+            "The first number is the vertical position, counted upwards from the bottom-left corner",
+            "The order of the two numbers does not matter, since NumPy works out which is which"
+          ],
+          "correct_answer": "The first number is the vertical position, counted downwards from the top-left corner"
+        },
+        {
+          "order_index": 4,
+          "type": "mcq",
+          "language": null,
+          "marks": 2,
+          "title": "What a bare colon does",
+          "prompt_md": "For a table called `grid` with three rows and four columns, you run `print(grid[:, 1])`. What does the bare colon before the comma mean, and what do you get back?",
+          "options": [
+            "It means every row, so you get column 1 on its own as a one-dimensional array",
+            "It means every column, so you get row 1 on its own as a one-dimensional array",
+            "It means an empty selection, so you get an array with no values inside it at all",
+            "It means the whole table, so the number after the comma is quietly ignored"
+          ],
+          "correct_answer": "It means every row, so you get column 1 on its own as a one-dimensional array"
+        },
+        {
+          "order_index": 5,
+          "type": "mcq",
+          "language": null,
+          "marks": 2,
+          "title": "Views and copies",
+          "prompt_md": "You write `b = a[0:2]` and then `b[0] = 99`. When you print the original array `a`, its first value has also become 99. Why does that happen?",
+          "options": [
+            "A slice gives you a view onto the same data, so editing it edits the original array",
+            "NumPy keeps a history of edits and replays them onto every array in your script",
+            "Assigning to b renamed the original array, so a and b are two names for one list",
+            "Editing any array in NumPy always changes every array that was created before it"
+          ],
+          "correct_answer": "A slice gives you a view onto the same data, so editing it edits the original array"
+        },
+        {
+          "order_index": 6,
+          "type": "short_answer",
+          "language": null,
+          "marks": 3,
+          "title": "Decode the line",
+          "prompt_md": "A Computer Vision lesson opens with `patch = img[10:20, 30:40]` and gives no explanation. Write the explanation yourself, in plain English, for someone who has never seen square-bracket slicing before.",
+          "correct_answer": "img is an image stored as a grid of numbers, with one number per pixel. The two parts inside the brackets, separated by the comma, select rows first and columns second. So 10:20 takes rows 10 up to but not including 20, and 30:40 takes columns 30 up to but not including 40. The result, patch, is a 10 by 10 square cut out of the picture, starting 10 pixels down and 30 pixels across from the top-left corner."
+        },
+        {
+          "order_index": 7,
+          "type": "short_answer",
+          "language": null,
+          "marks": 3,
+          "title": "The bug that does not crash",
+          "prompt_md": "You meant to take a patch 30 pixels across and 10 pixels down, but you typed the two ranges the wrong way round. Your program runs without any error. Explain why there is no error, and describe how you would catch a mistake like this.",
+          "correct_answer": "Both numbers are valid positions in the array, so NumPy has no way to know which one you meant to be rows and which columns, and it happily returns a patch of the size you asked for. Nothing crashes because nothing is out of bounds. I would catch it by printing patch.shape and comparing it with the shape I expected, and by checking one known value from the original image against the same position in the patch. Looking at the patch itself, or its dimensions, is quicker than reasoning about the code."
+        },
+        {
+          "order_index": 8,
+          "type": "short_answer",
+          "language": null,
+          "marks": 3,
+          "title": "Index errors against silent slices",
+          "prompt_md": "`grid[2, 0]` on a two-row array raises `IndexError: index 2 is out of bounds for axis 0 with size 2`, but `scores[2:99]` on a six-item array raises nothing. Explain the difference and why it matters when you are debugging.",
+          "correct_answer": "A single index has to point at one real position, so asking for a row that does not exist is impossible and NumPy raises an IndexError. A slice describes a range, and NumPy returns whatever part of that range exists, which can be fewer values than you asked for or even none. It matters because an out-of-range index tells you loudly that something is wrong, while an out-of-range slice fails silently and leaves you with a smaller array than you expected. After slicing, check the shape rather than assuming."
+        },
+        {
+          "order_index": 9,
+          "type": "short_answer",
+          "language": null,
+          "marks": 3,
+          "title": "When to copy",
+          "prompt_md": "You take `region = photo[0:100, 0:100]` and then set every value in `region` to zero, intending to leave the original photograph untouched. Describe what actually happens and how you would write it so the original is safe.",
+          "correct_answer": "region is a view onto the same underlying data, not a separate copy, so setting its values to zero blanks out that corner of the original photo as well. To keep the original safe I would write region = photo[0:100, 0:100].copy(), which allocates new memory and copies the values across. After that, changes to region leave photo alone. Views are the default because they are fast and use no extra memory, so copying is something you ask for deliberately."
+        },
+        {
+          "order_index": 10,
+          "type": "short_answer",
+          "language": null,
+          "marks": 3,
+          "title": "Two ways to reach one value",
+          "prompt_md": "Both `grid[1][2]` and `grid[1, 2]` return the same value from a two-dimensional array. Explain what each one is actually doing, and say which form you should get into the habit of using.",
+          "correct_answer": "grid[1][2] does two separate steps: it pulls out row 1 as its own array, then takes item 2 from that row. grid[1, 2] does one step, telling NumPy both positions at once. The comma form is the habit to build, because it extends naturally to slicing both axes together, as in grid[0:2, 1:3]. The chained form cannot do that correctly, since grid[0:2][1:3] slices the rows twice instead of slicing rows and then columns."
+        },
+        {
+          "order_index": 11,
+          "type": "short_answer",
+          "language": "python",
+          "marks": 5,
+          "title": "Cut a patch out of an image",
+          "prompt_md": "The script below builds a small stand-in for an image: a grid of numbers with 12 rows and 15 columns. Complete it so that it takes the patch covering rows 4 to 7 and columns 6 to 10, then prints the patch, its shape, and its top-left value.\n\nRemember: rows come first, and the stop number is not included.\n\nExpected output:\n\n```\n(12, 15)\n[[ 66  67  68  69  70]\n [ 81  82  83  84  85]\n [ 96  97  98  99 100]\n [111 112 113 114 115]]\n(4, 5)\n66\n```",
+          "starter_code": "import numpy as np\n\nimg = np.arange(12 * 15).reshape(12, 15)\nprint(img.shape)\n\n# 1. Take rows 4, 5, 6 and 7 and columns 6, 7, 8, 9 and 10\npatch = \n\n# 2. Print the patch\n\n# 3. Print the shape of the patch\n\n# 4. Print the value in the top-left corner of the patch\n",
+          "correct_answer": "import numpy as np\n\nimg = np.arange(12 * 15).reshape(12, 15)\nprint(img.shape)\n\n# 1. Take rows 4, 5, 6 and 7 and columns 6, 7, 8, 9 and 10\npatch = img[4:8, 6:11]\n\n# 2. Print the patch\nprint(patch)\n\n# 3. Print the shape of the patch\nprint(patch.shape)\n\n# 4. Print the value in the top-left corner of the patch\nprint(patch[0, 0])\n",
+          "solution_code": "import numpy as np\n\nimg = np.arange(12 * 15).reshape(12, 15)\nprint(img.shape)\n\n# 1. Take rows 4, 5, 6 and 7 and columns 6, 7, 8, 9 and 10\npatch = img[4:8, 6:11]\n\n# 2. Print the patch\nprint(patch)\n\n# 3. Print the shape of the patch\nprint(patch.shape)\n\n# 4. Print the value in the top-left corner of the patch\nprint(patch[0, 0])\n"
+        },
+        {
+          "order_index": 12,
+          "type": "short_answer",
+          "language": "prompt",
+          "marks": 5,
+          "title": "Prompt Lab: have code you did not write explained",
+          "prompt_md": "You are reading the Module 0 of a Computer Vision course and hit these three lines, which you did not write and which nobody explained:\n\n```python\nimg = cv2.imread(\"cat.jpg\", cv2.IMREAD_GRAYSCALE)\nprint(img.shape)\ncrop = img[100:300, 50:250]\n```\n\nWrite the prompt you would send to an AI assistant so that it **walks you through what each line does and what the numbers mean**, at the level of someone who met arrays for the first time this week. Ask for understanding, not a rewrite.",
+          "correct_answer": "I am new to programming. I have recently learned what a NumPy array is, what shape and dtype mean, and how slicing with start:stop works, including that the stop value is not included. I have never used OpenCV and I have never worked with images in code before.\n\nPlease walk me through these three lines, one at a time, at that level:\n\nimg = cv2.imread(\"cat.jpg\", cv2.IMREAD_GRAYSCALE)\nprint(img.shape)\ncrop = img[100:300, 50:250]\n\nFor each line, tell me: what it produces, what type of thing that result is, and what I would expect to see if I printed it.\n\nThen answer these specifically:\n1. After the first line, what exactly is stored in img, and what do the individual numbers inside it represent?\n2. If shape prints (400, 600), which number is the height and which is the width, and why is it in that order?\n3. In the third line, which pair of numbers selects rows and which selects columns, and how many rows and columns does crop end up with?\n4. Is the top-left corner of an image at the top or the bottom, and which direction does the first number count in?\n\nDo not rewrite or improve the code. I want to understand what is already there. Where a convention is involved rather than a rule, please say so, and tell me how I could check it myself in a couple of lines."
+        }
+      ]
+    },
+    {
+      "order_index": 18,
+      "title": "Maths on a whole array at once, and where you go next",
+      "theory_md": "You have a list of prices and you need to add ten per cent to each one. In Week 2 you would have written a loop: make an empty list, go round every price, multiply, append. Six lines, and a fair chance of an off-by-one somewhere.\n\nWith an array it is one line, and it reads like the sentence you would say out loud.\n\n## Doing the maths to the whole array\n\n```python\nimport numpy as np\n\nprices = np.array([10.0, 25.0, 4.5, 60.0])\nprint(prices * 1.1)\nprint(prices + 5)\n```\n\nOutput:\n\n```\n[11.   27.5   4.95 66.  ]\n[15.  30.   9.5 65. ]\n```\n\nNo loop. NumPy applied the multiplication to every value. This is called a **vectorised** operation, and it is the second reason arrays exist. The first was speed; this is readability. `prices * 1.1` says what it means.\n\nThe same works between two arrays of the same shape - they line up position by position - and it works with comparisons, which is where it becomes genuinely useful:\n\n```python\nimport numpy as np\n\nprices = np.array([10.0, 25.0, 4.5, 60.0])\nprint(prices > 20)\nprint(prices[prices > 20])\nprint(prices.sum())\nprint(prices.mean())\n```\n\nOutput:\n\n```\n[False  True False  True]\n[25. 60.]\n99.5\n24.875\n```\n\nRead the middle line slowly, because it appears constantly in real code. `prices > 20` produces an array of True and False, one per price. Putting that inside the square brackets - `prices[prices > 20]` - keeps only the values where it said True. That is filtering, in one line, with no `if` and no loop. It is usually called a **mask**.\n\n`.sum()` and `.mean()` fold the whole array down to one number. On a table you can fold in one direction only:\n\n```python\nimport numpy as np\n\ngrid = np.array([[1, 2, 3],\n                 [4, 5, 6]])\nprint(grid.sum())\nprint(grid.sum(axis=0))\nprint(grid.sum(axis=1))\n```\n\nOutput:\n\n```\n21\n[5 7 9]\n[ 6 15]\n```\n\n`axis=0` collapses the rows, giving a total per column. `axis=1` collapses the columns, giving a total per row. If you cannot remember which, print both and look. That is not cheating; it is faster than remembering.\n\n## The trap: numbers that wrap around\n\nPhotographs are usually stored as `uint8` - unsigned 8-bit integers. Each pixel is a whole number from 0 to 255, where 0 is black and 255 is white. Eight bits cannot count higher than 255. There is no room.\n\nSo watch what happens when you try to brighten a picture by doubling it:\n\n```python\nimport numpy as np\n\npixels = np.array([100, 150, 200], dtype=np.uint8)\nprint(pixels.dtype)\nprint(pixels * 2)\n```\n\nOutput:\n\n```\nuint8\n[200  44 144]\n```\n\nLook at that second line. 100 doubled correctly to 200. But 150 should be 300, and it came out as **44**. 200 should be 400, and it came out as **144**. The values ran off the top of the range and wrapped back round to the bottom, like a car odometer rolling over.\n\nThere was no error. No warning. The brightest parts of your photograph turned dark, and your program reported success.\n\nThe fix is to do the arithmetic somewhere with more room, hold the values inside the legal range, and only then convert back:\n\n```python\nimport numpy as np\n\npixels = np.array([100, 150, 200], dtype=np.uint8)\nbright = np.clip(pixels.astype(np.int16) * 2, 0, 255).astype(np.uint8)\nprint(bright)\n```\n\nOutput:\n\n```\n[200 255 255]\n```\n\n`astype(np.int16)` moves the values into 16-bit integers, which have plenty of headroom. `np.clip(..., 0, 255)` squashes anything above 255 down to 255 and anything below 0 up to 0. `astype(np.uint8)` puts it back into picture form. Three steps, and now \"too bright\" means white instead of black.\n\n## The mistakes people actually make here\n\n**Expecting the array to change itself.** `prices * 1.1` gives you a new array; it does not alter `prices`. If you want to keep the result, save it: `prices = prices * 1.1`.\n\n**Mismatched shapes.** Adding a 2-value array to a 3-value array gives `ValueError: operands could not be broadcast together with shapes (2,) (3,)`. That message is telling you the shapes do not line up. Print both shapes.\n\n**Whole-number division.** `np.array([1, 2, 3]) / 2` gives `[0.5 1.  1.5]`, but `//` gives `[0 1 1]`, throwing away the decimals silently.\n\n**Forgetting dtype after a conversion.** `astype` returns a new array. `pixels.astype(np.int16)` on its own changes nothing unless you assign it.\n\n## Try this yourself\n\nTake `np.array([50, 120, 200, 250], dtype=np.uint8)`, add 50 to it, and predict the output before you run it. Then do it properly with `astype`, `np.clip` and back to `uint8`. Seeing the wrong answer once, on purpose, is what makes this stick.\n\n## What you can now read\n\nStop for a second, because this is the end of the course and you have earned the summary.\n\nSix weeks ago you may never have written a line of code. You can now write and run a program, use variables, make decisions with `if`, hold data in lists and dictionaries, loop over them, write functions, read an error instead of fearing it, debug by narrowing things down, save and run a `.py` file, install packages, work in a virtual environment, move around a terminal, and track your work with Git and GitHub. And as of this week you can read `import numpy as np`, `img.shape`, `img[10:20, 30:40]` and `arr[arr > 20]`.\n\nThat list is not a beginner's list. It is exactly the entry bar for the Foundations module of every technical track on this platform. Nothing in those Module 0 lessons will now open with a line you have never seen.\n\n## Choosing where you go next\n\nSix technical tracks, in plain terms:\n\n- **Generative AI** - working with large language models: prompting them properly, wiring them into applications, retrieval, evaluation. Start here if what pulled you in was ChatGPT-style tools.\n- **Machine Learning** - teaching a model to predict from data: features, training, testing, honest evaluation. Start here if you like the question \"can we predict that?\"\n- **Computer Vision** - images and video: detection, classification, tracking. This is the track whose Module 0 opens with the array slicing you learned this week. Start here if pictures are what excite you.\n- **Cybersecurity** - attack and defence: networks, systems, testing your own defences. Heavier on the terminal, which you now have. Start here if you like breaking things to understand them.\n- **Data Science** - analysing real data and communicating findings: cleaning, statistics, charts. Start here if the questions you care about come with a spreadsheet attached.\n- **Full Stack** - building software people actually use: web applications, front and back. Start here if you want to make things other people can open.\n\nHow to choose: pick the one whose worst day sounds tolerable, not the one whose best day sounds exciting. Every track has a slow, fiddly middle. Also, you are not locked in. The foundations you have built are the same for all six.\n\nOne last thing, and it is the thing this whole course has been saying. You were never missing a gene for this. You were missing an explanation. You have had it now. Go and open your Module 0.\n",
+      "estimated_minutes": 35,
+      "learning_objectives": [
+        "Apply arithmetic and comparisons to a whole array without writing a loop",
+        "Filter an array with a boolean mask and summarise it along a chosen axis",
+        "Recognise and prevent integer overflow when scaling uint8 pixel values",
+        "Choose a technical track and name the skills from this course it will rely on"
+      ],
+      "case_study": "**Pac-Man and the level 256 kill screen — eight bits ran out (1980)**\n\nNamco released Pac-Man in 1980, and for years players believed it went on forever. It does not. Reach level 256 and the game breaks in a very particular way: the left half of the maze draws normally, and the right half fills with garbled letters, fruit symbols and fragments of memory that were never meant to be seen. Players called it the kill screen. The level cannot be completed, because the scrambled half contains only a handful of the dots the game requires you to eat, so no amount of skill gets you past it.\n\nThe cause is one variable. The level counter was stored as an 8-bit integer, and 8 bits can hold the whole numbers 0 to 255 and nothing else. When the game reached level 256 and added one more, the counter had nowhere to put the value and rolled back around to 0, while the rest of the code carried on as though it were drawing a brand new maze. The routine that draws the fruit at the bottom of the screen was handed a nonsense number and wrote nonsense to the screen. Nothing crashed. The machine did precisely what it was told, with a number that had quietly wrapped around.\n\nThat is the same bug you met a few paragraphs ago, in `pixels * 2` giving `[200 44 144]`. A `uint8` pixel holds 0 to 255 for exactly the same reason a Pac-Man level counter did, and it wraps for exactly the same reason. Doubling a bright pixel makes it dark. Nobody tells you.\n\nNotice, too, that this bug survived in one of the most-played pieces of software ever written, because almost nobody got that far. Bugs are not evidence that the author was careless or stupid. They are evidence that a machine follows instructions literally, including the ones about how much room a number is allowed to take up. Knowing that a number has a size is one of the small pieces of knowledge that separates code that looks right from code that is right.\n",
+      "exercises": [
+        {
+          "order_index": 1,
+          "type": "mcq",
+          "language": null,
+          "marks": 2,
+          "title": "What a vectorised operation does",
+          "prompt_md": "You have `prices = np.array([10.0, 25.0, 4.5, 60.0])` and you write `prices * 1.1`. What does NumPy do, and what is the result of that expression?",
+          "options": [
+            "It multiplies every value by 1.1 and hands back a new array holding the results",
+            "It multiplies only the first value by 1.1 and leaves the other three values alone",
+            "It changes the values inside prices itself and hands back nothing you can print",
+            "It raises an error, because an array can only be multiplied by another array"
+          ],
+          "correct_answer": "It multiplies every value by 1.1 and hands back a new array holding the results"
+        },
+        {
+          "order_index": 2,
+          "type": "mcq",
+          "language": null,
+          "marks": 2,
+          "title": "Filtering with a mask",
+          "prompt_md": "The expression `prices[prices > 20]` returned `[25. 60.]` from an array of four prices. Which description of how that works is correct?",
+          "options": [
+            "The comparison makes an array of True and False, and only the True positions are kept",
+            "The comparison sorts the prices, and everything below the value 20 is then discarded",
+            "The comparison counts how many prices beat 20, and that count is used as a position",
+            "The comparison replaces every price under 20 with the number 20 before returning"
+          ],
+          "correct_answer": "The comparison makes an array of True and False, and only the True positions are kept"
+        },
+        {
+          "order_index": 3,
+          "type": "mcq",
+          "language": null,
+          "marks": 2,
+          "title": "Why a bright pixel goes dark",
+          "prompt_md": "Doubling the array `np.array([100, 150, 200], dtype=np.uint8)` gave the output `[200 44 144]` with no error message at all. What has happened to the second and third values?",
+          "options": [
+            "They went past 255, which is the highest a uint8 can hold, so they wrapped round to low numbers",
+            "They were rounded down to fit the display, because printing an array shortens large numbers",
+            "They were treated as text rather than numbers, so doubling them produced meaningless output",
+            "They were divided by 255 to keep them inside range, leaving only the remainder behind"
+          ],
+          "correct_answer": "They went past 255, which is the highest a uint8 can hold, so they wrapped round to low numbers"
+        },
+        {
+          "order_index": 4,
+          "type": "mcq",
+          "language": null,
+          "marks": 2,
+          "title": "Folding a table in one direction",
+          "prompt_md": "For the array `np.array([[1, 2, 3], [4, 5, 6]])`, the call `grid.sum(axis=0)` returns `[5 7 9]`. What has axis=0 asked NumPy to do?",
+          "options": [
+            "Collapse the rows together, producing one total for each column of the table",
+            "Collapse the columns together, producing one total for each row of the table",
+            "Add up only the first row, since axis zero refers to the row numbered zero",
+            "Add up everything in the table, since axis zero means the whole array at once"
+          ],
+          "correct_answer": "Collapse the rows together, producing one total for each column of the table"
+        },
+        {
+          "order_index": 5,
+          "type": "mcq",
+          "language": null,
+          "marks": 2,
+          "title": "Reading a broadcast error",
+          "prompt_md": "You try to add two arrays and Python stops with `ValueError: operands could not be broadcast together with shapes (2,) (3,)`. What is that message telling you?",
+          "options": [
+            "The two arrays have different lengths, so their values cannot be lined up position by position",
+            "One of the arrays holds text while the other holds numbers, so addition is not defined",
+            "The arrays are too large to add together and should be split into smaller pieces first",
+            "One array is a view of the other, and NumPy refuses to add an array to its own view"
+          ],
+          "correct_answer": "The two arrays have different lengths, so their values cannot be lined up position by position"
+        },
+        {
+          "order_index": 6,
+          "type": "short_answer",
+          "language": null,
+          "marks": 3,
+          "title": "Loop or vectorise",
+          "prompt_md": "You need to add VAT at 20 per cent to two thousand prices. Compare writing a Python loop over a list with using a NumPy array, and explain which you would choose and why.",
+          "correct_answer": "With a list I would create an empty list, loop over every price, multiply each one by 1.2 and append the result, which is about five lines and gives several places to make a small mistake. With an array it is one line, prices * 1.2, which reads like the sentence I would say out loud and produces a new array of results. The array version is also much faster because NumPy does not stop to check the type of each value. I would choose the array for anything that is a lot of numbers of the same kind."
+        },
+        {
+          "order_index": 7,
+          "type": "short_answer",
+          "language": null,
+          "marks": 3,
+          "title": "The silent overflow",
+          "prompt_md": "A colleague brightens photographs by writing `img = img * 2` on a uint8 image and reports that dark areas look fine but bright areas have gone black. Explain what is happening and how you would fix it.",
+          "correct_answer": "A uint8 value can only hold 0 to 255, so any pixel above 127 doubles to a number that does not fit and wraps around to a small value, which is why bright areas turn dark while dark areas are unaffected. There is no error because the wrap is a normal, defined behaviour of that type. The fix is to do the arithmetic in a wider type and clamp the result, for example np.clip(img.astype(np.int16) * 2, 0, 255).astype(np.uint8). That way anything over the limit becomes white rather than wrapping."
+        },
+        {
+          "order_index": 8,
+          "type": "short_answer",
+          "language": null,
+          "marks": 3,
+          "title": "Which axis",
+          "prompt_md": "You have a table with one row per student and one column per test. Explain which axis you would sum along to get each student total, which to get each test total, and how you would check you picked the right one.",
+          "correct_answer": "Rows are students and columns are tests, so summing along axis=1 collapses the columns and gives one total per student, while axis=0 collapses the rows and gives one total per test. To check, I would look at the length of the result: a per-student total should have as many values as there are rows, and a per-test total as many as there are columns. If I am unsure I would print both and compare one value against a total I can add up by hand."
+        },
+        {
+          "order_index": 9,
+          "type": "short_answer",
+          "language": null,
+          "marks": 3,
+          "title": "Nothing changed",
+          "prompt_md": "A beginner writes `prices * 1.1` on one line, prints `prices` on the next, and is confused that the values are unchanged. Explain what they have misunderstood and what they should write instead.",
+          "correct_answer": "Multiplying an array produces a brand new array and leaves the original alone, so a line that only computes a result and never stores it has no lasting effect. They should assign it, either prices = prices * 1.1 to replace the original or with_vat = prices * 1.1 to keep both. The same applies to astype, which returns a converted copy rather than converting in place. A quick way to spot this is that the line has no equals sign and no print."
+        },
+        {
+          "order_index": 10,
+          "type": "short_answer",
+          "language": null,
+          "marks": 3,
+          "title": "Choosing your track",
+          "prompt_md": "Now that the course is finished, name the technical track you intend to start next and explain your choice in terms of what you would be doing day to day, not only the subject name. Then name one thing from this course you expect to lean on in week one of it.",
+          "correct_answer": "A good answer names one of the six tracks, which are Generative AI, Machine Learning, Computer Vision, Cybersecurity, Data Science and Full Stack, and justifies it by the daily work rather than the label, for example choosing Computer Vision because the work is inspecting and transforming images and that is interesting even on a slow day. It should then name a concrete skill from this course that the first module will need, such as reading a traceback without panic, running a .py file from the terminal, installing a package into a virtual environment, or slicing a two-dimensional array. The reasoning matters more than which track is chosen."
+        },
+        {
+          "order_index": 11,
+          "type": "short_answer",
+          "language": "python",
+          "marks": 5,
+          "title": "Brighten an image without wrapping round",
+          "prompt_md": "The array below stands in for a row of pixels from a black-and-white photograph, stored as `uint8`. Complete the script so that it first shows the wrong way to double it, then does it properly.\n\nStep 3 must widen the type, double the values, clip them to the range 0 to 255, and convert back to `uint8`.\n\nExpected output:\n\n```\nuint8\n[ 80 200  44 144 184]\n[ 80 200 255 255 255]\nuint8\n```",
+          "starter_code": "import numpy as np\n\npixels = np.array([40, 100, 150, 200, 220], dtype=np.uint8)\nprint(pixels.dtype)\n\n# 1. Print pixels * 2 to see the values wrap round\n\n# 2. Make bright: widen to int16, double, clip to 0-255, convert back to uint8\nbright = \n\n# 3. Print bright\n\n# 4. Print the dtype of bright to prove it is still uint8\n",
+          "correct_answer": "import numpy as np\n\npixels = np.array([40, 100, 150, 200, 220], dtype=np.uint8)\nprint(pixels.dtype)\n\n# 1. Print pixels * 2 to see the values wrap round\nprint(pixels * 2)\n\n# 2. Make bright: widen to int16, double, clip to 0-255, convert back to uint8\nbright = np.clip(pixels.astype(np.int16) * 2, 0, 255).astype(np.uint8)\n\n# 3. Print bright\nprint(bright)\n\n# 4. Print the dtype of bright to prove it is still uint8\nprint(bright.dtype)\n",
+          "solution_code": "import numpy as np\n\npixels = np.array([40, 100, 150, 200, 220], dtype=np.uint8)\nprint(pixels.dtype)\n\n# 1. Print pixels * 2 to see the values wrap round\nprint(pixels * 2)\n\n# 2. Make bright: widen to int16, double, clip to 0-255, convert back to uint8\nbright = np.clip(pixels.astype(np.int16) * 2, 0, 255).astype(np.uint8)\n\n# 3. Print bright\nprint(bright)\n\n# 4. Print the dtype of bright to prove it is still uint8\nprint(bright.dtype)\n"
+        },
+        {
+          "order_index": 12,
+          "type": "short_answer",
+          "language": "prompt",
+          "marks": 5,
+          "title": "Prompt Lab: get help debugging without being handed the answer",
+          "prompt_md": "Your brightening script runs with no error, but the bright parts of the picture have come out dark. You want an AI assistant to help you find the cause yourself rather than paste a fixed version at you.\n\nWrite the prompt you would send. Include your code, what you expected, what you actually got, and clear instructions about the kind of help you want.",
+          "correct_answer": "I am six weeks into learning Python and I have recently met NumPy arrays. I am trying to brighten a black-and-white image and something is wrong, but there is no error message.\n\nMy code:\n\nimport numpy as np\npixels = np.array([40, 100, 150, 200, 220], dtype=np.uint8)\nprint(pixels.dtype)\nprint(pixels * 2)\n\nWhat I expected: every value roughly twice as large, with the bright ones near white.\nWhat I actually got: uint8, then [ 80 200  44 144 184]. The two biggest values came out smaller than they started.\n\nPlease help me work this out rather than fixing it for me:\n1. Ask me up to three questions whose answers would narrow down the cause, and wait for my replies before going further.\n2. Point me at the one line most likely to be responsible, and tell me what to print to test that idea, without telling me what the result will be.\n3. Explain any concept I clearly need here in plain English, at the level of someone who learned what a dtype is this week.\n4. Only if I ask twice, give me the corrected code, and when you do, explain each change.\n\nPlease do not rewrite my whole script and do not use jargon without defining it first. I want to be able to recognise this problem on my own next time."
+        }
+      ]
+    }
+  ]
+}

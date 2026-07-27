@@ -1,0 +1,470 @@
+{
+  "week": 1,
+  "lessons": [
+    {
+      "order_index": 1,
+      "title": "What a program is and how to run your first one",
+      "theory_md": "## The bit everyone skips\n\nMost guides open with a black window full of white text and assume you already know what it is. That is the moment a lot of people quietly decide programming is not for them. So let us start further back than that.\n\nA **program** is a list of instructions, written as ordinary text, saved in a file, and handed to something that can carry them out.\n\nThat is the whole idea. There is no hidden layer underneath it. The text you type **is** the program. Nobody is born knowing this, and not knowing it is not a sign of anything about you.\n\n## Code is text in a file\n\nA **file** is a named piece of content stored on your computer: a photo, a letter, a shopping list. Every file has a name and an **extension**, which is the short tag after the full stop. `holiday.jpg` is a picture. `letter.docx` is a document. A Python program lives in a file whose extension is `.py`, for example `hello.py`.\n\nInside a `.py` file there are no pictures, no bold, no font sizes. There is text and nothing else. If you opened `hello.py` in a plain text editor you would see exactly the letters you typed, in the order you typed them.\n\n## Something has to read the file\n\nText on its own does nothing at all. Something must read it and act on it. For us, that something is **Python**: a program that already exists on many computers, and that you can also use through a website without installing anything.\n\nPython reads your file **from the top, one line at a time**, and finishes each line before moving to the next. It never skips ahead. It never works out what you meant. That literal-mindedness is the most useful fact about it. When a program misbehaves, it is almost always doing exactly what you wrote rather than what you pictured in your head.\n\n**Running** a program means handing your file to Python and letting it work through the lines. What Python shows you while it does that is called the **output**, and it appears in a plain text area on your screen.\n\nYou do not need to install anything to follow this lesson. Search for an online Python runner, paste the code in, and press Run. Seeing output on your screen today matters far more than a tidy setup.\n\n## Your first instruction: print\n\n`print` puts something on the screen. Type this exactly:\n\n```python\nprint(\"Hello.\")\n```\n\nRun it. The output is:\n\n```\nHello.\n```\n\nFour parts, and every one of them matters:\n\n- `print` — the name of the instruction, all in lower case.\n- `(` and `)` — round brackets, holding whatever you are giving the instruction.\n- `\"` and `\"` — a matching pair of straight double quote marks.\n- `Hello.` — your text, sitting between those quote marks.\n\nThe quote marks are how Python tells the difference between *text you want shown* and *a name it should go and look up*. Without them, Python would hunt for something called `Hello`, find nothing, and stop.\n\n## A longer example: order is your job\n\n```python\nprint(\"Filling the kettle.\")\nprint(\"Waiting for it to boil.\")\nprint(\"Tea is ready.\")\n```\n\nOutput:\n\n```\nFilling the kettle.\nWaiting for it to boil.\nTea is ready.\n```\n\nThree instructions, carried out top to bottom, in the order you wrote them. Swap the first and last line and the tea is ready before the kettle is filled. Python will not complain, because it has no idea what tea is. Sensible order is entirely your responsibility.\n\nYou can leave notes for yourself with `#`. Python ignores everything after a `#` on that line:\n\n```python\n# A short tea-making routine\nprint(\"Filling the kettle.\")   # this one runs\n# print(\"This line does nothing.\")\nprint(\"Tea is ready.\")\n```\n\nOutput:\n\n```\nFilling the kettle.\nTea is ready.\n```\n\nLook at what happened to the middle `print`. It has a `#` in front of it, so Python treated the whole line as a note rather than an instruction, and nothing appeared. Those notes are called **comments**, and they are for humans reading the file later, including you in a fortnight.\n\n## Mistakes you are going to make\n\nNone of these mean you are bad at this. Every one of them happens to everybody, including people who do this for a living.\n\n**A missing quote mark.**\n\n```python\nprint(\"Hello.)\n```\n\n```\nSyntaxError: unterminated string literal (detected at line 1)\n```\n\nRead it slowly. A **string** is the word programmers use for a piece of text. **Unterminated** means it was opened and never closed. **Line 1** tells you where to look. The message is a map, not a verdict on you.\n\n**A capital letter.** Writing `Print(\"Hello.\")` gives you this:\n\n```\nNameError: name 'Print' is not defined. Did you mean: 'print'?\n```\n\nPython treats upper and lower case as different, so `print` and `Print` are two separate names, and only one of them exists. Notice the second sentence: recent versions of Python often guess what you meant and say so. Errors are frequently trying to help you.\n\n**Curly quote marks.** Word processors quietly turn straight quotes into curly ones. Python accepts only the straight kind. If code you copied out of a document refuses to run, retype the quote marks by hand in a plain text editor.\n\n**A missing closing bracket.** Python reaches the end of your file still waiting for the `)`, and often points at the line *after* the real problem. When an error points at a line that looks perfectly fine, check the line above it.\n\n## Try this yourself\n\nWrite and run a four-line program that introduces you: your name, where you live, one thing you would like to build, and one thing that worries you about learning this.\n\nThen break it on purpose. Delete one quote mark, run it, and read the error message out loud. Put the quote mark back and run it again. Breaking something deliberately and repairing it is the fastest way to stop being frightened of errors, and you will meet a great many of them. That is not a problem with you. It is the job.\n",
+      "estimated_minutes": 30,
+      "learning_objectives": [
+        "Describe a program as ordinary text saved in a file and read by Python one line at a time",
+        "Run a Python file and produce output on screen using the print instruction",
+        "Use comments to leave notes that Python ignores when the program runs",
+        "Read a SyntaxError or NameError message and identify the line and the cause"
+      ],
+      "case_study": "**Grace Hopper and the first compiler — teaching a machine to read something closer to English (1951-1952)**\n\nIn the early 1950s, programming a computer meant writing the numeric codes the machine itself used. There was no `print`. There were no words. A programmer worked out the arithmetic of the machine and wrote it down by hand, and a single slip meant starting again. Grace Hopper, a mathematician working on the UNIVAC I, thought this was an absurd way to spend a human life. Her idea was that the computer could do the translation itself: you would write instructions in a form convenient for people, and a program would turn them into the form convenient for the machine.\n\nShe built that translator across 1951 and 1952 and called it the A-0. She also coined the word for this kind of program: a **compiler**. Hopper later recalled that the reaction was not enthusiasm but disbelief, because the accepted wisdom of the day was that computers could only do arithmetic and certainly could not handle words. It took time before the idea was taken seriously by the people around her.\n\nShe kept going. Her later work produced FLOW-MATIC, the first data-processing language to use English-like statements, and that work fed directly into COBOL, whose first specifications appeared in 1959. Business computing ran on the descendants of that idea for decades.\n\nThe reason this belongs in your first lesson is the shape of it. Everything you type in this course is text meant for a person, translated by a program into something a machine can act on. `print(\"Hello.\")` is readable because Hopper argued, against the room, that readable was worth building. And the second half of the story matters as much as the first: the person who invented this was told the idea was not sensible, and was right anyway. Feeling out of your depth at the start is not evidence about your ability. It is what the start feels like for everyone.\n",
+      "exercises": [
+        {
+          "order_index": 1,
+          "type": "mcq",
+          "language": null,
+          "marks": 2,
+          "title": "What a program is actually made of",
+          "prompt_md": "A friend tells you that a Python program is a special compressed file that only a computer can open, and that the code inside is hidden. Based on this lesson, what is a Python program actually made of?",
+          "options": [
+            "Ordinary text saved in a file, which Python reads from the top one line at a time",
+            "A compressed file that has to be unpacked by Python before any of it can be read",
+            "A picture of code that Python scans and converts back into letters and numbers",
+            "A hidden setting inside the computer that Python switches on when it is asked to"
+          ],
+          "correct_answer": "Ordinary text saved in a file, which Python reads from the top one line at a time"
+        },
+        {
+          "order_index": 2,
+          "type": "mcq",
+          "language": null,
+          "marks": 2,
+          "title": "Why the quote marks are there",
+          "prompt_md": "In the line `print(\"Hello.\")` the word Hello is wrapped in a matching pair of straight double quote marks. What do those quote marks tell Python to do with what is between them?",
+          "options": [
+            "Treat everything between them as plain text and show it exactly as written",
+            "Make the text bold on the screen so that the output is easier for a human to read",
+            "Look up a stored name called Hello and show whatever value that name is holding",
+            "Check the spelling of the words between them before showing anything on screen"
+          ],
+          "correct_answer": "Treat everything between them as plain text and show it exactly as written"
+        },
+        {
+          "order_index": 3,
+          "type": "mcq",
+          "language": null,
+          "marks": 2,
+          "title": "What happens when the lines are in the wrong order",
+          "prompt_md": "A three-line program prints the steps of making tea, but the line saying the tea is ready has been placed first by mistake. What will Python do when that program is run?",
+          "options": [
+            "Run the lines top to bottom exactly as written, so the steps come out in a silly order",
+            "Work out the sensible order from the meaning of the words and repair the steps for you",
+            "Stop with an error message, because the steps do not make sense in the order given",
+            "Run the lines in an unpredictable order, because print lines have no fixed sequence"
+          ],
+          "correct_answer": "Run the lines top to bottom exactly as written, so the steps come out in a silly order"
+        },
+        {
+          "order_index": 4,
+          "type": "mcq",
+          "language": null,
+          "marks": 2,
+          "title": "Reading a NameError",
+          "prompt_md": "A learner types `Print(\"Hello.\")` with a capital P and sees the message `NameError: name 'Print' is not defined. Did you mean: 'print'?`. What has actually gone wrong here?",
+          "options": [
+            "Python treats upper and lower case as different, and only the lower case print exists",
+            "The message is reporting that the text between the brackets has been spelled wrongly",
+            "A capital letter is allowed, but the brackets must then be square rather than round",
+            "Python ran out of memory partway through and could not finish the print instruction"
+          ],
+          "correct_answer": "Python treats upper and lower case as different, and only the lower case print exists"
+        },
+        {
+          "order_index": 5,
+          "type": "mcq",
+          "language": null,
+          "marks": 2,
+          "title": "What a hash symbol does to a line",
+          "prompt_md": "A line inside a program begins with a hash symbol, followed by the words A short tea-making routine. What does Python do with that line at the moment the program is run?",
+          "options": [
+            "Nothing at all, because a hash makes Python ignore the rest of that line completely",
+            "Shows it on screen in a different colour so that written notes stand out clearly",
+            "Treats it as a heading and prints it once, above all of the other output lines",
+            "Reports an error, because those words are not a valid instruction that Python knows"
+          ],
+          "correct_answer": "Nothing at all, because a hash makes Python ignore the rest of that line completely"
+        },
+        {
+          "order_index": 6,
+          "type": "short_answer",
+          "language": null,
+          "marks": 3,
+          "title": "Explain what literal means here",
+          "prompt_md": "This lesson says Python reads your instructions literally and never works out what you meant. Explain in your own words what that means, and why it is good news rather than bad news when a program does something unexpected.",
+          "correct_answer": "It means Python carries out precisely the instructions written in the file, in the order they appear, without filling in gaps or correcting anything. When a program does something unexpected, the cause is therefore in the text of the program rather than in some hidden place I cannot see. That is good news, because it means the problem is findable by reading my own lines carefully."
+        },
+        {
+          "order_index": 7,
+          "type": "short_answer",
+          "language": null,
+          "marks": 3,
+          "title": "Code copied out of a word processor",
+          "prompt_md": "A friend copies a working `print` line out of a Word document into a Python file, and it refuses to run even though it looks identical to the original. What would you check first, and why?",
+          "correct_answer": "I would check the quote marks first. Word processors replace straight quote marks with curly ones, and Python accepts only the straight kind, so the line can look correct to a human and still be rejected. The fix is to delete the quote marks and retype them by hand in a plain text editor."
+        },
+        {
+          "order_index": 8,
+          "type": "short_answer",
+          "language": null,
+          "marks": 3,
+          "title": "Reading an unterminated string message",
+          "prompt_md": "You run a program and see `SyntaxError: unterminated string literal (detected at line 1)`. Walk through how you would read that message, piece by piece, and say what you would do next.",
+          "correct_answer": "A string literal is a piece of text written between quote marks, and unterminated means it was opened but never closed. The phrase at line 1 tells me which line to look at. So I would go to line 1, count the quote marks, and add the missing one so that they form a matching pair."
+        },
+        {
+          "order_index": 9,
+          "type": "short_answer",
+          "language": null,
+          "marks": 3,
+          "title": "Breaking a working program on purpose",
+          "prompt_md": "The lesson asks you to take a program that already works, break it deliberately, read the error, and then repair it. Explain why that is worth doing rather than a waste of time.",
+          "correct_answer": "It lets me see an error message while I already know exactly what caused it, so I learn what that wording looks like in a safe situation. Later, when the same message appears and I do not know the cause, I will recognise it and know where to look. It also makes errors feel ordinary rather than alarming, which keeps me working instead of stopping."
+        },
+        {
+          "order_index": 10,
+          "type": "short_answer",
+          "language": null,
+          "marks": 3,
+          "title": "It only looked like text",
+          "prompt_md": "Someone opens their `.py` file in a text editor, sees only plain letters and symbols with no formatting, and worries that they have saved the file wrongly. What would you tell them?",
+          "correct_answer": "Nothing has gone wrong, because that is precisely what a Python file is. A program is ordinary text saved in a file with a .py extension, and Python reads those letters and symbols as instructions. If the file had pictures or bold formatting inside it, that would be the real problem."
+        },
+        {
+          "order_index": 11,
+          "type": "short_answer",
+          "language": "python",
+          "marks": 5,
+          "title": "Write a four-line program with print",
+          "prompt_md": "Complete the program so that it produces exactly these four lines of output, in this order:\n\n```\nProgramming is instructions.\nPython reads from the top.\nLine three runs third.\nDone.\n```\n\nReplace each TODO with a `print` instruction. Keep the comment on the first line. Check your quote marks form matching pairs and that every bracket you open is closed.",
+          "starter_code": "# A four-line program that describes itself.\nprint(\"Programming is instructions.\")\n# TODO: print the second line\n# TODO: print the third line\n# TODO: print the fourth line\n",
+          "correct_answer": "# A four-line program that describes itself.\nprint(\"Programming is instructions.\")\nprint(\"Python reads from the top.\")\nprint(\"Line three runs third.\")\nprint(\"Done.\")\n",
+          "solution_code": "# A four-line program that describes itself.\nprint(\"Programming is instructions.\")\nprint(\"Python reads from the top.\")\nprint(\"Line three runs third.\")\nprint(\"Done.\")\n"
+        },
+        {
+          "order_index": 12,
+          "type": "short_answer",
+          "language": "prompt",
+          "marks": 5,
+          "title": "Prompt Lab: ask for an error to be explained, not fixed",
+          "prompt_md": "You ran the line `print(\"Hello.)` and Python replied:\n\n```\nSyntaxError: unterminated string literal (detected at line 1)\n```\n\nWrite the prompt you would send to an AI assistant (ChatGPT, Claude, Copilot or Gemini) so that it **explains the message and teaches you to read it**, without handing you the corrected line. Being handed the answer costs you the skill. Your prompt should set out who you are, what you ran, what you saw, and what kind of help you do and do not want.",
+          "correct_answer": "I am on my first day of learning Python and I have never programmed before, so please assume I know no jargon and define any term you use.\n\nI ran this single line in an online Python runner:\n\nprint(\"Hello.)\n\nand Python replied:\n\nSyntaxError: unterminated string literal (detected at line 1)\n\nPlease do NOT give me the corrected line of code. I want to find it myself.\n\nInstead, please: (1) translate that message into plain English, explaining what a string literal is and what unterminated means; (2) explain what the part in brackets about line 1 is telling me; (3) give me one specific thing to count or look at on that line so that I can spot the problem myself; (4) tell me what a correct version would look like in general terms, without writing my line out for me. Once I have tried a fix, I will show you my new line and you can tell me whether my reasoning was right."
+        }
+      ]
+    },
+    {
+      "order_index": 2,
+      "title": "Storing values in variables, and why text and numbers behave differently",
+      "theory_md": "## A program that forgets everything\n\nIn the last lesson your programs could speak, but they could not remember. Every value appeared on screen and then vanished. To do anything useful, a program needs to hold on to a value and refer back to it later. That is what a **variable** is.\n\nA variable is a name you attach to a value.\n\n```python\nage = 30\n```\n\nRead that as: *put the value 30 into a name called age*. From this point on, wherever you write `age`, Python hands you 30.\n\nThe equals sign here is not the equals sign from school. It does not mean *these two things are the same*. It means *store the thing on the right under the name on the left*. It is an arrow pointing leftwards. This trips up almost everybody once, and the moment it clicks, a whole class of confusion disappears.\n\n## Naming things\n\nA name may contain letters, digits and underscores. It may not contain spaces, and it may not start with a digit. Upper and lower case count as different, so `total` and `Total` are two separate names.\n\nThe usual Python style is lower case words joined by underscores: `first_name`, `item_price`, `days_remaining`. Choose names that say what the value is. `x` costs you nothing today and costs you ten minutes next week when you reread your own program and cannot remember what `x` held.\n\n## Text and numbers are different kinds of thing\n\nEvery value in Python has a **type**, which is the kind of thing it is. Three types cover almost everything you will meet at the start:\n\n- **str** — short for *string*, meaning text. Written between quote marks: `\"hello\"`, `\"5\"`, `\"Amara\"`.\n- **int** — short for *integer*, meaning a whole number. Written with no quote marks: `30`, `0`, `-7`.\n- **float** — a number with a decimal point: `1.62`, `0.5`, `-3.0`.\n\nYou can ask Python what type a value has:\n\n```python\nprint(type(\"5\"))\nprint(type(5))\nprint(type(5.0))\n```\n\nOutput:\n\n```\n<class 'str'>\n<class 'int'>\n<class 'float'>\n```\n\nThe word `class` there is Python being formal. Read it as *kind*. Note carefully that `\"5\"` and `5` are not the same value. One is a piece of writing that happens to look like a number. The other is a number.\n\n## Worked example: storing and showing values\n\n```python\nname = \"Amara\"\nage = 30\nheight_m = 1.62\n\nprint(name)\nprint(age)\nprint(f\"{name} is {age} years old and {height_m} metres tall.\")\n```\n\nOutput:\n\n```\nAmara\n30\nAmara is 30 years old and 1.62 metres tall.\n```\n\nThat last line uses an **f-string**. Put the letter `f` immediately before the opening quote mark, and then anything you write inside curly brackets is replaced by the value stored under that name. It is the tidiest way to mix text and stored values, and you will use it constantly.\n\n## Worked example: the classic that breaks\n\nHere is the one that catches every beginner.\n\n```python\nprice = \"5\"\nextra = 5\nprint(price + extra)\n```\n\nOutput:\n\n```\nTraceback (most recent call last):\n  File \"shop.py\", line 3, in <module>\n    print(price + extra)\n          ~~~~~~^~~~~~~\nTypeError: can only concatenate str (not \"int\") to str\n```\n\nThat block of output is called a **traceback**. Read it from the bottom upwards. The last line is what went wrong. Above it, Python shows you the exact line it was running and draws a small squiggle under the part that caused the trouble. The `line 3` tells you where to look.\n\nThe reason it failed is that `+` means two different things depending on what it is given. Given two numbers, it adds them. Given two pieces of text, it glues them end to end, which is called **concatenation**. Given one of each, there is no sensible answer, so Python refuses to guess and tells you why.\n\nThat refusal is a kindness. There are languages that would quietly produce something and let the mistake travel onwards into your results.\n\nYou have two fixes, and they give different answers:\n\n```python\nprice = \"5\"\nextra = 5\n\nprint(int(price) + extra)\nprint(price + str(extra))\n```\n\nOutput:\n\n```\n10\n55\n```\n\n`int(...)` turns text into a whole number. `str(...)` turns a number into text. Same `+`, same starting values, and the answers are 10 and 55. Deciding which one you actually want is your job, not Python's.\n\n## Reassignment: a name can be pointed somewhere new\n\n```python\ncount = 3\ncount = count + 1\nprint(count)\n```\n\nOutput:\n\n```\n4\n```\n\nThe second line looks impossible until you remember that `=` is not equality. Python works out the right-hand side first, using the current value of `count`, which is 3. That gives 4. It then stores 4 under the name `count`, replacing the 3. The old value is gone.\n\n## Mistakes you are going to make\n\n**Using a name before storing anything in it.** `print(total)` before any `total = ...` line gives `NameError: name 'total' is not defined`. Python is telling you it has never heard of that name.\n\n**A typo or a case mismatch.** `user_name = \"Amara\"` followed by `print(username)` also gives a NameError, because the underscore makes it a different name entirely. When you see a NameError, read the name in the message character by character against the one you stored.\n\n**Numbers arriving as text.** Values that come from a form, a file or a website almost always arrive as text, even when they look like numbers. That is where the `\"5\" + 5` problem comes from in real work. Convert deliberately with `int(...)` or `float(...)` before doing arithmetic.\n\n**Converting something that is not a whole number.** `int(\"3.5\")` gives `ValueError: invalid literal for int() with base 10: '3.5'`. Use `float(\"3.5\")` when there is a decimal point involved.\n\n## Try this yourself\n\nStore your first name, your age and your height in three well-named variables. Print a sentence about yourself using an f-string. Then set a variable to the text `\"10\"`, try to add the number `5` to it, and read the TypeError. Fix it twice: once so the answer is 15, once so the answer is 105. Seeing both answers come from the same `+` is the point of this lesson.\n",
+      "estimated_minutes": 32,
+      "learning_objectives": [
+        "Store a value under a name and explain why the equals sign means store rather than equals",
+        "Tell apart the str, int and float types and check any value with the type instruction",
+        "Convert between text and numbers with int, float and str, and choose the conversion you want",
+        "Diagnose a TypeError, NameError or ValueError caused by mixing text and numbers"
+      ],
+      "case_study": "**Python and Guido van Rossum — a holiday project that refused to guess (1989-1991)**\n\nIn December 1989, Guido van Rossum, a programmer at the national research institute CWI in Amsterdam, found himself with a quiet Christmas break and an itch. He had been working on a teaching language called ABC, which had been designed to be approachable for people who were not professional programmers. ABC was pleasant to read but awkward to extend, and it had not caught on. Van Rossum started building a successor as a personal project, keeping the readability and dropping the ceremony. He named it after the television programme Monty Python's Flying Circus.\n\nHe released it publicly as version 0.9.0 in February 1991, posting it to a Usenet newsgroup where people shared source code. It was, at that point, one person's side project with a handful of interested strangers.\n\nOne of the design decisions from those early years is sitting directly underneath this lesson. Many languages of the period made you announce the type of every variable before you could use it, writing the equivalent of *this name will hold a whole number* before ever storing anything in it. Python removed that requirement: you write `age = 30` and the type travels with the value rather than with the name. That is why this course can get you storing values in the first few minutes.\n\nBut Python did not go the other way and start guessing. When you ask it to add the text `\"5\"` to the number `5`, it stops and says so, rather than quietly producing something. That combination, no ceremony at the start and no silent guessing later, is a large part of why Python became the language people learn first and why every technical track on this platform is written in it. The TypeError that annoys you today is the same design choice that let you begin at all.\n",
+      "exercises": [
+        {
+          "order_index": 1,
+          "type": "mcq",
+          "language": null,
+          "marks": 2,
+          "title": "What the equals sign actually does",
+          "prompt_md": "A program contains the single line `total = 12`. The equals sign here does something specific, and it is not what an equals sign means in a maths lesson. Which description matches what Python actually does?",
+          "options": [
+            "Stores the value 12 under the name total, so that total can be used later on",
+            "Checks whether total is already holding 12 and reports back either True or False",
+            "Creates a permanent label that can never afterwards be pointed at a different value",
+            "Prints the value 12 on screen and also remembers it under the name total for later"
+          ],
+          "correct_answer": "Stores the value 12 under the name total, so that total can be used later on"
+        },
+        {
+          "order_index": 2,
+          "type": "mcq",
+          "language": null,
+          "marks": 2,
+          "title": "Adding text to a number",
+          "prompt_md": "A program stores the text 5 in quote marks under the name price, stores the whole number 5 under the name extra, and then asks Python to work out `price + extra`. What happens when it runs?",
+          "options": [
+            "Python stops with a TypeError, because a piece of text and a number cannot be added",
+            "Python prints 10, because it notices that the text 5 is really a number underneath",
+            "Python prints 55, because a plus sign always glues two values end to end like that",
+            "Python prints nothing at all and carries on quietly to the next line of the program"
+          ],
+          "correct_answer": "Python stops with a TypeError, because a piece of text and a number cannot be added"
+        },
+        {
+          "order_index": 3,
+          "type": "mcq",
+          "language": null,
+          "marks": 2,
+          "title": "Choosing between int and str",
+          "prompt_md": "Starting from the text 5 stored under price and the whole number 5 stored under extra, a learner writes `int(price) + extra` and runs the program. What does that line produce?",
+          "options": [
+            "The number 10, because the text 5 is turned into a number before the adding happens",
+            "The text 55, because the number 5 is turned into text and then glued onto the end",
+            "An error, because the int instruction cannot be used on a value written in quote marks",
+            "The number 5, because int keeps only the first of the two values that it is given here"
+          ],
+          "correct_answer": "The number 10, because the text 5 is turned into a number before the adding happens"
+        },
+        {
+          "order_index": 4,
+          "type": "mcq",
+          "language": null,
+          "marks": 2,
+          "title": "A name that Python has never heard of",
+          "prompt_md": "A learner stores a value under the name user_name, then later writes `print(username)` with no underscore in the middle. What does Python report when that program is run?",
+          "options": [
+            "A NameError, because username and user_name are two completely different names",
+            "Nothing at all, because Python matches names loosely and pays no attention to underscores",
+            "A TypeError, because the value was stored as text but is being printed as a number",
+            "A blank line, because an unrecognised name is treated as an empty piece of text"
+          ],
+          "correct_answer": "A NameError, because username and user_name are two completely different names"
+        },
+        {
+          "order_index": 5,
+          "type": "mcq",
+          "language": null,
+          "marks": 2,
+          "title": "The letter f before a quote mark",
+          "prompt_md": "A program contains the line `print(f\"{name} is {age} years old.\")`, with the letter f placed immediately before the opening quote mark. What is that f doing there?",
+          "options": [
+            "Telling Python to replace each name inside curly brackets with the value it is holding",
+            "Telling Python to format the output as a full sentence beginning with a capital letter",
+            "Telling Python to treat every number that appears inside the text as a decimal value",
+            "Telling Python to show the text more quickly by skipping its usual checks on the line"
+          ],
+          "correct_answer": "Telling Python to replace each name inside curly brackets with the value it is holding"
+        },
+        {
+          "order_index": 6,
+          "type": "short_answer",
+          "language": null,
+          "marks": 3,
+          "title": "The text 5 and the number 5",
+          "prompt_md": "Explain in your own words the difference between the value `\"5\"` written with quote marks and the value `5` written without them, and why Python treats that difference as important rather than fussy.",
+          "correct_answer": "The value in quote marks is text, which is a piece of writing that happens to look like a number, while the value without quote marks is an actual number Python can do arithmetic with. Python needs the difference because the plus sign behaves differently for each: it glues text together but adds numbers. If Python ignored the difference it would have to guess which behaviour I wanted, and a wrong guess would travel silently into my results."
+        },
+        {
+          "order_index": 7,
+          "type": "short_answer",
+          "language": null,
+          "marks": 3,
+          "title": "Ages from a form",
+          "prompt_md": "A small program reads an age typed into a web form, adds 1 to it to work out next year's age, and crashes with a TypeError every time. The form is definitely being filled in with a number. What is the most likely cause, and how would you repair it?",
+          "correct_answer": "Values that arrive from a form come through as text, even when the person typed digits, so the program is trying to add a number to a piece of text. The repair is to convert deliberately before the arithmetic, using int on the value from the form. After that the addition is between two numbers and works as expected."
+        },
+        {
+          "order_index": 8,
+          "type": "short_answer",
+          "language": null,
+          "marks": 3,
+          "title": "How a name can be defined using itself",
+          "prompt_md": "The line `count = count + 1` looks impossible if you read the equals sign as meaning the two sides are the same. Explain what Python actually does with that line, in order.",
+          "correct_answer": "Python works out the right-hand side first, looking up the value currently stored under count and adding 1 to it. It then stores that new result back under the name count, replacing what was there before. The equals sign is an instruction to store rather than a claim that both sides are equal, so there is no contradiction."
+        },
+        {
+          "order_index": 9,
+          "type": "short_answer",
+          "language": null,
+          "marks": 3,
+          "title": "The cost of naming things a, b and c",
+          "prompt_md": "A learner names three variables `a`, `b` and `c` because it is quicker to type. The program works correctly today. Explain what this choice is likely to cost them, and what you would suggest instead.",
+          "correct_answer": "The program runs the same either way, so the cost is paid by humans rather than by Python. When they reopen the file in a week, or ask someone else for help, nobody can tell what those values represent without rereading the whole program. I would use names that describe the value, such as item_price, quantity and total, written in lower case with underscores."
+        },
+        {
+          "order_index": 10,
+          "type": "short_answer",
+          "language": null,
+          "marks": 3,
+          "title": "Reading a ValueError from int",
+          "prompt_md": "A program runs `int(\"3.5\")` and Python replies `ValueError: invalid literal for int() with base 10: '3.5'`. Explain what Python is objecting to, and what you would use instead.",
+          "correct_answer": "The int instruction turns text into a whole number, and 3.5 is not a whole number, so there is no whole number it can honestly produce. Python refuses rather than silently rounding or cutting off the decimal part. I would use float instead, which turns the text into a number with a decimal point and gives 3.5."
+        },
+        {
+          "order_index": 11,
+          "type": "short_answer",
+          "language": "python",
+          "marks": 5,
+          "title": "Work out a till total from values that arrived as text",
+          "prompt_md": "The price and the quantity below have both arrived as text, which is what forms and files usually hand you. Complete the program so that it converts them to whole numbers, works out the total, and prints exactly this line:\n\n```\n3 x notebook = 12\n```\n\nUse an f-string for the final line. Do not change the three values at the top.",
+          "starter_code": "# A small till receipt.\n# item_price and quantity have arrived as text.\nitem_price = \"4\"\nquantity = \"3\"\nitem_name = \"notebook\"\n\n# TODO: turn item_price and quantity into whole numbers.\n# TODO: multiply them and store the result under the name total.\n# TODO: print exactly:  3 x notebook = 12\n",
+          "correct_answer": "# A small till receipt.\n# item_price and quantity have arrived as text.\nitem_price = \"4\"\nquantity = \"3\"\nitem_name = \"notebook\"\n\nprice_number = int(item_price)\nquantity_number = int(quantity)\ntotal = price_number * quantity_number\n\nprint(f\"{quantity_number} x {item_name} = {total}\")\n",
+          "solution_code": "# A small till receipt.\n# item_price and quantity have arrived as text.\nitem_price = \"4\"\nquantity = \"3\"\nitem_name = \"notebook\"\n\nprice_number = int(item_price)\nquantity_number = int(quantity)\ntotal = price_number * quantity_number\n\nprint(f\"{quantity_number} x {item_name} = {total}\")\n"
+        },
+        {
+          "order_index": 12,
+          "type": "short_answer",
+          "language": "prompt",
+          "marks": 5,
+          "title": "Prompt Lab: get a TypeError explained without being handed the fix",
+          "prompt_md": "You ran a short program and Python replied:\n\n```\nTypeError: can only concatenate str (not \"int\") to str\n```\n\nWrite the prompt you would send to an AI assistant (ChatGPT, Claude, Copilot or Gemini) so that it **explains the message and helps you work out your own fix**, rather than rewriting your program for you. Remember there is more than one correct fix here and they give different answers, so a good prompt asks the assistant to help you decide which one you want.",
+          "correct_answer": "I am a complete beginner learning Python and this is my second lesson, so please define any technical word you use and do not assume I know jargon.\n\nHere is my whole program:\n\nprice = \"5\"\nextra = 5\nprint(price + extra)\n\nPython replied:\n\nTypeError: can only concatenate str (not \"int\") to str\n\nPlease do NOT rewrite my program or give me corrected lines. I want to fix it myself.\n\nInstead, please: (1) translate that message into plain English, explaining what str and int mean and what concatenate means; (2) tell me which of my three lines Python is objecting to and why; (3) explain that there is more than one possible fix here and describe, in words rather than code, what each one would do to the result; (4) ask me a question that helps me decide which result I actually want, 10 or 55. After I have written my own fix I will paste it back and you can tell me whether my reasoning holds up."
+        }
+      ]
+    },
+    {
+      "order_index": 3,
+      "title": "Making decisions with if, else and comparisons",
+      "theory_md": "## Programs that do the same thing every time\n\nSo far your programs have had exactly one path through them. Run them a hundred times and you get the same output a hundred times. Real programs behave differently depending on what is true at the moment they run: a coat if it is cold, a discount if the code is valid, a warning if the tank is nearly empty.\n\nTo do that, a program needs to ask a question and act on the answer. Python has a value type for the answers.\n\n## True and False\n\nA **boolean** is a value that is either `True` or `False`. Those are the only two, they take a capital first letter, and they take no quote marks. `True` is a yes-or-no value. `\"True\"` with quote marks is a piece of text that reads like the word, which is a different thing entirely.\n\nBooleans usually come from comparing two values rather than from you typing them:\n\n```python\nprint(7 > 5)\nprint(7 == 5)\nprint(\"cat\" == \"cat\")\n```\n\nOutput:\n\n```\nTrue\nFalse\nTrue\n```\n\n## The comparison operators\n\nThere are six, and you already know five of them from school:\n\n- `==` is the same as\n- `!=` is not the same as\n- `>` is greater than\n- `<` is less than\n- `>=` is greater than or equal to\n- `<=` is less than or equal to\n\nThe one to learn deliberately is `==`, written with **two** equals signs. In the last lesson a single `=` meant *store this value under this name*. That meaning is already taken, so comparing needs its own symbol. Read `==` out loud as \"is the same as\" and the pair of them stop competing in your head.\n\n## if and else\n\n```python\ntemperature = 4\n\nif temperature < 10:\n    print(\"Take a coat.\")\nelse:\n    print(\"No coat needed.\")\n\nprint(\"Have a good day.\")\n```\n\nOutput:\n\n```\nTake a coat.\nHave a good day.\n```\n\nThree things to notice.\n\nFirst, the `if` line ends with a **colon**. So does the `else` line. The colon announces that a group of instructions is about to follow.\n\nSecond, the lines belonging to each branch are **indented**: pushed in from the left margin by four spaces. In Python, indentation is not decoration. It is how you say *these lines belong to that if*. Other languages use curly brackets for this; Python uses the layout you can already see. It means a Python program that looks tidy usually is tidy.\n\nThird, `print(\"Have a good day.\")` is not indented, so it belongs to no branch. It runs whatever the temperature is. Change 4 to 20 and the output becomes `No coat needed.` followed by `Have a good day.`\n\n## Worked example: more than two outcomes\n\n`elif` is short for *else if*. Use it when there are several bands to check.\n\n```python\nscore = 72\n\nif score >= 80:\n    print(\"Grade: A\")\nelif score >= 70:\n    print(\"Grade: B\")\nelif score >= 60:\n    print(\"Grade: C\")\nelse:\n    print(\"Grade: D\")\n```\n\nOutput:\n\n```\nGrade: B\n```\n\nPython checks the tests **in order**, from the top. The first one that is `True` wins, its indented lines run, and every remaining test is skipped entirely. A score of 72 is not 80 or more, so the first test fails. It is 70 or more, so the second wins. Python never even looks at the `elif score >= 60` line.\n\nThis is why the order of the bands matters enormously. Turn that ladder upside down and put `score >= 60` first, and a score of 95 gets a C: it passes the first test, and the better tests below it are never reached. The program produces no error at all. It quietly gives out wrong grades. Bugs that produce wrong answers without complaining are far more expensive than bugs that stop the program.\n\n## Combining questions with and, or, not\n\n```python\nage = 20\nhas_ticket = True\n\nif age >= 18 and has_ticket:\n    print(\"Entry allowed.\")\nelse:\n    print(\"Entry refused.\")\n```\n\nOutput:\n\n```\nEntry allowed.\n```\n\n`and` requires both sides to be `True`. `or` requires at least one side. `not` flips a boolean over, so `not True` is `False`.\n\n## Mistakes you are going to make\n\n**One equals sign instead of two.**\n\n```python\nif temperature = 10:\n    print(\"Exactly ten.\")\n```\n\n```\nSyntaxError: invalid syntax. Maybe you meant '==' or ':=' instead of '='?\n```\n\nPython is being asked to store a value in the middle of a question, and it has spotted the likely cause and told you. Take the `==` suggestion. You can ignore the `:=` for now; it is a rarer tool you will not need in this course.\n\n**A missing colon.** Leaving the `:` off the end of an `if` line gives `SyntaxError: expected ':'`. It is a small mark and it carries real meaning.\n\n**Forgetting to indent.**\n\n```python\ntemperature = 4\n\nif temperature < 10:\nprint(\"Take a coat.\")\n```\n\n```\nIndentationError: expected an indented block after 'if' statement on line 3\n```\n\nRead that as: *you promised me a group of instructions with the colon, and then gave me nothing that was pushed in*. Add four spaces to the front of the `print` line.\n\n**Mixing tab characters and spaces.** They can look identical on screen and Python treats them as different, which produces indentation errors on lines that look perfect. Set your editor to insert spaces when you press Tab, and the problem disappears for good.\n\n**Comparing text when you meant numbers.**\n\n```python\nprint(\"10\" > \"9\")\nprint(10 > 9)\n```\n\nOutput:\n\n```\nFalse\nTrue\n```\n\nText is compared character by character, in dictionary order. The first character of `\"10\"` is `1`, the first character of `\"9\"` is `9`, and `1` comes before `9`, so the text `\"10\"` is treated as smaller. This is the previous lesson coming back to visit: if a value arrived from a form or a file, convert it with `int(...)` before you compare it as a number.\n\n## Try this yourself\n\nWrite a program that stores a temperature and prints one of four messages: freezing below 0, cold below 10, mild below 20, warm otherwise. Run it with 5, then -3, then 25, and check each answer by hand.\n\nThen break it on purpose. Put the `warm` test at the top of the ladder and see how a temperature of -3 is now reported. No error message will appear. That silence is exactly what you are learning to catch.\n",
+      "estimated_minutes": 33,
+      "learning_objectives": [
+        "Produce True and False values using the six comparison operators",
+        "Write an if, elif and else statement that chooses exactly one branch to run",
+        "Use indentation to group the lines that belong inside a decision",
+        "Spot an ordering bug in a ladder of tests that produces wrong answers without any error"
+      ],
+      "case_study": "**Scratch at the MIT Media Lab — making the shape of a decision visible (2007)**\n\nFor years, teaching a beginner their first conditional statement ran into the same wall. The learner understood the idea perfectly well in ordinary life, but the code kept failing on punctuation: a forgotten colon, a stray space, a bracket left open. The concept was never the problem. The typing was.\n\nThe Lifelong Kindergarten group at the MIT Media Lab, led by Mitchel Resnick, took a different route. They had been building on earlier work with programmable toys and children's learning tools, and with support from a National Science Foundation grant they developed Scratch, which was publicly launched in May 2007. In Scratch you do not type instructions at all. You drag coloured blocks and click them together like plastic bricks, and the blocks that do not belong together will not physically join. The name nods at the way a DJ scratches records, recombining pieces someone else made into something new.\n\nThe part that matters for this lesson is what an `if` block looks like in Scratch. It is a shape with a mouth. The instructions that belong inside the decision are literally placed inside that mouth, held by it, visibly nested. You cannot get the grouping wrong, because grouping is physical. The Media Lab has since reported the platform passing one hundred million registered users, and for a great many of them it was the first time a decision in code made sense.\n\nPython does the same job with indentation. Those four spaces at the front of a line are not tidiness and they are not style. They are the mouth of the `if` block, drawn with whitespace instead of colour. When you indent a line, you are saying *this belongs inside the decision*, and when you stop indenting, you are saying *the decision is over now*. If you find yourself squinting at an `IndentationError`, picture the Scratch block: which instructions were supposed to be held inside the shape, and which were supposed to sit below it?\n",
+      "exercises": [
+        {
+          "order_index": 1,
+          "type": "mcq",
+          "language": null,
+          "marks": 2,
+          "title": "One equals sign inside an if",
+          "prompt_md": "A learner writes `if temperature = 10:` with a single equals sign, and Python refuses to run the program at all, reporting a SyntaxError. Why is a single equals sign wrong in that position?",
+          "options": [
+            "A single equals sign stores a value, and comparing two values needs a double equals sign",
+            "A single equals sign compares text only, so comparing numbers needs a double equals sign",
+            "A single equals sign is correct, but it has to be written before the word if instead",
+            "A single equals sign works only when the value on the right is either True or False"
+          ],
+          "correct_answer": "A single equals sign stores a value, and comparing two values needs a double equals sign"
+        },
+        {
+          "order_index": 2,
+          "type": "mcq",
+          "language": null,
+          "marks": 2,
+          "title": "Which lines belong to the if",
+          "prompt_md": "A program has an `if` line ending in a colon, and then two `print` lines directly below it, neither of which is indented at all. Which of those print lines belongs to the if?",
+          "options": [
+            "Neither of them, and Python reports an IndentationError because the group is missing",
+            "Both of them, because every line written after an if line belongs to it by default",
+            "Only the first one, because the line straight after an if is always inside the group",
+            "Neither of them, and Python quietly skips the if line and then runs both print lines"
+          ],
+          "correct_answer": "Neither of them, and Python reports an IndentationError because the group is missing"
+        },
+        {
+          "order_index": 3,
+          "type": "mcq",
+          "language": null,
+          "marks": 2,
+          "title": "Why the order of the bands matters",
+          "prompt_md": "A grade checker tests `score >= 60` first, then `score >= 70`, then `score >= 80`, each one as an elif below the first if. What happens to a score of 95 when that program runs?",
+          "options": [
+            "It matches the very first test and gets the lowest grade, because the first match wins",
+            "It matches the last test and gets the highest grade, because Python checks every band",
+            "It matches no test at all, so the final else branch runs and reports a failing grade",
+            "It causes an error, because one score is not allowed to satisfy three tests at once"
+          ],
+          "correct_answer": "It matches the very first test and gets the lowest grade, because the first match wins"
+        },
+        {
+          "order_index": 4,
+          "type": "mcq",
+          "language": null,
+          "marks": 2,
+          "title": "True with quote marks around it",
+          "prompt_md": "A learner writes `has_ticket = \"True\"` with quote marks around the word True, instead of writing `has_ticket = True` without them. How are those two lines different from one another?",
+          "options": [
+            "With quote marks it is text, so it is a piece of writing rather than a yes-or-no value",
+            "There is no difference at all, because Python removes quote marks from True and False",
+            "With quote marks it becomes a number, so it can be compared using greater than signs",
+            "With quote marks it runs faster, because Python skips its usual check on the value"
+          ],
+          "correct_answer": "With quote marks it is text, so it is a piece of writing rather than a yes-or-no value"
+        },
+        {
+          "order_index": 5,
+          "type": "mcq",
+          "language": null,
+          "marks": 2,
+          "title": "When 10 is smaller than 9",
+          "prompt_md": "A program compares the text `\"10\"` against the text `\"9\"` using a greater than sign, and Python prints False. Both values are in quote marks. Why is False the answer here?",
+          "options": [
+            "Text is compared character by character, and the character 1 comes before the character 9",
+            "Text can never be compared with each other at all, so Python returns False as a safe default",
+            "Python rounds text down to whole numbers first, and both of these round down to the value 1",
+            "The greater than sign works only on decimal numbers, so whole numbers always report False"
+          ],
+          "correct_answer": "Text is compared character by character, and the character 1 comes before the character 9"
+        },
+        {
+          "order_index": 6,
+          "type": "short_answer",
+          "language": null,
+          "marks": 3,
+          "title": "Indentation as grouping",
+          "prompt_md": "Explain in your own words what indentation means in Python, using an if statement as your example. Say what a reader can tell from a line being pushed in by four spaces, and what they can tell from a line that is not.",
+          "correct_answer": "Indentation is how Python shows which lines belong to which decision. A line pushed in by four spaces underneath an if line belongs to that if, so it runs only when the test is True. A line that is back at the left margin belongs to no branch, so it runs every time regardless of the test. The layout is not decoration, it carries the grouping."
+        },
+        {
+          "order_index": 7,
+          "type": "short_answer",
+          "language": null,
+          "marks": 3,
+          "title": "A discount ladder giving everyone the same result",
+          "prompt_md": "A shop program is meant to give 20 percent off orders over 100 pounds, 10 percent off orders over 50 pounds, and nothing otherwise. It uses an if and two elifs. Every customer, including one spending 200 pounds, is getting 10 percent. No error appears. What is the likely cause, and how would you fix it?",
+          "correct_answer": "The bands are almost certainly in the wrong order, with the test for over 50 pounds placed above the test for over 100 pounds. Python takes the first test that is True and skips the rest, so an order of 200 pounds passes the over 50 test and never reaches the better one. The fix is to reorder the ladder so the largest threshold is tested first."
+        },
+        {
+          "order_index": 8,
+          "type": "short_answer",
+          "language": null,
+          "marks": 3,
+          "title": "Where booleans come from",
+          "prompt_md": "This lesson says that booleans usually come from somewhere other than you typing the words True and False yourself. Explain what a boolean is, and give an example of a line that produces one without either word being typed.",
+          "correct_answer": "A boolean is a value that is either True or False, and nothing else. Most of the time they are produced by comparing two values rather than being typed out. For example, the line print(7 > 5) contains neither word but produces True, because Python works out the comparison and the answer to it is a boolean."
+        },
+        {
+          "order_index": 9,
+          "type": "short_answer",
+          "language": null,
+          "marks": 3,
+          "title": "The difference between and and or",
+          "prompt_md": "Explain the difference between `and` and `or` when they are used to join two comparisons in an if line. Give one everyday example of a rule that needs `and`, and one that needs `or`.",
+          "correct_answer": "With and, both sides have to be True for the whole test to be True, whereas with or only one side needs to be True. A rule needing and is entry to a film that requires being 18 or over and holding a ticket, because failing either one refuses entry. A rule needing or is free postage that applies if the order is over 50 pounds or the customer is a member, because either condition on its own is enough."
+        },
+        {
+          "order_index": 10,
+          "type": "short_answer",
+          "language": null,
+          "marks": 3,
+          "title": "Reading an IndentationError",
+          "prompt_md": "You run a program and Python replies `IndentationError: expected an indented block after 'if' statement on line 3`. Translate that message into plain English and describe exactly what you would change in the file.",
+          "correct_answer": "The colon at the end of the if statement on line 3 promised Python a group of instructions, and Python then found nothing pushed in from the left margin. So the lines that were meant to belong inside that decision are still sitting at the margin. I would add four spaces to the front of each line that is supposed to run only when the test is True."
+        },
+        {
+          "order_index": 11,
+          "type": "short_answer",
+          "language": "python",
+          "marks": 5,
+          "title": "Write a ticket price checker with if, elif and else",
+          "prompt_md": "Complete the program so that it prints exactly one line, chosen by the visitor's age:\n\n- under 5 prints `Free`\n- 5 to 15 inclusive prints `Child: 4 pounds`\n- 16 to 64 inclusive prints `Adult: 10 pounds`\n- 65 and over prints `Senior: 6 pounds`\n\nWith `age = 16` as given, the output must be `Adult: 10 pounds`. Think carefully about the order of your tests, and remember the colon at the end of each test line and four spaces of indentation underneath it.",
+          "starter_code": "# Work out the ticket price for one visitor.\nage = 16\n\n# TODO: write an if / elif / elif / else that prints exactly one\n# of these four lines:\n#   Free\n#   Child: 4 pounds\n#   Adult: 10 pounds\n#   Senior: 6 pounds\n",
+          "correct_answer": "# Work out the ticket price for one visitor.\nage = 16\n\nif age < 5:\n    print(\"Free\")\nelif age <= 15:\n    print(\"Child: 4 pounds\")\nelif age <= 64:\n    print(\"Adult: 10 pounds\")\nelse:\n    print(\"Senior: 6 pounds\")\n",
+          "solution_code": "# Work out the ticket price for one visitor.\nage = 16\n\nif age < 5:\n    print(\"Free\")\nelif age <= 15:\n    print(\"Child: 4 pounds\")\nelif age <= 64:\n    print(\"Adult: 10 pounds\")\nelse:\n    print(\"Senior: 6 pounds\")\n"
+        },
+        {
+          "order_index": 12,
+          "type": "short_answer",
+          "language": "prompt",
+          "marks": 5,
+          "title": "Prompt Lab: understand an if ladder someone else wrote",
+          "prompt_md": "A colleague sends you this program and asks you to check it. It runs without any error, but every order seems to get the smallest discount.\n\n```python\ntotal = 200\n\nif total > 50:\n    print(\"10 percent off\")\nelif total > 100:\n    print(\"20 percent off\")\nelse:\n    print(\"No discount\")\n```\n\nWrite the prompt you would send to an AI assistant (ChatGPT, Claude, Copilot or Gemini) asking it to **help you understand why this behaves as it does**, so that you can explain the problem to your colleague in your own words. Do not ask it to hand you corrected code.",
+          "correct_answer": "I am learning Python and I have covered if, elif, else and comparison operators, but nothing beyond that. Please keep to those ideas and define any term you use.\n\nA colleague sent me this program. It runs with no error message, but an order of 200 prints 10 percent off, which is not what was intended.\n\ntotal = 200\n\nif total > 50:\n    print(\"10 percent off\")\nelif total > 100:\n    print(\"20 percent off\")\nelse:\n    print(\"No discount\")\n\nPlease do NOT give me corrected code. I have to explain this to my colleague myself, so I need to understand it rather than paste a fix.\n\nPlease: (1) walk me through what Python does line by line with the value 200, saying which tests it evaluates and which it never reaches; (2) explain the general rule about how an if and elif ladder chooses a branch; (3) explain why this produces no error message at all, and why a bug that stays silent is more dangerous than one that crashes; (4) describe in words, not code, what would need to change about the order of the tests. Then give me one short question I could ask my colleague that would lead them to spot it themselves."
+        }
+      ]
+    }
+  ]
+}

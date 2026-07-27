@@ -1,94 +1,82 @@
 // ═══════════════════════════════════════════════════════════════════════════════
-// Beginner on-ramp routing.
+// Beginner placement.
 //
-// The problem this solves: the diagnostic scores SUBJECT knowledge (five questions
-// on ML, CV, security…) and bands the learner Novice→Expert. It has never asked
-// whether they can write code. So a total beginner and a working developer who
-// simply doesn't know computer vision are routed identically — both into a
-// technical track whose "Module 0 — Foundations" quietly assumes prior coding
-// (the CV one opens at `import numpy as np` with array slicing). The beginner
-// discovers the gap by failing.
+// The problem this solves: the diagnostic scores SUBJECT knowledge (five
+// questions on ML, CV, security…) and bands the learner Novice→Expert. It has
+// never asked whether they can write code. So a total beginner and a working
+// developer who simply doesn't know computer vision were routed identically,
+// with nothing telling either of them where to start.
 //
-// A single self-report answer fixes what inference cannot: not knowing a subject
-// and not being able to program are different things, and only the learner knows
-// which applies.
+// Since 2026-07-28 the answer is inside the course rather than beside it: every
+// technical track's Module 0 now opens with 18 lessons of programming from
+// absolute zero (Python → data → functions and errors → environments → terminal
+// and Git → NumPy arrays) before its domain refresher. So this no longer routes
+// anyone to a different course — it tells them where in their OWN track to
+// start, and lets the experienced skip ahead.
 //
-// HARD RULE — this is a recommendation, never a gate. Every caller must render a
-// visible way to continue into the chosen track regardless of the answer. Nothing
-// here may block enrolment. Activation is the platform's weakest metric; a door
-// that tells a new signup they aren't ready would cost more than it saves.
+// HARD RULE — guidance, never a gate. Every caller must leave the learner free
+// to start wherever they like. Nothing here may block enrolment or progress.
 //
 // Pure by design: no database, no React, no I/O — so it can be tested directly.
 // ═══════════════════════════════════════════════════════════════════════════════
 
-/** Slug of the beginner programming on-ramp course. */
-export const ON_RAMP_SLUG = "programming-from-zero";
-
 /** Auth-metadata key the answer is persisted under (mirrors onboarding_goal). */
 export const CODING_EXPERIENCE_KEY = "coding_experience";
+
+/** Lessons of programming-from-zero that now open every technical Module 0. */
+export const PROGRAMMING_LESSON_COUNT = 18;
 
 /** What the learner told us about their coding background. */
 export type CodingExperience = "none" | "some" | "comfortable";
 
-export interface OnRampRecommendation {
-  /** Whether to surface the on-ramp. False = straight through, as today. */
-  recommend: boolean;
-  /** Slug to send them to when recommending, else null. */
-  courseSlug: string | null;
-  /** How strongly to put it — drives copy emphasis, never behaviour. */
-  strength: "start-here" | "refresher" | "none";
+export interface StartGuidance {
+  /** Whether to show guidance at all. False = nothing to say, go as normal. */
+  show: boolean;
+  /** Emphasis for the copy — never changes what the learner is allowed to do. */
+  strength: "start-at-the-beginning" | "skim" | "none";
   headline: string;
   body: string;
-  /** Label for the always-present escape hatch. */
-  skipLabel: string;
+  /** Label for the always-present alternative. */
+  altLabel: string;
 }
 
 /**
- * Given what the learner said about their coding experience, decide whether to
- * recommend the on-ramp.
+ * Given what the learner said about their coding experience, tell them where in
+ * their chosen track to begin.
  *
- * `intendedTrackTitle` is the track they were heading for, used only to make the
- * copy concrete ("…before Computer Vision"). Omitting it is fine.
+ * `trackTitle` is the course they are heading for, used only to make the copy
+ * concrete. Omitting it is fine.
  */
-export function recommendOnRamp(
+export function guideStart(
   experience: CodingExperience,
-  intendedTrackTitle?: string | null,
-): OnRampRecommendation {
-  const track = intendedTrackTitle?.trim() || null;
-  const before = track ? ` before ${track}` : "";
+  trackTitle?: string | null,
+): StartGuidance {
+  const track = trackTitle?.trim() || null;
+  const named = track ? ` in ${track}` : "";
 
   if (experience === "none") {
     return {
-      recommend: true,
-      courseSlug: ON_RAMP_SLUG,
-      strength: "start-here",
-      headline: "Start with Programming from Zero",
+      show: true,
+      strength: "start-at-the-beginning",
+      headline: "You are in the right place — start at Module 0",
       body:
-        `Every technical track opens with foundations that assume you can already read Python, use a terminal and commit with Git. This course teaches exactly those things from nothing — it is the missing first step${before}.`,
-      skipLabel: track ? `Skip ahead to ${track}` : "Skip ahead and dive in",
+        `Module 0${named} begins with ${PROGRAMMING_LESSON_COUNT} lessons of programming from nothing: your first program, variables, loops, functions, reading errors, the terminal, Git and arrays. No prior coding is assumed anywhere in it. Take lesson 1 and go in order.`,
+      altLabel: "Browse the whole curriculum",
     };
   }
 
   if (experience === "some") {
     return {
-      recommend: true,
-      courseSlug: ON_RAMP_SLUG,
-      strength: "refresher",
-      headline: "A quick refresher might save you time",
+      show: true,
+      strength: "skim",
+      headline: "Skim the opening, slow down where it gets unfamiliar",
       body:
-        `You said you have written a little code. Programming from Zero covers Python, the terminal, Git and arrays — skim the weeks you already know and slow down on the ones you do not${before ? `, then pick up${before}` : ""}.`,
-      skipLabel: track ? `Go straight to ${track}` : "Go straight to a career track",
+        `Module 0${named} opens with programming fundamentals — Python, the terminal, Git and arrays — then moves into the domain foundations. Move quickly through what you already know; the later lessons on environments and arrays catch most people out.`,
+      altLabel: "Browse the whole curriculum",
     };
   }
 
-  return {
-    recommend: false,
-    courseSlug: null,
-    strength: "none",
-    headline: "",
-    body: "",
-    skipLabel: "",
-  };
+  return { show: false, strength: "none", headline: "", body: "", altLabel: "" };
 }
 
 /** Type guard for values arriving from storage or auth metadata. */

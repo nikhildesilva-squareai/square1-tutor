@@ -1,0 +1,470 @@
+{
+  "week": 5,
+  "lessons": [
+    {
+      "order_index": 13,
+      "title": "Talking to your computer with the terminal",
+      "theory_md": "## The window with no buttons\n\nSooner or later, every set of instructions you follow will contain a line like this: *open a terminal and run `pip install pandas`*. Then there is a window with a plain background, small text, a blinking cursor, and nothing to click. Plenty of capable people stop right there, because a window with no buttons gives you no hint about what it wants from you.\n\nHere is the reassuring truth. The terminal is not a secret club with a password. It is a text box that runs one instruction at a time. You type a word, press Enter, the computer does one thing, and it tells you what happened. That is the whole idea. You already know how to do the difficult part, which is typing carefully and reading what comes back.\n\n## The five words you need\n\n**Terminal** — the window itself. On macOS it is an app called Terminal. On most Linux systems it is called Terminal or Console. On Windows, install Git for Windows and use the app it gives you called **Git Bash**; that gives you the same commands the rest of the world uses, and every example below will behave the same way for you.\n\n**Shell** — the program running inside that window, reading what you type. The most common one is called `bash`. So \"run this in bash\", \"run this in the shell\" and \"run this in the terminal\" all mean the same thing: type it into that window and press Enter.\n\n**Prompt** — the text the shell prints before your cursor while it waits for you. It often ends in a dollar sign:\n\n```bash\nsam@laptop:~$\n```\n\nIn written instructions, a leading `$` means \"the prompt is here, type the rest of the line\". **Do not type the dollar sign.** Typing it is the most common first-day mistake and it produces a baffling error message.\n\n**Command** — the first word you type: the thing you want done. **Arguments** are the words after it: what you want it done to. **Options** (often called flags) usually start with a dash and change how a command behaves.\n\n## Worked example one: where am I, and what is here\n\nThree commands do most of the work. `pwd` prints the working directory, which is the folder your terminal is sitting inside right now. `ls` lists what is in that folder. `cd` changes directory, which moves you.\n\n```bash\n$ pwd\n/Users/sam\n$ ls\nDesktop  Documents  Downloads  projects\n$ cd projects\n$ pwd\n/Users/sam/projects\n$ ls\nhello.py  notes.txt\n```\n\nRead that as a conversation. You asked where you were and you were told. You asked what was there and you were told. You moved into `projects`, asked again, and the answer changed. Nothing magical happened.\n\n`ls` takes options. `ls -l` prints one item per line with its size and date. `ls -a` also shows hidden files, which are files whose names begin with a dot. You can combine letters after one dash:\n\n```bash\n$ ls -la\ntotal 16\ndrwxr-xr-x  4 sam  staff   128 12 Mar 09:14 .\ndrwxr-xr-x  8 sam  staff   256 12 Mar 09:02 ..\n-rw-r--r--  1 sam  staff    64 12 Mar 09:14 hello.py\n-rw-r--r--  1 sam  staff   112 12 Mar 09:10 notes.txt\n```\n\nIgnore the letters and numbers on the left for now. The two strange entries named `.` and `..` are the part that matters, and they lead to the next idea.\n\n## Paths: absolute and relative\n\nA **path** is a written address for a file or a folder. There are two kinds, and mixing them up causes more beginner confusion than anything else in this lesson.\n\nAn **absolute path** starts at the very top of the file system and spells out every step: `/Users/sam/projects/hello.py`. It begins with a forward slash and it points at the same file no matter where you are standing.\n\nA **relative path** starts from wherever you are right now: `projects/hello.py` means \"inside the projects folder that is here\". Three shorthands make relative paths usable:\n\n- `.` means \"the folder I am in\"\n- `..` means \"the folder one level up\"\n- `~` means \"my home folder\", so `~/projects` works from anywhere\n\n## Worked example two: moving around and reading a file\n\n`cat` prints the contents of a file straight into the terminal window.\n\n```bash\n$ cd ~/projects\n$ cat notes.txt\nShopping list for the party\n6 eggs\n2 litres of milk\n$ cd ..\n$ pwd\n/Users/sam\n$ cat projects/notes.txt\nShopping list for the party\n6 eggs\n2 litres of milk\n```\n\nOne file, read twice: once by a relative path from inside its folder, once by a relative path from one level up. The file never moved. Only your position changed, so the address you had to write changed with it.\n\n## The mistakes beginners actually make here\n\n- **Typing the `$`.** The reply is `bash: $: command not found`. Retype the line without it.\n- **`No such file or directory`.** This almost always means you are in a different folder from the one you pictured. It is a fact, not a verdict. Run `pwd`, then `ls`, and the mystery usually dissolves in about five seconds.\n- **Capital letters.** On macOS and Linux, `Notes.txt` and `notes.txt` can be two different files. Copy names exactly as they appear in `ls`.\n- **Spaces in names.** `cat my notes.txt` looks to the shell like two separate arguments, so it fails. Wrap the name in quotes: `cat \"my notes.txt\"`.\n- **Expecting a reply.** Many commands print nothing at all when they work. Silence means success, not a frozen computer.\n\n## Why every developer tool speaks this language\n\nPython runs a file with `python hello.py`. Packages install with `pip install`. Git, which is the next lesson, was built as a set of terminal commands and still is. Servers in a data centre often have no screen attached at all, so text is the only way in. Learning four commands is the difference between following a tutorial and being locked out of one on the first line.\n\n## Try this yourself\n\nOpen your terminal and type these one at a time, reading each answer before you type the next:\n\n```bash\n$ pwd\n$ ls -la\n$ cd ~\n$ mkdir terminal-practice\n$ cd terminal-practice\n$ pwd\n```\n\n`mkdir` makes a directory. You have created a folder without touching a mouse, and you can prove where it is. Stay in that folder, because the next lesson starts inside it.",
+      "estimated_minutes": 30,
+      "learning_objectives": [
+        "Open a terminal on your own machine and identify the shell, the prompt and a command",
+        "Navigate a file system using pwd, ls and cd without touching a mouse",
+        "Distinguish absolute from relative paths and write both for the same file",
+        "Diagnose a no such file or directory message using pwd and ls"
+      ],
+      "case_study": "**Toy Story 2 at Pixar — ninety per cent of a film deleted in seconds (1998)**\n\nIn the winter of 1998, Pixar was deep in production on *Toy Story 2*. The film lived as thousands of files on a shared Unix server, and the animators worked on it by connecting to that server from their workstations. One afternoon, staff watching a directory listing saw the number of files inside it drop, then drop again, and then whole sequences of the film began to vanish. As Oren Jacob, then an associate technical director, and Galyn Susman, the supervising technical director, have recounted in interviews and in the 2007 documentary *The Pixar Story*, a deletion command had been run against the wrong part of the file system, and it worked exactly as instructed. By the time someone pulled the plug on the machine, most of the film was gone.\n\nThe backup was supposed to be the safety net. It was not. The backup process had been failing quietly for some time, and what had been captured was incomplete. That is the detail worth sitting with: the organisation believed it had a copy, and only discovered otherwise at the exact moment it needed one.\n\nThe film survived because of an unrelated accident of circumstance. Susman had recently had a baby and had been working from home, so a copy of the film had been kept in sync on a computer at her house. Staff drove to her home, carried the machine out to a car, wrapped it in blankets and drove it back to the studio slowly enough not to jolt the disks. The recovered files brought the film back. Pixar went on to rework much of the story anyway, and *Toy Story 2* released in November 1999.\n\nEvery idea in this lesson is in that story. Files live at paths on a machine. A command aimed at the wrong path does its job without asking twice. And the terminal is powerful precisely because it does exactly what you say, which is why `pwd` before anything destructive is a habit worth forming on day one.",
+      "exercises": [
+        {
+          "order_index": 1,
+          "type": "mcq",
+          "language": null,
+          "marks": 2,
+          "title": "What pwd tells you",
+          "prompt_md": "You have opened a terminal window and you are not certain which folder the terminal is currently working inside. Which command answers that question, and what does it print?",
+          "options": [
+            "pwd, which prints the working directory as a full path",
+            "ls, which prints the full path of the folder you are inside",
+            "cd, which prints the current folder before it moves you",
+            "cat pwd, which reads the folder name out of a hidden file"
+          ],
+          "correct_answer": "pwd, which prints the working directory as a full path"
+        },
+        {
+          "order_index": 2,
+          "type": "mcq",
+          "language": null,
+          "marks": 2,
+          "title": "Absolute or relative",
+          "prompt_md": "A path written as `/Users/sam/projects` begins with a forward slash, so it tells the shell to start at the very top of the file system rather than from the folder you happen to be in. What is a path like this called?",
+          "options": [
+            "An absolute path, because it starts from the top of the file system",
+            "A relative path, because it is written relative to the top folder",
+            "A home path, because a leading slash always means your home folder",
+            "A hidden path, because paths that start with a symbol are hidden"
+          ],
+          "correct_answer": "An absolute path, because it starts from the top of the file system"
+        },
+        {
+          "order_index": 3,
+          "type": "mcq",
+          "language": null,
+          "marks": 2,
+          "title": "Moving up one level",
+          "prompt_md": "You are inside `/home/sam/projects/website` and you want to move up one level so that `pwd` would print `/home/sam/projects`. Which command does that?",
+          "options": [
+            "cd .. because two dots mean the folder one level up",
+            "cd . because a single dot means the folder one level up",
+            "cd up because the word up steps towards the top of the tree",
+            "cd / because a lone slash always steps up by exactly one folder"
+          ],
+          "correct_answer": "cd .. because two dots mean the folder one level up"
+        },
+        {
+          "order_index": 4,
+          "type": "mcq",
+          "language": null,
+          "marks": 2,
+          "title": "Reading a no such file message",
+          "prompt_md": "You type `cat notes.txt` and the terminal replies `cat: notes.txt: No such file or directory`. You are certain you saved that file earlier today. What is the most likely explanation, and what should you check first?",
+          "options": [
+            "You are in a different folder from the one holding the file, so run pwd and then ls",
+            "The file has become corrupted, so cat refuses to open it and reports it as missing",
+            "cat can only read files whose names end in .csv, so it skips over any .txt file",
+            "The terminal must be restarted before it can see files that were saved after it opened"
+          ],
+          "correct_answer": "You are in a different folder from the one holding the file, so run pwd and then ls"
+        },
+        {
+          "order_index": 5,
+          "type": "mcq",
+          "language": null,
+          "marks": 2,
+          "title": "Listing hidden files",
+          "prompt_md": "You want to see everything in the current folder, including hidden files whose names begin with a dot, with one item per line. Which command is the right one, and what are the letters after the dash?",
+          "options": [
+            "ls -la, where the letters after the dash are options that change what ls shows",
+            "ls --hidden --long, because ls accepts only full English words as options",
+            "cat -la, because cat lists a folder in long format when given those letters",
+            "pwd -la, because pwd can list the contents of the directory it prints"
+          ],
+          "correct_answer": "ls -la, where the letters after the dash are options that change what ls shows"
+        },
+        {
+          "order_index": 6,
+          "type": "short_answer",
+          "language": null,
+          "marks": 3,
+          "title": "Explain the shell and the prompt",
+          "prompt_md": "In your own words, explain to someone who has never opened a terminal what the shell is and what the prompt is. Mention what the dollar sign at the start of a line in a tutorial means.",
+          "correct_answer": "The shell is the program running inside the terminal window that reads each line you type and carries it out, one instruction at a time. The prompt is the text the shell prints before your cursor to show it is ready for you, and it often ends in a dollar sign. When a tutorial shows a line starting with a dollar sign, that symbol represents the prompt itself, so you type everything after it and not the dollar sign."
+        },
+        {
+          "order_index": 7,
+          "type": "short_answer",
+          "language": null,
+          "marks": 3,
+          "title": "Diagnosing a failed cd",
+          "prompt_md": "A friend messages you: `cd Documents` gives them `bash: cd: Documents: No such file or directory`, and they insist the folder exists. Which two commands would you ask them to run first, and what would each answer tell you?",
+          "correct_answer": "Ask them to run pwd first, which prints the folder they are actually in, because the error usually means they are somewhere other than they imagine. Then ask them to run ls, which lists what is really in that folder, so they can see whether Documents is there and exactly how it is spelled. Between the two, they will normally find either that they need to move to their home folder first with cd ~, or that the name has a different capital letter."
+        },
+        {
+          "order_index": 8,
+          "type": "short_answer",
+          "language": null,
+          "marks": 3,
+          "title": "Absolute versus relative in practice",
+          "prompt_md": "Explain the difference between an absolute path and a relative path, and give one example of each for a file called `report.txt` that lives in `/Users/sam/projects`. Say when each kind is the more sensible choice.",
+          "correct_answer": "An absolute path starts at the top of the file system and points at the same file from anywhere, for example /Users/sam/projects/report.txt. A relative path is read from the folder you are currently in, so from inside /Users/sam the same file is projects/report.txt. Relative paths are shorter and are the natural choice while you are working inside a project, whereas absolute paths are safer when you are writing instructions for someone else or for a script that might be run from anywhere."
+        },
+        {
+          "order_index": 9,
+          "type": "short_answer",
+          "language": null,
+          "marks": 3,
+          "title": "Why the tools speak terminal",
+          "prompt_md": "Someone asks you why developers still type commands when their computer has a perfectly good mouse. Give two concrete reasons, using examples from tools you have met so far in this course.",
+          "correct_answer": "First, most developer tools are built as commands rather than as windows, so typing is the only interface they have. Running a Python file with python hello.py and installing a package with pip install pandas are both examples, and Git in the next lesson is another. Second, many machines that run real code, such as servers in a data centre, have no screen or mouse attached at all, so text commands are the only way to work on them. A typed command is also easy to copy, share and repeat exactly, which a sequence of mouse clicks is not."
+        },
+        {
+          "order_index": 10,
+          "type": "short_answer",
+          "language": null,
+          "marks": 3,
+          "title": "A filename with a space in it",
+          "prompt_md": "You try to read a file with `cat my notes.txt` and get an error mentioning two separate names. Explain what the shell did with your line, and give a corrected command.",
+          "correct_answer": "The shell splits a line into words at every space, so it read my and notes.txt as two separate arguments and tried to print two files, neither of which exists under those names. To keep a name with a space in it as one argument, wrap it in quotes. The corrected command is cat \"my notes.txt\"."
+        },
+        {
+          "order_index": 11,
+          "type": "short_answer",
+          "language": "bash",
+          "marks": 5,
+          "title": "Find your way to a file and read it",
+          "prompt_md": "Write the shell commands, one per line and in order, that do the following four things.\n\n1. Print the folder you are currently in.\n2. List everything in that folder, including hidden files, one item per line.\n3. Move into a folder named `project` that is inside the folder you are in.\n4. Print the contents of `README.md` from inside `project`.\n\nWrite only the commands themselves, with no dollar sign at the start of any line.",
+          "starter_code": "# 1. print the folder you are in\n\n# 2. list everything, including hidden files, one per line\n\n# 3. move into the folder named project\n\n# 4. print the contents of README.md\n",
+          "correct_answer": "pwd\nls -la\ncd project\ncat README.md",
+          "solution_code": "pwd\nls -la\ncd project\ncat README.md"
+        },
+        {
+          "order_index": 12,
+          "type": "short_answer",
+          "language": "prompt",
+          "marks": 5,
+          "title": "Prompt lab: get an error explained, not fixed for you",
+          "prompt_md": "You ran `cd project` and the terminal replied:\n\n```\nbash: cd: project: No such file or directory\n```\n\nWrite the message you would send to an AI assistant (ChatGPT, Claude, Copilot, Gemini or another) so that it **explains what the error means and teaches you how to investigate it yourself**, rather than handing you a command to paste. A strong prompt states your level, quotes the exact error, says what you already tried, and explicitly asks for an explanation and diagnostic steps instead of a finished answer.",
+          "correct_answer": "I am completely new to the terminal, so please assume I know nothing beyond pwd, ls, cd and cat.\n\nI am using bash on macOS. I typed this command:\n\ncd project\n\nand got back exactly this:\n\nbash: cd: project: No such file or directory\n\nI am fairly sure I created a folder called project earlier today.\n\nPlease do three things, in this order:\n1. Explain in plain language what this specific error message is telling me, breaking down what each part of the line means.\n2. List the two or three most common reasons a beginner sees this exact message.\n3. Give me a short checklist of read-only commands I can run to work out which reason applies to me, and tell me what to look for in each answer.\n\nPlease do not give me the final command that fixes it yet. I want to diagnose it myself first. After I report back what the checklist showed, then tell me whether my reasoning was right."
+        }
+      ]
+    },
+    {
+      "order_index": 14,
+      "title": "Saving your work with Git",
+      "theory_md": "## The folder full of final versions\n\nAlmost everyone has a folder like this somewhere:\n\n```\nessay.docx\nessay_v2.docx\nessay_v2_new.docx\nessay_FINAL.docx\nessay_FINAL_use_this_one.docx\n```\n\nIt is a perfectly sensible thing to do. You are afraid of losing work, so you keep copies. The trouble is that after a week you cannot remember what changed between any two of them, and if you need the version from Tuesday you are guessing.\n\nProgrammers have this problem far worse, because a small change in one file can break something in another file entirely, and the only fix is to get back to the exact state of things before you started. So they use a tool built for it. That tool is **Git**.\n\n## What Git actually is\n\nGit is a program that watches a folder and, whenever you ask, records a complete snapshot of everything in it. Each snapshot is called a **commit**. A commit stores what every file looked like at that moment, who made it, when, and a short message from you saying what you changed.\n\nThe mental model that makes Git click: **a commit is a save point you can return to.** Like a save point in a game, you choose when to make one, you can name it, and later you can go back to it. Git never forgets a commit you have made, and it never makes one without being asked.\n\nTwo more words. A **repository**, usually shortened to *repo*, is a folder that Git is watching. Git keeps its records in a hidden folder called `.git` inside it, which you never need to open. The **staging area** is a short list of the changes you want to include in your *next* commit. That middle step is the part beginners find odd, so here is the analogy: writing a page is editing a file, putting chosen pages into an envelope is `git add`, and sealing the envelope with a label on it is `git commit`.\n\n## First-time setup\n\nGit puts your name on every commit, so tell it who you are once, on this computer:\n\n```bash\n$ git config --global user.name \"Sam Patel\"\n$ git config --global user.email \"sam@example.com\"\n```\n\nBoth commands print nothing. As you learned last lesson, silence means it worked.\n\n## Worked example one: from empty folder to first commit\n\n```bash\n$ mkdir shopping\n$ cd shopping\n$ git init\nInitialized empty Git repository in /Users/sam/shopping/.git/\n$ echo \"6 eggs\" > list.txt\n$ git status\nOn branch main\n\nNo commits yet\n\nUntracked files:\n  (use \"git add <file>...\" to include in what will be committed)\n\tlist.txt\n\nnothing added to commit but untracked files present (use \"git add\" to track)\n```\n\n`git init` turned an ordinary folder into a repository. `echo \"6 eggs\" > list.txt` created a file containing that line. `git status` is the command you will run more than any other: it tells you where you stand. Right now it is saying it can see `list.txt` but is not yet recording it — that is what *untracked* means.\n\n```bash\n$ git add list.txt\n$ git commit -m \"Add shopping list with eggs\"\n[main (root-commit) 9f2c1ab] Add shopping list with eggs\n 1 file changed, 1 insertion(+)\n create mode 100644 list.txt\n```\n\nThat is your first save point. `9f2c1ab` is the start of the commit's unique identifier; yours will be different, and that is expected.\n\n## Worked example two: a second change, and looking back\n\n```bash\n$ echo \"2 litres of milk\" >> list.txt\n$ git status\nOn branch main\nChanges not staged for commit:\n  (use \"git add <file>...\" to update what will be committed)\n\tmodified:   list.txt\n\nno changes added to commit (use \"git add\" to track)\n$ git add list.txt\n$ git commit -m \"Add milk to the list\"\n[main 4d81e07] Add milk to the list\n 1 file changed, 1 insertion(+)\n$ git log --oneline\n4d81e07 Add milk to the list\n9f2c1ab Add shopping list with eggs\n```\n\n`git log` prints your history, newest first; `--oneline` keeps it to one line per commit. You now have a labelled trail of your own work, and every step of it can be returned to.\n\n## The mistakes beginners actually make here\n\n- **Committing without adding.** You edit a file, run `git commit -m \"...\"`, and Git says `no changes added to commit`. Nothing is broken. Git only commits what you put in the envelope, so run `git add` first.\n- **Forgetting `-m`.** Running `git commit` on its own opens a text editor inside the terminal, often one called `vim`, which is famously hard to leave. If it happens: press `Esc`, type `:q!` and press Enter. Then run the command again with `-m \"your message\"`.\n- **`fatal: not a git repository`.** You are in a folder Git is not watching. Run `pwd` to see where you are, and `cd` into the project folder, or run `git init` if this really is a new project.\n- **Messages like \"stuff\" or \"changes\".** In three weeks that tells you nothing. Write what changed and why: `Fix crash when the list is empty`.\n- **Expecting Git to save automatically.** It never does. A commit happens when you ask for one, which is exactly what makes it trustworthy.\n\n## Try this yourself\n\nIn the `terminal-practice` folder from last lesson:\n\n```bash\n$ git init\n$ echo \"print('hello')\" > hello.py\n$ git add hello.py\n$ git commit -m \"Add a hello script\"\n$ echo \"print('goodbye')\" >> hello.py\n$ git add hello.py\n$ git commit -m \"Say goodbye as well\"\n$ git log --oneline\n```\n\nTwo commits, in your history, on your machine. Run `git status` between each step and read what it tells you. That habit alone will carry you through the Git lesson at the end of every technical Module 0.",
+      "estimated_minutes": 30,
+      "learning_objectives": [
+        "Explain what version control is and the problem a commit history solves",
+        "Turn a folder into a repository and record a commit using init, add and commit",
+        "Read git status and git log to describe the current state of your work",
+        "Recognise and recover from the three commonest beginner Git errors"
+      ],
+      "case_study": "**Git — written in a fortnight after a licence was withdrawn, Linus Torvalds (2005)**\n\nBy 2005 the Linux kernel had thousands of contributors sending changes from all over the world, and since 2002 the project had been coordinating them using a commercial tool called BitKeeper. Its maker allowed the kernel developers to use it at no cost, which had always been an uneasy arrangement for a project built on free software. That spring the arrangement collapsed: after a dispute over a separate tool written to interoperate with BitKeeper, the free-of-charge licence for kernel work was withdrawn. The busiest software project in the world was suddenly without a way to track its own changes.\n\nLinus Torvalds, who had started Linux itself in 1991, decided to write a replacement rather than adopt an existing one. Work began in early April 2005, and the first commit to Git was made on 7 April 2005 — recorded by Git itself, because by that point it could already store its own history. Within roughly a fortnight the kernel project was using it for real work. Torvalds handed maintenance to Junio Hamano in July that year and returned to the kernel.\n\nThe design goals explain the commands you have used in this lesson. Speed came first, because merging thousands of contributions had to be quick. Every clone holds the full history, so no one depends on a central server being available. And each commit is identified by a hash computed from its own contents, which means a commit cannot be altered quietly without the identifier changing. That is why the identifiers in `git log` look like random strings rather than 1, 2, 3.\n\nTwenty years later, Git is the near-universal default for storing code, and in a 2025 anniversary interview Torvalds described how quickly the tool became self-hosting. The point for you is smaller and more encouraging: the whole system rests on one idea you have already used, which is taking a labelled snapshot at a moment you choose.",
+      "exercises": [
+        {
+          "order_index": 1,
+          "type": "mcq",
+          "language": null,
+          "marks": 2,
+          "title": "What git init does",
+          "prompt_md": "You have an ordinary folder on your computer containing one file, and you run `git init` inside it. What has changed about that folder afterwards?",
+          "options": [
+            "It is now a repository, so Git can record snapshots of what is inside it",
+            "Every file in it has been saved as a first commit automatically",
+            "It has been uploaded to a website so other people can read the files",
+            "Git now saves a new snapshot every time any file in it is edited"
+          ],
+          "correct_answer": "It is now a repository, so Git can record snapshots of what is inside it"
+        },
+        {
+          "order_index": 2,
+          "type": "mcq",
+          "language": null,
+          "marks": 2,
+          "title": "Why add comes before commit",
+          "prompt_md": "You edit three files but you only want two of them included in your next snapshot. Which pair of commands reflects how Git expects you to work, and why does the first step exist?",
+          "options": [
+            "git add on the two files, then git commit, because add chooses what goes into the snapshot",
+            "git commit on the two files, then git add, because commit prepares and add records",
+            "git commit on its own, because Git always includes every edited file in the folder",
+            "git status on the two files, then git commit, because status marks files as ready"
+          ],
+          "correct_answer": "git add on the two files, then git commit, because add chooses what goes into the snapshot"
+        },
+        {
+          "order_index": 3,
+          "type": "mcq",
+          "language": null,
+          "marks": 2,
+          "title": "The message on a commit",
+          "prompt_md": "You run `git commit` with no other words on the line and a text editor opens inside your terminal that you cannot work out how to leave. What was Git asking you for, and what would have avoided this?",
+          "options": [
+            "A commit message, which you can supply on the line itself using -m and quotes",
+            "A file name, which you can supply on the line itself using -m and quotes",
+            "Your name and email, which Git needs again for every single commit you make",
+            "Permission to upload the commit, which the editor is waiting for you to type"
+          ],
+          "correct_answer": "A commit message, which you can supply on the line itself using -m and quotes"
+        },
+        {
+          "order_index": 4,
+          "type": "mcq",
+          "language": null,
+          "marks": 2,
+          "title": "Reading your own history",
+          "prompt_md": "You have made four commits over two days and you want a compact list of them, newest first, with the short identifier and message for each. Which command gives you that?",
+          "options": [
+            "git log --oneline, which prints one line per commit, newest first",
+            "git status --oneline, which prints one line per commit, oldest first",
+            "git add --log, which lists the commits waiting to be recorded",
+            "git commit --list, which prints the messages of past commits only"
+          ],
+          "correct_answer": "git log --oneline, which prints one line per commit, newest first"
+        },
+        {
+          "order_index": 5,
+          "type": "mcq",
+          "language": null,
+          "marks": 2,
+          "title": "Not a git repository",
+          "prompt_md": "You type `git status` and Git replies `fatal: not a git repository (or any of the parent directories): .git`. What is this telling you, and what is the sensible first move?",
+          "options": [
+            "You are in a folder Git is not watching, so check where you are with pwd and cd into your project",
+            "Your Git installation is broken, so the sensible first move is to reinstall Git",
+            "You have unsaved changes blocking the command, so commit them before running status",
+            "The repository has been deleted from your computer, so the work cannot be recovered"
+          ],
+          "correct_answer": "You are in a folder Git is not watching, so check where you are with pwd and cd into your project"
+        },
+        {
+          "order_index": 6,
+          "type": "short_answer",
+          "language": null,
+          "marks": 3,
+          "title": "Version control in your own words",
+          "prompt_md": "Explain to a friend who does not code what version control is and what problem it solves. Use the folder-of-final-versions problem from the lesson as your starting point.",
+          "correct_answer": "Version control is a tool that records complete snapshots of a folder at moments you choose, so you can see what changed between them and go back to any earlier state. It replaces the habit of keeping copies named final, final2 and really_final, which quickly becomes impossible to interpret. With Git each snapshot carries a message, a date and an author, so the history explains itself rather than needing to be guessed at."
+        },
+        {
+          "order_index": 7,
+          "type": "short_answer",
+          "language": null,
+          "marks": 3,
+          "title": "A commit as a save point",
+          "prompt_md": "The lesson describes a commit as a save point you can return to. Explain what a single commit actually records, and say what is different about Git compared with a program that saves your work automatically.",
+          "correct_answer": "A commit records what every tracked file looked like at that moment, together with the author, the time and a short message describing the change. It is a deliberate act: Git never creates one on its own, so you decide when the project is in a state worth returning to. That is the opposite of automatic saving, and it is what makes the history meaningful, because every entry is a point someone chose to mark rather than an arbitrary moment."
+        },
+        {
+          "order_index": 8,
+          "type": "short_answer",
+          "language": null,
+          "marks": 3,
+          "title": "Nothing added to commit",
+          "prompt_md": "You edit `app.py`, then run `git commit -m \"Fix the total\"` and Git replies `no changes added to commit`. Explain what has happened and give the two commands that put things right.",
+          "correct_answer": "Git only records what has been placed in the staging area, and editing a file does not put it there. The commit therefore found nothing selected and refused to make an empty snapshot. Running git add app.py stages the change, and then git commit -m \"Fix the total\" records it. Running git status in between will confirm the file has moved from changes not staged to changes to be committed."
+        },
+        {
+          "order_index": 9,
+          "type": "short_answer",
+          "language": null,
+          "marks": 3,
+          "title": "Writing a message worth reading",
+          "prompt_md": "Compare these two commit messages: `stuff` and `Fix crash when the shopping list is empty`. Explain who the message is written for and what makes the second one more useful.",
+          "correct_answer": "A commit message is written for a future reader, and that reader is usually you in a few weeks, or a teammate scanning the history for the change that broke something. The word stuff describes nothing, so anyone reading the log has to open the commit to find out what happened. The second message names the behaviour that changed and the situation it applies to, so someone can scan a list of commits and find the relevant one without opening any of them."
+        },
+        {
+          "order_index": 10,
+          "type": "short_answer",
+          "language": null,
+          "marks": 3,
+          "title": "How often to commit",
+          "prompt_md": "You have spent an afternoon adding three separate features to a small program. Would you make one commit or three, and why? Refer to what a commit is for when you answer.",
+          "correct_answer": "Three commits is the better choice, one for each feature, because a commit is a point you might want to return to and a mixed snapshot gives you no way to keep one change and drop another. Smaller commits also make the log readable, since each message can describe a single change honestly. A useful rule of thumb is to commit whenever the project is in a working state that you would be content to come back to."
+        },
+        {
+          "order_index": 11,
+          "type": "short_answer",
+          "language": "bash",
+          "marks": 5,
+          "title": "Take a project from no history to two commits",
+          "prompt_md": "You are inside an empty folder in your terminal. Write the shell commands, one per line and in order, that do all of the following.\n\n1. Turn the folder into a Git repository.\n2. Create a file called `hello.py` containing the single line `print(\"hello\")`, using `echo` and a redirect.\n3. Stage that file.\n4. Commit it with the message `Add hello script`.\n5. Show the history in compact one-line form.\n\nWrite only the commands, with no dollar sign at the start of any line.",
+          "starter_code": "# 1. make this folder a Git repository\n\n# 2. create hello.py containing: print(\"hello\")\n\n# 3. stage the file\n\n# 4. commit it with the message: Add hello script\n\n# 5. show the history, one line per commit\n",
+          "correct_answer": "git init\necho 'print(\"hello\")' > hello.py\ngit add hello.py\ngit commit -m \"Add hello script\"\ngit log --oneline",
+          "solution_code": "git init\necho 'print(\"hello\")' > hello.py\ngit add hello.py\ngit commit -m \"Add hello script\"\ngit log --oneline"
+        },
+        {
+          "order_index": 12,
+          "type": "short_answer",
+          "language": "prompt",
+          "marks": 5,
+          "title": "Prompt lab: make sense of a git status you do not understand",
+          "prompt_md": "You ran `git status` in your project and got output mentioning `Changes to be committed`, `Changes not staged for commit` and `Untracked files` all at once, and you are not sure what state your work is in.\n\nWrite the message you would send to an AI assistant (ChatGPT, Claude, Copilot, Gemini or another) so that it **explains the three sections and teaches you to read this output for yourself in future**, rather than telling you which commands to run. Include your level, the exact output you saw, and what you want to understand.",
+          "correct_answer": "I am a complete beginner with Git. I have only used git init, git add, git commit and git log so far, and I do not yet know what branches are.\n\nI ran git status in my project and the output has three sections at once:\n\nChanges to be committed:\n\tmodified:   list.txt\nChanges not staged for commit:\n\tmodified:   notes.txt\nUntracked files:\n\tdraft.txt\n\nPlease help me understand rather than fix it:\n1. Explain what each of the three sections means, in plain language, and where each file physically is in Git terms.\n2. Explain how a file gets from one section to the next, and what would happen to each of these three files if I ran git commit right now.\n3. Give me a simple rule of thumb for reading git status output in future, so I can work this out myself next time.\n\nPlease do not tell me which commands to run to tidy this up. I want to predict the outcome first. I will tell you my prediction of what a commit would include, and you can tell me whether I have read it correctly."
+        }
+      ]
+    },
+    {
+      "order_index": 15,
+      "title": "Putting your work on GitHub",
+      "theory_md": "## Your history is on one laptop\n\nAt the end of the last lesson you had a small repository with a couple of commits in it. That history is real and useful, and it exists in exactly one place: the hard drive of the machine in front of you. If that machine is stolen, dropped, or has a bad morning, the history goes with it. There is also nobody you can show it to.\n\nThis lesson fixes both problems with one idea.\n\n## Remotes, and what GitHub is\n\nA **remote** is a copy of your repository that lives on another computer, reachable over the internet. Git has always been able to send commits to a remote and fetch commits back from one; that is what the word *distributed* meant in the last lesson.\n\n**GitHub** is a website that hosts remotes for you, for free, along with a page for each repository that shows the files, the history and a description. It is not Git. Git is the program on your machine; GitHub is one popular place to keep a copy. GitLab and Bitbucket do the same job. Because most open-source code and most teaching material lives on GitHub, it is where this course points you.\n\nThree commands cover almost everything you need:\n\n- `git remote add origin <url>` — tell your local repository where its copy lives. `origin` is the conventional nickname for the main remote.\n- `git push` — send your commits up to the remote.\n- `git clone <url>` — make a complete local copy of someone else's repository, history and all.\n\n## Worked example one: putting an existing project online\n\nCreate an empty repository on GitHub first through the website — no files, no README — and copy the address it gives you. Then, inside your project folder:\n\n```bash\n$ git remote add origin https://github.com/sampatel/shopping.git\n$ git branch -M main\n$ git push -u origin main\nEnumerating objects: 6, done.\nCounting objects: 100% (6/6), done.\nWriting objects: 100% (6/6), 512 bytes | 512.00 KiB/s, done.\nTotal 6 (delta 0), reused 0 (delta 0)\nTo https://github.com/sampatel/shopping.git\n * [new branch]      main -> main\nbranch 'main' set up to track 'origin/main'.\n```\n\n`git branch -M main` renames your line of work to `main`, which is the name GitHub expects. The `-u` in the push means \"remember this pairing\", so from then on `git push` on its own is enough. Refresh the GitHub page and your files are there, with your commit messages beside them.\n\n## Worked example two: getting a copy of someone else's work\n\nThis is how you will start most tutorials and every project kit in the technical tracks.\n\n```bash\n$ cd ~/projects\n$ git clone https://github.com/psf/requests.git\nCloning into 'requests'...\nremote: Enumerating objects: 24310, done.\nReceiving objects: 100% (24310/24310), 11.20 MiB | 6.15 MiB/s, done.\nResolving deltas: 100% (14975/14975), done.\n$ cd requests\n$ ls\nAUTHORS.rst  LICENSE  README.md  docs  src  tests\n$ git log --oneline -3\n3f8b1e5 Update urllib3 pin\nc0a9d21 Fix typo in the docs\n7ee4c93 Add test for redirect handling\n```\n\nNote what `clone` gave you: not a zip file of the current state, but the whole history, on your machine, ready to work with. Downloading a zip from the website loses all of that.\n\n## What people see, and why that matters\n\nA repository page shows your files, every commit message you wrote, and, if you include a file called `README.md`, that file rendered as the front page. A README that says what the project does, how to run it, and what you learned turns a folder of code into something a stranger can understand in thirty seconds.\n\nThis is the quiet reason this lesson exists. Nobody can check a claim on a CV that says \"familiar with Python\". Anyone can open a link. A public repository with a readable README and a history of small, sensibly-titled commits is evidence — of what you built, and of the fact that you worked at it over time. Every technical track in this school ends in projects, and the portfolio those projects become is built out of exactly the three commands above.\n\n## Two safety rules\n\n- **Never commit a password, an API key, or a token.** Deleting it in a later commit does not remove it, because Git keeps the history. If it happens, treat the secret as exposed and replace it at the source immediately.\n- **Keep junk out** with a file named `.gitignore`, listing things Git should not track — one per line, for example `venv/` for the virtual environment folder from Week 4, and `.env` for a file of settings and secrets.\n\n## The mistakes beginners actually make here\n\n- **Pushing before committing.** `push` only sends commits. If you forgot to commit, the remote receives nothing and reports `Everything up-to-date`.\n- **`master` and `main`.** Older repositories call the default line of work `master`; newer ones call it `main`. If a push complains about a branch name, run `git branch` to see the name you actually have.\n- **Typing your account password.** GitHub stopped accepting account passwords over `https` in 2021. You use a personal access token generated in your account settings, or an SSH key. The error message names this; read it rather than retrying the password.\n- **Pushing a huge file.** Data files and videos will be refused above certain sizes. Keep large data out of the repository and describe how to get it in the README.\n\n## Try this yourself\n\nTake your `terminal-practice` repository, create an empty repository for it on GitHub, and push it up with the three commands above. Then add a `README.md` with two sentences about what it is, commit it, and push again. You now have a link you can send to someone — the first entry in a portfolio you will spend the rest of this school filling.",
+      "estimated_minutes": 30,
+      "learning_objectives": [
+        "Explain what a remote is and how GitHub differs from Git itself",
+        "Publish an existing local repository using remote add, branch and push",
+        "Clone a public repository and inspect its files and history locally",
+        "Judge what should never be committed and describe why a public repository is portfolio evidence"
+      ],
+      "case_study": "**Homebrew — the public repository that spoke for its author, Max Howell (2009–2015)**\n\nIn 2009 a British developer named Max Howell released a tool called Homebrew: a package installer for macOS, written in Ruby, published openly so that anyone could read it, copy it and send in improvements. It was not a company product and it had no marketing. It spread because it worked and because the code was there in the open for anyone to inspect. Within a few years it had become the standard way developers set up a Mac, and thousands of contributors had added to it.\n\nIn June 2015 Howell posted a short, blunt message on Twitter about a job interview at Google. His account, published on 10 June 2015, was that his interviewers told him around ninety per cent of Google engineers used the software he had written, but that because he could not invert a binary tree on a whiteboard, there would be no offer. The message spread across Hacker News and the technology press within days and became the single most quoted item in the long argument about whiteboard interviewing. Howell later clarified that his feedback had covered more than one question, and that the tweet compressed a longer story into one line — a useful reminder to read viral anecdotes carefully.\n\nLook past the interview argument, though, at the thing that made the story possible at all. A recruiter at one of the largest companies in the world could see precisely what Howell had built, because it was in a public repository with a readable history. So could everyone who read the story afterwards. His work was checkable by strangers, and that is why it carried weight.\n\nThat is the whole case for pushing your work. You are not going to release Homebrew this month. But a public repository with a clear README and a trail of honest commit messages is something a stranger can open and assess in under a minute, and no line on a CV can do that. The commands in this lesson are the ones that put your work where it can be seen.",
+      "exercises": [
+        {
+          "order_index": 1,
+          "type": "mcq",
+          "language": null,
+          "marks": 2,
+          "title": "What a remote actually is",
+          "prompt_md": "Your project has a remote named `origin` pointing at an address on GitHub. In plain terms, what is that remote, and what is its relationship to the repository on your laptop?",
+          "options": [
+            "A copy of your repository on another computer, which your commands can send commits to",
+            "A backup service that copies your folder automatically whenever you edit a file",
+            "The only real copy of your project, with your laptop holding a temporary view of it",
+            "A website page that displays your files but holds no history of your commits"
+          ],
+          "correct_answer": "A copy of your repository on another computer, which your commands can send commits to"
+        },
+        {
+          "order_index": 2,
+          "type": "mcq",
+          "language": null,
+          "marks": 2,
+          "title": "Commit and push are two different acts",
+          "prompt_md": "You edit a file, save it, and run `git push`. Git replies `Everything up-to-date`, and nothing appears on GitHub. What has gone wrong?",
+          "options": [
+            "Push only sends commits, and you have not committed the change yet",
+            "Push only works once per day, so the second push of the day is ignored",
+            "Push needs the file to be listed in a README before it will send it",
+            "Push sends only files that were added before the remote was created"
+          ],
+          "correct_answer": "Push only sends commits, and you have not committed the change yet"
+        },
+        {
+          "order_index": 3,
+          "type": "mcq",
+          "language": null,
+          "marks": 2,
+          "title": "Clone versus downloading a zip",
+          "prompt_md": "You want a local copy of a public project so you can read its code and see how it developed over time. Why is `git clone` a better choice than downloading a zip file of the project from the website?",
+          "options": [
+            "Clone brings the full commit history as well as the files, while a zip has only the current state",
+            "Clone downloads the files faster, though both give you exactly the same information",
+            "Clone gives you permission to change the original project, which a zip download does not",
+            "Clone keeps your copy identical to the original at all times without any further commands"
+          ],
+          "correct_answer": "Clone brings the full commit history as well as the files, while a zip has only the current state"
+        },
+        {
+          "order_index": 4,
+          "type": "mcq",
+          "language": null,
+          "marks": 2,
+          "title": "What a README is for",
+          "prompt_md": "You add a file called `README.md` to the top of your repository and push it. What happens on the repository page, and why does this matter for someone looking at your work?",
+          "options": [
+            "It is shown as the front page, so a stranger can see what the project does without reading the code",
+            "It is hidden from visitors and read only by Git when it decides which files to track",
+            "It replaces your commit messages on the page, so the history is no longer visible to anyone",
+            "It is required before a push is accepted, which is why repositories always contain one"
+          ],
+          "correct_answer": "It is shown as the front page, so a stranger can see what the project does without reading the code"
+        },
+        {
+          "order_index": 5,
+          "type": "mcq",
+          "language": null,
+          "marks": 2,
+          "title": "A key committed by accident",
+          "prompt_md": "You realise that a password for an online service was written inside a file you committed and pushed last week. You delete the line and commit again. Is the problem solved?",
+          "options": [
+            "No, because the old commit still holds it, so the password must be changed at the service itself",
+            "Yes, because the newest commit is the only version that anyone visiting the page can read",
+            "Yes, because deleting a line removes it from every commit that ever contained it",
+            "No, but adding the file to .gitignore afterwards removes it from the history for you"
+          ],
+          "correct_answer": "No, because the old commit still holds it, so the password must be changed at the service itself"
+        },
+        {
+          "order_index": 6,
+          "type": "short_answer",
+          "language": null,
+          "marks": 3,
+          "title": "Explain a remote to a friend",
+          "prompt_md": "A friend who has made a few commits on their laptop asks what GitHub is and whether it is the same thing as Git. Answer them in your own words, and say what a remote is.",
+          "correct_answer": "Git is the program on your own computer that records snapshots of your project, and it works perfectly well without any internet connection. GitHub is a website that stores a copy of a repository for you and shows it on a page, and GitLab and Bitbucket do the same job. That stored copy is called a remote, and you send your commits to it with git push and fetch a whole copy of someone else with git clone."
+        },
+        {
+          "order_index": 7,
+          "type": "short_answer",
+          "language": null,
+          "marks": 3,
+          "title": "Why public work is evidence",
+          "prompt_md": "Explain why a public repository with a clear README and a history of sensible commit messages is stronger evidence of your ability than a line on a CV. Give two specific things a reader can learn from it.",
+          "correct_answer": "A line on a CV is a claim that nobody can check, whereas a repository is something a stranger can open and assess in under a minute. From the README a reader learns what the project does and how to run it, which shows you can explain your own work. From the commit history they can see that the work was built up over time in sensible steps, which shows persistence and a way of working rather than a single copied result."
+        },
+        {
+          "order_index": 8,
+          "type": "short_answer",
+          "language": null,
+          "marks": 3,
+          "title": "A push that will not authenticate",
+          "prompt_md": "You run `git push` and are asked for a username and password. You type your GitHub account password and the push is rejected with a message about password authentication no longer being supported. Explain what is happening and what you need instead.",
+          "correct_answer": "GitHub stopped accepting account passwords for pushing over https in 2021, so the password you type will always be rejected no matter how carefully it is entered. Instead you generate a personal access token in your GitHub account settings and use that in place of the password, or you set up an SSH key so no password is asked for. The error message itself names the reason, so the fix is to read it rather than retry the password."
+        },
+        {
+          "order_index": 9,
+          "type": "short_answer",
+          "language": null,
+          "marks": 3,
+          "title": "What belongs in .gitignore",
+          "prompt_md": "You are about to push a Python project that contains your code, a `venv` folder from Week 4, and a `.env` file holding an API key. Explain what you would put in `.gitignore` and why each entry belongs there.",
+          "correct_answer": "I would list venv/ and .env in .gitignore. The venv folder is a rebuildable copy of installed packages, it is large, and it is specific to my machine, so anyone cloning the project should create their own from the requirements list instead. The .env file holds a secret, and once a secret is committed it stays in the history even if deleted later, so it must never be tracked at all. Everything that is genuinely my own source code stays tracked and gets pushed."
+        },
+        {
+          "order_index": 10,
+          "type": "short_answer",
+          "language": null,
+          "marks": 3,
+          "title": "Reading a branch name error",
+          "prompt_md": "Your first push fails with a message mentioning `master` when you were expecting `main`. Explain what the two names are, how you would check which one your repository is using, and what you would do next.",
+          "correct_answer": "Both names refer to the default line of work in a repository: older Git installations and older projects call it master, while newer ones and GitHub use main. Running git branch on its own lists the names in my repository and marks the one I am on, so I can see which I actually have. If it is master and the remote expects main, I would rename it with git branch -M main and then push again with git push -u origin main."
+        },
+        {
+          "order_index": 11,
+          "type": "short_answer",
+          "language": "bash",
+          "marks": 5,
+          "title": "Publish a local repository and clone one back",
+          "prompt_md": "You are inside a Git repository that already has two commits and no remote. Write the shell commands, one per line and in order, that do all of the following.\n\n1. Add a remote named `origin` pointing at `https://github.com/sampatel/shopping.git`.\n2. Rename your current line of work to `main`.\n3. Push to that remote, setting it as the one to remember for future pushes.\n4. Move up one folder.\n5. Make a fresh local copy of `https://github.com/psf/requests.git`.\n\nWrite only the commands, with no dollar sign at the start of any line.",
+          "starter_code": "# 1. add the remote named origin\n\n# 2. rename the current branch to main\n\n# 3. push and remember this pairing\n\n# 4. move up one folder\n\n# 5. clone the requests repository\n",
+          "correct_answer": "git remote add origin https://github.com/sampatel/shopping.git\ngit branch -M main\ngit push -u origin main\ncd ..\ngit clone https://github.com/psf/requests.git",
+          "solution_code": "git remote add origin https://github.com/sampatel/shopping.git\ngit branch -M main\ngit push -u origin main\ncd ..\ngit clone https://github.com/psf/requests.git"
+        },
+        {
+          "order_index": 12,
+          "type": "short_answer",
+          "language": "prompt",
+          "marks": 5,
+          "title": "Prompt lab: get a rejected push explained",
+          "prompt_md": "Your push has been rejected:\n\n```\nremote: Support for password authentication was removed on August 13, 2021.\nfatal: Authentication failed for 'https://github.com/sampatel/shopping.git/'\n```\n\nWrite the message you would send to an AI assistant (ChatGPT, Claude, Copilot, Gemini or another) so that it **explains what this error means, what the safe options are, and how to judge between them** — without asking you to paste any secret and without handing you a finished command. State your level, quote the exact error, and say what you want to understand.",
+          "correct_answer": "I am new to Git and GitHub. I have made local commits and this is my first time pushing to a remote.\n\nI ran git push -u origin main and got exactly this back:\n\nremote: Support for password authentication was removed on August 13, 2021.\nfatal: Authentication failed for 'https://github.com/sampatel/shopping.git/'\n\nPlease help me understand it rather than fixing it for me:\n1. Explain in plain language what this error is telling me and why my normal GitHub password is being refused.\n2. Describe the two usual ways to authenticate now, a personal access token and an SSH key, and compare them on how hard each is to set up and how safe each is for a beginner on a personal laptop.\n3. Tell me what a personal access token is, what it can do if someone else gets hold of it, and where such a thing should and should not be stored.\n4. Then give me the steps for whichever option you would recommend for my situation, but describe what each step achieves rather than only what to type.\n\nImportant: do not ask me to paste my token, password or any part of them into this conversation, and if I ever do, tell me to revoke it instead of using it."
+        }
+      ]
+    }
+  ]
+}
