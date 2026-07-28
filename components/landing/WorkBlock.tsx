@@ -17,7 +17,11 @@ const DIMS = ["Context", "Role & goal", "Constraints & format", "Specificity", "
 type IngKey = "role" | "context" | "specificity" | "constraints";
 
 const BASE_TEXT = "Write a launch email for our new product.";
-const BASE_SCORES = [2, 2, 1, 2, 1] as const;
+// Typed as a 5-number tuple (matching each ingredient's `deltas`) rather than
+// `as const`: a const tuple indexed by a number yields the literal union 1 | 2,
+// which made the scores reduce below resolve its accumulator to a non-numeric
+// type and broke every downstream comparison.
+const BASE_SCORES: readonly [number, number, number, number, number] = [2, 2, 1, 2, 1];
 
 const INGREDIENTS: {
   key: IngKey;
