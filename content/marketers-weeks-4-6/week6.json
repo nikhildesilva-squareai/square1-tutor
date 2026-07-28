@@ -1,0 +1,464 @@
+{
+ "week": 6,
+ "lessons": [
+  {
+   "order_index": 1,
+   "title": "Audit the Month: Mapping Real Work to the System You Built",
+   "theory_md": "## The problem changes shape at the end of a course\n\nBy this point you are not short of capability. You have a brief format that names the audience, the decision the output has to drive and the brand-voice constraint. You have a brand-voice file a model can read. You have a campaign pack you built end to end. You have prompt chains that hand work from one step to the next, saved templates you trust, and an assistant you have tested against your own material.\n\nWhat you do not have yet is a decision about where each of those things sits in a normal working month. Most marketers who stall after learning AI stall here. The kit works inside a lesson and then dissolves on contact with a Monday, because nothing tells them which task opens which template.\n\nThe fix is an audit, and it starts on paper rather than in a chat window.\n\n## Step one: write the month down before you touch a tool\n\nList every marketing task you actually performed in the last four weeks. Not the tasks in your job description, the ones in your sent folder and your calendar. Sort them into three buckets.\n\n**Recurring** work happens on a predictable cadence: the weekly newsletter, the monthly performance narrative, the fortnightly social batch, the standing set of ad variants. **Episodic** work happens once per campaign or launch: the pack, the landing page, the sequence. **One-off** work happens because something happened: a partner request, a press response, a pricing question.\n\nRecord frequency and rough time for each. A forty-minute task you do weekly is worth more of your attention than a full day you spend once a year. Recurrence is what makes a template pay for itself; duration only tells you how painful one instance felt.\n\n## Step two: interrogate every task with three questions\n\n1. **Does it need the brand voice?** If a stranger would notice the output was not written by you, the brand-voice file has to be in the room.\n2. **Does it reach a customer without another human reading it first?** This is the risk question, and it is the one people answer too optimistically.\n3. **Does it make a claim?** Performance, price, comparison, availability, a named person, a customer experience. Claims decide where verification sits.\n\nThese three answers route work far more reliably than a feeling about whether something is creative or administrative.\n\n## Step three: route the task to one of four destinations\n\n**Assistant plus brand-voice file.** High frequency, voice-heavy, judgement-light: cutting a long post into channel versions, adapting a proven email for a different segment, tidying a draft into house style.\n\n**Saved template or prompt chain.** Structured, repeatable and multi-step: the launch sequence, the monthly report narrative, the ad variant set, the content brief. If you have written the instructions twice, they belong in a template.\n\n**Human first, assistant as critic.** Positioning, pricing, partner communications, anything sensitive. Invert the usual order: you write, then ask the assistant to argue with the draft against the brief and name what a sceptical customer would push back on.\n\n**Not automated at all.** Some tasks are valuable because a person did them. A reply to an unhappy customer with a name attached is not a content problem.\n\nThe commonest failure is inversion. Teams hand over the thinking, which carries the risk and has no repeatable structure, and keep the typing, which is exactly what a template does well.\n\n## Step four: sequence, because order compounds\n\nThe brief sits upstream of everything. One good brief feeds many assets, so writing six briefs for six assets in the same campaign multiplies your work and guarantees drift.\n\nBatch by shared input rather than by channel. If the newsletter, three ads and a landing section all rest on the same customer research, prepare and verify that research once, then run the assets from it in a single session while the context is warm. Reporting comes last and feeds the next brief, which is how the month becomes a loop rather than a queue.\n\nSequencing also decides where your attention goes. Work that is expensive to correct later, such as positioning language that will end up on the site and in every ad, deserves your freshest hour of the week. Work that is cheap to redo, such as a fourth subject line, does not. A month that starts with the brief and ends with the report leaves the fixing cheap and the thinking early.\n\n## What the audit usually exposes\n\nThree findings turn up in almost every honest audit, and each one is useful.\n\nThe first is duplication: the same instructions typed from memory into a fresh chat every week, slightly differently each time, which is a template you have written a dozen times without saving. The second is silent automation: a task that quietly stopped being reviewed because the output has been fine for months, which is where unverified claims eventually escape. The third is misplaced effort: hours spent polishing assets that no measurable decision depends on, while the brief that shapes twenty assets is written in five minutes on a Friday.\n\nNone of these is a prompting problem, which is why no amount of better wording fixes them. They are visible only when the month is written down.\n\n## Step five: the checkpoints that never move\n\nHowever good your prompts become, a named human signs off on:\n\n- factual and comparative claims, including figures, superlatives and phrases such as \"up to\" or \"the leading\"\n- customer quotes, testimonials and case-study wording\n- prices, dates, eligibility and contract terms\n- anything in a regulated category, including health, finance and environmental wording\n- images, voices or likenesses that resemble a real person\n- disclosure where a platform, a regulator or a client contract requires it\n\nTwo habits keep this survivable. First, the checkpoint lives on the template itself, so it travels with the work instead of living in your head. Second, the checkpoint is written as an action rather than a warning. \"Be careful with statistics\" changes nothing. \"Open the source page and confirm the figure and its date before this line ships\" is a task somebody can complete or fail.\n\n## Step six: turn the audit into a routing table\n\nOne page, six columns: task, cadence, destination, input needed, checkpoint, owner. Fifteen to twenty-five rows is normal for one marketer. When it is finished, three things should be visible at a glance: which templates you still owe yourself, which tasks you have quietly been automating without a verification step, and which tasks you should stop doing at all.\n\nYou have it right when a colleague could pick up the table and run your Tuesday. You have it wrong when the table lists tools rather than tasks, when every row points at the same destination, or when the checkpoint column is empty on anything a customer will read.",
+   "estimated_minutes": 28,
+   "learning_objectives": [
+    "Audit a real marketing month into recurring, episodic and one-off work with honest frequency and time",
+    "Route every task to one of four destinations using the brand-voice, exposure and claim questions",
+    "Sequence a month so one verified brief feeds batched assets instead of six competing briefs",
+    "Write human checkpoints as completable actions on the assets that carry claims, quotes or disclosure"
+   ],
+   "case_study": "**Under Armour — the AI-powered ad that argued about its own credits (2024)**\n\nIn March 2024 a short Under Armour film featuring the boxer Anthony Joshua was posted on Instagram by its director and described as an AI-powered sports commercial. The post explained that the piece had been assembled without athlete access from existing assets, a three-dimensional model of Joshua and a mix of AI video, AI stills, CGI, motion graphics, film and an AI voiceover. As Euronews and the advertising trade press reported at the time, it was pitched as an example of what a small team could now produce in about three weeks.\n\nThe reaction from other creatives was immediate, and it was not about the technology. Much of the footage of the athlete came from an earlier Under Armour production directed by Gustav Johansson and shot by cinematographer Andre Chemetoff. Johansson responded publicly that the athlete material was his, and that describing a piece as AI when humans had shot it was a slippery slope. Credits were subsequently added to the social post identifying the earlier work as licensed footage.\n\nNothing here was a prompting failure. The rights to the footage were reportedly held, the craft was real and the output shipped. What went missing was a checkpoint: before the work reached an audience, nobody was accountable for a claim about how it was made or for the credit that claim displaced. That is a routing problem, not a creative one, and it sat on the last step of the process where an audit is supposed to place a human.\n\nThe lesson for your own month is narrow and useful. When you build your routing table, the assets that carry a claim about a person, a piece of work or a method belong in the same category as claims about price and performance. The check is not a feeling of caution; it is a named person confirming, before publication, that the description of the work is one you could defend in public.",
+   "exercises": [
+    {
+     "order_index": 1,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "The first routing filter",
+     "prompt_md": "You are auditing your marketing month and deciding where each recurring task should sit. Which question is the most reliable first filter when you are deciding how much automation a task can take?",
+     "options": [
+      "Does the task reach a customer without another human reading it first",
+      "Does the task feel creative rather than administrative to whoever does it",
+      "Does the task take more than one hour for a marketer to finish alone",
+      "Does the task belong to a channel the marketing team reports on monthly"
+     ],
+     "correct_answer": "Does the task reach a customer without another human reading it first"
+    },
+    {
+     "order_index": 2,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "The inversion trap",
+     "prompt_md": "A marketer hands positioning and campaign strategy to the assistant, then formats and proofreads the resulting drafts by hand every week. Why does the audit method treat this split as the wrong way round?",
+     "options": [
+      "The judgement work carries the most risk and the least repeatable structure, so it stays human",
+      "The formatting work is where brand voice lives, so it deserves the most human attention",
+      "Assistants handle short outputs far better than long ones, so strategy drafts are unreliable",
+      "Strategy work happens too rarely in a month to be worth writing a saved template for"
+     ],
+     "correct_answer": "The judgement work carries the most risk and the least repeatable structure, so it stays human"
+    },
+    {
+     "order_index": 3,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "Sequencing shared inputs",
+     "prompt_md": "Your audit shows a newsletter, three ad variant sets and a landing page section that all rest on the same piece of customer research this month. What does the sequencing principle in this lesson tell you to do?",
+     "options": [
+      "Batch them behind one shared brief so the research is prepared and verified once",
+      "Run them in channel order so the largest paid channel is always finished first",
+      "Spread them across four weeks so no single week carries too much assisted output",
+      "Give each asset its own brief so the wording can be tuned tightly per channel"
+     ],
+     "correct_answer": "Batch them behind one shared brief so the research is prepared and verified once"
+    },
+    {
+     "order_index": 4,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "Where the checkpoint stays",
+     "prompt_md": "Four tasks in your routing table have produced clean output from the same template for six months. Which of them still needs a named human checkpoint every single time before it goes out?",
+     "options": [
+      "A social post that quotes a named customer and repeats a performance figure",
+      "A weekly internal summary of channel results circulated to the marketing team",
+      "A first list of blog headlines that a copywriter rewrites before anything ships",
+      "An internal glossary of product terms kept up to date for the wider team"
+     ],
+     "correct_answer": "A social post that quotes a named customer and repeats a performance figure"
+    },
+    {
+     "order_index": 5,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "The column that carries quality",
+     "prompt_md": "Your routing table already records the task, its cadence and the destination tool for every row. Which additional column does the most to keep output quality stable when a colleague runs the task instead of you?",
+     "options": [
+      "The verification step, written as an action somebody can complete or fail",
+      "The time saved per run, so the team can show the value of the system",
+      "The assistant the template was written for, so outputs stay consistent",
+      "The channel the output is published to, so the calendar stays readable"
+     ],
+     "correct_answer": "The verification step, written as an action somebody can complete or fail"
+    },
+    {
+     "order_index": 6,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "The three audit questions",
+     "prompt_md": "Name the three questions the audit asks of every marketing task, and say what each one decides about how that task should be run.",
+     "correct_answer": "The first question is whether the task needs the brand voice, which decides whether the brand-voice file has to be supplied with the prompt. The second is whether the output reaches a customer without another human reading it, which decides how much risk the task carries and therefore how tight the checkpoint must be. The third is whether the task makes a claim about performance, price, comparison, availability or a named person, which decides where verification sits and who signs it off."
+    },
+    {
+     "order_index": 7,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "Frequency beats duration",
+     "prompt_md": "A colleague argues that the tasks worth templating are the ones that take longest. Explain why frequency is the better signal, and give one example from a marketing month where the longer task is the worse candidate.",
+     "correct_answer": "A template pays for itself every time it runs, so a forty-minute task done weekly returns far more than a full day spent once a year. Duration only measures how painful one instance felt, while recurrence measures how much total time the template will save and how quickly you will learn to improve it. An annual brand strategy offsite may take three days but is a poor template candidate, whereas the weekly newsletter that takes forty minutes is an excellent one."
+    },
+    {
+     "order_index": 8,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "Inverting the roles",
+     "prompt_md": "Describe the pattern where the human writes first and the assistant becomes the critic. Name one task from a realistic marketing month where you would use it, and say what you would ask the assistant to do.",
+     "correct_answer": "In this pattern you draft the work yourself and then ask the assistant to argue with your draft against the brief rather than to produce it. It suits high-judgement, low-frequency work such as pricing messaging, partner communications or a sensitive announcement. For a price increase email I would write the draft, then ask the assistant to name every sentence a sceptical customer would challenge, flag anything that reads as a claim needing evidence, and check the tone against the brand-voice file."
+    },
+    {
+     "order_index": 9,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "Checkpoints as actions",
+     "prompt_md": "Explain the difference between a checkpoint written as a warning and one written as an action. Give one example of each for a claim-heavy customer email.",
+     "correct_answer": "A warning describes a mood and cannot be completed, so nobody can tell whether it was done. An action names a specific step with an observable result, so it can be ticked off or failed in review. A weak checkpoint reads be careful with the statistics in this email, while a strong one reads open the source report, confirm the figure and its publication date, and paste the link into the brief before this email is scheduled."
+    },
+    {
+     "order_index": 10,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "Reading your own table",
+     "prompt_md": "Your finished routing table has twenty-two rows, and eighteen of them point at the same assistant with the brand-voice file attached. What does that pattern tell you, and what would you change?",
+     "correct_answer": "It tells you the table is recording a tool rather than a system, because almost no work has been shaped into a repeatable template or reserved for human judgement. In practice several of those rows are structured, multi-step tasks that should become saved templates or prompt chains, and at least a few are judgement or relationship tasks that should be marked human first or not automated. I would re-sort the eighteen rows using the three questions, promote the recurring structured ones into named templates, and add a verification step to every row a customer will read."
+    },
+    {
+     "order_index": 11,
+     "type": "short_answer",
+     "language": "prompt",
+     "marks": 5,
+     "title": "Prompt Lab: build the routing table",
+     "prompt_md": "**Scenario.** You are the only marketer at a twelve-person B2B software company selling scheduling software to independent veterinary practices. You have listed eighteen recurring and episodic tasks from the last four weeks, from the Tuesday newsletter to quarterly case-study production. You want an assistant to help you turn that list into a routing table rather than to invent a new list for you.\n\nWrite the prompt. A strong prompt will brief the assistant like a colleague: it states the business and audience, supplies the task list as the only source of tasks, names the four possible destinations, gives the three routing questions, demands a verification step in the assistant voice of an action rather than a warning, fixes the output as a table with named columns, and forbids inventing tasks, tools or claims. It should also tell the assistant what to do when a task is ambiguous.",
+     "correct_answer": "You are helping me, the only marketer at a twelve-person B2B software company, turn a list of real tasks into a routing table. We sell scheduling software to independent veterinary practices; the buyer is usually the practice owner or practice manager, who is time-poor and sceptical of software promises.\n\nHere is the complete list of eighteen tasks I actually performed in the last four weeks, with cadence and rough time for each: [paste list]. Use only these tasks. Do not add, merge away or invent tasks, tools, figures or channels.\n\nFor each task, decide a destination from exactly these four: (1) assistant plus brand-voice file, (2) saved template or prompt chain, (3) human writes first and the assistant critiques, (4) not automated. Decide using three questions and show your answer to each: does it need the brand voice; does it reach a customer without another human reading it; does it make a claim about performance, price, comparison, availability or a named person.\n\nOutput one markdown table with these columns: Task | Cadence | Destination | Input needed | Verification step | Owner. Write every verification step as an action somebody can complete or fail, such as open the source and confirm the figure and its date, not as a warning such as be careful. Every task that reaches a customer must have a non-empty verification step naming a human owner.\n\nAfter the table, add three short lists: templates I still need to write, tasks I appear to be automating without a verification step, and tasks that look like candidates to stop doing. If a task is ambiguous, place it in the safer destination, mark it Needs decision in the Owner column, and tell me the one question you would need answered. Do not soften a risky task to make the table tidier."
+    },
+    {
+     "order_index": 12,
+     "type": "short_answer",
+     "language": "prompt",
+     "marks": 5,
+     "title": "Prompt Lab: the checkpoint policy",
+     "prompt_md": "**Scenario.** Your routing table is finished and a second person is about to start running some of the rows. Before that happens you want a one-page human-checkpoint policy covering every asset type that reaches a customer: emails, ad copy, social posts, landing page sections, case studies and the monthly report narrative. You market a regulated product in the United Kingdom, so disclosure and claim wording matter.\n\nWrite the prompt. A strong prompt supplies the asset list and who owns each, states the categories of content that always need a check, insists that the policy names the action and the evidence rather than a tone of caution, asks for an escalation path when the assistant or the operator is unsure, and forbids the assistant from inventing regulations, regulator names or legal thresholds it cannot support.",
+     "correct_answer": "Act as an experienced marketing operations lead helping me write a one-page human-checkpoint policy for a small marketing team in the United Kingdom. Read the attached brand-voice file and routing table first.\n\nCover exactly these customer-facing assets: email, ad copy, organic social, landing page sections, case studies and the monthly report narrative. For each, the policy must state who drafts it, who checks it and who is accountable for what ships.\n\nAlways require a human check for: factual and comparative claims including figures, superlatives and phrases such as up to; customer quotes, testimonials and case-study wording; prices, dates, eligibility and contract terms; regulated wording; images, voices or likenesses resembling a real person; and any disclosure a platform or client contract requires.\n\nWrite every check as an action with named evidence, for example open the source and confirm the figure and its date, or obtain written approval from the named customer and store it with the asset. Do not write reminders to be careful or to use good judgement.\n\nAdd an escalation path: what the operator does when a claim cannot be evidenced before the deadline, who decides, and what the default is if nobody answers in time. Make the default holding the asset rather than shipping it.\n\nDo not invent regulations, regulator names, legal thresholds or case law. Where a rule may apply but you cannot state it accurately, write Confirm with legal or the client and describe what needs confirming. Output the policy as a single page with short headed sections and a final checklist a colleague can run in five minutes."
+    }
+   ]
+  },
+  {
+   "order_index": 2,
+   "title": "The System Card: Documenting, Versioning and Handing Over Your Templates",
+   "theory_md": "## A template only you can run is not a system\n\nThe routing table from the last lesson tells you which task opens which template. It does not tell anyone else how to run one. That gap is where most marketing AI work quietly dies: the person who wrote the prompts leaves, goes on holiday, or moves to another brand, and the templates survive as text nobody trusts.\n\nA documented system fixes three separate problems at once. It lets a colleague produce work you would sign off on. It lets you change the offer without breaking twenty assets. And it gives you something to hand an agency or a freelancer that is stronger than a briefing call, because it is written down and testable.\n\nThe unit of documentation is the system card: one short page per template.\n\n## What goes on a system card\n\nNine fields, none of them long.\n\n**Name and purpose.** One line, in plain language: what this template produces and for whom. If you cannot write it in one line, the template is doing two jobs and should be split.\n\n**When to use it.** The trigger. A cadence, a campaign stage or an event.\n\n**When not to use it.** The field everyone skips and the one that prevents most misuse. Name the cases that look similar but are not: the crisis version of the announcement, the regulated market, the enterprise segment where the proof points differ.\n\n**Inputs required.** Every input, and where each one comes from. The brief. The brand-voice file. The current offer sheet. The approved claims list. If an input is missing, the correct behaviour is to stop, not to improvise.\n\n**The prompt.** The template itself, stored where a colleague can copy it without editing your working file.\n\n**Expected output.** The shape and the length: three subject lines and one body under 180 words, or a table with named columns. A defined shape is what makes a bad run obvious.\n\n**Verification step.** Written as an action, carried over from your checkpoint policy: open the source and confirm the figure and its date; check the offer wording against the current offer sheet; obtain written approval for the quote.\n\n**Owner.** A person, not a team.\n\n**Version and changelog.** The version number, the date of the last change, what changed, why, and who approved it. Three lines of history are worth more than a perfect first draft.\n\n## Write the card for the worst day, not the best\n\nThe test of a card is not whether it reads well when you write it. It is whether it holds up when someone runs the template at five o'clock on a deadline, with the wrong version of the offer sheet open and no time to ask you a question.\n\nThat test changes how you write. Say where each input lives rather than naming it. Say what to do when an input is missing or out of date, which is stop and ask, not carry on. Say what a bad run looks like, because a colleague who has never seen the good version cannot recognise the poor one. Cards written this way are shorter than the ones people write to sound thorough, and they survive far better.\n\n## Define good before you hand anything over\n\nHandover fails when quality lives in your head as taste. Before someone else runs a template, write the bar in a form that can be scored: does the output follow the brief, does it carry the brand voice, is every claim evidenced, is the required disclosure present, is it the agreed shape and length.\n\nFive yes-or-no checks beat a paragraph about tone. They give a new person something to self-assess against, they give you something to sample, and they turn disagreements about quality into disagreements about a specific check, which are far easier to settle.\n\n## Versioning: what changes, and what has to change with it\n\nTemplates rot because the world around them moves. Treat two categories differently.\n\nA **minor version** tidies wording, adds an example, tightens the output shape. Nothing the output asserts has changed. Note it in the changelog and carry on.\n\nA **major version** changes what the template claims or who it is for: a new price, a changed offer, a new proof point, a revised positioning line, an audience shift, a regulated claim rewritten by legal, or a failure discovered in review. A major version needs a fresh sign-off from the named checkpoint owner before anyone runs it again.\n\nThe part teams forget is the dependency map. Your templates do not stand alone: they read from a brand-voice file, an offer or pricing sheet, an approved claims list and a proof library. When one of those sources changes, some templates become wrong immediately and silently. So the map runs the other way too. Against each source, list the templates that draw on it. When the price changes on Tuesday, you do not hunt through folders; you open the map and see the six cards that need review before Wednesday.\n\n## Handing the system to a colleague or an agency\n\nA handover pack is five things: the brief spine you have used since week one, the brand-voice file, the relevant system cards, the checkpoint policy, and worked examples. Include at least one rejected output with a short note on why it was rejected. Approved examples teach the target; a rejected one teaches the boundary, and boundaries are what a newcomer cannot infer.\n\nThen run a supervised start. The first three outputs from a new person or agency come back to you for review against the same five checks, with the failures logged onto the card rather than fixed silently. Two rounds of that will surface every ambiguity your documentation still contains.\n\nWith an external partner, three commercial points belong in writing rather than in a chat: whether AI-assisted production is disclosed to you and to the end audience, who owns the outputs and the prompts, and what data of yours may be pasted into which tools. Agree them once, at the start, when they cost nothing.\n\n## After handover, sample rather than supervise\n\nYou cannot review everything, and reviewing everything defeats the point. Sample instead: a fixed share of each template output each month, scored against the five checks, with claim-bearing assets sampled at a higher rate. When something fails, the fix goes onto the card as a new version, not into a message that disappears. A system that learns from its own failures is the only kind that survives contact with a busy quarter.",
+   "estimated_minutes": 29,
+   "learning_objectives": [
+    "Write a nine-field system card that lets a colleague run a template to your standard",
+    "Define quality as five yes-or-no checks that can be applied without you in the room",
+    "Version templates correctly and trace every source change through a dependency map",
+    "Assemble a handover pack and supervised start for a colleague or an external agency"
+   ],
+   "case_study": "**Bayer Consumer Health — scoring the work before it goes live (2024–2025)**\n\nBayer sells self-care brands such as Aspirin, Claritin and Alka-Seltzer across dozens of markets, which means the same campaign idea has to survive translation into many languages, formats and cut-downs. In 2024 the company consolidated its global Consumer Health creative, production and media into a single agency partner, Interpublic, with the stated aim of integrating those functions and making better use of generative production. Bayer has said it uses AI heavily for exactly the work that scales badly by hand: localising creative for different markets and cutting assets to different lengths.\n\nWhat makes the case useful for this lesson is not the generation, it is the paperwork around it. As Digiday reported, and as the vendor CreativeX documents in its own client story, Bayer evaluates every piece of creative against a Creative Quality Score, shares those scores with its agencies, and requires markets and brands to hit a defined share of best practice before work goes live. The standard is a number rather than a feeling, so an agency in one market and an in-house team in another can be held to the same bar without a meeting.\n\nBayer has also been open that the difficult part was not the technology but the change management, and that it wants to keep a human quality in advertising even as production speeds up, including work on spotting creative that reads as machine-made. That is the same instinct as your when-not-to-use field: the system says out loud where the machine should not be trusted to finish the job.\n\nRead across to your own scale and the pattern holds. A shared, written standard is what makes handover possible, because it turns a judgement only you can make into a check anyone can apply. A marketing team of one can run the same idea with five yes-or-no checks on a system card, applied before publication rather than discovered afterwards.",
+   "exercises": [
+    {
+     "order_index": 1,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "The field that prevents misuse",
+     "prompt_md": "You are writing system cards for eight templates that a new colleague will run next month. Which field does the most to stop the templates being used on work they were never designed for?",
+     "options": [
+      "When not to use it, naming the cases that look similar but need different handling",
+      "The expected output shape, describing the length and the sections to produce",
+      "The name and purpose line, summarising what the template produces and for whom",
+      "The owner field, recording the person accountable for the template over time"
+     ],
+     "correct_answer": "When not to use it, naming the cases that look similar but need different handling"
+    },
+    {
+     "order_index": 2,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "Minor change or major version",
+     "prompt_md": "Your product team has replaced the headline proof point used across the launch email template with a different customer outcome. How should the system card treat that change before anyone runs the template again?",
+     "options": [
+      "As a major version needing fresh sign-off from the named checkpoint owner",
+      "As a minor version, because the structure and the output shape are unchanged",
+      "As a changelog note only, because the proof point lives in the brief anyway",
+      "As a separate template, because the audience for the launch has now changed"
+     ],
+     "correct_answer": "As a major version needing fresh sign-off from the named checkpoint owner"
+    },
+    {
+     "order_index": 3,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "Why the dependency map runs both ways",
+     "prompt_md": "Your offer sheet changes on a Tuesday and several live templates now quote the old terms. What does a dependency map give you that a folder of well-written system cards on its own does not?",
+     "options": [
+      "A list, by source, of every template that reads from the input which changed",
+      "A record of which templates have produced the most output in the last quarter",
+      "A ranking of templates by how much review time each one costs the team",
+      "A shared place to store the offer sheet so the newest version is easy to find"
+     ],
+     "correct_answer": "A list, by source, of every template that reads from the input which changed"
+    },
+    {
+     "order_index": 4,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "What a handover pack must include",
+     "prompt_md": "An agency is taking over three of your templates next quarter and you are assembling the handover pack. Which inclusion teaches them the boundary of acceptable work fastest, beyond the cards and the brand-voice file?",
+     "options": [
+      "A rejected output with a short note explaining why it was turned down",
+      "A folder of the strongest outputs the templates produced last quarter",
+      "A summary of the results each template contributed to over six months",
+      "A recording of the briefing call where the templates were talked through"
+     ],
+     "correct_answer": "A rejected output with a short note explaining why it was turned down"
+    },
+    {
+     "order_index": 5,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "Defining good before handover",
+     "prompt_md": "Before a colleague runs your templates you want to define quality in a way they can apply without you. Which approach fits the documented-system method described in this lesson?",
+     "options": [
+      "Five yes-or-no checks covering brief, voice, evidence, disclosure and shape",
+      "A written description of the brand tone with several paragraphs of guidance",
+      "A rule that anything customer-facing waits for your personal review first",
+      "A scoring range from one to ten that the reviewer applies to each output"
+     ],
+     "correct_answer": "Five yes-or-no checks covering brief, voice, evidence, disclosure and shape"
+    },
+    {
+     "order_index": 6,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "Purpose in one line",
+     "prompt_md": "Explain why a system card whose purpose line cannot be written in a single sentence is a warning sign, and say what you would do about it.",
+     "correct_answer": "If the purpose takes more than a sentence, the template is usually doing two jobs, which means its inputs, its output shape and its verification step are all compromises. Colleagues then use it for the wrong half of its remit and the output quality becomes unpredictable. The fix is to split it into two templates with their own cards, each with a single purpose, its own trigger and its own checkpoint."
+    },
+    {
+     "order_index": 7,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "Minor versus major",
+     "prompt_md": "Give one example of a minor version change and one of a major version change to a marketing template, and explain the different sign-off each one needs.",
+     "correct_answer": "Tightening the output shape from four subject lines to three, or adding a worked example to the prompt, is a minor version: nothing the output asserts has changed, so a changelog line is enough. Rewriting the template to carry a new price, a new proof point or a claim that legal has revised is a major version, because what the output tells a customer has changed. A major version needs fresh sign-off from the named checkpoint owner before anyone runs it again."
+    },
+    {
+     "order_index": 8,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "The supervised start",
+     "prompt_md": "Describe how you would supervise the first outputs from a new colleague or agency running your templates, and explain what you do with the problems you find.",
+     "correct_answer": "I would review their first three outputs per template against the same five yes-or-no checks the card defines, rather than rewriting the work myself. Each failure gets discussed against the specific check it missed, so the conversation is about a rule and not about taste. Every ambiguity that caused a failure is then written onto the card as a new version, so the documentation absorbs the lesson instead of the fix living in a message thread."
+    },
+    {
+     "order_index": 9,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "Terms worth agreeing early",
+     "prompt_md": "Name the three commercial points this lesson recommends agreeing in writing with an external partner before they run your templates, and say why each matters.",
+     "correct_answer": "First, whether AI-assisted production is disclosed to you and, where required, to the end audience, so you are never surprised by how work was made. Second, who owns the outputs and the prompts, because the templates are an asset you have built and want to keep. Third, what data of yours may be pasted into which tools, which protects customer information and unreleased plans. All three are cheap to settle at the start and expensive to argue about once work is live."
+    },
+    {
+     "order_index": 10,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "Sampling instead of supervising",
+     "prompt_md": "You cannot review every output once a system is running. Explain how sampling should work, and how the sample rate should differ across template types.",
+     "correct_answer": "Sampling means reviewing a fixed share of each template output every month against the five defined checks, rather than approving everything or nothing. Templates whose output carries claims, prices, customer quotes or required disclosure are sampled at a higher rate, because the cost of a single failure is much greater. Low-risk internal work can be sampled lightly, and any failure found anywhere becomes a new version of the card rather than a private correction."
+    },
+    {
+     "order_index": 11,
+     "type": "short_answer",
+     "language": "prompt",
+     "marks": 5,
+     "title": "Prompt Lab: draft the system cards",
+     "prompt_md": "**Scenario.** You have six working prompt templates saved in a document: launch email, monthly performance narrative, ad variant set, social batch, content brief and case-study first draft. They work when you run them, but nothing around them is written down. You are going on leave for three weeks and a marketing coordinator will run four of them.\n\nWrite the prompt that turns your raw templates into system cards. A strong prompt supplies the templates as the only source material, fixes the nine card fields, insists the verification step is an action rather than a warning, requires an honest gap list where the template does not say enough, and forbids the assistant from inventing inputs, approvals, owners or claims. It should also make the when-not-to-use field specific rather than generic.",
+     "correct_answer": "You are helping me document six marketing prompt templates as system cards, so a marketing coordinator can run four of them while I am on leave for three weeks. We sell to independent veterinary practices; the reader of every customer-facing output is a time-poor practice owner.\n\nHere are the six templates exactly as I use them: [paste]. Also attached are the brand-voice file and the current offer sheet. Work only from these. Do not invent templates, inputs, owners, approvals, figures or claims.\n\nProduce one card per template with exactly these fields: Name and purpose in one sentence; When to use; When not to use; Inputs required and where each comes from; The prompt itself, copied unchanged; Expected output shape and length; Verification step; Owner; Version and changelog.\n\nThe When not to use field must name concrete situations from my context, such as a crisis announcement or a regulated claim, not general advice about using judgement. The verification step must be an action somebody can complete or fail, for example open the offer sheet and confirm the price and end date, rather than a reminder to be careful.\n\nWhere a template does not tell you enough to fill a field, write MISSING and state the single question I need to answer. Do not guess an owner or invent an approval that has not happened. At the end, list the fields you marked MISSING as a short checklist for me, and flag any template that appears to be doing two jobs and should be split before handover."
+    },
+    {
+     "order_index": 12,
+     "type": "short_answer",
+     "language": "prompt",
+     "marks": 5,
+     "title": "Prompt Lab: the change-impact review",
+     "prompt_md": "**Scenario.** Your company has repositioned. The headline price has changed, one product tier has been renamed, and the positioning line on the site has been rewritten. You hold twelve system cards, a brand-voice file, an approved claims list and an offer sheet. Live campaigns are running.\n\nWrite the prompt that produces a change-impact review. A strong prompt names the three changes precisely, supplies the cards and the source documents, asks for templates to be classified as major version, minor version or unaffected with the reason, demands a priority order tied to what is already in market, and forbids the assistant from rewriting the templates or inventing the new wording it has not been given.",
+     "correct_answer": "Act as a marketing operations lead running a change-impact review for me. Three things changed this week: the headline monthly price moved from the figure in the attached old offer sheet to the figure in the new one; the tier previously called Practice Plus is now called Practice Pro; and the positioning line has been rewritten to the exact wording in the attached document.\n\nAttached are twelve system cards, the brand-voice file, the approved claims list and both offer sheets. Use only these. Do not invent new wording, new claims, new prices or new tier names, and do not rewrite the templates in this pass.\n\nFor each of the twelve templates, classify it as major version, minor version or unaffected, and give the one-line reason, naming the field or input that is now wrong. Treat anything that asserts a price, a tier name or the positioning line to a customer as major.\n\nThen give me a priority order for fixing them, ranked by what is already live in market and by how many customers each output reaches, using the cadence recorded on each card. For every major version, state who the named checkpoint owner is according to the card and what evidence they must see before it is run again.\n\nFinish with two lists: live assets already in market that contain the old price or the old tier name and therefore need withdrawal or correction, and anything you could not classify because the card or the source documents do not say enough. Mark uncertainty as uncertainty rather than making a judgement call for me."
+    }
+   ]
+  },
+  {
+   "order_index": 3,
+   "title": "Capstone: Deliver Your Marketing AI Operating System",
+   "theory_md": "## What you are delivering\n\nThis is the final piece of work on the course, and it is a build rather than an essay. You are delivering a marketing AI operating system: the small set of documents that lets you, or somebody standing in for you, run a marketing month at a known standard.\n\nA complete pack has six parts. Two of them are graded here, in the Prompt Labs at the end of this lesson, because they are the parts that carry everything else.\n\n1. **The master brand-and-brief block.** The anchoring text you paste at the top of any session, in any assistant. Graded.\n2. **The template pack.** Your working templates, each with a usage note and a verification note. Graded.\n3. **The routing table** from lesson one: task, cadence, destination, input, checkpoint, owner.\n4. **The checkpoint policy** covering claims, quotes, prices, regulated wording, likenesses and disclosure.\n5. **The dependency map and version log** from lesson two, so a change to the offer is traceable to the templates it breaks.\n6. **The month sequence**: what happens in which week, and which brief feeds which batch.\n\nParts three to six you already have in draft form. This lesson is about finishing the two that anchor them.\n\n## The master brand-and-brief block\n\nEverything you have built since week one collapses into one block of text. It carries the course spine: who the audience is, what decision the output has to drive, and the brand-voice constraint. It is what you would tell a capable new colleague in their first ten minutes, written so an assistant can act on it.\n\nA strong block states the business in one or two lines, then the audience in terms of what they want and what they distrust rather than demographics. It gives the voice as rules with examples, since **we are friendly but professional** guides nobody, while **we write in the second person, we never use exclamation marks, we say practice rather than clinic** guides everyone. It names the words and claims that are banned, and the proof points that are approved. It states the honesty rule plainly: no invented statistics, no fabricated customer quotes, no claims that are not in the approved list, and a clear instruction to say what is missing rather than to fill a gap. It sets output defaults: British spelling, the length and shape you usually want, and what to do when the brief is thin.\n\nA weak block is a paragraph of adjectives that could belong to any company in your sector. The test is blunt: if a competitor could paste your block and lose nothing, it is not finished.\n\nKeep it under roughly 400 words. Anything longer starts to compete with the task in front of it.\n\n## The template pack\n\nFour to six templates is a working system for one marketer; more than that on a first pass usually means several of them are variations. Choose them from the recurring rows of your routing table, not from the tasks you enjoy most. If the newsletter goes out every week, the newsletter template matters more than the launch film brief you may write twice a year.\n\nEach template needs three things beyond the prompt itself. A **usage note** says when to run it, when not to, and what inputs must be present. A **verification note** says what a human confirms before the output ships, written as an action with named evidence. And an **expected output** line fixes the shape, so a poor run is obvious rather than arguable.\n\nTemplates should assume the master block is already in the session. A template that repeats the brand voice inside itself will drift out of step the first time the voice file changes, and you will not notice until something reads oddly in market.\n\n## How the submission is judged\n\nSix things carry the marks. **Specificity**: could only your business have written this. **Anchoring**: do the templates rely on the master block rather than restating it. **Verification**: is every customer-facing template carrying an action, not a caution. **Honesty**: does the pack instruct the assistant to flag gaps instead of inventing figures, quotes or approvals. **Coverage**: does the pack address the recurring work in your month. **Handover-readiness**: could a competent colleague run it on a bad day without ringing you.\n\nThe failure modes are predictable. Generic voice rules. A template that is a wish rather than an instruction. A verification note that says check carefully. A pack that covers campaigns and ignores the weekly grind. Any claimed result that has not happened yet.\n\n## Give the month a shape\n\nThe sequence is the cheapest part of the pack to write and the part most likely to be missing. A workable rhythm for one marketer looks like this: one session at the start of the month to write and verify the briefs, one batching session where assets are produced from those briefs while the context is warm, a continuous shipping cadence that runs off saved templates, and a short session at month end where the report narrative is written and feeds the next round of briefs.\n\nWrite it as four lines with dates attached, not as a philosophy. Its job is to tell a stand-in which week they are in and which template that week opens.\n\n## Test it before you submit it\n\nThree tests, each about ten minutes.\n\nThe **cold run**: open a new session in any assistant, paste the master block and one template with real inputs, and score the output against your five checks. No editing, no follow-up prompts. What you get is what a colleague would get.\n\nThe **colleague test**: hand the pack to somebody who does not do your job and ask them to run one template. Every question they have to ask you is a gap in the documentation, and it goes into the pack rather than into a reply.\n\nThe **change test**: pretend the price changed this morning. Walk your dependency map and name every template that is now wrong. If you cannot do it in five minutes, the map is not finished.\n\nYour pack should be assistant-agnostic. It has to work in whichever tool your employer approves next year, so avoid tricks that depend on one product's interface. The system is the writing, not the software.\n\n## After you submit\n\nTreat version 1.0 as a starting position rather than a finished artefact. The pack earns its keep through small, dated edits: a failed output that becomes a sharper verification note, a question from a colleague that becomes a clearer usage note, a new offer that promotes three templates to a major version. Diarise a review each quarter, and give the master block the same treatment whenever the positioning, the audience or the approved proof points move.\n\nOne last thing worth saying plainly, because it is the difference between a marketer who uses AI and a marketer who runs a system. Nothing in this pack claims a result. It claims a standard, a sequence and a set of checks. The results still come from the same place they always did: knowing the audience, having something worth saying, and being honest about what you can prove.",
+   "estimated_minutes": 30,
+   "learning_objectives": [
+    "Assemble the six parts of a marketing AI operating system into one handover-ready pack",
+    "Write a master brand-and-brief block specific enough that a competitor could not reuse it",
+    "Document four to six recurring templates with usage, output shape and verification notes",
+    "Test the pack with a cold run, a colleague test and a change test before submitting it"
+   ],
+   "case_study": "**Zalando — the production line, not the prompt (2023–2025)**\n\nThe European fashion retailer Zalando spent two years turning generative imagery from an experiment into a routine part of how campaigns are made. Reporting by Business of Fashion set out the numbers the company gave: campaign imagery that used to take six to eight weeks to produce now takes around three to four days, at roughly ninety per cent lower cost. By the fourth quarter of 2024, the company said around seventy per cent of its editorial campaign images were AI-generated.\n\nThe interesting part is what those figures are actually measuring. Zalando did not report finding a better prompt. It built a pipeline: its own brand assets and product data as inputs, three-dimensional replicas so that a model shown in a campaign can also appear consistently on product pages, and a defined place in the calendar for the work, which is what lets the company react to a fast-moving trend rather than commissioning a shoot for it. Traditional photography did not disappear; it moved to the work where it still earns its cost.\n\nRead the ninety per cent carefully, because it is the kind of figure that gets repeated without its conditions. It belongs to one company, one category of asset, one year, and it sits on top of an unusual amount of owned material. Your own saving will be different, and quoting somebody else's number as your own is exactly the invented statistic your honesty rule forbids.\n\nWhat does transfer is the shape of the thing. The gain came from repeatability: known inputs, a known output standard, a known slot in the month, and human decisions kept where they mattered. That is the same object you are delivering in this lesson at a smaller scale. A marketing operating system is not a clever prompt you found; it is the boring apparatus around it that lets the same quality happen next Tuesday, and the Tuesday after that, whether or not you are in the room.",
+   "exercises": [
+    {
+     "order_index": 1,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "Testing the master block",
+     "prompt_md": "You have drafted the master brand-and-brief block that will open every assisted session for your marketing team. Which test tells you most reliably that the block is not finished yet?",
+     "options": [
+      "A direct competitor could paste the same block and lose nothing from it",
+      "The block runs to more than one screen when pasted into an assistant",
+      "The block repeats information that also appears inside your templates",
+      "The block names products that a new colleague would not recognise yet"
+     ],
+     "correct_answer": "A direct competitor could paste the same block and lose nothing from it"
+    },
+    {
+     "order_index": 2,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "Choosing the templates",
+     "prompt_md": "You are picking four to six templates for the pack you will hand over. Which selection rule best matches the operating-system approach taught across this week?",
+     "options": [
+      "Take them from the recurring rows of the routing table, highest cadence first",
+      "Take the tasks where assisted drafts have most impressed you and colleagues",
+      "Take one template per marketing channel so the whole mix is represented",
+      "Take the tasks that consume the most hours whenever they happen to occur"
+     ],
+     "correct_answer": "Take them from the recurring rows of the routing table, highest cadence first"
+    },
+    {
+     "order_index": 3,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "Why templates should not restate the voice",
+     "prompt_md": "A colleague has written the full brand-voice rules into each of the six templates as well as into the master block. What is the practical problem with that duplication?",
+     "options": [
+      "The templates drift out of step the first time the voice file is updated",
+      "The templates become too long for most assistants to follow accurately",
+      "The templates stop working when a different assistant is used next year",
+      "The templates lose the audience context the master block was carrying"
+     ],
+     "correct_answer": "The templates drift out of step the first time the voice file is updated"
+    },
+    {
+     "order_index": 4,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "What a cold run proves",
+     "prompt_md": "You open a fresh session, paste the master block and one template with real inputs, and accept the first output without editing or follow-up. What is this test actually measuring?",
+     "options": [
+      "What a colleague running your documentation without you would receive",
+      "Whether the assistant you prefer performs better than the alternatives",
+      "Whether the template produces work good enough to publish unedited",
+      "How much time the template saves compared with writing from scratch"
+     ],
+     "correct_answer": "What a colleague running your documentation without you would receive"
+    },
+    {
+     "order_index": 5,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "Voice rules that guide",
+     "prompt_md": "Your master block currently describes the brand voice as approachable, expert and human. Which replacement would give an assistant and a new colleague something they can actually apply?",
+     "options": [
+      "Write in the second person, avoid exclamation marks, say practice not clinic",
+      "Sound like a trusted adviser who understands the pressures of the sector",
+      "Match the tone used across the website, the newsletter and the ad copy",
+      "Keep the writing warm and confident without becoming casual or salesy"
+     ],
+     "correct_answer": "Write in the second person, avoid exclamation marks, say practice not clinic"
+    },
+    {
+     "order_index": 6,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "The six parts",
+     "prompt_md": "List the six parts of a complete marketing AI operating system and say, in one clause each, what job that part does.",
+     "correct_answer": "The master brand-and-brief block anchors every session with audience, decision and voice, while the template pack turns recurring work into repeatable instructions. The routing table says which task goes to which destination and who owns it, and the checkpoint policy names what a human confirms before anything customer-facing ships. The dependency map and version log trace a change in the offer or the voice to the templates it breaks, and the month sequence says which brief feeds which batch, and in which week."
+    },
+    {
+     "order_index": 7,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "The honesty rule in the block",
+     "prompt_md": "Explain what the honesty rule inside the master block must instruct the assistant to do, and why the instruction to flag a gap matters more than the instruction to avoid invention.",
+     "correct_answer": "The rule must forbid invented statistics, fabricated customer quotes and any claim outside the approved list, and require British spelling and the approved proof points. More importantly it must tell the assistant what to do instead: name the missing input and stop, or mark the gap clearly in the output. Without that positive instruction the assistant fills silence with plausible text, which is exactly how unverified claims reach a customer."
+    },
+    {
+     "order_index": 8,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "The colleague test",
+     "prompt_md": "Describe the colleague test for your pack and explain what you do with the questions it produces.",
+     "correct_answer": "You give the pack to somebody who does not do your job and ask them to run one template end to end without your help. Every question they need to ask you is a gap in the documentation rather than a gap in their ability. Each question is answered by editing the relevant system card or the master block, so the pack absorbs the fix and the next person never has to ask."
+    },
+    {
+     "order_index": 9,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "Verification notes that hold",
+     "prompt_md": "Take one customer-facing template from your own pack. Write the verification note you would attach to it, then explain why a weaker version of that note would fail in practice.",
+     "correct_answer": "For a launch email the note would read: open the current offer sheet and confirm the price, the tier name and the end date; confirm every figure against its linked source and record the publication date; obtain written approval before any named customer is quoted. It names the evidence and the person can complete or fail each step. A weaker note such as check the details are accurate cannot be failed, so it survives every review while nothing is actually checked."
+    },
+    {
+     "order_index": 10,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "Staying assistant-agnostic",
+     "prompt_md": "Explain why the pack you hand over should not depend on one particular assistant or its interface features, and give one example of a dependency to avoid.",
+     "correct_answer": "Tools change, and employers approve different ones over time, so a pack tied to a single product becomes worthless the moment the subscription or the policy moves. Value should sit in the writing: the brief, the voice rules, the verification steps and the output shapes, all of which transfer anywhere. A dependency to avoid is a template that assumes a stored custom persona, a saved memory or a proprietary file connector, rather than pasting the master block and the inputs into the session."
+    },
+    {
+     "order_index": 11,
+     "type": "short_answer",
+     "language": "prompt",
+     "marks": 5,
+     "title": "Prompt Lab: the master brand-and-brief block (capstone submission, part one)",
+     "prompt_md": "**This is the first half of your graded capstone submission.**\n\nWrite the master brand-and-brief block for the brand you have worked on throughout this course, real or chosen. This is not a request to an assistant for help; it is the anchoring text you will paste at the top of every session, so it is written to be acted on.\n\nA complete block carries: the business in one or two lines; the audience described by what they want and what they distrust; the decision your marketing outputs exist to drive; brand-voice rules with concrete examples rather than adjectives; banned words and banned claim types; the approved proof points; the honesty rule, including what the assistant must do when an input is missing; and the output defaults such as British spelling, length and shape. Keep it under roughly 400 words, and make it specific enough that a competitor could not paste it and lose nothing.",
+     "correct_answer": "You are writing marketing copy for Harbourline, a scheduling and reminders product for independent veterinary practices in the United Kingdom. Read this block before any task and follow it over any general writing habit.\n\nAudience. The buyer is a practice owner or practice manager running four to twelve staff. They want fewer missed appointments and less front-desk phone time. They distrust software promises, long onboarding, hidden per-user pricing and anything that sounds like it was written by a marketing department. They read on a phone between consultations.\n\nThe decision every output must drive. Book a fifteen-minute demo, or take the next step already named in the brief. If the brief does not name a decision, ask me for it before writing.\n\nVoice. Write in the second person. Short sentences. No exclamation marks. Lead with the reader problem, not the product. Say practice, not clinic; say front desk, not reception team; say reminders, not engagement solution. Never open with a rhetorical question. British spelling throughout.\n\nBanned. No superlatives such as best or leading. No unevidenced comparisons with named competitors. No claims about clinical outcomes, animal health or regulatory compliance. No percentages, time savings or customer numbers unless they appear in the approved proof list below. No invented customer quotes, names or practice names.\n\nApproved proof points, to be used word for word: [list, each with its source and date].\n\nHonesty rule. If an input is missing, out of date or contradicts this block, stop and tell me what is missing rather than filling the gap. Where you are unsure whether something counts as a claim, treat it as a claim and mark it NEEDS EVIDENCE in the draft. Never present an assumption as a fact, and never soften a gap to make a draft feel finished.\n\nDefaults unless the brief says otherwise. Give three options for any headline or subject line. Keep body copy under 180 words. Use sentence case for headings, no emoji, no bold inside body copy. End every output with a short list of anything you assumed and anything a human must verify before it ships."
+    },
+    {
+     "order_index": 12,
+     "type": "short_answer",
+     "language": "prompt",
+     "marks": 5,
+     "title": "Prompt Lab: the documented template pack (capstone submission, part two)",
+     "prompt_md": "**This is the second half of your graded capstone submission.**\n\nDeliver your template pack: four to six templates chosen from the recurring rows of your routing table. Present them as one document. Each template must include the prompt itself, a usage note saying when to run it and when not to, the inputs it requires and where each comes from, the expected output shape, and a verification note written as an action with named evidence.\n\nWrite the templates so they assume the master block from the previous lab is already in the session rather than repeating the voice rules. Cover the recurring work of a real month, not only campaign highlights. Include no claimed results, and make every verification note something a colleague could complete or fail on a busy afternoon.",
+     "correct_answer": "HARBOURLINE TEMPLATE PACK v1.0 - assumes the master brand-and-brief block is pasted first in every session.\n\n1. WEEKLY NEWSLETTER. Run every Monday for the practice-owner list. Do not run for the win-back segment, which has its own template. Inputs: this week's topic line from the content plan; one approved proof point; the current offer sheet. Prompt: Using the block above, draft the Monday newsletter on [topic]. One reader problem, one practical answer they could use this week, one call to action to book a demo. Body under 180 words, three subject lines, no more than one proof point and only from the approved list. If the topic line is missing or vague, ask me before drafting. Expected output: three subject lines plus one body under 180 words. Verification: confirm the proof point wording and date against the approved list; confirm any offer wording against the current offer sheet; owner signs before scheduling.\n\n2. MONTHLY PERFORMANCE NARRATIVE. Run on the second working day. Do not run before the data is final. Inputs: exported channel table; last month's narrative. Prompt: Using the block above and the attached table, write what changed, the most likely explanation, what we do next and what we would need to know to be sure. Use only numbers present in the table. Do not infer causation from a single month. Expected output: 300 words plus three recommended actions. Verification: check every figure against the export; mark any explanation not supported by the table as a hypothesis.\n\n3. AD VARIANT SET. Run at campaign launch and at each refresh. Do not run for regulated claims without prior approval. Inputs: the campaign brief; the approved proof list. Prompt: Produce six variants across two angles from the brief, each with one hook and one call to action, no superlatives, no comparisons. Expected output: a table of six rows. Verification: confirm every claim maps to an approved proof point; reject any variant that implies a clinical outcome.\n\n4. SOCIAL BATCH. Run fortnightly from an existing long-form piece. Do not use it to announce anything new. Inputs: the source article; the block. Prompt: Cut the attached piece into eight posts that stand alone, no new facts introduced. Expected output: eight posts under 60 words each. Verification: confirm no post contains a figure absent from the source; confirm no customer is named without written approval.\n\n5. CASE-STUDY FIRST DRAFT. Run only after the customer has agreed in writing. Inputs: interview notes; signed approval. Prompt: Draft a 400-word case study using only the attached notes. Do not invent quotes, figures or job titles. Mark anything unclear as NEEDS CONFIRMATION. Expected output: 400 words plus a list of open questions. Verification: the named customer approves the final wording in writing before publication, and the approval is stored with the asset.\n\nVersion log: v1.0, [date], first pack. Change any template that carries the price, the tier names or the positioning line whenever the offer sheet changes, and record it here."
+    }
+   ]
+  }
+ ]
+}

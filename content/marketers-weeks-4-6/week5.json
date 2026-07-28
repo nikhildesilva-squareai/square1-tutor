@@ -1,0 +1,464 @@
+{
+  "week": 5,
+  "lessons": [
+    {
+      "order_index": 1,
+      "title": "Building a brand assistant with no code",
+      "theory_md": "# Building a brand assistant with no code\n\nThree weeks in, you have the raw material. You can write a marketer's brief without thinking about it. You have a brand-voice file with real examples in it. You have a positioning line, a set of claims you are allowed to make, and a prompt library from week 3 that you actually use.\n\nAnd you are still pasting all of it into the top of every new chat. So is everyone else on the team, badly, from memory, in a slightly different order each time. That is the tax this lesson removes.\n\n## The three parts, whatever the tool\n\nEvery mainstream assistant now offers the same shape under a different name. ChatGPT has Projects and Custom GPTs. Claude has Projects. Microsoft Copilot has agents. Gemini has Gems. Ignore the branding: each one is assembled from the same three parts, and none of them require you to write a line of code.\n\n- **A name and description.** What this thing is, who owns it, what it is for. Boring, and the reason a colleague either uses it correctly or quietly misuses it.\n- **An instruction block.** The standing brief. Read at the start of every conversation, so it holds behaviour: who you write for, how you sound, what you must never claim, what to ask before drafting.\n- **Knowledge files.** The documents the assistant may draw facts from. Consulted when relevant rather than read start to finish, so they hold reference material: the brand-voice file, the product facts, the claims list.\n\nYou type into two boxes and upload a handful of files. The skill is not technical. The skill is deciding what goes where.\n\n## Instructions versus knowledge: the day-one test\n\nHere is the rule of thumb that settles almost every argument. If you would say it out loud to a new starter on their first morning, it belongs in the instructions. If you would hand them a document and say \"look it up in there\", it belongs in a knowledge file.\n\nInstructions hold behaviour. The spine of the marketer's brief — audience, the decision the output must drive, the brand-voice constraint — belongs here, as an instruction to ask for anything missing rather than invent it. So do your three or four hard voice rules, your refusal behaviour, your default output shape, and the honesty rule you have carried since week 2: no invented statistics, no fabricated customer quotes, disclosure where it is required.\n\nKnowledge holds facts, especially facts that change and material too long to retype. Pricing tiers. Feature lists. The wording legal signed off. The examples that show what your voice sounds like on a good day.\n\nThe split matters because of how each part is used. Instructions are in front of the assistant every single time, so anything essential and short goes there. Knowledge is retrieved when it looks relevant, so behaviour buried on page 14 of an uploaded PDF will be missed on the request that needed it. Equally, a full price list pasted into the instruction block bloats it, goes stale within a quarter, and nobody remembers to update it.\n\n## The five files worth loading\n\n1. **The brand-voice file** from week 1, with its examples intact. The examples do more work than the adjectives.\n2. **Positioning and audience**, one page: who this is for, the problem it removes, what they use instead today, the reason to believe.\n3. **A product fact sheet**: what it does, tiers and pricing, availability, integrations, and — the part everyone forgets — what it does not do.\n4. **The claims list**: approved wording on one side, banned claims on the other, each with the reason recorded beside it (unsubstantiated, regulated, legal has said no).\n5. **A gold set**: six to ten published pieces that landed well, plus two that did not, labelled so the assistant can tell which is which.\n\nCurate ruthlessly. Uploading the entire shared drive feels thorough and makes the assistant worse: a 96-page brand book, three superseded product sheets and last year's campaign deck give it more chances to retrieve something stale and confidently wrong. Trim to what a good freelance copywriter would actually consult, and put the date in each file name.\n\n## Writing the instruction block\n\nSix moves, in this order, written as a briefing rather than a set of keywords.\n\n1. **Role and remit.** Who this assistant writes for and what it produces.\n2. **Ask before assuming.** If the request does not name the audience, the decision the copy must drive, or the format, ask for it before drafting.\n3. **Voice rules.** Three to five concrete rules — sentence length, the register, banned words, whether you use exclamation marks — rather than a pile of adjectives.\n4. **Grounding.** Product facts and claims come only from the attached files. If something is not covered, say so and name what is missing.\n5. **Output shape.** The default deliverable, plus a note that assumptions are listed at the end of every draft.\n6. **Escalation.** What must go to a person: regulated claims, pricing, anything comparing you to a named competitor, anything involving a customer's words.\n\n## Leave out, name, own, date\n\nDo not upload personal data, customer lists, unreleased pricing or anything covered by an agreement you have not read. A shared assistant is a shared surface, and your company will have a policy on what may be put into a vendor's system. Check it before you build, not after a colleague asks.\n\nThen give it a plain name — \"Acme copy, B2B\" beats \"Marketing Helper v2\" — put an owner and a review date in the description, and write three example prompts into it so the first person who opens it knows what it is for.\n\nNone of this is a new skill. It is the brief you already write, saved once so nobody has to remember it.",
+      "estimated_minutes": 28,
+      "learning_objectives": [
+        "Assemble a custom brand assistant from instructions, knowledge files and a description without writing code",
+        "Decide what belongs in the instruction block versus the knowledge pack using the day-one test",
+        "Curate the five brand files an assistant needs and exclude material that should never be uploaded",
+        "Write an instruction block that carries the brief spine, voice rules, grounding and escalation"
+      ],
+      "case_study": "**Moderna — a brand team that built its own assistants instead of re-briefing (2023-2024)**\n\nModerna partnered with OpenAI in early 2023 and rolled out an internal deployment of ChatGPT, then ChatGPT Enterprise, across the company. By the reporting in April 2024, more than 750 custom GPTs had been built in roughly two months, with around 40% of weekly active users building at least one themselves. Brice Challamel, the company's head of AI products and platforms, described evaluating several options before settling on the deployment.\n\nWhat matters for a marketing team is who built them. A custom GPT is assembled by typing instructions into a box and attaching files — there is nothing for an engineer to do. Moderna's corporate brand team used that to build assistants for its own recurring problems: one to help prepare slides for quarterly earnings calls, another to turn dense biotech terminology into approachable language for investor communications. Both are brand-voice problems. Both had previously been solved by re-explaining the same context to a new drafter every quarter.\n\nThe transferable idea is not the count. It is that the standing context — the audience, the register, what may and may not be said — was encoded once and reused, so each request only had to carry what was genuinely new about it. A team of five marketers gets the same benefit from three well-built assistants that a company of thousands gets from hundreds.\n\nOne caution before you copy it. Moderna was working inside an enterprise deployment with agreed data handling. Your five files may include pricing, unreleased plans or customer detail, so read your own company's policy on what may be uploaded before you build, not after.",
+      "exercises": [
+        {
+          "order_index": 1,
+          "type": "mcq",
+          "language": null,
+          "marks": 2,
+          "title": "Where the brand context lives",
+          "prompt_md": "Your team keeps pasting the brand-voice file into the top of every new chat, and half the time somebody pastes an outdated copy. Which part of a custom assistant is designed to hold that material permanently?",
+          "options": [
+            "The knowledge files attached to the assistant",
+            "The opening message of each new conversation",
+            "The name and description shown to teammates",
+            "The saved history of previous conversations"
+          ],
+          "correct_answer": "The knowledge files attached to the assistant"
+        },
+        {
+          "order_index": 2,
+          "type": "mcq",
+          "language": null,
+          "marks": 2,
+          "title": "Instructions or knowledge",
+          "prompt_md": "You want a standing rule that every draft must name the audience and the decision the copy should drive before a single sentence is written. Where does that rule belong in a custom assistant?",
+          "options": [
+            "In the instruction block, because it governs behaviour",
+            "In a knowledge file, because it is written guidance",
+            "In the assistant description, so colleagues can read it",
+            "In each file name, so documents are sorted correctly"
+          ],
+          "correct_answer": "In the instruction block, because it governs behaviour"
+        },
+        {
+          "order_index": 3,
+          "type": "mcq",
+          "language": null,
+          "marks": 2,
+          "title": "The shared drive problem",
+          "prompt_md": "A colleague suggests uploading the whole shared drive folder holding every brand document from the past decade, on the grounds that more context can only help. What is the strongest objection?",
+          "options": [
+            "Unfiltered volume gives the assistant more stale material to retrieve",
+            "Assistants are able to read only one uploaded document at a time",
+            "Older documents are always written in the wrong tone of voice",
+            "Uploaded files become permanently visible to everyone outside"
+          ],
+          "correct_answer": "Unfiltered volume gives the assistant more stale material to retrieve"
+        },
+        {
+          "order_index": 4,
+          "type": "mcq",
+          "language": null,
+          "marks": 2,
+          "title": "Holding the banned claims",
+          "prompt_md": "Legal has given you a list of claims the brand may not make, each with a short reason attached. How should that list be held so the assistant can act on it reliably?",
+          "options": [
+            "As a knowledge file, with the reason recorded beside each banned claim",
+            "As one summary sentence inside the instruction block",
+            "As a note in the campaign calendar, checked before publishing",
+            "As background knowledge held by whoever briefs the assistant"
+          ],
+          "correct_answer": "As a knowledge file, with the reason recorded beside each banned claim"
+        },
+        {
+          "order_index": 5,
+          "type": "mcq",
+          "language": null,
+          "marks": 2,
+          "title": "Why examples beat adjectives",
+          "prompt_md": "Your brand-voice file describes the voice as warm, plain and confident. Why is it still worth attaching six to ten published pieces that landed well as knowledge?",
+          "options": [
+            "Examples show the voice concretely where adjectives stay open to interpretation",
+            "Examples let the assistant reuse whole published paragraphs word for word",
+            "Adjectives in a voice file are ignored by every mainstream assistant",
+            "Examples remove the need for anyone to review the resulting drafts"
+          ],
+          "correct_answer": "Examples show the voice concretely where adjectives stay open to interpretation"
+        },
+        {
+          "order_index": 6,
+          "type": "short_answer",
+          "language": null,
+          "marks": 3,
+          "title": "Apply the day-one test",
+          "prompt_md": "Sort these three items into instructions or knowledge, and give the reason for each: (a) the rule that a customer quote may only be used if it appears in the approved quotes file; (b) the Q3 price list; (c) the sentence \"we write short sentences and we do not use exclamation marks\".",
+          "correct_answer": "(a) and (c) go in the instruction block: both are behaviour you would tell a new starter on day one, and both must apply to every request rather than being retrieved only when they look relevant. (b) goes in a knowledge file: it is reference detail that changes each quarter, would bloat the instructions, and is only needed on requests that touch pricing. The test is whether you would say it out loud or hand over a document."
+        },
+        {
+          "order_index": 7,
+          "type": "short_answer",
+          "language": null,
+          "marks": 3,
+          "title": "What the assistant must ask first",
+          "prompt_md": "Name the three parts of the marketer's brief that your assistant should ask for whenever a request arrives without them, and explain why asking beats guessing.",
+          "correct_answer": "The three parts are the audience, the decision the output must drive, and the brand-voice constraint or format. If the assistant guesses, it produces something fluent and generic that the requester then rewrites, which costs more time than the question would have. Asking also surfaces the fact that the requester had not decided, which is often the real problem with the brief."
+        },
+        {
+          "order_index": 8,
+          "type": "short_answer",
+          "language": null,
+          "marks": 3,
+          "title": "Curating a 96-page brand book",
+          "prompt_md": "Your brand book runs to 96 pages, most of it logo geometry, colour values and print specifications. Explain what you would extract for the assistant and why loading the whole document would be a mistake.",
+          "correct_answer": "Extract only the parts a copywriter consults: tone of voice, the words we use and avoid, how the brand describes itself, and any mandatory legal or disclosure wording. Loading the full document buries those pages among dozens of irrelevant ones, so the assistant is more likely to retrieve print specifications than voice guidance. A short curated extract, dated in the file name, is more reliable than a complete but unindexed source."
+        },
+        {
+          "order_index": 9,
+          "type": "short_answer",
+          "language": null,
+          "marks": 3,
+          "title": "Escalation rules",
+          "prompt_md": "Give three types of request your brand assistant should hand to a person rather than answer, and say what could go wrong if it answered them itself.",
+          "correct_answer": "Reasonable answers include regulated or health, financial and environmental claims; direct comparisons naming a competitor; pricing and contractual terms; and anything quoting a real customer. Each carries a risk the assistant cannot see: a regulated claim can breach advertising rules, a competitor comparison can be legally actionable, and a paraphrased customer quote is a fabrication. Escalation costs a few minutes; a published error costs far more."
+        },
+        {
+          "order_index": 10,
+          "type": "short_answer",
+          "language": null,
+          "marks": 3,
+          "title": "Owner, date and description",
+          "prompt_md": "Explain why the name, description, owner and review date of a shared assistant are worth ten minutes of your time, and what tends to happen when they are left blank.",
+          "correct_answer": "The description is the only thing a colleague reads before their first request, so it sets the scope and stops the assistant being used for work it was never tested on. A named owner gives people somewhere to report a bad answer, and a review date forces someone to check the files still match the current positioning. Without them the assistant drifts out of date silently and quietly loses the team's trust."
+        },
+        {
+          "order_index": 11,
+          "type": "short_answer",
+          "language": "prompt",
+          "marks": 5,
+          "title": "Prompt Lab: draft an instruction block for a supplied brand",
+          "prompt_md": "**Scenario.** Northwind Ledger is a UK bookkeeping app sold to sole traders and businesses with fewer than ten staff. Its voice is plain, calm and free of finance jargon. It has three tiers, a free trial, and a legal position that it may never describe itself as tax advice or use the words \"guaranteed\" or \"HMRC-approved\". Its marketing team of four wants one shared assistant that drafts emails, ad copy and short social posts.\n\nWrite the **instruction block** you would paste into a custom assistant for Northwind Ledger.\n\nA strong instruction block carries: the role and remit; the requirement to ask for audience, the decision the copy must drive, and format before drafting; three to five concrete voice rules rather than adjectives; a grounding rule that product facts and claims come only from the attached files and that anything not covered is flagged; the honesty rule on invented figures and customer quotes; a default output shape including listed assumptions; and an escalation list. Write it as a briefing to a capable freelancer, not as keywords.",
+          "correct_answer": "You are the copy assistant for Northwind Ledger, a UK bookkeeping app for sole traders and businesses with fewer than ten staff. You draft marketing emails, ad copy and short social posts for the four-person marketing team. You are a drafter, not a publisher: a person approves everything before it goes out.\n\nBefore you draft, check the request names three things: who it is for, the one decision or action the copy must drive, and the format with any length limit. If any is missing, ask for it and stop. Do not guess the audience.\n\nVoice rules. Write plainly, as one person talking to a busy owner who is not a finance professional. Keep sentences under about 25 words. No finance jargon unless the attached glossary shows we use it. No exclamation marks. Never open with a rhetorical question.\n\nGrounding. Take every product fact, feature, tier, price and claim only from the attached files. If a request needs a fact that is not in the files, say which fact is missing and stop rather than filling the gap. Never invent statistics, awards, integrations, certifications or customer quotes; a quote may only appear if it is in the approved quotes file, word for word. Never describe Northwind Ledger as tax advice and never use the words guaranteed or HMRC-approved.\n\nOutput. Give the requested deliverable first, then a short list headed Assumptions covering anything you inferred, then one line naming which attached file each product claim came from.\n\nEscalate to a person rather than drafting: anything comparing us to a named competitor, anything about tax treatment or legal obligation, changes to pricing or contract terms, and any use of a real customer's words."
+        },
+        {
+          "order_index": 12,
+          "type": "short_answer",
+          "language": "prompt",
+          "marks": 5,
+          "title": "Prompt Lab: audit your files before you load them",
+          "prompt_md": "**Scenario.** You have gathered the five candidate knowledge files for your own brand assistant: the brand-voice file, a positioning page, a product fact sheet, a claims list and a folder of published copy. You suspect they contradict each other in places and that some obvious facts are missing entirely.\n\nWrite a **single prompt** that has an assistant audit this pack before you build anything with it.\n\nA strong prompt: states the purpose the files will be put to; asks for contradictions between files to be listed with the conflicting wording quoted; asks for gaps a copywriter would hit in everyday work; asks for anything that looks out of date or undated; asks for anything that should not be uploaded at all, such as personal data or unreleased pricing; specifies a table output with a severity and a suggested fix per row; and instructs the assistant not to invent missing content or resolve conflicts on its own.",
+          "correct_answer": "I am about to build a shared brand assistant for our marketing team, and these five files will be its only source of product facts, claims and tone. Audit the pack before I upload it. Do not write any new brand content and do not resolve conflicts yourself.\n\nGo through the files and report four things.\n\nFirst, contradictions: any place where two files say different things about the same fact, claim, price, audience or tone rule. Quote both pieces of wording and name the file each came from.\n\nSecond, gaps: facts a copywriter would need in an ordinary week that no file answers — pricing and what each tier includes, what the product does not do, the approved way to describe the main competitor category, disclosure or legal wording, and whether any customer quotes are approved for use.\n\nThird, staleness: anything undated, anything referring to a superseded product name or campaign, and any file whose content suggests it is more than a year old.\n\nFourth, material I should not upload at all: personal data, named customer detail, unreleased pricing or plans, or anything that reads as confidential.\n\nReturn one table with the columns Issue, Type, Files involved, Evidence quoted, Severity as high, medium or low, and Suggested fix. Sort by severity. Then add three questions I should put to our legal or product colleagues before this pack goes live."
+        }
+      ]
+    },
+    {
+      "order_index": 2,
+      "title": "Testing it before the team relies on it",
+      "theory_md": "# Testing it before the team relies on it\n\nThe moment you share the assistant, its output stops being your experiment and starts being your brand's copy. A colleague who was not in this course will open it, type one line, get something fluent, and send it. Everything that assistant invents, you published.\n\nSo there is a step between building it and sharing it, and it is not \"have a play with it\". It is a test you can repeat, written down, with a verdict at the end.\n\n## Build the test set from real requests\n\nDo not invent test prompts. Go back through the last month of actual requests — the messages, the briefs, the \"can you knock up a quick\" asks — and take twenty to twenty-five of them, in the requester's own words, warts and all. Write them into a sheet. That sheet is now fixed. You will run the same prompts after every change, which is the only way to tell whether a change helped.\n\nSort them into three buckets.\n\n**Bread and butter, around twelve.** The requests you get every week. A launch email. Three ad variants. A social post from a blog. This bucket tests voice and format, not honesty.\n\n**Edge, around six.** Real but awkward: a request with no audience named, a very short brief, a request in a format you rarely produce, a request that spans two products.\n\n**Traps, at least five.** These you write deliberately, and they are where assistants fail in public:\n\n- A request that needs a product fact your files do not contain.\n- A direct comparison with a named competitor.\n- A leading request that assumes something false — \"write the post about our award-winning support team\" when no award exists.\n- A regulated or absolute claim: fastest, safest, clinically proven, guaranteed.\n- Something out of scope entirely, such as advice on a customer's tax position or a legal question.\n\n## Grounding rules: what to add to the instructions\n\nVague instructions produce vague obedience. \"Be accurate\" changes nothing. These do:\n\n- Take product facts, features, prices and claims only from the attached files.\n- If a fact is not in the files, say so, name the missing fact, and stop rather than filling the gap.\n- Never invent figures, percentages, customer quotes, awards, certifications or integrations.\n- When a draft uses a product claim, name the file it came from at the end.\n- Route the escalation list to a person: competitor comparisons, regulated claims, pricing, anything quoting a customer.\n\nThat last-but-one rule is the quiet hero. Asking for the source of each claim makes invention visible, because an invented fact has no file to point at. It also changes what a reviewer has to do: instead of reading a draft and hoping to notice the wrong number, they read a short list of claims with a file name beside each and check the ones that matter.\n\nWrite the refusal wording too, not only the rule. \"Not covered in the brand files: I do not have the Business tier price. Send it and I will finish the draft\" is useful to a colleague. A flat refusal, or a paragraph of apology, teaches the team to stop asking.\n\n## Red flags to read for\n\nWhen you score responses, these are the tells that something has been invented rather than retrieved:\n\n- **Suspiciously round or precise numbers.** Cuts admin time by 40%. Trusted by over 5,000 businesses. If you cannot point at the file, it did not come from one.\n- **Named customers and quoted words.** A paraphrase of a real customer is still a fabricated quote.\n- **Awards, certifications and standards.** Award-winning, certified, compliant with a named standard.\n- **Invented integrations and features.** The most common one, because it is the easiest thing for an assistant to assume a product like yours has.\n- **Absolutes and comparatives.** Fastest, safest, leading, the only, guaranteed, proven. Each is a claim that needs substantiation you probably do not hold.\n\nRead for those five before you read for tone. A slightly stiff sentence is an inconvenience; an invented certification is a problem for someone in legal.\n\n## Drift, and what causes it\n\nDrift is when behaviour that was right yesterday is wrong today, and nobody changed anything on purpose. Three sources:\n\n**Within a conversation.** Twenty exchanges in, the voice slides towards the assistant's own default register — smoother, more upbeat, more adverbs. The fix is practical: start a fresh conversation for each deliverable rather than running one long thread, and put a short \"sound like the examples in the voice file\" reminder in your standing prompts.\n\n**After an edit.** You improve one tone rule and something unrelated breaks. This is why you change one thing at a time and rerun a fixed regression set of about ten prompts afterwards. Two changes on the same afternoon means you cannot tell which caused what.\n\n**Underneath you.** Providers update models. An assistant built in March can behave differently in September with no edit from you. A monthly run of the regression set catches it before a colleague does.\n\n## Scoring, and what counts as ready\n\nFour checks per response, pass or fail, no scores out of ten:\n\n1. **Voice.** Would this pass as ours without editing the register?\n2. **Grounding.** Is every factual claim traceable to a file?\n3. **Judgement.** Did it ask, flag or escalate where it should have?\n4. **Format.** Is it the deliverable that was asked for, at the right length?\n\nRecord the date, which version of the instructions you tested, and the verdicts. A screenshot in a folder is not a record; a sheet with dates is.\n\nThe bar for sharing it: every trap prompt passes, with no invented claim and no missed escalation. Voice and format failures on the bread-and-butter bucket are worth fixing but are not dangerous. An invented product capability is.\n\n## Keep the log of what it could not answer\n\nEvery time the assistant says a fact is not covered, write down the fact. After a month that list is not a fault report — it is your content backlog, and it tells you exactly which brand documents your team has been improvising around for years.",
+      "estimated_minutes": 29,
+      "learning_objectives": [
+        "Build a fixed test set from real requests, split into bread-and-butter, edge and trap prompts",
+        "Write grounding rules that make an assistant flag missing facts instead of inventing product claims",
+        "Detect voice drift and regressions caused by edits, long sessions and provider model updates",
+        "Score each response against four checks and decide from the results whether the assistant is safe to share"
+      ],
+      "case_study": "**Pak'nSave — the Savey Meal-bot that suggested chlorine gas (2023)**\n\nIn July 2023 the New Zealand supermarket chain Pak'nSave, part of Foodstuffs North Island, launched the Savey Meal-bot. The idea was thoroughly on-brand for a value retailer: type in the leftovers in your fridge, get a recipe, waste less and spend less. Within weeks it had generated tens of thousands of recipes.\n\nThen, in August, the political commentator Liam Hehir fed it water, bleach and ammonia. The bot returned a cheerful suggestion it called an aromatic water mix — a recipe for chlorine gas. Other New Zealanders piled in and shared the results, including a bleach-infused rice dish and a stew with human flesh in it. The story ran in the New Zealand Herald and the Guardian, and Foodstuffs said a minority of users had used the tool inappropriately and not for its intended purpose, adding that it would continue to fine-tune its controls.\n\nTwo things are worth separating. The users were being mischievous, and the brand was right that this was not the intended use. But a hostile input is not an exotic event on a public tool, and every one of these outputs was reachable in about ten minutes by anyone who decided to try. Nobody appears to have written down, before launch, the short list of things the tool must refuse — and refusal behaviour that has not been specified will not appear on its own.\n\nYour brand assistant has a much quieter failure mode. It will not suggest a poison; it will put an invented integration, an unearned award or a slightly-too-strong claim into a draft that a colleague sends to nine thousand subscribers. The remedy is the same one Savey needed: a fixed set of awkward requests, run deliberately by the person who built the thing, before anyone else is allowed near it.",
+      "exercises": [
+        {
+          "order_index": 1,
+          "type": "mcq",
+          "language": null,
+          "marks": 2,
+          "title": "Why the test set stays fixed",
+          "prompt_md": "You have twenty-five test prompts for your brand assistant. A colleague suggests writing fresh prompts each time you test so the assistant cannot get comfortable. Why is keeping the set fixed the better practice?",
+          "options": [
+            "A fixed set makes results comparable before and after each change",
+            "A fixed set stops the assistant from memorising the right answers",
+            "Fresh prompts take longer to write than reusing the earlier ones",
+            "Fresh prompts will always favour the most recent model version"
+          ],
+          "correct_answer": "A fixed set makes results comparable before and after each change"
+        },
+        {
+          "order_index": 2,
+          "type": "mcq",
+          "language": null,
+          "marks": 2,
+          "title": "Wording a grounding rule",
+          "prompt_md": "Your assistant keeps describing an integration your product does not have. Which instruction is most likely to stop it inventing product capabilities in future drafts?",
+          "options": [
+            "Take product facts only from the attached files and say when something is not covered",
+            "Be accurate about the product and avoid making things up when you write",
+            "Write with confidence about the product so the copy reads as authoritative",
+            "Search the web for product details whenever the attached files look thin"
+          ],
+          "correct_answer": "Take product facts only from the attached files and say when something is not covered"
+        },
+        {
+          "order_index": 3,
+          "type": "mcq",
+          "language": null,
+          "marks": 2,
+          "title": "A leading request",
+          "prompt_md": "One of your trap prompts reads: write a post celebrating our award-winning support team. No award appears anywhere in the brand files. What is the correct behaviour from a well-built assistant?",
+          "options": [
+            "Flag that no award appears in the files and ask before drafting anything",
+            "Draft the post and mark the award claim for checking after publication",
+            "Draft the post using softer wording such as widely praised by customers",
+            "Refuse the whole request and decline to help with the post at all"
+          ],
+          "correct_answer": "Flag that no award appears in the files and ask before drafting anything"
+        },
+        {
+          "order_index": 4,
+          "type": "mcq",
+          "language": null,
+          "marks": 2,
+          "title": "Changing two things at once",
+          "prompt_md": "On Tuesday afternoon you edited two knowledge files and tightened the tone rules in the instructions. By Wednesday the drafts are worse than they were. What is the flaw in how you worked?",
+          "options": [
+            "Several changes at once make the cause of a regression impossible to isolate",
+            "Knowledge files should never be edited once an assistant has been shared",
+            "Tone rules and knowledge files cannot be changed on the same working day",
+            "Assistants need a full day to absorb any document that has been uploaded"
+          ],
+          "correct_answer": "Several changes at once make the cause of a regression impossible to isolate"
+        },
+        {
+          "order_index": 5,
+          "type": "mcq",
+          "language": null,
+          "marks": 2,
+          "title": "What blocks a release",
+          "prompt_md": "You have run all twenty-five test prompts before sharing the assistant with the wider team. Which single result should stop you sharing it today?",
+          "options": [
+            "A trap prompt produced a product claim that appears in none of the files",
+            "A reply used a longer sentence than the voice file recommends",
+            "A reply asked two clarifying questions before it produced a draft",
+            "A reply named the knowledge file that a product detail came from"
+          ],
+          "correct_answer": "A trap prompt produced a product claim that appears in none of the files"
+        },
+        {
+          "order_index": 6,
+          "type": "short_answer",
+          "language": null,
+          "marks": 3,
+          "title": "Build the three buckets",
+          "prompt_md": "Describe the three buckets of a brand assistant test set, roughly how many prompts belong in each, and what each bucket is actually testing.",
+          "correct_answer": "Bread and butter, about twelve prompts taken verbatim from real weekly requests, tests voice and format on ordinary work. Edge, about six, covers real but awkward requests such as a brief with no audience named or one spanning two products, and tests judgement. Traps, at least five written deliberately, cover missing facts, competitor comparisons, leading requests, regulated claims and out-of-scope asks, and test honesty and escalation. The traps are the bucket that decides whether the assistant is safe to share."
+        },
+        {
+          "order_index": 7,
+          "type": "short_answer",
+          "language": null,
+          "marks": 3,
+          "title": "Write two traps for your own brand",
+          "prompt_md": "Write two trap prompts for your own brand or a brand you know well, and for each say what a passing response looks like.",
+          "correct_answer": "A good answer gives two specific, realistic prompts rather than generic ones, for example a request that needs a price not held in the files, and a request to say the product is the fastest in its category. A passing response to the first names the missing fact and stops rather than estimating a price. A passing response to the second declines the superlative, explains that it is an unsubstantiated comparative claim, and offers wording that is supportable from the files."
+        },
+        {
+          "order_index": 8,
+          "type": "short_answer",
+          "language": null,
+          "marks": 3,
+          "title": "Drift inside a long conversation",
+          "prompt_md": "Explain what happens to the voice over a long working session with an assistant, and give one practical habit that limits it.",
+          "correct_answer": "Over many exchanges the output slides towards the assistant default register, which is smoother, more upbeat and more adverb-heavy than most brand voices, because the recent conversation carries more weight than the standing instructions. The practical habit is to start a fresh conversation for each deliverable rather than running one long thread, and to include a short reminder to match the examples in the voice file. Spot-checking a late draft against an early one from the same session also makes the drift visible."
+        },
+        {
+          "order_index": 9,
+          "type": "short_answer",
+          "language": null,
+          "marks": 3,
+          "title": "Four checks and a record",
+          "prompt_md": "Name the four checks you apply to each test response, and explain why the test record should carry a date and the version of the instructions tested.",
+          "correct_answer": "The four checks are voice, grounding, judgement and format: does it sound like us, is every factual claim traceable to a file, did it ask or escalate where it should have, and is it the deliverable requested. Recording the date and instruction version means a later failure can be traced to the change that caused it, rather than argued about. Without that record you cannot tell whether the assistant got worse or the team grew less patient with it."
+        },
+        {
+          "order_index": 10,
+          "type": "short_answer",
+          "language": null,
+          "marks": 3,
+          "title": "The not-covered log",
+          "prompt_md": "Your assistant answered that a fact was not covered in the brand files nine times last month. Explain why that log is valuable and what you should do with it.",
+          "correct_answer": "Each of those answers is a fact your team needed and your brand documentation does not hold, so the log is a prioritised list of the gaps in your own source material. Turn the repeated ones into short additions to the fact sheet or claims list, then rerun the affected test prompts. Treating the log as a fault in the assistant, and loosening the grounding rule to make the refusals stop, would trade a visible gap for an invisible invention."
+        },
+        {
+          "order_index": 11,
+          "type": "short_answer",
+          "language": "prompt",
+          "marks": 5,
+          "title": "Prompt Lab: turn real requests into a test set",
+          "prompt_md": "**Scenario.** You have pasted twenty-eight real requests your marketing team received last month, copied verbatim from email and chat, including the vague ones. You want them turned into a structured test set for your brand assistant before you share it.\n\nWrite the **single prompt** that does this conversion.\n\nA strong prompt: explains what the test set is for; asks for the requests to be sorted into bread and butter, edge and traps with a target count for each; asks for additional trap prompts to be written where the real requests do not cover missing facts, competitor comparisons, leading assumptions, regulated claims and out-of-scope asks; asks for an expected behaviour and a one-line pass criterion for every row; requires the original wording to be preserved rather than tidied; and specifies the table columns you want back.",
+          "correct_answer": "Below are twenty-eight requests my marketing team received last month, copied word for word. I am building a test set to check a shared brand assistant before I let colleagues use it, so I need these turned into a repeatable test sheet rather than rewritten into better briefs.\n\nSort them into three buckets. Bread and butter, around twelve, the ordinary weekly requests that test voice and format. Edge, around six, real but awkward requests such as ones with no audience named, an unusual format, or two products in one ask. Traps, at least five, the requests where a careless assistant would invent something.\n\nKeep the original wording exactly as written, including the vagueness. Do not improve the briefs.\n\nIf the real requests do not already cover all five trap types, write new ones for the gaps, in our team's natural phrasing: a request needing a product fact our files do not hold, a direct comparison with a named competitor, a leading request that assumes a fact we have not verified, a request inviting a regulated or absolute claim, and a request that is out of scope for a marketing assistant.\n\nReturn one table with the columns Number, Prompt exactly as written, Bucket, What a good answer does, and Pass criterion in a single line that another person could judge without me in the room. Flag any request where you are unsure of the intent instead of guessing it."
+        },
+        {
+          "order_index": 12,
+          "type": "short_answer",
+          "language": "prompt",
+          "marks": 5,
+          "title": "Prompt Lab: audit a batch of drafts for invention and drift",
+          "prompt_md": "**Scenario.** You have run your test set and now hold twenty drafts produced by the assistant. You also have the brand-voice file, the product fact sheet and the approved claims list. You want a second pass over the drafts that hunts for invented claims and voice drift before you decide whether to ship.\n\nWrite the **single prompt** that performs that audit.\n\nA strong prompt: defines an invented claim precisely, including figures, awards, certifications, integrations, customer quotes and superlatives; requires every factual claim to be matched to a specific line of a named file or marked unsupported; asks for voice drift to be judged against the examples rather than against adjectives; requires the offending sentence to be quoted as evidence; asks for a per-draft verdict of pass, fix or block with the reason; and forbids the assistant from rewriting the drafts or resolving anything itself.",
+          "correct_answer": "You are auditing twenty drafts produced by our brand assistant before we decide whether to share it with the team. The attached files are the brand-voice file with examples, the product fact sheet and the approved claims list. Treat those three files as the only source of truth. Do not rewrite the drafts and do not fix anything.\n\nFor every draft, do two passes.\n\nPass one, grounding. List every factual claim the draft makes: features, numbers, percentages, prices, availability, integrations, awards, certifications, named customers and any quoted words. For each, either name the file and the line that supports it, or mark it unsupported. Treat as unsupported any comparative or absolute claim such as fastest, safest, leading, guaranteed or proven unless those exact words appear in the approved claims list.\n\nPass two, voice. Judge the draft against the published examples in the voice file, not against adjectives. Flag sentences that read as generic assistant prose: stacked adjectives, rhetorical opening questions, exclamation marks, hollow phrases such as unlock the power, and sentences longer than the examples run.\n\nQuote the offending sentence as evidence for every flag; a flag without a quotation is not usable.\n\nEnd each draft with a verdict of pass, fix or block, and one line of reason. Block anything containing an unsupported claim about the product. Then give me a summary table of the twenty verdicts and the three problems that occurred most often across the batch."
+        }
+      ]
+    },
+    {
+      "order_index": 3,
+      "title": "Ship a tested brand assistant your team can use",
+      "theory_md": "# Ship a tested brand assistant your team can use\n\nThis is the week's deliverable. By the end of it there should be a working assistant that a colleague can open on Monday morning, use correctly without asking you what it is, and trust because you can show it was tested.\n\nFive things make up the shipped item. Miss any one and it either does not get used or should not be.\n\n1. **The assistant itself**, built in whichever tool your company already pays for.\n2. **The instruction block** — the standing brief, saved as text somewhere outside the tool as well, so it survives the tool.\n3. **The knowledge pack** — the curated, dated files from lesson 1.\n4. **The test protocol and its results** — the fixed prompt set, the four checks, the verdicts, the date.\n5. **A one-page user note** — the thing that turns your assistant into the team's assistant.\n\n## An afternoon, in order\n\nGather and trim the files first, and give yourself forty-five minutes rather than a week: five short curated documents beat twenty complete ones. Write the instruction block next, working through the eight elements below. Build the assistant and run three smoke prompts to check the files are actually being read — ask it something only the fact sheet knows.\n\nThen run the full test set from lesson 2 and score it honestly, which takes about forty-five minutes and is the step everyone is tempted to shorten. Fix one thing at a time, rerunning the ten-prompt regression set after each change. When the traps are clean, write the user note.\n\nThen pilot it with two colleagues for a week before you announce it to anyone else. Pick one person who briefs well and one who does not; the second will teach you more. Ask them for the request they sent, the draft they got and whether they would have published it. Expect two kinds of finding: requests in a shape you never tested, and instructions that read perfectly to you and ambiguously to them. Both are cheap to fix in a pilot and expensive to fix in public.\n\n## The instruction block, checked against eight elements\n\nBefore you call it done, read your instruction block and confirm each of these is present in plain words:\n\n- **Role and remit** — who it writes for, what it produces, what it is not.\n- **Ask before assuming** — audience, the decision the copy must drive, format.\n- **Voice rules** — three to five concrete ones, plus the banned words.\n- **Grounding** — facts only from the files, name the gap when a fact is missing.\n- **Honesty** — no invented figures, quotes, awards, certifications or integrations; disclosure where required.\n- **Output shape** — the default deliverable, with assumptions listed at the end.\n- **Sourcing** — name the file behind each product claim.\n- **Escalation** — competitor comparisons, regulated claims, pricing, customer words.\n\nIf an element is missing, you will find out through a colleague's published draft rather than through your own test.\n\n## The user note is the shipping document\n\nOne page, written for someone who has never heard of a knowledge file:\n\n- **What it is for.** Three or four examples of good requests, in their words.\n- **What it is not for.** Named exclusions with reasons — pricing questions, legal or regulated claims, competitor comparisons, anything customer-quoted.\n- **What you must check before publishing.** Every product claim against the fact sheet; every number; every quote. The assistant drafts, a person approves. That rule is not negotiable and it belongs in writing rather than in your head.\n- **Who owns it, and how to report a bad answer.** A name and one channel.\n- **Version and review date.**\n\nThree starter prompts inside the assistant's own description do more for adoption than any amount of training. Most people copy the first example they see, so make the examples the requests you want to receive: one with an audience named, one with the decision the copy must drive, one asking for a specific format and length.\n\nKeep the note to a single page and put it where the assistant is, not in a folder somebody has to find. A page nobody opens protects nobody.\n\n## Keeping it alive\n\nPut a monthly slot in the calendar: rerun the regression set, read the not-covered log, update the files, note what changed in a two-line changelog. Trigger an unscheduled run whenever the positioning changes, a product ships, legal revises a claim, or a colleague reports an answer that felt wrong.\n\nVersion your knowledge files by date in the file name and delete the superseded copy rather than keeping both. Two versions of the price list in the same pack is the single most reliable way to make a well-built assistant unreliable. And when a file changes, rerun the prompts that depend on it before you tell anyone the update is done.\n\nAdoption is maintenance too. Watch which requests colleagues send in their own words, then add the good ones to the description as examples. The assistant that gets used is the one whose first screen shows someone a request that looks like their own.\n\nTwo failure modes end most internal assistants. The first is the one nobody uses, because nobody could tell what it was for — a user note fixes that. The second is the one everybody trusts, because it sounds confident and nobody ever tested it — the protocol fixes that. Your deliverable this week is the pair.\n\n## What you are graded on\n\nThe two Prompt Labs below are the assessed output: the instruction block your assistant actually runs on, and the reliability test protocol that shows it stays in voice and never invents a claim. Write both for your real brand, or a brand you know well enough to be specific about. Specificity is the thing being marked — an instruction block that would suit any company suits none.",
+      "estimated_minutes": 30,
+      "learning_objectives": [
+        "Assemble the five components of a shipped brand assistant, from instruction block to user note",
+        "Audit your instruction block against the eight elements before releasing it to colleagues",
+        "Write a user note that sets scope, the human approval rule, ownership and a review date",
+        "Run a reliability protocol and maintenance cadence that keeps the assistant on brand over time"
+      ],
+      "case_study": "**Telstra — piloted with a hundred people before it went to thousands (2023-2024)**\n\nThe Australian telecommunications company Telstra built two assistants for its frontline teams. One Sentence Summary condenses a customer's history into a line an agent can read before speaking. Ask Telstra answers staff questions by drawing on the company's own information sources rather than on whatever a general model happens to know — the same grounding pattern you built in lesson 1, aimed at support rather than marketing copy.\n\nThe sequence is the part to copy. Neither tool was announced and rolled out on the same day. Ask Telstra was trialled with roughly 200 customer service agents in mid-2023 and One Sentence Summary with about 100, and the results were reported before the wider rollout: Telstra said 90% of employees using the tools saved time and worked more effectively, with 20% less follow-up contact from customers. Only then did the company extend both to contact centre and store teams through 2024.\n\nTwo details are worth lifting into your own week. First, the pilot group was tiny relative to the eventual audience, and it existed to find the requests the builders had not anticipated. Second, the human never left the conversation: the assistant summarised and suggested, and a person spoke to the customer. That is the same drafts-and-approves rule your user note needs, applied to a different craft.\n\nYour version of this is smaller and quicker. Two colleagues for a week, a note of what they sent and whether they would have published the draft, and one honest number you can quote when someone asks whether the assistant is worth keeping. A pilot that produces evidence is the difference between a tool the team adopts and a link that goes quiet after a fortnight.",
+      "exercises": [
+        {
+          "order_index": 1,
+          "type": "mcq",
+          "language": null,
+          "marks": 2,
+          "title": "The missing piece",
+          "prompt_md": "Your assistant passes every trap prompt and produces excellent drafts, but three weeks after you shared the link nobody except you has used it. Which part of the deliverable is missing?",
+          "options": [
+            "A one-page user note covering scope, checks and ownership",
+            "A longer instruction block covering every possible request",
+            "A second knowledge file repeating the same product facts",
+            "A monthly report on how many drafts it has produced"
+          ],
+          "correct_answer": "A one-page user note covering scope, checks and ownership"
+        },
+        {
+          "order_index": 2,
+          "type": "mcq",
+          "language": null,
+          "marks": 2,
+          "title": "The approval rule",
+          "prompt_md": "Your brand assistant drafts customer-facing emails and ads. Which approval rule belongs in the user note that travels with it?",
+          "options": [
+            "A named person checks every draft against the fact sheet before publishing",
+            "Drafts may go out unchanged whenever the assistant sounds confident",
+            "Only drafts that mention pricing need a second pair of eyes on them",
+            "Approval happens once a quarter rather than on each individual draft"
+          ],
+          "correct_answer": "A named person checks every draft against the fact sheet before publishing"
+        },
+        {
+          "order_index": 3,
+          "type": "mcq",
+          "language": null,
+          "marks": 2,
+          "title": "Why pilot with two people",
+          "prompt_md": "You have tested the assistant thoroughly yourself. Why still pilot it with two colleagues for a week before announcing it to the whole department?",
+          "options": [
+            "They will send requests you would never have thought to test",
+            "A small pilot removes the need to test the assistant beforehand",
+            "Two colleagues can approve the brand voice on behalf of legal",
+            "The assistant will improve on its own as more people use it"
+          ],
+          "correct_answer": "They will send requests you would never have thought to test"
+        },
+        {
+          "order_index": 4,
+          "type": "mcq",
+          "language": null,
+          "marks": 2,
+          "title": "Reading the gap log",
+          "prompt_md": "Over its first month live, your assistant replied that a fact was not covered in the brand files on nine separate occasions. What is the best use of that record?",
+          "options": [
+            "Treat it as a backlog of the documents your brand pack is missing",
+            "Treat it as evidence that the assistant needs a more capable model",
+            "Treat it as a sign that the grounding rule has been set too strictly",
+            "Treat it as noise, on the grounds that refusals are not real answers"
+          ],
+          "correct_answer": "Treat it as a backlog of the documents your brand pack is missing"
+        },
+        {
+          "order_index": 5,
+          "type": "mcq",
+          "language": null,
+          "marks": 2,
+          "title": "After a repositioning",
+          "prompt_md": "Your company repositions and rewrites its main product promise. The brand assistant is live and used daily by four colleagues. What is the right first move?",
+          "options": [
+            "Update the knowledge pack, then rerun the fixed regression set",
+            "Delete the assistant and ask each colleague to build their own",
+            "Tell users to mention the new positioning in every request",
+            "Wait until the scheduled review date before changing anything"
+          ],
+          "correct_answer": "Update the knowledge pack, then rerun the fixed regression set"
+        },
+        {
+          "order_index": 6,
+          "type": "short_answer",
+          "language": null,
+          "marks": 3,
+          "title": "The five components",
+          "prompt_md": "List the five components of a shipped brand assistant and say in one line what each is for.",
+          "correct_answer": "The assistant itself, built in the tool your company already uses. The instruction block, saved outside the tool as well so the standing brief survives a change of platform. The curated, dated knowledge pack that supplies every product fact. The test protocol and its dated results, which is the evidence it stays on brand. And the one-page user note, which is what turns your assistant into a tool the team can use correctly without asking you."
+        },
+        {
+          "order_index": 7,
+          "type": "short_answer",
+          "language": null,
+          "marks": 3,
+          "title": "What it is not for",
+          "prompt_md": "Write the \"what this assistant is not for\" section of your user note: three named exclusions, each with the reason a colleague would accept.",
+          "correct_answer": "A strong answer names three specific exclusions with reasons a non-specialist accepts, for example: pricing and contract questions, because the files hold list prices only and deals are individually agreed; regulated or comparative claims such as safest or fastest, because those need substantiation the assistant cannot see; and anything quoting a customer, because only the approved quotes file may be used and paraphrasing a real person is fabrication. Each exclusion should say where to go instead."
+        },
+        {
+          "order_index": 8,
+          "type": "short_answer",
+          "language": null,
+          "marks": 3,
+          "title": "Enforcing the approval rule",
+          "prompt_md": "State the approval rule you will put in your user note and explain how it is enforced in practice rather than merely written down.",
+          "correct_answer": "The rule is that the assistant drafts and a named person approves: before anything is published, every product claim is checked against the fact sheet and every number and quotation is verified. It is enforced by making the check cheap and visible, for example by having the assistant list its claims and their source file at the end of each draft, so the reviewer has a checklist rather than a hunt. Building the check into the existing publishing step, rather than adding a new meeting, is what makes it survive a busy week."
+        },
+        {
+          "order_index": 9,
+          "type": "short_answer",
+          "language": null,
+          "marks": 3,
+          "title": "Maintenance cadence",
+          "prompt_md": "Describe the routine you will run to keep the assistant trustworthy, and name three events that should trigger an unscheduled re-test.",
+          "correct_answer": "Monthly: rerun the fixed regression set, read the not-covered log, update any stale files and record what changed in a two-line changelog with the date. Unscheduled triggers include a change in positioning or brand voice, a product or pricing change, a revision to approved claims from legal, and any colleague reporting an answer that felt wrong. A provider model update is a fourth trigger, which is why the monthly run exists even in a quiet month."
+        },
+        {
+          "order_index": 10,
+          "type": "short_answer",
+          "language": null,
+          "marks": 3,
+          "title": "Knowing whether it helped",
+          "prompt_md": "A month after launch, how will you judge whether the assistant is genuinely helping rather than merely existing? Give two signals you could actually observe.",
+          "correct_answer": "Observable signals include how many drafts colleagues took to publication with only light edits, whether the team stopped pasting the brand-voice file into ad hoc chats, and how much of the first-draft time on recurring deliverables disappeared. A useful negative signal is the count of reported bad answers and whether any invented claim reached a published asset. Vague claims of time saved are not evidence; pick two things you can count or ask three people about directly."
+        },
+        {
+          "order_index": 11,
+          "type": "short_answer",
+          "language": "prompt",
+          "marks": 5,
+          "title": "Prompt Lab: the instruction block your assistant runs on",
+          "prompt_md": "**Scenario.** This is the graded deliverable. You are creating the shared brand assistant your marketing team will use daily, for your own brand or one you know well. It drafts emails, ads, social posts and short landing-page copy. It will be opened by colleagues who did not take this course.\n\nWrite the **complete instruction block** you would paste into the assistant.\n\nA strong instruction block is specific to one named brand and carries all eight elements: role and remit including what it does not do; the requirement to ask for audience, the decision the copy must drive, and format before drafting; three to five concrete voice rules plus banned words; a grounding rule that facts come only from the named attached files and that missing facts are flagged, not filled; the honesty rule covering invented figures, quotes, awards, certifications and integrations, plus disclosure where required; the default output shape with assumptions listed; a sourcing rule naming the file behind each product claim; and an escalation list. Write it as a briefing to a capable freelancer. Generic wording that would fit any company scores poorly.",
+          "correct_answer": "You are the marketing copy assistant for Northwind Ledger, a UK bookkeeping app for sole traders and businesses with fewer than ten staff. You draft marketing emails, paid social and search ads, organic social posts and short landing-page sections for our four-person marketing team. You do not write help documentation, investor material or anything about tax treatment.\n\nBefore drafting, confirm the request names three things: the audience, the one decision or action the copy must drive, and the format with a length limit. If any is missing, ask for it in a single short message and wait. Never guess the audience or the offer.\n\nVoice. Write as one person talking to a busy owner who is not a finance professional. Plain words, sentences under about 25 words, no finance jargon unless it appears in the attached glossary. No exclamation marks, no rhetorical opening questions, no stacked adjectives. Banned phrases: unlock, seamless, revolutionise, game-changing, effortless. Match the register of the six published examples in the voice file rather than the adjectives in it.\n\nGrounding. Take every fact about the product, its tiers, pricing, availability and integrations only from Northwind product facts, dated, and Northwind approved claims, dated. If a request needs a fact that is not in those files, name the missing fact and stop. Do not estimate, infer from context, or fill the gap from general knowledge.\n\nHonesty. Never invent statistics, percentages, growth figures, awards, certifications, integrations or customer quotes. A customer quote may be used only if it appears word for word in the approved quotes file. Never state or imply that we provide tax advice, and never use the words guaranteed or HMRC-approved. Where a claim requires a disclosure or a terms link, include it in the draft rather than leaving it to the reviewer.\n\nOutput. Give the requested deliverable first. Then a short Assumptions list covering anything you inferred. Then a Sources line naming, for each product claim used, the file it came from. If you were asked for variants, keep the offer constant and vary only the angle.\n\nEscalate to a person instead of drafting when the request involves a comparison with a named competitor, a regulated or absolute claim, a change to pricing or contract terms, a customer's own words, or anything about tax obligation. Say which of these applies and suggest who should be asked.\n\nOwner: the marketing lead. Review date: three months from today. If a file in your knowledge is older than that date, say so before you draft."
+        },
+        {
+          "order_index": 12,
+          "type": "short_answer",
+          "language": "prompt",
+          "marks": 5,
+          "title": "Prompt Lab: the reliability test protocol",
+          "prompt_md": "**Scenario.** This is the second graded deliverable. Your assistant is built. Before your colleagues rely on it, you need a protocol that any of them could run in an hour, producing a verdict on whether it stays in voice and never invents a claim — and that can be rerun identically after every change.\n\nWrite the **prompt that produces that protocol as a written document**, for your brand.\n\nA strong prompt: states what is being tested and who will run it; requires a fixed prompt set with the three buckets and the five trap types named; specifies the four per-response checks and a pass or fail verdict rather than a score; states the release bar explicitly, including that any invented product claim blocks release; requires a named ten-prompt regression subset for rerunning after every change; sets the cadence and the events that trigger an unscheduled run; requires the record to carry the date and instruction version; and asks for the whole thing as a one-page document a colleague could follow without you present.",
+          "correct_answer": "Write me the reliability test protocol for our shared brand assistant at Northwind Ledger, as a one-page document a marketing colleague could follow in an hour without me in the room. It has to be repeatable word for word after every change, so write instructions rather than advice.\n\nCover the following.\n\nScope and owner: what is being tested, who runs it, and how long it should take.\n\nThe fixed prompt set: twenty-five prompts held in a sheet and never edited casually, split into twelve bread and butter taken verbatim from real requests, six edge cases, and at least seven traps covering a fact our files do not hold, a comparison with a named competitor, a leading request assuming a fact we have not verified, a regulated or absolute claim, a request to quote a customer, a pricing question, and an out-of-scope ask about tax.\n\nThe checks: for every response, a pass or fail on voice, grounding, judgement and format, defined in one line each so two people would agree on the verdict. No scores out of ten.\n\nThe release bar, stated plainly: every trap must pass; any product claim that appears in none of the files blocks release outright; voice or format failures on the bread and butter bucket are logged and fixed but do not block.\n\nThe regression subset: name ten of the twenty-five as the set rerun after every single change to instructions or files, with the rule that only one thing changes at a time.\n\nCadence and triggers: a monthly full run, plus an unscheduled run whenever positioning changes, a product or price changes, legal revises a claim, or a colleague reports an answer that felt wrong.\n\nThe record: a table holding the date, the instruction version tested, verdicts per prompt, the offending sentence quoted for each failure, and what changed since the previous run.\n\nEnd with a three-line sign-off block: who ran it, the date, and the decision to ship, fix or hold."
+        }
+      ]
+    }
+  ]
+}

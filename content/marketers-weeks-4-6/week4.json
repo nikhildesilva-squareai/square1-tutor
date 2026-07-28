@@ -1,0 +1,464 @@
+{
+ "week": 4,
+ "lessons": [
+  {
+   "order_index": 1,
+   "title": "Prompt chains for campaign production",
+   "theory_md": "## What week three actually cost you\n\nThe campaign pack you built in week three was good work. It was also slow, and the slowness was not where you think. Reconstruct that day and most of it was not thinking. It was re-explaining. You described the audience, then described it again when you moved from angles to emails, then again when you asked for ad variants, then again when the subject lines came back sounding like a different company. The thinking happened once. The typing happened five times.\n\nThat gap is what this week closes. Not \"make the assistant write better\" — you can already do that with a brief and a brand-voice file. The task now is to make one round of good thinking produce a whole campaign without you rebuilding the context from scratch at every step.\n\n## Why one enormous prompt is not the fix\n\nThe tempting shortcut is to ask for everything at once: brief, three angles, a launch email, six ad variants, a landing headline, all in a single message. Marketers try this early in their AI habit and it fails in a recognisable pattern.\n\n**The later items thin out.** A request carrying six different jobs spreads effort across all of them. The first output usually reads well. By the sixth you are looking at filler that repeats the first in different word order.\n\n**You cannot tell what went wrong.** When a fifteen-line instruction produces a weak email, you have no way of knowing which line was ignored. Was it the audience? The word limit? The prohibition on exclamation marks? You end up rewriting the whole prompt on a guess.\n\n**There is nowhere to intervene.** If the angle underneath all six assets is wrong, you find out after the assistant has already built six assets on top of it.\n\n**Nothing survives.** A giant one-off prompt is welded to one campaign. Next month you write it again.\n\n## A chain is a sequence with clean handoffs\n\nA prompt chain breaks the work into steps where the output of one step is the input to the next. For campaign production, four steps carry most of it.\n\n1. **Brief in, sharpened brief out.** You supply the raw request; the assistant returns the audience, the single decision the campaign must drive, the offer, the proof you actually hold and the brand-voice constraint, as named fields.\n2. **Sharpened brief in, angles out.** Five or six distinct propositions, each with the audience belief it attacks and the proof it leans on.\n3. **Chosen angle in, flagship asset out.** One angle you have picked, one properly built asset — usually the launch email or the landing hero.\n4. **Flagship asset in, variants out.** Channel adaptations, ad copy, subject-line alternatives, social cutdowns, all derived from an asset you have already approved.\n\nThe rule that makes this work is the handoff rule: **every step must end in something structured enough to paste into the next one without editing.** Ask for angles as prose and you will spend ten minutes reformatting them. Ask for `Angle name / Belief it challenges / Proof used / One-line expression` and step three has somewhere to point.\n\n## What a handoff looks like in practice\n\nSay step two returns this, among five others:\n\n> **Angle name:** The cancellation was about the fortnight, not the food\n> **Belief it challenges:** they think the service demands more planning than they have\n> **Proof used:** shorter delivery window, smaller minimum order\n> **One-line expression:** two meals a week, ordered on Thursday, no forward planning required\n\nStep three then opens with something close to: *here is the angle we are running, here is the audience and the decision, here is the voice constraint, write the launch email*. You are not describing the campaign again. You are moving a block. The difference between a chain that saves you a morning and one that does not is almost entirely whether that block can be moved without being retyped.\n\n## The three places a human has to look\n\nChains are not automation. They are a way of putting your judgement where it changes the most.\n\n**After the sharpened brief.** Check the assistant has not quietly widened the audience or invented a benefit. This takes thirty seconds and prevents a whole wasted run.\n\n**After the angles.** This is the highest-value checkpoint in the chain. An angle is a bet about what your audience believes; the assistant cannot know whether that bet is true for your market, and everything downstream inherits it. Kill the weak ones here, not after they have become copy.\n\n**Before anything is published.** Voice drift, unverifiable claims, fabricated numbers and missing disclosure all show up in finished assets. Lesson three of this week turns that check into a prompt of its own.\n\n## Errors compound down a chain\n\nThe reason the checkpoints sit where they do is arithmetic. An invented statistic that survives step two appears once. Run it through step four and it appears in twelve ad variants, three subject lines and a landing headline. The chain did not create the error. It industrialised it.\n\nThis cuts the other way too, which is the point of the whole exercise. A sharp, true, well-evidenced angle also gets multiplied by twelve.\n\n## Carrying the brief without carrying the drift\n\nYou can run a chain in one long conversation or in separate fresh ones. Both have a cost.\n\nOne thread keeps context — the assistant still has the brand-voice file in view — but it accumulates everything else too, including rejected angles and your own corrections, and after a dozen turns the output starts drifting towards whatever dominated the middle of the conversation.\n\nFresh threads stay clean but you must re-paste the brief and the voice constraint each time. That sounds like the retyping you were trying to escape, and it would be, except that you are pasting a saved block rather than rewriting it. Which is exactly what lesson two is about.\n\nA reliable middle path: restate the audience, the decision and the voice constraint in one short line at the top of every step, whichever mode you are in. It costs a sentence and it stops the chain sliding.\n\n## When a chain is the wrong tool\n\nNot everything deserves four steps. If there is one output and no intermediate decision worth reviewing, chaining adds ceremony and nothing else. Rewriting one subject line to fit a character limit is a single prompt. Choosing between two propositions for a quarter is not a chain either — that is a decision you make, then feed in.\n\nThe test is simple: **is there a point mid-way where a human choice changes everything after it?** If yes, that is a chain and the checkpoint goes there. If no, write one good prompt and move on.",
+   "estimated_minutes": 28,
+   "learning_objectives": [
+    "Break a campaign into a four-step chain where each output feeds the next step",
+    "Explain why a single large prompt degrades across multiple campaign outputs",
+    "Specify handoff formats that let one step be consumed by the next without editing",
+    "Place human checkpoints where a decision changes everything downstream of it"
+   ],
+   "case_study": "**WPP — Production Studio and the staged content supply chain (2023-2024)**\n\nIn June 2024, during Cannes Lions week, the advertising group WPP announced Production Studio, an AI-enabled production application co-developed with its production arm Hogarth and embedded in WPP Open, the group's marketing operating system. It built on a generative content engine WPP had been developing with NVIDIA since an announcement the previous May. WPP described the problem it was aimed at in language worth noticing: producing content that is brand-compliant and product-accurate, at volume.\n\nThe detail that matters for a marketer is not the technology. It is the shape. WPP did not describe one clever prompt. It described a content supply chain — named stages, with briefs and brand assets entering one end and text, images and video leaving the other, and human creative judgement sitting between the stages rather than being applied once at the end. That is a chain, run at agency scale.\n\nProduction Studio reached launch off the back of a pilot period of roughly twelve months with clients including Ford and L'Oréal. Chains earn their place on real campaigns before they get rolled out, and the pilot pattern is the same one available to you at a much smaller scale: run the sequence on a live campaign, see which handoff breaks, fix that step rather than rewriting everything.\n\nTwo things transfer directly. First, the unit of scale is the pipeline, not the prompt — WPP invested in the sequence and the handoffs, not in a single miraculous instruction. Second, brand-compliant and product-accurate are described as requirements of the system, which means somebody has to check them. Volume does not verify itself, and neither at agency scale nor at your desk does the generation step do that job.",
+   "exercises": [
+    {
+     "order_index": 1,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "Why single-prompt campaign production degrades",
+     "prompt_md": "You ask an assistant for a brief, three emails, six ad variants and a landing headline inside one prompt. The first email is strong but the later outputs come back noticeably thinner and more repetitive. What does this pattern tell you about single-prompt campaign production?",
+     "options": [
+      "Effort is spread across every requested output, so quality falls as the list runs on",
+      "The assistant has run out of factual knowledge about the product being marketed",
+      "The brand voice file was too long and crowded out the campaign brief you supplied",
+      "Ad variants are inherently harder to write than emails for any assistant to produce"
+     ],
+     "correct_answer": "Effort is spread across every requested output, so quality falls as the list runs on"
+    },
+    {
+     "order_index": 2,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "What makes a handoff between chain steps clean",
+     "prompt_md": "You want step two of your chain to produce campaign angles that step three can consume without you rewriting or reformatting them first. What matters most about how step two is asked to shape its output?",
+     "options": [
+      "It must return named, separated fields that the next step can be pointed at directly",
+      "It must run as long as possible so the next step has plenty of material to work from",
+      "It must already be written in finished brand voice so that no editing is needed later",
+      "It must include a confidence score on every angle so that you can rank them quickly"
+     ],
+     "correct_answer": "It must return named, separated fields that the next step can be pointed at directly"
+    },
+    {
+     "order_index": 3,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "Placing the highest-value checkpoint",
+     "prompt_md": "Your chain runs brief, then angles, then flagship asset, then variants. You have time to review carefully at only one point before the variants are produced. Where does that single review pay back the most, and why?",
+     "options": [
+      "Straight after the angles, because a wrong angle is multiplied by every later step",
+      "Straight after the variants, because that is where the largest volume of copy sits",
+      "Straight after the brief, because the brief is the only step that you wrote yourself",
+      "Straight before the final export, because that is when mistakes become most costly"
+     ],
+     "correct_answer": "Straight after the angles, because a wrong angle is multiplied by every later step"
+    },
+    {
+     "order_index": 4,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "How an unchecked error behaves in a chain",
+     "prompt_md": "A statistic with no source behind it slips into the angle produced at step two of your campaign chain and nobody catches it. By the time step four has produced twelve ad variants, what has happened to that single error?",
+     "options": [
+      "It has been copied into every downstream asset and now needs twelve separate fixes",
+      "It has been diluted across the variants and no longer affects any published claim",
+      "It has been flagged automatically because later steps re-check earlier factual claims",
+      "It has been removed by the rewriting that happens when copy is adapted per channel"
+     ],
+     "correct_answer": "It has been copied into every downstream asset and now needs twelve separate fixes"
+    },
+    {
+     "order_index": 5,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "Deciding when a chain is the wrong tool",
+     "prompt_md": "A colleague asks you to rewrite one email subject line so that it fits a forty character limit while holding the brand voice. Should this be turned into a four-step chain, and what is the reasoning?",
+     "options": [
+      "No, because there is one output and no mid-way choice that changes what follows",
+      "Yes, because any marketing task improves once it is broken into separate named steps",
+      "No, because subject lines are far too short for an assistant to handle reliably alone",
+      "Yes, because a character limit always requires its own separate verification stage"
+     ],
+     "correct_answer": "No, because there is one output and no mid-way choice that changes what follows"
+    },
+    {
+     "order_index": 6,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "Restating the brief at every step",
+     "prompt_md": "You are running all four steps of a campaign chain inside one long conversation, so the assistant can still see the brief you pasted at the start. Explain why it is still worth restating the audience, the decision and the voice constraint in one line at the top of each step.",
+     "correct_answer": "A long thread accumulates rejected angles, corrections and side discussion, and the assistant weights recent turns heavily, so the original brief steadily loses influence over the output. Restating the audience, the decision the output must drive and the voice constraint costs one sentence and re-anchors each step to the brief rather than to the middle of the conversation. It also makes each step portable: if you later move that step into its own saved template, the context it needs is already inside it."
+    },
+    {
+     "order_index": 7,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "What actually moves between step two and step three",
+     "prompt_md": "Describe precisely what should pass from the angle-generation step of a campaign chain into the step that builds the flagship asset. Be specific about what is carried forward and what is deliberately left behind.",
+     "correct_answer": "What moves forward is the one angle you selected, with its named proposition, the audience belief it challenges and the specific proof it leans on, plus the brief fields and the voice constraint. What is left behind is the five angles you rejected and any commentary the assistant offered about them, because carrying rejected options into the writing step invites the assistant to hedge and blend them. The handoff should be a short, clean block you could paste into a fresh conversation and still have the writing step work."
+    },
+    {
+     "order_index": 8,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "The three human checkpoints",
+     "prompt_md": "Name the three points in a four-step campaign chain where a human must look, and state what you are specifically looking for at each one. Do not describe general proofreading.",
+     "correct_answer": "After the sharpened brief, check that the audience has not been quietly widened and that no benefit or proof point has been invented that you do not actually hold. After the angles, check that the audience belief each angle attacks is true for your market, because the assistant cannot know that and everything downstream inherits the bet. Before publication, check voice drift, unverifiable claims, fabricated figures or quotes, and any disclosure the channel requires."
+    },
+    {
+     "order_index": 9,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "Answering the speed objection",
+     "prompt_md": "A teammate argues that chains are slower than one big prompt because you have to sit through four exchanges instead of one. Answer the objection in terms of total time to a publishable campaign rather than time to first output.",
+     "correct_answer": "One big prompt reaches a first draft faster but reaches a publishable campaign slower, because when the underlying angle is wrong every asset built on it has to be redone and you cannot tell which instruction failed. A chain surfaces that decision after one cheap step, so the expensive writing work is only ever done on an angle you have approved. The four exchanges also leave reusable steps behind, so the second campaign costs far less than the first."
+    },
+    {
+     "order_index": 10,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "A task that should stay one prompt",
+     "prompt_md": "Identify one recurring task in your own marketing work that should stay a single prompt rather than becoming a chain. Justify it using the test given in the lesson, and say what would have to change for it to become a chain.",
+     "correct_answer": "A good answer names a concrete task, for example shortening approved body copy to fit a banner slot or converting an approved paragraph into alt text. The justification applies the test: there is one output and no mid-way point where a human choice changes everything after it, so extra steps add ceremony without adding control. It would become a chain if the task grew an upstream decision, for example if the same copy had to be adapted for four audiences and someone first had to choose which claim each audience sees."
+    },
+    {
+     "order_index": 11,
+     "type": "short_answer",
+     "language": "prompt",
+     "marks": 5,
+     "title": "Prompt Lab: the angle-generation step",
+     "prompt_md": "You are marketing a subscription meal-kit service. The campaign is aimed at households who cancelled within their first two months and have not returned. The decision the campaign must drive is a single reactivation order. Your brand-voice file says: plain, warm, no exclamation marks, no food adjectives stacked more than two deep. The proof you actually hold is a shortened delivery window and a smaller minimum order.\n\nWrite step two of a production chain: the prompt that takes the sharpened brief and returns campaign angles.\n\nA strong prompt will restate the audience and the decision, hand over only the proof you genuinely hold, forbid invented evidence, fix the number of angles, and specify a named output structure that the next step in the chain can consume without reformatting.",
+     "correct_answer": "You are helping me produce a reactivation campaign. Work only from the brief below. Do not add benefits, figures or customer quotes that are not in it.\n\nBRIEF\nAudience: households that subscribed to our meal-kit service and cancelled within their first two months, and have not ordered since.\nDecision the campaign must drive: place one reactivation order.\nProof I actually hold: the delivery window is now shorter, and the minimum order is smaller than it was.\nVoice constraint: plain and warm, no exclamation marks, never more than two food adjectives in a row.\n\nTASK\nGive me exactly six distinct angles. Distinct means they attack different reasons a household walked away, not six wordings of the same reason. At least two must address a suspected objection rather than promote a benefit.\n\nOUTPUT FORMAT\nReturn six blocks, nothing before or after them, each with these five labelled lines and no prose commentary:\nAngle name:\nAudience belief it challenges:\nProof it leans on (must come from the brief):\nOne-line expression in our voice:\nWhy this might fail:\n\nCONSTRAINTS\nIf an angle would need evidence I have not given you, do not write it. Say which evidence would be needed instead, on the proof line."
+    },
+    {
+     "order_index": 12,
+     "type": "short_answer",
+     "language": "prompt",
+     "marks": 5,
+     "title": "Prompt Lab: the variant handoff step",
+     "prompt_md": "Your reactivation chain has reached step four. You have one approved flagship email: subject line, ninety words of body copy, one call to action, already signed off for voice and for claims. You now need channel variants without letting the approved claims mutate.\n\nWrite the step-four prompt that takes the approved asset and produces the variants.\n\nA strong prompt will paste in the approved asset as fixed source material, state clearly which parts may change and which may not, name each channel with its real constraint, and require the output in a form you can hand straight to whoever schedules it.",
+     "correct_answer": "Below is an approved campaign email. It has already been signed off for brand voice and for factual claims. Treat it as the only source of substance for this task.\n\nAPPROVED ASSET\n[paste subject line, body copy and call to action here]\n\nWHAT MAY NOT CHANGE\nThe two claims in the asset are the shorter delivery window and the smaller minimum order. Do not add, strengthen, quantify or reword these into anything more specific. Do not introduce discounts, deadlines, figures or customer quotes. Do not invent urgency that is not in the source.\n\nWHAT MAY CHANGE\nLength, sentence order, opening line, and the phrasing of the call to action.\n\nTASK\nProduce channel adaptations of this asset:\n1. Three alternative subject lines, each 40 characters or fewer.\n2. One SMS version, 140 characters or fewer, including the call to action.\n3. Two paid social variants, 25 words or fewer each, written to be read without the email context.\n4. One in-app banner line, 12 words or fewer.\n\nVOICE\nPlain and warm. No exclamation marks. Never more than two food adjectives in a row. Match the register of the approved asset.\n\nOUTPUT FORMAT\nA labelled list under the four headings above, with the character or word count shown in brackets after each item, and no commentary. At the end, under the heading CHECK, list any line where you were unsure whether a claim had shifted."
+    }
+   ]
+  },
+  {
+   "order_index": 2,
+   "title": "Saved templates and macros",
+   "theory_md": "## The second time is the signal\n\nThe first time you write a prompt, you are solving a problem. The second time you write nearly the same prompt, you are wasting a morning. That second occasion is the signal, and most marketers sail straight past it — partly because rewriting a prompt from memory feels quick, and partly because the version you rewrite is never quite the good one. It is the good one with a few details missing.\n\nWeek three had you build a campaign prompt library. This lesson turns that library from a folder of favourite prompts into something a colleague could pick up and run without you in the room. The difference is placeholders, storage and versions.\n\n## Stable parts and variable parts\n\nTake any prompt you have used more than once and split it in two.\n\n**Stable** is everything that would be identical next month: the framing of the task, the brand-voice constraint, the honesty rules, the output format, the word limits, the ban on invented statistics and fabricated customer quotes.\n\n**Variable** is the handful of things that change per campaign: the audience, the offer, the decision the output must drive, the proof you hold this time, the channel, the deadline.\n\nA template is that prompt with every variable part replaced by a named placeholder. Name them for what they are, in a form nobody can mistake for real copy: `[AUDIENCE]`, `[DECISION_TO_DRIVE]`, `[PROOF_WE_HOLD]`, `[CHANNEL]`, `[WORD_LIMIT]`. Then list them once at the top of the template so anyone filling it in can see, at a glance, what they need to gather before they start.\n\nThat list is more useful than it looks. It is a brief in disguise. If a colleague cannot fill in `[DECISION_TO_DRIVE]`, the campaign is not ready to be written, and the template has caught that before a single word of copy existed.\n\n## Two failure modes worth designing against\n\n**The unfilled placeholder.** Paste a template with `[PROOF_WE_HOLD]` still in it and most assistants will not stop. They will invent something plausible and carry on, and you now have a fabricated proof point running through a chain. Defend against this inside the template itself: *if any placeholder is still present or empty, stop and tell me which one before writing anything.* One line, and it converts a silent failure into a visible one.\n\n**The template that has quietly gone stale.** This is the more expensive one and it appears later in this lesson.\n\n## Macros: the short trigger for the long instruction\n\nA template is text. A macro is how you reach it in two seconds instead of two minutes.\n\nMost assistants now offer some way to save a standing instruction — a custom assistant, a saved project with its own attached context, a reusable persona. Any of these can hold a template plus your brand-voice file so that the only thing you type is the variable part. The mechanism differs between tools and it will keep changing; the discipline does not.\n\nThere is a trade-off to make deliberately. A template saved inside one assistant is fast and convenient and stops working the day your organisation switches tools or the day a colleague uses a different one. A template saved as plain text in a shared document is a little slower to use and survives everything. The practical answer for most teams is both: the canonical text lives in the shared document, and the assistant-side macro is a copy that points back to it.\n\n## Storage: the new-starter test\n\nThere is one test for whether your templates are stored well. **Could someone who joined last week find the right one and use it correctly without asking you?**\n\nThat rules out most of what marketers actually do, which is keeping prompts in personal notes, in a chat history, or in a document called `prompts` with forty entries and no order. It argues for a small number of clearly named files in the place your team already looks for marketing process — the same shelf as the brand-voice file and the brief format, not a separate AI corner.\n\nName templates by the job, not by the cleverness. *Reactivation email, first draft* beats *email prompt v3 final*. If a name needs explaining, the template will be re-invented by someone who could not find it.\n\n## Versions: templates go stale silently\n\nA prompt template is a small piece of published brand policy. When the brand changes and the template does not, the template keeps producing yesterday's brand at speed, and nobody gets an error message.\n\nThe failure is worst with claims. Suppose a proof point is withdrawn — the guarantee changes, the figure is no longer supportable, compliance asks for it to stop. If that claim is baked into the stable half of a template, it keeps appearing in copy weeks after the decision, and it now arrives with the authority of an approved company asset. That is a slower, quieter version of the honesty problem you already know from week two.\n\nSo give every template a short header: **version number, date, owner, what it is for, what changed since the last version, and known limits.** Six lines.\n\nThen review on triggers rather than on a calendar. Rewrite the template when:\n\n- the brand voice file is updated\n- the offer, pricing or guarantee changes\n- a claim is withdrawn or a regulator or legal review requires new wording\n- the product is renamed or repositioned\n- **you find yourself making the same manual edit to the output every single time**\n\nThat last one is the strongest signal and the most ignored. A correction you make on every run is not a correction. It is a missing line in the template.\n\nWhen you retire a version, deprecate rather than delete. Mark it superseded, say what replaced it, and leave it where it was. Deleted templates get resurrected from somebody's personal notes, which is exactly the copy without the header.\n\n## Keep the library small\n\nThe instinct after a lesson like this is to build forty templates. Resist it. A library nobody can hold in their head gets bypassed, and bypassed templates go stale unnoticed. Six templates covering the work that genuinely repeats — the launch email, the reactivation sequence, the ad variant set, the social calendar, the performance summary, the landing page draft — will carry most marketing teams, and six is a number a person can actually maintain.",
+   "estimated_minutes": 27,
+   "learning_objectives": [
+    "Separate the stable and variable parts of a working prompt into a template",
+    "Design placeholders and stop rules that prevent an assistant inventing missing inputs",
+    "Store and name templates so a new colleague can find and run them unaided",
+    "Version and deprecate templates when the brand, offer or claims change"
+   ],
+   "case_study": "**The Estée Lauder Companies — the GPT Lab and a library of saved assistants (2024)**\n\nIn April 2024 the beauty group The Estée Lauder Companies formed what it called a GPT Lab, an internal function for building customised assistants on top of its enterprise AI subscription. By the time an expansion of the partnership was reported that November, the company was described as running more than 240 custom assistants across the business, with employee access widened rather than restricted to a specialist team. Trade and technology press covering the announcement, including CIO Dive and WWD, listed examples: a copywriting assistant used for campaign work across platforms, a fragrance insights assistant that reads consumer survey data, and a vendor snapshot assistant that assembles supplier profiles and purchase history.\n\nWhat that number describes is not 240 clever prompts. It is 240 saved, named, findable assets, each one built around a task that somebody was previously doing from scratch. The copywriting assistant is the one to look at closely, because it is the same object this lesson is asking you to build: a stable frame of brand rules, task framing and output format, waiting for the variable parts of whatever campaign is next.\n\nThe company has reported large improvements in turnaround times across research and marketing teams as a result. Those are company-reported figures rather than independently measured ones and should be read that way, but the direction is unsurprising and the mechanism is the interesting part. Speed did not come from a better model. It came from not rebuilding the context each time.\n\nThe scale also makes the maintenance problem visible. A library of 240 assistants is a library of 240 things that can quietly go out of date when a product is renamed, a claim is withdrawn or the brand voice moves. Whatever the version discipline is at that size, the small-team version is the header on your six templates: who owns it, what changed, and when it was last looked at.",
+   "exercises": [
+    {
+     "order_index": 1,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "Choosing what becomes a placeholder",
+     "prompt_md": "You are converting a launch email prompt into a reusable template. It contains a brand voice constraint, a ban on invented statistics, an audience description, a word limit and this campaign specific offer. Which of these should become placeholders?",
+     "options": [
+      "The audience description and the offer, because those change with every campaign",
+      "The brand voice constraint and the ban on statistics, because those are the strictest",
+      "The word limit and the brand voice constraint, because those vary between channels",
+      "Everything in the prompt, because a template should carry no fixed wording at all"
+     ],
+     "correct_answer": "The audience description and the offer, because those change with every campaign"
+    },
+    {
+     "order_index": 2,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "What happens when a placeholder is left unfilled",
+     "prompt_md": "A colleague pastes your template into an assistant but forgets to replace the proof placeholder with the evidence you actually hold. What is the most likely outcome, and why does it matter more than an ordinary typing error?",
+     "options": [
+      "The assistant invents a plausible proof point and the copy carries a claim you cannot support",
+      "The assistant refuses to produce anything until every placeholder has been filled in properly",
+      "The assistant leaves the placeholder visible in the copy so the omission is caught at proofing",
+      "The assistant substitutes the proof point used in the previous run of the same template"
+     ],
+     "correct_answer": "The assistant invents a plausible proof point and the copy carries a claim you cannot support"
+    },
+    {
+     "order_index": 3,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "The test for whether templates are stored well",
+     "prompt_md": "Your team keeps its best marketing prompts in your personal notes and in a long chat history that you know your way around. What is the single test that shows whether this storage arrangement is good enough?",
+     "options": [
+      "Whether somebody who joined last week could find the right one and use it unaided",
+      "Whether the prompts can be retrieved on a phone as quickly as on a laptop screen",
+      "Whether the collection contains at least one template for every marketing channel",
+      "Whether the prompts are backed up somewhere outside the assistant you normally use"
+     ],
+     "correct_answer": "Whether somebody who joined last week could find the right one and use it unaided"
+    },
+    {
+     "order_index": 4,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "The strongest signal that a template needs rewriting",
+     "prompt_md": "You have run the same social post template eleven times this quarter. On every single run you delete the closing question the assistant adds and replace it with a direct call to action. What does this pattern most strongly indicate?",
+     "options": [
+      "The template is missing a line, and the repeated edit belongs inside it",
+      "The assistant is drifting and the whole template should be rebuilt from scratch",
+      "The brand voice file is out of date and needs a new section on calls to action",
+      "The template is fine and manual finishing is a normal part of using any template"
+     ],
+     "correct_answer": "The template is missing a line, and the repeated edit belongs inside it"
+    },
+    {
+     "order_index": 5,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "Retiring an old version safely",
+     "prompt_md": "A guarantee your company offered has been withdrawn, and it is written into the stable half of one of your templates. You have rewritten the template. What should happen to the old version, and for what reason?",
+     "options": [
+      "Mark it superseded and leave it in place, naming the version that replaces it",
+      "Delete it entirely so that nobody can run the withdrawn guarantee by accident",
+      "Move it to a personal folder so that its wording is still available for reference",
+      "Leave it untouched alongside the new one so that both remain available to the team"
+     ],
+     "correct_answer": "Mark it superseded and leave it in place, naming the version that replaces it"
+    },
+    {
+     "order_index": 6,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "Splitting a working prompt into stable and variable",
+     "prompt_md": "Take the campaign prompt you relied on most in week three. Describe how you would split it into a stable half and a variable half, naming at least three placeholders you would create and saying why each one belongs in the variable half.",
+     "correct_answer": "A good answer keeps the task framing, the brand-voice constraint, the honesty rules, the output format and any word limits in the stable half, because those hold across campaigns. It names concrete placeholders such as AUDIENCE, DECISION_TO_DRIVE, PROOF_WE_HOLD, OFFER and CHANNEL, each justified by the fact that it changes campaign to campaign and would be wrong if inherited from the previous run. The strongest answers note that listing the placeholders at the top doubles as a readiness check, because a campaign whose decision cannot be stated is not ready to be written."
+    },
+    {
+     "order_index": 7,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "Building in an escape hatch",
+     "prompt_md": "Explain why a reusable template should contain an instruction telling the assistant what to do when a placeholder is missing or empty, and write the line you would add. Say what failure this converts and into what.",
+     "correct_answer": "Without such an instruction an assistant will usually fill the gap with something plausible rather than stopping, which turns an omission into a fabricated claim buried inside otherwise finished copy. A line such as: if any placeholder below is still present or empty, stop and tell me which one before writing anything, converts a silent failure into a visible one. That matters most for the proof placeholder, because an invented proof point is the failure that reaches publication."
+    },
+    {
+     "order_index": 8,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "What a version header must carry",
+     "prompt_md": "List the fields you would put in the version header of a marketing prompt template, and explain what each one prevents. Then explain why a superseded template should be deprecated rather than deleted.",
+     "correct_answer": "The header should carry a version number, a date, an owner, what the template is for, what changed since the previous version and any known limits, so that a user can tell at a glance whether it is current, who to ask, and where it should not be used. Without the owner and the date, nobody knows whether an old claim inside it is still approved. Deprecating rather than deleting matters because a deleted template gets restored from the personal notes of whoever kept a copy, and that copy arrives without the header, so nobody can tell it is out of date."
+    },
+    {
+     "order_index": 9,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "The stale template as an honesty problem",
+     "prompt_md": "A proof point in one of your templates has been withdrawn by compliance, but the template was never updated. Describe how this becomes an honesty failure rather than an admin failure, and say who is likely to notice it first and when.",
+     "correct_answer": "The withdrawn claim keeps being generated at speed and now arrives inside an approved company asset, so writers reasonably assume it has been signed off and stop questioning it. That turns one policy decision into a repeated published claim the company cannot support, which is the same honesty failure as inventing a statistic, only slower and better disguised. It is usually noticed late and from outside the marketing team, by compliance, legal or a customer quoting the wording back, which is why review is tied to triggers such as a withdrawn claim rather than to a periodic tidy-up."
+    },
+    {
+     "order_index": 10,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "Arguing for a small library",
+     "prompt_md": "A colleague proposes building forty templates so that every marketing task is covered. Give the case for holding the library to roughly six, and name the six you would choose for your own work.",
+     "correct_answer": "A library too large to hold in the head gets bypassed, and bypassed templates are never corrected, so a big library quietly becomes a store of out-of-date brand policy that people still occasionally run. Six is roughly the number one person can genuinely maintain and review on triggers. A reasonable six covers the work that truly repeats, for example the launch email, the reactivation sequence, the ad variant set, the social calendar, the performance summary and the landing page draft, and anything outside those is written fresh."
+    },
+    {
+     "order_index": 11,
+     "type": "short_answer",
+     "language": "prompt",
+     "marks": 5,
+     "title": "Prompt Lab: a versioned template with placeholders",
+     "prompt_md": "Your team sends a monthly performance summary to the commercial director. It always covers the same ground: what happened to the pipeline, what drove it, what you changed, what you will change next. The numbers come from a report you paste in. The audience, the period and the figures change every month; nothing else does.\n\nWrite this as a reusable template rather than as a one-off prompt.\n\nA strong template will carry a short version header, a list of its placeholders at the top, clearly named placeholders inside the body, the stable brand-voice and honesty rules written out in full, a fixed output structure, and an explicit instruction about what to do if a placeholder is unfilled or if the pasted data does not support a statement.",
+     "correct_answer": "TEMPLATE: Monthly performance summary, first draft\nVersion: 1.2 | Updated: [DATE_UPDATED] | Owner: [OWNER]\nUse for: the monthly commercial performance email to an internal senior reader.\nChanged in this version: added the no-inference rule on figures.\nKnown limits: not for board reporting and not for any external audience.\n\nPLACEHOLDERS TO FILL BEFORE RUNNING\n[PERIOD] [READER] [DECISION_TO_DRIVE] [DATA_PASTED] [CHANGES_WE_MADE] [WORD_LIMIT]\n\nSTOP RULE\nIf any placeholder above is still in square brackets, or empty, stop and tell me which one. Do not write the summary.\n\nTASK\nWrite the monthly performance summary for [PERIOD], addressed to [READER]. The summary must make one thing easy: [DECISION_TO_DRIVE].\n\nSOURCE DATA (the only permitted source of figures)\n[DATA_PASTED]\n\nRULES\n1. Every number must appear in the source data above. Do not calculate, round, project or infer any figure that is not there. If a claim I would want to make is not supported, write the sentence and mark it UNSUPPORTED rather than softening it.\n2. No invented causes. Where you attribute a movement to something, it must come from [CHANGES_WE_MADE] or be labelled as a hypothesis.\n3. Voice: plain, direct, no hype, no exclamation marks, short sentences, no more than [WORD_LIMIT] words.\n\nOUTPUT STRUCTURE\nHeadline, one sentence.\nWhat moved, three bullets maximum.\nWhy we think it moved, with hypotheses labelled.\nWhat we changed in [PERIOD].\nWhat we will change next, and the one thing we need from the reader.\nUNSUPPORTED: any claim you could not evidence from the source data."
+    },
+    {
+     "order_index": 12,
+     "type": "short_answer",
+     "language": "prompt",
+     "marks": 5,
+     "title": "Prompt Lab: turning an old prompt into a template",
+     "prompt_md": "You have a folder of prompts written over the past year. They work, but each one is welded to the campaign it was written for, with the audience, the offer and the numbers typed directly into the body. You do not want to rewrite them all by hand.\n\nWrite the prompt you would use to convert an existing one-off prompt into a reusable, versioned template.\n\nA strong prompt will make the assistant separate stable from variable rather than paraphrase, insist that no wording is improved along the way, require a named placeholder list, require the stop rule and version header to be added, and ask it to flag anything campaign specific that it was not certain about instead of guessing.",
+     "correct_answer": "I am going to paste a marketing prompt that was written for one specific campaign. Convert it into a reusable template. Do not improve, shorten or rewrite the wording of anything you keep. Your job is separation, not editing.\n\nPROMPT TO CONVERT\n[paste the original prompt here]\n\nWHAT TO DO\n1. Split the prompt into a stable half, meaning anything that would be identical for the next campaign, such as task framing, voice rules, honesty rules, output format and limits, and a variable half, meaning anything specific to that one campaign, such as audience, offer, proof points, figures, dates, product names and channel.\n2. Replace each variable item with a named placeholder in square brackets and capitals, named for what it is rather than for the value it held.\n3. List every placeholder you created at the top, in the order somebody would gather them.\n4. Add a stop rule: if any placeholder is unfilled, the assistant must name it and write nothing else.\n5. Add a version header with fields for version, date, owner, what it is for, what changed and known limits, left blank for me to fill.\n\nUNCERTAINTY\nWhere you cannot tell whether something is stable or campaign specific, do not guess. Keep it in place and list it under a heading called CHECK WITH OWNER, with a one-line reason.\n\nOUTPUT\nReturn the finished template first, then the CHECK WITH OWNER list, then nothing else. Do not add commentary on how the original prompt could have been written better."
+    }
+   ]
+  },
+  {
+   "order_index": 3,
+   "title": "Build a reusable campaign production chain",
+   "theory_md": "## What you are building today\n\nBy the end of this lesson you should have two documents saved where your team keeps its marketing process.\n\n**One.** A master campaign chain: four parameterised steps, each with its handoff format, its placeholders and its checkpoint, with a version header on top.\n\n**Two.** A verification prompt: a single reusable check that takes a finished asset and tests it against the brief, the brand voice and the honesty rules before anybody publishes it.\n\nThose two are the graded output of this week. Everything below is the build order.\n\n## Step one: choose the campaign worth systemising\n\nPick the campaign type that repeats most often, not the one you enjoy most. The launch you do twice a year is a poor candidate. The monthly newsletter, the always-on ad refresh, the quarterly reactivation push — these are where a chain pays for itself, because the second run costs almost nothing.\n\nIf two candidates tie, take the one where the brief is most stable. A chain built on shifting ground needs rebuilding before it earns anything back.\n\n## Step two: draw the chain before you write any prompt\n\nOn one line, name the four steps and the artefact each hands to the next. Something like:\n\n*raw request → sharpened brief → six angles → approved flagship asset → channel variants*\n\nWrite the arrows first. If you cannot name what moves across an arrow, that handoff will break when you build it. This takes two minutes and saves an afternoon.\n\n## Step three: write the shared header once\n\nEvery step in your chain repeats the same short block at the top. It carries the placeholders, the honesty rules and the voice constraint, and it is the reason a step still works when it is run in a fresh conversation.\n\nA workable header carries: the audience, the decision the output must drive, the proof you actually hold, the voice constraint, and the standing rules — no invented figures, no fabricated customer quotes, disclosure where the channel requires it, and stop if a placeholder is unfilled.\n\nWrite it once. Paste it at the top of all four steps. Do not paraphrase it per step, because four slightly different versions of your honesty rules is worse than none.\n\n## Step four: write each step with its handoff\n\nNow write step one through four, working forward. For each, be explicit about three things: what it receives, what it must return, and in what shape. The shape is the part people skip. `Return six blocks with these five labelled lines and nothing else` is a handoff. `Give me some angles` is a conversation.\n\n## Step five: make the checkpoints part of the document\n\nA checkpoint that lives in your head is not a checkpoint. Write them into the chain document as lines a human has to pass:\n\n- **After the sharpened brief** — has the audience been widened? Has a benefit appeared that you do not hold?\n- **After the angles** — is the audience belief each angle attacks actually true in your market?\n- **Before publication** — the verification prompt runs here.\n\nName who does each check. On a team of one, that is still worth writing down, because the point of writing it is that you notice when you skipped it.\n\n## Step six: the verification prompt\n\nThis is the piece most marketers never build, and it is the one that keeps you out of trouble.\n\nThe verification prompt takes a finished asset and returns a verdict, claim by claim. It is not a proofreader and it is not an editor. Four design rules make it useful.\n\n**Run it in a fresh conversation.** An assistant that wrote the copy will defend the copy. Given the same thread, it tends to explain why its claim was reasonable rather than flag that the claim has no support. Open a new conversation, paste the brief, the voice file and the asset as three separate blocks, and ask for a check.\n\n**Forbid it from fixing anything.** The moment a verification prompt is allowed to rewrite, you get back an improved asset and no clear list of what was wrong with the old one, and you will publish the improvement without ever having seen the problem. Ask for findings only.\n\n**Require a per-item verdict, not an impression.** Every factual claim in the asset gets listed and marked: supported by the source material, not supported, or cannot tell from what was provided. That third category is the honest one and most checks omit it.\n\n**Make it name what it could not check.** A verification prompt cannot confirm that a statement is true in the world. It can only tell you whether the material you handed it supports the statement. Anything requiring outside knowledge — a competitor claim, a regulatory requirement, a price — must come back as *needs a human to verify*, and a person has to do that before publication.\n\n## Step seven: dry-run on a campaign you have already published\n\nDo not test a new chain on live work. Run it on a campaign you published last quarter, where you already know what good looked like.\n\nTwo things come out of this. You will find the handoff that breaks, usually because a step returned prose where the next one expected fields. And you will find out whether your verification prompt catches the things you already know were wrong with that campaign — a soft claim, a stat nobody could source, a subject line that was not in your voice. If it misses them, tighten it now, on work that cannot hurt you.\n\n## What the chain does not do for you\n\nTwo things stay yours, and it is worth being blunt about them before you start relying on the document you are about to build.\n\nThe chain does not choose the angle. It produces six and structures the decision; which bet is true for your market is a judgement made by somebody who knows the market, and no amount of production machinery substitutes for it. Teams that skip checkpoint two get a fast, tidy, well-formatted campaign built on a proposition their customers do not hold.\n\nThe verification prompt does not sign anything off. It narrows what a human has to read and it catches the specific failure of a claim appearing from nowhere, which is the failure that most often reaches publication. What it hands you is a shorter list and a clearer question. A named person still answers the question, and their name is in the chain document for that reason.\n\n## Step eight: header, storage, done\n\nPut a version header on both documents: version, date, owner, what it is for, what changed, known limits. Save them alongside the brand-voice file and the brief format, named by the job they do. Then use them, and let the edits you keep making by hand tell you what the next version should say.",
+   "estimated_minutes": 30,
+   "learning_objectives": [
+    "Build a four-step campaign chain with placeholders, handoffs and named checkpoints",
+    "Write a verification prompt that returns claim-by-claim verdicts without rewriting",
+    "Route claims needing outside knowledge to a named human before publication",
+    "Dry-run a new chain against published work to find the handoff that breaks"
+   ],
+   "case_study": "**Chicago Sun-Times — the syndicated summer reading list that recommended books nobody wrote (May 2025)**\n\nIn May 2025 the Chicago Sun-Times ran a special summer section including a recommended reading list. The authors on it were real and well known. Most of the books were not. Titles such as Tidewater Dreams, attributed to Isabel Allende, came with confident plot summaries for novels that had never existed. The section was not written by Sun-Times staff. It came from King Features, a syndication business owned by Hearst, and the freelance writer who produced it, Marco Buscaglia, said he had generated the list with AI assistance and had not checked it. The Philadelphia Inquirer ran the same syndicated content. A subsequent review by the Sun-Times found further errors elsewhere in the section.\n\nRead the failure carefully, because it is a production failure rather than a technology one. The generation step worked exactly as such tools work: asked for a plausible list, it produced a plausible list, and plausible is what fabrication looks like. Nothing in the pipeline afterwards was designed to ask whether the things being asserted were real.\n\nIt got through because it arrived looking finished. A syndicated section with a byline reads as an approved asset, and approved assets do not get re-checked at every desk they pass. That is the same effect that a saved template or a smooth production chain creates inside a marketing team: output that looks authoritative because of where it came from rather than because anyone tested it.\n\nThe check that would have caught it is unglamorous and takes two minutes. Every book title in that list was a factual claim with no supporting source attached, and a verification pass that listed each claim and marked it supported, not supported, or cannot tell would have returned ten unsupported items in a row. Ownership is the other half. Nobody in that chain believed the check was theirs to run, which is why the chain you build today names a person against each checkpoint, even if that person is you.",
+   "exercises": [
+    {
+     "order_index": 1,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "Why verification runs in a fresh conversation",
+     "prompt_md": "You have written a launch email with an assistant across a long conversation. You now want the same assistant to check the email against the brief and the honesty rules. Why should the check be run in a new conversation instead?",
+     "options": [
+      "In the same thread it tends to defend the reasoning that produced the copy",
+      "In the same thread it will have forgotten the brief you pasted at the start",
+      "In a new thread it can access more recent information about your market",
+      "In a new thread it applies stricter grammar rules than in a long conversation"
+     ],
+     "correct_answer": "In the same thread it tends to defend the reasoning that produced the copy"
+    },
+    {
+     "order_index": 2,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "What a verification prompt should return",
+     "prompt_md": "Your verification prompt reads a finished ad and comes back with a cleaner, tighter version of the same ad and a note saying it fixed a few issues along the way. Why is this the wrong output for a verification step?",
+     "options": [
+      "You get an improved asset with no list of what was wrong with the original",
+      "You get an asset that no longer matches the word limits set in the brief",
+      "You get an output the assistant cannot reproduce if you run the check again",
+      "You get an asset whose voice has drifted away from the brand voice file"
+     ],
+     "correct_answer": "You get an improved asset with no list of what was wrong with the original"
+    },
+    {
+     "order_index": 3,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "The limit of what a check can establish",
+     "prompt_md": "Your verification prompt marks a competitor comparison in your ad as supported, because a line supporting it appeared in the brief you pasted. What has the check actually established about that comparison?",
+     "options": [
+      "Only that the material you supplied backs it, not that it is true in the market",
+      "That the comparison is accurate, because it was traced back to a written source",
+      "That the comparison meets advertising rules, because it has documented support",
+      "That the comparison can be published, because no unsupported claim was found"
+     ],
+     "correct_answer": "Only that the material you supplied backs it, not that it is true in the market"
+    },
+    {
+     "order_index": 4,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "Choosing the first campaign to systemise",
+     "prompt_md": "You are deciding which campaign type to turn into your first reusable chain. You run a twice yearly product launch, a monthly newsletter and an occasional event push. Which should you build first, and on what basis?",
+     "options": [
+      "The monthly newsletter, because frequency is what makes a chain pay back",
+      "The product launch, because it is the campaign with the highest revenue at stake",
+      "The event push, because irregular work is where you waste the most set-up time",
+      "All three at once, because a chain built for one campaign rarely fits another"
+     ],
+     "correct_answer": "The monthly newsletter, because frequency is what makes a chain pay back"
+    },
+    {
+     "order_index": 5,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "Why the dry run uses old work",
+     "prompt_md": "The lesson tells you to test a newly built chain on a campaign you published last quarter rather than on the campaign you are about to run. What is the main reason for testing against completed work?",
+     "options": [
+      "You already know what good looked like, so you can see where the chain fails",
+      "Old campaigns are shorter, so the chain can be tested in far less time",
+      "Live campaigns change while you work, so the placeholders keep needing updates",
+      "Published work has been approved, so the assistant treats it more carefully"
+     ],
+     "correct_answer": "You already know what good looked like, so you can see where the chain fails"
+    },
+    {
+     "order_index": 6,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "Draw your chain",
+     "prompt_md": "Write your own campaign chain as a single line of steps and arrows, then state, for each arrow, exactly what artefact crosses it. Use a campaign type that genuinely repeats in your work.",
+     "correct_answer": "A good answer names a genuinely repeating campaign and gives four steps with named artefacts crossing each arrow, for example raw request to sharpened brief, sharpened brief to six angles, chosen angle to approved flagship asset, approved asset to channel variants. Each arrow is described in terms of a concrete object rather than an activity, so the artefact could be pasted into the next step unchanged. The strongest answers note where an arrow was hard to name, because that is the handoff most likely to break during the dry run."
+    },
+    {
+     "order_index": 7,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "The shared header block",
+     "prompt_md": "Describe the shared header block that sits at the top of every step of your chain. Say what it contains and explain why it is repeated verbatim rather than paraphrased for each step.",
+     "correct_answer": "The header carries the placeholders for audience, the decision the output must drive and the proof actually held, plus the brand-voice constraint and the standing rules: no invented figures, no fabricated customer quotes, disclosure where the channel requires it, and stop if a placeholder is unfilled. It is repeated so that any step still works when run in a fresh conversation, which is what makes the steps portable and individually reusable. It is repeated verbatim because four slightly different wordings of the honesty rules would leave you unsure which version any given asset was produced under."
+    },
+    {
+     "order_index": 8,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "Findings only, no fixes",
+     "prompt_md": "Explain why the verification prompt must be forbidden from rewriting the asset it is checking, and describe what you would do with its findings instead.",
+     "correct_answer": "If the check is allowed to rewrite, you receive a polished asset and no visible list of faults, so the fault is silently corrected without anyone learning that it happened or deciding whether the correction was right. Findings only forces a human decision on each item and preserves the record of what the chain produced wrong. The findings then split three ways: unsupported claims go back to the writing step or get cut, cannot-tell items go to a named person to verify from outside sources, and any fault that recurs run after run gets written into the template rather than fixed by hand again."
+    },
+    {
+     "order_index": 9,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "Who signs off after the check",
+     "prompt_md": "Your verification prompt has returned a clean report with no unsupported claims. Explain what this does and does not change about human sign-off before publication.",
+     "correct_answer": "A clean report means nothing in the asset contradicts the material supplied and no claim appeared without support in that material, which narrows what a human needs to look at. It does not establish that the supplied material is correct, current or complete, so anything resting on outside facts, prices, competitor positions or regulatory requirements still needs a person to confirm. Sign-off therefore stays with a named human, and the check changes what that human reads first rather than removing the step."
+    },
+    {
+     "order_index": 10,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "Applying the lesson to a real failure",
+     "prompt_md": "Using the case study from this lesson, identify the point in a production chain where the failure should have been caught, and write the specific verdict lines a good verification pass would have produced. Say why the content got through despite looking professional.",
+     "correct_answer": "The failure belongs at the pre-publication checkpoint, where a verification pass takes the finished asset and lists every factual claim against the supplied source material. Each book title and plot summary was a factual claim with no supporting source attached, so a good pass would have returned a run of identical verdicts reading not supported by the material provided, needs a human to verify the title exists. It got through because it arrived as a finished syndicated section that read as an approved asset, and approved assets stop being re-checked, so no person in the chain believed the check was theirs to run."
+    },
+    {
+     "order_index": 11,
+     "type": "short_answer",
+     "language": "prompt",
+     "marks": 5,
+     "title": "Prompt Lab: the master campaign chain template",
+     "prompt_md": "This is the first half of the week deliverable. Write the master chain template for a campaign type that repeats in your work, so that a colleague could run the whole campaign from it without asking you anything.\n\nIt must be one document containing all four steps, not four disconnected prompts.\n\nA strong answer will carry a version header, a placeholder list at the top, a shared header block repeated at every step, an explicit handoff format for each step so the next one can consume it without reformatting, a named human checkpoint between the steps where it belongs, and a stop rule for unfilled placeholders. Write it as the prompts themselves, ready to paste, not as a description of what the prompts would say.",
+     "correct_answer": "MASTER CHAIN: monthly reactivation campaign\nVersion: 1.0 | Date: [DATE] | Owner: [OWNER]\nUse for: the monthly reactivation push to lapsed customers.\nKnown limits: not for acquisition, not for any regulated claim about pricing.\n\nFILL BEFORE STARTING\n[AUDIENCE] [DECISION_TO_DRIVE] [PROOF_WE_HOLD] [OFFER] [CHANNELS] [WORD_LIMIT] [DEADLINE]\n\nSHARED HEADER (paste at the top of every step below)\nAudience: [AUDIENCE]\nDecision this campaign must drive: [DECISION_TO_DRIVE]\nProof we actually hold: [PROOF_WE_HOLD]\nOffer: [OFFER]\nVoice: [paste the brand voice file]\nStanding rules: use no figure, statistic or customer quote that is not in the proof above. Do not strengthen a claim beyond how it is written there. Flag anything that would need disclosure on [CHANNELS]. If any placeholder is still in square brackets or empty, stop and name it before writing anything.\n\nSTEP 1 - SHARPEN THE BRIEF\n[shared header]\nRestate this campaign as a brief. Return exactly these labelled lines and nothing else: Audience / The one decision / The offer / Proof we hold / What we must not claim / Voice constraint / Success looks like.\nWhere I have given you something vague, say so on the line rather than filling the gap.\n\nCHECKPOINT 1 - [OWNER] reads the brief. Has the audience widened? Has a benefit appeared that we do not hold? Do not continue until this is clear.\n\nSTEP 2 - ANGLES\n[shared header]\nBrief: [paste the approved output of step 1]\nGive me exactly six distinct angles, attacking six different reasons this audience lapsed. At least two must answer an objection rather than promote a benefit. Return six blocks with these labelled lines and no commentary: Angle name / Audience belief it challenges / Proof it leans on, from the brief only / One-line expression in our voice / Why this might fail.\n\nCHECKPOINT 2 - [OWNER] chooses one angle. Test: is the belief it attacks actually true for our market? Everything after this inherits that judgement.\n\nSTEP 3 - FLAGSHIP ASSET\n[shared header]\nChosen angle: [paste one block from step 2]\nWrite the flagship asset for [CHANNELS], maximum [WORD_LIMIT] words, with one call to action tied to [DECISION_TO_DRIVE]. Return: Subject line / Body / Call to action / CLAIMS USED, listing every factual claim you made and the line of the brief it came from.\n\nCHECKPOINT 3 - run the verification prompt on this asset before any variants are produced.\n\nSTEP 4 - VARIANTS\n[shared header]\nApproved asset: [paste the signed-off output of step 3]\nThe claims in the approved asset may not change, be strengthened, quantified or added to. Length, order, opening line and call-to-action phrasing may change. Produce: three subject lines of 40 characters or fewer, one SMS of 140 characters or fewer, two paid social variants of 25 words or fewer, one banner line of 12 words or fewer. Show the count in brackets after each. End with CHECK, listing any line where you were unsure whether a claim had shifted."
+    },
+    {
+     "order_index": 12,
+     "type": "short_answer",
+     "language": "prompt",
+     "marks": 5,
+     "title": "Prompt Lab: the pre-publication verification prompt",
+     "prompt_md": "This is the second half of the week deliverable, and the one that keeps you out of trouble. Write the reusable verification prompt that runs at the last checkpoint of your chain, in a fresh conversation, on a finished asset.\n\nIt has to test the asset against three things: the brief, the brand voice file, and the honesty rules carried through this course.\n\nA strong answer will take the brief, the voice file and the asset as three clearly separated inputs, forbid rewriting, require a claim-by-claim verdict with a cannot-tell category, force outside-knowledge items to be routed to a named human, cover disclosure and voice separately from factual accuracy, and end in a single overall recommendation that a person can act on.",
+     "correct_answer": "You are checking a finished marketing asset before publication. You did not write it. Do not rewrite, improve, shorten or reword any part of it. Findings only. If you produce a corrected version of the asset, you have failed the task.\n\nINPUT A - THE BRIEF\n[paste the approved brief: audience, the decision it must drive, the offer, proof we hold, what we must not claim]\n\nINPUT B - THE BRAND VOICE FILE\n[paste the voice file]\n\nINPUT C - THE ASSET AS WRITTEN\n[paste the finished asset]\n\nCHECK 1 - CLAIMS\nList every factual claim in the asset, including implied ones such as comparisons, superlatives, timescales, prices and anything a reader would take as a number. For each, give one verdict and nothing else:\nSUPPORTED - and quote the line of Input A that supports it\nNOT SUPPORTED - nothing in Input A backs this\nCANNOT TELL - this depends on information outside Input A, and name what a person would need to check\nDo not merge claims to shorten the list. If the asset contains no factual claims, say so explicitly.\n\nCHECK 2 - INVENTED MATERIAL\nName any statistic, research finding, customer quote, testimonial, award or endorsement that appears in the asset but not in Input A. Quote it exactly.\n\nCHECK 3 - BRIEF FIT\nState the decision the asset actually pushes the reader towards, in your words. Say whether it matches the decision in Input A. Name the audience the asset appears to be written for and say whether it matches. If the asset is aimed wider than the brief, say where it widened.\n\nCHECK 4 - VOICE\nQuote up to five lines that depart from Input B and name the rule each one breaks. Do not offer replacements.\n\nCHECK 5 - DISCLOSURE AND RISK\nName anything that would need a disclosure, a qualifier, a terms link or a legal review on the intended channel, including affiliate or paid relationships, health, financial or environmental claims, and comparisons with named competitors.\n\nOUTPUT\nReturn the five checks in order, then one final line reading exactly one of: CLEAR TO PUBLISH, CLEAR AFTER NAMED HUMAN CHECKS, or DO NOT PUBLISH. If the verdict is not CLEAR TO PUBLISH, list the specific items that must be resolved first, and who would have to resolve each one."
+    }
+   ]
+  }
+ ]
+}
