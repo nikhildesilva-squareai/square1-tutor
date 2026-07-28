@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import Link from "next/link";
 import type { CSSProperties } from "react";
+import { ProjectsTour } from "@/components/ProjectsTour";
 
 /* ─── Types ─────────────────────────────────────────────────────────────── */
 interface CourseRow { id: string; slug: string; title: string; color: string }
@@ -323,9 +324,13 @@ export default async function ProjectsPage() {
 
   return (
     <div className="px-4 sm:px-6 py-8 max-w-5xl mx-auto">
+      {/* First-visit walkthrough — the cards read as a catalogue, so it is not
+          obvious each one is a real repo you clone, build and submit. */}
+      <ProjectsTour />
+
       {/* Header — GitHub style */}
       <div className="flex items-center justify-between mb-6">
-        <div>
+        <div data-tour="projects-header">
           <h1 className="text-2xl font-black text-ink">Projects</h1>
           <p className="text-sm text-ink-muted mt-0.5">{completedProjects} of {totalProjects} completed</p>
         </div>
@@ -339,14 +344,14 @@ export default async function ProjectsPage() {
       </div>
 
       {/* Course sections */}
-      {courseList.map((course) => {
+      {courseList.map((course, courseIdx) => {
         const courseProjects = grouped.get(course.id) ?? [];
         if (courseProjects.length === 0) return null;
         const completed = courseProjects.filter(p => subMap.has(p.id) && subMap.get(p.id)!.score !== null).length;
         const lessonsComplete = completionsByCourse.get(course.id) ?? 0;
 
         return (
-          <div key={course.id} className="mb-8">
+          <div key={course.id} className="mb-8" data-tour={courseIdx === 0 ? "projects-list" : undefined}>
             {/* Course label — like GitHub org header */}
             <div className="flex items-center gap-2 mb-3 pb-3 border-b border-border">
               <div className="w-5 h-5 rounded flex items-center justify-center" style={{ background: course.color }}>
