@@ -9,6 +9,7 @@ import { cn } from "@/lib/utils";
 import katex from "katex";
 import { SaveNoteButton } from "@/components/SaveNoteButton";
 import { NovaPanel } from "@/components/NovaPanel";
+import { ProductTour } from "@/components/ProductTour";
 
 // ─── Types ─────────────────────────────────────────────────────────────────
 
@@ -512,6 +513,11 @@ export function LearnClient({
   const [results, setResults] = useState<ExerciseResult[] | null>(null);
   const [completing, setCompleting] = useState(false);
   const [completed, setCompleted] = useState(alreadyCompleted);
+  // Milestone facts from /api/learn/complete. isFirstWin drives the celebration
+  // for lesson ONE — the highest-leverage screen a new learner ever sees.
+  const [isFirstWin, setIsFirstWin] = useState(false);
+  const [lessonsDone, setLessonsDone] = useState<number | null>(null);
+  const [nextMinutes, setNextMinutes] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   // Time tracking
@@ -606,6 +612,10 @@ export function LearnClient({
         body: JSON.stringify({ lessonId: lesson.id, answers }),
       });
       if (!res.ok) { const d = await res.json(); throw new Error(d.error ?? "Failed"); }
+      const data = await res.json().catch(() => null);
+      if (data?.isFirstLesson) setIsFirstWin(true);
+      if (typeof data?.lessonsCompleted === "number") setLessonsDone(data.lessonsCompleted);
+      if (typeof data?.nextLessonMinutes === "number") setNextMinutes(data.nextLessonMinutes);
       setCompleted(true);
     } catch (err) { setError(err instanceof Error ? err.message : "Something went wrong"); }
     finally { setCompleting(false); }
@@ -811,7 +821,7 @@ export function LearnClient({
 
                 {/* Per-section "In short" takeaway — lands the point before the prose */}
                 {card.takeaway && (
-                  <div className="mb-4 flex items-start gap-2.5 rounded-xl border border-brand/20 bg-surface-tint px-4 py-3">
+                  <div data-tour="lesson-takeaway" className="mb-4 flex items-start gap-2.5 rounded-xl border border-brand/20 bg-surface-tint px-4 py-3">
                     <span className="mt-0.5 shrink-0 text-[10px] font-extrabold uppercase tracking-wider text-brand">In short</span>
                     <span className="text-[14.5px] font-medium leading-snug text-ink">{card.takeaway}</span>
                   </div>
@@ -823,7 +833,7 @@ export function LearnClient({
                   dangerouslySetInnerHTML={{ __html: card.content ?? "" }} />
 
                 {/* Ask Nova about THIS section — 3 grounded actions + Save */}
-                <div className="mt-5 rounded-2xl border border-indigo-500/25 bg-indigo-500/[0.04] p-3.5">
+                <div data-tour="lesson-nova" className="mt-5 rounded-2xl border border-indigo-500/25 bg-indigo-500/[0.04] p-3.5">
                   <div className="mb-2.5 flex items-center justify-between gap-2">
                     <div className="flex items-center gap-2">
                       <span className="flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-br from-indigo-600 to-violet-600 text-xs font-extrabold text-white">N</span>
@@ -862,7 +872,7 @@ export function LearnClient({
               return (
                 <div className="card-scale">
                   <div className="text-center mb-6">
-                    <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-amber-50 border border-amber-200 text-amber-700 text-xs font-bold">
+                    <span data-tour="lesson-quiz" className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-amber-50 border border-amber-200 text-amber-700 text-xs font-bold">
                       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" /></svg>
                       Quick Check
                     </span>
@@ -1233,13 +1243,56 @@ export function LearnClient({
                 </div>
 
                 <h2 className="text-2xl font-black text-ink mb-2">
-                  {completed ? "Lesson Complete!" : "Ready to finish?"}
+                  {completed
+                    ? isFirstWin
+                      ? "That's your first lesson done."
+                      : "Lesson Complete!"
+                    : "Ready to finish?"}
                 </h2>
                 <p className="text-sm text-ink-muted mb-6 max-w-sm mx-auto">
                   {completed
-                    ? "Great work. This lesson is in your progress."
+                    ? isFirstWin
+                      ? "You just did the thing most people who sign up never do — you finished something. Everything from here builds on it."
+                      : lessonsDone
+                        ? `Great work. That's ${lessonsDone} lessons done.`
+                        : "Great work. This lesson is in your progress."
                     : `You covered ${cards.filter(c => c.type === "theory").length} sections in ${Math.round(elapsed / 60)} minutes.`}
                 </p>
+
+                {/* First-win milestone — real facts only: what they just did,
+                    and how long the next one takes. No invented stats. */}
+                {completed && isFirstWin && (
+                  <div className="max-w-sm mx-auto mb-6 rounded-2xl border border-brand/20 bg-brand/[0.04] p-5 text-left">
+                    <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-brand mb-3">
+                      What you just banked
+                    </p>
+                    <ul className="space-y-2 text-[13px] text-ink">
+                      <li className="flex items-start gap-2.5">
+                        <span className="mt-0.5 text-emerald-600">✓</span>
+                        <span>
+                          {cards.filter(c => c.type === "theory").length} sections read in {Math.round(elapsed / 60)} minutes
+                        </span>
+                      </li>
+                      {results && (
+                        <li className="flex items-start gap-2.5">
+                          <span className="mt-0.5 text-emerald-600">✓</span>
+                          <span>{totalScore}/{maxScore} marks on the exercises, graded by Nova</span>
+                        </li>
+                      )}
+                      <li className="flex items-start gap-2.5">
+                        <span className="mt-0.5 text-emerald-600">✓</span>
+                        <span>This lesson&apos;s key ideas are now in your review deck for tomorrow</span>
+                      </li>
+                    </ul>
+                    {nextLessonId && (
+                      <p className="mt-4 pt-3 border-t border-brand/15 text-xs text-ink-muted">
+                        {nextMinutes
+                          ? `The next lesson takes about ${nextMinutes} minutes. Two in a row is how this starts to stick.`
+                          : "Two in a row is how this starts to stick."}
+                      </p>
+                    )}
+                  </div>
+                )}
 
                 {/* Score summary */}
                 {results && (
@@ -1374,6 +1427,45 @@ export function LearnClient({
 
       {/* In-lesson Nova slide-over */}
       <NovaPanel open={novaOpen} onClose={() => setNovaOpen(false)} context={novaContext} seed={novaSeed} />
+
+      {/* First-lesson walkthrough — the lesson player is where learners spend
+          most of their time, and its two best features (grounded Nova actions
+          per section, and quick checks that become flashcards) are easy to
+          scroll straight past. Shown once, on whichever lesson they open first;
+          steps whose target is not on this particular lesson are skipped. */}
+      <ProductTour
+        id="lesson-player"
+        steps={[
+          {
+            title: "This is where the learning happens",
+            body:
+              "A lesson is short sections of theory broken up by quick checks. Read, answer, move on — it is designed to be done in one sitting of about half an hour.",
+          },
+          {
+            target: "lesson-takeaway",
+            title: "The point, before the detail",
+            body:
+              "Each section opens with the one thing it wants you to remember. If you read nothing else, read this — then the prose underneath explains why.",
+          },
+          {
+            target: "lesson-nova",
+            title: "Stuck on a section? Ask about that section",
+            body:
+              "These three buttons send Nova the section you are reading, so the answer is grounded in it rather than generic. Explain it simpler, get another example, or have Nova quiz you on it.",
+          },
+          {
+            target: "lesson-quiz",
+            title: "Quick checks are not busywork",
+            body:
+              "You must answer these to complete the lesson — and every one of them becomes a flashcard in your Study Hub, due tomorrow. Getting one wrong is useful: that is the card you will see most.",
+          },
+          {
+            title: "Finish, and it schedules your revision",
+            body:
+              "Complete the lesson and the platform advances you to the next one and files your flashcards. Come back tomorrow and the review is already waiting.",
+          },
+        ]}
+      />
     </div>
   );
 }

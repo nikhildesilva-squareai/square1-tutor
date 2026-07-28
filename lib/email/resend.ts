@@ -133,21 +133,47 @@ export async function sendWelcomeEmail(to: string, name: string) {
 }
 
 /* ─── Streak Reminder ────────────────────────────────────────────────────── */
-export async function sendStreakReminder(to: string, name: string, streakDays: number, lessonTitle: string) {
+export async function sendStreakReminder(
+  to: string,
+  name: string,
+  streakDays: number,
+  lessonTitle: string,
+  lessonsDone = 0,
+) {
   const r = getResend();
+  // Only a live streak gets streak framing. With no streak we lead with what
+  // they've already banked (lessons done) — progress can't be "broken", so it
+  // motivates without the loss-aversion guilt trip. Callers guarantee
+  // lessonsDone >= 1 (students with zero completions get the activation
+  // sequence instead, never this email).
+  const hasStreak = streakDays > 0;
+  const headline = hasStreak
+    ? `${streakDays}-day streak!`
+    : lessonsDone > 0
+      ? `${lessonsDone} ${lessonsDone === 1 ? "lesson" : "lessons"} done`
+      : `Hey ${name}!`;
+  const subline = hasStreak
+    ? "Don't break it — one lesson keeps it going."
+    : lessonsDone > 0
+      ? "Pick up where you left off — the next one is short."
+      : "Your next lesson is waiting for you.";
   return r.emails.send({
     from: FROM,
     to,
-    subject: streakDays > 0 ? `Keep your ${streakDays}-day streak alive!` : "Time to learn something new",
+    subject: hasStreak
+      ? `Keep your ${streakDays}-day streak alive!`
+      : lessonsDone > 0
+        ? `Pick up where you left off, ${name}`
+        : "Time to learn something new",
     html: `
       <div style="font-family:system-ui,-apple-system,sans-serif;max-width:520px;margin:0 auto;padding:40px 20px;">
         <div style="text-align:center;margin-bottom:32px;">
           <img src="https://square1-tutor.vercel.app/logo-square1.png" alt="Square 1 AI" width="150" style="display:inline-block;margin-bottom:16px;max-width:150px;height:auto;" />
           <h1 style="color:#0F172A;font-size:24px;font-weight:800;margin:0 0 8px;">
-            ${streakDays > 0 ? `${streakDays}-day streak!` : "Hey " + name + "!"}
+            ${headline}
           </h1>
           <p style="color:#64748B;font-size:14px;margin:0;">
-            ${streakDays > 0 ? "Don't break it — one lesson keeps it going." : "Your next lesson is waiting for you."}
+            ${subline}
           </p>
         </div>
 
@@ -211,19 +237,48 @@ export async function sendAssessmentNudge(to: string, name: string) {
  * The highest-leverage lifecycle email: most signups stall before their first
  * lesson. Points straight at "start learning" (no assessment gate) to match the
  * dashboard's lesson-first CTA. */
-export async function sendActivationNudge(to: string, name: string) {
+/** A learner's measured gap, from their latest skill report. Null when the
+ *  report is missing or holds no usable topics — then we send generic copy. */
+export type ActivationGap = {
+  courseTitle: string | null;
+  courseSlug: string | null;
+  topics: string;      // "web security, OWASP and network security"
+  firstTopic: string;  // the single biggest gap
+  score: number | null;
+  maxScore: number | null;
+};
+
+export async function sendActivationNudge(to: string, name: string, gap: ActivationGap | null = null) {
   const r = getResend();
+  // When we know what they actually scored, speak to THAT — they already spent
+  // three minutes telling us. Generic "time to learn something new" wastes the
+  // one piece of personalisation we've earned.
+  const subject = gap
+    ? `${name}, one lesson closes your biggest gap: ${gap.firstTopic}`
+    : `${name}, your first lesson takes 5 minutes`;
+  const heroLine = gap && gap.courseTitle
+    ? `You finished the ${gap.courseTitle} skill check — here's the gap to close first.`
+    : "You created your account — now the good part. Your first lesson is waiting.";
   return r.emails.send({
     from: FROM,
     to,
-    subject: `${name}, your first lesson takes 5 minutes`,
+    subject,
     html: `
       <div style="font-family:system-ui,-apple-system,sans-serif;max-width:520px;margin:0 auto;padding:40px 20px;">
         <div style="text-align:center;margin-bottom:32px;">
           <img src="https://square1-tutor.vercel.app/logo-square1.png" alt="Square 1 AI" width="150" style="display:inline-block;margin-bottom:16px;max-width:150px;height:auto;" />
           <h1 style="color:#0F172A;font-size:24px;font-weight:800;margin:0 0 8px;">Ready when you are, ${name} 👋</h1>
-          <p style="color:#64748B;font-size:14px;margin:0;">You created your account — now the good part. Your first lesson is waiting.</p>
+          <p style="color:#64748B;font-size:14px;margin:0;">${heroLine}</p>
         </div>
+${gap ? `
+        <div style="background:#EFF5FF;border:1px solid #D8E7FC;border-radius:12px;padding:20px;margin-bottom:24px;">
+          <p style="color:#0056CE;font-size:11px;text-transform:uppercase;letter-spacing:1px;font-weight:700;margin:0 0 8px;">Your biggest gap</p>
+          <p style="color:#0F172A;font-size:17px;font-weight:800;margin:0 0 6px;text-transform:capitalize;">${gap.firstTopic}</p>
+          <p style="color:#334155;font-size:14px;line-height:1.6;margin:0;">
+            Your check flagged ${gap.topics}${gap.score != null && gap.maxScore != null ? ` (you scored ${gap.score} of ${gap.maxScore})` : ""}.
+            The next lesson starts exactly there — no need to guess where to begin.
+          </p>
+        </div>` : ""}
 
         <div style="background:#F8FAFC;border:1px solid #E2E8F0;border-radius:12px;padding:24px;margin-bottom:24px;">
           <h3 style="color:#0F172A;font-size:16px;font-weight:700;margin:0 0 8px;">5 minutes. No test. No setup.</h3>

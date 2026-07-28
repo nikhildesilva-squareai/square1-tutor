@@ -98,6 +98,15 @@ export async function POST(request: Request) {
       // Continue anyway — non-critical
     }
 
+    // How many lessons this student has EVER completed, counted after the
+    // upsert so the very first one can be celebrated in the UI. The upsert is
+    // idempotent (onConflict student_id,lesson_id), so re-finishing a lesson
+    // won't inflate this or re-trigger the milestone.
+    const { count: lessonsCompleted } = await supabase
+      .from("lesson_completions")
+      .select("id", { count: "exact", head: true })
+      .eq("student_id", student.id);
+
     // ── Spaced-retrieval seeding ───────────────────────────────────────────
     // Turn this lesson's recall items (its MCQ + short-answer exercises) into
     // spaced-repetition flashcards in the learner's deck, first due the NEXT day
@@ -164,11 +173,12 @@ export async function POST(request: Request) {
 
     // Find the next lesson in this module, or the first lesson in the next module
     let nextLessonId: string | null = null;
+    let nextLessonMinutes: number | null = null;
 
     // Try next lesson in same module
     const { data: nextInModule } = await supabase
       .from("lessons")
-      .select("id")
+      .select("id, estimated_minutes")
       .eq("module_id", lesson.module_id)
       .gt("order_index", lesson.order_index)
       .order("order_index", { ascending: true })
@@ -177,6 +187,7 @@ export async function POST(request: Request) {
 
     if (nextInModule) {
       nextLessonId = nextInModule.id;
+      nextLessonMinutes = (nextInModule.estimated_minutes as number | null) ?? null;
     } else {
       // Get current module's order_index
       const { data: currentModule } = await supabase
@@ -200,13 +211,14 @@ export async function POST(request: Request) {
           // First lesson in next module
           const { data: firstLesson } = await supabase
             .from("lessons")
-            .select("id")
+            .select("id, estimated_minutes")
             .eq("module_id", nextModule.id)
             .order("order_index", { ascending: true })
             .limit(1)
             .maybeSingle();
 
           nextLessonId = firstLesson?.id ?? null;
+          nextLessonMinutes = (firstLesson?.estimated_minutes as number | null) ?? null;
         }
       }
     }
@@ -223,7 +235,16 @@ export async function POST(request: Request) {
     const admin = createAdminClient();
     const enrollmentCompleted = await checkAndMarkEnrollmentComplete(enrollment.id, admin);
 
-    return NextResponse.json({ completed: true, nextLessonId, enrollmentCompleted });
+    return NextResponse.json({
+      completed: true,
+      nextLessonId,
+      nextLessonMinutes,
+      enrollmentCompleted,
+      // Drives the first-win celebration: the moment after lesson ONE is the
+      // highest-leverage screen in the product for a brand-new learner.
+      lessonsCompleted: lessonsCompleted ?? null,
+      isFirstLesson: lessonsCompleted === 1,
+    });
   } catch (err) {
     if (err instanceof z.ZodError) {
       return NextResponse.json({ error: "Invalid request", details: err.issues }, { status: 400 });

@@ -1,5 +1,6 @@
 import { createAdminClient } from "@/lib/supabase/admin";
 import { computeStreak } from "@/lib/streaks";
+import { usableWeakTopics, joinTopics } from "@/lib/skill-gaps";
 import { getOrgStats } from "@/lib/org-stats";
 import {
   sendStreakReminder,
@@ -70,16 +71,52 @@ export async function runStreakReminders(): Promise<JobResult> {
 
   const studentIds = [...new Set(enrollments.map((e) => e.student_id as string))];
 
-  const [{ data: todayCompletions }, alreadyEmailed] = await Promise.all([
-    supabase
-      .from("lesson_completions")
-      .select("student_id")
-      .in("student_id", studentIds)
-      .gte("completed_at", todayStart.toISOString()),
-    recentlySent(supabase, "streak_reminder", todayStart.toISOString()),
-  ]);
+  const [{ data: todayCompletions }, alreadyEmailed, { data: allCompletions }, { data: pastSends }] =
+    await Promise.all([
+      supabase
+        .from("lesson_completions")
+        .select("student_id")
+        .in("student_id", studentIds)
+        .gte("completed_at", todayStart.toISOString()),
+      recentlySent(supabase, "streak_reminder", todayStart.toISOString()),
+      // Every completion ever, per student: a streak reminder to someone with
+      // ZERO completions is nonsense — they have no streak to protect, and it
+      // burns the inbox that the activation sequence needs. See the floor below.
+      supabase
+        .from("lesson_completions")
+        .select("student_id, completed_at")
+        .in("student_id", studentIds),
+      // Past streak sends, to enforce the stopping rule (no infinite daily nag).
+      supabase
+        .from("email_log")
+        .select("student_id, sent_at")
+        .eq("email_type", "streak_reminder")
+        .in("student_id", studentIds),
+    ]);
 
   const alreadyStudied = new Set((todayCompletions ?? []).map((c) => c.student_id));
+
+  // student_id -> most recent completion timestamp (absent = never studied)
+  const lastCompletion = new Map<string, string>();
+  for (const c of (allCompletions ?? []) as Array<{ student_id: string; completed_at: string }>) {
+    const prev = lastCompletion.get(c.student_id);
+    if (!prev || c.completed_at > prev) lastCompletion.set(c.student_id, c.completed_at);
+  }
+
+  // student_id -> how many streak reminders we've sent SINCE their last lesson.
+  // This is the fatigue counter: it resets the moment they study again.
+  const sendsSinceActivity = new Map<string, number>();
+  for (const e of (pastSends ?? []) as Array<{ student_id: string; sent_at: string }>) {
+    const since = lastCompletion.get(e.student_id);
+    if (since && e.sent_at <= since) continue; // pre-dates their last lesson
+    sendsSinceActivity.set(e.student_id, (sendsSinceActivity.get(e.student_id) ?? 0) + 1);
+  }
+
+  // Once we've nudged NUDGE_LIMIT times with nothing to show for it, daily is
+  // just noise (and a spam signal) — fall back to a weekly touch.
+  const NUDGE_LIMIT = 5;
+  const isWeeklySlot = new Date().getDay() === 1; // Monday
+
   const seen = new Set<string>();
 
   for (const enrollment of enrollments as unknown as Array<{
@@ -99,6 +136,21 @@ export async function runStreakReminders(): Promise<JobResult> {
       continue;
     }
 
+    // ── FLOOR: no completions ever → not a streak problem, an activation one.
+    // runActivationNudges owns these students; sending both would mean two
+    // emails competing for the same click, and "keep it going" to someone who
+    // never started reads as broken. (This was live for 34 consecutive days.)
+    if (!lastCompletion.has(sid)) {
+      result.skipped++;
+      continue;
+    }
+
+    // ── STOPPING RULE: after NUDGE_LIMIT unproductive nudges, weekly not daily.
+    if ((sendsSinceActivity.get(sid) ?? 0) >= NUDGE_LIMIT && !isWeeklySlot) {
+      result.skipped++;
+      continue;
+    }
+
     const { data: completions } = await supabase
       .from("lesson_completions")
       .select("completed_at")
@@ -110,8 +162,13 @@ export async function runStreakReminders(): Promise<JobResult> {
     const name = student.name ?? student.email.split("@")[0];
     const lessonTitle = enrollment.current_lesson?.title ?? "Your next lesson";
 
+    // A zero streak is a demoralising thing to lead with, so when there's no
+    // streak we show progress instead ("3 lessons done") — something earned
+    // that can't be lost. Real count, never an estimate.
+    const lessonsDone = (completions ?? []).length;
+
     try {
-      await sendStreakReminder(student.email, name, streak.current, lessonTitle);
+      await sendStreakReminder(student.email, name, streak.current, lessonTitle, lessonsDone);
       await logSend(supabase, sid, "streak_reminder");
       result.sent++;
     } catch (err) {
@@ -291,14 +348,35 @@ export async function runActivationNudges(): Promise<JobResult> {
 
   const studentIds = students.map((s) => s.id);
 
-  const [{ data: withLessons }, alreadyActivation, alreadyAssessment] = await Promise.all([
-    // Anyone with at least one completed lesson is already activated — skip.
-    supabase.from("lesson_completions").select("student_id").in("student_id", studentIds),
-    recentlySent(supabase, "activation_nudge", new Date(0).toISOString()),
-    recentlySent(supabase, "assessment_nudge", new Date(0).toISOString()),
-  ]);
+  const [{ data: withLessons }, alreadyActivation, alreadyAssessment, { data: reports }] =
+    await Promise.all([
+      // Anyone with at least one completed lesson is already activated — skip.
+      supabase.from("lesson_completions").select("student_id").in("student_id", studentIds),
+      recentlySent(supabase, "activation_nudge", new Date(0).toISOString()),
+      recentlySent(supabase, "assessment_nudge", new Date(0).toISOString()),
+      // Skill reports let us name the learner's ACTUAL biggest gap instead of
+      // sending "time to learn something new". Ordered oldest→newest so the
+      // map below ends up holding each student's most recent report.
+      supabase
+        .from("skill_reports")
+        .select("student_id, weak_topics, estimated_score, max_score, course:courses(title, slug)")
+        .in("student_id", studentIds)
+        .order("created_at", { ascending: true }),
+    ]);
 
   const started = new Set((withLessons ?? []).map((c) => c.student_id));
+
+  type ReportRow = {
+    student_id: string;
+    weak_topics: unknown;
+    estimated_score: number | null;
+    max_score: number | null;
+    course: { title: string; slug: string } | null;
+  };
+  const latestReport = new Map<string, ReportRow>();
+  for (const r of (reports ?? []) as unknown as ReportRow[]) {
+    latestReport.set(r.student_id, r); // ascending order ⇒ last write wins
+  }
 
   for (const student of students) {
     if (result.sent >= BATCH_CAP) break;
@@ -314,8 +392,25 @@ export async function runActivationNudges(): Promise<JobResult> {
       continue;
     }
 
+    // Personalise off the skill report when it holds usable topics. Legacy rows
+    // carry numeric junk tags (["0","1","2"]) — usableWeakTopics filters those,
+    // and an empty result falls back to the generic copy rather than shipping
+    // an empty "your gaps:" block.
+    const report = latestReport.get(student.id);
+    const topics = usableWeakTopics(report?.weak_topics);
+    const gap = topics.length > 0
+      ? {
+          courseTitle: report?.course?.title ?? null,
+          courseSlug: report?.course?.slug ?? null,
+          topics: joinTopics(topics),
+          firstTopic: topics[0],
+          score: report?.estimated_score ?? null,
+          maxScore: report?.max_score ?? null,
+        }
+      : null;
+
     try {
-      await sendActivationNudge(student.email, student.name ?? student.email.split("@")[0]);
+      await sendActivationNudge(student.email, student.name ?? student.email.split("@")[0], gap);
       await logSend(supabase, student.id, "activation_nudge");
       result.sent++;
     } catch (err) {

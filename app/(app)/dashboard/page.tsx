@@ -605,15 +605,33 @@ export default async function DashboardPage({ searchParams }: DashboardProps) {
           </div>
         </div>
 
-        <div className="bg-surface rounded-2xl border border-border shadow-card p-4 flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-amber-50 flex items-center justify-center shrink-0">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#D97706" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 12c2-2.96 0-7-1-8 0 3.038-1.773 4.741-3 6-1.226 1.26-2 3.24-2 5a6 6 0 1012 0c0-1.532-1.056-3.94-2-5-1.786 3-2.791 3-4 2z" /></svg>
+        {/* Streak OR progress. A bold "0 Day Streak" is the most demoralising
+            thing you can show someone still forming the habit — so with no live
+            streak we surface what they've actually banked (lessons done), which
+            can't be lost. The streak tile returns the moment there's one. */}
+        {streakInfo.current > 0 ? (
+          <div className="bg-surface rounded-2xl border border-border shadow-card p-4 flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-amber-50 flex items-center justify-center shrink-0">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#D97706" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 12c2-2.96 0-7-1-8 0 3.038-1.773 4.741-3 6-1.226 1.26-2 3.24-2 5a6 6 0 1012 0c0-1.532-1.056-3.94-2-5-1.786 3-2.791 3-4 2z" /></svg>
+            </div>
+            <div>
+              <p className="text-lg font-black text-ink">{streakInfo.current}</p>
+              <p className="text-[10px] text-ink-muted uppercase tracking-wider">Day Streak</p>
+            </div>
           </div>
-          <div>
-            <p className="text-lg font-black text-ink">{streakInfo.current}</p>
-            <p className="text-[10px] text-ink-muted uppercase tracking-wider">Day Streak</p>
+        ) : (
+          <div className="bg-surface rounded-2xl border border-border shadow-card p-4 flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center shrink-0">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0056CE" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
+            </div>
+            <div>
+              <p className="text-lg font-black text-ink">{lessonsCompleted}</p>
+              <p className="text-[10px] text-ink-muted uppercase tracking-wider">
+                {lessonsCompleted === 1 ? "Lesson Done" : "Lessons Done"}
+              </p>
+            </div>
           </div>
-        </div>
+        )}
       </div>
 
       {/* ── Two column layout ──────────────────────────────────────────── */}
