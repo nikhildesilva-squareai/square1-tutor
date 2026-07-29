@@ -59,13 +59,9 @@ function clampAnswer(answer: string): string {
 // and wrapped in an unforgeable per-batch token the student never sees. The
 // GRADING_SYSTEM_PROMPT instructs the judge to treat everything between the
 // markers as untrusted data and to award 0 to any manipulation attempt.
-const SUBMISSION_MARK = "UNTRUSTED_STUDENT_SUBMISSION";
-
-/** A per-batch delimiter token the student can't predict (they never see the
- * request), so they cannot forge the closing marker. */
-function submissionToken(): string {
-  return (Math.random().toString(36).slice(2, 10) + Math.random().toString(36).slice(2, 10)).toUpperCase();
-}
+// Shared with the project grader (lib/grading/project-review.ts) so both graders
+// delimit untrusted student content identically.
+import { SUBMISSION_MARK, submissionToken } from "./untrusted";
 
 /** Clamp, strip any delimiter-marker text (anti-forgery), then wrap the answer in
  * unforgeable per-batch markers so the grader treats it strictly as untrusted data. */

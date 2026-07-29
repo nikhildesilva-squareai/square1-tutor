@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 import { callAI, BudgetExceededError } from "@/lib/ai/budget";
@@ -446,7 +447,11 @@ export async function POST(
     // Token-free action plan — replaces the old per-grade AI recommendations call.
     const recommendationsMd = buildActionPlan(domainMastery, weakTopics, subject);
 
-    const { data: report, error: reportErr } = await supabase
+    // Grade records are written with the SERVICE ROLE: students must not hold
+    // INSERT/UPDATE on the grade tables, or they could set their own score by
+    // calling PostgREST directly and bypassing this route entirely. Ownership is
+    // already proven above from the session, not from the request.
+    const { data: report, error: reportErr } = await createAdminClient()
       .from("skill_reports")
       .insert({
         attempt_id: attemptId,
@@ -493,7 +498,9 @@ export async function POST(
     );
 
     /* ── Update attempt status ─────────────────────────────────────────── */
-    await supabase
+    // Service role for the same reason as above; the attempt was fetched with
+    // .eq("student_id", student.id), so ownership is already established.
+    await createAdminClient()
       .from("assessment_attempts")
       .update({
         status: "graded",

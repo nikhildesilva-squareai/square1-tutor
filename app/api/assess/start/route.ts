@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
@@ -73,8 +74,12 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "No questions found for this assessment" }, { status: 404 });
     }
 
-    // Create attempt
-    const { data: attempt, error: attemptErr } = await supabase
+    // Create attempt.
+    // Grade records are written with the SERVICE ROLE: students must not hold
+    // INSERT/UPDATE on the grade tables, or they could set their own score by
+    // calling PostgREST directly and bypassing this route entirely. Ownership is
+    // already proven above from the session, not from the request.
+    const { data: attempt, error: attemptErr } = await createAdminClient()
       .from("assessment_attempts")
       .insert({
         student_id: student.id,
