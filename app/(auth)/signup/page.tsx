@@ -32,6 +32,9 @@ const CODE_LENGTH = 6;
 
 // Maps a diagnostic/course slug (?subject=) to a display subject so the
 // track a visitor picked on the mini-diagnostic carries into their profile.
+// Keep in step with DIAG_SUBJECTS in lib/diagnostic.ts. Not imported from there
+// because that module carries the whole question bank, which has no business in
+// the signup bundle.
 const SLUG_TO_SUBJECT: Record<string, string> = {
   "generative-ai": "Generative AI",
   "machine-learning": "Machine Learning",
@@ -39,12 +42,19 @@ const SLUG_TO_SUBJECT: Record<string, string> = {
   "cybersecurity": "Cybersecurity",
   "data-science": "Data Science",
   "fullstack-development": "Full Stack Development",
-  "game-development": "Game Development",
   "computer-vision": "Computer Vision",
-  "drone-technology": "Drone Technology",
   "llm-agent-architect": "LLM Agent Architect",
+  "agentic-ai": "Agentic AI",
   "ai-product-management": "AI Product Management",
-  "devops-engineering": "DevOps Engineering",
+  // Non-technical lane
+  "ai-foundations": "AI Foundations",
+  "ai-for-marketers": "AI for Marketers",
+  "ai-for-finance": "AI for Finance",
+  "ai-for-creators": "AI for Creators",
+  "ai-for-founders": "AI for Founders",
+  "ai-for-teachers": "AI for Teachers",
+  "ai-for-project-managers": "AI for Project Managers",
+  "ai-for-sales": "AI for Sales",
 };
 
 /* ─── Brand SVG icons (inline — no external requests) ─────────────────────── */
@@ -89,9 +99,15 @@ export default function SignupPage() {
   // Capture the track the visitor picked on the mini-diagnostic (?subject=slug),
   // read client-side so we don't need a Suspense boundary for useSearchParams.
   const subjectRef = useRef<string>("");
+  // The raw slug as well as the display subject: it's what we land them on
+  // after verifying, so they arrive in the course they were just tested on
+  // rather than on a generic dashboard.
+  const courseSlugRef = useRef<string>("");
   useEffect(() => {
     const slug = new URLSearchParams(window.location.search).get("subject");
-    if (slug && SLUG_TO_SUBJECT[slug]) subjectRef.current = SLUG_TO_SUBJECT[slug];
+    if (!slug) return;
+    if (SLUG_TO_SUBJECT[slug]) subjectRef.current = SLUG_TO_SUBJECT[slug];
+    courseSlugRef.current = slug;
   }, []);
 
   /* ── Countdown timer ──────────────────────────────────────────────────── */
@@ -110,10 +126,14 @@ export default function SignupPage() {
     setLoading(true);
     setError(null);
     const supabase = createClient();
+    // Google sign-ups never reach handleVerify, so carry the diagnostic's track
+    // through the callback instead. The callback sanitises `next` and already
+    // permits /courses/... ; an unknown slug there falls back to /dashboard.
+    const next = courseSlugRef.current ? `?next=/courses/${courseSlugRef.current}` : "";
     const { error } = await supabase.auth.signInWithOAuth({
       provider,
       options: {
-        redirectTo: `${window.location.origin}/api/auth/callback`,
+        redirectTo: `${window.location.origin}/api/auth/callback${next}`,
       },
     });
     if (error) setError(error.message);
@@ -154,6 +174,9 @@ export default function SignupPage() {
     if (subjectRef.current) {
       localStorage.setItem("sq1_pending_subject", subjectRef.current);
     }
+    if (courseSlugRef.current) {
+      localStorage.setItem("sq1_pending_course", courseSlugRef.current);
+    }
     setStep("otp");
     setDigits(Array(CODE_LENGTH).fill(""));
     setResendCountdown(60);
@@ -187,18 +210,32 @@ export default function SignupPage() {
       // country) are deferred — collected later in the dashboard / Settings.
       // We only carry the track they picked on the diagnostic, if any.
       const pendingSubject = localStorage.getItem("sq1_pending_subject");
+      const pendingCourse = localStorage.getItem("sq1_pending_course");
+
+      // Default destination. If they came from the diagnostic, /api/onboard
+      // tells us whether that track has a live course and we land them on it.
+      let destination = "/dashboard";
       try {
-        await fetch("/api/onboard", {
+        const res = await fetch("/api/onboard", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(pendingSubject ? { subject: pendingSubject } : {}),
+          body: JSON.stringify({
+            ...(pendingSubject ? { subject: pendingSubject } : {}),
+            ...(pendingCourse ? { courseSlug: pendingCourse } : {}),
+          }),
         });
+        if (res.ok) {
+          const { courseSlug } = (await res.json()) as { courseSlug?: string | null };
+          if (courseSlug) destination = `/courses/${courseSlug}`;
+        }
         localStorage.removeItem("sq1_pending_subject");
+        localStorage.removeItem("sq1_pending_course");
       } catch {
-        // Non-fatal — student record may already exist or will be created lazily
+        // Non-fatal — student record may already exist or will be created
+        // lazily; fall back to the dashboard rather than blocking the signup.
       }
 
-      router.push("/dashboard");
+      router.push(destination);
       setLoading(false);
     },
     [email, router],

@@ -47,7 +47,28 @@ export async function GET(request: NextRequest) {
       } catch {
         /* ignore — never break sign-in over geolocation */
       }
-      return NextResponse.redirect(`${origin}${next}`);
+
+      // sanitizeRedirect only vets the shape of the path, not whether the course
+      // exists. /courses/[slug] calls notFound() on an unknown slug, so a signup
+      // arriving from a diagnostic track with no live course would land on a 404
+      // straight after authenticating. Confirm it resolves, else use /dashboard.
+      let destination = next;
+      const courseMatch = /^\/courses\/([^/?#]+)/.exec(next);
+      if (courseMatch) {
+        try {
+          const { data: course } = await supabase
+            .from("courses")
+            .select("slug")
+            .eq("slug", decodeURIComponent(courseMatch[1]))
+            .eq("status", "active")
+            .maybeSingle();
+          if (!course) destination = "/dashboard";
+        } catch {
+          destination = "/dashboard";
+        }
+      }
+
+      return NextResponse.redirect(`${origin}${destination}`);
     }
   }
   return NextResponse.redirect(`${origin}/login?error=auth_failed`);

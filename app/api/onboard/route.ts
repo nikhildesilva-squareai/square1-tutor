@@ -8,6 +8,10 @@ const OnboardSchema = z.object({
   country: z.string().min(1).max(100).optional(),
   subject: z.string().min(1).max(100).optional(),
   experience: z.string().min(1).max(100).optional(),
+  // Course slug the visitor was skill-tested on (?subject= on the diagnostic
+  // CTA). Echoed back only if it resolves to a live course, so the caller can
+  // land them on it — see the courseSlug note in the response below.
+  courseSlug: z.string().min(1).max(100).optional(),
 });
 
 export async function POST(request: Request) {
@@ -42,7 +46,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Invalid input" }, { status: 400 });
     }
 
-    const { name, country, subject, experience } = parsed.data;
+    const { name, country, subject, experience, courseSlug } = parsed.data;
 
     // Find or create student record for this user
     //
@@ -116,7 +120,22 @@ export async function POST(request: Request) {
       }
     }
 
-    return NextResponse.json({ studentId });
+    // Resolve where to send them next. The diagnostic's subject list includes a
+    // few tracks with no live course, and /courses/[slug] calls notFound() on an
+    // unknown slug - so validate here rather than bouncing a brand-new signup
+    // onto a 404. Null means "no live course for that track": land on /dashboard.
+    let resolvedCourseSlug: string | null = null;
+    if (courseSlug) {
+      const { data: course } = await supabase
+        .from("courses")
+        .select("slug")
+        .eq("slug", courseSlug)
+        .eq("status", "active")
+        .maybeSingle();
+      resolvedCourseSlug = course?.slug ?? null;
+    }
+
+    return NextResponse.json({ studentId, courseSlug: resolvedCourseSlug });
   } catch {
     return NextResponse.json({ error: "Something went wrong" }, { status: 500 });
   }
