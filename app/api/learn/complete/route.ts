@@ -80,8 +80,11 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Not enrolled in this course" }, { status: 403 });
     }
 
-    // Upsert lesson completion (enrollment_id is required by the table)
-    const { error: completionError } = await supabase
+    // Upsert lesson completion (enrollment_id is required by the table).
+    // Service role: students hold no write privilege on the grade tables, so
+    // they can't mark lessons complete by calling PostgREST directly. The
+    // enrolment check above proves this student owns this course.
+    const { error: completionError } = await createAdminClient()
       .from("lesson_completions")
       .upsert(
         {

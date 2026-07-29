@@ -114,7 +114,10 @@ export async function POST(request: Request) {
       attemptNumber = (existingSubmission.attempt_number ?? submissionHistory.length) + 1;
     }
 
-    const { data: submission, error: upsertError } = await supabase
+    // Service role: students hold no write privilege on the grade tables, so a
+    // score can only be set by this route, after Nova has actually graded the
+    // work. student_id comes from the session, never the request body.
+    const { data: submission, error: upsertError } = await createAdminClient()
       .from("project_submissions")
       .upsert(
         {
