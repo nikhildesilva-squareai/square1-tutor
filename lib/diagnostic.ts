@@ -667,6 +667,112 @@ const AI_FOR_SALES: DiagQuestion[] = [
   },
 ];
 
+const AI_FOR_OPERATIONS: DiagQuestion[] = [
+  {
+    stem: "You want an AI assistant to draft a demand-forecast summary from last year's sales and shipping data. The input that gets a useful result is…",
+    options: [
+      "The actual data, the season you're planning for, and the decisions it needs to inform",
+      "A one-line request — a capable assistant can infer the rest of the context",
+      "A competitor's public forecast for it to adapt to your numbers",
+      "An instruction to stay optimistic so the plan looks achievable",
+    ],
+    correct: 0, topic: "Work briefing",
+  },
+  {
+    stem: "An AI tool predicts demand will jump 30% next quarter. Before you raise purchase orders on it…",
+    options: [
+      "Sanity-check it against real history and known signals — a wrong forecast ties up cash in stock",
+      "Act on it immediately — forecasting is exactly what AI is best at",
+      "Round it up to 40% to stay safe against stockouts",
+      "Forward it to a supplier so they can validate it for you",
+    ],
+    correct: 0, topic: "Output verification",
+  },
+  {
+    stem: "Your logistics file includes customer addresses and negotiated contract prices. Before pasting it into an AI tool…",
+    options: [
+      "Use a tool your company has approved for confidential data, not a personal chatbot account",
+      "Paste it into whichever free tool returns the fastest answer",
+      "Remove the addresses but share the pricing — numbers aren't personal data",
+      "Assume anything typed into a chatbot stays private by default",
+    ],
+    correct: 0, topic: "Sensitive data",
+  },
+  {
+    stem: "Which of these should you NOT hand to an AI assistant to do outright?",
+    options: [
+      "Approving a purchase order or committing a delivery date to a customer",
+      "Drafting a first-pass standard operating procedure from your notes",
+      "Turning a messy supplier email into a clear action list",
+      "Summarising a week of warehouse incident reports for your review",
+    ],
+    correct: 0, topic: "Judgment calls",
+  },
+  {
+    stem: "The safest way to roll out an AI-drafted standard operating procedure is…",
+    options: [
+      "As a draft you review with the people who actually do the work before it's official",
+      "As the live procedure the moment the AI produces it",
+      "As a replacement for training, since every step is written down",
+      "As the final word in disputes about how the process should run",
+    ],
+    correct: 0, topic: "Process workflow",
+  },
+];
+
+const AI_FOR_STUDENTS: DiagQuestion[] = [
+  {
+    stem: "You have an essay due next week. The way of using AI that actually helps you learn is…",
+    options: [
+      "Asking it to explain the topic, outline arguments and critique your draft — then writing it yourself",
+      "Having it write the whole essay so you can submit it and save the time",
+      "Pasting the question and turning in its answer with a few words changed",
+      "Asking it to make your writing sound more advanced than you understand",
+    ],
+    correct: 0, topic: "Using AI to learn",
+  },
+  {
+    stem: "An AI tool gives you a fact and a named source to cite in an assignment. Before you use it…",
+    options: [
+      "Check the source actually exists and really says that — AI can invent convincing citations",
+      "Cite it as given — if the AI named a source, the source is real",
+      "Change the author's name slightly so it can't be traced back to the AI",
+      "Cite it vaguely as 'research shows' so you don't have to name the source",
+    ],
+    correct: 0, topic: "Checking facts",
+  },
+  {
+    stem: "Which use is most likely to break your school's academic-honesty rules?",
+    options: [
+      "Submitting AI-generated answers as your own original work",
+      "Asking AI to explain a concept you didn't follow in class",
+      "Using AI to quiz you on the material before an exam",
+      "Having AI check your finished essay for spelling and grammar",
+    ],
+    correct: 0, topic: "Academic integrity",
+  },
+  {
+    stem: "The most effective way to study with AI is to…",
+    options: [
+      "Have it quiz you and explain where you went wrong, so you can recall it yourself later",
+      "Read its summary of the topic once and move on",
+      "Ask it for the answers so you can memorise them the night before",
+      "Let it take all your notes so you don't have to engage with the material",
+    ],
+    correct: 0, topic: "Effective study",
+  },
+  {
+    stem: "When using an AI tutor, the smart habit around your own information is to…",
+    options: [
+      "Keep personal details out and use a tool your school or parents approve of",
+      "Share your full name, school and schedule so it can personalise everything",
+      "Trust its advice on health or safety exactly as you would a professional's",
+      "Assume everything you type is private and never stored anywhere",
+    ],
+    correct: 0, topic: "Safe & private use",
+  },
+];
+
 const BANK: Record<string, DiagQuestion[]> = {
   "agentic-ai": AGENTIC_AI,
   "generative-ai": GENERATIVE_AI,
@@ -689,6 +795,8 @@ const BANK: Record<string, DiagQuestion[]> = {
   "ai-for-teachers": AI_FOR_TEACHERS,
   "ai-for-project-managers": AI_FOR_PROJECT_MANAGERS,
   "ai-for-sales": AI_FOR_SALES,
+  "ai-for-operations": AI_FOR_OPERATIONS,
+  "ai-for-students": AI_FOR_STUDENTS,
 };
 
 /**
@@ -804,6 +912,8 @@ export const DIAG_SUBJECTS: DiagSubject[] = [
   { slug: "ai-for-teachers", title: "AI for Teachers", icon: "\u{1F34E}", role: "AI-Productive Teacher", color: "#0D9488" },
   { slug: "ai-for-project-managers", title: "AI for Project Managers", icon: "\u{1F5C2}\u{FE0F}", role: "AI-Productive Project Manager", color: "#B45309" },
   { slug: "ai-for-sales", title: "AI for Sales", icon: "\u{1F91D}", role: "AI-Productive Sales Professional", color: "#0E7490" },
+  { slug: "ai-for-operations", title: "AI for Operations", icon: "\u{1F4E6}", role: "AI-Productive Operations Professional", color: "#0369A1" },
+  { slug: "ai-for-students", title: "AI for Students", icon: "\u{1F393}", role: "AI-Productive Student", color: "#9333EA" },
 ];
 
 export function getSubject(slug: string): DiagSubject | undefined {
@@ -1160,6 +1270,40 @@ export const SUBJECT_SEO: Record<string, SubjectSEO> = {
       "Customer data": "CRM data belongs in company-approved tools, never in personal chatbot accounts.",
       "Call preparation": "AI briefs speed up prep; the thinking about this account is still your edge.",
       "Honest selling": "Every capability claim in a draft you send is a promise you'll have to keep.",
+    },
+  },
+  "ai-for-operations": {
+    h1: "Is AI making your operations sharper — or just busier?",
+    description: "Free 3-minute AI skill check for operations & supply chain professionals. Five real scenarios on forecasting, data handling, and process judgment — instant results, no signup.",
+    body: "Operations and supply chain teams sit on exactly the kind of data AI is good with — forecasts, schedules, supplier emails, incident logs. The teams pulling ahead don't just automate; they brief AI with real constraints, verify its numbers before money moves, and keep sensitive customer and pricing data out of the wrong tools.\n\nThis 3-minute check tests five judgment calls that decide whether AI tightens your operation or just adds noise: briefing an AI forecast with the right inputs, sanity-checking its predictions before you reorder, handling confidential logistics data safely, knowing what to never hand off outright, and rolling out AI-drafted procedures the right way.\n\nFive questions, instant results, no signup.",
+    faqs: [
+      { q: "Do I need to be technical to take this?", a: "No — it's about judgment, not tools. Every question is a real operations scenario; there's no code and no jargon." },
+      { q: "Will AI replace planners and coordinators?", a: "This check reflects the opposite view: AI drafts and forecasts, but committing orders, dates, and trade-offs stays with you. It measures how well your AI habits support that." },
+      { q: "What happens after the snapshot?", a: "You get an instant read on where you're strong. Sign up for the free AI for Operations course to turn the gaps into skills." },
+    ],
+    topicRelevance: {
+      "Work briefing": "A forecast is only as good as the data and constraints you brief it with.",
+      "Output verification": "A wrong prediction ties up cash in stock — verify before the PO goes out.",
+      "Sensitive data": "Customer addresses and contract pricing belong in approved tools, never a personal chatbot.",
+      "Judgment calls": "Approving orders and committing dates are yours to own; AI drafts around them.",
+      "Process workflow": "An AI-drafted SOP is a starting draft, checked with the people who run the process.",
+    },
+  },
+  "ai-for-students": {
+    h1: "Are you using AI to learn — or to skip the learning?",
+    description: "Free 3-minute AI skill check for students. Five scenarios on studying with AI, checking facts, and academic honesty — instant results, no signup.",
+    body: "Almost every student now has an AI assistant a tab away. The ones it actually helps use it to understand the material — to be quizzed, to have a concept explained a different way, to get feedback on a draft. The ones it hurts hand in its answers and skip the part where the learning happens.\n\nThis 3-minute check tests five habits that decide which way AI takes you: using it to learn rather than to shortcut, checking the facts and citations it gives you, staying on the right side of academic-honesty rules, studying in a way that actually sticks, and using AI tutors safely and privately.\n\nFive questions, instant results, no signup.",
+    faqs: [
+      { q: "Is it cheating to use AI for schoolwork?", a: "It depends how. Using AI to explain, quiz, or give feedback is studying; submitting its work as your own usually breaks academic-honesty rules. This check helps you tell the difference." },
+      { q: "Do I need to know anything technical?", a: "No — it's about how you study, not about the tools. There's no code and nothing to install." },
+      { q: "What's after the snapshot?", a: "You get an instant read on your AI study habits. The free AI for Students course builds the ones you're missing." },
+    ],
+    topicRelevance: {
+      "Using AI to learn": "The value is in understanding the work, not in outsourcing it.",
+      "Checking facts": "AI can invent convincing sources — verify before you cite.",
+      "Academic integrity": "Knowing where the honesty line sits protects your grades and your record.",
+      "Effective study": "Being quizzed and corrected sticks; passively reading a summary doesn't.",
+      "Safe & private use": "Keep personal details out, and use tools your school or parents approve.",
     },
   },
 };
