@@ -63,7 +63,7 @@ export default function ReportPage({ params }: PageProps) {
   /* ═══════════════════════════════════════════════════════════════════ */
   if (error) {
     return (
-      <div className="min-h-screen flex items-center justify-center p-6">
+      <div className="min-h-dvh flex items-center justify-center p-6">
         <div className="text-center max-w-md">
           <div className="w-16 h-16 rounded-2xl bg-error-bg flex items-center justify-center mx-auto mb-4">
             <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--color-error)" strokeWidth="2">
@@ -90,7 +90,7 @@ export default function ReportPage({ params }: PageProps) {
     const progressPct = (completedDuration / totalDuration) * 100;
 
     return (
-      <div className="min-h-screen flex items-center justify-center p-6">
+      <div className="min-h-dvh flex items-center justify-center p-6">
         <div className="relative max-w-md w-full bg-surface border border-border rounded-2xl p-8 shadow-card">
           <div className="text-center mb-8">
             <div className="w-16 h-16 rounded-2xl bg-surface-tint flex items-center justify-center mx-auto mb-4">

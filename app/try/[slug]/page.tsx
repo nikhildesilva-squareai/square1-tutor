@@ -96,7 +96,7 @@ export default async function TryLessonPage({ params }: { params: Promise<{ slug
   const accent = data.color;
 
   return (
-    <div className="min-h-screen" style={{ background: "linear-gradient(180deg,#F8FAFC 0%,#FFFFFF 40%)" }}>
+    <div className="min-h-dvh" style={{ background: "linear-gradient(180deg,#F8FAFC 0%,#FFFFFF 40%)" }}>
       {/* Header */}
       <header className="sticky top-0 z-20 backdrop-blur-md bg-white/80 border-b border-slate-200/70">
         <div className="max-w-3xl mx-auto px-5 sm:px-6 h-16 flex items-center justify-between">

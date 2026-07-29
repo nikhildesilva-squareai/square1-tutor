@@ -41,7 +41,7 @@ export default async function TeamImpactReport() {
   ];
 
   return (
-    <div className="min-h-screen bg-white text-slate-900">
+    <div className="min-h-dvh bg-white text-slate-900">
       {/* Action bar — hidden in print */}
       <div className="print:hidden border-b border-slate-200 px-5 sm:px-8 py-4 flex items-center justify-between gap-4">
         <BackPill href="/business/dashboard" label="Back to portal" />

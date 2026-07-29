@@ -9,7 +9,7 @@ export const metadata = {
 
 export default async function CommunityPage() {
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-dvh flex flex-col">
       {/* Header with tab navigation */}
       <div className="border-b border-border">
         <div className="px-4 sm:px-6 py-4 max-w-7xl mx-auto flex items-center justify-between">

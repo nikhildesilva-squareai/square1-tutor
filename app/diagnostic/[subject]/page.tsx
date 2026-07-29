@@ -17,7 +17,7 @@ export default async function SubjectDiagnosticPage({ params }: PageProps) {
 
   if (!subject || !seo) {
     return (
-      <div className="flex min-h-screen flex-col items-center justify-center px-4">
+      <div className="flex min-h-dvh flex-col items-center justify-center px-4">
         <p className="mb-4 text-lg text-slate-600">Subject not found.</p>
         <Link href="/diagnostic" className="text-sm font-semibold text-blue-600 hover:underline">
           Browse all skill checks
@@ -49,7 +49,7 @@ export default async function SubjectDiagnosticPage({ params }: PageProps) {
   }
 
   return (
-    <div className="flex min-h-screen flex-col bg-white">
+    <div className="flex min-h-dvh flex-col bg-white">
       {/* Remember the chosen track so it can attach to the profile after signup. */}
       <SubjectCapture subject={subject.title} />
       {/* Funnel logging: this visitor opened the skill check for this subject. */}

@@ -45,7 +45,7 @@ export default async function SharedReportPage(
   const levelLabel = report.level.charAt(0).toUpperCase() + report.level.slice(1);
 
   return (
-    <div className="min-h-screen bg-surface-soft">
+    <div className="min-h-dvh bg-surface-soft">
       {/* Header — public chrome, hidden in print/PDF */}
       <header className="print:hidden flex items-center justify-between px-5 sm:px-10 py-5 bg-surface border-b border-border">
         <Link href="/"><Logo variant="dark" size="md" /></Link>

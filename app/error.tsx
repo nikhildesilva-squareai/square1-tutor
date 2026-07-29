@@ -22,7 +22,7 @@ export default function Error({ error, reset }: { error: Error & { digest?: stri
   }, [error]);
 
   return (
-    <main className="min-h-screen flex flex-col items-center justify-center text-center px-6 bg-white">
+    <main className="min-h-dvh flex flex-col items-center justify-center text-center px-6 bg-white">
       <div className="mb-8"><Logo variant="dark" size="lg" /></div>
       <p className="text-[11px] tracking-[0.35em] uppercase text-brand font-bold mb-3">Something went wrong</p>
       <h1 className="font-black text-slate-900 leading-[0.98] mb-4" style={{ fontSize: "clamp(32px,6vw,64px)", letterSpacing: "-0.03em" }}>

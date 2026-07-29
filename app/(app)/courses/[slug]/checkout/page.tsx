@@ -211,7 +211,7 @@ export default function CheckoutPage({ params }: { params: Promise<{ slug: strin
   const isFormValid = cardName.length > 2 && cardNumber.replace(/\s/g, "").length === 16 && expiry.length === 5 && cvc.length >= 3 && agreed;
 
   return (
-    <div className="min-h-screen py-8 sm:py-14 px-4 sm:px-6">
+    <div className="min-h-dvh py-8 sm:py-14 px-4 sm:px-6">
       <div className="max-w-4xl mx-auto">
         {/* ── Back link ───────────────────────────────────────────────────────── */}
         <Link

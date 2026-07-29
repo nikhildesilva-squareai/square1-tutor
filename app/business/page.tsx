@@ -24,7 +24,7 @@ export const metadata: Metadata = {
 
 export default function BusinessPage() {
   return (
-    <div className="min-h-screen" style={{ background: "linear-gradient(180deg,#F8FAFC 0%,#FFFFFF 35%)" }}>
+    <div className="min-h-dvh" style={{ background: "linear-gradient(180deg,#F8FAFC 0%,#FFFFFF 35%)" }}>
       {/* Header */}
       <header className="flex items-center justify-between px-5 sm:px-10 py-5">
         <Link href="/"><Logo variant="dark" size="md" /></Link>

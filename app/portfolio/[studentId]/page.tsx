@@ -163,7 +163,7 @@ export default async function PublicPortfolioPage({ params }: PageProps) {
   const joinYear = new Date(student.created_at).getFullYear();
 
   return (
-    <div className="min-h-screen bg-surface-soft">
+    <div className="min-h-dvh bg-surface-soft">
       {/* Public header */}
       <header className="bg-surface border-b border-border px-6 py-3">
         <div className="max-w-4xl mx-auto flex items-center justify-between">

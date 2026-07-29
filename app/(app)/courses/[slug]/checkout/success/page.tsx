@@ -131,7 +131,7 @@ export default function CheckoutSuccessPage({ params }: { params: Promise<{ slug
   }, [slug]);
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4 sm:px-6 py-16">
+    <div className="min-h-dvh flex items-center justify-center px-4 sm:px-6 py-16">
       {showConfetti && <Confetti />}
 
       <div className="max-w-md w-full text-center">

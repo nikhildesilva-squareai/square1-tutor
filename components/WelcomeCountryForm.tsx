@@ -39,7 +39,7 @@ export function WelcomeCountryForm() {
 
   return (
     <div
-      className="min-h-screen w-full flex items-center justify-center"
+      className="min-h-dvh w-full flex items-center justify-center"
       style={{
         background: `
           radial-gradient(ellipse 800px 500px at 20% 20%, rgba(0,86,206,0.08), transparent 60%),

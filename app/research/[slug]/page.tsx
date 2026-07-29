@@ -54,7 +54,7 @@ export default async function ResearchArticlePage(
     .slice(0, 3);
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-dvh bg-white">
       {/* Sticky header with reading progress */}
       <header className="sticky top-0 z-40 bg-white/85 backdrop-blur-md">
         <div className="relative max-w-4xl mx-auto flex items-center justify-between px-6 sm:px-8 py-4">

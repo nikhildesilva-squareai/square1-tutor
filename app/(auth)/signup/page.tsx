@@ -278,7 +278,7 @@ export default function SignupPage() {
   /* ── Shared input styles ───────────────────────────────────────────────── */
 
   const inputClass =
-    "w-full h-11 px-3.5 rounded-lg text-sm text-slate-900 placeholder:text-slate-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand/20 focus:border-brand transition-all";
+    "w-full h-11 px-3.5 rounded-lg text-base sm:text-sm text-slate-900 placeholder:text-slate-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand/20 focus:border-brand transition-all";
 
   const inputStyle: React.CSSProperties = {
     background: "#F8FAFC",
@@ -292,7 +292,7 @@ export default function SignupPage() {
 
   return (
     <div
-      className="min-h-screen w-full"
+      className="min-h-dvh w-full"
       style={{
         background: `
           radial-gradient(ellipse 800px 500px at 20% 20%, rgba(0,86,206,0.08), transparent 60%),

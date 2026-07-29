@@ -46,7 +46,7 @@ export default function StartTeamPage() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col" style={{ background: "linear-gradient(180deg,#F8FAFC 0%,#FFFFFF 45%)" }}>
+    <div className="min-h-dvh flex flex-col" style={{ background: "linear-gradient(180deg,#F8FAFC 0%,#FFFFFF 45%)" }}>
       <header className="flex items-center px-5 sm:px-10 py-5">
         <Link href="/business"><Logo variant="dark" size="md" /></Link>
       </header>

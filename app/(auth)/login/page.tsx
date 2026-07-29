@@ -214,7 +214,7 @@ export default function LoginPage() {
 
   return (
     <div
-      className="min-h-screen w-full flex items-center justify-center"
+      className="min-h-dvh w-full flex items-center justify-center"
       style={{
         background: `
           radial-gradient(ellipse 800px 500px at 20% 20%, rgba(0,86,206,0.08), transparent 60%),
@@ -293,7 +293,7 @@ export default function LoginPage() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="you@example.com"
-                  className="w-full h-12 px-4 rounded-xl text-sm text-slate-900 placeholder:text-slate-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand/20 focus:border-brand transition-all"
+                  className="w-full h-12 px-4 rounded-xl text-base sm:text-sm text-slate-900 placeholder:text-slate-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand/20 focus:border-brand transition-all"
                   style={{
                     background: "#F8FAFC",
                     border: "1px solid #E2E8F0",

@@ -15,7 +15,7 @@ export const metadata: Metadata = {
 
 export default function AIReadinessPage() {
   return (
-    <div className="min-h-screen" style={{ background: "linear-gradient(180deg,#F8FAFC 0%,#FFFFFF 35%)" }}>
+    <div className="min-h-dvh" style={{ background: "linear-gradient(180deg,#F8FAFC 0%,#FFFFFF 35%)" }}>
       <header className="flex items-center justify-between px-5 sm:px-10 py-5">
         <Link href="/business" aria-label="Back to Square 1 for Teams"><Logo variant="dark" size="md" /></Link>
         <Link href="/business" className="text-sm font-semibold text-slate-500 hover:text-slate-900 transition-colors">← For Teams</Link>

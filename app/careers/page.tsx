@@ -15,7 +15,7 @@ const ACCENT = "linear-gradient(135deg, #3388FF 0%, #0056CE 55%, #01224F 100%)";
 
 export default function CareersPage() {
   return (
-    <main className="min-h-screen overflow-x-hidden bg-white">
+    <main className="min-h-dvh overflow-x-hidden bg-white">
 
       {/* ── Hero ─────────────────────────────────────────────────────────────── */}
       <section className="relative overflow-hidden pt-6 pb-16 sm:pb-20 px-4 sm:px-6 lg:px-8 bg-white">

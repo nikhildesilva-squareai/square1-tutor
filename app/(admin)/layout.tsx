@@ -16,7 +16,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   if (!isAdminEmail(user.email)) redirect("/dashboard");
 
   return (
-    <div className="flex h-screen overflow-hidden bg-surface-soft">
+    <div className="flex h-dvh overflow-hidden bg-surface-soft">
       {/* Sidebar */}
       <AdminSidebar userEmail={user.email ?? ""} />
 

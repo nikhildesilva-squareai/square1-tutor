@@ -305,7 +305,7 @@ export default function AssessPage({ params }: PageProps) {
   /* ═══════════════════════════════════════════════════════════════════════ */
   if (phase === "welcome") {
     return (
-      <div className="min-h-screen flex items-center justify-center p-6 bg-surface-soft">
+      <div className="min-h-dvh flex items-center justify-center p-6 bg-surface-soft">
         <div className="relative max-w-md w-full">
           {/* Decorative glow */}
           <div className="absolute -inset-4 bg-gradient-to-br from-brand/5 via-transparent to-brand/5 rounded-3xl blur-2xl" />
@@ -380,7 +380,7 @@ export default function AssessPage({ params }: PageProps) {
   /* ═══════════════════════════════════════════════════════════════════════ */
   if (phase === "submitting") {
     return (
-      <div className="min-h-screen flex items-center justify-center p-6 bg-surface-soft">
+      <div className="min-h-dvh flex items-center justify-center p-6 bg-surface-soft">
         <div className="text-center anim-scale-in">
           <div className="w-20 h-20 rounded-full bg-surface-tint border-2 border-brand/20 flex items-center justify-center mx-auto mb-6">
             <svg className="animate-spin h-10 w-10 text-brand" viewBox="0 0 24 24" fill="none">
@@ -405,7 +405,7 @@ export default function AssessPage({ params }: PageProps) {
   /* ═══════════════════════════════════════════════════════════════════════ */
   if (phase === "review") {
     return (
-      <div className="min-h-screen bg-surface-soft">
+      <div className="min-h-dvh bg-surface-soft">
         {/* Header */}
         <div className="border-b border-border bg-surface px-6 py-4">
           <div className="max-w-2xl mx-auto flex items-center justify-between">
@@ -502,7 +502,7 @@ export default function AssessPage({ params }: PageProps) {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-surface-soft">
+    <div className="min-h-dvh flex flex-col bg-surface-soft">
       {/* ── Minimal Header ─────────────────────────────────────────────── */}
       <div className="bg-surface border-b border-border px-4 sm:px-6 py-3">
         <div className="max-w-3xl mx-auto flex items-center justify-between gap-4">

@@ -34,7 +34,7 @@ export default async function CommunityFeedPage() {
   }
 
   return (
-    <div className="flex min-h-screen flex-col">
+    <div className="flex min-h-dvh flex-col">
       <div className="border-b border-border">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6">
           <h1 className="text-2xl font-bold text-ink">Community</h1>

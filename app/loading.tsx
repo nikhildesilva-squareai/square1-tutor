@@ -2,7 +2,7 @@ import { Logo } from "@/components/ui/logo";
 
 export default function Loading() {
   return (
-    <main className="min-h-screen flex flex-col items-center justify-center gap-6 bg-white">
+    <main className="min-h-dvh flex flex-col items-center justify-center gap-6 bg-white">
       <Logo variant="dark" size="lg" />
       <div className="flex items-center gap-2">
         <span className="w-2 h-2 rounded-full bg-brand animate-bounce" style={{ animationDelay: "0ms" }} />

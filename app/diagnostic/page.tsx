@@ -56,7 +56,7 @@ export default function DiagnosticPage() {
   }, [filtered, workFirst]);
 
   return (
-    <div className="flex min-h-screen flex-col bg-white">
+    <div className="flex min-h-dvh flex-col bg-white">
       <header className="flex items-center justify-between px-6 py-5 sm:px-10">
         <Link href="/"><Logo variant="dark" size="md" /></Link>
         <Link href="/login" className="text-sm font-semibold text-slate-500 transition-colors hover:text-slate-900">

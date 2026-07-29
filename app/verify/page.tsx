@@ -73,7 +73,7 @@ export default async function VerifyPage({ searchParams }: PageProps) {
   const searched = !!id;
 
   return (
-    <div className="min-h-screen bg-surface-soft flex flex-col">
+    <div className="min-h-dvh bg-surface-soft flex flex-col">
       {/* Header */}
       <header className="border-b border-border bg-surface">
         <div className="max-w-3xl mx-auto px-4 py-4 flex items-center justify-between">

@@ -59,7 +59,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   }
 
   return (
-    <div className="flex h-screen overflow-hidden bg-surface-soft">
+    <div className="flex h-dvh overflow-hidden bg-surface-soft">
       {/* Desktop sidebar — hidden on mobile/tablet */}
       <SidebarNav userEmail={email} userName={userName} userId={userId} isManager={isManager} isAdmin={isAdmin} />
 
@@ -68,7 +68,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
         {/* Mobile/tablet header + slide-over drawer (hidden on lg+) */}
         <MobileNav userEmail={email} userName={userName} isManager={isManager} isAdmin={isAdmin} />
 
-        <main id="main" className="flex-1 overflow-y-auto pb-20 lg:pb-0">
+        <main id="main" className="flex-1 overflow-y-auto pb-[calc(5rem+env(safe-area-inset-bottom))] lg:pb-0">
           {children}
         </main>
 

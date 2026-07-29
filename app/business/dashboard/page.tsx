@@ -25,7 +25,7 @@ function bandStyle(level: string): { background: string; color: string } {
 // A silent redirect to the marketing page is indistinguishable from a bug.
 function NoTeamState() {
   return (
-    <div className="min-h-screen flex flex-col" style={{ background: "linear-gradient(180deg,#F8FAFC 0%,#FFFFFF 45%)" }}>
+    <div className="min-h-dvh flex flex-col" style={{ background: "linear-gradient(180deg,#F8FAFC 0%,#FFFFFF 45%)" }}>
       <header className="flex items-center justify-between px-5 sm:px-10 py-5">
         <Link href="/"><Logo variant="dark" size="md" /></Link>
         <span className="text-sm font-semibold text-slate-500">Manager portal</span>
@@ -90,7 +90,7 @@ export default async function ManagerDashboard() {
   const fmtDate = (d: string | null) => (d ? new Date(d).toLocaleDateString("en-AU", { day: "numeric", month: "short" }) : "—");
 
   return (
-    <div className="min-h-screen" style={{ background: "linear-gradient(180deg,#F8FAFC 0%,#FFFFFF 30%)" }}>
+    <div className="min-h-dvh" style={{ background: "linear-gradient(180deg,#F8FAFC 0%,#FFFFFF 30%)" }}>
       <header className="flex items-center justify-between px-5 sm:px-10 py-5 border-b border-slate-200/70">
         <Link href="/"><Logo variant="dark" size="md" /></Link>
         <span className="text-sm font-semibold text-slate-500">Manager portal</span>

@@ -402,7 +402,7 @@ export default function ResultsClient({ initialSeats = null, coursePath = null, 
 
   if (!subject || !seo || !answers) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center px-4" style={{ background: C.bg, color: C.ink }}>
+      <div className="min-h-dvh flex flex-col items-center justify-center px-4" style={{ background: C.bg, color: C.ink }}>
         <p className="text-lg mb-4" style={{ color: C.sec2 }}>Invalid or missing results.</p>
         <Link href={`/diagnostic/${slug || ""}`} className="text-sm font-semibold hover:underline" style={{ color: C.blue }}>
           Take the skill check
@@ -437,7 +437,7 @@ export default function ResultsClient({ initialSeats = null, coursePath = null, 
   const ringDash = `${(pct * RING_C).toFixed(1)} ${RING_C.toFixed(1)}`;
 
   return (
-    <div style={{ minHeight: "100vh", background: C.bg, color: C.ink, fontFamily: "var(--font-inter-tight), 'Inter Tight', system-ui, sans-serif" }}>
+    <div style={{ minHeight: "100dvh", background: C.bg, color: C.ink, fontFamily: "var(--font-inter-tight), 'Inter Tight', system-ui, sans-serif" }}>
       {/* App bar */}
       <header style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "16px 24px", borderBottom: `1px solid ${C.border}`, background: C.card }}>
         <Link href="/" style={{ display: "inline-flex", alignItems: "center" }} aria-label="Square 1 AI home">
@@ -613,7 +613,7 @@ export default function ResultsClient({ initialSeats = null, coursePath = null, 
               {!freeOpen && (
               <>
               <div style={{ ...eyebrow, color: C.sec2, marginTop: 28, marginBottom: 14 }}>Lock your founding rate for life</div>
-              <div className="grid grid-cols-3" style={{ gap: 12, maxWidth: 560, margin: "0 auto", alignItems: "stretch" }}>
+              <div className="grid grid-cols-1 sm:grid-cols-3" style={{ gap: 12, maxWidth: 560, margin: "0 auto", alignItems: "stretch" }}>
                 {foundingPlans.map((p) => (
                   <div key={p.months} style={{
                     position: "relative", background: C.card, textAlign: "center",

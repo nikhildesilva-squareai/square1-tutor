@@ -155,7 +155,7 @@ export default function ReassessPage({ params }: PageProps) {
   /* ═══ INTRO ═══ */
   if (phase === "intro") {
     return (
-      <div className="min-h-screen flex items-center justify-center p-6 bg-surface-soft">
+      <div className="min-h-dvh flex items-center justify-center p-6 bg-surface-soft">
         <div className="max-w-md w-full bg-surface border border-border rounded-2xl p-8 shadow-card text-center">
           <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-brand to-violet-500 flex items-center justify-center mx-auto mb-5">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round">
@@ -209,7 +209,7 @@ export default function ReassessPage({ params }: PageProps) {
   /* ═══ SUBMITTING ═══ */
   if (phase === "submitting") {
     return (
-      <div className="min-h-screen flex items-center justify-center p-6 bg-surface-soft">
+      <div className="min-h-dvh flex items-center justify-center p-6 bg-surface-soft">
         <div className="text-center">
           <div className="w-16 h-16 rounded-full bg-surface-tint flex items-center justify-center mx-auto mb-4">
             <svg className="animate-spin h-8 w-8 text-brand" viewBox="0 0 24 24" fill="none">
@@ -228,7 +228,7 @@ export default function ReassessPage({ params }: PageProps) {
   if (phase === "results") {
     const pct = result?.percentage ?? 0;
     return (
-      <div className="min-h-screen flex items-center justify-center p-6 bg-surface-soft">
+      <div className="min-h-dvh flex items-center justify-center p-6 bg-surface-soft">
         <div className="max-w-md w-full bg-surface border border-border rounded-2xl p-8 shadow-card text-center">
           <div className={cn(
             "w-20 h-20 rounded-full flex items-center justify-center text-2xl font-black mx-auto mb-4",
@@ -266,7 +266,7 @@ export default function ReassessPage({ params }: PageProps) {
   const isLast = currentIdx === questions.length - 1;
 
   return (
-    <div className="min-h-screen flex flex-col bg-surface-soft">
+    <div className="min-h-dvh flex flex-col bg-surface-soft">
       {/* Header */}
       <div className="bg-surface border-b border-border px-4 py-3">
         <div className="max-w-2xl mx-auto flex items-center justify-between">

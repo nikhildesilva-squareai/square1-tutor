@@ -760,9 +760,9 @@ export function LearnClient({
           {/* Step dots */}
           <div className="flex items-center gap-1 mt-2 overflow-x-auto scrollbar-none">
             {cards.map((c, i) => (
-              <button key={i} onClick={() => goToCard(i)}
+              <button key={i} onClick={() => goToCard(i)} aria-label={c.title}
                 className={cn(
-                  "shrink-0 rounded-full transition-all duration-300",
+                  "shrink-0 min-h-0 rounded-full transition-all duration-300",
                   i === currentCard ? "w-6 h-2 bg-brand" :
                   visitedCards.has(i) ? "w-2 h-2 bg-brand/40" :
                   c.type === "quiz" ? "w-2 h-2 bg-amber-300" :

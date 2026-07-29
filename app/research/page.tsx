@@ -40,7 +40,7 @@ export default function ResearchIndexPage() {
   const topicCount = new Set(cards.map((c) => c.topic)).size;
 
   return (
-    <div className="min-h-screen" style={{ background: "linear-gradient(180deg,#F8FAFC 0%,#FFFFFF 40%,#F4F8FF 100%)" }}>
+    <div className="min-h-dvh" style={{ background: "linear-gradient(180deg,#F8FAFC 0%,#FFFFFF 40%,#F4F8FF 100%)" }}>
       {/* Header */}
       <header className="max-w-6xl mx-auto flex items-center justify-between px-6 sm:px-8 py-5">
         <Link href="/"><Logo variant="dark" size="md" /></Link>

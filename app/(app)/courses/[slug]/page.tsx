@@ -661,7 +661,7 @@ export default async function CourseDetailPage({ params }: PageProps) {
 
       {/* Sticky CTA — only for non-enrolled courses that use a placement assessment */}
       {!isEnrolled && hasAssessment && (
-      <div className="fixed bottom-0 left-0 right-0 bg-surface border-t border-border px-4 sm:px-6 py-3 sm:py-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 print:hidden z-30">
+      <div className="fixed bottom-[calc(4rem+env(safe-area-inset-bottom))] lg:bottom-0 left-0 right-0 bg-surface border-t border-border px-4 sm:px-6 py-3 sm:py-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 print:hidden z-30">
         <div>
           <p className="text-sm font-semibold text-ink">{course.title}</p>
           <p className="text-xs text-ink-muted">20 questions · ~30 minutes</p>

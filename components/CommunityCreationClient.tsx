@@ -196,7 +196,7 @@ export function CommunityCreationClient() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50/30">
+    <div className="min-h-dvh bg-gradient-to-br from-slate-50 via-white to-blue-50/30">
       {/* Header Section */}
       <div className="relative w-screen -mx-[calc((100vw-100%)/2)] bg-gradient-to-br from-slate-900 via-slate-800 to-blue-900 py-20 px-4 mb-16 overflow-hidden">
         <div className="absolute top-0 left-10 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl" />
