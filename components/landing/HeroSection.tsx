@@ -258,6 +258,9 @@ export function HeroSection({
             <Link href="/business" className="hidden sm:block text-[11px] font-semibold tracking-[0.12em] uppercase text-slate-500 hover:text-slate-900 transition-colors" style={{ minHeight: "unset" }}>
               For Teams
             </Link>
+            <Link href="/newsroom" className="hidden sm:block text-[11px] font-semibold tracking-[0.12em] uppercase text-slate-500 hover:text-slate-900 transition-colors" style={{ minHeight: "unset" }}>
+              Newsroom
+            </Link>
             <Link href="/research" className="hidden sm:block text-[11px] font-semibold tracking-[0.12em] uppercase text-slate-500 hover:text-slate-900 transition-colors" style={{ minHeight: "unset" }}>
               Research
             </Link>
@@ -293,6 +296,7 @@ export function HeroSection({
               {[
                 { href: "/#pricing", label: "Pricing" },
                 { href: "/business", label: "For Teams" },
+                { href: "/newsroom", label: "Newsroom" },
                 { href: "/research", label: "Research" },
                 { href: "/about",    label: "About" },
                 { href: "/login",    label: "Sign in" },

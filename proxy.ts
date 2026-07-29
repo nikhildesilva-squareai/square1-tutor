@@ -16,6 +16,7 @@ const PUBLIC_PATHS = [
   "/careers",
   "/contact",
   "/research",
+  "/newsroom", // daily tech news — public + crawlable (SEO surface like /research)
   "/report", // tokenized public skill reports (opt-in shares)
   "/api/auth/callback",
   "/api/onboard",

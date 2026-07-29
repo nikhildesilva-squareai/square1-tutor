@@ -16,6 +16,7 @@ import { JourneyHook } from "@/components/landing/JourneyHook";
 import { LaneMapSection } from "@/components/landing/LaneMapSection";
 import { BuildPremiseSection, type RailTrack } from "@/components/landing/BuildPremiseSection";
 import { WorkBlock } from "@/components/landing/WorkBlock";
+import { NewsroomStrip } from "@/components/landing/NewsroomStrip";
 import { ToolsMarquee } from "@/components/landing/ToolsMarquee";
 import { CodeReviewSlider } from "@/components/landing/CodeReviewSlider";
 import { CookieConsent } from "@/components/ui/cookie-consent";
@@ -182,6 +183,9 @@ export default async function Home() {
       <div data-s1-section="journey"><JourneyHook /></div>
 
       <SectionWave />
+
+      {/* ── Newsroom — renders nothing until stories are published ───────────── */}
+      <div data-s1-section="newsroom"><NewsroomStrip /></div>
 
       {/* ── 6. Vs alternatives — portfolio over certificates ─────────────────── */}
       <div data-s1-section="comparison"><ComparisonSection region={region} /></div>
@@ -414,6 +418,7 @@ export default async function Home() {
                 <ul className="space-y-1">
                   <li><Link href="/#pricing" className="inline-block py-1 text-sm text-slate-400 hover:text-white transition-colors">Pricing</Link></li>
                   <li><Link href="/#faq" className="inline-block py-1 text-sm text-slate-400 hover:text-white transition-colors">FAQ</Link></li>
+                  <li><Link href="/newsroom" className="inline-block py-1 text-sm text-slate-400 hover:text-white transition-colors">Newsroom</Link></li>
                   <li><Link href="/research" className="inline-block py-1 text-sm text-slate-400 hover:text-white transition-colors">Research</Link></li>
                   <li><Link href="/business" className="inline-block py-1 text-sm text-slate-400 hover:text-white transition-colors">For Teams</Link></li>
                   <li><Link href="/about" className="inline-block py-1 text-sm text-slate-400 hover:text-white transition-colors">About Us</Link></li>
