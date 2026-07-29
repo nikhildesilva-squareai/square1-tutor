@@ -103,6 +103,9 @@ export default function SignupPage() {
   // after verifying, so they arrive in the course they were just tested on
   // rather than on a generic dashboard.
   const courseSlugRef = useRef<string>("");
+  // Guard: OAuth is a full-page redirect; a double-tap must not start it twice
+  // (that overwrites the PKCE verifier → "bad_code_verifier" on the callback).
+  const oauthStartedRef = useRef(false);
   useEffect(() => {
     const slug = new URLSearchParams(window.location.search).get("subject");
     if (!slug) return;
@@ -123,6 +126,8 @@ export default function SignupPage() {
   // in Supabase — a visible-but-broken auth option costs signups.
 
   async function handleOAuth(provider: "google") {
+    if (oauthStartedRef.current) return; // never start the OAuth redirect twice
+    oauthStartedRef.current = true;
     setLoading(true);
     setError(null);
     const supabase = createClient();
@@ -136,8 +141,12 @@ export default function SignupPage() {
         redirectTo: `${window.location.origin}/api/auth/callback${next}`,
       },
     });
-    if (error) setError(error.message);
-    setLoading(false);
+    // Browser redirects away on success; only reset on error so retry works.
+    if (error) {
+      setError(error.message);
+      oauthStartedRef.current = false;
+      setLoading(false);
+    }
   }
 
   /* ── Email OTP — send code ────────────────────────────────────────────── */

@@ -34,6 +34,7 @@ export function TeamSignIn({ next, onAuthed }: { next: string; onAuthed: () => v
   const [error, setError] = useState<string | null>(null);
   const [resend, setResend] = useState(0);
   const refs = useRef<(HTMLInputElement | null)[]>([]);
+  const oauthStartedRef = useRef(false); // OAuth redirect must not fire twice (corrupts the PKCE verifier)
 
   useEffect(() => {
     if (resend <= 0) return;
@@ -42,12 +43,14 @@ export function TeamSignIn({ next, onAuthed }: { next: string; onAuthed: () => v
   }, [resend]);
 
   async function signInWithGoogle() {
+    if (oauthStartedRef.current) return; // never start the OAuth redirect twice
+    oauthStartedRef.current = true;
     setLoading(true); setError(null);
     const { error } = await createClient().auth.signInWithOAuth({
       provider: "google",
       options: { redirectTo: `${window.location.origin}/api/auth/callback?next=${encodeURIComponent(next)}` },
     });
-    if (error) { setError(error.message); setLoading(false); }
+    if (error) { setError(error.message); oauthStartedRef.current = false; setLoading(false); }
   }
 
   async function sendCode(e: React.FormEvent) {

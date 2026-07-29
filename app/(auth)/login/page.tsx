@@ -65,6 +65,25 @@ export default function LoginPage() {
   const [resendCountdown, setResendCountdown] = useState(0);
 
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
+  // OAuth is a full-page redirect; firing it twice (an easy double-tap on
+  // mobile) overwrites the PKCE code-verifier, so the callback then fails with
+  // "bad_code_verifier" and drops the user back out. Guard so it starts once.
+  const oauthStartedRef = useRef(false);
+
+  /* ── Surface a failed OAuth callback ─────────────────────────────────────
+     /api/auth/callback redirects here with ?error=auth_failed when the code
+     exchange fails (e.g. the PKCE verifier cookie was lost crossing between
+     square1ai.com hosts). Without this the user just sees a blank login page
+     and no explanation. window.location, not useSearchParams — the latter
+     forces a Suspense boundary for no benefit here. */
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("error") === "auth_failed") {
+      setError("Sign-in didn't complete. Please try again — it usually works on the second attempt.");
+      // Clean the URL so a refresh doesn't re-show a stale error.
+      window.history.replaceState(null, "", "/login");
+    }
+  }, []);
 
   /* ── Countdown timer ──────────────────────────────────────────────────── */
 
@@ -79,6 +98,8 @@ export default function LoginPage() {
   // in Supabase — a visible-but-broken auth option costs signups.
 
   async function handleOAuth(provider: "google") {
+    if (oauthStartedRef.current) return; // never start the OAuth redirect twice
+    oauthStartedRef.current = true;
     setLoading(true);
     setError(null);
     const supabase = createClient();
@@ -88,8 +109,13 @@ export default function LoginPage() {
         redirectTo: `${window.location.origin}/api/auth/callback`,
       },
     });
-    if (error) setError(error.message);
-    setLoading(false);
+    // On success the browser redirects away (leave the button disabled). Only
+    // reset the guard on error so a genuine failure can be retried.
+    if (error) {
+      setError(error.message);
+      oauthStartedRef.current = false;
+      setLoading(false);
+    }
   }
 
   /* ── Email OTP — send code ────────────────────────────────────────────── */
