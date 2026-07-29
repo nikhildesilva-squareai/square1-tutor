@@ -89,12 +89,11 @@ export async function POST(request: Request) {
     const complete = hasObjective
       ? !!objective?.passed && rubricPct >= RUBRIC_BAR
       : rubricPct >= SOLO_BAR;
-    const inPortfolio = complete;
 
     // ── 4. Re-submission history ────────────────────────────────────────────
     const { data: existingSubmission } = await supabase
       .from("project_submissions")
-      .select("score, max_score, breakdown, attempt_number, submission_history, submitted_at")
+      .select("score, max_score, breakdown, attempt_number, submission_history, submitted_at, in_portfolio")
       .eq("student_id", student.id).eq("project_id", projectId).maybeSingle();
 
     let attemptNumber = 1;
@@ -113,6 +112,12 @@ export async function POST(request: Request) {
       ];
       attemptNumber = (existingSubmission.attempt_number ?? submissionHistory.length) + 1;
     }
+
+    // Publishing is the student's choice, never a side effect of passing.
+    // /portfolio/[studentId] is a public page carrying their name and scores,
+    // so nothing lands there until they ask for it on the result screen. A
+    // student who already opted in keeps that choice across re-submissions.
+    const inPortfolio = existingSubmission?.in_portfolio ?? false;
 
     // Service role: students hold no write privilege on the grade tables, so a
     // score can only be set by this route, after Nova has actually graded the

@@ -162,57 +162,48 @@ export async function findSeedingCandidates(
 }
 
 /**
- * Add multiple profiles to a community as members
- * Used for seeding during community creation
+ * Invite scored candidates to a new community.
+ *
+ * This used to insert straight into community_members with the service role,
+ * so creating a public community silently joined 20–50 real people to a room
+ * they had never heard of — and then reported them as members. Membership now
+ * requires the person to accept: we write a pending invite they can act on,
+ * and the creator is told how many were invited, not how many "joined".
  */
-export async function seedCommunity(
+export async function inviteToCommunity(
   communityId: string,
-  profileIds: string[]
-): Promise<{ added: number; failed: number }> {
+  profileIds: string[],
+  invitedBy: string | null
+): Promise<{ invited: number; failed: number }> {
   const supabase = createAdminClient();
 
-  let added = 0;
+  let invited = 0;
   let failed = 0;
 
-  // Insert members in batches to avoid hitting query limits
+  // Batch to avoid hitting query limits.
   const batchSize = 50;
   for (let i = 0; i < profileIds.length; i += batchSize) {
     const batch = profileIds.slice(i, i + batchSize);
-    const memberships = batch.map((profileId) => ({
+    const invites = batch.map((profileId) => ({
       community_id: communityId,
       profile_id: profileId,
-      role: "member" as const,
+      invited_by: invitedBy,
+      invite_status: "pending" as const,
     }));
 
     const { error } = await supabase
-      .from("community_members")
-      .insert(memberships);
+      .from("community_invites")
+      .insert(invites);
 
     if (error) {
       failed += batch.length;
-      console.error(`Error seeding community batch ${i / batchSize}:`, error);
+      console.error(`Error inviting community batch ${i / batchSize}:`, error);
     } else {
-      added += batch.length;
+      invited += batch.length;
     }
   }
 
-  // Also insert into community_invites to track that these were auto-added
-  const invites = profileIds.map((profileId) => ({
-    community_id: communityId,
-    profile_id: profileId,
-    invited_by: null, // NULL = auto-added
-    invite_status: "auto_added" as const,
-  }));
-
-  const { error: inviteError } = await supabase
-    .from("community_invites")
-    .insert(invites);
-
-  if (inviteError) {
-    console.error("Error inserting community invites:", inviteError);
-  }
-
-  return { added, failed };
+  return { invited, failed };
 }
 
 /**

@@ -45,6 +45,7 @@ interface ObjectiveInfo {
 }
 
 interface SubmitResult {
+  submissionId?: string;
   score: number;
   max_score: number;
   breakdown: { criterion: string; score: number; max: number; feedback: string }[];
@@ -245,6 +246,81 @@ const severityConfig = {
   error:   { bg: "bg-red-50",    text: "text-red-700",    border: "border-red-200",    icon: "🔴" },
 };
 
+// ─── Portfolio publishing ────────────────────────────────────────────────────
+// /portfolio/[studentId] is public and needs no login: it carries the student's
+// name next to their scores. So publishing is an explicit choice made here,
+// after they've seen the mark — not a side effect of passing — and it can be
+// withdrawn at any time.
+function PortfolioToggle({ submissionId, initial }: { submissionId: string; initial: boolean }) {
+  const [published, setPublished] = useState(initial);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  async function toggle() {
+    const next = !published;
+    setSaving(true);
+    setError(null);
+    try {
+      const res = await fetch("/api/projects/portfolio", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ submissionId, publish: next }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error ?? "Could not update your portfolio");
+      setPublished(data.in_portfolio);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Could not update your portfolio");
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  return (
+    <div className="bg-brand/5 border border-brand/20 rounded-xl px-4 py-3.5">
+      <div className="flex items-start justify-between gap-4 flex-wrap">
+        <div className="flex items-start gap-3 min-w-0">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0056CE" strokeWidth="2.5" className="mt-0.5 shrink-0" aria-hidden>
+            {published
+              ? <polyline points="20 6 9 17 4 12" />
+              : <><rect x="3" y="4" width="18" height="16" rx="2" /><path d="M3 10h18" /></>}
+          </svg>
+          <div className="min-w-0">
+            <p className="text-sm font-semibold text-ink">
+              {published ? "Showing on your public portfolio" : "Add this to your public portfolio"}
+            </p>
+            <p className="text-xs text-ink-muted mt-0.5">
+              {published
+                ? "Anyone with the link can see this project, its score and your GitHub repo. You can remove it at any time."
+                : "Your portfolio is a public page you can share with employers. Nothing appears on it until you choose to publish."}
+            </p>
+          </div>
+        </div>
+        <div className="flex items-center gap-2 shrink-0">
+          {published && (
+            <a
+              href="/portfolio"
+              className="text-xs font-bold text-brand hover:underline whitespace-nowrap"
+            >
+              View
+            </a>
+          )}
+          <Button
+            type="button"
+            variant={published ? "secondary" : "primary"}
+            size="sm"
+            onClick={toggle}
+            disabled={saving}
+          >
+            {saving ? "Saving…" : published ? "Remove" : "Publish"}
+          </Button>
+        </div>
+      </div>
+      {error && <p className="text-xs text-error mt-2">{error}</p>}
+    </div>
+  );
+}
+
 export function ScoreDisplay({ result, onResubmit }: ScoreDisplayProps) {
   const overallStatus = scoreStatus(result.score, result.max_score);
   const pct = Math.round((result.score / result.max_score) * 100);
@@ -293,11 +369,8 @@ export function ScoreDisplay({ result, onResubmit }: ScoreDisplayProps) {
                 Attempt {attempt}
               </span>
             )}
-            {result.in_portfolio && (
-              <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
-                In Portfolio
-              </span>
-            )}
+            {/* No portfolio badge here: PortfolioToggle below owns that state,
+                and a header badge would go stale the moment it's toggled. */}
           </div>
           <div className="flex items-center gap-2 mt-0.5">
             <p className="text-lg font-bold text-ink">
@@ -590,20 +663,8 @@ export function ScoreDisplay({ result, onResubmit }: ScoreDisplayProps) {
         </div>
       )}
 
-      {/* ── Portfolio notice ─────────────────────────────────────────── */}
-      {result.in_portfolio && (
-        <div className="bg-emerald-50 border border-emerald-200 rounded-xl px-4 py-3 flex items-start gap-3">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22C55E" strokeWidth="2.5" className="mt-0.5 shrink-0">
-            <polyline points="20 6 9 17 4 12" />
-          </svg>
-          <div>
-            <p className="text-sm font-semibold text-emerald-800">Added to your Career Portfolio</p>
-            <p className="text-xs text-emerald-700 mt-0.5">
-              This project is complete and is now visible on your public portfolio with your GitHub link and tech stack.
-            </p>
-          </div>
-        </div>
-      )}
+      {/* ── Portfolio: opt-in, never automatic ───────────────────────── */}
+      {result.submissionId && <PortfolioToggle submissionId={result.submissionId} initial={!!result.in_portfolio} />}
 
       {/* ── Resubmit ───────────────────────────────────────────────── */}
       {onResubmit && (

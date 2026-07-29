@@ -204,6 +204,7 @@ export default async function ProjectBriefPage({ params }: PageProps) {
                 <h2 className="text-xs font-bold text-ink-muted uppercase tracking-widest mb-4">Your result</h2>
                 <ScoreDisplay
                   result={{
+                    submissionId: submission!.id,
                     score: submission!.score!,
                     max_score: submission!.max_score,
                     breakdown: submission!.breakdown ?? [],

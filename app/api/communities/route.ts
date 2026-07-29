@@ -1,6 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { findSeedingCandidates, seedCommunity, generateUniqueSlug } from "@/lib/community/seeding";
+import { findSeedingCandidates, inviteToCommunity, generateUniqueSlug } from "@/lib/community/seeding";
 import { ensureCommunityProfile } from "@/lib/community/ensure-profile";
 import { TemplateType } from "@/types/database";
 import { NextResponse } from "next/server";
@@ -207,10 +207,12 @@ export async function POST(req: Request) {
       }
     }
 
-    // Find seeding candidates
-    let seedCount = 0;
+    // Invite scored candidates. They are NOT joined: creating a community must
+    // not add other people to it, so each candidate gets a pending invite they
+    // can accept or decline from /community.
+    let invitedCount = 0;
     if (!is_private) {
-      // Only auto-seed public communities
+      // Public communities only — a private one shouldn't broadcast invitations.
       const candidateIds = await findSeedingCandidates({
         templateType: templateType,
         creatorId: creatorProfile.id,
@@ -218,8 +220,8 @@ export async function POST(req: Request) {
       });
 
       if (candidateIds.length > 0) {
-        const { added } = await seedCommunity(community.id, candidateIds);
-        seedCount = added;
+        const { invited } = await inviteToCommunity(community.id, candidateIds, creatorProfile.id);
+        invitedCount = invited;
       }
     }
 
@@ -227,9 +229,11 @@ export async function POST(req: Request) {
       {
         community: {
           ...community,
-          memberCount: 1 + seedCount, // Creator + seeded members
+          // The creator is the only member until someone accepts. Counting
+          // invitees here would have reported people who never joined.
+          memberCount: 1,
         },
-        seeded: seedCount,
+        invited: invitedCount,
       },
       { status: 201 }
     );

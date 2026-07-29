@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 import { CommunityDiscoveryClient } from "@/components/CommunityDiscoveryClient";
 import { CommunityTabs } from "@/components/community/CommunityTabs";
+import { CommunityInvites } from "@/components/community/CommunityInvites";
 
 export const metadata = {
   title: "Community · Square 1 AI",
@@ -16,6 +17,11 @@ export default async function CommunityPage() {
           <h1 className="text-2xl font-bold text-ink">Community</h1>
           <CommunityTabs />
         </div>
+      </div>
+
+      {/* Pending invitations — renders nothing when there are none */}
+      <div className="max-w-7xl mx-auto w-full px-4 sm:px-6 pt-6">
+        <CommunityInvites />
       </div>
 
       {/* Main Content — the client owns its own hero (full-bleed) + container */}
