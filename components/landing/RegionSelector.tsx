@@ -56,8 +56,12 @@ export function RegionSelector({ region }: { region: RegionKey }) {
           );
         })}
       </div>
+      {/* Says only what is true TODAY. verifyRegionAtCheckout() exists but has no
+          call sites yet (Stripe isn't live), so promising checkout verification
+          here would be a claim the system doesn't currently honour. Restore the
+          stronger wording when that function is actually wired. */}
       <p className="text-[11px] text-slate-400 text-center max-w-xs">
-        Prices shown for your region. Verified against your payment country at checkout.
+        Prices shown for your region. Regional rates require a payment method from that region.
       </p>
     </div>
   );

@@ -37,10 +37,14 @@ export default async function VerifyPage({ searchParams }: PageProps) {
   if (id?.startsWith("SQ1-")) {
     const supabase = await createClient();
 
+    // Only FINISHED enrolments can back a valid certificate — mirrors the gate on
+    // the certificate page itself. Verifying an unfinished enrolment as "valid"
+    // would confirm a credential the learner never earned.
     const { data: enrollments } = await supabase
       .from("student_enrollments")
-      .select("id, student_id, assessment_level, enrolled_at, course_id")
-      .eq("status", "active");
+      .select("id, student_id, assessment_level, enrolled_at, course_id, completed_at")
+      .eq("status", "active")
+      .not("completed_at", "is", null);
 
     if (enrollments) {
       for (const enrollment of enrollments) {

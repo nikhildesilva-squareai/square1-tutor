@@ -40,13 +40,20 @@ export default async function CertificatePage({ params }: PageProps) {
 
   const { data: enrollment } = await supabase
     .from("student_enrollments")
-    .select("id, assessment_level, enrolled_at")
+    .select("id, assessment_level, enrolled_at, completed_at")
     .eq("student_id", student.id)
     .eq("course_id", course.id)
     .eq("status", "active")
     .maybeSingle();
 
   if (!enrollment) redirect(`/courses/${courseSlug}`);
+
+  // A certificate must attest to FINISHING the course, not to enrolling in it.
+  // completed_at is the authoritative marker, set by checkAndMarkEnrollmentComplete
+  // when the last lesson lands. Without this gate anyone could sign up, free-enrol
+  // and mint a verifiable certificate at zero lessons — which would make every
+  // certificate we've issued worthless.
+  if (!enrollment.completed_at) redirect(`/courses/${courseSlug}`);
 
   const { count: completedCount } = await supabase
     .from("lesson_completions")

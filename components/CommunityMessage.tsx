@@ -73,9 +73,20 @@ export function CommunityMessage({
     }
   };
 
-  // Parse markdown-like formatting
+  // Parse markdown-like formatting.
+  // The message body is UNTRUSTED — any member can send anything — so it must be
+  // HTML-escaped BEFORE we introduce our own tags. Without this, a message like
+  // `<img src=x onerror=...>` is stored and then executes for every member who
+  // opens the channel (including an admin), and the CSP cannot stop it while
+  // script-src allows 'unsafe-inline'.
+  // Same escape as components/ui/rich-content.tsx and note-content.tsx.
   const renderContent = (text: string) => {
-    let parsed = text
+    const safe = text
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;");
+
+    let parsed = safe
       .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
       .replace(/_(.*?)_/g, "<em>$1</em>")
       .replace(/`(.*?)`/g, "<code>$1</code>");
