@@ -1,0 +1,464 @@
+{
+ "week": 4,
+ "lessons": [
+  {
+   "order_index": 1,
+   "title": "Prompt chains for the reporting cycle",
+   "theory_md": "It is day three of close. The trial balance has landed, the pack is due Thursday, and someone in the team pastes the whole cost-centre export into an assistant with a single instruction: \"analyse this and write the commentary\". Ninety seconds later there is a page of confident prose. It reads well. It has a number in the third paragraph that exists nowhere in the ledger, and because the sentence around it is fluent, nobody queries it until the finance director does — in the meeting.\n\nThat failure is not a failure of the assistant. It is a failure of shape. A reporting cycle is not one task; it is at least three, and they have different risk profiles.\n\n## What a chain is\n\nA prompt chain is the deliberate separation of a piece of work into steps, where each step produces an artefact you can check before the next step is allowed to touch it. For the reporting cycle the natural links are:\n\n1. **Extract** — restate the source material accurately. No interpretation.\n2. **Analyse** — compute and rank from the *verified* extract. No narrative.\n3. **Draft** — write commentary from the *verified* analysis, for a named audience and a named decision.\n\nBetween each link sits the thing the whole course has been about: the verification step. You tick the extract back to the ledger before analysis. You recompute the variances before drafting. The brief you learned in week one — source material, the decision the audience must make, the verification step — is not written once for the whole job. Each link gets its own miniature brief.\n\n## Why one giant prompt is where errors hide\n\nWhen you ask for extraction, analysis and prose in a single response, all three happen out of sight and you only see the last one. If the closing sentence says overheads ran £412k over budget, you cannot tell whether the assistant misread a column, subtracted in the wrong direction, or produced a plausible-looking figure from nothing. There is no artefact to check against — only the conclusion.\n\nFluency makes it worse. A well-formed sentence about a £412k overspend carries the tone of something that has been checked. Finance work is read by people who reasonably assume the numbers came from somewhere. Split the job and the failure becomes visible early, in a table, where it is cheap.\n\n## Worked example one — the extraction link\n\n```\nYou are helping me prepare the July management pack for a UK services\nbusiness. Below is the marketing cost-centre extract (actual, budget,\nprior year). Figures have been anonymised for this exercise.\n\nTask one only: restate this as a table with columns Account, Actual,\nBudget, Variance (GBP), Variance (%).\nDo not comment on the variances. Do not explain them. Do not add any\naccount that is not listed below.\nWhere a figure is missing from my paste, write MISSING rather than\nestimating it.\n\n[extract pasted here]\n```\n\nAbridged output:\n\n| Account | Actual | Budget | Variance (GBP) | Variance (%) |\n|---|---|---|---|---|\n| Agency fees | 118,400 | 96,000 | 22,400 | 23.3% |\n| Events | 41,900 | 60,000 | (18,100) | (30.2%) |\n| Software licences | MISSING | 12,000 | MISSING | MISSING |\n\nNow the check takes two minutes rather than an afternoon. You recompute two or three variances yourself, tick the totals to the trial balance, and notice that the software line came back MISSING — which tells you your paste was truncated, not that the assistant failed. That flag is worth more than any paragraph of prose it could have written.\n\n## Worked example two — analysis, then drafting\n\n```\nBelow is a variance table I have verified line by line against the\nledger. Use only these figures.\n\nIdentify the three largest adverse variances by value, and separately\nthe three largest by percentage. Quote each figure exactly as given and\ndo not round. For each one, list the questions I should put to the\nbudget holder.\nDo not propose causes — you do not have that information.\n```\n\nAbridged output: \"By value: Agency fees, GBP 22,400 adverse (23.3%). Questions for the budget holder: was the autumn campaign brought forward into July? Is any part of this a prepayment that belongs in August? ...\"\n\nOnly then does the drafting link run, and it is fed the verified analysis plus the causes you actually confirmed:\n\n```\nDraft 120 words of variance commentary for the board pack. Audience:\nnon-executive directors deciding whether to approve the revised\nfull-year marketing budget on 19 August.\nUse only the figures in the table below and the causes in my notes\nbelow, which I confirmed with the budget holder on 4 August. Where a\ncause is not in my notes, write CAUSE NOT CONFIRMED rather than\noffering an explanation. Plain English, no adjectives about performance.\n```\n\n## The mistakes people make here\n\n**Chaining inside one long conversation without re-stating the figures.** Assistants carry a compressed memory of what was said earlier, and compressed numbers drift. Paste the verified artefact into each link as fresh text.\n\n**Verifying only at the end.** If the extract was wrong, the analysis is wrong and the commentary is a well-written wrong thing. Checking a finished draft is the most expensive place to find the error.\n\n**Letting the assistant do arithmetic your spreadsheet should do.** Sum, subtract and compute in the workbook, where the formula is visible and auditable. Use the chain to structure, question and describe.\n\n**Pasting live client or commercial figures into a public assistant.** The chain does not change the confidentiality line. Anonymise, or work only in the tool your organisation has approved.\n\n**Building a chain of nine links.** Three or four is usually the whole job. Every extra link is another handover where a figure can be dropped.\n\n## In practice\n\nRun your next variance pack as three prompts instead of one, and put a two-minute tick-back between each. The first time, it feels slower. By the second cycle it is faster, because you stop rewriting commentary that was built on a number nobody had checked — and because the step that finds the error is now the cheap one.",
+   "estimated_minutes": 28,
+   "learning_objectives": [
+    "Split a reporting task into extract, analyse and draft links with a defined artefact at each handover",
+    "Write a verification step between links so an unchecked figure cannot travel into commentary",
+    "Diagnose why a single combined prompt conceals arithmetic, reading and fabrication errors",
+    "Apply the confidentiality and traceability lines to every link of a chain, not only the final draft"
+   ],
+   "case_study": "**Public Health England — the reporting step that silently ran out of room (2020)**\n\nOn 4 October 2020, Public Health England announced that 15,841 positive coronavirus test results had been left out of the daily reported case figures between 25 September and 2 October. The tests had been carried out. The results existed. They had reached the reporting pipeline and then stopped being counted, and for a week nobody in the process noticed.\n\nThe cause was structural rather than clerical. Laboratory results were collated into a template saved in the legacy spreadsheet file format, which holds a maximum of 65,536 rows. Because each test occupied several rows, a single file could carry only around 1,400 tests. Once the file reached that ceiling, further records were left off. No warning was raised and no step failed visibly. The output that emerged looked like a complete daily file, internally consistent, correctly formatted, and wrong by omission.\n\nThe consequence fell on the step that followed. Contact tracing could not begin for people linked to cases that had never appeared, and estimates reported at the time put the number of contacts not reached in the tens of thousands. A multi-stage pipeline had been running for weeks in which no stage compared the number of records that went in with the number that came out.\n\nThat single comparison is the whole point of a gate between links. Errors of omission are the ones a human reader will never catch by reading the output, because nothing in a well-formed table announces what is not in it. This is why the extraction link is told to write MISSING rather than estimate, why you tick totals back to the trial balance before analysis begins, and why a truncated paste has to be caught in a two-minute count check rather than discovered by a director reading the commentary.",
+   "exercises": [
+    {
+     "order_index": 1,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "Why the work is split",
+     "prompt_md": "You have been asked why the reporting cycle is run as three separate prompts rather than one instruction that produces the finished commentary. What is the strongest reason to give?",
+     "options": [
+      "Each step produces an artefact that can be checked before the next step uses it",
+      "Shorter prompts are processed more quickly and reduce the cost of the assistant",
+      "Assistants are unable to handle more than one instruction in a single request",
+      "Splitting the work means the assistant remembers earlier figures more reliably"
+     ],
+     "correct_answer": "Each step produces an artefact that can be checked before the next step uses it"
+    },
+    {
+     "order_index": 2,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "What the analysis link receives",
+     "prompt_md": "Your extraction link has produced a variance table and you have ticked every line back to the ledger. What should you paste into the analysis link that follows it?",
+     "options": [
+      "The verified table, restated as fresh text with the figures written out in full",
+      "The original raw export again, so that nothing is lost between the two steps",
+      "A short summary of the table, because the assistant already saw the detail",
+      "Nothing at all, since the assistant retains the previous answer in the thread"
+     ],
+     "correct_answer": "The verified table, restated as fresh text with the figures written out in full"
+    },
+    {
+     "order_index": 3,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "The MISSING instruction",
+     "prompt_md": "An extraction prompt instructs the assistant to write MISSING wherever a figure is absent from the pasted material, rather than estimating it. What does that instruction mainly protect you from?",
+     "options": [
+      "A truncated or incomplete paste being filled in with a plausible invented figure",
+      "The assistant refusing to produce a table when the source data is incomplete",
+      "The pack being issued before the budget holder has confirmed the causes",
+      "Commentary that describes performance in language the board finds too strong"
+     ],
+     "correct_answer": "A truncated or incomplete paste being filled in with a plausible invented figure"
+    },
+    {
+     "order_index": 4,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "Where verification belongs",
+     "prompt_md": "A colleague runs the full chain end to end and then checks the finished commentary against the ledger once, at the end. Why is that weaker than checking between every link of the chain?",
+     "options": [
+      "An error in the extract is rewritten as fluent prose before anyone can catch it",
+      "The final commentary is usually too long for a single reviewer to check properly",
+      "Assistants apply their own corrections once a chain has run to completion",
+      "Checking at the end means the board pack deadline will always be missed"
+     ],
+     "correct_answer": "An error in the extract is rewritten as fluent prose before anyone can catch it"
+    },
+    {
+     "order_index": 5,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "Confidentiality inside a chain",
+     "prompt_md": "You are about to run a three-link chain over a client cost-centre report that carries commercially sensitive supplier rates. Which approach is consistent with the confidentiality line this course has held throughout?",
+     "options": [
+      "Anonymise the material, or run the chain only in a tool your organisation has approved",
+      "Paste the full report but ask the assistant not to retain or reuse any of the content",
+      "Split the report across several prompts so that no single prompt holds all of it",
+      "Use the material as it stands, because a chain keeps each step separate anyway"
+     ],
+     "correct_answer": "Anonymise the material, or run the chain only in a tool your organisation has approved"
+    },
+    {
+     "order_index": 6,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "Name the three links",
+     "prompt_md": "Describe the three links of a reporting-cycle chain and state, in one clause each, what the artefact produced by that link looks like.",
+     "correct_answer": "Extract produces a restated table of accounts, actuals, budget and variances with nothing interpreted. Analyse takes that verified table and produces a ranked list of the largest variances plus the questions to put to budget holders. Draft takes the verified analysis and produces commentary for a named audience and decision, using only the figures and confirmed causes supplied."
+    },
+    {
+     "order_index": 7,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "Catching what is not there",
+     "prompt_md": "Using the Public Health England example, explain why reading the output of a step cannot catch an error of omission, and state the kind of check that can.",
+     "correct_answer": "Nothing in a well-formed table announces what has been left out of it, so a reviewer reading the output sees something complete and consistent and has no reason to query it. The check that works is mechanical reconciliation between steps: compare the number of records or the totals that went in with what came out. In a reporting chain that is ticking the extract totals back to the trial balance and clearing every MISSING flag before analysis begins."
+    },
+    {
+     "order_index": 8,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "Arithmetic in the right place",
+     "prompt_md": "A team member wants the assistant to calculate all variances, percentages and subtotals for the pack. Give the professional argument for keeping that arithmetic in the workbook instead.",
+     "correct_answer": "A spreadsheet formula is visible, repeatable and auditable, so a reviewer can see how a figure was produced and reperform it. An assistant returns a number without a traceable calculation, which breaks the rule that every figure must be traceable to source. Use the chain to structure, question and describe; keep computation where it can be checked."
+    },
+    {
+     "order_index": 9,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "Drift in a long thread",
+     "prompt_md": "Explain why continuing a chain in one long conversation, without re-pasting the verified figures, is risky, and state what to do instead.",
+     "correct_answer": "Assistants carry a compressed memory of earlier turns, and compressed figures drift or are approximated as the thread grows. The commentary can then quote a number that no longer matches the verified table. Re-paste the verified artefact as fresh text at the start of each link, and instruct the assistant to use only those figures."
+    },
+    {
+     "order_index": 10,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "When a cause is not confirmed",
+     "prompt_md": "Your drafting prompt tells the assistant to write CAUSE NOT CONFIRMED where an explanation is not in your notes. Explain what professional problem that instruction prevents.",
+     "correct_answer": "Without it the assistant will offer a plausible explanation such as seasonality or timing, which then reads as a finding the finance team has established. That puts an unverified cause in front of decision makers under your name. The flag keeps the gap visible so it can be closed with the budget holder before the pack is issued."
+    },
+    {
+     "order_index": 11,
+     "type": "short_answer",
+     "language": "prompt",
+     "marks": 5,
+     "title": "Prompt Lab: the extraction link",
+     "prompt_md": "It is day two of close at a UK services business. You have pasted an anonymised extract of the Operations cost centre for July, showing actual, budget and prior year by account. Write the first link of your chain: the extraction prompt.\n\nA strong prompt will set the role and the context, restrict the task to restatement only, define the exact table columns you want, forbid interpretation and any account not present in the source, require a MISSING flag instead of an estimate, and note that the figures are anonymised. It must not ask for commentary, causes or recommendations.",
+     "correct_answer": "You are helping me prepare the July management pack for a UK services business. Below is an anonymised extract of the Operations cost centre showing actual, budget and prior year by account.\n\nThis is link one of three and its only job is accurate restatement.\n\nTask: restate the extract as a single table with these columns and no others: Account, Actual, Budget, Variance (GBP), Variance (%), Prior year.\n\nRules:\n- Use only the accounts listed below. Do not add, merge, split or rename any account.\n- Do not comment on any variance, do not suggest causes, do not recommend anything.\n- Where a figure is absent or unreadable in my paste, write MISSING. Never estimate, infer or carry forward a figure.\n- Show adverse variances in brackets and do not round: quote figures exactly as they appear.\n- After the table, list any account where a figure was marked MISSING, so I can check my paste.\n\nI will tick this table back to the ledger before anything else happens, so accuracy of restatement matters more than completeness of the answer.\n\n[extract pasted here]"
+    },
+    {
+     "order_index": 12,
+     "type": "short_answer",
+     "language": "prompt",
+     "marks": 5,
+     "title": "Prompt Lab: the drafting link",
+     "prompt_md": "Your extract has been ticked to the ledger and your analysis link has produced a ranked list of the three largest adverse variances. You have spoken to two of the three budget holders and have written notes on those causes; the third has not replied. Write the final link: the drafting prompt for the board pack commentary.\n\nA strong prompt will name the audience and the decision they must make, supply the verified figures and the confirmed causes, forbid the use of any figure or cause not supplied, require an explicit flag where a cause is unconfirmed, set a length and a plain-English register, and keep evaluative adjectives out.",
+     "correct_answer": "Draft the variance commentary for our July board pack.\n\nAudience: non-executive directors who must decide on 19 August whether to approve the revised full-year operating budget. They are not close to the detail and read the pack the night before.\n\nUse only the material below. The figures come from a variance table I have ticked line by line to the ledger. The causes come from my own notes from calls with the budget holders on 4 and 5 August.\n\nRules:\n- Do not introduce any figure that is not in the table below, and do not recalculate or round the ones that are.\n- Do not offer a cause that is not in my notes. Where a cause is missing, write CAUSE NOT CONFIRMED and leave it there for me to close.\n- Around 150 words, plain English, short sentences. No adjectives about performance such as strong, disappointing or encouraging.\n- Close with the one question the board needs answered before it can approve the revised budget.\n\nVerified figures:\n[table pasted here]\n\nConfirmed causes:\n[notes pasted here]"
+    }
+   ]
+  },
+  {
+   "order_index": 2,
+   "title": "Saved templates and macros for recurring finance work",
+   "theory_md": "Ask a finance team where their best prompt lives and you will hear four answers: in a private message thread, in someone's notebook, in the history of an assistant nobody else can open, and in the head of the analyst who wrote it and has since moved to treasury. The prompt worked. It produced usable variance commentary in one pass. Next month it gets retyped from memory, slightly differently, and the output is slightly worse, and nobody can say why.\n\nAnything you do every month is not a prompt. It is an asset. It deserves the treatment you already give a reconciliation workbook or a reporting template: a name, an owner, a place it lives, a version number, and a rule about when it must be changed.\n\n## The anatomy of a finance prompt template\n\nA template has two layers that must stay visibly separate.\n\n**The fixed layer** is everything that is true every month: who the assistant is helping, the audience, the decision that audience must make, the house rules on figures and causes, the output shape, the length, the register. This is the part you have already learned to write — the brief.\n\n**The variable layer** is what changes each cycle, and it should appear as obvious placeholders in square brackets that look wrong if left unfilled: [PERIOD], [ENTITY], [VERIFIED VARIANCE TABLE], [CONFIRMED CAUSES], [DECISION DATE], [MATERIALITY THRESHOLD].\n\nMost assistants offer somewhere to keep these — saved prompts, custom instructions, a project or workspace that holds standing context, or a plain shared document that anyone can copy from. The mechanism matters far less than the discipline. Three templates carry most recurring finance work: variance commentary, reconciliation review, and the board note.\n\n## Worked example one — the variance-commentary template\n\n```\nFIN-TPL-01  Variance commentary  v1.4  (owner: FP&A manager,\nlast reviewed 30 June, next review after any change to the\nchart of accounts or the pack layout)\n\nYou are helping the finance team of [ENTITY] prepare variance\ncommentary for the [PERIOD] management pack.\nAudience: [AUDIENCE], deciding [DECISION] on [DECISION DATE].\nMateriality: comment on any variance above [THRESHOLD] by value\nor [PERCENT] by percentage; ignore anything below both.\n\nUse only the figures in [VERIFIED VARIANCE TABLE], which has been\nticked to the ledger, and only the causes in [CONFIRMED CAUSES].\nWhere a cause is missing, write CAUSE NOT CONFIRMED.\nOutput: one paragraph per material variance, [WORD COUNT] words in\ntotal, plain English, no adjectives about performance.\n```\n\nAbridged output when filled in: \"Agency fees are GBP 22,400 (23.3%) above budget for July. The autumn campaign was brought forward at the request of the commercial team, confirmed with the budget holder on 4 August. Events spend is GBP 18,100 below budget; CAUSE NOT CONFIRMED.\"\n\nThe header is doing as much work as the instruction. It tells the next person which template this is, whether it is current, who owns it, and what event forces a review.\n\n## Worked example two — the reconciliation-review template\n\n```\nFIN-TPL-02  Reconciliation review  v2.1\n\nYou are reviewing a completed [ACCOUNT TYPE] reconciliation for\n[ENTITY], [PERIOD]. You are not preparing it and you are not\napproving it.\nBelow are the reconciling items with dates, values and preparer\nnotes: [RECONCILING ITEMS].\n\nFor each item, tell me: whether the note explains what the item is\nand why it is still open; how old it is against our [AGEING RULE];\nand what evidence a reviewer should ask to see.\nList separately any item with no supporting note, any item older\nthan [AGEING RULE], and any item that has moved by less than\n[TOLERANCE] since [PRIOR PERIOD], which may indicate a balance\ncarried without being worked.\nDo not conclude that the reconciliation is clean. That is my call.\n```\n\nAbridged output: \"Item 4, GBP 6,120, first raised in March: no preparer note, older than the 60-day rule, and unchanged for four periods. Ask for the bank advice and the original posting.\"\n\nNotice the last line of the template. Templates should hard-code the boundary between the assistant's work and the professional judgement that stays with you.\n\n## Versioning, and what forces a new version\n\nVersion numbers exist so that two people running the same template get the same output. Bump the version, date it, and write one line on what changed, whenever any of these happen: the chart of accounts changes or accounts are merged; a cost centre or entity is added; the reporting pack is redesigned; a materiality threshold moves; an accounting standard or policy changes how a balance is presented; an audit or review point tells you the commentary missed something; or the audience changes.\n\nKeep a two-column change log at the foot of the template — date and what changed. It takes a line to write and it is the only thing that will tell a colleague in November why the October commentary looks different.\n\n## The mistakes people make here\n\n**Baking last cycle's figures into the template.** A number left in the fixed layer will be quoted again next month with total confidence. Placeholders only.\n\n**Leaving a placeholder unfilled.** Square brackets in an issued pack are embarrassing; the worse case is a placeholder the assistant helpfully fills for you. Add a final instruction: list any placeholder that arrived empty and stop.\n\n**Templating the judgement.** Materiality, tone for a nervous board, whether an item is a going-concern matter — these are yours. Template the structure, not the conclusion.\n\n**Letting the template outlive the chart of accounts.** The most dangerous template is one that still works. It produces confident commentary against account names that no longer mean what they did.\n\n**No owner.** An asset without a named owner is not reviewed, and an unreviewed template is a hidden assumption running monthly.\n\n## In practice\n\nTake the prompt you used last close, strip every figure out of it, put square brackets where the figures were, add a header with a version and an owner, and save it where the pack is stored rather than where your messages are. You have converted a lucky result into something the team can run — and, more importantly, into something the team can review.",
+   "estimated_minutes": 28,
+   "learning_objectives": [
+    "Separate a recurring finance prompt into a fixed brief layer and bracketed placeholders for each cycle",
+    "Build variance-commentary, reconciliation-review and board-note templates as named, owned assets",
+    "Apply version numbers and a change log triggered by chart of accounts and reporting pack changes",
+    "Identify template failures such as embedded figures, unfilled placeholders and templated judgement"
+   ],
+   "case_study": "**Fannie Mae — the model that outlived the rule it was built for (2003)**\n\nIn October 2003, roughly two weeks after publishing its third-quarter figures, the US mortgage finance company Fannie Mae disclosed that it had made an error in the calculation of shareholders' equity. The adjustment was around 1.1 billion US dollars. It was not fraud and it was not a judgement call gone wrong. It came from a computation error inside a spreadsheet used in implementing a new accounting standard governing how certain financial instruments were valued and presented.\n\nThe company was direct about it. It described the error as an honest mistake in the implementation of complex new requirements, stated that the income statement was unaffected, and reported the matter to its regulator, the Office of Federal Housing Enterprise Oversight, and to Congressional oversight committees. The share price fell on the news. The correction itself was arithmetic; the cost was to credibility, at an organisation whose numbers were read very closely.\n\nThe mechanism is the one every finance team knows and few teams guard against. A workbook is built for a set of rules. It is checked hard when it is new. Then the rules change — a new standard, a new presentation, a restructured chart of accounts — and the workbook is carried forward because it has always worked. Nothing announces that its logic is now subtly out of date. It keeps producing figures, confidently, in the old shape.\n\nA saved prompt is exactly this kind of asset, with one difference that makes it more dangerous: it has no formula bar. You cannot open a template and see the assumption that has gone stale. That is what the version number, the review trigger and the change log are for. When the chart of accounts moves, the templates that reference it are on the list of things to reopen — before the next pack is drafted from them, not after someone spots the answer looks wrong.",
+   "exercises": [
+    {
+     "order_index": 1,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "What belongs in the fixed layer",
+     "prompt_md": "You are converting last month's successful variance-commentary prompt into a reusable template. Which of these belongs in the fixed layer rather than in a bracketed placeholder?",
+     "options": [
+      "The rule that no cause may be stated unless the budget holder has confirmed it",
+      "The list of the three largest adverse variances found during the July close",
+      "The date on which the board meets to approve the revised full-year budget",
+      "The verified variance table produced by the extraction step this month"
+     ],
+     "correct_answer": "The rule that no cause may be stated unless the budget holder has confirmed it"
+    },
+    {
+     "order_index": 2,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "The trigger for a new version",
+     "prompt_md": "Your organisation merges two cost centres and renames several accounts in the chart of accounts. What should happen to the saved finance prompt templates that reference those accounts?",
+     "options": [
+      "They are reopened, corrected, given a new version number and a change log line",
+      "They are left alone, because the assistant will adapt to the new account names",
+      "They are deleted, because a template built on old accounts cannot be trusted again",
+      "They are kept as they are until an audit point or a reviewer challenges the output"
+     ],
+     "correct_answer": "They are reopened, corrected, given a new version number and a change log line"
+    },
+    {
+     "order_index": 3,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "Figures inside a template",
+     "prompt_md": "A colleague has saved a template that still contains the actual agency fees figure from the July pack inside the instruction text. What is the specific risk this creates?",
+     "options": [
+      "The stale figure is quoted again in a later period as though it were current",
+      "The template becomes too long for the assistant to process in one request",
+      "Other members of the team will be unable to open or copy the saved template",
+      "The assistant will refuse to run the template until the figure is removed"
+     ],
+     "correct_answer": "The stale figure is quoted again in a later period as though it were current"
+    },
+    {
+     "order_index": 4,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "The line a template should hard-code",
+     "prompt_md": "The reconciliation-review template ends with an instruction telling the assistant not to conclude that the reconciliation is clean. Why is that line written into the template rather than left to the reviewer each time?",
+     "options": [
+      "It fixes the boundary between assistant support and the professional judgement you own",
+      "It shortens the response and therefore leaves more room for the reconciling items",
+      "It prevents the assistant from reading items that fall below the ageing rule",
+      "It records who prepared the reconciliation so the reviewer can be identified later"
+     ],
+     "correct_answer": "It fixes the boundary between assistant support and the professional judgement you own"
+    },
+    {
+     "order_index": 5,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "Where a template lives",
+     "prompt_md": "Your team agrees that saved prompts should stop living in private message threads and assistant histories. Where should the finance templates be stored, and why?",
+     "options": [
+      "With the reporting pack, so any member of the team can find, review and copy them",
+      "In the personal workspace of whoever wrote them, so authorship stays clear",
+      "In the assistant history of the finance director, who signs off the final pack",
+      "In a folder shared with budget holders, so they can adjust the wording themselves"
+     ],
+     "correct_answer": "With the reporting pack, so any member of the team can find, review and copy them"
+    },
+    {
+     "order_index": 6,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "Two layers",
+     "prompt_md": "Explain the difference between the fixed layer and the variable layer of a finance prompt template, and give one example of each from your own recurring work.",
+     "correct_answer": "The fixed layer holds everything true every cycle: the role, the audience, the decision, the rules on figures and unconfirmed causes, the output shape and length. The variable layer holds what changes, written as bracketed placeholders such as period, entity, the verified variance table and the confirmed causes. Keeping them visibly separate stops this month figures from being baked in as permanent instruction text."
+    },
+    {
+     "order_index": 7,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "The Fannie Mae mechanism",
+     "prompt_md": "Using the Fannie Mae example, explain why a saved prompt template can be more hazardous than a stale spreadsheet, and what practice controls that.",
+     "correct_answer": "A workbook built for one set of rules kept producing figures after the accounting requirements changed, and nothing signalled that its logic was out of date. A prompt template fails the same way but has no formula bar, so the stale assumption cannot be inspected. The controls are a version number, a named owner, an explicit review trigger such as a chart of accounts or standards change, and a change log."
+    },
+    {
+     "order_index": 8,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "Guarding placeholders",
+     "prompt_md": "Describe two ways an unfilled placeholder can damage a finance output, and the instruction you would add to a template to catch it.",
+     "correct_answer": "Square brackets left in an issued pack look careless and undermine confidence in the numbers around them. Worse, the assistant may fill the gap with a plausible invention that then reads as a finance figure. Add a closing instruction requiring the assistant to list every placeholder that arrived empty and to stop rather than produce the output."
+    },
+    {
+     "order_index": 9,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "What not to template",
+     "prompt_md": "Give two elements of month-end work that should not be templated, and explain what the template should hold instead in each case.",
+     "correct_answer": "Materiality decisions and the conclusion that a balance or reconciliation is acceptable should stay with the professional, along with judgements such as tone for a nervous board or whether an item is a going-concern matter. The template should hold the threshold as a placeholder you set each cycle and an explicit instruction that the assistant must not draw the conclusion, so the structure is reusable while the judgement remains yours."
+    },
+    {
+     "order_index": 10,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "The change log",
+     "prompt_md": "A colleague asks why a two-line change log at the foot of a template is worth maintaining. Give the practical answer.",
+     "correct_answer": "It tells the next person why the output changed between periods, which is the first question anyone asks when commentary reads differently. It also makes review possible, because the reviewer can see what was altered, when and by whom. Without it a template drifts silently and nobody can reconstruct which version produced an issued pack."
+    },
+    {
+     "order_index": 11,
+     "type": "short_answer",
+     "language": "prompt",
+     "marks": 5,
+     "title": "Prompt Lab: the variance-commentary template",
+     "prompt_md": "Write a reusable variance-commentary template your team could run every month without you. Assume a mid-sized UK business with several cost centres and a monthly management pack.\n\nA strong template will carry a header with a reference, a version, an owner and a review trigger; a fixed brief covering role, audience, decision, materiality, evidence rules and output shape; bracketed placeholders for everything that changes each cycle; an explicit flag where a cause is unconfirmed; and a closing check on empty placeholders. It must not contain any actual figure.",
+     "correct_answer": "FIN-TPL-01 Variance commentary v1.0 | Owner: [OWNER ROLE] | Last reviewed: [REVIEW DATE] | Review again on any change to the chart of accounts, the pack layout, the materiality threshold or the audience.\n\nYou are helping the finance team of [ENTITY] prepare variance commentary for the [PERIOD] management pack.\n\nAudience: [AUDIENCE]. They must decide [DECISION] on [DECISION DATE] and are not close to the detail.\n\nMateriality: comment on any variance above [VALUE THRESHOLD] or [PERCENT THRESHOLD]; ignore anything below both.\n\nSources you may use, and nothing else:\n- Figures: [VERIFIED VARIANCE TABLE] — already ticked line by line to the ledger.\n- Causes: [CONFIRMED CAUSES] — my notes from budget holder calls.\n\nRules:\n- Quote figures exactly as supplied. Do not recalculate, round or introduce a figure that is not in the table.\n- State no cause that is not in my notes. Where a cause is missing, write CAUSE NOT CONFIRMED.\n- Plain English, short sentences, no adjectives about performance.\n\nOutput: one short paragraph per material variance, [WORD COUNT] words in total, then one line naming the single question the audience needs answered before [DECISION].\n\nBefore you write anything, list any placeholder above that arrived empty or still shows square brackets, and stop until I confirm."
+    },
+    {
+     "order_index": 12,
+     "type": "short_answer",
+     "language": "prompt",
+     "marks": 5,
+     "title": "Prompt Lab: the reconciliation-review template",
+     "prompt_md": "Write a reusable template for reviewing a completed balance-sheet reconciliation prepared by someone else. Your team runs perhaps twenty of these each month across bank, control and intercompany accounts.\n\nA strong template will carry the version header, set the assistant as reviewer rather than preparer or approver, take the reconciling items and preparer notes as a placeholder, apply an ageing rule and a movement tolerance you set each cycle, ask for the evidence a reviewer should request, and hard-code that the conclusion on whether the reconciliation is acceptable remains yours.",
+     "correct_answer": "FIN-TPL-02 Reconciliation review v1.0 | Owner: [OWNER ROLE] | Last reviewed: [REVIEW DATE] | Review again on any change to the chart of accounts, the ageing policy or the reconciliation format.\n\nYou are helping me review a completed [ACCOUNT TYPE] reconciliation for [ENTITY], [PERIOD]. You are the reviewer. You did not prepare it and you do not approve it.\n\nBelow are the reconciling items with dates, values and preparer notes:\n[RECONCILING ITEMS]\n\nOur rules this cycle: ageing limit [AGEING RULE]; movement tolerance [TOLERANCE] against [PRIOR PERIOD]; review threshold [VALUE THRESHOLD].\n\nFor every item, tell me:\n1. Whether the preparer note explains what the item is and why it remains open, in one line.\n2. Its age against the ageing limit.\n3. The specific evidence a reviewer should ask to see to clear it.\n\nThen list separately, under clear headings:\n- items with no supporting note;\n- items older than the ageing limit;\n- items that have moved by less than the tolerance since the prior period, which may be carried rather than worked;\n- anything in the notes you cannot interpret from the information given.\n\nRules: use only the items and notes pasted above, do not estimate a value or a date, and quote every figure exactly as given. Do not conclude that the reconciliation is clean, acceptable or complete — that judgement is mine. Finally, list any placeholder above that arrived empty and stop until I confirm."
+    }
+   ]
+  },
+  {
+   "order_index": 3,
+   "title": "Practical: build a reusable month-end chain",
+   "theory_md": "The pack is due at four. At ten past three someone asks where the 3.2 per cent figure in the second paragraph came from, and the room goes quiet — not because anyone did anything wrong, but because the commentary has been through four hands and nobody can now say which artefact that number came out of. Everyone assumes it was checked by whoever touched it before them.\n\nThis lesson turns the last two into one working asset. You will build a month-end chain you can hand to a colleague, and the verification prompt that stands between that chain and the pack going out.\n\n## The master chain template\n\nA chain template is one document holding every link, its inputs, its output, and — written down, not assumed — the human gate between links. It looks like this:\n\n```\nFIN-CHAIN-01  Month-end commentary chain  v1.0\nOwner: [OWNER ROLE]   Reviewed: [DATE]\nRe-open on: chart of accounts change, pack redesign,\nmateriality change, audit point, change of audience.\n\nCONTEXT (used by every link)\nEntity [ENTITY] · Period [PERIOD] · Audience [AUDIENCE] ·\nDecision [DECISION] on [DECISION DATE] · Materiality\n[VALUE THRESHOLD] or [PERCENT THRESHOLD]\nConfidentiality: anonymised extracts only, in [APPROVED TOOL].\n\nLINK 1 EXTRACT   in: [RAW EXTRACT]   out: restated table\n  rules: restatement only, no interpretation, MISSING never estimated\n  GATE 1 (me): tick totals to trial balance, recompute three\n  variances by hand, resolve every MISSING before continuing.\n\nLINK 2 ANALYSE   in: [VERIFIED TABLE]   out: ranked variances +\n  questions for budget holders\n  rules: no causes proposed, no rounding\n  GATE 2 (me): put the questions to budget holders, write the\n  answers into [CONFIRMED CAUSES] with names and dates.\n\nLINK 3 DRAFT     in: [VERIFIED TABLE] + [CONFIRMED CAUSES]\n  out: [WORD COUNT] words of commentary\n  rules: only supplied figures and causes, CAUSE NOT CONFIRMED\n  where a cause is missing\n  GATE 3 (me): run FIN-CHECK-01 in a new session, clear every\n  NOT TRACEABLE line, then sign.\n```\n\nWritten down, the gates stop being good intentions. They become steps a reviewer can ask about, and a handover a colleague can run in your absence.\n\n## The verification prompt\n\nThe final gate deserves its own asset because it is the one that protects the numbers. The trick is what you ask for. \"Is this commentary correct?\" invites agreement and gets it. Instead, ask the assistant to enumerate and classify — work it cannot do vaguely.\n\n```\nFIN-CHECK-01  Pre-issue figure check  v1.0\n\nBelow are two things: (A) a draft commentary, and (B) the verified\nsource table and my confirmed-cause notes.\n\nDo not improve, rewrite or comment on the draft.\n\n1. List every number that appears anywhere in A, including\n   percentages, dates used as figures and any amount written in\n   words.\n2. For each, state one of: MATCHES (identical figure present in B,\n   quote it); DIFFERS (present in B but not identical, show both);\n   NOT TRACEABLE (no corresponding figure in B).\n3. List every statement in A that gives a cause, reason or\n   explanation, and mark each CONFIRMED (present in my notes) or\n   UNSUPPORTED.\n4. List anything in A that reads as a forward-looking statement,\n   a commitment or an opinion on performance.\n5. Return a count of NOT TRACEABLE, DIFFERS and UNSUPPORTED items.\n   Do not tell me the draft is ready. That is my decision.\n```\n\nAbridged output:\n\n| Figure in draft | Status | Source |\n|---|---|---|\n| 22,400 | MATCHES | Agency fees variance, row 3 |\n| 23.3% | MATCHES | Agency fees variance % |\n| 3.2% | NOT TRACEABLE | no corresponding figure |\n| 18,100 | DIFFERS | source shows 18,100 adverse; draft shows favourable |\n\n\"Causes: 'campaign brought forward' — CONFIRMED (note dated 4 August). 'Softer demand in the region' — UNSUPPORTED.\"\n\nTwo minutes of reading, and the 3.2 per cent that nobody could place is now the thing you go and find before four o'clock rather than after.\n\n## What this check is and is not\n\nIt is a triage of the draft against what you pasted. It is not verification. It cannot see your ledger, so a figure can be marked MATCHES while the source table itself is wrong — which is why GATE 1 exists and why it is you, not the chain, who ticks to the trial balance. Run it in a fresh session rather than at the end of the drafting conversation; an assistant asked to check its own recent output in the same thread has every reason to confirm it. And the count at the end is information for your judgement, not a verdict. The signature on the pack stays yours.\n\n## The mistakes people make here\n\n**Treating the check as sign-off.** A clean run means nothing untraceable was found in what you supplied. It does not mean the pack is right.\n\n**Pasting the draft without the source.** With nothing to compare against, the assistant will assess plausibility, which is the failure mode you are trying to remove.\n\n**Dropping the NOT TRACEABLE category.** Two categories let a fabricated figure be recorded as a near miss. Three keeps it visible.\n\n**Leaving the gates unwritten.** A gate that lives in your head does not survive annual leave, and cannot be evidenced when someone asks who checked what.\n\n**Checking the draft and not the numbers behind it.** The pre-issue check reads the commentary; it says nothing about whether the variance in the table was computed correctly, or whether the accrual behind it was posted to the right period. Those belong to the earlier gates and to your own reperformance.\n\n**Running the chain to the deadline rather than to the gate.** When time is short the first thing dropped is the confirmation call with the budget holder, and the commentary then carries a cause that sounds established and is not. Professional duty sits above speed: if the cause has not been confirmed, the pack says CAUSE NOT CONFIRMED and goes out honest.\n\n## In practice — your deliverable\n\nBuild both assets for a real recurring pack: the master chain with its gates, and the pre-issue check. Then test them the honest way. Take a draft, alter one figure and add one cause you never confirmed, and run the check. If it does not surface both, the prompt is not finished — and better you find that this month than in a meeting.",
+   "estimated_minutes": 30,
+   "learning_objectives": [
+    "Assemble the extract, analyse and draft links into one documented chain template with written human gates",
+    "Write a pre-issue verification prompt that enumerates and classifies every figure and causal claim in a draft",
+    "Explain the limits of an assistant-run check and where the professional sign-off must remain",
+    "Test both assets by seeding a wrong figure and an unconfirmed cause into a draft before relying on them"
+   ],
+   "case_study": "**Eastman Kodak — the control that existed and was not performed (2005)**\n\nIn late 2005 Eastman Kodak restated its first and second quarter results. The largest item was an overstated severance accrual connected with a plant closure in the United Kingdom, worth about 11 million US dollars net of tax. The cause, as the company set out in its amended quarterly filing, was mundane: too many zeros had been entered into the input cells for pension and other termination benefits in a spreadsheet. One cell, wrong by orders of magnitude, carried into published accounts.\n\nWhat makes the episode worth a finance professional's time is the company's own root cause analysis. Kodak concluded that the failure lay in the operation, rather than the design, of the preventive and detective controls around the preparation and review of spreadsheets containing new or changed formulas — and attributed it in part to changes in personnel. In other words, the review step was correctly specified. It was written down. It was not carried out that quarter, by people who were new to it.\n\nThat distinction is the whole of this lesson. A control that is well designed and not operated produces exactly the same published number as no control at all. The comfort of having a documented process is not the same as the evidence that it ran, and the risk concentrates precisely where staff turn over, deadlines compress, and a workbook is trusted because it has always been right before.\n\nAn AI-assisted chain inherits the same exposure and adds pace to it. The gates you write between links — tick to the trial balance, confirm the cause with the budget holder, run the pre-issue check in a fresh session — are the design. What protects the pack is a record that each one happened, on this period, by a named person. Write the gate into the template, and record the run, so the question \"who checked the 3.2 per cent?\" has an answer before anyone thinks to ask it.",
+   "exercises": [
+    {
+     "order_index": 1,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "How to ask for a check",
+     "prompt_md": "You are writing the pre-issue verification prompt for your month-end pack. Which instruction is most likely to surface a figure that appears in the draft but nowhere in the source?",
+     "options": [
+      "List every number in the draft and mark each as matching, differing or not traceable",
+      "Read the draft carefully and tell me whether the commentary looks correct overall",
+      "Check the draft for errors and rewrite any sentence that seems unclear or unsupported",
+      "Summarise the draft in three lines so that I can compare it against the source table"
+     ],
+     "correct_answer": "List every number in the draft and mark each as matching, differing or not traceable"
+    },
+    {
+     "order_index": 2,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "Where to run the check",
+     "prompt_md": "Your drafting link has produced the commentary and you are ready to run the pre-issue check. Why should that check be run in a fresh session rather than in the same conversation?",
+     "options": [
+      "An assistant reviewing its own recent output in the thread tends to confirm it",
+      "A long conversation will eventually exceed the length an assistant can accept",
+      "A fresh session applies the newest version of the assistant to the same material",
+      "The drafting session holds the raw extract, which must not be checked twice"
+     ],
+     "correct_answer": "An assistant reviewing its own recent output in the thread tends to confirm it"
+    },
+    {
+     "order_index": 3,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "What a clean check means",
+     "prompt_md": "The pre-issue check returns zero items marked NOT TRACEABLE, DIFFERS or UNSUPPORTED. What may you correctly conclude from that result?",
+     "options": [
+      "Nothing untraceable was found in the material you supplied to the check",
+      "Every figure in the pack has now been agreed back to the underlying ledger",
+      "The pack has been verified and can be issued without a further sign-off",
+      "The source table used in the check has been confirmed as free of error"
+     ],
+     "correct_answer": "Nothing untraceable was found in the material you supplied to the check"
+    },
+    {
+     "order_index": 4,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "Design against operation",
+     "prompt_md": "Kodak concluded that its spreadsheet review controls had failed in operation rather than in design. What does that distinction mean for the gates written into your month-end chain?",
+     "options": [
+      "A gate that is documented but not performed protects the pack no more than none at all",
+      "A gate should be redesigned each period so that reviewers do not become complacent",
+      "A gate is only needed where a spreadsheet contains new or recently changed formulas",
+      "A gate belongs with the preparer, since the reviewer cannot see the original inputs"
+     ],
+     "correct_answer": "A gate that is documented but not performed protects the pack no more than none at all"
+    },
+    {
+     "order_index": 5,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "Testing the check itself",
+     "prompt_md": "Before relying on your new pre-issue verification prompt, you want evidence that it works. Which test gives you that evidence most directly?",
+     "options": [
+      "Seed a draft with one altered figure and one unconfirmed cause, then run the check",
+      "Run the check twice on the same clean draft and compare the two sets of output",
+      "Ask the assistant to explain how it would verify a figure before you supply one",
+      "Run the check on a pack from a prior period that was issued without any query"
+     ],
+     "correct_answer": "Seed a draft with one altered figure and one unconfirmed cause, then run the check"
+    },
+    {
+     "order_index": 6,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "The three gates",
+     "prompt_md": "State the human gate that sits after each of the three links in a month-end chain, and say in one clause what each gate is protecting against.",
+     "correct_answer": "After extraction you tick totals to the trial balance, recompute a sample of variances and clear every MISSING, which protects against a truncated or misread source. After analysis you put the questions to budget holders and record the answers with names and dates, which protects against invented causes. After drafting you run the pre-issue check in a fresh session and clear every untraceable item, which protects against a figure or claim reaching the pack unsupported."
+    },
+    {
+     "order_index": 7,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "Triage, not verification",
+     "prompt_md": "Explain why the pre-issue check should be described as triage rather than verification, and what still has to happen before the pack is issued.",
+     "correct_answer": "The check compares the draft only against the material you pasted, so it can mark a figure as matching while the source table itself is wrong. It cannot see the ledger or the underlying documents. Verification remains the human tick back to source at the first gate, and the professional sign-off on the pack stays with the person whose name is on it."
+    },
+    {
+     "order_index": 8,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "Three categories, not two",
+     "prompt_md": "Your colleague wants to simplify the check to a pass or fail per figure. Explain what is lost by dropping the NOT TRACEABLE category.",
+     "correct_answer": "With only pass or fail, a figure that exists nowhere in the source is recorded in the same bucket as a figure that is present but stated differently, and the fabricated one reads as a near miss. Keeping MATCHES, DIFFERS and NOT TRACEABLE separates a transcription slip from an invention, and the invention is the item that must be found before issue."
+    },
+    {
+     "order_index": 9,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "Handover",
+     "prompt_md": "A colleague must run your month-end chain while you are on leave. Describe what the chain template has to contain for that handover to be safe.",
+     "correct_answer": "It needs the version, owner and review trigger, the standing context of entity, period, audience, decision and materiality, and each link written with its inputs, outputs and rules. Critically it needs the gates written as steps rather than assumed, so the colleague knows to tick to the trial balance, to confirm causes with named budget holders and dates, and to run the pre-issue check in a fresh session before signing."
+    },
+    {
+     "order_index": 10,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "Confidentiality in a packaged chain",
+     "prompt_md": "Your chain template will be reused by several people across entities, some of them holding client and commercially sensitive data. State how the confidentiality line should appear in the asset itself.",
+     "correct_answer": "Write it into the standing context at the top of the template rather than relying on memory: anonymised or masked extracts only, and the chain to be run solely in the tool the organisation has approved. Naming the approved tool and the masking requirement in the asset means anyone who inherits the chain inherits the constraint, including a colleague running it for the first time under deadline."
+    },
+    {
+     "order_index": 11,
+     "type": "short_answer",
+     "language": "prompt",
+     "marks": 5,
+     "title": "Prompt Lab: the master month-end chain template",
+     "prompt_md": "Build the graded deliverable: a master month-end chain template your team could run without you, for the monthly management pack of a multi-entity UK business.\n\nA strong template carries a reference, version, owner and re-open triggers; a standing context block with entity, period, audience, decision, materiality and the confidentiality rule; three links each with named inputs, outputs and rules; and an explicit human gate written after every link, with the pre-issue check named at the final gate. It must contain placeholders only, with no actual figures.",
+     "correct_answer": "FIN-CHAIN-01 Month-end commentary chain v1.0 | Owner: [OWNER ROLE] | Reviewed: [REVIEW DATE]\nRe-open this template on: any chart of accounts change, pack redesign, materiality change, audit or review point, or change of audience.\n\nSTANDING CONTEXT (paste at the top of every link)\nEntity: [ENTITY] · Period: [PERIOD] · Audience: [AUDIENCE] · Decision: [DECISION] on [DECISION DATE]\nMateriality: [VALUE THRESHOLD] or [PERCENT THRESHOLD]\nConfidentiality: anonymised or masked extracts only, run in [APPROVED TOOL]. No client or commercially sensitive data in any other assistant.\n\nLINK 1 — EXTRACT\nIn: [RAW EXTRACT]. Out: a restated table of Account, Actual, Budget, Variance (GBP), Variance (%).\nRules: restatement only; no causes, comments or recommendations; no account added that is not in the source; write MISSING rather than estimating; do not round.\nGATE 1 (me, before Link 2): tick the totals to the trial balance, recompute at least three variances by hand, resolve every MISSING, and record who checked and when.\n\nLINK 2 — ANALYSE\nIn: [VERIFIED TABLE] re-pasted in full. Out: the material variances ranked by value and by percentage, each with the questions to put to the budget holder.\nRules: use only the supplied figures; propose no causes; quote figures exactly.\nGATE 2 (me, before Link 3): put the questions to the budget holders, write their answers into [CONFIRMED CAUSES] with names and dates, and leave anything unanswered blank rather than assumed.\n\nLINK 3 — DRAFT\nIn: [VERIFIED TABLE] + [CONFIRMED CAUSES]. Out: [WORD COUNT] words of commentary for the audience above.\nRules: no figure that is not in the table; no cause that is not in the notes; write CAUSE NOT CONFIRMED where one is missing; plain English; no adjectives about performance; close with the question the audience must have answered before the decision.\nGATE 3 (me, before issue): run FIN-CHECK-01 in a new session, clear every NOT TRACEABLE and UNSUPPORTED item, then sign.\n\nBefore running any link, list any placeholder above that is still empty and stop."
+    },
+    {
+     "order_index": 12,
+     "type": "short_answer",
+     "language": "prompt",
+     "marks": 5,
+     "title": "Prompt Lab: the pre-issue verification prompt",
+     "prompt_md": "Build the second graded deliverable: the verification prompt that checks every figure in a draft back to its source before the pack is issued. You will paste the draft commentary and the verified source table plus your confirmed-cause notes.\n\nA strong prompt forbids rewriting or improving the draft; requires every number to be enumerated, including percentages and amounts written in words; classifies each as matching, differing or not traceable with the source quoted; separates causal claims into confirmed and unsupported; catches forward-looking statements and opinions on performance; returns counts; and explicitly refuses to declare the pack ready.",
+     "correct_answer": "FIN-CHECK-01 Pre-issue figure check v1.0 | Run in a new session, never in the drafting thread.\n\nBelow are two things: (A) a draft commentary for the [PERIOD] management pack, and (B) the verified source table and my confirmed-cause notes.\n\nDo not improve, rewrite, summarise or comment on the quality of A. Your only job is to trace it against B.\n\n1. List every number that appears anywhere in A. Include percentages, ratios, dates used as figures, and any amount written in words.\n2. For each one, give exactly one status and show your evidence:\n   - MATCHES — an identical figure exists in B; quote the line it comes from.\n   - DIFFERS — a related figure exists in B but is not identical; show both, including any difference of sign or direction.\n   - NOT TRACEABLE — no corresponding figure exists in B.\n3. List every statement in A that gives a cause, reason or explanation for a movement, and mark each CONFIRMED (present in my notes, quote it) or UNSUPPORTED.\n4. List anything in A that reads as a forward-looking statement, a commitment, a guarantee or an opinion on performance.\n5. Return counts of NOT TRACEABLE, DIFFERS and UNSUPPORTED items, and list them together at the end in one short table.\n\nRules: do not infer, estimate or reconcile a difference on my behalf; if a figure in A could relate to more than one line in B, mark it DIFFERS and say which lines. Do not tell me the draft is accurate, complete or ready to issue — that judgement is mine.\n\nA — DRAFT COMMENTARY:\n[DRAFT]\n\nB — VERIFIED SOURCE TABLE AND CONFIRMED CAUSES:\n[SOURCE]"
+    }
+   ]
+  }
+ ]
+}

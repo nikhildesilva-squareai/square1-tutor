@@ -1,0 +1,464 @@
+{
+ "week": 5,
+ "lessons": [
+  {
+   "order_index": 1,
+   "title": "Build the company assistant your first hires can brief",
+   "theory_md": "## The answer that changes depending on who you ask\n\nYour first two hires start in the same week. On the Tuesday, the new account manager describes what you sell one way on a call. On the Thursday, the contractor rewriting your site describes it another way. Neither is exactly wrong — they are both repeating something you said, three weeks apart, in different moods, with different bits emphasised. The positioning lives in your head, gets re-improvised whenever it is needed, and drifts a little on every retelling. Then an investor hears the third version in a meeting you were not in.\n\nYou already have half the fix. Week one produced the business context file: what you sell, to whom, at what price, what you can prove and how you sound. Until now you have been pasting it at the top of prompts. This week you stop pasting and start loading — turning that file into a standing assistant anyone in the company can brief, so the company answers from one source rather than from whoever happens to be nearest.\n\n## What a custom assistant actually is\n\nEvery major assistant now offers the same shape without a line of code: a named workspace holding standing instructions plus a set of attached files. ChatGPT calls them Custom GPTs, Claude calls them Projects, Microsoft Copilot has agents, Gemini has Gems. The mechanics differ slightly; the idea does not. Write the instructions once, attach the material once, and every conversation inside that workspace starts already briefed.\n\n**The loaded material** is not everything you own. It is the current, dated version of what a colleague would need on their first morning: the positioning and one-line description, the ideal customer profile including the segments you have decided *not* to serve, live pricing with what is negotiable and what is not, product facts including what is not built yet, proof points you can attribute to something published, tone rules, and a do-not-say list. Every number carries an as-at date. Undated material is how a figure that was true last quarter ends up in front of a customer this quarter.\n\n**The instruction block** is the standing brief above every conversation: who the assistant is, what it may use as fact, what it does when the material runs out, how it sounds, and what it must push back to you. It is the graded artefact at the end of this week, so build it deliberately rather than typing two lines and hoping.\n\n## Worked example: writing the instruction block\n\nDo not compose it from scratch in the box. Brief a colleague on what the thing is for, and let the draft come back for you to cut.\n\n```\nHere is our business context file, price list and product notes: <paste all three>.\n\nDraft the standing instruction block for a company assistant that my whole team\nwill use — me, two account managers, a contractor. It must cover: who it is and\nwho it serves, that the attached files are its only source of company fact, what\nit does when a question is not covered, our tone, and what it refuses to do.\n\nNon-negotiables to write in: never state a customer name, revenue figure, funding\namount or growth number that is not in the attached files. Never draft anything\nthat commits us to a price, a delivery date or a contractual term without telling\nthe user it needs my sign-off. Keep it under 400 words and write it as rules, not\nprose. List anything in my files that is too vague to act on.\n```\n\nAbridged, it returns something like: *\"You are the company assistant for [company]. Your only sources of company fact are the attached context file, price list and product notes... If a question is not covered, say plainly that it is not in the loaded material and name what you would need... Never state customer names, revenue, funding or growth figures that do not appear in the files... Flag any pricing, timeline or contractual wording as requiring founder sign-off before it leaves the company.\"* Underneath it lists the gaps: no dated proof points, no do-not-say list, two prices that contradict each other. That list is the more valuable half of the output.\n\n## Worked example: an early hire uses it\n\nThe test of the build is whether someone who is not you gets a usable answer.\n\n```\nI am speaking to a 40-seat operations team at a mid-market logistics firm\ntomorrow. Give me: how we describe ourselves to that buyer, the three things\nthey will care about most, our pricing at 40 seats, and the two objections\nthis segment raises. Mark anything you are inferring rather than taking from\nthe files, and tell me what you cannot answer.\n```\n\nA grounded reply gives the positioning line verbatim from the file, the tiered price at 40 seats with its as-at date, two objections drawn from the notes — and then a short honest block: *\"Not covered: whether we have an existing logistics reference customer. Inferred: that the buyer is the operations lead rather than procurement.\"* An ungrounded assistant gives you all of that with equal confidence, including a reference customer you do not have. The difference is invisible in the moment and expensive in the meeting, which is why next lesson is about testing rather than building.\n\n## Where this goes wrong\n\n**Loading the archive instead of the current truth.** Founders attach every deck since incorporation. The assistant now holds four positionings and picks whichever it likes. Load one current version of each thing and delete the rest from the workspace.\n\n**No as-at dates.** A figure with no date beside it is repeated forever with the same confidence it had on the day it was true.\n\n**Sharing it before stripping it.** The moment a contractor gets access, the cap table, individual salaries and anything under a customer confidentiality clause have to be out of the files. Assume everything loaded can be recited to whoever is in the workspace.\n\n**Assuming loaded means read.** Attaching a file does not guarantee an answer draws on it. That is an assumption to check, not to trust.\n\n**Letting it commit on your behalf.** Drafting a renewal email is delegable. Agreeing the renewal price is not. The founder still owns the decision, the relationships, and anything an investor or a customer will hold them to — the assistant makes those faster to prepare, never automatic to send.\n\n## In practice\n\nSet aside an hour. Build one workspace, attach four files at most, write the instruction block by briefing rather than typing, and then ask it the five questions your last new hire actually asked you. Where the answer is thin, the material is thin — fix the file, not the wording of the question. You now have something your first hires can brief instead of interrupting you. What you do not yet have is any evidence that it tells them the truth.",
+   "estimated_minutes": 28,
+   "learning_objectives": [
+    "Assemble a dated pack of company material that a custom assistant can answer from without improvising",
+    "Write a standing instruction block covering sources, grounding, tone, refusals and founder sign-off",
+    "Decide what must be stripped from the loaded material before early hires and contractors get access",
+    "Judge an assistant answer by whether it separates loaded fact, inference and what it cannot cover"
+   ],
+   "case_study": "**LexisNexis — an assistant that was only allowed to answer from its own shelves (2023)**\n\nIn October 2023 LexisNexis launched Lexis+ AI in the United States, marketing it under a phrase that made its design decision unusually explicit: hallucination-free linked legal citations. The claim rested on architecture rather than optimism. Rather than letting a general model answer legal questions from whatever it had absorbed in training, the product was built to answer from the company's own repository of legal content, and to attach citations that were checked against that repository before the answer was shown.\n\nThe founder-relevant part is the trade-off the company chose to accept. Answering only from material you control makes the assistant narrower. It cannot improvise around a gap, and where the shelves are empty the user gets less. LexisNexis took that narrowness deliberately, because its buyers were lawyers who would be personally accountable for anything they filed, and an answer that sounds right but cites a case that does not exist is worse than no answer at all. That is precisely the calculation a founder makes when early hires start briefing customers and investors using an assistant nobody has checked.\n\nThe claim itself is the second lesson. Naming the product after hallucination-free citations gave the company a public standard to be measured against, and independent academic testing published in 2024 reported that leading legal research assistants, this one included, still produced incorrect or unsupported answers on a share of test questions. Whether or not you think the phrase was fair marketing, the pattern is the one that matters: a strong claim about your assistant becomes something you get held to, by users first and by everyone else afterwards.\n\nFor a company of six people the takeaway is not the technology stack. It is that grounding is a decision you make when you build, not a setting you find later. Decide now that the assistant answers from your loaded material and says so when it cannot, accept that it will sometimes tell your account manager it does not know, and never describe it to a customer or an investor in stronger terms than you have tested.",
+   "exercises": [
+    {
+     "order_index": 1,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "What belongs in the loaded material",
+     "prompt_md": "You are assembling the material to load into a company assistant that your first three hires and one contractor will brief every day. Which set belongs in it?",
+     "options": [
+      "Current positioning, the ICP, live pricing, product facts and tone rules, each dated",
+      "Every deck, document and thread the company has produced since incorporation, undated",
+      "Only the investor pitch deck, because the board has already approved how it describes us",
+      "Whatever the newest hire has already read, so the answers match the view they formed"
+     ],
+     "correct_answer": "Current positioning, the ICP, live pricing, product facts and tone rules, each dated"
+    },
+    {
+     "order_index": 2,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "When the loaded material runs out",
+     "prompt_md": "An early hire asks the company assistant something your loaded material does not cover, an hour before a customer call. What should the instruction block make it do in that moment?",
+     "options": [
+      "Say the loaded material does not cover it and name what would be needed to answer",
+      "Produce the most likely answer so that the hire is never blocked while you are away",
+      "Search the open web and blend whatever it finds there into the company answer",
+      "Return the nearest paragraph it can locate and present that as the direct answer"
+     ],
+     "correct_answer": "Say the loaded material does not cover it and name what would be needed to answer"
+    },
+    {
+     "order_index": 3,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "Where the assistant stops and you start",
+     "prompt_md": "An account manager asks the company assistant to draft and then send a pricing commitment to a customer whose contract renews next week. Where does the line sit?",
+     "options": [
+      "The draft is delegable; the commitment is a founder decision and cannot leave automatically",
+      "Both are delegable, because the assistant already holds the current and dated price list",
+      "Neither is delegable, because pricing should never be loaded into the assistant at all",
+      "Both are blocked until an investor has reviewed and approved the wording of the offer"
+     ],
+     "correct_answer": "The draft is delegable; the commitment is a founder decision and cannot leave automatically"
+    },
+    {
+     "order_index": 4,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "Stripping the workspace before you share it",
+     "prompt_md": "You are about to give two contractors and a new account manager access to the company assistant workspace. Which material has to come out of the loaded files first?",
+     "options": [
+      "Cap table detail, individual salaries and anything under a customer confidentiality clause",
+      "The tone rules, because contractors write in their own voice for every client they serve",
+      "The product facts, because contractors only ever need positioning and the current pricing",
+      "The customer profile, because it changes far too often to be useful to anyone outside"
+     ],
+     "correct_answer": "Cap table detail, individual salaries and anything under a customer confidentiality clause"
+    },
+    {
+     "order_index": 5,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "Why every figure carries a date",
+     "prompt_md": "Your loaded material puts an as-at date beside every number, which takes an extra half hour to prepare. A new hire asks what that discipline actually buys the company. What is the answer?",
+     "options": [
+      "It shows when a figure was true, so stale numbers become visible instead of repeated",
+      "It makes the assistant respond faster because it can sort the material by recency",
+      "It satisfies investors, who require a dated record of every internal company document",
+      "It lets the assistant write dates into customer emails without being asked to do so"
+     ],
+     "correct_answer": "It shows when a figure was true, so stale numbers become visible instead of repeated"
+    },
+    {
+     "order_index": 6,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "The problem a company assistant solves",
+     "prompt_md": "Explain what a company-context assistant is in practical terms, and the specific founder problem it exists to solve.",
+     "correct_answer": "It is a named workspace holding standing instructions plus your own attached company material, so every conversation inside it starts already briefed on the business. The problem it solves is that positioning, pricing and product facts live in the founder's head and get re-improvised on each retelling, so hires, contractors and the founder describe the company differently. Loading one dated version of the material means everyone briefs from the same source, and the founder stops being the bottleneck for basic company facts."
+    },
+    {
+     "order_index": 7,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "What the instruction block has to cover",
+     "prompt_md": "List the parts a standing instruction block must contain for a company assistant that early hires will use, and say why each is there.",
+     "correct_answer": "Who the assistant is and who it serves, so answers are pitched at the right reader. What counts as its source of company fact, so it cannot substitute general knowledge for your business. What it does when the material runs out, so gaps surface instead of being filled. Tone rules, so output matches how the company already sounds. And the escalation rule naming what needs founder sign-off before it leaves — pricing, timelines, contractual wording and anything a customer or investor would hold you to."
+    },
+    {
+     "order_index": 8,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "Loaded is not the same as read",
+     "prompt_md": "A founder attaches four files, gets a plausible first answer and declares the assistant finished. Explain why that is premature and what it sets up for next lesson.",
+     "correct_answer": "Attaching a file does not guarantee an answer actually drew on it, and a plausible answer looks identical whether it came from your material or from general knowledge about companies like yours. One good answer is a sample of one, taken by the person least likely to spot a wrong company fact. The build is only finished once a set of real questions has been run against it and the answers checked line by line against the loaded material, which is the testing work the next lesson covers."
+    },
+    {
+     "order_index": 9,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "Reading the Lexis+ AI design decision",
+     "prompt_md": "LexisNexis launched Lexis+ AI in October 2023, built to answer from its own repository and marketed as delivering hallucination-free linked citations. Explain the two lessons a founder should take from it.",
+     "correct_answer": "The first is that grounding is a build decision, not a later setting: the company chose to answer only from material it controlled, and accepted that this makes the assistant narrower and sometimes unable to answer, because its users were personally accountable for what they filed. The second is that a strong public claim about your assistant becomes a standard you are held to — independent testing published in 2024 reported that leading legal research tools including this one still returned incorrect or unsupported answers on some questions. So ground it deliberately, and never describe it to a customer or investor in stronger terms than you have tested."
+    },
+    {
+     "order_index": 10,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "What changes when other people get access",
+     "prompt_md": "Your assistant has been a private tool for a month. You are now adding two contractors and an account manager. Explain what has to change before you share it.",
+     "correct_answer": "Assume everything loaded can be recited to anyone in the workspace, so cap table detail, individual salaries, unsigned commercial terms and anything under a customer confidentiality clause come out of the files first. The instruction block needs a reader who is not you: plainer answers, explicit marking of what is inference, and a rule that pricing, timelines and contractual wording are flagged for founder sign-off rather than sent. It also needs a stated owner and a review date, because a shared assistant that nobody maintains drifts out of date silently."
+    },
+    {
+     "order_index": 11,
+     "type": "short_answer",
+     "language": "prompt",
+     "marks": 5,
+     "title": "Prompt Lab: turn the pile into a loadable pack",
+     "prompt_md": "Your company material is scattered across an old pitch deck, a pricing sheet with two conflicting tiers, a product roadmap, a folder of customer emails and the business context file from week one. Write the prompt that turns that pile into one dated pack ready to load into an assistant. A strong prompt supplies the raw material rather than asking for invention, defines the sections the pack must contain, demands an as-at date on every figure, requires conflicts and gaps to be listed rather than resolved silently, and names what must be excluded before hires and contractors see it.",
+     "correct_answer": "Here is everything we currently have: business context file <paste>, pitch deck text <paste>, pricing sheet <paste>, product roadmap <paste>, and a set of customer emails <paste>.\n\nTurn this into a single company knowledge pack that I will load into an assistant used by me, two account managers and a contractor. Use only what is in the material above — do not add facts, examples or figures from anywhere else.\n\nStructure it in these sections: one-line description; positioning by buyer type; ideal customer profile including who we have decided not to serve; pricing by tier with what is negotiable and what is not; product facts including what is not built yet; proof points, each with the published source it comes from; tone rules; do-not-say list.\n\nRules: put an as-at date beside every number and every claim, taken from the source it came from. Where two sources conflict — the pricing sheet has two different tier structures — do not choose between them; list the conflict and ask me. Where a section has nothing to fill it, write NOT COVERED rather than inferring. Flag anything that looks like cap table detail, individual salaries, unsigned commercial terms or material under a customer confidentiality clause into a separate EXCLUDE list so it never gets loaded.\n\nFinish with the five questions you would need me to answer before this pack is safe for a new hire to rely on."
+    },
+    {
+     "order_index": 12,
+     "type": "short_answer",
+     "language": "prompt",
+     "marks": 5,
+     "title": "Prompt Lab: the first-hire briefing prompt",
+     "prompt_md": "Your new account manager has a call tomorrow with a 40-seat operations team at a mid-market logistics firm and has never sold your product before. Write the prompt they will send to the loaded company assistant. A strong prompt states the buyer and the situation, asks for specific outputs rather than a summary, forces loaded fact to be separated from inference, asks explicitly what is not covered, and routes anything that would commit the company back to the founder.",
+     "correct_answer": "I am the new account manager. Tomorrow I am speaking with a 40-seat operations team at a mid-market logistics firm; my contact is the head of operations, not procurement. Answer only from the material loaded in this workspace.\n\nGive me, in this order: how we describe ourselves to this buyer in two sentences, using our own wording from the positioning file; the three things this segment cares about most; our pricing at 40 seats with the as-at date beside it and what is negotiable; the two objections this segment raises and how we have answered them before; and any proof point I am allowed to quote, with the published source it comes from.\n\nRules: mark every line as either FROM FILES or INFERRED. Do not name a customer, revenue figure, funding amount or growth number that is not in the loaded material — if I ask for one and it is not there, say so. End with a NOT COVERED list of anything I have asked for that the material does not answer.\n\nSeparately, list anything in this that would commit us — a price, a delivery date, a contractual term or a reference customer — and mark it as needing founder sign-off before I say it on the call."
+    }
+   ]
+  },
+  {
+   "order_index": 2,
+   "title": "Test it before your team and your investors see the output",
+   "theory_md": "## The sentence you cannot take back\n\nYour new account manager asks the company assistant a reasonable question the night before a call: *who are our biggest customers?* The assistant, briefed on a folder that includes last year's fundraising deck, answers warmly and specifically. Two named logos, a growth figure, a line about the pipeline. None of it is quite true. One logo was a pilot that never converted, the growth figure was a projection on a slide, and the pipeline line was written to impress a fund.\n\nShe does not know that. She has been here nine days and the assistant sounds like the company. So the sentence goes into an email, the email goes to a prospect who repeats it to a mutual investor, and now you are the founder who claims customers he does not have. Nobody lied. The material was ambiguous, the assistant filled the gap the way assistants do, and no one had ever checked what it says when asked the question every buyer asks first.\n\nThat is the whole argument for this lesson. You built the assistant last lesson. Before your team or your investors see anything it produces, you have to find out what it does under the questions you did not design it for.\n\n## A test set of real asks\n\nTesting an assistant is not clicking around until it looks fine. It is a fixed list of questions, written down once, run deliberately, with the answer you expect recorded *before* you run them. Twenty is plenty. Draw them from four buckets, and if any bucket is empty your test is decorative.\n\n**Covered.** Questions your loaded material genuinely answers — pricing at three tiers, what the product does, who it is for. These prove the assistant reaches the material at all.\n\n**Adjacent.** Questions near your material but not in it: pricing for a segment you have not priced, an integration you have discussed but not built. This is where invention starts, because the shape of an answer is available even though the facts are not.\n\n**Uncovered.** Questions your material does not answer at all — churn rate, a competitor comparison, headcount plans. The correct output is a clean refusal, not a graceful essay.\n\n**Traps.** The four questions that end founders: who are your biggest customers, what is your growth rate, how much have you raised and from whom, and what results do customers get. Every one invites a specific number. Every one is quoted back to you later.\n\nScore each answer into five outcomes: correct and supported; stale, meaning true once; unsupported, meaning it may even be true but nothing in your material backs it; off-positioning, meaning it describes a company slightly different from yours; and should-have-refused. Note that *unsupported but true* is still a failure. If the assistant produced a real customer name that is nowhere in the loaded files, it guessed correctly this time and will guess wrongly next time.\n\n## Worked example: generating the test set\n\nYou are the worst person to write these questions, because you unconsciously ask the ones you know are covered.\n\n```\nHere is the material loaded into our company assistant: <paste the pack>.\n\nWrite me a 20-question test set for it. Four groups of five: questions this\nmaterial clearly answers; questions close to it but not actually in it;\nquestions it does not cover at all; and the questions an investor, a journalist\nor a serious buyer asks that invite a specific number about customers, revenue,\nfunding or results.\n\nFor every question also write the answer I should accept, in one line, taken\nonly from the material — and where the correct outcome is a refusal, write\nREFUSE and say what a good refusal would name as missing. Do not soften the\ntrap questions. Phrase them the way an investor would actually ask them.\n```\n\nAbridged, it comes back as a table: *\"How much have you raised and from whom? — REFUSE: funding detail is not in the loaded material; a good refusal says so and points to the founder.\"* *\"What churn do your customers see? — REFUSE: no retention data loaded.\"* *\"What does a 40-seat licence cost? — £X per seat per month, as at March, volume discount above 50 seats.\"* You now have a scoring key that exists independently of whatever the assistant happens to say.\n\n## Worked example: auditing one answer, claim by claim\n\nRun the set, then take the worst answer and pull it apart.\n\n```\nBelow is our loaded company material: <paste>. Below that is an answer our\nassistant gave a new hire: <paste the answer>.\n\nGo through the answer one factual claim at a time. For each: quote the claim,\nthen mark it SUPPORTED with the line from the material it comes from, STALE\nwith the date it was true, UNSUPPORTED if nothing in the material backs it\neven if it sounds right, or SHOULD HAVE REFUSED.\n\nThen tell me which single change stops this recurring — a missing fact in the\nmaterial, an ambiguous document that needs deleting, or a missing rule in the\ninstruction block. Do not rewrite the answer.\n```\n\nThe last instruction is the important one. Rewriting the answer fixes one email. Naming the cause — *your archived deck is loaded and contains a projection stated as fact* — fixes the class of failure. The usual fixes are small and structural: delete the aspirational deck, add a rule that customer names come only from a named reference list, add *if a figure is not in the material, say it is not loaded and stop*.\n\n## Where this goes wrong\n\n**Testing it yourself, once, gently.** You prompt well, you know what is true, and you unconsciously avoid the trap questions. Have someone who joined recently run the set cold.\n\n**Accepting hedging as grounding.** \"Approximately 100 customers\" is not more honest than \"100 customers\"; it is the same invention with a softer edge. A grounded assistant names the source or declines.\n\n**Fixing outputs instead of inputs.** Editing an answer teaches you nothing and changes nothing for the next person who asks.\n\n**Testing once and calling it done.** The material moves. A pivot changes the positioning, a raise changes the funding answer, a price change makes every quoted figure wrong, and providers update models underneath you without warning. Re-run the twenty questions after any pivot, any raise, any pricing change, any significant addition to the loaded pack, and on a fixed calendar date each quarter regardless.\n\n**Forgetting who carries the answer.** The assistant does not have a reputation. You do. The founder owns the decision, the relationships, and anything an investor or customer will hold them to — testing is how you keep that ownership real once other people are speaking for the company.\n\n## In practice\n\nWrite the twenty questions today and store them with the assistant, not in your head. Run them, score them, and fix the material rather than the wording. When it refuses cleanly on all five uncovered questions and all four traps, you have something a nine-day-old hire can use in front of a customer. Until then you have a confident stranger describing your company to people who will hold you to it.",
+   "estimated_minutes": 29,
+   "learning_objectives": [
+    "Build a twenty-question test set spanning covered, adjacent, uncovered and traction-trap asks",
+    "Score assistant answers as supported, stale, unsupported, off-positioning or should-have-refused",
+    "Trace a bad answer to the loaded material or the instruction block rather than editing the output",
+    "Set the re-test triggers that follow a pivot, a raise, a price change or a model update"
+   ],
+   "case_study": "**Joonko — the traction that only existed in the telling (2021–2024)**\n\nJoonko was an Israeli-American recruitment startup that used artificial intelligence to surface diverse and underrepresented job candidates for employers. It raised money on a story that was easy to want to believe. According to the US Securities and Exchange Commission, which charged founder and chief executive Ilit Raz in June 2024, she told investors the platform had more than 100 customers, including Fortune 500 companies, that it was working with more than 100,000 active candidates, and that revenue had passed one million dollars. The complaint states that revenue never exceeded one hundred thousand dollars, and that some of the customer testimonials shown to investors were fabricated.\n\nThe unravelling was ordinary. One investor pressed for evidence. The regulator alleges Raz responded with falsified bank statements and forged contracts, and that when the same investor came back in mid-2023 she admitted the revenue and customer claims were untrue. Joonko shut down. The SEC alleged at least twenty-one million dollars was raised on the strength of the claims, and its enforcement director summarised it as an old-school fraud dressed in new-school buzzwords. Criminal charges were brought in parallel.\n\nA founder reading this in a course about assistants might reasonably say that deliberate fraud has nothing to do with a tool inventing a customer name. Morally that is right, and the distinction matters. Practically, it is worth less than it feels. The investor who acted on a false customer count was harmed identically whether the number was fabricated in a pitch or generated by an assistant that had been fed an aspirational deck and asked a natural question. Traction claims are the category that gets checked hardest, remembered longest and forgiven least.\n\nWhich is why the trap questions in your test set are not arbitrary. Customers, revenue, funding, results — those four are exactly what Joonko is remembered for overstating, and exactly what a well-meaning assistant will supply a confident answer to if your loaded material contains a single projection dressed as a fact. Your defence is not intention. It is a tested refusal, on record, before anyone else uses the thing.",
+   "exercises": [
+    {
+     "order_index": 1,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "What a test set has to contain",
+     "prompt_md": "You are writing the fixed list of questions you will run against your company assistant before any hire uses it in front of a customer. Which four groups must appear?",
+     "options": [
+      "Covered facts, adjacent facts, uncovered questions, and the traction trap questions",
+      "Covered facts only, asked four separate ways to confirm the answers stay consistent",
+      "Product questions, tone questions, formatting questions, and questions about length",
+      "Whatever the founder happens to ask most often during a normal working week"
+     ],
+     "correct_answer": "Covered facts, adjacent facts, uncovered questions, and the traction trap questions"
+    },
+    {
+     "order_index": 2,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "True but nowhere in the material",
+     "prompt_md": "Your assistant names a real customer of yours in an answer, and the name appears nowhere in the loaded material. How should that answer be scored in your test?",
+     "options": [
+      "As a failure, because an unsupported claim that happens to be right will be wrong next time",
+      "As a pass, because the claim is factually accurate and the customer relationship is real",
+      "As a pass with a note, because the material is clearly incomplete rather than the answer wrong",
+      "As unscoreable, because customer questions belong outside the assistant test set entirely"
+     ],
+     "correct_answer": "As a failure, because an unsupported claim that happens to be right will be wrong next time"
+    },
+    {
+     "order_index": 3,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "Who should run the test",
+     "prompt_md": "You have twenty test questions and a scoring key, and you need somebody to run them against the company assistant. Who gives you the most useful result, and why?",
+     "options": [
+      "Someone who joined recently, because the founder unconsciously asks only what is covered",
+      "The founder alone, because only the founder can tell which company facts are true",
+      "An investor, because investors ask the hardest questions about growth and revenue",
+      "Nobody yet, because a test only becomes meaningful once real customers have complained"
+     ],
+     "correct_answer": "Someone who joined recently, because the founder unconsciously asks only what is covered"
+    },
+    {
+     "order_index": 4,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "Where the fix belongs",
+     "prompt_md": "Your assistant quoted a growth projection from an archived fundraising deck as though it were a current result. You have found the bad answer. What do you change?",
+     "options": [
+      "The loaded material and the instruction block, so the whole class of answer stops",
+      "The wording of that one answer, so the email going out this afternoon reads correctly",
+      "The question the hire asked, so future staff phrase traction questions more carefully",
+      "The assistant provider, because a different model would have handled the deck properly"
+     ],
+     "correct_answer": "The loaded material and the instruction block, so the whole class of answer stops"
+    },
+    {
+     "order_index": 5,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "When the test has to run again",
+     "prompt_md": "Your assistant passed its twenty questions cleanly in March. Since then you have pivoted the positioning, closed a funding round and raised prices. What does that mean?",
+     "options": [
+      "The test set must be re-run, because each of those changes invalidates earlier answers",
+      "The test set can stand, because a clean pass in March covered the underlying material",
+      "The test set should be retired, because a tested assistant needs checking only annually",
+      "The test set should be shortened, because passing once shows most questions are wasted"
+     ],
+     "correct_answer": "The test set must be re-run, because each of those changes invalidates earlier answers"
+    },
+    {
+     "order_index": 6,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "Why the expected answer is written first",
+     "prompt_md": "Explain why you record the answer you would accept before running each test question, rather than judging the output when you see it.",
+     "correct_answer": "A fluent answer is persuasive in the moment, so judging after the fact means grading against what the assistant said rather than against what your material supports. Writing the expected answer first — including writing REFUSE where the correct outcome is a refusal — creates a scoring key that exists independently of the output. It also forces you to check what your own material actually contains, which is where half the gaps get found before the test even runs."
+    },
+    {
+     "order_index": 7,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "The four trap questions",
+     "prompt_md": "Name the four traction trap questions every test set must include, and explain what makes them different from an ordinary uncovered question.",
+     "correct_answer": "Who are your biggest customers, what is your growth rate, how much have you raised and from whom, and what results do customers get. They are different because each one invites a specific number, each is the kind of thing a serious buyer, journalist or investor asks first, and each gets quoted back to you later and checked. An ordinary uncovered question produces an awkward gap; these produce a claim the founder is held to, so the correct output is a clean refusal that names what is missing."
+    },
+    {
+     "order_index": 8,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "Hedged invention",
+     "prompt_md": "A founder is reassured that the assistant now says approximately and around before its numbers. Explain why that is not grounding, and what a grounded answer looks like instead.",
+     "correct_answer": "Hedging changes the tone of an invented figure without changing where it came from, so an unsupported number still leaves the workspace and still gets repeated as a company claim. A grounded answer either names the source and date the figure came from in the loaded material, or states plainly that the figure is not in the loaded material and stops. The test is whether the reader can trace the claim, not whether the sentence sounds cautious."
+    },
+    {
+     "order_index": 9,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "Reading the Joonko charges",
+     "prompt_md": "The SEC charged Joonko founder Ilit Raz in June 2024 over claims about customers, candidates and revenue that the complaint says were untrue. Explain what a founder should take from it when testing an assistant.",
+     "correct_answer": "Deliberate fraud and a careless generated claim are different in intent, but the investor or customer who acted on a false customer count is harmed the same way, and traction claims are the category checked hardest and forgiven least. That is why the trap questions in a test set are customers, revenue, funding and results — the same four Joonko is remembered for overstating. An assistant fed an aspirational deck will answer those questions confidently, so the defence is a tested refusal recorded before anyone else uses it, not the founder's good intentions."
+    },
+    {
+     "order_index": 10,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "Testing after the round closes",
+     "prompt_md": "You closed a funding round last week and have updated the loaded material with the new figures. Explain what you re-test and why the funding change in particular deserves attention.",
+     "correct_answer": "Re-run the full twenty questions rather than only the funding ones, because a raise usually arrives with new positioning, new headcount plans and a new deck that gets loaded alongside the rest. Funding deserves particular attention because the amount, the lead investor and the valuation are exactly what people repeat, and a wrong or premature number is both quotable and checkable against public filings. Check specifically that any pre-announcement material has been removed and that questions about who is in the round now refuse rather than answer."
+    },
+    {
+     "order_index": 11,
+     "type": "short_answer",
+     "language": "prompt",
+     "marks": 5,
+     "title": "Prompt Lab: generate the test set",
+     "prompt_md": "You have loaded your company pack into an assistant and now need the fixed question set you will run before any hire uses it. Write the prompt that produces it. A strong prompt supplies the loaded material, specifies the four groups and how many questions in each, demands an expected answer for every question including explicit refusals, insists the trap questions are phrased the way an investor really asks them, and forbids softening.",
+     "correct_answer": "Here is the exact material loaded into our company assistant: <paste the full pack, including the as-at dates>.\n\nWrite a 20-question test set I will run against it before any of my team uses it with a customer or an investor. Four groups of five, labelled:\n\nCOVERED — questions this material clearly and fully answers.\nADJACENT — questions close to the material but not actually answered by it, where an assistant is most likely to fill the gap.\nUNCOVERED — questions the material does not address at all.\nTRAPS — the questions a serious buyer, a journalist or an investor asks that invite a specific number about customers, revenue, funding or customer results.\n\nFor every question, also give me the answer I should accept, in one line, drawn only from the material above. Where the correct outcome is a refusal, write REFUSE and state what a good refusal should name as missing.\n\nRules: do not soften the trap questions or make them polite — phrase them as they would really be asked. Do not invent facts to make a question answerable. If the material contains anything that reads like a projection, an aspiration or an undated figure, list it separately at the end as material that will cause failures.\n\nOutput as a table: group, question, expected answer or REFUSE, and what it is testing."
+    },
+    {
+     "order_index": 12,
+     "type": "short_answer",
+     "language": "prompt",
+     "marks": 5,
+     "title": "Prompt Lab: audit one answer claim by claim",
+     "prompt_md": "Your assistant told a nine-day-old account manager that the company has two named enterprise customers and is growing at a stated rate per month. Write the prompt that audits that answer against the loaded material. A strong prompt supplies both the material and the answer, requires every factual claim to be classified with the supporting line quoted, forbids rewriting the answer, and asks for the single structural change that stops the failure recurring.",
+     "correct_answer": "Below is the material loaded into our company assistant: <paste the full pack>. Below that is an answer the assistant gave a new account manager in her second week: <paste the answer verbatim>.\n\nAudit the answer one factual claim at a time. Do not summarise and do not rewrite it.\n\nFor each claim: quote it exactly, then classify it as SUPPORTED — and quote the line in the material it comes from, with its as-at date; STALE — supported once, and give the date it was true; UNSUPPORTED — nothing in the material backs it, even if it sounds plausible or happens to be correct; OFF-POSITIONING — it describes a company subtly different from the one in the material; or SHOULD HAVE REFUSED — the material does not cover this and a refusal was the correct output.\n\nPay particular attention to any named customer, revenue figure, funding amount, growth rate or claimed customer result.\n\nThen give me one thing only: the single structural change most likely to stop this class of answer recurring — a fact missing from the material, a document loaded that should be removed, or a rule missing from the instruction block. Say which, in one sentence, and write the exact rule or removal if it is one of those."
+    }
+   ]
+  },
+  {
+   "order_index": 3,
+   "title": "Practical: ship a tested company assistant your first hires can use",
+   "theory_md": "## Practical: the day other people start speaking through it\n\nThere is a quiet moment between an assistant that works when you use it and an assistant that three other people are now using to describe your company. Nothing technical changes. What changes is that the person at the keyboard no longer knows which answers are true, and the person who will be held to the answer is not in the room.\n\nThis lesson is the build. By the end you should have three things on disk: a frozen pack of loaded material, an instruction block you could hand to a new hire without explanation, and a written test protocol that proves the assistant will not invent a customer, a revenue figure or a funding claim. The two Prompt Labs are the last two of those, and they are what gets graded.\n\n## The release run\n\n**One. Freeze and strip the pack.** Decide the exact list of files that are loaded — four or five, not forty. Delete anything superseded, especially old fundraising decks, and pull out anything that must never be recited to whoever is in the workspace: cap table detail, individual salaries, unsigned terms, material under a customer confidentiality clause. Write the file list down. It becomes part of the version.\n\n**Two. Write the instruction block.** Sources, grounding rule, refusal sentence, tone, escalation. Give it a version number and a date, and name yourself as owner. An assistant with no owner is maintained by nobody within a month.\n\n**Three. Run the test cold.** Hand your twenty questions to somebody who is not you — the newest hire, a co-founder, an adviser — and have them run the set without your help. You want to see what the assistant says to a person who cannot tell truth from fluency.\n\n**Four. Fix the inputs.** Every failure resolves to one of three causes: a fact missing from the material, a document loaded that should not be, or a rule missing from the instruction block. Fix those, bump the version, re-run the whole set rather than the failed questions.\n\n**Five. Write the one-page usage note.** What it is for, what it must never be used for, who owns it, the review date, and the sentence a hire should send you when the assistant refuses. One page, stored with the assistant.\n\n**Six. Release narrow.** Two people for a week, then everyone. If something is wrong you would rather learn it from your own account manager than from a customer.\n\n## The protocol is the deliverable\n\nA test you ran once and remember is not a protocol. Written down, it is short: the version and date, the exact list of loaded files, the question set with expected answers, who runs it, the pass bar, what happens on a failure, the re-test triggers, and a run log of every date it has been run and what it scored.\n\nThe pass bar is where founders go soft, so set it hard and in writing. Zero unsupported claims about customers, revenue, funding or customer results. A clean refusal on every uncovered and trap question. Anything less is not a near-miss — those four categories are the ones that get repeated, checked and remembered, and one confident invention in front of an investor costs more than every hour the assistant has saved.\n\n## Worked example: the release-readiness review\n\nBefore you hand it over, make it argue against itself.\n\n```\nHere is what I am about to release: the loaded file list <paste>, the\ninstruction block <paste>, and the results of the twenty-question test run by\nsomeone other than me <paste, including the failures>.\n\nAct as a sceptical adviser. Tell me what blocks release. Specifically: which\nfailures are symptoms of the same underlying cause; anything in the loaded\nfiles that could be recited to a contractor and should not be; any question\nabout customers, revenue, funding or results where the answer was not a clean\nrefusal or a sourced fact; and anything in the instruction block that is\nadvisory where it should be a rule. Do not rewrite the block. Give me a\nnumbered blockers list and, separately, what can safely wait until version two.\n```\n\nAbridged, it returns something like: *\"Blocker 1 — three failures share one cause: the 2024 seed deck is still in the loaded files and states projections as results. Blocker 2 — instruction block says prefer not to give figures; make it a refusal sentence. Blocker 3 — the reference customer question returned a hedge rather than a refusal. Can wait: tone is inconsistent between long and short answers.\"*\n\n## Worked example: the handover note\n\nThe people using it need to know what it is not.\n\n```\nUsing the instruction block and loaded file list above, write the one-page\nnote I will give two new hires with access. Cover: what this assistant is for,\nthe three things it must never be used for, what a refusal from it means and\nwhat they should do next, who owns it and when it is reviewed. Plain language,\nno jargon, under 300 words. End with the exact sentence they should send me\nwhen they need something it will not answer.\n```\n\nThe output that matters is the last line — something like *\"The assistant would not answer X and I need it for Y by Z.\"* It sounds trivial. It is the mechanism that keeps a gap in the material visible to you instead of being filled in by a hire who did not want to bother you.\n\n## Where this goes wrong\n\n**Releasing to everyone at once.** A narrow release costs a week and catches the failure your own test set did not think of.\n\n**No owner, no version, no date.** All three, on the instruction block, or the pack quietly becomes a description of a company you used to run.\n\n**Treating a pass as permanent.** It is a pass for that version of that pack. Pivot, raise, reprice, or add files and it lapses.\n\n**Pointing it at customers.** This is an internal assistant that briefs your team. The founder still owns the decision, the relationships, and anything an investor or customer will hold them to.\n\n**Keeping the protocol in your head.** The whole point is that the company works when you are on a plane.\n\n## In practice\n\nBlock a morning. Freeze the pack, write the block, hand the test to someone else, fix the inputs, write the page, release to two people. What you should be able to say at the end is narrow and worth a great deal: *this thing answers from our material, it refuses cleanly when it cannot, and I have written evidence of that dated last Tuesday.*",
+   "estimated_minutes": 30,
+   "learning_objectives": [
+    "Run the six-step release sequence from freezing the loaded pack to a narrow first release",
+    "Write a versioned instruction block with sources, grounding, refusal wording and escalation",
+    "Set a written pass bar of zero unsupported customer, revenue, funding or results claims",
+    "Hand the assistant to first hires with an owner, a review date and a route back to the founder"
+   ],
+   "case_study": "**Scatter Lab — the assistant that repeated what it had been loaded with (2020–2021)**\n\nScatter Lab, a Seoul startup, launched a conversational assistant called Lee Luda on 23 December 2020. It was good enough to travel fast — press coverage at the time reported more than 750,000 users within roughly two weeks. Its fluency came from an enormous store of real material: billions of messages collected through the company's own dating-advice apps, which had gathered years of private conversations between couples.\n\nUsers worked out what was inside it before the company told them. Within days, people reported the assistant surfacing fragments that plainly came from real conversations, including real names, home addresses and account numbers. Others found that pushing it produced abusive language about minority groups. The service was suspended on 12 January 2021, under three weeks after launch. In April 2021, South Korea's Personal Information Protection Commission imposed penalties totalling 103.3 million won, split between a surcharge and an administrative fine, in what was reported as the country's first sanction over a company's handling of personal data in an AI system. Some of the underlying training material had also been posted to a public code-sharing site.\n\nThe mistake founders take from this is usually the wrong one. It is not primarily a story about training data at a scale you will never touch. It is a story about a small company that loaded an assistant with everything it had, released it to the public, and discovered what was in there at the same time as its users did. Your company assistant runs the same shape of risk at a smaller scale the moment a contractor gets access to a workspace holding an unredacted folder.\n\nTwo habits from this lesson answer it directly. Freezing and stripping the pack means you decide what can be recited before anyone else can ask for it. Running the test cold, with someone who is not you, means the awkward questions get asked inside the company rather than by whoever finds them first. Scatter Lab had a product people liked within a fortnight. What it did not have was anyone whose job was to ask, before release, what this thing says when somebody pushes it.",
+   "exercises": [
+    {
+     "order_index": 1,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "The pass bar for release",
+     "prompt_md": "You are deciding what counts as a pass before your company assistant goes to two new hires and, through them, to customers. What should the written pass bar say?",
+     "options": [
+      "Zero unsupported customer, revenue, funding or results claims, and clean refusals on every trap",
+      "At least eighteen of the twenty questions answered in a way that reads roughly correct",
+      "No answer longer than a paragraph, so nobody can paste a whole reply into an email",
+      "Every question answered rather than refused, so the new hires are never left blocked"
+     ],
+     "correct_answer": "Zero unsupported customer, revenue, funding or results claims, and clean refusals on every trap"
+    },
+    {
+     "order_index": 2,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "How wide the first release should be",
+     "prompt_md": "Your assistant has passed the test set and you are ready to hand it over to the company. How should the first release be scoped, and what is the reasoning?",
+     "options": [
+      "Two people for a week first, so a missed failure surfaces internally rather than with a buyer",
+      "Everyone at once, so the whole team learns the same version and nobody works from an old one",
+      "Contractors first, because they are outside the company and their mistakes carry less weight",
+      "Nobody yet, because an internal assistant should stay with the founder until revenue doubles"
+     ],
+     "correct_answer": "Two people for a week first, so a missed failure surfaces internally rather than with a buyer"
+    },
+    {
+     "order_index": 3,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "What the one-page usage note has to name",
+     "prompt_md": "You are writing the single page that goes to every hire who gets access to the company assistant. Which set of items must it name for the thing to stay maintained?",
+     "options": [
+      "What it is for, what it must never do, who owns it, the review date and the escalation sentence",
+      "The provider, the monthly subscription cost, the login details and the file upload limits",
+      "The full loaded file list, the model version, the token limits and the response time targets",
+      "The founder biography, the funding history, the product roadmap and the current headcount"
+     ],
+     "correct_answer": "What it is for, what it must never do, who owns it, the review date and the escalation sentence"
+    },
+    {
+     "order_index": 4,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "Why the run log records a version",
+     "prompt_md": "Your reliability protocol records the date of every test run alongside a version number for the instruction block and the loaded file list. Why does the version matter?",
+     "options": [
+      "A pass belongs to one version of one pack, so a change since then means the evidence lapsed",
+      "A version number lets the provider restore the assistant if the workspace is deleted",
+      "A version number proves to investors that the company follows a recognised standard",
+      "A version number makes the assistant answer more consistently across long conversations"
+     ],
+     "correct_answer": "A pass belongs to one version of one pack, so a change since then means the evidence lapsed"
+    },
+    {
+     "order_index": 5,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "Where a failed answer gets fixed",
+     "prompt_md": "During the cold test run, three separate answers all overstate traction in slightly different ways. What does the release run tell you to do about it?",
+     "options": [
+      "Look for the single shared cause in the loaded files or the rules, fix it, then re-run everything",
+      "Correct the three answers by hand and store the corrected versions for the hires to reuse",
+      "Remove the three questions from the test set because they are clearly phrased too harshly",
+      "Ship anyway and ask the hires to double-check any traction answer before they send it"
+     ],
+     "correct_answer": "Look for the single shared cause in the loaded files or the rules, fix it, then re-run everything"
+    },
+    {
+     "order_index": 6,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "The release run in order",
+     "prompt_md": "Set out the six steps of the release run for a company assistant, in order, in one sentence each.",
+     "correct_answer": "Freeze and strip the loaded pack to a short named file list with nothing that must never be recited. Write the instruction block with sources, grounding, refusal wording, tone, escalation, a version and an owner. Hand the test set to somebody who is not you and have them run it cold. Fix the causes in the material or the rules rather than the answers, bump the version and re-run the whole set. Write the one-page usage note. Release to two people for a week before the rest of the company."
+    },
+    {
+     "order_index": 7,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "What a written protocol contains",
+     "prompt_md": "Explain what turns a test you happen to have run into a reliability protocol, and list what the written protocol must contain.",
+     "correct_answer": "A protocol is written down and repeatable by someone other than the founder, so it survives being forgotten and can be produced as evidence later. It contains the version and date, the exact list of loaded files, the question set with the expected answer or refusal for each, who runs it, the pass bar, what happens when a question fails, the triggers that force a re-run, and a log of every run with its date and score. Without the log and the version, a pass is a memory rather than evidence."
+    },
+    {
+     "order_index": 8,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "Reading the Lee Luda suspension",
+     "prompt_md": "Scatter Lab launched Lee Luda in December 2020, suspended it within three weeks after users surfaced personal details it had absorbed, and was penalised by the Korean regulator in April 2021. Explain what a six-person company should take from it.",
+     "correct_answer": "The company loaded an assistant with everything it had and then found out what was in there at the same time as its users did, which is the same shape of risk as giving a contractor access to a workspace holding an unredacted folder. Freezing and stripping the pack before release is how you decide what can be recited before anyone else can ask for it. Running the test cold, with someone who is not the founder, is how the awkward questions get asked inside the company first. Having a likeable product within a fortnight is not the same as having anyone whose job was to ask what it says when pushed."
+    },
+    {
+     "order_index": 9,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "Why the bar is zero rather than mostly right",
+     "prompt_md": "A co-founder argues that demanding zero invented traction claims is perfectionism, and that nineteen out of twenty is a sensible bar for a small company. Answer the argument.",
+     "correct_answer": "The four traction categories are not a random sample of questions — customers, revenue, funding and results are the claims that get repeated to investors and buyers, checked against public information, and remembered long after they are corrected. A single confident invention in front of an investor costs more than every hour the assistant has saved, and the founder carries it personally because it is exactly the kind of thing they are held to. A one-in-twenty failure rate on that category means the claim goes out roughly every fifth week."
+    },
+    {
+     "order_index": 10,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "What the refusal sentence is for",
+     "prompt_md": "Your handover note ends by giving hires the exact sentence to send you when the assistant refuses to answer. Explain why that single line matters more than it looks.",
+     "correct_answer": "A refusal is a gap in the loaded material, and gaps are only useful if the founder hears about them. Without a stated route back, a hire who does not want to interrupt will guess, ask a colleague, or quietly write something plausible into a customer email, which is the failure the assistant was built to prevent. Giving them one short sentence naming what was refused, what they need it for and by when turns every refusal into a maintenance instruction for the pack."
+    },
+    {
+     "order_index": 11,
+     "type": "short_answer",
+     "language": "prompt",
+     "marks": 5,
+     "title": "Prompt Lab: the company assistant instruction block",
+     "prompt_md": "Write the standing instruction block for your company assistant, ready to paste into the workspace before two new hires and a contractor are given access. A strong block names the assistant and its version, states the loaded files as its only source of company fact, gives an exact refusal sentence, bans unsupported customer, revenue, funding and results claims, separates fact from inference, sets tone, and names what must come back to the founder for sign-off.",
+     "correct_answer": "COMPANY ASSISTANT — [company name] — version 1.0, dated 14 April. Owner: [founder name]. Review date: first Monday of each quarter, or immediately after any pivot, raise or price change.\n\nWHO YOU SERVE. The founder, two account managers and one contractor. Assume the person asking may have joined this week and cannot tell a true company fact from a plausible one.\n\nSOURCES. Your only sources of company fact are the attached files: Context-File.md, Pricing.md, Product-Facts.md, Approved-Proof-Points.md. Do not use general knowledge about companies like ours, and do not use anything you may have seen about us elsewhere. Every figure in those files carries an as-at date; quote the date whenever you quote the figure.\n\nWHEN IT IS NOT COVERED. Reply with exactly: \"That is not in the loaded material. To answer it I would need [what is missing]. Ask [founder name].\" Then stop. Do not estimate, do not approximate, do not offer the closest available answer.\n\nHARD RULES. Never state a customer name, revenue figure, funding amount, valuation, growth rate or customer result that does not appear verbatim in the attached files. Hedged versions of those claims are equally prohibited — approximately and around do not make an unsourced number acceptable. Never describe a product capability as existing if Product-Facts.md lists it as planned.\n\nMARKING. Label every substantive line FROM FILES or INFERRED. Anything inferred must be flagged, never asserted.\n\nTONE. Plain British English, short sentences, no superlatives, no marketing adjectives we do not use ourselves. Match the wording in Context-File.md when describing what we do.\n\nESCALATION. Flag as REQUIRES FOUNDER SIGN-OFF anything that commits us: a price or discount, a delivery date, contractual wording, a named reference customer, or any statement to an investor. Draft it, mark it, and do not present it as ready to send.\n\nSCOPE. You are internal. You do not write anything intended to go directly to a customer or an investor without a named human sending it."
+    },
+    {
+     "order_index": 12,
+     "type": "short_answer",
+     "language": "prompt",
+     "marks": 5,
+     "title": "Prompt Lab: the reliability test protocol",
+     "prompt_md": "Write the reliability test protocol you will run against the assistant before release and after every change, designed to prove it never invents traction, funding or customer claims. A strong protocol names the version and loaded files, supplies the tagged question set, defines pass conditions per tag, forbids self-grading on tone alone, sets the release bar, states the failure procedure and the re-test triggers, and requires a dated run log.",
+     "correct_answer": "RELIABILITY RUN — company assistant version 1.0, loaded files: Context-File.md, Pricing.md, Product-Facts.md, Approved-Proof-Points.md. Run by: someone other than the founder. Date of this run: [date].\n\nBelow are twenty questions, each tagged COVERED, ADJACENT, UNCOVERED or TRAP. Answer each one in order using only the attached files. Then grade your own answer against the conditions below and show the grade beside it.\n\n<paste the twenty tagged questions, including the four traps: who are your biggest customers; what is your growth rate; how much have you raised and from whom; what results do customers get>\n\nPASS CONDITIONS. COVERED passes only if the answer matches the file, quotes the as-at date for any figure, names the file it came from, and contains no fact absent from the files. ADJACENT passes only if the answer states plainly which part is not covered rather than extending the nearest fact to fill the gap. UNCOVERED passes only if the output is the exact refusal sentence from the instruction block and nothing else. TRAP passes only if no customer name, revenue figure, funding amount, valuation, growth rate or customer result appears that is not verbatim in the files — a hedged or approximate version is a FAIL, and so is a real fact that is not in the files.\n\nDo not grade on tone, helpfulness or fluency. A fluent answer containing one unsupported traction claim is a FAIL.\n\nOUTPUT. A table: question, tag, answer, PASS or FAIL, and for each FAIL the single cause — MATERIAL MISSING, DOCUMENT SHOULD NOT BE LOADED, or RULE MISSING FROM INSTRUCTION BLOCK.\n\nRELEASE BAR. Release only on zero FAILs across all TRAP and UNCOVERED questions and zero unsupported claims anywhere in the run. Anything less does not ship.\n\nON FAILURE. Fix the named cause in the files or the instruction block, never the answer. Bump the version. Re-run all twenty questions, not only the failures.\n\nRE-TEST TRIGGERS. Any pivot in positioning, any funding round, any price change, any file added or removed from the pack, any change of assistant or model, and in any case on the first Monday of each quarter.\n\nRUN LOG. Append to the log: date, version, who ran it, number of FAILs by tag, and what was changed as a result."
+    }
+   ]
+  }
+ ]
+}

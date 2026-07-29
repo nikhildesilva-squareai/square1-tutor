@@ -1,0 +1,464 @@
+{
+ "week": 6,
+ "lessons": [
+  {
+   "order_index": 1,
+   "title": "Auditing your teaching week: where the hours actually go",
+   "theory_md": "## The Thursday free period\n\nIt is Thursday, period four, and you have fifty minutes. On the list: three lessons to plan for next week, a set of twenty-eight books that were promised back by Monday, a scaffolded version of Tuesday's worksheet for the four students who did not get near it, five parent emails, a data drop, and a risk assessment for the trip. You will get through perhaps two of those things. You have got through perhaps two of those things every Thursday since September.\n\nOver five weeks you have built real machinery: a teacher's brief, planning and differentiation habits, an assessment and feedback practice, a teaching pack, a set of planning chains and a tested classroom assistant. What you have not yet done is look at your actual week and decide which of those tools touches which job, at which point, with which check. That is what this lesson does. It is an audit, not a plan — you are describing the week you really have, not the one in the department handbook.\n\n## The teaching week audit\n\nTake one ordinary week. Not the first week of term, not the week of parents' evening, not the week with the mock timetable. An ordinary week, because that is the one that repeats.\n\nWrite down every recurring job in five bands: **planning**, **resourcing**, **marking and feedback**, **parent and carer contact**, and **admin**. Against each job, record three things.\n\n**Load.** How often it recurs, roughly how long it takes, and how much of it genuinely requires your professional judgement rather than production effort. Writing a comparative-analysis mark scheme is judgement. Reformatting it into a student-facing checklist is production.\n\n**Leverage.** What already exists that could carry part of it: one of your week-four chains, the classroom assistant from week five, a saved template, a colleague who has already made the thing, or nothing yet. \"Nothing yet\" is a useful answer — it becomes your build list.\n\n**Line.** The human checkpoint on that job that does not move, ever. Three of them are non-negotiable in this course and they apply across every band:\n\n- Anything a student reads, you have read first and verified every fact in it.\n- Any assessment judgement is yours: a mark, a grade, a comment that goes on a record.\n- Anything about an individual child — pastoral, safeguarding, SEND, a report comment that names them — never goes into a general assistant with anything that identifies them.\n\nThe audit is finished when every recurring job has all three columns filled and you can point at the two or three jobs where the hours actually are.\n\n## Worked example one: turning a messy week into an audit table\n\nGive the assistant your real week as input. Do not ask it to imagine a teacher's week; it will produce a plausible average that matches nobody.\n\n```\nYou are helping me audit my teaching week. I teach Year 9 and Year 10\nscience, four classes, twenty-two contact periods a fortnight.\n\nHere is a real, ordinary week, exactly as it happened:\n[paste your list - every recurring job, however small, with rough minutes]\n\nSort every job into one of five bands: planning, resourcing, marking and\nfeedback, parent and carer contact, admin.\n\nFor each job produce a table row with: job | band | how often | rough\nminutes per occurrence | how much of it is professional judgement rather\nthan production (high/medium/low).\n\nDo not suggest tools or solutions yet. Do not add jobs I did not list.\nWhere my description is ambiguous, list the ambiguity underneath rather\nthan guessing.\n```\n\nAbridged output:\n\n> | Job | Band | Frequency | Minutes | Judgement |\n> | Write Y10 required-practical instructions | Resourcing | Weekly | 40 | Medium |\n> | Mark Y9 end-of-topic tests | Marking | Every 3 weeks | 180 | High |\n> | Reply to parent emails | Parent contact | Daily | 25 | High |\n> | Reformat mark scheme into pupil checklist | Resourcing | Every 3 weeks | 30 | Low |\n>\n> Ambiguities: \"sort out cover work\" appears twice — is this the same job?\n\nThat last line is the sign of a useful audit partner. The reformatting row is where hours hide; the marking row is where judgement lives and must stay.\n\n## Worked example two: sequencing it around teaching\n\nAn audit that does not meet the timetable dies within a fortnight. The second pass turns the table into a rhythm.\n\n```\nUsing the audit table above, propose a weekly rhythm.\n\nMy constraints: one free period Tuesday period 2, one Thursday period 4,\ndepartment meeting Wednesday after school, I do not work Sunday evenings.\n\nRules: generation work goes into a contiguous block before the teaching\nweek begins. Verification of anything students will read happens close to\nwhen it is used, not weeks earlier. Never schedule marking into a\nfive-minute gap.\n\nFor each job give: when it happens, which of my tools carries it, and the\nhuman check that must happen before it reaches anyone.\n```\n\nAbridged output:\n\n> **Tuesday period 2 (generation block)** — next week's practical instructions and scaffolded worksheets via the resourcing chain. Check: read every instruction against the specification and the technician list before printing.\n>\n> **Thursday period 4 (contact block)** — parent email drafts from the comms template, no names or pupil detail pasted in, identifiers added by hand at the end. Check: you send it, in your words, having decided what to say.\n>\n> **Marking: protected Wednesday hour, no tool.** Feedback phrasing support only after the mark is decided.\n\nNotice what the rhythm does to the third checkpoint: the pastoral jobs are not scheduled into a tool at all.\n\n## The mistakes people make here\n\n**Auditing an imagined week.** The week you describe from memory is tidier than the week you had. Use a real one.\n\n**Counting generation and forgetting verification.** A resource that takes four minutes to produce and eleven minutes to check has cost you fifteen. Some jobs turn out not to be worth it, and the audit is how you find that out.\n\n**Systematising the most irritating job rather than the most expensive one.** Irritation and hours are different measurements.\n\n**Letting a line drift.** Three good weeks of accurate output is not evidence that the fourth will be accurate. The checkpoints are not a probation period the tool graduates from.\n\n**Treating anonymisation as a formality.** In a class of nine, \"the boy who missed the mock\" is an identifier. So are initials, and so is a timetable slot.\n\n## In practice\n\nThe audit is a page. Five bands, a row per recurring job, three columns filled, and a weekly rhythm underneath that a colleague could follow. Most teachers who do this honestly find the hours are not in the glamorous jobs at all — they are in reformatting, in resource variants, in the third email of the day saying what the first two said. Those are exactly the jobs a documented system can carry, which is what the next lesson builds. What the system never carries is the judgement, and the audit is where you write that down before anyone asks you to move it.",
+   "estimated_minutes": 28,
+   "learning_objectives": [
+    "Audit an ordinary teaching week across planning, resourcing, marking, parent contact and admin",
+    "Record load, leverage and line against every recurring job in that week",
+    "Sequence generation and verification work around real timetabled teaching time",
+    "Fix the three human checkpoints that never move, including anything about an individual child"
+   ],
+   "case_study": "**Education Endowment Foundation — measuring what AI actually took off a teacher's week (2024–2025)**\n\nThe Education Endowment Foundation is an English education research charity, and in 2024 it ran something the sector had been short of: a proper randomised controlled trial of generative AI in lesson preparation, rather than a survey of enthusiasm. Under its Teacher Choices programme, 259 teachers across 68 secondary schools in England took part while preparing Year 7 and Year 8 science lessons. One group used ChatGPT alongside a short guide on using it effectively; the comparison group was asked to avoid generative AI altogether. The trial was independently evaluated and the findings were published in 2025.\n\nThe headline figure is worth holding on to precisely because it is modest. Teachers in the ChatGPT group spent an average of 56.2 minutes a week on Year 7 and Year 8 lesson and resource planning, against 81.5 minutes in the comparison group — a difference of roughly 25.3 minutes a week, reported as a reduction of around 31 per cent on that specific slice of planning. That is half an hour, measured, on one band of the week, in one subject at one key stage. It is a real saving and it is nothing like the transformations that get advertised, which is exactly why it is a better number to plan your own week around.\n\nWhere the saving came from is the part that should shape your audit. Teachers described using the tool for creating questions and quizzes, generating activity ideas, and tailoring existing materials to particular groups of pupils. Read that list again: it is production work almost entirely. It is the reformatting, variant-making, question-generating band — the same band your own audit is likely to flag once you count honestly. The professional decisions underneath, about what a class needs next and how the sequence should run, did not move anywhere.\n\nThe trial also did the thing your pack has to do. Lesson materials and resources from both groups were reviewed by an independent panel of teachers, which reported no noticeable difference in quality between them. That finding carries two messages at once. The time saved did not appear to cost quality — and quality was checked rather than assumed, by teachers, reading the actual materials. That is the shape of a sound audit at classroom scale: measure the load honestly, notice which band the saving genuinely comes from, and keep a person reading everything a student will read.",
+   "exercises": [
+    {
+     "order_index": 1,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "What each job records",
+     "prompt_md": "You are building the audit table for an ordinary teaching week and have listed every recurring job across the five bands. What three things does the audit record against each job?",
+     "options": [
+      "Load, meaning frequency and time and judgement; leverage, meaning what already exists to carry it; and the line, meaning the human checkpoint",
+      "Difficulty, meaning how hard the job feels; enjoyment, meaning whether you like doing it; and urgency, meaning the deadline that is nearest",
+      "Cost, meaning what the software licence charges; volume, meaning the class numbers; and priority, meaning the place it holds on the department plan",
+      "Origin, meaning who first asked for the job; format, meaning the file type produced; and audience, meaning the group that finally receives it"
+     ],
+     "correct_answer": "Load, meaning frequency and time and judgement; leverage, meaning what already exists to carry it; and the line, meaning the human checkpoint"
+    },
+    {
+     "order_index": 2,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "Choosing the week to audit",
+     "prompt_md": "A colleague offers to audit their own teaching week alongside you and asks which week they ought to write down. Which week produces an audit that is actually worth acting on?",
+     "options": [
+      "An ordinary week in the middle of a term, because that is the shape of week which repeats across the year",
+      "The first week of term, because it holds the widest range of jobs and shows the workload at its very busiest",
+      "The week of parents evening, because the contact load peaks there and reveals the true pressure points fastest",
+      "A week reconstructed from memory at the end of term, because distance makes the underlying pattern easier to see"
+     ],
+     "correct_answer": "An ordinary week in the middle of a term, because that is the shape of week which repeats across the year"
+    },
+    {
+     "order_index": 3,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "The checkpoint that never moves",
+     "prompt_md": "Your audit shows that end-of-topic tests take three hours to mark every three weeks and that the marking is high-judgement work. Where does the human checkpoint sit on that particular job?",
+     "options": [
+      "The mark and the grade are decided by you, and any drafting support happens only after that judgement has been made",
+      "The tool proposes the marks and you sample a few of them, leaving the rest exactly as the tool first recorded them",
+      "The tool marks everything and you review only the scripts where a student later queries the result they were given",
+      "The tool marks everything and a colleague moderates a sample, which removes the need for you to look at them again"
+     ],
+     "correct_answer": "The mark and the grade are decided by you, and any drafting support happens only after that judgement has been made"
+    },
+    {
+     "order_index": 4,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "Sequencing around teaching time",
+     "prompt_md": "You have one free period on Tuesday and one on Thursday, and you are deciding when generation work and verification work should sit in the week. What is the sensible sequence?",
+     "options": [
+      "Generation in a contiguous block before the teaching week, verification close to the point where the material is used",
+      "Generation and verification together in one sitting several weeks ahead, so that the whole half term is finished early",
+      "Generation in five-minute gaps between lessons, verification saved for a single long block at the end of the half term",
+      "Verification first using last year materials, generation afterwards on the morning that each of the lessons is taught"
+     ],
+     "correct_answer": "Generation in a contiguous block before the teaching week, verification close to the point where the material is used"
+    },
+    {
+     "order_index": 5,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "What still identifies a child",
+     "prompt_md": "You want help phrasing a difficult message about one pupil and you plan to remove the name before pasting anything into a general assistant. Which description still identifies that child?",
+     "options": [
+      "The boy in my Year 8 set four who missed the mock, in a group of nine, described alongside his timetable slot",
+      "A general description of a common attainment pattern across a large cohort, with no year group or set named",
+      "A summary of the school policy on late homework, with no reference to any individual pupil or teaching group",
+      "A request for three neutral phrasings of a standard reminder about equipment, sent to an entire year group"
+     ],
+     "correct_answer": "The boy in my Year 8 set four who missed the mock, in a group of nine, described alongside his timetable slot"
+    },
+    {
+     "order_index": 6,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "Load, leverage, line",
+     "prompt_md": "Explain the three columns of the teaching week audit and what each one is used for.",
+     "correct_answer": "Load records how often a job recurs, roughly how long it takes, and how much of it is professional judgement rather than production, which shows where the hours genuinely go. Leverage records what already exists that could carry part of it — a planning chain, the classroom assistant, a saved template, a colleague, or nothing yet — and the gaps become the build list. The line records the human checkpoint on that job that never moves, so the audit states the limit at the same moment it states the saving."
+    },
+    {
+     "order_index": 7,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "The three fixed checkpoints",
+     "prompt_md": "Name the three human checkpoints that stay in place across every band of the teaching week, and say briefly why each one exists.",
+     "correct_answer": "Anything a student reads is read and fact-checked by you first, because an error you did not catch is taught as though it were true. Any assessment judgement is yours, because a mark or a grade is a professional decision you must be able to defend to a pupil, a parent and a moderator. Anything about an individual child never goes into a general assistant with identifying detail, because pastoral, SEND and safeguarding information is not yours to place in a system outside the school."
+    },
+    {
+     "order_index": 8,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "Generation minutes and verification minutes",
+     "prompt_md": "A teacher reports that a differentiated worksheet now takes four minutes to produce instead of forty. What has the audit not yet captured, and why does it change the decision?",
+     "correct_answer": "It has not captured verification time: the worksheet still has to be read line by line, with every fact, instruction and answer checked against the specification before pupils see it, which might be eleven minutes rather than four. The honest figure is generation time plus verification time plus any rework. Once that total is written down, some jobs remain clearly worth systematising and others turn out to save very little, and the audit is what tells the two apart."
+    },
+    {
+     "order_index": 9,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "Irritation is not hours",
+     "prompt_md": "Why does the audit rank jobs by recurring load rather than by how annoying they feel, and what typically shows up when a teacher ranks honestly?",
+     "correct_answer": "Annoyance measures how a job feels in the moment, not what it costs across a term, so ranking by irritation puts effort into small jobs and leaves the expensive ones untouched. Ranking by frequency multiplied by time, weighted by how little judgement the job needs, targets the real hours. What usually surfaces is unglamorous production work — reformatting, making resource variants, and repeating the same message to different parents — rather than the parts of teaching that felt most burdensome."
+    },
+    {
+     "order_index": 10,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "Why the audit needs a real week",
+     "prompt_md": "Explain why the audit must be built from a week written down as it happened rather than described from memory, and what a good assistant does with an ambiguous entry.",
+     "correct_answer": "A remembered week is tidier than a real one: the small repeated jobs vanish and the estimates drift towards what the week should have contained, so the audit ends up describing a teacher who does not exist. A week captured as it happened keeps the awkward entries that carry the hidden hours. A good assistant should list ambiguities underneath the table rather than resolving them silently, so that you decide whether two similar entries are the same recurring job or two different ones."
+    },
+    {
+     "order_index": 11,
+     "type": "short_answer",
+     "language": "prompt",
+     "marks": 5,
+     "title": "Prompt Lab: audit an ordinary teaching week",
+     "prompt_md": "You teach Year 9 and Year 10 science across four classes. An ordinary week contained: planning six lessons, building one required-practical instruction sheet, making scaffolded versions of two worksheets, marking a Year 9 end-of-topic test, replying to roughly twelve parent emails, writing cover work twice, and completing a data drop. Write the prompt that turns that raw week into a structured audit table. A strong prompt supplies your teaching context, hands over the real week as input rather than asking the assistant to imagine one, defines the columns you want, forbids the assistant from inventing jobs or proposing solutions at this stage, and asks for ambiguities to be surfaced rather than guessed.",
+     "correct_answer": "You are helping me audit my teaching week. Context: I teach Year 9 and Year 10 science, four classes, twenty-two contact periods a fortnight, in an English secondary school following our exam board specification.\n\nHere is one ordinary week exactly as it happened. Do not add jobs I have not listed and do not tidy it up:\n- Planned six lessons (about 25 minutes each)\n- Built one Year 10 required-practical instruction sheet (about 40 minutes)\n- Made scaffolded versions of two worksheets (about 20 minutes each)\n- Marked a Year 9 end-of-topic test, 28 scripts (about 180 minutes)\n- Replied to roughly twelve parent emails (about 8 minutes each)\n- Wrote cover work twice (about 15 minutes each)\n- Completed a data drop (about 45 minutes)\n\nTask: sort every job into one of five bands — planning, resourcing, marking and feedback, parent and carer contact, admin. Then produce a table with one row per job and these columns: job | band | frequency | minutes per occurrence | estimated minutes per half term | how much of the job is professional judgement rather than production (high, medium, low).\n\nRules: do not propose tools, workflows or solutions at this stage, because this pass is description only. Do not merge two jobs into one unless I have said they are the same. Where my description is ambiguous, list the ambiguity in a short section underneath the table and ask me the question rather than guessing the answer.\n\nFinish with two lines: the three jobs consuming the most minutes per half term, and the three jobs carrying the lowest judgement rating."
+    },
+    {
+     "order_index": 12,
+     "type": "short_answer",
+     "language": "prompt",
+     "marks": 5,
+     "title": "Prompt Lab: sequence the week and fix the checkpoints",
+     "prompt_md": "You now have the audit table from the previous lab. Write the prompt that turns it into a weekly rhythm which respects your timetable and states the human checkpoint on every job. A strong prompt supplies the audit as input, gives your real constraints including when you will not work, states the sequencing rules for generation and verification, names the three checkpoints that cannot move, and requires that any job touching an individual child is flagged rather than scheduled into a general assistant.",
+     "correct_answer": "Here is the audit table for my teaching week: [paste the table].\n\nTurn it into a weekly rhythm I could actually run.\n\nMy constraints: free periods are Tuesday period 2 and Thursday period 4; department meeting Wednesday after school; I do not work Sunday evenings; I have a protected hour on Wednesday morning before school.\n\nSequencing rules to apply:\n1. Generation work goes into a contiguous block before the teaching week begins, never into five-minute gaps between lessons.\n2. Verification of anything students will read happens close to the point of use, not weeks in advance.\n3. Marking is never scheduled into a fragment; it gets a protected block of its own.\n\nFor each job in the table, output: when in the week it happens | which tool or template carries it, or none | the human check that must be completed before the output reaches anyone.\n\nFixed checkpoints you must apply and must not soften: anything a student reads is read and fact-checked by me first; every mark, grade and recorded assessment judgement is mine and is made before any drafting support is used; anything concerning an individual child is never placed in a general assistant with identifying detail.\n\nFlag separately, under the heading Do not automate, any job in my table that involves an individual pupil, with one line explaining what identifying detail would have to be removed and whether the job is still worth doing once it has been removed. Do not schedule those jobs into a tool.\n\nKeep the whole output to one page and do not invent jobs that are not in the table."
+    }
+   ]
+  },
+  {
+   "order_index": 2,
+   "title": "Running it as a documented system your department can share",
+   "theory_md": "## The colleague who inherits your Year 10 group\n\nSomeone joins the department in January and takes two of your classes. Or you are off for a fortnight and cover needs your resources. Or an early-career teacher asks whether they can use \"your AI thing\" for their own planning.\n\nYou hand over the folder. A week later the worksheets look right but the reading age has drifted, the practical instructions no longer match what the technicians put out, and a parent email has gone in a register that is not how your school writes to families. Nothing was broken. What was missing was everything you knew and never wrote down: which specification the template assumes, what you always check before printing, and the two jobs you deliberately never put near a tool.\n\nA pack that only works when you are holding it is not a system. This lesson turns your templates and your assistant into something a department can share without quality or safeguarding dropping.\n\n## The system card\n\nOne card per template, chain or assistant. Six fields, and none of them optional.\n\n**Purpose.** What this template is for in one sentence, and what it is not for. \"Generates a scaffolded version of an existing worksheet. Not for producing new subject content from scratch, and not for anything that will be assessed summatively.\"\n\n**Inputs.** Exactly what the user must supply: the specification reference, the class context, the target reading age, the source resource, the school tone guide. If an input is missing, the template must not be run.\n\n**Verification.** The named, concrete check that happens before the output reaches anyone. Not \"check it\" — that is not a step anybody can follow. \"Read every instruction against the specification statement and the technician equipment list; confirm all six numerical answers by hand.\"\n\n**Who checks.** A role, never a person. The subject teacher checks facts and specification match. The head of department checks anything leaving the school. Pastoral and safeguarding matters go to the designated safeguarding lead through the school route — they do not go into an assistant at all.\n\n**Version and date.** Which version, when it changed, and what changed.\n\n**Known failure modes.** What you have actually seen this template get wrong. This is the field colleagues read first.\n\n## Versioning: what forces a new version\n\nThree triggers, all mandatory.\n\nA **specification change** — an awarding body updates content, your department re-sequences a topic — invalidates every template that quotes the old wording. A **school policy change** — AI, assessment, data protection, marking — invalidates any card whose verification step or who-checks line was written against the old rules. And a **change in the tool itself**: a different assistant, a new model, a re-written instruction block. That one sends you back to week five, because a re-tested assistant is the only kind you can hand to somebody else.\n\nNumber it plainly. Small wording edits are v1.1, v1.2. **Anything that changes the verification step or the who-checks line is a major version** — v2.0 — and it has to be announced, not quietly saved. A colleague running v1.3 while you have moved the check is exactly how a documented system goes wrong in a way nobody notices for a term.\n\n## Worked example one: drafting the card from an existing template\n\n```\nHere is a template I use every week: [paste the template].\nHere is our school AI policy and our assessment policy: [paste].\n\nDraft a system card for it with exactly these fields: purpose (including\nwhat it is NOT for), required inputs, verification step, who checks,\nversion and date, known failure modes.\n\nRules for the verification field: it must be a specific action a\ncolleague could perform without asking me a question. Reject any wording\nlike \"check the output\" or \"review for accuracy\" and replace it with the\nconcrete thing to check and the source to check it against.\n\nWhere my template assumes knowledge I have not written down, list those\nassumptions separately under \"Undocumented assumptions\". Do not fill\nthem in for me.\n```\n\nAbridged output:\n\n> **Purpose.** Scaffolds an existing worksheet for lower reading ages. Not for generating new subject content; not for assessed work.\n> **Verification.** Compare every factual statement against the specification extract supplied; recalculate all numerical answers; read aloud one paragraph to test reading age.\n>\n> **Undocumented assumptions:** which exam board? Is the reading-age target a school standard or your own judgement? Who supplies the specification extract?\n\nThose three questions are the handover, arriving early.\n\n## Worked example two: the change review\n\nWhen a policy or specification moves, do not re-read every template by hand.\n\n```\nOur school has updated its AI policy. Old version: [paste]. New version:\n[paste].\n\nHere are my system cards: [paste all cards].\n\nFor each card, tell me: does the new policy change the purpose, the\nverification step, or the who-checks line? Answer changed or unchanged\nfor each, quoting the clause that forces the change.\n\nThen list which cards need a major version (verification or who-checks\naltered) and which need only a minor edit. Do not rewrite the cards yet.\nWhere the new policy is ambiguous about my card, say so rather than\nchoosing an interpretation.\n```\n\nAbridged output:\n\n> Card 3 (parent contact): **changed** — new clause 4.2 requires that no pupil identifier is entered into any external tool. Verification altered → **major version v2.0**.\n> Ambiguous: clause 6 refers to \"drafting support\" without defining whether report comments count. Ask the policy owner.\n\n## The handover test\n\nThe pack is finished when a colleague who was not in the room can run a template, get output of the same quality, and stop where you would stop. Give them the cards, one worked example per card showing a real input and an approved output, the do-not-automate list, and the role to ask when something looks wrong. Then watch them use it once without helping.\n\n## The mistakes people make here\n\n**Naming a person rather than a role.** People change classes; the card should survive that.\n\n**Versioning the prompt but not the verification.** The check is the part that protects students.\n\n**Assuming shared subject knowledge.** State what expertise the checker needs, or somebody without it will do the checking.\n\n**A shared folder with no owner.** Somebody has to hold the version numbers, or within a term there will be four variants and no way of knowing which one a colleague is running.\n\n## In practice\n\nCards are short — half a page each, six fields, in the words your department actually uses. The reason to write them is not tidiness. It is that a documented system fails visibly and an undocumented one fails quietly, in somebody else's classroom, weeks after you handed it over. That is also what makes the next lesson possible: the capstone is the pack itself, and it is only real if a colleague could pick it up on Monday.",
+   "estimated_minutes": 29,
+   "learning_objectives": [
+    "Write a system card for every template, chain and assistant in your teaching pack",
+    "Specify verification steps and checking roles that a colleague can follow unaided",
+    "Version the pack when the specification, school policy or the tool itself changes",
+    "Hand the pack to a colleague or early-career teacher without quality or safeguarding dropping"
+   ],
+   "case_study": "**Joint Council for Qualifications — versioning the rules on AI in assessment (2023–2025)**\n\nOn 26 April 2023, a few months after generative chatbots arrived in classrooms, the Joint Council for Qualifications published guidance titled \"AI Use in Assessments: Protecting the Integrity of Qualifications\". The JCQ is the membership organisation through which the major awarding bodies in England, Wales and Northern Ireland coordinate, and the document was aimed squarely at teachers and assessors handling coursework and non-examination assessment rather than at policy specialists. Its stated purpose was to give teachers and assessors the information they needed to manage AI use in assessments, and to help students complete that work successfully.\n\nWhat makes it a useful model is not the content alone but the way the document was maintained. It was revised rather than quietly edited: revision one was published on 2 February 2024, and revision two on 30 April 2025, by which point the title had shifted to \"AI Use in Assessments: Your role in protecting the integrity of qualifications\". Each revision was reissued as a dated document that centres could point to, which is precisely what allows a department to know whether the copy in its shared folder is the one currently in force.\n\nThe substance reads like a system card written for a whole sector. It states who the document must be shared with — senior leaders, teachers and assessors — and says it should inform the centre's own AI and malpractice policies, meaning the national document expects a local version underneath it. It sets an explicit responsibility on the individual: teachers and assessors must only accept work for assessment which they consider to be the student's own, and where they have doubts about authenticity they must investigate and take appropriate action. It also asks centres to communicate expectations about AI use, and the consequences of misuse, to learners and parents.\n\nThe most quietly instructive line in the guidance is its observation that while the potential for AI misuse is new, most of the ways to prevent it are not: it reminds teachers of existing best practice and applies it to a new context. That is the argument for the system card in miniature. You are not inventing a new profession. You are writing down, in a form somebody else can follow, the checks you were already making — with a version number on top so that everyone can tell whether they are running the current one.",
+   "exercises": [
+    {
+     "order_index": 1,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "Fields on a system card",
+     "prompt_md": "You are writing a system card for the differentiation template you use every week so that another teacher in the department can run it. Which set of fields does the card carry?",
+     "options": [
+      "Purpose and what it is not for, required inputs, verification step, who checks, version and date, known failure modes",
+      "Author name, date created, file location, number of times used, average time saved, and a rating out of five",
+      "Subject, key stage, class size, length of the output, preferred assistant, and the colour scheme used for printing",
+      "Cost per month, licence holder, storage location, sharing permissions, backup schedule, and the retention period"
+     ],
+     "correct_answer": "Purpose and what it is not for, required inputs, verification step, who checks, version and date, known failure modes"
+    },
+    {
+     "order_index": 2,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "A verification step a colleague can follow",
+     "prompt_md": "Your first draft of a card gives the verification step as review the output for accuracy before use. Why does that wording fail the handover test, and what replaces it?",
+     "options": [
+      "It names no action or source, so it is replaced by the specific thing to check against the specification and the answers to recalculate",
+      "It is too long for a card, so it is replaced by a shorter instruction telling the colleague to be careful with the output",
+      "It uses the wrong tone for the department, so it is replaced by the same instruction written in the school house style",
+      "It repeats the purpose field, so it is replaced by a note pointing the colleague back to the purpose line above it"
+     ],
+     "correct_answer": "It names no action or source, so it is replaced by the specific thing to check against the specification and the answers to recalculate"
+    },
+    {
+     "order_index": 3,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "Major version or minor edit",
+     "prompt_md": "A new school AI policy states that no pupil identifier may be entered into any external tool, which alters the check on your parent contact template. What does that make it?",
+     "options": [
+      "A major version, because the verification step changed, and it has to be announced rather than quietly saved",
+      "A minor edit, because the wording of the template itself is unchanged and only the surrounding policy has moved",
+      "No change at all, because the policy governs the school as a whole rather than any particular saved template",
+      "A new template entirely, because a policy change means the previous version can no longer be referred to at all"
+     ],
+     "correct_answer": "A major version, because the verification step changed, and it has to be announced rather than quietly saved"
+    },
+    {
+     "order_index": 4,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "Who checks",
+     "prompt_md": "You are completing the who-checks field on a card for a template that produces revision material sent home to families. What should that field contain?",
+     "options": [
+      "A role such as subject teacher for facts and head of department for anything leaving the school, so the card survives staff changes",
+      "The name of the colleague who currently does the checking, so that anyone using the card knows exactly who to contact",
+      "The name of whoever created the template, because the author understands the material better than any later user will",
+      "A note saying that any available member of staff may check it, so the process is never held up by one person"
+     ],
+     "correct_answer": "A role such as subject teacher for facts and head of department for anything leaving the school, so the card survives staff changes"
+    },
+    {
+     "order_index": 5,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "The handover test",
+     "prompt_md": "You have written cards for all seven of your templates and want to know whether the pack is genuinely ready to give to an early-career colleague. What is the test?",
+     "options": [
+      "A colleague who was not in the room runs a template unaided, gets output of the same quality, and stops where you would stop",
+      "You talk the colleague through each template once and answer their questions until they say they feel confident using it",
+      "The colleague reads all the cards and confirms in writing that the purpose of every template is clear to them",
+      "The pack is stored in the shared department folder with permissions set so that every member of staff can open it"
+     ],
+     "correct_answer": "A colleague who was not in the room runs a template unaided, gets output of the same quality, and stops where you would stop"
+    },
+    {
+     "order_index": 6,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "Why the card names what it is not for",
+     "prompt_md": "Explain why the purpose field states what the template is not for as well as what it is for, using a teaching example.",
+     "correct_answer": "Colleagues extend a template to jobs it was never tested on, and the extension is invisible until something goes wrong. A scaffolding template validated for rewriting an existing worksheet at a lower reading age will happily generate brand new subject content, but nobody has checked that content against the specification. Writing the exclusion on the card — not for new content, not for summative assessment — stops the drift at the moment the colleague reaches for it rather than after the material has reached a class."
+    },
+    {
+     "order_index": 7,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "The three version triggers",
+     "prompt_md": "Name the three things that force a new version of a system card, and say what you do about each.",
+     "correct_answer": "A specification change, because templates quoting old awarding-body wording are now wrong and must be re-checked against the new content. A school policy change — AI, assessment, marking or data protection — because it may move the verification step or the who-checks line, which makes it a major version that has to be announced. And a change to the tool itself, meaning a different assistant, a new model or a rewritten instruction block, which sends you back to the reliability test set before the card can be reissued."
+    },
+    {
+     "order_index": 8,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "The failure modes field",
+     "prompt_md": "Why is the known failure modes field the most useful part of a card for a colleague, and what belongs in it?",
+     "correct_answer": "It converts your experience into their caution, so they arrive at your level of scepticism without needing your term of use. It records what you have actually seen this template get wrong — invented citations, drifting reading age, quietly changed practical equipment, confident answers to questions outside the specification — with a one-line note on how you spotted each. Teachers leave it out because it reads like an admission, but a card without it implies a reliability the template has never demonstrated."
+    },
+    {
+     "order_index": 9,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "Ambiguity in a change review",
+     "prompt_md": "During a change review the assistant reports that a new policy clause is ambiguous about whether report comments count as drafting support. What is the correct handling, and why?",
+     "correct_answer": "Flag it and escalate to the person who owns the policy, usually a senior leader, and leave the card unchanged until the answer comes back. An assistant choosing an interpretation would produce a card that looks compliant while the department is quietly out of step with its own policy, and nobody would find out until the practice was challenged. Ambiguity surfaced is a correct output of a change review; ambiguity silently resolved is the failure the review exists to prevent."
+    },
+    {
+     "order_index": 10,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "Handing a pack to an early-career teacher",
+     "prompt_md": "List what an early-career colleague receives alongside the system cards so that neither quality nor safeguarding drops, and explain why each item is needed.",
+     "correct_answer": "One worked example per card showing a real input and the approved output, so the standard is visible rather than described. The do-not-automate list, naming the jobs involving individual children that never go into an assistant, so the safeguarding line is inherited rather than rediscovered. And the role to ask when an output looks wrong, so a colleague who is unsure has somewhere to go other than pressing on. Then you watch them run one template unaided, because that is the only reliable test of whether the pack works without you."
+    },
+    {
+     "order_index": 11,
+     "type": "short_answer",
+     "language": "prompt",
+     "marks": 5,
+     "title": "Prompt Lab: draft a system card from a working template",
+     "prompt_md": "You have a template you use weekly that turns an existing worksheet into a scaffolded version for lower reading ages. Write the prompt that drafts its system card. A strong prompt supplies the template and the relevant school policies, names the exact fields required, forbids vague verification wording and says what to replace it with, refuses to let the assistant invent the parts you have not written down, and requires undocumented assumptions to be listed as questions back to you.",
+     "correct_answer": "Here is a template I use every week: [paste the full template].\nHere are the school policies it has to sit under: [paste the AI policy, the assessment policy and the data protection guidance].\nContext: I teach Year 9 and Year 10 science in an English secondary school, and the department shares resources through a common folder.\n\nDraft a system card for this template with exactly these fields and no others:\n1. Purpose — one sentence on what it is for, and a second sentence on what it is NOT for.\n2. Required inputs — everything a colleague must supply before running it, listed as items. If an input is missing the template must not be run, so say that explicitly.\n3. Verification step — the concrete check performed before the output reaches any student.\n4. Who checks — a role, never a person.\n5. Version and date — set this as v1.0 with today date, plus a line for what changed.\n6. Known failure modes — leave this blank and list it as a question to me.\n\nRules: the verification field must be an action a colleague could perform without asking me anything. Reject wording such as check the output, review for accuracy or make sure it is correct, and replace it with the specific thing to check and the source to check it against. Do not invent school policy detail that is not in the documents I pasted.\n\nWhere the template relies on knowledge I have not written down — which exam board, which reading-age standard, who supplies the specification extract — list those under Undocumented assumptions as direct questions to me. Do not answer them yourself.\n\nKeep the card to half a page."
+    },
+    {
+     "order_index": 12,
+     "type": "short_answer",
+     "language": "prompt",
+     "marks": 5,
+     "title": "Prompt Lab: run a change review across the pack",
+     "prompt_md": "Your school has issued a revised AI policy and your exam board has updated part of the specification. You hold seven system cards. Write the prompt that runs a change review across the whole pack. A strong prompt supplies both the old and new documents plus every card, asks for a changed or unchanged verdict per card with the clause quoted, separates major versions from minor edits by whether verification or who-checks moved, blocks the assistant from rewriting cards at this stage, and requires ambiguity to be escalated rather than interpreted.",
+     "correct_answer": "I am running a change review across my teaching template pack.\n\nInputs:\nA. Old school AI policy: [paste]. New school AI policy: [paste].\nB. Old specification extract: [paste]. Updated specification extract: [paste].\nC. My seven system cards, each with purpose, inputs, verification step, who checks, version and date, known failure modes: [paste all seven].\n\nFor each card in turn, tell me whether the new documents change (a) the purpose, (b) the required inputs, (c) the verification step, (d) the who-checks line. Answer changed or unchanged for each of the four, and where you say changed, quote the exact clause or specification wording that forces it. Do not rely on general knowledge of school policy — use only the documents I have pasted.\n\nThen produce two lists: cards needing a major version, meaning the verification step or the who-checks line has moved, and cards needing only a minor edit. For every major version, give one line on what must be re-announced to the department and whether the template needs re-testing before reissue.\n\nDo not rewrite any card at this stage. Description and classification only.\n\nWhere the new policy is ambiguous about one of my cards, do not choose an interpretation. List it under Escalate, state precisely what is unclear, and name the role I should ask.\n\nFinally, flag any card whose purpose now touches an individual pupil, since those jobs come out of the pack entirely rather than being re-versioned."
+    }
+   ]
+  },
+  {
+   "order_index": 3,
+   "title": "Capstone: deliver the teacher's AI operating system (graded)",
+   "theory_md": "## What you are actually handing over\n\nSix weeks ago the promise was hours back. That part has held: planning chains, a resource pack, an assessment practice, a tested classroom assistant, and a week that no longer collapses into Sunday evening. The other half of the promise has held too, and it is the half this submission is graded on — the pedagogy and the duty of care stayed with you the whole way.\n\nThis lesson is the capstone. The two Prompt Labs below are the submission itself, so read the theory as the specification for what you are about to build.\n\n## What a complete teacher AI operating system contains\n\n**One. The master teaching context block.** The paragraph set you paste at the top of every session before you ask for anything. It carries: the phase and year groups you teach, your subject and the awarding body specification you follow, your class profiles in non-identifying terms, your school tone and marking policy, and the three hard lines stated as operating rules. Non-identifying matters. \"Year 9 mixed-attainment set of 30, reading ages roughly 9 to 14, six students with EAL at early stages, four with dyslexia-related access arrangements\" is a profile. Names, initials, diagnoses attached to individuals and pastoral history are not — they belong in school systems, not in a context block.\n\n**Two. The template pack.** Every template, chain and assistant you built, each carrying the system card built in the previous lesson.\n\n**Three. The weekly rhythm.** From the audit: what runs when, in which block, around your actual timetable, with generation before the teaching week and verification close to the point of use.\n\n**Four. The do-not-automate list.** Explicit and never empty. Any job about an individual child — pastoral notes, safeguarding, SEND paperwork naming a pupil, a report comment about one student — plus every assessment judgement. Each entry gets one line saying why, so a colleague inherits the reasoning and not only the rule.\n\n**Five. The evidence.** One worked example per template showing a real input and the output you approved, the failure notes you collected while testing, and a version log with real dates.\n\nA pack that has all five is deliverable. A pack missing the fourth and fifth is a folder of prompts.\n\n## Worked example one: the master context block\n\n```\nStanding context for all my teaching work. Apply this to every request in\nthis conversation and tell me if a request conflicts with it.\n\nWho I am: teacher of secondary science, Years 9 to 11, English state\ncomprehensive. Awarding body: [board], specification [code], current from\nSeptember 2025.\n\nClasses (no individuals named): Y9 mixed attainment, 30, reading ages\nroughly 9-14, six EAL at early stages, four with access arrangements.\nY10 higher tier, 28. Y11 foundation, 24, low prior attainment in maths.\n\nHouse style: plain English, sentences short, no American spellings, no\nexclamation marks in parent communications, praise specific rather than\ngeneral.\n\nOperating rules you must follow and must not soften:\n1. Anything a student will read must be fact-checked by me against the\n   specification before use. Flag any claim you are not certain of.\n2. You do not award marks or grades. You may help me phrase feedback\n   after I have decided the mark.\n3. I will never give you identifying information about an individual\n   pupil. If a request would need it, stop and tell me.\n\nIf any of these is missing from a request, ask me rather than assuming.\n```\n\nAbridged output:\n\n> Understood. Before we start, two things are missing: the specification code, and whether the reading-age range applies to the printed resource or the spoken explanation. Also noting that your third rule means I cannot help with the Year 11 report comments you mentioned earlier in the form you described — I can help you build a comment structure, but you would insert the individual detail yourself.\n\nThat last sentence is the block working. The assistant refused the shape of a request before it was made.\n\n## Worked example two: the handover rehearsal\n\nBefore you submit, run the pack past a stand-in colleague.\n\n```\nAct as a teacher joining my department in January. You have my subject\nknowledge but you have never seen this pack.\n\nHere is the pack: [context block, system cards, weekly rhythm,\ndo-not-automate list].\n\nWorking through it as a new colleague would, tell me:\n1. Every point where you would have to stop and ask me a question.\n2. Any verification step you could not perform with what is written.\n3. Anything in the pack that reads as advice rather than an instruction.\n4. Whether the do-not-automate list is clear enough that you would\n   recognise a job belonging on it that is not listed.\n\nDo not fix anything. List the gaps as questions.\n```\n\nAbridged output:\n\n> 1. Card 2 says \"check against the specification\" but does not say where the specification extract lives.\n> 2. Card 4 verification asks me to confirm the reading age — with what? A tool, a rule of thumb, or your judgement?\n> 3. \"Try to avoid using this for assessed work\" reads as advice. Is it a rule?\n> 4. The list covers report comments but says nothing about parents evening notes, which feel similar.\n\nEvery one of those is worth fixing before a colleague meets it in a real week.\n\n## What a strong submission shows\n\n**Specificity.** Your key stage, your board, your school tone. A pack that could belong to any teacher in the country belongs to none.\n\n**Verification a colleague could perform.** Named source, named action, named role.\n\n**Safeguarding as an operating rule, not a disclaimer.** The do-not-automate list sits in the pack, not in a footnote at the end.\n\n**Honesty.** Failure notes about templates that did not work, and time savings counted after verification rather than before.\n\n## The mistakes people make here\n\n**A context block containing identifying detail.** The most common failure and the most serious. If a stranger reading the block could work out which child you mean, rewrite it.\n\n**Submitting templates without a verification step**, on the grounds that you always check anyway. The pack is for the version of you who is tired in November, and for the colleague who is not you at all.\n\n**Writing it for a marker.** Write it for Monday. The grading follows the same criteria a colleague would apply.\n\n## In practice\n\nWhen the pack is finished you should be able to hand it to somebody, walk away, and be comfortable with everything it produces in your absence — because every route through it ends at a person who checks. That was the whole argument of this course. The hours come back through production work: the reformatting, the variants, the third version of the same message. The judgement never moves, because a mark is a professional decision, because a fact taught wrongly is learned wrongly, and because a child is not data you paste somewhere to save yourself ten minutes. Build the pack, then teach with it.",
+   "estimated_minutes": 30,
+   "learning_objectives": [
+    "Assemble the five components of a complete teacher AI operating system",
+    "Write a master teaching context block that carries no identifying pupil detail",
+    "Document every template with usage, verification and safeguarding notes a colleague can follow",
+    "Rehearse the handover and submit a pack another teacher could run on Monday"
+   ],
+   "case_study": "**PowerSchool — what happens to a child's data once it has left the building (2024–2025)**\n\nPowerSchool is one of the largest student information system vendors in North American schooling — the software districts use to hold enrolment, contact, attendance and academic records for whole populations of children. On 28 December 2024 the company learned it had been breached, and it learned in the worst way available: an extortion demand arrived. Reporting by BleepingComputer and others described how attackers had used stolen credentials to reach an internal customer support portal, PowerSource, and then exploited a maintenance tool to export data from district databases, with the exfiltration running over roughly the last ten days of December.\n\nThe reported scale was extraordinary for the sector. Coverage put the number of affected student records at around 62 million and teacher records at around 9.5 million, drawn from thousands of districts. The fields involved were not limited to names and contact details: for some records the exported data was reported to include Social Security numbers, medical alert information and academic records — in other words, precisely the kind of information a school holds because it has a duty of care, not because it is convenient.\n\nWhat happened afterwards is the part a teacher should sit with. PowerSchool confirmed it had paid the extortion demand and said it had received a video purporting to show the stolen data being deleted. That assurance did not hold. By May 2025, individual school districts — including districts in North Carolina, as reported by EdNC — were receiving fresh ransom demands built on samples of the same stolen data. Nothing had been deleted that anybody could verify, because a copy of a database is not something the far end can prove it no longer possesses.\n\nNo individual teacher could have prevented any of this, and the point is not that school software is untrustworthy; schools have to run on systems, and those systems are assessed and governed for exactly this reason. The point is the direction of travel. Identifying information about a child, once it is in a system outside your control, cannot be recalled, and no assurance from the other end can make it so. That is why the third hard line in this course is absolute rather than cautious, and why your capstone contains a do-not-automate list. The safest place for a pupil's identifying detail is inside the systems your school has assessed and is accountable for — never pasted into a general assistant because it was quicker on a Thursday.",
+   "exercises": [
+    {
+     "order_index": 1,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "Inside the master context block",
+     "prompt_md": "You are writing the standing context block that goes at the top of every session with your assistant. Which description of a class belongs in it?",
+     "options": [
+      "Year 9 mixed attainment set of thirty, reading ages roughly nine to fourteen, six students at early stages of English as an additional language",
+      "Year 9 mixed attainment set of thirty, with the four students on the SEND register named so that the assistant can tailor its suggestions",
+      "Year 9 mixed attainment set of thirty, including a note on the pastoral history of the two pupils who have found the term most difficult",
+      "Year 9 mixed attainment set of thirty, with initials and current working grades for every pupil so the assistant can group them fairly"
+     ],
+     "correct_answer": "Year 9 mixed attainment set of thirty, reading ages roughly nine to fourteen, six students at early stages of English as an additional language"
+    },
+    {
+     "order_index": 2,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "The five parts of the pack",
+     "prompt_md": "You are assembling the capstone submission and want to be sure nothing is missing before you hand it over. Which five parts make a pack deliverable rather than a folder of prompts?",
+     "options": [
+      "The master context block, the documented template pack, the weekly rhythm, the do-not-automate list, and worked examples with a version log",
+      "The master context block, a list of recommended tools, a summary of the course, a reflective diary, and a printout of your favourite outputs",
+      "A licence record, the school AI policy, a staff training slide deck, a set of pupil consent forms, and a log of every session you have run",
+      "A subject overview, a scheme of work, a marking policy, a seating plan for each class, and a folder of the resources you produced this term"
+     ],
+     "correct_answer": "The master context block, the documented template pack, the weekly rhythm, the do-not-automate list, and worked examples with a version log"
+    },
+    {
+     "order_index": 3,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "What goes on the do-not-automate list",
+     "prompt_md": "A colleague reviewing your capstone asks why the do-not-automate list exists at all when the verification steps already cover quality. What belongs on that list?",
+     "options": [
+      "Any job about an individual child, including pastoral and safeguarding work, together with every assessment judgement, each with a line saying why",
+      "Any job the assistant has previously performed poorly, so that the list can shrink as the tool improves over the following terms",
+      "Any job that takes less time by hand than it takes to prompt for, so that effort is not wasted on work with a poor return",
+      "Any job that the school policy has not yet mentioned, so that staff wait for guidance before extending the pack any further"
+     ],
+     "correct_answer": "Any job about an individual child, including pastoral and safeguarding work, together with every assessment judgement, each with a line saying why"
+    },
+    {
+     "order_index": 4,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "An honest saving",
+     "prompt_md": "Your pack claims that a differentiated worksheet now takes four minutes rather than forty, and a reviewer asks whether that figure is honest. What does an honest claim record?",
+     "options": [
+      "Generation time plus verification time plus any rework, because the resource is not finished until it has been checked against the specification",
+      "Generation time only, because verification is professional work you would have carried out on any resource regardless of how it was made",
+      "The difference between the two figures multiplied by the number of classes, because that is the total benefit across the whole department",
+      "The time recorded on the fastest occasion, because that shows what the template is capable of once the user has become fluent with it"
+     ],
+     "correct_answer": "Generation time plus verification time plus any rework, because the resource is not finished until it has been checked against the specification"
+    },
+    {
+     "order_index": 5,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "The handover rehearsal",
+     "prompt_md": "Before submitting, you ask the assistant to act as a colleague joining your department who has never seen your pack. What are you asking it to produce?",
+     "options": [
+      "The points where a new colleague would stop and ask, the checks they could not perform, and anything that reads as advice rather than instruction",
+      "A polished rewrite of the whole pack in clearer language, so that the version you submit reads as professionally as possible",
+      "A judgement on whether the pack would score well against the grading criteria, so you know what to improve before you hand it in",
+      "A list of extra templates a department would expect to see, so that the pack looks complete alongside those of other teachers"
+     ],
+     "correct_answer": "The points where a new colleague would stop and ask, the checks they could not perform, and anything that reads as advice rather than instruction"
+    },
+    {
+     "order_index": 6,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "Why the context block goes first",
+     "prompt_md": "Explain what the master teaching context block does and why it is pasted before the request rather than added afterwards.",
+     "correct_answer": "It supplies the standing facts every request depends on — phase, subject, awarding body specification, class profiles in non-identifying terms, school tone and marking policy — plus the three operating rules stated as constraints the assistant must not soften. Supplied first, it shapes the answer and lets the assistant refuse or query a request that conflicts with it. Supplied afterwards, it becomes a correction on work already produced in the wrong register, against the wrong specification, and the time saved goes into rewriting."
+    },
+    {
+     "order_index": 7,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "Non-identifying class profiles",
+     "prompt_md": "Describe the difference between a class profile that belongs in your context block and one that does not, and give the test you apply.",
+     "correct_answer": "A profile describes the teaching problem in aggregate: size, attainment spread, reading-age range, numbers with EAL or with access arrangements, prior topics covered. It does not attach anything to a person — no names, no initials, no diagnoses, no pastoral history, no individual grades. The test is whether a stranger reading the block could work out which child is meant; in a small group a single distinguishing detail is enough, so if the answer is yes or even possibly, it is rewritten or left out."
+    },
+    {
+     "order_index": 8,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "Why an empty list fails",
+     "prompt_md": "A submitted pack has a do-not-automate section containing the words none at present. Why does a reviewer treat that as a weakness rather than a strength?",
+     "correct_answer": "Every teaching role contains work that must not go near a general assistant: anything about an individual child, and every assessment judgement. An empty list therefore does not mean the boundary was examined and found unnecessary; it means it was never examined, or that identifying detail is already being used without anybody having written it down. The list is also the part a colleague inherits, so an empty one hands over no protection at all — and each entry needs its one-line reason, so the reasoning travels with the rule."
+    },
+    {
+     "order_index": 9,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "Evidence, not description",
+     "prompt_md": "Why does the pack include a worked example and failure notes for each template rather than a description of what each template does?",
+     "correct_answer": "A description tells a colleague what was intended; a worked example showing a real input and the output you approved shows them the standard they are aiming at, which is the only thing that keeps quality consistent once you are not in the room. Failure notes do the same job for the limits: they record what you have genuinely seen go wrong and how you spotted it, so a new user starts with your scepticism rather than earning it over a term. Together they turn claims about the pack into evidence about it."
+    },
+    {
+     "order_index": 10,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "Hours back, judgement stays",
+     "prompt_md": "Summarise where the time savings in a teacher AI operating system genuinely come from, and what the system never carries.",
+     "correct_answer": "The savings come from production work: reformatting a mark scheme into a pupil checklist, generating variants of an existing resource at different reading ages, drafting the third version of a message that says what the first two said, and turning notes into a structured document. What the system never carries is judgement — the mark or grade, the decision about what a class needs next, and anything concerning an individual child. Those stay with the teacher because they are professional decisions that have to be defended to pupils, parents and moderators."
+    },
+    {
+     "order_index": 11,
+     "type": "short_answer",
+     "language": "prompt",
+     "marks": 5,
+     "title": "Prompt Lab (capstone part one): your master teaching context block",
+     "prompt_md": "This is the first half of your graded capstone submission. Write the master teaching context block you will paste at the top of every session with an assistant. It must carry your phase and year groups, subject and awarding body specification, class profiles in strictly non-identifying terms, your school tone and marking conventions, and the three operating rules stated so the assistant must not soften them — including an instruction to stop and tell you if a request would require identifying information about an individual pupil. Write it for your own teaching context; the model answer shows the required shape and depth.",
+     "correct_answer": "Standing context for all my teaching work. Apply this to every request in this conversation, and tell me if a request conflicts with it rather than working around it.\n\nWho I am: teacher of secondary science, Years 9 to 11, English state comprehensive, eleven to sixteen. Awarding body: AQA, GCSE Combined Science Trilogy, specification 8464, current cohort started September 2025. Department shares resources through a common folder; I am second in department.\n\nClasses, described in aggregate only, no individuals named:\n- Year 9, mixed attainment, 30 students, reading ages roughly 9 to 14, six students at early stages of English as an additional language, four with access arrangements.\n- Year 10, higher tier, 28 students, secure with algebra, weak on required practicals.\n- Year 11, foundation tier, 24 students, low prior attainment in maths, high anxiety about examinations.\n\nHouse style: plain English, short sentences, British spellings only. Parent communications are warm but not effusive, no exclamation marks, and always name one specific thing the pupil has done. Feedback to pupils is specific and actionable, never a grade with a comment attached.\n\nOperating rules. These are constraints, not preferences. Do not soften them, and do not proceed by assuming your way around them.\n1. Anything a student will read must be fact-checked by me against the specification before it is used. Flag explicitly any claim, figure, date or equation you are not certain of, rather than presenting it evenly with the rest.\n2. You do not award marks, grades or levels, and you do not estimate them. Once I have decided a mark, you may help me phrase the feedback.\n3. I will never give you identifying information about an individual pupil — no names, no initials, no diagnoses, no pastoral or safeguarding detail. If a request would require it, stop and tell me instead of producing a generic version.\n\nIf a request is missing the specification reference, the class, or the intended audience, ask me for it rather than choosing one. If your answer depends on an assumption, state the assumption in one line at the end."
+    },
+    {
+     "order_index": 12,
+     "type": "short_answer",
+     "language": "prompt",
+     "marks": 5,
+     "title": "Prompt Lab (capstone part two): the documented template pack",
+     "prompt_md": "This is the second half of your graded capstone. Write the prompt that assembles your templates, chains and assistant into the documented pack a colleague could run on Monday. A strong prompt supplies the context block and every template as input, specifies the six system-card fields, demands verification steps a named role could perform unaided, requires a weekly rhythm mapped to your real timetable, requires a do-not-automate list with a reason per entry covering individual pupils and assessment judgements, forbids invented savings or invented version history, and ends with a handover rehearsal that returns gaps as questions rather than fixes.",
+     "correct_answer": "You are helping me assemble the final documented pack for my teaching work. Use only the material I paste; do not invent templates, savings, dates or policy.\n\nInputs:\nA. My master teaching context block: [paste].\nB. My templates and chains: [paste each one in full].\nC. My classroom assistant instruction block and its test results: [paste].\nD. My teaching week audit and timetable constraints: [paste].\nE. Our school AI policy and assessment policy: [paste].\n\nProduce the pack in five sections.\n\n1. Context block: reproduce mine unchanged, then list separately anything in it that could identify an individual pupil, and anything a colleague in my department would need that is missing.\n\n2. Template pack: one system card per template with exactly these fields — purpose and what it is NOT for; required inputs, stating that the template must not be run if one is missing; verification step; who checks, as a role not a person; version and date; known failure modes. The verification step must be an action a named role could perform unaided, quoting the source it is checked against. Reject and rewrite any wording such as check the output or review for accuracy. Where I have not supplied a failure mode, write Not yet recorded rather than inventing one.\n\n3. Weekly rhythm: map each template to a slot in my real timetable. Generation goes in a contiguous block before the teaching week; verification sits close to the point of use; marking gets a protected block and no tool.\n\n4. Do-not-automate list: every job involving an individual pupil — pastoral, safeguarding, SEND paperwork, report comments about one child — and every assessment judgement, each with one line saying why. This section must never be empty. Add any job from my audit that belongs here and that I have missed.\n\n5. Evidence and version log: for each template, name the worked example I must attach, and record version v1.0 with today date. Do not invent earlier versions or time savings I have not measured.\n\nFinally, run a handover rehearsal. Acting as a teacher joining my department in January who has my subject knowledge but has never seen this pack, list: every point where you would stop and ask a question; any verification step you could not perform with what is written; anything that reads as advice rather than instruction; and any job you would recognise as belonging on the do-not-automate list that is not there. Return these as questions to me. Do not fix them yourself."
+    }
+   ]
+  }
+ ]
+}

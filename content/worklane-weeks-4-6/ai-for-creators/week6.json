@@ -1,0 +1,464 @@
+{
+ "week": 6,
+ "lessons": [
+  {
+   "order_index": 1,
+   "title": "Audit your publishing month: load, carriers, and the checkpoints that never move",
+   "theory_md": "## The month you actually publish\n\nAsk a creator what they make and you get the channel description. Look at four weeks of the calendar and you get the truth: the same jobs come round again and again, in the same order, at the same awkward hours. Ideas hunted late on a Sunday. A script that has to be finished before the shoot or the whole week slides. An edit that eats two days. Six cutdowns that were meant to take an hour. Comments that never stop arriving. And a sponsor deliverable with a deadline somebody else set, a brief you agreed to honour, and a disclosure line that is not optional.\n\nYou have spent five weeks building parts: a creator's brief, a voice file, idea engines, scripting and repurposing habits, a content pack, production chains, and an assistant you have tested. This week they stop being a toolbox and become a system that has to survive a real publishing month. The audit comes first, and only the honest version is any use.\n\n## Audit the month you had, not the month you meant to have\n\nOpen the last four weeks. Not the plan: the record. What went out, what was drafted and abandoned, the shoot that moved, the sponsor round, the week you published nothing. For every job that appeared more than once, write down four things.\n\n**Load.** How often it recurs and roughly how long it takes. Count the parts nobody counts. Choosing a thumbnail. Chasing an approval. Answering the same question in comments for the ninth time.\n\n**Carrier.** What you already built that could take part of it: a chain from week four, a template from the pack, the assistant from week five, the voice file, or nothing yet.\n\n**Checkpoint.** The human step that stays, and what you are checking for. \"I read it\" is not a checkpoint. \"I check every figure against its source and every stated opinion against something I have actually said in public\" is.\n\n**Damage.** What it costs if this one goes out wrong. A weak B-roll suggestion costs an hour. An invented statistic inside a sponsored video costs the sponsor, the platform relationship, and a piece of the trust you spent years earning.\n\nRanked by load against damage, the wall of work becomes a build order.\n\n## Worked example one: turning the raw month into a table\n\n```\nAttached: my creator brief, my voice file, and a raw list of everything I\npublished, drafted or abandoned in the last four weeks with rough hours\nagainst each.\n\nTurn this into an audit table, one row per recurring job, with these columns:\njob, times it recurred, rough hours, which of my existing tools could carry\npart of it, the human checkpoint that has to stay, and the damage if a poor\noutput went out unchecked.\n\nRules: use only jobs present in my list, and do not add jobs you would expect\na creator to have. Where you cannot tell which tool fits, write \"unclear\"\nrather than guessing. Flag every row where the checkpoint touches my voice,\na factual claim, or a sponsor or platform obligation.\n```\n\nAbridged output:\n\n| Job | Times | Hours | Carrier | Checkpoint | Damage |\n| --- | --- | --- | --- | --- | --- |\n| Idea hunting | weekly | 3 | idea engine | none needed | low |\n| Long-form script | 4 | 12 | research-to-script chain | **voice, every claim** | high |\n| Shorts cutdowns | 16 | 6 | repurposing template | **voice on hooks** | medium |\n| Comment replies | daily | 5 | assistant drafts, you send | **voice, anything read as advice** | medium |\n| Sponsor deliverable | 2 | 7 | template + brief | **claims, disclosure line, approval** | severe |\n| Thumbnail choice | 4 | 2 | unclear | taste, stays yours | medium |\n\nSix rows, three flagged. The flags are where the system must never run unattended.\n\n## Worked example two: sequencing it against your real week\n\nA publishing week has a shape, and the shape is not evenly loaded. There is a trough and there is a crunch. Chains and assistants belong in the trough, producing material that is waiting when the crunch arrives. Asking an assistant to rescue you at eleven at night on edit day is how unchecked drafts reach an audience.\n\n```\nHere is my audit table, and here is my actual week: film Tuesday, edit\nWednesday and Thursday, long-form publishes Friday morning, three shorts go\nout across the weekend, community day Monday, sponsor calls fortnightly.\n\nPlace each carrier at a specific point in that week, with a reason tied to\nwhere my time is loose or tight. For every flagged row, name the checkpoint,\nwhen it happens, and what has to be true before the piece moves on. Do not\nplace a checkpoint inside the edit crunch. Tell me which jobs have no carrier\nyet and rank those by hours saved.\n```\n\nAbridged output: research chain runs Sunday so the Tuesday shoot has an outline; repurposing chain runs Friday afternoon against the published long-form; the sponsor claim check sits Monday morning with the brief open, deliberately away from the Thursday deadline; comment drafts batch on community day; thumbnail choice has no carrier and is left alone. Two jobs sit unbuilt, ranked.\n\n## The three checkpoints that never move\n\nEverything else is negotiable. These are not.\n\n**Anything in your voice.** An opinion, a recommendation, a story told as yours. The audience cannot tell which sentences you wrote, so you carry all of them.\n\n**Any factual claim.** Figures, dates, prices, study findings, quotes, what a product does. Checked against a source you have opened, not against a fluent paragraph.\n\n**Anything a sponsor or a platform holds you to.** Contracted claims, approval steps, the disclosure line, the platform label for synthetic or altered media. These are obligations you agreed to, and an assistant has no standing in them.\n\n## Where this goes wrong\n\n**Auditing the ideal month.** The tidy version has no comment moderation, no re-edit, no week where everything moved. Systems built on the tidy version collapse in the messy one.\n\n**Counting only filming and editing.** The hours that vanish are administrative: approvals, reformatting, the sponsor thread, the same reply typed again. They are also the easiest to hand over.\n\n**Automating the crunch first.** The crunch feels worst, so it gets attention first. The trough is where automation is safe, because there is time left to check what came out.\n\n**Treating \"I would notice\" as a checkpoint.** You notice a bad draft. You do not notice a good draft with one confident invented number in the middle.\n\n**Letting the checkpoint move when the week goes wrong.** The check is the immovable object. If the week collapses, the piece slips. That trade is the system working, not the system failing.\n\n## In practice\n\nBuild the audit once, on a real month, with real hours. It usually shows two things: more of the load is repeatable than you expected, and the pieces you most want to hand over are the ones sitting closest to your voice. That tension is the whole design problem for the rest of this week. AI is the writers' room, not the writer, and the audit is where you decide which side of that line each job sits on.",
+   "estimated_minutes": 28,
+   "learning_objectives": [
+    "Map a real publishing month into recurring jobs with load, carrier, checkpoint and damage recorded against each",
+    "Rank which job to systematise next by weighing the hours it consumes against the damage an unchecked output would cause",
+    "Sequence chains and the assistant around your actual publishing rhythm so checking happens in the trough rather than the crunch",
+    "Defend the three immovable checkpoints covering your voice, every factual claim, and every sponsor or platform obligation"
+   ],
+   "case_study": "**House of Illuminati — Willy's Chocolate Experience (2024)**\n\nOn 24 February 2024 an unlicensed event loosely inspired by Charlie and the Chocolate Factory opened in a warehouse in Glasgow, run by an outfit trading as House of Illuminati. It had been marketed through a website of lavish AI-generated images promising an enchanting immersive world of sweets, and tickets sold on the strength of them.\n\nThe promotional material carried its own warning signs for anyone reading it back. The published copy included strings such as \"cartchy tuns\" and \"a pasadise of sweet teats\", alongside invented words like \"exarserdray\". Reporting afterwards, including a detailed account by the journalism institute Poynter and coverage by BBC News, established that the creative material had been generated end to end, from the marketing images to the script handed to the actors playing the tour guides.\n\nWhat families found inside was a sparsely decorated warehouse with plastic props, a small bouncy castle and printed AI backdrops pinned to the walls. Tempers rose within the first sessions, police were called to the venue, the event was cancelled the same day, and refunds followed. The gap between the generated images and the room became a global story within about forty-eight hours.\n\nThe instructive part is not that generative tools were used. It is that nothing generated was ever checked against two ordinary questions: can we actually deliver this, and is this even English. Both checks take minutes and neither needs expertise. Every job in a creator's month that a paying customer, a sponsor or a platform holds you to needs a named human who reads the output back against reality before it is published, and that check does not move because the week got tight.",
+   "exercises": [
+    {
+     "order_index": 1,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "What the audit ranks by",
+     "prompt_md": "You have listed every job that recurred across your last four weeks of publishing and now need to decide which one to systematise first. What does the creator month audit rank the jobs by?",
+     "options": [
+      "How much load the job carries against how much damage a poor unchecked output would cause",
+      "How enjoyable the job is to do and how much of your audience notices it happening each week",
+      "How recently the job appeared, how technical it looks, and how many tools already exist for it",
+      "How expensive the software is, how new the format feels, and how loudly your community asks"
+     ],
+     "correct_answer": "How much load the job carries against how much damage a poor unchecked output would cause"
+    },
+    {
+     "order_index": 2,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "What counts as a checkpoint",
+     "prompt_md": "Two creators describe the human step they keep before a scripted video goes out. Which description functions as a real checkpoint rather than an intention that quietly disappears on a busy week?",
+     "options": [
+      "Every figure is checked against its source and every stated opinion against something published before",
+      "The whole script is read through carefully once before recording, start to finish, without stopping",
+      "The draft is left overnight and looked at again in the morning with fresh eyes before filming",
+      "The assistant is asked to review its own draft for anything that might be inaccurate or off voice"
+     ],
+     "correct_answer": "Every figure is checked against its source and every stated opinion against something published before"
+    },
+    {
+     "order_index": 3,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "Where the carriers belong in the week",
+     "prompt_md": "Your publishing week has a clear trough on Sunday and Monday and a crunch across the two edit days before a Friday release. Where should the prompt chains and the assistant be scheduled to run?",
+     "options": [
+      "In the trough, so the material is ready and there is still time left to check it properly",
+      "In the crunch, because that is where the hours are hardest and the pressure is most painful",
+      "Spread evenly across all seven days so no single day carries more of the generated output",
+      "Immediately before publishing, so the drafts produced are as fresh as they can possibly be"
+     ],
+     "correct_answer": "In the trough, so the material is ready and there is still time left to check it properly"
+    },
+    {
+     "order_index": 4,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "The obligation checkpoint",
+     "prompt_md": "A sponsored video carries three contracted product claims, an approval step with the brand, and the disclosure line your agreement and the platform both require. What does the audit say about that row?",
+     "options": [
+      "The checkpoint is immovable because these are obligations you agreed to and the tool holds none of them",
+      "The checkpoint can be relaxed once the same sponsor has approved several similar videos without changes",
+      "The checkpoint belongs to the assistant, which can be instructed to verify the claims and the disclosure",
+      "The checkpoint applies only to the claims, since disclosure wording rarely changes between sponsored posts"
+     ],
+     "correct_answer": "The checkpoint is immovable because these are obligations you agreed to and the tool holds none of them"
+    },
+    {
+     "order_index": 5,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "Which month to audit",
+     "prompt_md": "You are about to audit your publishing load and can either use the four weeks that actually happened, messy and interrupted, or a clean representative month you describe from memory. Which do you use, and why?",
+     "options": [
+      "The messy real four weeks, because a system built on the tidy version fails in the real one",
+      "The clean representative month, because interruptions are unusual and would distort the ranking",
+      "A blend of the two, taking the hours from memory and the job list from the real calendar record",
+      "Whichever month produced the most published output, because that shows the system at full stretch"
+     ],
+     "correct_answer": "The messy real four weeks, because a system built on the tidy version fails in the real one"
+    },
+    {
+     "order_index": 6,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "The four columns",
+     "prompt_md": "Name the four things the audit records against every recurring job in your publishing month, and say what each one is used for.",
+     "correct_answer": "Load is how often the job recurs and how long it takes, including the administrative parts nobody counts, which shows where the hours actually go. Carrier is what you have already built that could take part of it, which turns into the build list. Checkpoint is the specific human step that stays and what it checks for. Damage is what a poor unchecked output would cost, and load against damage gives you the order to work in."
+    },
+    {
+     "order_index": 7,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "The three that never move",
+     "prompt_md": "State the three human checkpoints that never move in a creator's AI operating system, and explain in one sentence why each one cannot be handed to a tool.",
+     "correct_answer": "Anything in your voice, because the audience cannot tell which sentences you wrote and you carry all of them. Any factual claim, because a fluent draft fills gaps confidently and only a source you have opened settles it. Anything a sponsor or platform holds you to, including contracted claims, approvals, disclosure and synthetic-media labels, because those are obligations you personally agreed to and an assistant has no standing in them."
+    },
+    {
+     "order_index": 8,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "The hours nobody counts",
+     "prompt_md": "Explain why an audit that records only filming and editing time understates the real load, and what tends to be found in the hours it misses.",
+     "correct_answer": "Filming and editing are the visible work, so they are the hours creators remember, but the month is also full of administrative load: choosing thumbnails, chasing sponsor approvals, reformatting the same piece for three platforms, and answering the same question in comments repeatedly. Those hours are large in aggregate and are usually the safest to hand to a chain or an assistant, so missing them hides the best opportunities in the audit."
+    },
+    {
+     "order_index": 9,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "Trough before crunch",
+     "prompt_md": "Your worst hours are the two edit days before release. Explain why the audit still places generated material in the quieter days rather than in the crunch itself.",
+     "correct_answer": "Generated material needs a check before it goes anywhere, and a check needs time. Running a chain during the crunch produces drafts at the exact moment there is no capacity left to verify them, which is when unchecked output reaches an audience. Running it in the trough means the material is already waiting when the crunch arrives, and the checkpoint has happened while there was room for it."
+    },
+    {
+     "order_index": 10,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "When the week collapses",
+     "prompt_md": "A shoot moves, an edit overruns, and the Friday release is now at risk with the fact check on a scripted claim still outstanding. Explain what the system says should happen.",
+     "correct_answer": "The checkpoint is the immovable part of the design, so the piece slips rather than the check being skipped. Publishing on time with an unverified claim converts a scheduling problem into a trust problem that outlasts the week. Treating the slipped release as the system working, rather than as a failure, is what keeps the checkpoint real the next time the week goes wrong."
+    },
+    {
+     "order_index": 11,
+     "type": "short_answer",
+     "language": "prompt",
+     "marks": 5,
+     "title": "Prompt Lab: audit the month you actually had",
+     "prompt_md": "You publish one long-form video a week, three to five shorts, and a newsletter every fortnight, and you run two sponsor deliverables a month. Your last four weeks included a shoot that moved, a week with nothing published, roughly two hundred comments you answered yourself, and a sponsor round that needed two approval passes. Write the prompt that turns that raw month into the audit table. A strong prompt attaches the creator brief and voice file, supplies the raw month rather than asking the assistant to imagine a typical creator, names the exact columns wanted, forbids invented jobs, requires unclear rather than guessed carriers, and asks for rows to be flagged where the checkpoint touches voice, a factual claim, or a sponsor or platform obligation.",
+     "correct_answer": "Attached: my creator brief, my voice file, and a raw list of everything I published, drafted or abandoned in the last four weeks, with rough hours against each item and notes on what went wrong.\n\nTurn this into an audit table, one row per job that recurred more than once. Columns: job, number of times it recurred, rough hours in total, which of my existing tools could carry part of it (research-to-script chain, repurposing template, content pack, assistant, voice file, or none yet), the human checkpoint that has to stay and exactly what it checks, and the damage if a poor output went out unchecked, rated low, medium, high or severe.\n\nRules. Use only jobs that appear in my list. Do not add jobs you would expect a creator to have, and do not merge two of my jobs into one tidy row. Include the administrative work, not only filming and editing: thumbnail choice, sponsor approval chasing, reformatting, repeated comment replies. Where you cannot tell which tool fits, write unclear rather than guessing.\n\nFlag in bold every row where the checkpoint touches one of three things: anything written in my voice, any factual claim, or anything a sponsor or a platform holds me to including contracted claims, approvals, disclosure lines and synthetic-media labels.\n\nThen sort the table by hours against damage and tell me, in three lines, which job I should systematise next and why. If the list I gave you is missing information you need for a column, ask me for it instead of filling it in."
+    },
+    {
+     "order_index": 12,
+     "type": "short_answer",
+     "language": "prompt",
+     "marks": 5,
+     "title": "Prompt Lab: sequence the system against your real week",
+     "prompt_md": "You now have the audit table. Your week runs: community and admin on Monday, film Tuesday, edit Wednesday and Thursday, long-form publishes Friday morning, shorts across the weekend, sponsor calls every second Thursday. Write the prompt that places each carrier and each checkpoint at a specific point in that week. A strong prompt supplies the audit table and the real week, requires a reason tied to where time is loose or tight, keeps checkpoints out of the edit crunch, names when each checkpoint happens and what must be true before the piece moves on, and asks for the unbuilt jobs to be ranked.",
+     "correct_answer": "Attached: my audit table from the last four weeks, my creator brief and my voice file.\n\nMy actual week: Monday is community and admin, Tuesday is filming, Wednesday and Thursday are editing, the long-form publishes Friday morning, three shorts go out across the weekend, and sponsor calls fall every second Thursday. The edit days are my crunch. Sunday and Monday are the only slack I have.\n\nFor each carrier in the table, place it at a specific point in that week and give one reason tied to where my time is loose or tight. Do not place any generated work at a point where there is no capacity left to check it, and do not place a checkpoint inside the two edit days.\n\nFor every flagged row, state three things: when the checkpoint happens, who holds it, and what has to be true before the piece is allowed to move to the next step. Treat these as immovable: if the week overruns, tell me what slips instead of the check.\n\nList any job in the table that has no carrier yet, ranked by hours it would save, and for each one say in a line what would have to be built. Do not propose new tools for jobs I have not listed. If two carriers would land in the same slot and compete for the same hours, say so rather than pretending both fit."
+    }
+   ]
+  },
+  {
+   "order_index": 2,
+   "title": "Run it as a documented system: system cards, versions and handover",
+   "theory_md": "## The pack that only exists in your head\n\nSix weeks in, you have a working set of parts. And a problem you have not noticed yet: almost none of it is written down. You know the hook template expects the transcript rather than the outline, because you built it. You know the newsletter template was fixed after a sponsor asked why a claim had changed. You know the voice file has one rule in it that only makes sense if you remember the video that caused it.\n\nThen you take two weeks off, or your format changes, or an editor joins and asks which prompt they should be using. The honest answer is that it is somewhere in a chat history, in a version you cannot identify, with a rule you can no longer explain. A system nobody can describe is not a system. It is a habit, and habits do not survive handover, illness, or a format that moves.\n\nThis lesson turns the pack into something documented. The risk to manage while you do it is real: over-documenting a creative practice can flatten the thing people came for. The aim is not a manual. It is enough written down that the work can be repeated, checked and shared, while the voice and the judgement stay unmistakably yours.\n\n## A system card per template\n\nOne short card per template. Five lines, nothing more.\n\n**Purpose.** The job it does and the format it does it for. Narrow beats broad: a card that says \"writes content\" tells nobody anything.\n\n**Inputs.** Exactly what has to be attached and in what state. The voice file, the creator brief, a transcript rather than a summary, the sponsor brief as agreed.\n\n**Carries.** The fixed rules baked into the template: voice rules, the no-invented-facts rule, the disclosure line, format constraints the platform imposes.\n\n**Verification.** The check before anything moves on, stated as an action and given to a named person. This is the line that makes the card worth writing.\n\n**Version.** A number, a date, one line on what changed and why.\n\n## Worked example one: drafting the cards from templates you already use\n\n```\nAttached: my template pack (six templates), my creator brief, and my voice\nfile.\n\nFor each template, write a system card of exactly five lines: purpose, inputs,\ncarries, verification, version. Base every line on what the template actually\ncontains, quoting the phrase you drew it from. Where a template has no\nverification step written into it, write \"MISSING\" rather than inventing a\nsensible one. Where two templates overlap in purpose, say which and how.\nKeep each line to one sentence.\n```\n\nAbridged output:\n\n```\nTEMPLATE: shorts-hook-pack\nPurpose: turns one published long-form transcript into eight hook options\n         for shorts.\nInputs: full transcript (not summary) + voice file + the format rules file.\nCarries: no claim that is not in the transcript; my opening patterns; no\n         curiosity gaps that the video does not pay off.\nVerification: MISSING\nVersion: v1, undated.\n```\n\nThree of the six came back MISSING, which is the ordinary result the first time. The value of the exercise is that the gaps become visible instead of being covered by the fact that you personally always check.\n\n## Versioning, when your voice is the thing changing\n\nTemplates age because you change. A format tightens, an audience grows, a sponsor category arrives with new obligations, or your voice moves the way anyone's does over two years.\n\nThree working rules. **Version on a rule change, not a wording tweak.** Rewriting a sentence for clarity is an edit. Removing the requirement to cite the source of every figure is a new version. **Date it and record why in one line**, because in four months the why is the only part you will need. **Retire, do not delete.** Keep the previous version readable, because when output quality drops you need to see what changed between the run that worked and the run that did not.\n\nOne rule sits above those: any change to the voice file or to a rule a template carries sends the assistant back through the test set from last week before it touches anything published. A voice file edit is not a cosmetic change. It is the anchor moving.\n\n## Worked example two: the handover brief\n\n```\nAttached: my six system cards, my voice file, my creator brief.\n\nWrite a handover brief for an editor working two days a week. Sort every\ntemplate into three tiers: (1) they run it and send the output out, (2) they\nrun it and route the output to me before anything goes out, (3) they never\nrun it.\n\nBase the tiers on the verification line in each card, not on how hard the\ntask looks. Put anything that states an opinion, makes a factual claim, or\ntouches a sponsor or platform obligation in tier two or three. For each\ntemplate in tier one, write the one sentence that tells them when to stop and\nask. Do not soften that sentence.\n```\n\nAbridged output: repurposing and caption formatting land in tier one with a stop-and-ask line about any claim not present in the source; newsletter drafting and comment replies land in tier two; anything sponsor-facing, anything stating a view, and edits to the voice file itself land in tier three. The brief runs to a page, which is roughly the length a real person will read.\n\n## Where this goes wrong\n\n**One giant master prompt.** It works, it is impossible to version, and when it starts producing weaker output nobody can tell which part changed.\n\n**Versioning the wording rather than the rules.** Twelve versions that differ by phrasing tell you nothing. Two versions that differ by a rule tell you everything.\n\n**Cards with no verification line.** A card that documents purpose and inputs but leaves the check implicit becomes decoration. The check was the reason for writing it down.\n\n**Handing over the task and the checkpoint together.** Delegating who runs a template is ordinary. Delegating who is accountable for a claim in your voice is not, and it is easy to do by accident when someone capable joins.\n\n**Letting a helper bring their own prompts.** A second assistant, loaded with a different voice file, quietly reintroduces the drift you spent a week testing out.\n\n**Documenting so hard the work goes grey.** If every hook has to pass four rules, you will get hooks that pass four rules. Keep rules for things that can cause harm, and leave taste alone.\n\n## In practice\n\nA documented pack is what lets you be away for a fortnight without the channel either stopping or sounding like somebody else. The cards carry the repeatable part, the version history carries the reasoning, and the tiers make explicit what was always true: the assembly can be shared, the voice and the judgement cannot. AI is the writers' room. The room can be staffed. The writer is still you.",
+   "estimated_minutes": 28,
+   "learning_objectives": [
+    "Write a five-line system card for every template covering purpose, inputs, rules carried, verification and version",
+    "Apply versioning rules that separate rule changes from wording edits and retire old versions rather than deleting them",
+    "Sort templates into run-and-send, run-and-route and never-delegated tiers using the verification line on each card",
+    "Protect voice and judgement while handing production work to an editor by separating who runs a task from who is accountable"
+   ],
+   "case_study": "**The Associated Press — an AI chapter in the Stylebook (2023)**\n\nIn August 2023 the Associated Press issued guidance to its journalists on generative AI and added a chapter on artificial intelligence to the AP Stylebook, the reference work that newsrooms far beyond AP itself use as a standard. The timing mattered: AP was not an organisation new to automation, having used automated systems to produce routine corporate earnings stories for years before generative tools arrived.\n\nThe guidance drew a hard line in an unusually plain way. Generative AI was not to be used to create publishable content or images for the wire. At the same time, staff were actively encouraged to become familiar with the tools and to experiment with them, and the guidance warned at length about the known failure modes, including the tendency of these systems to produce fluent misinformation. Output was to be treated as unverified material subject to the same human checking AP applies to any other unconfirmed source.\n\nWhat makes it a useful model is not the specific rule but the form it took. It was written down where a new hire could read it, it named what was permitted as well as what was forbidden, and it went into a document that is revised on a cycle rather than living in the head of one senior editor. Coverage at the time by Poynter and by the Nieman Journalism Lab noted that AP framed the guidance explicitly as a standard for using the tools, not as a step towards replacing journalists.\n\nA creator running a template pack is doing a smaller version of the same job. A system card states what a template is for, what it may be given, what it carries, and who checks the output before it goes anywhere. Putting that on paper, and revising it on a schedule rather than in a panic, is what turns a personal habit into something an editor can be handed and an audience can rely on.",
+   "exercises": [
+    {
+     "order_index": 1,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "The line that makes a card worth writing",
+     "prompt_md": "You are writing a system card for each template in your pack: purpose, inputs, carries, verification and version. Which of those lines is the one that stops the card being decoration, and why?",
+     "options": [
+      "Verification, because it names the check and the person who holds it before the output moves on",
+      "Purpose, because it describes the job and lets an editor find the right template quickly",
+      "Inputs, because it lists which files must be attached and stops the template running on thin material",
+      "Version, because it records the date and lets you see which edition of the template produced a draft"
+     ],
+     "correct_answer": "Verification, because it names the check and the person who holds it before the output moves on"
+    },
+    {
+     "order_index": 2,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "When a version number changes",
+     "prompt_md": "You have made two edits to a template this month: you rewrote one instruction so it reads more clearly, and you removed the requirement to cite a source for every figure. Which of these is a new version?",
+     "options": [
+      "Removing the source requirement, because a rule the template carries has changed",
+      "Both edits, because any alteration to the text of a template creates a new edition of it",
+      "The clarity rewrite, because the wording an assistant reads is what determines the output",
+      "Neither edit, because versions change only when the underlying voice file has been updated"
+     ],
+     "correct_answer": "Removing the source requirement, because a rule the template carries has changed"
+    },
+    {
+     "order_index": 3,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "What a two-day-a-week editor can run alone",
+     "prompt_md": "An editor joins two days a week and you are sorting your templates into tiers. Which of these tasks can sit in the tier where they run the template and send the output out without routing it to you?",
+     "options": [
+      "Reformatting a published piece into platform captions, with a stop-and-ask line for any new claim",
+      "Drafting the newsletter opinion section from your notes, using the voice file you built in week five",
+      "Replying to community questions in your voice where the answer would be read as your recommendation",
+      "Producing the sponsored post copy from the brief, since the disclosure line is already in the template"
+     ],
+     "correct_answer": "Reformatting a published piece into platform captions, with a stop-and-ask line for any new claim"
+    },
+    {
+     "order_index": 4,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "After the voice file moves",
+     "prompt_md": "Your format has tightened over six months and you have rewritten three rules in the voice file that your assistant and several templates depend on. What does the system require next?",
+     "options": [
+      "Re-running the fixed test set before the assistant touches anything that will be published",
+      "Publishing a short note to the audience explaining that your written style has been updated",
+      "Rebuilding the assistant from scratch so that no trace of the previous rules remains anywhere",
+      "Waiting a month to see whether the output feels different before making any further changes"
+     ],
+     "correct_answer": "Re-running the fixed test set before the assistant touches anything that will be published"
+    },
+    {
+     "order_index": 5,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "Retire rather than delete",
+     "prompt_md": "Your template pack has reached version four of the scripting template and the older editions are cluttering the folder. What is the argument for keeping the retired versions readable rather than deleting them?",
+     "options": [
+      "When output quality drops you need to compare the run that worked against the version that changed",
+      "Older versions can be reused unchanged whenever a sponsor asks for a format you no longer publish",
+      "Keeping every edition demonstrates to an audience that your process has been consistent over time",
+      "Deleting files risks losing the voice file itself, which is usually stored inside the same template"
+     ],
+     "correct_answer": "When output quality drops you need to compare the run that worked against the version that changed"
+    },
+    {
+     "order_index": 6,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "The five lines",
+     "prompt_md": "List the five lines of a system card and say in one clause what each one prevents going wrong.",
+     "correct_answer": "Purpose prevents a template being used for a job it was never shaped for. Inputs prevents it running on thin material, such as a summary where it needs a full transcript. Carries prevents the fixed rules, including voice rules and the disclosure line, being quietly dropped. Verification prevents output moving on unchecked by naming the check and who holds it. Version, with a date and a line on what changed, prevents a quality drop becoming impossible to trace."
+    },
+    {
+     "order_index": 7,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "Versioning rules",
+     "prompt_md": "Explain the three working rules for versioning a template pack, and the one rule that overrides them when the voice file itself changes.",
+     "correct_answer": "Version on a rule change rather than a wording tweak, so version numbers carry meaning. Date each version and record in one line why it changed, because the reasoning is the part you will need months later. Retire rather than delete, so a drop in quality can be traced to a specific change. Overriding all three: any change to the voice file or to a rule a template carries sends the assistant back through the fixed test set before it produces anything for publication."
+    },
+    {
+     "order_index": 8,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "The three tiers",
+     "prompt_md": "Describe the three delegation tiers used when handing parts of the system to an editor or assistant, and the basis on which a template is sorted into one of them.",
+     "correct_answer": "Tier one is run and send: the helper runs the template and the output goes out, with a written stop-and-ask line. Tier two is run and route: the helper runs it and the output comes to you before publication. Tier three is never delegated. Templates are sorted by the verification line on their card rather than by how difficult the task looks, and anything that states an opinion, makes a factual claim, or touches a sponsor or platform obligation goes in tier two or three."
+    },
+    {
+     "order_index": 9,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "The task and the checkpoint",
+     "prompt_md": "A capable editor takes over your repurposing work, including the check you used to do yourself. Explain what has gone wrong and how the handover should have been written.",
+     "correct_answer": "Delegating who runs a template is ordinary, but delegating accountability for a claim published in your voice is not, and it tends to happen silently when the new person is competent. The handover should hand over the task while naming who still holds the check, so the editor runs the template and routes anything containing a claim, an opinion or a sponsor obligation back to you. Their authority is to run and to stop, not to approve what only you can stand behind."
+    },
+    {
+     "order_index": 10,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "Documented, not flattened",
+     "prompt_md": "Explain the risk of over-documenting a creative practice, and the test for deciding whether a rule belongs in a template at all.",
+     "correct_answer": "If every hook has to satisfy four written rules, the output converges on hooks that satisfy four rules, and the specific quality an audience came for gets sanded off. The test is harm: a rule belongs in the template when breaking it causes real damage, such as an invented figure, a missing disclosure line or a stated opinion you have never held. Matters of taste, pacing and phrasing stay with your judgement rather than becoming written constraints."
+    },
+    {
+     "order_index": 11,
+     "type": "short_answer",
+     "language": "prompt",
+     "marks": 5,
+     "title": "Prompt Lab: draft the system cards",
+     "prompt_md": "You have six templates in daily use: research-to-outline, long-form script, shorts hook pack, caption reformatting, newsletter draft, and sponsor deliverable. None of them is documented. Write the prompt that produces a system card for each. A strong prompt attaches the pack, the creator brief and the voice file, fixes the five lines, requires each line to be grounded in what the template actually says with the phrase quoted, forbids inventing a sensible verification step where none exists, and asks for overlaps between templates to be named.",
+     "correct_answer": "Attached: my template pack (six templates), my creator brief, and my voice file.\n\nFor each template, write a system card of exactly five lines, in this order and no others.\n\nPurpose: the specific job and the format it serves, in one sentence. Do not write general descriptions such as writes content.\nInputs: exactly what must be attached and in what state, including whether it needs a full transcript rather than a summary.\nCarries: the fixed rules already baked into the template, such as voice rules, the requirement that no claim appears that is not in the source, the disclosure line, and any platform format constraint.\nVerification: the check that happens before the output moves on, written as an action, with the person who holds it.\nVersion: number, date, and one line on what last changed and why.\n\nGround every line in what the template actually contains and quote the phrase you drew it from. Where a template contains no verification step, write MISSING rather than supplying a sensible one, and where it has no version history write UNDATED. Where two templates overlap in purpose, say which pair and where the overlap sits.\n\nThen list, in priority order, the cards where MISSING appears against verification, and for each one tell me which of the three immovable checkpoints (voice, factual claim, sponsor or platform obligation) the template touches. Ask me for anything you need rather than assuming it."
+    },
+    {
+     "order_index": 12,
+     "type": "short_answer",
+     "language": "prompt",
+     "marks": 5,
+     "title": "Prompt Lab: the handover brief",
+     "prompt_md": "An editor is joining two days a week to take some of the production load while you keep the voice and the judgement. Write the prompt that turns your system cards into their handover brief. A strong prompt supplies the cards, the voice file and the brief, defines the three tiers, sorts on the verification line rather than task difficulty, forces anything touching voice, claims or sponsor and platform obligations into tier two or three, requires a stop-and-ask sentence per tier-one template, and rules out the helper bringing their own prompts or assistant.",
+     "correct_answer": "Attached: my six system cards, my voice file and my creator brief.\n\nWrite a handover brief for an editor working two days a week, no longer than one page, addressed to them directly.\n\nSort every template into three tiers. Tier one: they run it and the output goes out. Tier two: they run it and route the output to me before anything is published. Tier three: they never run it.\n\nSort on the verification line in each card, not on how hard the task looks. Anything that states an opinion, makes a factual claim, or touches a sponsor or platform obligation, including contracted claims, approvals, disclosure lines and synthetic-media labels, goes into tier two or tier three. Edits to the voice file itself are tier three.\n\nFor every tier-one template, write one plain sentence telling them when to stop and route it to me instead. Do not soften that sentence with hedging language.\n\nState explicitly that they run my templates with my voice file and no other, that they do not substitute their own prompts or a second assistant, and that their authority includes stopping any piece but never approving one. Close with the three things I remain accountable for regardless of who ran the template. If a card is too thin to place in a tier, say so and tell me what is missing rather than placing it anyway."
+    }
+   ]
+  },
+  {
+   "order_index": 3,
+   "title": "Capstone: deliver the creator's AI operating system",
+   "theory_md": "## The thing you hand in is the thing you run\n\nThis is the capstone, and the standard for it is unusual: the pack you submit should be the pack you actually use next month. Not a tidied demonstration version. If a template in it has never produced anything you published, it does not belong. If a checkpoint in it is one you would skip on a bad week, write the one you would really keep.\n\nSix weeks have produced parts. A creator's brief. A voice file. Idea engines. Scripting and repurposing habits. A content pack. Production chains. A tested assistant. The capstone assembles them into one thing that has a front door, so that a stranger, an editor or you in four months can pick it up and run it correctly.\n\n## What a complete pack contains\n\n**One. The master voice-and-brief block.** The anchor. Everything else inherits from it: who you are and what you publish, the audience in their own words, the formats and where each goes, your voice rules with short examples rather than adjectives, and the hard lines. It is the block you paste at the top of any new assistant or chat, and it is the one file whose accuracy matters more than anything else in the pack.\n\n**Two. The template pack.** Every template you actually run, each with the five-line system card from the last lesson: purpose, inputs, carries, verification, version.\n\n**Three. The chain map.** Which templates run in which order for each recurring job, and where each sits in your publishing week. Two or three lines per chain is enough.\n\n**Four. The checkpoint register.** Every immovable check in one list: what is checked, who holds it, when it happens, and what has to be true before the piece moves on. Anything in your voice, any factual claim, anything a sponsor or platform holds you to.\n\n**Five. The disclosure and platform notes.** What you say publicly about how AI is used in your work, plus the obligations you did not choose: sponsor-agreement terms, platform rules on labelling synthetic or altered media, and anything a contract requires you to state.\n\n**Six. The test set and its last dated result.** The fixed briefs from week five and how the assistant scored, with the date. An undated result is not evidence.\n\n**Seven. The version log.** One line per change: what, when, why.\n\n## Worked example one: assembling the master block\n\n```\nAttached: my creator brief, my voice file, ten pieces of my published work\nacross all three formats, and my sponsor agreement.\n\nDraft my master voice-and-brief block. Sections: who I am and what I publish;\nmy audience in their own words; my formats and where each goes; my voice\nrules; my hard lines.\n\nBuild the voice rules only from patterns you can see in the attached published\nwork, and give a short quoted example for each. Do not use adjectives like\nauthentic or engaging. If a rule in my voice file does not appear in the\npublished work, list it separately as unverified rather than including it.\nKeep the block under 500 words, because it gets pasted everywhere.\n```\n\nAbridged output: five sections, seven voice rules each with a quoted line, two rules flagged unverified because they described intentions rather than habits, and a hard-lines section listing the three immovable checkpoints plus the sponsor disclosure wording.\n\n## Worked example two: documenting the pack\n\n```\nAttached: my six templates with their system cards, my chain map, my sponsor\nagreement, and the platform rules I publish under.\n\nProduce the pack documentation. For each template give: when to use it, when\nnot to use it, the inputs it requires, the verification step and who holds it,\nand any disclosure obligation it triggers.\n\nDraw disclosure obligations only from my sponsor agreement and the platform\nrules attached. Do not generalise about what creators usually disclose. Where\na template can produce something a platform would treat as synthetic or\naltered media, say so and name the label required. Flag any template where a\ndisclosure obligation exists but no verification step covers it.\n```\n\nAbridged output: six documented entries, one flag on the sponsor deliverable where the agreement required the disclosure line but the card had no step confirming it survived the final edit.\n\n## What separates a strong pack from a weak one\n\nA weak pack describes an intention. It has templates without cards, a voice file full of adjectives, a checkpoint list that reads like a promise, and no dated evidence that anything was tested. A strong pack is specific and falsifiable: quoted voice rules drawn from real work, named checkpoint holders, a dated test result, disclosure obligations traced to the agreement or platform rule they come from, and honest gaps marked as gaps.\n\nThe gaps matter. A pack that flags two undocumented templates and one missing verification step is worth more than one that quietly covers them, because the flagged version can be fixed.\n\n## Where this goes wrong\n\n**Submitting an aspirational pack.** Templates you have never run, a checkpoint you would abandon on a deadline. It reads well and collapses in week one.\n\n**A voice file of adjectives.** \"Warm, direct, a bit irreverent\" produces generic output from every assistant. Quoted patterns produce yours.\n\n**Disclosure written from memory.** What you must state comes from your sponsor agreement and your platforms, not from a general sense of what is decent. Read them and quote them.\n\n**A pack with no owner names.** \"Someone checks the claims\" fails the moment there is more than one person, and it fails silently.\n\n**Treating the master block as finished.** It is the anchor, and anchors are re-checked. When your format or audience moves, the block is the first thing that is revised and the assistant is re-tested against it.\n\n## In practice\n\nWhat you are submitting is a working answer to the question this course opened with. The assembly work, the drafting, the reformatting, the first pass at a hook: those can be systematised, documented and shared. The voice, the judgement about what is true, and the responsibility for what goes out under your name cannot. AI is the writers' room, not the writer. A pack that makes that distinction explicit, on paper, for every template you run, is the whole deliverable.",
+   "estimated_minutes": 30,
+   "learning_objectives": [
+    "Assemble the seven components of a complete creator AI operating system into one pack a stranger could run",
+    "Build a master voice-and-brief block from observable patterns in published work rather than from adjectives",
+    "Document every template with usage limits, verification holders and disclosure obligations traced to their source",
+    "Judge a submitted pack against specificity and dated evidence, flagging gaps rather than covering them"
+   ],
+   "case_study": "**The Authors Guild — the Human Authored certification mark (2025–2026)**\n\nIn January 2025 the Authors Guild, the long-established United States professional body for writers, launched a certification mark called \"Human Authored\", initially in beta for its own members. The idea was straightforward and, at the time, without precedent: a mark that a writer or publisher could display on a book and in its marketing to indicate that the text had been written by a person rather than generated.\n\nThe mechanism is what makes it interesting. It is not a slogan. An author registers a specific title, agrees to the licensing terms that define what the mark certifies, and passes an identity check. Registration produces a number and an entry in a public database, so that a reader, a retailer or a journalist can look up a title and confirm that the mark on the cover is an authorised use rather than a claim someone printed. Separate usage guidelines govern how the mark may be displayed.\n\nIn March 2026 the Guild expanded the programme beyond its membership to all authors with books published in the United States, and opened it to publishers wanting to certify titles in bulk. Publishers Weekly reported the expanded scheme carried a fee of ten dollars a title, with the identity-verification requirement waived for Guild members. What began as a member benefit became a piece of shared infrastructure for a claim the industry had no way to check.\n\nFor a creator submitting an operating system, the lesson is about the shape rather than the scheme. A claim about how your work is made is worth something only when it is written down, specific, and checkable against something. Your pack is the private version of that chain of trust: the master block that says what your voice is, the cards that say what each template may do, the register that says who checks what, and the disclosure notes that say what you tell your audience, your sponsors and your platforms. Disclosure is an output of the design, not a line added at the end.",
+   "exercises": [
+    {
+     "order_index": 1,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "What the master block is for",
+     "prompt_md": "Your pack opens with a master voice-and-brief block that you paste at the top of any new assistant or chat before doing anything else. What role does that block play in the operating system?",
+     "options": [
+      "It is the anchor every template and assistant inherits, so its accuracy matters more than any other file",
+      "It is a summary for readers of the pack, so that a new editor can understand the channel quickly",
+      "It is a backup of the voice file, kept separately in case the assistant loses its loaded material",
+      "It is the public statement of how you work, written for your audience rather than for the tools"
+     ],
+     "correct_answer": "It is the anchor every template and assistant inherits, so its accuracy matters more than any other file"
+    },
+    {
+     "order_index": 2,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "Where disclosure obligations come from",
+     "prompt_md": "You are writing the disclosure and platform notes section of your pack and need to establish what you are actually required to state about AI use and about the content itself. What should those notes be drawn from?",
+     "options": [
+      "Your sponsor agreements and the published rules of the platforms you post on, quoted directly",
+      "The disclosure practice of the largest creators in your category, since audiences expect consistency",
+      "A general principle of transparency applied to whichever parts of the process feel worth mentioning",
+      "Whatever your assistant recommends after being asked what creators normally disclose about AI"
+     ],
+     "correct_answer": "Your sponsor agreements and the published rules of the platforms you post on, quoted directly"
+    },
+    {
+     "order_index": 3,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "Aspirational versus running",
+     "prompt_md": "You are deciding whether to include a polished scripting template in your submitted pack. You built it three weeks ago and it looks impressive, but nothing you have published has come through it. What does the capstone standard say?",
+     "options": [
+      "Leave it out, because the pack has to be the one you will actually run next month",
+      "Include it, because a template that has been built is part of the system whether used or not",
+      "Include it but mark it as untested, since the marker needs to see the full range of your work",
+      "Replace your working template with it, because the newer version is clearly the better design"
+     ],
+     "correct_answer": "Leave it out, because the pack has to be the one you will actually run next month"
+    },
+    {
+     "order_index": 4,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "What the checkpoint register records",
+     "prompt_md": "The checkpoint register pulls every immovable check in your system into one list. Which set of details does each entry in that register have to carry to be usable by anyone other than you?",
+     "options": [
+      "What is checked, who holds it, when it happens, and what must be true before the piece moves on",
+      "What is checked, how long it usually takes, which tool produced the draft, and the format involved",
+      "Which template it belongs to, how often it has caught an error, and the risk rating of the job",
+      "What is checked, why the rule exists, which week of the course introduced it, and its version"
+     ],
+     "correct_answer": "What is checked, who holds it, when it happens, and what must be true before the piece moves on"
+    },
+    {
+     "order_index": 5,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "Evidence of testing",
+     "prompt_md": "Your pack includes the fixed test set from week five and a summary saying the assistant performed well across all formats. A marker reading that section rejects it as evidence. What is missing?",
+     "options": [
+      "A date and the actual scored result, because an undated summary cannot be compared to anything",
+      "A longer test set, because six to ten briefs is too small a sample to describe as evidence",
+      "A second opinion from an editor, because self-assessed scoring cannot be treated as objective",
+      "The prompts used, because a marker cannot judge the outcome without reading every instruction"
+     ],
+     "correct_answer": "A date and the actual scored result, because an undated summary cannot be compared to anything"
+    },
+    {
+     "order_index": 6,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "The seven components",
+     "prompt_md": "List the seven components of a complete creator AI operating system pack, with a few words on what each contributes.",
+     "correct_answer": "The master voice-and-brief block, the anchor everything inherits. The template pack, each template carrying its five-line system card. The chain map, showing which templates run in what order and where in the publishing week. The checkpoint register, listing every immovable check with its holder and timing. The disclosure and platform notes, drawn from sponsor agreements and platform rules. The test set with its last dated result. The version log, one line per change recording what, when and why."
+    },
+    {
+     "order_index": 7,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "Voice rules that work",
+     "prompt_md": "Explain why voice rules built from quoted patterns in your published work outperform voice rules written as adjectives, and what to do with a rule that does not appear in your published work.",
+     "correct_answer": "Adjectives such as warm, direct or irreverent mean different things to every assistant, so they produce generic output that could belong to anyone. Rules drawn from observable patterns in real published work, each with a short quoted example, give the assistant something specific to match and give you something to test against. A rule that cannot be found in the published work describes an intention rather than a habit, so it is listed separately as unverified until the work supports it."
+    },
+    {
+     "order_index": 8,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "Disclosure as a design output",
+     "prompt_md": "A creator adds a general line about using AI tools to the end of their pack. Explain why that is weaker than treating disclosure as an output of the design, and what the stronger version looks like.",
+     "correct_answer": "A general line is a sentiment and covers nothing specific, so it neither satisfies an obligation nor tells the audience anything usable. The stronger version traces each obligation to its source: the wording a sponsor agreement requires, the label a platform applies to synthetic or altered media, and anything a contract makes you state. Each obligation is then attached to the templates that can trigger it, with a verification step confirming it survived the final edit."
+    },
+    {
+     "order_index": 9,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "Strong pack, weak pack",
+     "prompt_md": "Describe what separates a strong submitted pack from a weak one, and explain why flagged gaps improve rather than damage a submission.",
+     "correct_answer": "A weak pack describes intentions: templates without cards, adjectives instead of quoted voice patterns, a checkpoint list that reads as a promise, and no dated evidence of testing. A strong pack is specific and falsifiable, with quoted voice rules, named checkpoint holders, a dated test result and disclosure obligations traced to their source. Flagged gaps improve it because a documented gap can be fixed next month, while a hidden one fails silently on a busy week."
+    },
+    {
+     "order_index": 10,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "What the pack proves",
+     "prompt_md": "The spine of this course is that AI is the writers' room, not the writer. Explain how a completed pack makes that distinction concrete rather than rhetorical.",
+     "correct_answer": "The pack sorts the work explicitly. Assembly, drafting, reformatting and first-pass options sit in templates that are documented, versioned and shareable with an editor. The voice, the judgement about what is true, and accountability for anything published under your name sit in the checkpoint register with a named holder and a rule that they do not move when a week goes wrong. The distinction stops being a slogan because every template in the pack has been placed on one side of it or the other."
+    },
+    {
+     "order_index": 11,
+     "type": "short_answer",
+     "language": "prompt",
+     "marks": 5,
+     "title": "Prompt Lab: the master voice-and-brief block",
+     "prompt_md": "CAPSTONE, PART ONE. Submit the master voice-and-brief block that anchors your whole system: the block you would paste at the top of any new assistant or chat. It covers who you are and what you publish, your audience in their own words, your formats and where each goes, your voice rules built from observable patterns with short quoted examples, and your hard lines including the three immovable checkpoints and the disclosure wording you are obliged to carry. Write it for a real channel, keep it tight enough to paste anywhere, and make every rule specific enough that an assistant could be tested against it.",
+     "correct_answer": "MASTER BLOCK — v1, 12 May. Paste this at the top of any new chat or assistant before anything else.\n\nWHO I AM. I publish on home coffee brewing for people who own one grinder and one machine and want better results without buying more equipment. One long-form video a week, three to five shorts, a fortnightly newsletter. I have published for four years and my audience knows my kit.\n\nMY AUDIENCE, IN THEIR WORDS. They say things like: I followed the recipe and it still tastes sour; I do not want to spend another two hundred pounds to fix this; is my grinder the problem or is it me. They are impatient with theory that does not change what they do tomorrow morning.\n\nFORMATS. Long-form: one problem, one fix, filmed at the machine. Shorts: one claim, one demonstration, no talking head intro. Newsletter: three short items, the last one always a reader question answered plainly.\n\nVOICE RULES, drawn from my published work.\n1. Open on the reader's failure, not on me. Example: \"Your espresso is sour and you have changed three things this week.\"\n2. One idea per piece. If a second idea appears, it becomes another piece.\n3. Numbers always carry their source and their conditions. Example: \"18 grams in, 36 out, 28 seconds, on my machine at this dose.\"\n4. No superlatives about gear. I say what it does and where it fails.\n5. Short sentences when explaining a mechanism. Longer ones only when telling a story.\n6. I close by naming the one thing to change tomorrow.\n\nHARD LINES. Never write an opinion, recommendation or preference I have not already stated in published work; if it is needed, ask me. Never state a figure, price, spec or study finding that is not in the attached source material; write UNVERIFIED instead. Never draft anything sponsor-facing without the sponsor brief attached, and always carry the exact disclosure line my agreement requires: \"Paid partnership with [brand].\" If a piece includes generated imagery or audio, flag it so I can apply the platform label for synthetic or altered media.\n\nWHEN UNSURE. Stop and ask. A gap marked UNVERIFIED is a good outcome; an invented fact in my voice is the worst outcome in this system."
+    },
+    {
+     "order_index": 12,
+     "type": "short_answer",
+     "language": "prompt",
+     "marks": 5,
+     "title": "Prompt Lab: the documented template pack",
+     "prompt_md": "CAPSTONE, PART TWO. Submit the prompt that produces your documented template pack: for every template, when to use it and when not to, the inputs it requires, the verification step and who holds it, the version, and any disclosure obligation it triggers. A strong prompt attaches the templates, the sponsor agreement and the platform rules, forbids generalising about what creators usually disclose, requires disclosure obligations to be traced to the document they come from, asks for synthetic or altered media to be identified with the label required, and demands that gaps be flagged rather than filled.",
+     "correct_answer": "Attached: my six templates with their system cards, my chain map, my master voice-and-brief block, my sponsor agreement, and the published policies of the three platforms I post on.\n\nProduce the documentation for my template pack. One entry per template, in this structure:\n\nName and version, with the date it last changed.\nWhen to use it: the specific job and format.\nWhen not to use it: the neighbouring job it will be reached for wrongly.\nInputs: exactly what must be attached, and in what state.\nRuns after / feeds into: its position in the chain map.\nVerification: the check before output moves on, written as an action, with the named person who holds it.\nDisclosure obligation: what this template can trigger, quoted from the source document.\n\nRules for the disclosure lines. Draw them only from my sponsor agreement and the attached platform policies, and cite which document and clause each came from. Do not generalise about what creators usually disclose, and do not invent an obligation that is not in the attached material. Where a template can produce something a platform treats as synthetic or altered media, say so and name the label that platform requires.\n\nFlag, as a separate list at the end: any template where a disclosure obligation exists but no verification step covers it; any verification line with no named holder; any template with no version history; and any obligation in the attached documents that no template in my pack currently addresses.\n\nDo not fill a gap with a sensible guess. A flagged gap is the useful output here. Where you need something I have not attached, ask me for it by name."
+    }
+   ]
+  }
+ ]
+}

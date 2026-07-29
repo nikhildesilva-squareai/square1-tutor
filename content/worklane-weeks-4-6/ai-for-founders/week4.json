@@ -1,0 +1,485 @@
+{
+ "week": 4,
+ "lessons": [
+  {
+   "order_index": 1,
+   "title": "Prompt chains for the work that comes back every week",
+   "theory_md": "Every founder has a short list of work that never ends: the monthly investor update, the Monday priorities note, the follow-ups owed to three customers who have been waiting since Thursday. None of it is difficult. All of it is repetitive, and all of it needs the same background — what the company does, who it sells to, what the current numbers are, what was promised last month. Most founders retype that background from memory into a fresh chat every time, and get a slightly different company back every time.\n\nThe fix is not a better one-off prompt. It is a chain.\n\n## What a chain is\n\nA chain is a short sequence of prompts where the output of one step becomes the input of the next, and every step is anchored to the same business context file you built in week 1. Three properties make a chain worth the setup:\n\n- **Each step does one job.** Gather facts. Draft. Challenge. A step that does all three hides its own mistakes.\n- **Each output is inspectable.** You can see what the assistant believed at step one before step two builds on it.\n- **The context comes from one place.** The context file is pasted at the top of the chain, so the company the assistant is writing about is the same company at every step.\n\n## Worked example one: the monthly investor update\n\n**Step 1 — facts and gaps, nothing else.**\n\n```\nHere is my business context file: [paste].\nBelow are my raw notes for July: [paste].\n\nPull out every fact an investor would care about into a table:\nmetric | value | period | where in my notes it comes from.\nDo not calculate anything I have not given you.\nAnything you cannot source from my notes, list separately under UNVERIFIED.\nNo prose, no commentary.\n```\n\nAbridged output:\n\n```\n| Metric           | Value   | Period   | Source in notes        |\n| Paying customers | 41      | end July | \"41 live accounts\"     |\n| MRR              | GBP 12,300 | end July | Stripe export, line 3 |\n| Churn            | not stated | -      | -                      |\n\nUNVERIFIED: \"pipeline looks strong\"; \"close to breaking even\"; \"two enterprise deals nearly signed\"\n```\n\nNotice what did not happen. No churn figure was invented to fill the empty cell, and the three comfortable phrases from your notes were quarantined rather than promoted into facts.\n\n**Step 2 — draft from the table, not from memory.**\n\n```\nUsing only the table above and my context file, draft the July investor update in my voice:\n250 words, four sections - headline, metrics, what we learned, what I need.\nWhere a number is missing, write [FOUNDER TO CONFIRM] rather than an estimate.\nDo not use anything from the UNVERIFIED list as a statement of fact.\n```\n\n**Step 3 — the challenge step.**\n\n```\nRead that draft as a sceptical investor who has our last three updates.\nList every claim not supported by the table, every number that moved without explanation,\nand every sentence that makes a forward commitment. Do not rewrite the update.\n```\n\nAbridged output: *\"On track for profitability by Q1 — not in the table; this is a forward commitment you will be asked about. Churn is low — no churn figure was supplied. Two enterprise deals nearly signed — UNVERIFIED, and nearly signed is a claim investors remember.\"*\n\nThat third step is where a chain earns its keep. The same assistant that produced the draft is a useful critic of it, provided you ask it to criticise rather than to improve.\n\n## Worked example two: priorities and customer follow-ups\n\n```\nMy context file is below. Here is everything on my plate this week: [paste].\nSort it into three groups:\n(a) only I can do this - it is a decision, a relationship, or something an investor\n    or customer will hold me to\n(b) I can brief someone else on it\n(c) it should not happen this week\nOne line of reasoning per item. Sort it; do not tell me my priority.\n```\n\nAbridged output: *(a) Pricing call with Meridian — relationship plus a commercial commitment. (a) Reply to the churned customer — relationship. (b) Draft the onboarding checklist — briefable. (c) Rebuild the pitch deck — nothing this week depends on it.*\n\nThe follow-ups then chain off the same sort:\n\n```\nFor each item in group (a) tagged as a customer follow-up, draft a reply under 120 words\nusing my context file and the thread I paste.\nNever state a delivery date, price or discount that is not already in the thread or the\ncontext file - write [DATE?] or [PRICE?] instead.\n```\n\nA draft that says *\"we should have this with you by [DATE?]\"* is doing exactly what you want. An invented Friday would have become a promise the moment you pressed send.\n\n## Where the founder reads\n\nThe chain drafts. It never sends. Before anything leaves, you read for three things, in this order:\n\n1. **Numbers.** Every figure traced back to the table, and the table back to a source you can point at.\n2. **Commitments.** Any sentence that a customer or investor could hold you to later — dates, capability claims, forecasts.\n3. **Relationships.** Whether this particular person should be hearing from a template at all.\n\nThose three map onto the never-outsource zones from week 2: the decision is yours, the relationships are yours, and anything an investor or customer will hold you to is yours. A chain moves the typing. It does not move the accountability.\n\n## The mistakes founders make here\n\n- **The mega-prompt.** One prompt that gathers, drafts and checks looks efficient and hides the joint where the error entered.\n- **Chaining on top of an unverified step.** An invented number at step one becomes a confident sentence at step two and a defended position at step three. Errors harden as they travel.\n- **Letting the sort become the decision.** Asking what should I do this week hands over a founder decision. Asking sort these and show your reasoning does not.\n- **Reading only the final output.** If you never look at the fact table, you are trusting a draft you cannot audit.\n- **Running the chain without the context file** because it feels like a small task, and getting a slightly different company in every reply.\n\n## In practice\n\nPick the one recurring job you resent most and chain it this week. Three steps is usually enough: extract with sources, draft with placeholders, challenge without rewriting. Save the three prompts somewhere you can find them next month. The point is not speed on the day. The point is that next month you start from a working chain rather than a blank chat and a fading memory of what you said last time.",
+   "estimated_minutes": 28,
+   "learning_objectives": [
+    "Design a three-step prompt chain that turns raw notes into a sourced investor update",
+    "Separate evidenced facts from unverified impressions before any drafting begins",
+    "Sort a founder week into work that must stay with the founder and work that can be briefed out",
+    "Apply the read-before-send check on numbers, commitments and relationships to every chain output"
+   ],
+   "case_study": "**Cigna — the review step that took 1.2 seconds (2022–2023)**\n\nIn March 2023, an investigation by The Capitol Forum described how the United States health insurer Cigna used an internal system, known as PxDx, to process large volumes of claims. The system matched submitted diagnosis codes against a list and grouped the ones that did not match into batches for a medical director to reject. On paper, a doctor reviewed and signed off every denial. That signature was the human checkpoint in the chain.\n\nThe reporting found the checkpoint had become a formality. Over a two-month period, company doctors were reported to have declined more than 300,000 requests for payment through the process, at an average of about 1.2 seconds each. A former Cigna doctor was quoted describing signing off the denials in batches without opening the individual files. Cigna said the process was a straightforward review to accelerate payment and did not involve reading patient records because it did not need to.\n\nThe consequence was not that the system was automated. It was that nobody could later say what a human had actually read. When the United States House Energy and Commerce Committee opened an inquiry after the reporting, and lawsuits followed in California, the question asked was the same in each forum: at the point of the decision, what did the person whose name was on it know? A checkpoint that exists in the diagram and not in practice is worse than no checkpoint, because everyone downstream believes it happened.\n\nFor a founder building chains, this is the whole lesson in one story. The chain will produce an investor update, a customer reply and a week of priorities faster than you can type them, and it will feel finished. The read-before-send step is the only part of the design that costs you time, which is exactly why it is the part that quietly disappears. If your review of a drafted update is a glance and a send, you have not automated the writing — you have removed yourself from a decision your name is still on.",
+   "exercises": [
+    {
+     "order_index": 1,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "Why chain rather than write one long prompt",
+     "prompt_md": "A founder writes a single very long prompt asking an assistant to gather the month's facts, draft the investor update and check it for problems, all in one go. Why does splitting that work into three chained steps usually produce a more trustworthy update?",
+     "options": [
+      "Each step produces an output the founder can inspect before it becomes the input to the next step",
+      "Longer prompts are always refused by assistants because of a hard limit on how much text they accept",
+      "Splitting the work makes the assistant switch to a more capable model for the drafting part of the job",
+      "Three separate steps guarantee that no number mentioned earlier can ever appear again in the final text"
+     ],
+     "correct_answer": "Each step produces an output the founder can inspect before it becomes the input to the next step"
+    },
+    {
+     "order_index": 2,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "The purpose of the facts-and-gaps step",
+     "prompt_md": "In the investor update chain, the first step asks for a table of metric, value, period and source, with anything unsourced listed separately under UNVERIFIED. What is the main benefit of running that step before any drafting happens?",
+     "options": [
+      "It separates what is evidenced from what is assumed before any later step inherits either of them",
+      "It shortens the finished update so that busy investors spend less time reading the monthly summary",
+      "It lets the assistant calculate the metrics that are missing by working backwards from the ones given",
+      "It removes the need for the founder to read the finished update carefully before it is sent onwards"
+     ],
+     "correct_answer": "It separates what is evidenced from what is assumed before any later step inherits either of them"
+    },
+    {
+     "order_index": 3,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "What the weekly sort is allowed to do",
+     "prompt_md": "A founder asks an assistant to sort the week into work only the founder can do and work that can be briefed out, and the reply comes back as a confident ranked list of priorities for the week. What should the founder do with that ranking?",
+     "options": [
+      "Treat it as a sorted input and make the call personally, because the priority decision belongs to the founder",
+      "Adopt the ranking as written, because the assistant has seen the entire workload at once and the founder has not",
+      "Discard the sort entirely, because a weekly workload is material that should never be shown to an assistant",
+      "Forward the ranking to the team as the agreed plan for the week and revisit the whole list next quarter"
+     ],
+     "correct_answer": "Treat it as a sorted input and make the call personally, because the priority decision belongs to the founder"
+    },
+    {
+     "order_index": 4,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "Why placeholders beat plausible detail",
+     "prompt_md": "The customer follow-up step instructs the assistant to write [DATE?] instead of a delivery date whenever the date is not already in the thread or the business context file. Why does that instruction matter more than it appears to?",
+     "options": [
+      "Because a plausible invented date reads as a commitment the customer can later hold the company to",
+      "Because assistants are unable to format dates correctly and will corrupt any date placed inside a draft",
+      "Because customers generally prefer replies that contain no specific dates, prices or delivery details at all",
+      "Because the missing date can be filled in later by whichever team member happens to send the message"
+     ],
+     "correct_answer": "Because a plausible invented date reads as a commitment the customer can later hold the company to"
+    },
+    {
+     "order_index": 5,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "Where the chain has to stop",
+     "prompt_md": "A founder builds a chain that ends by producing three customer replies that are ready to go out. Which arrangement matches the read-before-send rule described in this lesson?",
+     "options": [
+      "The chain stops at drafts and the founder reads every number and every promise before anything leaves",
+      "The chain sends the replies and the founder reviews a weekly log of everything that went out that week",
+      "The chain sends replies to existing customers automatically and holds drafts only for brand new prospects",
+      "The chain sends any reply under 120 words and holds only the longer replies back for founder approval"
+     ],
+     "correct_answer": "The chain stops at drafts and the founder reads every number and every promise before anything leaves"
+    },
+    {
+     "order_index": 6,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "Drafting from the table, not the notes",
+     "prompt_md": "Step two of the investor update chain drafts from the fact table produced in step one, rather than from the original raw notes. Explain in two to four sentences why that constraint makes the update safer.",
+     "options": null,
+     "correct_answer": "The fact table has already separated sourced numbers from unsourced impressions, so drafting from it means only evidenced material can become a statement of fact. Drafting straight from raw notes lets loose phrases such as pipeline looks strong slide into the update as if they were measured. It also gives the founder one place to audit: if a number in the update is wrong, it is wrong in the table and the source is named. The cost is one extra step; the benefit is that every sentence is traceable."
+    },
+    {
+     "order_index": 7,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "The three founder checks",
+     "prompt_md": "Before any chain-drafted message leaves, the founder reads for three specific things. Name them and explain briefly why each one cannot be delegated to the chain.",
+     "options": null,
+     "correct_answer": "Numbers, commitments and relationships. Numbers must trace back to a source the founder can point at, because the founder is the one who will be asked where the figure came from. Commitments are dates, forecasts and capability claims that a customer or investor can hold the company to, so they need a human who is willing to be held to them. Relationships are the judgement of whether this particular person should be receiving a drafted message at all, which is the founder judgement no chain can make."
+    },
+    {
+     "order_index": 8,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "Why the challenge step must not rewrite",
+     "prompt_md": "The third step of the update chain asks the assistant to list unsupported claims and forward commitments, and explicitly tells it not to rewrite the draft. Explain why that instruction is deliberate.",
+     "options": null,
+     "correct_answer": "If the assistant rewrites, it repairs the wording and the founder never sees what was wrong, so the same weakness reappears next month in a smoother sentence. Keeping the criticism as a list forces the founder to make each call themselves, which is where the accountability sits. It also keeps the two jobs separate: drafting and challenging pull in opposite directions and a step that does both tends to do neither honestly."
+    },
+    {
+     "order_index": 9,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "Diagnosing a claim that should not have shipped",
+     "prompt_md": "A founder sends an investor update containing the line on track for profitability by Q1, which was never in the fact table and came from an offhand note. Explain what went wrong in the chain and which step should have caught it.",
+     "options": null,
+     "correct_answer": "An unverified phrase from the raw notes was treated as a fact by the drafting step, which means either the notes were pasted into step two directly or the UNVERIFIED list was ignored. The challenge step should have flagged it twice over: it is unsupported by the table and it is a forward commitment. The founder read the draft as prose rather than checking each number and promise against the table, so the last checkpoint passed it through as well."
+    },
+    {
+     "order_index": 10,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "What the context file does for a chain",
+     "prompt_md": "Explain how anchoring every step to the same business context file makes a recurring chain repeatable, and describe one thing that goes wrong when a step is run without it.",
+     "options": null,
+     "correct_answer": "The context file fixes what the company is, who it sells to and how it speaks, so the same chain run in July and August describes the same business rather than whatever the assistant infers that day. It also means an update can only be improved in one place, because every step inherits from it. Run a step without it and the assistant fills the gap with plausible generic startup language, which usually shows up as inflated positioning or a customer description the founder would never use."
+    },
+    {
+     "order_index": 11,
+     "type": "short_answer",
+     "language": "prompt",
+     "marks": 5,
+     "title": "Prompt Lab: the facts-and-gaps step",
+     "prompt_md": "You are the founder of an eight-person B2B software company. It is the last week of the month and you need to write the investor update. Your raw material is a messy page of notes: some real figures pulled from your billing system, some rough impressions from calls, one number a co-founder mentioned that you cannot now find anywhere.\n\nWrite step one of your investor update chain: the prompt that turns raw notes into a fact table plus an explicit list of what is not evidenced.\n\nA strong prompt will: state the role and the audience; require the business context file and the raw notes to be pasted in; specify the exact table columns including a source column; forbid any calculation or estimate the founder has not supplied; require unsourced material to be quarantined under a clear heading rather than dropped or promoted; and forbid prose so the output stays inspectable.",
+     "options": null,
+     "correct_answer": "You are helping me prepare the monthly investor update for my eight-person B2B software company. This step is extraction only - do not draft anything.\n\nMy business context file is below, followed by my raw notes for this month.\n\nBUSINESS CONTEXT FILE:\n[paste]\n\nRAW NOTES FOR THIS MONTH:\n[paste]\n\nProduce exactly two things and nothing else.\n\n1. A table headed FACTS with these columns: metric | value | period | exact wording in my notes it comes from.\nRules for the table:\n- Include only figures that appear explicitly in my notes. Do not calculate, annualise, average or infer any value, including growth rates and run rates.\n- If a metric an investor would expect is missing, include the row with value \"not stated\" and leave the source blank rather than filling it.\n- Quote my own wording in the source column so I can find it again.\n\n2. A list headed UNVERIFIED containing every claim, impression or number in my notes that you could not source precisely - including anything vague such as \"pipeline looks strong\" or a figure whose origin is unclear. Quote each one.\n\nNo prose, no commentary, no summary, no suggestions about what to write. If my notes conflict with the context file, list the conflict under UNVERIFIED rather than resolving it yourself."
+    },
+    {
+     "order_index": 12,
+     "type": "short_answer",
+     "language": "prompt",
+     "marks": 5,
+     "title": "Prompt Lab: the sceptical-investor challenge step",
+     "prompt_md": "You now have a drafted investor update produced from your fact table. Before you read it properly, you want the chain to give you a list of everything a sceptical investor would push back on.\n\nWrite the challenge step of the chain.\n\nA strong prompt will: set the reader as an investor who has seen the previous updates; require the draft, the fact table and the context file as inputs; ask for unsupported claims, unexplained movements in numbers and forward commitments to be listed and quoted; explicitly forbid rewriting or softening the draft; require a clear statement when nothing is found in a category; and keep the decision about what to change with the founder.",
+     "options": null,
+     "correct_answer": "You are reading my drafted investor update as a sceptical existing investor who has our last three updates in front of them. Your job is to challenge it, not to improve it.\n\nINPUTS:\nBusiness context file: [paste]\nFact table from step one, including the UNVERIFIED list: [paste]\nDraft update: [paste]\n\nReturn four lists, quoting the exact sentence from the draft in each case.\n\n1. UNSUPPORTED: any claim or figure in the draft that does not appear in the fact table, or that draws on something in the UNVERIFIED list.\n2. MOVEMENT: any number that has changed since a previous period without an explanation in the draft, and the question an investor would ask about it.\n3. COMMITMENTS: any sentence a reader could hold me to later - dates, forecasts, capability claims, hiring or launch promises. Say plainly what I would be held to.\n4. TONE MISMATCH: anything that reads as more certain than the underlying evidence supports.\n\nRules: do not rewrite, reword or soften any sentence. Do not propose replacement text. If a list is empty, write \"none found\" rather than inventing an item to fill it. Where you are unsure whether something is supported, put it in the list and say why you are unsure - I would rather check one line too many than send one line too few."
+    }
+   ]
+  },
+  {
+   "order_index": 2,
+   "title": "Saved templates and a context file that stays true",
+   "theory_md": "At some point last month you wrote a genuinely good prompt. It produced a follow-up email that read like you on a good day, and the customer replied within the hour. Now you want it again. It is somewhere in a chat history, four hundred messages back, in a conversation you cannot remember starting. So you write it again from scratch, worse, and you will do the same next month.\n\nWhen you are the whole team, your best prompts are company assets. Nobody else is going to store them for you.\n\n## From a good prompt to a template\n\nA template is a prompt with the variable parts lifted out into named placeholders, kept outside the chat, dated, and pointed at the business context file rather than repeating what is in it.\n\nHere is a prompt that worked once:\n\n```\nWrite a follow-up email to Priya at Meridian Logistics. She came to the demo last Tuesday,\nliked the reporting view, worried about onboarding time. We are a route planning tool for\nmid-size logistics firms, 41 customers, we onboard in under two weeks. Keep it under\n150 words and do not be pushy.\n```\n\nAnd here is the same prompt as an asset:\n\n```\nTEMPLATE: Post-demo follow-up | v1.3 | last reviewed 12 July\nUse for: a first follow-up after a demo, sent by me, to a named person.\nNever: state a price, a discount or a go-live date that is not in [THREAD] or the context file.\n\nMy business context file is below - use it for what we do, who we serve and how I write:\n[CONTEXT FILE]\n\nRecipient: [NAME], [ROLE] at [COMPANY]\nDemo date: [DATE]\nWhat they responded well to: [POSITIVE SIGNAL]\nWhat they were worried about: [CONCERN]\nAnything already promised in writing: [THREAD]\n\nWrite a follow-up under 150 words in my voice. Address the concern directly with something\nwe have actually done for a comparable customer - if the context file does not contain one,\nwrite [FOUNDER: EXAMPLE NEEDED] instead of inventing one. No pressure tactics, no deadline\nlanguage. End with one specific next step I can honour this week.\n```\n\nAbridged output: *\"Priya — thanks for Tuesday. On onboarding: [FOUNDER: EXAMPLE NEEDED]. If it is useful I can walk your ops lead through the first week in twenty minutes on Thursday...\"*\n\nThe gap is the point. The template refused to fabricate a comparable customer, and told you exactly what it needed from you. That is a better outcome than a smooth paragraph about a customer who does not exist.\n\nNotice what left the prompt: the count of 41 customers, the two-week onboarding claim, the positioning line. Those are facts about the company, and facts about the company belong in one place.\n\n## The context file is the parent asset\n\nEverything you build inherits from the business context file. That is the whole design, and it has one consequence founders underestimate: **a stale context file does not fail loudly, it goes on being quoted.** The onboarding time you wrote down in March was true in March. The template will still be saying it in November, in an email you skim and send.\n\nSo the context file gets a review of its own. Once a month, or after anything material changes:\n\n```\nBelow is my business context file, dated [DATE], followed by evidence from the last month:\n[recent customer emails, the last investor update, current pricing page, team list].\n\nGo through the context file line by line. For each statement, mark it:\nCONFIRMED - the evidence supports it\nSTALE - the evidence contradicts it, quote both\nUNTESTED - nothing in the evidence speaks to it either way\nDo not rewrite the file. Return the three lists and a short question for each STALE line.\n```\n\nAbridged output: *\"STALE — file says onboarding under two weeks; three onboarding threads this month ran to nineteen, twenty-two and sixteen days. Question: is the claim now under three weeks, or is the process being fixed? STALE — file says four people; the team list shows six. UNTESTED — the claim that customers renew after seeing the reporting view; nothing in the evidence tests it.\"*\n\nYou then update the file yourself, because the numbers and claims in it are the ones you will be held to. Change the date, and every template that references it inherits the correction on its next run.\n\n## Storing and versioning without a system\n\nYou need less machinery than you think. One document, one template per section, and on every template three lines: a name, a version number, and the date you last reviewed it. When you change a template, write one line saying what changed and why — *v1.3: removed the discount language after the March pricing change*. When a change would break the template for its original use, fork it into a second template rather than adding another conditional clause.\n\nIf your assistant supports saved or custom prompts, and most do, keep them there for convenience. Keep the document as the source of truth. Saved prompts inside one assistant are not portable, are hard to date, and cannot be handed to your first hire.\n\n## The mistakes founders make here\n\n- **Hard-coding facts into templates.** Customer counts, prices, team size and positioning belong in the context file. In a template they rot silently and in fifteen places at once.\n- **Vague placeholders.** [X] gets filled in carelessly. [CONCERN - in their own words from the thread] does not.\n- **No date, no version.** An undated template is a claim about the company with no expiry, and you will not remember when you wrote it.\n- **Editing the master while sending.** Improve the template deliberately, in the document. Tweaking it in the chat window means the improvement lives only in that one email.\n- **Fifteen near-identical templates.** If two differ by one sentence, they are one template with a placeholder.\n- **Treating the review as admin.** The context file review is the cheapest honesty control you have — it catches the claim that quietly stopped being true before a customer or an investor does.\n\n## In practice\n\nStart with three templates, not thirty: the one you send most, the one that costs you most when it is wrong, and the one you always put off. Give each a name, a version and a review date. Put the facts in the context file and the placeholders in the template. Then diary twenty minutes a month to run the currency review, because the only thing worse than no template is a confident one describing a company you no longer run.",
+   "estimated_minutes": 28,
+   "learning_objectives": [
+    "Convert a one-off working prompt into a stored template with named placeholders",
+    "Keep company facts in the business context file rather than hard-coded inside templates",
+    "Version and date templates so a later reader can judge whether they still apply",
+    "Run a monthly currency review that sorts context file statements into confirmed, stale and untested"
+   ],
+   "case_study": "**Hertz — the record nobody refreshed (2021–2022)**\n\nBetween 2021 and 2022, the car rental company Hertz faced hundreds of legal claims from customers who said they had been reported to police as car thieves while renting lawfully. In case after case the pattern was similar: a vehicle was returned, or an extension was paid for, or a payment was recorded late, but the record the company acted on had not caught up. A theft report was filed on the strength of that record. Some renters were arrested. Some spent time in jail before the paperwork was untangled.\n\nThe company had a stated process, and downstream of that process everything behaved correctly. The escalation ran because the record said the car was outstanding. The police responded because a company had filed a report. Each step did its job faithfully, on an input that had stopped being true. In April 2022 United States senators wrote to the Federal Trade Commission asking it to examine the company's use of inaccurate stolen vehicle reports, and in December 2022 Hertz announced a settlement of approximately 168 million US dollars covering 364 pending claims, which it said resolved more than 95 per cent of outstanding theft reporting claims. The company said it was changing how such reports are handled.\n\nThe instructive part for a founder is not the size of the settlement. It is that no single person made a decision to accuse an innocent customer. The decision was made months earlier, by whoever did or did not keep the source record current, and then executed automatically and repeatedly by everything that inherited it. There was no moment where the error announced itself; there was only a downstream action carrying an upstream mistake with full confidence.\n\nYour business context file is that source record. It is smaller and less consequential, and it works the same way. Every template, chain and assistant you build reads from it and repeats it without doubt: your onboarding time, your customer count, your pricing, what you claim to do. Nothing in the system will tell you it has gone out of date. The only control is the one you schedule yourself - a periodic review against real evidence, done by the person whose name is on the claims.",
+   "exercises": [
+    {
+     "order_index": 1,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "What belongs in the template and what does not",
+     "prompt_md": "A founder is turning a working follow-up prompt into a reusable template. The prompt currently states the customer count, the standard onboarding time and the positioning line in its own text. Where should those three facts live instead?",
+     "options": [
+      "In the business context file that the template references, so one correction reaches every template at once",
+      "In each template that needs them, repeated word for word so that no template depends on any other document",
+      "In the subject line of the outgoing message, where the recipient can check them against the public website",
+      "In a separate archive of past messages, so the wording can be copied across whenever a new one is written"
+     ],
+     "correct_answer": "In the business context file that the template references, so one correction reaches every template at once"
+    },
+    {
+     "order_index": 2,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "Why a stale context file is dangerous",
+     "prompt_md": "The lesson argues that an out-of-date business context file does not fail loudly. What is the risk that this creates for a founder who has built templates and chains on top of that file?",
+     "options": [
+      "Outdated claims are repeated confidently in outgoing work until somebody outside the company challenges them",
+      "The assistant refuses to run any template whose referenced context file has passed its stated review date",
+      "The templates gradually lose the founder voice because the file supplies the tone as well as the facts",
+      "The saved prompts stored inside the assistant are deleted whenever the referenced file changes materially"
+     ],
+     "correct_answer": "Outdated claims are repeated confidently in outgoing work until somebody outside the company challenges them"
+    },
+    {
+     "order_index": 3,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "Writing a usable placeholder",
+     "prompt_md": "Two versions of the same placeholder appear in a draft template: one reads [X] and the other reads [CONCERN - in their own words from the thread]. Why is the second version the better piece of template design?",
+     "options": [
+      "It tells whoever fills it in what is needed and where to get it, so the input stays accurate under time pressure",
+      "It is longer, which means the assistant treats the surrounding instruction as having a higher priority overall",
+      "It prevents the assistant from reading the rest of the template until that particular field has been filled in",
+      "It allows the same template to be reused without a review date because the field describes its own source"
+     ],
+     "correct_answer": "It tells whoever fills it in what is needed and where to get it, so the input stays accurate under time pressure"
+    },
+    {
+     "order_index": 4,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "Version lines that earn their keep",
+     "prompt_md": "A founder edits a template to remove discount language after a pricing change and records the line v1.3: removed the discount language after the March pricing change. What does that one line buy the founder later?",
+     "options": [
+      "It records what changed and why, so a future reader can tell whether the reason still holds",
+      "It guarantees that the earlier version of the template can no longer be run by anyone in the company",
+      "It satisfies the requirement that every business document carry a formal internal audit reference",
+      "It allows the assistant to apply the same edit automatically to every other template in the document"
+     ],
+     "correct_answer": "It records what changed and why, so a future reader can tell whether the reason still holds"
+    },
+    {
+     "order_index": 5,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "When to fork rather than edit",
+     "prompt_md": "A founder has a post-demo follow-up template and now needs a version for renewals, which needs a different opening, a different next step and one extra rule. What does the lesson recommend in this situation?",
+     "options": [
+      "Fork it into a second named template, because the change would break the template for its original use",
+      "Add conditional clauses to the existing template so that a single asset covers both of the situations",
+      "Keep one template and rely on the founder to delete the sections that do not apply before sending",
+      "Retire the follow-up template entirely and write every renewal message from a blank chat each time"
+     ],
+     "correct_answer": "Fork it into a second named template, because the change would break the template for its original use"
+    },
+    {
+     "order_index": 6,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "Naming the three header lines",
+     "prompt_md": "Every template in this lesson carries three lines at the top before any instruction. Name them and explain in two to four sentences what each one prevents.",
+     "options": null,
+     "correct_answer": "A name, a version number and the date it was last reviewed. The name stops near-duplicates piling up because you can see what already exists before writing another. The version number, with its one-line note on what changed and why, means a later reader can judge whether the reason for a change still holds. The review date is the one that matters most: without it a template is an undated claim about the company, and there is no way to tell whether it describes the business as it is now."
+    },
+    {
+     "order_index": 7,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "Why the refusal was the right output",
+     "prompt_md": "In the worked example the template returned [FOUNDER: EXAMPLE NEEDED] instead of a comparable customer story. Explain why that is a better result than a fluent paragraph, and what the founder should do next.",
+     "options": null,
+     "correct_answer": "A fluent paragraph would have invented a customer reference, which is exactly the kind of claim a prospect can check and hold the company to. The placeholder makes the gap visible and tells the founder precisely what is missing, so the message cannot go out quietly wrong. The founder either supplies a real comparable customer or rewrites the sentence without one, and if the example is used often it belongs in the context file rather than being retyped each time."
+    },
+    {
+     "order_index": 8,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "Designing the currency review",
+     "prompt_md": "Explain why the context file review prompt sorts every statement into confirmed, stale or untested rather than asking the assistant to produce an updated file.",
+     "options": null,
+     "correct_answer": "Sorting keeps the assistant on evidence and keeps the rewriting with the founder, who is the person accountable for the numbers and claims in the file. An updated file handed back whole would blend corrections, guesses and unchanged lines into one document that nobody has actually checked. The untested category is valuable in its own right, because it shows which claims the company has never gathered evidence for rather than pretending they are confirmed."
+    },
+    {
+     "order_index": 9,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "Diagnosing a silent inheritance failure",
+     "prompt_md": "A founder changed pricing in March but updated only the pricing page. In June a prospect quotes an old price back from an email the founder sent last week. Explain what failed and what control would have caught it.",
+     "options": null,
+     "correct_answer": "The price was a fact hard-coded into the context file or into a template rather than being corrected at the source, so every message generated since March has been inheriting the old figure with full confidence. Nothing in the system signals a stale fact, which is why the error survived three months of sending. A dated context file plus a scheduled currency review against real evidence, including the current pricing page, would have surfaced the contradiction in the first review after the change."
+    },
+    {
+     "order_index": 10,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "Source of truth versus convenience",
+     "prompt_md": "The lesson says to keep saved prompts inside your assistant for convenience but to keep the document as the source of truth. Give two reasons why the document has to be the authoritative copy.",
+     "options": null,
+     "correct_answer": "Saved prompts inside one assistant are not portable, so changing tools or working across two assistants leaves you with divergent copies and no way to tell which is current. They are also difficult to date and version, which removes the review discipline the templates depend on. The third reason matters as the company grows: a document can be handed to a first hire or an agency as part of the operating pack, while a saved prompt locked in a personal account cannot."
+    },
+    {
+     "order_index": 11,
+     "type": "short_answer",
+     "language": "prompt",
+     "marks": 5,
+     "title": "Prompt Lab: turn a working prompt into a stored template",
+     "prompt_md": "You have a one-off prompt that produced an unusually good result last month: a reply to a customer who raised a problem with your service. You want to convert it into a reusable, stored template before you lose it.\n\nWrite the prompt that asks an assistant to help you do that conversion.\n\nA strong prompt will: supply the original working prompt and the business context file; require company facts to be stripped out of the template and referenced from the context file instead; require every variable part to become a named, self-describing placeholder; require the header lines that name, version and date the template; require an explicit never rule covering numbers, dates and claims; and ask for the assistant to flag anything in the original that should not be reused at all.",
+     "options": null,
+     "correct_answer": "I am converting a one-off prompt that worked well into a stored, reusable template for my company. Help me do the conversion - do not run the original prompt or produce a customer reply.\n\nBUSINESS CONTEXT FILE:\n[paste]\n\nORIGINAL WORKING PROMPT:\n[paste]\n\nReturn the template in a single block, structured as follows.\n\n1. Header, three lines: TEMPLATE name | version | last reviewed date. Leave the date for me to fill.\n2. A \"Use for\" line and a \"Never\" line. The Never line must forbid stating any price, discount, delivery date, refund or capability claim that is not present in the pasted thread or the context file.\n3. A reference to the context file rather than a copy of it.\n4. The instruction body, with every variable part replaced by a named placeholder in square brackets that describes what goes in it and where it comes from - for example [CONCERN - in their own words from the thread] rather than [X].\n5. An output specification: length, format, tone described in terms of my context file, and the required next step.\n\nRules for the conversion:\n- Strip out every company fact that is stated in the original prompt - customer counts, prices, timings, positioning - and rely on the context file for them. List what you stripped so I can check those facts are actually in the file.\n- Where the original relied on a specific example or reference customer, replace it with a placeholder that instructs the assistant to write [FOUNDER: EXAMPLE NEEDED] rather than invent one.\n- Flag separately anything in the original that should not be reused at all, such as a claim that was true only for that one customer or a commitment I made on the spot."
+    },
+    {
+     "order_index": 12,
+     "type": "short_answer",
+     "language": "prompt",
+     "marks": 5,
+     "title": "Prompt Lab: the monthly context file currency review",
+     "prompt_md": "Your business context file is four months old. Since writing it you have changed pricing, hired two people and watched onboarding slow down. Every template and chain you use inherits from this file, so a stale line in it is repeated in outgoing work without anyone noticing.\n\nWrite the monthly review prompt that checks the file against real evidence.\n\nA strong prompt will: name the file and the evidence pack to be pasted; require a line-by-line verdict of confirmed, stale or untested with quoted evidence on both sides for anything stale; forbid the assistant from rewriting the file; require a specific question back to the founder for each stale line; require flagging of any line that is a claim a customer or investor could hold the company to; and require honesty about what the evidence cannot settle.",
+     "options": null,
+     "correct_answer": "You are auditing my business context file against recent evidence. Do not rewrite the file and do not produce a new version of it - I will make every change myself.\n\nCONTEXT FILE, dated [DATE]:\n[paste]\n\nEVIDENCE FROM THE LAST MONTH:\n[paste: recent customer email threads, the last investor update, the current pricing page, the current team list, any support tickets]\n\nGo through the context file one statement at a time, in order. Give each statement one verdict.\n\nCONFIRMED - the evidence supports it. Quote the supporting evidence.\nSTALE - the evidence contradicts it. Quote the line from the file and the contradicting evidence side by side, then ask me one specific question about how to correct it. Do not choose the correction yourself.\nUNTESTED - nothing in the evidence speaks to it either way. Say what evidence would settle it.\n\nThen add two short lists.\n\nHELD TO: any statement in the file that is a claim a customer or an investor could hold my company to - timings, capability claims, performance figures, guarantees - flagged whether or not it is stale, because these are the lines I must be most confident about.\nMISSING: anything visible in the evidence that a context file should contain but this one does not.\n\nBe plain about uncertainty. If evidence is thin or ambiguous, say so and mark the line UNTESTED rather than confirming it. Do not soften a contradiction, and do not fill a gap with a plausible assumption about my business."
+    }
+   ]
+  },
+  {
+   "order_index": 3,
+   "title": "Practical: build a reusable founder workflow chain",
+   "theory_md": "You now have the two halves. Lesson one gave you chains: sequences of short steps anchored to the business context file. Lesson two gave you templates: your best prompts stored as dated assets with named placeholders. This lesson puts them together into one thing you will actually run, and then puts a gate on the end of it.\n\nThe deliverable is a workflow you can execute on a Monday without thinking, and a verification prompt that stands between its output and the outside world.\n\n## Choose the workflow that recurs and carries risk\n\nDo not build for the most tedious job. Build for the job that recurs **and** whose failure costs you something: the weekly customer follow-up run, the monthly investor update, the reply-to-inbound sequence. Tedious and harmless can wait. Recurring and consequential is where a documented chain pays for itself.\n\n## Pass one: the master chain template\n\nOne document. Header lines, a single reference to the context file, placeholders for everything that changes, and each step with an explicit output contract so the next step inherits something predictable.\n\n```\nCHAIN: Weekly customer follow-up run | v1.1 | last reviewed 12 July\nUse for: my Friday pass over open customer threads.\nNever: state a price, discount, delivery date or capability that is not in [THREADS]\nor the context file. Never send. Output drafts only.\n\nContext file: [CONTEXT FILE]\nInputs: [THREADS - full text of every open customer thread]\n        [COMMITMENTS - anything I have already promised in writing this month]\n\nSTEP A - Sort.\nGroup each thread into: waiting on me / waiting on them / dead.\nFor each thread waiting on me, add a tag: DECISION, RELATIONSHIP, ROUTINE.\nOutput: table only, columns thread | status | tag | one line of reasoning.\n\nSTEP B - Draft.\nFor ROUTINE threads only, draft a reply under 120 words in my voice.\nWhere a date, price or capability is not in [THREADS] or the context file,\nwrite [DATE?], [PRICE?] or [FOUNDER: CLAIM NEEDED]. Never estimate.\nOutput: one draft per thread, each headed with the thread name.\n\nSTEP C - Escalate.\nFor every DECISION and RELATIONSHIP thread, do not draft a reply.\nWrite me three bullets: what they are actually asking, what I have already promised,\nwhat I need to decide before I write.\nOutput: bullets only.\n```\n\nAbridged output from step C: *\"Meridian — asking whether the March pricing still applies to a second site. Already promised: nothing in writing. To decide: whether second sites are priced separately, which is your call, not a drafting question.\"*\n\nThe chain refused to write the message that mattered most. That is the design working. Step A tagged it a decision, step C handed it back to you with the question sharpened rather than answered.\n\n## Pass two: the verification prompt\n\nThe gate is a separate pass, run on the finished drafts, with the source material attached. It checks three things and does not touch a fourth.\n\n```\nYou are checking drafts before I read them. Do not rewrite anything.\n\nContext file: [CONTEXT FILE]\nSource threads: [THREADS]\nDrafts: [DRAFTS]\n\nCheck 1 - CONTEXT: any statement about my company that contradicts the context file,\nor that is not in it at all. Quote both.\nCheck 2 - HONESTY: every number, date, price and capability claim in the drafts.\nFor each, state where it comes from - thread, context file, or nowhere.\nFlag anything from nowhere, anything rounded up, anything phrased as more certain\nthan the source supports.\nCheck 3 - ZONES: any draft that touches a decision, a relationship or something a\ncustomer or investor could hold me to. These must not go out as drafted replies.\n\nReturn findings only, grouped by check, quoting the exact sentence.\nDo not approve anything. Do not score the drafts. End with the list of threads\nyou believe I must handle personally, and why.\n```\n\nAbridged output: *\"HONESTY — draft to Calder says our reporting refreshes hourly. Source: nowhere. The context file says nightly. ZONES — draft to Priya answers a question about renewal terms. This is a commitment; it should not go out as a routine reply.\"*\n\nThree things to notice. The gate never says *approved* — it produces findings, and you decide. It has the sources, so it can trace a claim instead of guessing at one. And it looks for the honest failure modes a founder actually commits: the number nobody can source, the rounded-up figure, the confident phrasing over thin evidence.\n\n## Pass three: run it twice before you rely on it\n\nRun the whole chain on a real week, then on a week you have already handled so you can compare its judgement with yours. You are looking for joints: a step whose output the next step could not use, a tag that was applied wrongly, a draft that slipped a claim past the gate. Fix the prompt, bump the version, write one line on what changed.\n\n## The mistakes founders make here\n\n- **A gate that checks tone.** Tone is the easy check and the one that has never cost anyone a customer. Numbers, commitments and relationships are the expensive ones.\n- **Asking for a score.** A verification prompt that returns eight out of ten invites you to send. Findings force a decision; a score performs one.\n- **Treating a clean pass as permission.** The gate reduces what you have to catch. It does not replace your read, and it cannot see what you know about the person receiving the message.\n- **Verifying without the sources.** A gate that only sees the drafts is guessing. Give it the threads and the context file, or it will confirm confident nonsense.\n- **Letting the drafting step check itself.** Same breath, same assumptions. Separate the pass.\n- **Building the chain and never dating it.** An undated chain is an unmaintained one; when the company changes, it keeps describing the old company.\n\n## In practice\n\nYour deliverable this week is two artefacts: a master chain template for one recurring workflow, and the verification prompt that guards it. Store them together, dated and versioned, in the same document as your context file. Then run the chain on this week for real — draft everything, verify everything, and send nothing you have not read. The chain buys you the hour. What you do with the decisions, the relationships and the claims in that hour is still the job you cannot hand over.",
+   "estimated_minutes": 30,
+   "learning_objectives": [
+    "Select the recurring workflow whose failure carries real cost and scope it as a chain",
+    "Write a master chain template with headers, placeholders and an output contract at every step",
+    "Write a verification prompt that traces numbers and claims to their source before anything is sent",
+    "Test and version the chain on real material so its escalation rules match founder judgement"
+   ],
+   "case_study": "**Nate, Inc. — the capability claim investors were sold (2019–2025)**\n\nNate was a consumer shopping application founded by Albert Saniger, marketed on the promise that a single tap could complete a purchase on any retailer site because the transaction was handled by the company's own artificial intelligence. On the strength of that story the company raised more than 42 million US dollars from investors. The claim was specific and technical, and it was the reason people wrote cheques.\n\nOn 9 April 2025, the United States Attorney's Office for the Southern District of New York charged Saniger with securities fraud and wire fraud, and the Securities and Exchange Commission filed a parallel civil action. According to those filings, the application relied heavily on hundreds of human contractors in a call centre in the Philippines who completed purchases manually, and the automation rate the company had described to investors as above ninety per cent was, in the words of the announcement, essentially zero. Prosecutors also alleged that success metrics shown to investors were fabricated. The charges are allegations, and were unresolved at the time of writing. Reporting from June 2022 that questioned the AI claims preceded a funding difficulty, and the company ceased operations, dissolving in January 2023.\n\nWhat makes this a week four story rather than a story about dishonest people is where the claim lived. A capability claim of that kind is not made once in a pitch. It is repeated, from a deck into an investor update, into a website, into a follow-up email, into a customer answer, each copy inheriting the last without anyone re-testing whether it was still true, or ever was. The more of that repetition is templated, the further a single unchecked sentence travels, and the more places it has to be walked back from.\n\nThat is what the verification pass is for. A gate that asks of every number and every capability claim where does this come from - thread, context file, or nowhere - is aimed precisely at this failure. It will not make a founder honest. It will make the unsourced claim visible before it is sent, at the one moment when correcting it is still cheap and entirely within the founder's control.",
+   "exercises": [
+    {
+     "order_index": 1,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "Choosing which workflow to build first",
+     "prompt_md": "A founder has three candidate workflows to automate: reformatting a monthly expenses list, the weekly customer follow-up run, and renaming files after each client project. Which should be built as a documented chain first, and on what basis?",
+     "options": [
+      "The weekly follow-up run, because it recurs often and its failures reach customers directly",
+      "The expenses reformatting, because it is the most tedious task and therefore the biggest time saving",
+      "The file renaming, because it is the simplest to describe and will be finished within a single sitting",
+      "All three at once, because a chain built for one workflow can be reused across the other two unchanged"
+     ],
+     "correct_answer": "The weekly follow-up run, because it recurs often and its failures reach customers directly"
+    },
+    {
+     "order_index": 2,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "What an output contract does at each joint",
+     "prompt_md": "Each step of the master chain template ends with a line specifying exactly what the step must output, such as table only with named columns. Why does the lesson insist on that line at every step?",
+     "options": [
+      "Because the next step inherits that output, and a predictable shape is what makes the chain repeatable",
+      "Because assistants are unable to produce tables at all unless the column names are stated in advance",
+      "Because a stated output format shortens the reply and therefore lowers the running cost of the chain",
+      "Because the founder can then skip reading the middle steps and inspect only the final drafted messages"
+     ],
+     "correct_answer": "Because the next step inherits that output, and a predictable shape is what makes the chain repeatable"
+    },
+    {
+     "order_index": 3,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "Why the chain refuses to draft some replies",
+     "prompt_md": "In the worked example, step C deliberately produces bullets rather than a drafted reply for every thread tagged as a decision or a relationship. What principle is that rule enforcing?",
+     "options": [
+      "That decisions, relationships and anything a customer can hold the founder to stay with the founder",
+      "That drafted replies are unreliable whenever a thread runs to more than a handful of messages",
+      "That an assistant should never be shown the full text of a thread involving an existing customer",
+      "That bullets are a more effective format than prose for every kind of outgoing customer message"
+     ],
+     "correct_answer": "That decisions, relationships and anything a customer can hold the founder to stay with the founder"
+    },
+    {
+     "order_index": 4,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "Findings rather than a score",
+     "prompt_md": "A founder considers changing the verification prompt so that it returns a readiness score out of ten for each draft instead of a list of findings. Why does the lesson argue against that change?",
+     "options": [
+      "A score invites the founder to send on the strength of a number, while findings force a decision on each item",
+      "A score is harder for an assistant to calculate reliably and will slow down the verification pass considerably",
+      "A score cannot be recorded in the version history of the chain, whereas a list of findings can be stored",
+      "A score would have to be recalculated whenever the business context file is reviewed and brought up to date"
+     ],
+     "correct_answer": "A score invites the founder to send on the strength of a number, while findings force a decision on each item"
+    },
+    {
+     "order_index": 5,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "What the gate needs in front of it",
+     "prompt_md": "The verification prompt is given the drafts, the source threads and the business context file rather than the drafts alone. Why does the lesson treat that as essential rather than optional?",
+     "options": [
+      "Without the sources the gate cannot trace where a claim came from and will confirm confident invention",
+      "Without the sources the assistant will refuse to run the verification pass and will ask for more material",
+      "Without the sources the gate cannot assess the tone of the drafts against the voice of the founder",
+      "Without the sources the findings cannot be quoted back accurately in the version note for the chain"
+     ],
+     "correct_answer": "Without the sources the gate cannot trace where a claim came from and will confirm confident invention"
+    },
+    {
+     "order_index": 6,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "The three checks in the gate",
+     "prompt_md": "Name the three checks the verification prompt runs and state, in a sentence each, what kind of damage each one is designed to prevent.",
+     "options": null,
+     "correct_answer": "The context check catches statements about the company that contradict the context file or appear nowhere in it, which prevents a message describing a business you do not run. The honesty check traces every number, date, price and capability claim back to the thread, the context file or nowhere, which prevents unsourced or rounded-up figures reaching people who will rely on them. The zones check identifies drafts that touch a decision, a relationship or a commitment, which prevents the founder work being sent out as a routine automated reply."
+    },
+    {
+     "order_index": 7,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "Why verification is a separate pass",
+     "prompt_md": "Explain why the verification prompt is run separately rather than being added as a final instruction to the drafting step.",
+     "options": null,
+     "correct_answer": "A step that drafts and then checks its own work runs on the same assumptions it has already made, so an invented figure is confirmed rather than caught. Separating the pass means the checking prompt starts from the sources and the finished text, with no attachment to how the draft was produced. It also keeps each step doing one job, which is what makes the joint between them inspectable when something goes wrong."
+    },
+    {
+     "order_index": 8,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "Reading the escalation output",
+     "prompt_md": "The chain returned this line for a thread: asking whether the March pricing still applies to a second site; already promised nothing in writing; to decide whether second sites are priced separately. Explain why this output is more valuable to the founder than a polished draft reply would have been.",
+     "options": null,
+     "correct_answer": "The question being asked is a pricing decision the founder has not yet made, so any drafted reply would have had to invent a policy and would then have become a commitment on sending. The output instead sharpens the decision and confirms that nothing has been promised in writing, which is the fact that determines how freely the founder can answer. The founder spends the saved time on the decision rather than on the wording, which is the right division of labour."
+    },
+    {
+     "order_index": 9,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "What a clean verification pass does and does not mean",
+     "prompt_md": "A founder runs the gate and it returns no findings under any of the three checks. Explain what the founder is entitled to conclude, and what still has to happen before the drafts go out.",
+     "options": null,
+     "correct_answer": "The founder may conclude that no unsourced number, contradicted claim or misfiled decision was detected in the drafts against the material supplied. It is not permission to send: the gate cannot see what the founder knows about the recipient, the history of the relationship or the timing, and it can only check against sources that were pasted in. The founder still reads every draft for numbers, commitments and relationships, and sends personally anything that belongs in the never-outsource zones."
+    },
+    {
+     "order_index": 10,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "Versioning a chain after a fix",
+     "prompt_md": "After running the chain on a real week, the founder finds that step B drafted a reply for a thread that should have been escalated. Describe how to respond to that in a way that keeps the chain maintainable.",
+     "options": null,
+     "correct_answer": "Fix the cause rather than the symptom: the tagging rule in step A or the boundary in step B was too loose, so tighten the wording of the tag definitions and the condition on which step B is allowed to draft. Bump the version number and write one line recording what changed and why, so a later reader can see whether the reason still holds. Then re-run the chain on the same week to confirm the thread now escalates, because an untested fix is a guess."
+    },
+    {
+     "order_index": 11,
+     "type": "short_answer",
+     "language": "prompt",
+     "marks": 5,
+     "title": "Prompt Lab: the master chain template",
+     "prompt_md": "This is the first half of your graded deliverable. You are the founder of a small B2B company and you run the same pass over open customer threads every Friday. Write the master chain template you will store, version and re-run every week.\n\nA strong template will: carry header lines naming, versioning and dating it, plus a use for line and a never line; reference the business context file rather than restating company facts; name every input as a self-describing placeholder; define three steps with an explicit output contract at each joint; sort threads so that decisions, relationships and commitments are escalated rather than drafted; require placeholders such as [DATE?] wherever a fact is not in the sources; and state plainly that the chain never sends.",
+     "options": null,
+     "correct_answer": "CHAIN: Weekly customer follow-up run | v1.0 | last reviewed [DATE]\nUse for: my Friday pass over every open customer thread.\nNever: state a price, discount, delivery date, refund or capability that is not present in [THREADS] or the context file. Never send anything. This chain produces drafts and questions only.\n\nINPUTS\nBusiness context file: [CONTEXT FILE]\nThreads: [THREADS - full text of every open customer thread, oldest message first]\nCommitments: [COMMITMENTS - anything I have already promised in writing this month]\n\nSTEP A - SORT\nGroup every thread into: waiting on me / waiting on them / dead.\nFor each thread waiting on me add one tag:\nDECISION - answering it requires a choice I have not yet made\nRELATIONSHIP - the person, not the request, is the substance of the thread\nROUTINE - the answer already exists in the threads or the context file\nOutput: a table only, columns thread | status | tag | one line of reasoning. No drafts in this step.\n\nSTEP B - DRAFT ROUTINE ONLY\nFor threads tagged ROUTINE, draft a reply under 120 words in the voice described in my context file.\nUse only facts present in [THREADS] or the context file. Where a date, price or capability is not in either, write [DATE?], [PRICE?] or [FOUNDER: CLAIM NEEDED]. Never estimate, round or infer a figure.\nDo not draft for DECISION or RELATIONSHIP threads under any circumstances.\nOutput: one draft per thread, each headed with the thread name, followed by a one-line list of every fact used and where it came from.\n\nSTEP C - ESCALATE\nFor every DECISION and RELATIONSHIP thread, write three bullets: what they are actually asking, what I have already promised in writing, what I must decide before I write. Do not answer the question and do not suggest a position.\nOutput: bullets only, grouped by thread.\n\nCLOSING RULE\nDo not send, schedule or mark anything as ready. End with the list of threads I must handle personally."
+    },
+    {
+     "order_index": 12,
+     "type": "short_answer",
+     "language": "prompt",
+     "marks": 5,
+     "title": "Prompt Lab: the verification prompt that guards the chain",
+     "prompt_md": "This is the second half of your graded deliverable. Write the verification prompt that runs on the drafts your chain produced, before you read them and before anything leaves.\n\nA strong prompt will: take the drafts, the source threads and the business context file as inputs; check statements about the company against the context file; trace every number, date, price and capability claim to thread, context file or nowhere, flagging rounding and overclaiming; identify any draft that touches a decision, a relationship or something a customer or investor could hold the company to; return quoted findings grouped by check; refuse to rewrite, approve or score; and end with the list of items the founder must handle personally.",
+     "options": null,
+     "correct_answer": "You are checking drafts produced by my weekly follow-up chain before I read them. You are not editing and not approving. Return findings only.\n\nINPUTS\nBusiness context file: [CONTEXT FILE]\nSource threads: [THREADS]\nDrafts to check: [DRAFTS]\n\nCHECK 1 - CONTEXT\nFind every statement about my company in the drafts. For each, say whether the context file supports it, contradicts it, or is silent. Quote the draft sentence and the context file line side by side. Anything the file is silent on is a finding, not a pass.\n\nCHECK 2 - HONESTY\nList every number, date, price, percentage, timescale and capability claim in the drafts. For each, state its origin as one of: THREAD (quote it), CONTEXT FILE (quote it), or NOWHERE.\nFlag separately: any figure rounded or restated more favourably than its source; any claim phrased with more certainty than the source supports; any comparison or superlative that no source establishes; any implied commitment about the future.\n\nCHECK 3 - ZONES\nIdentify any draft that touches a decision I have not made, a relationship where the person rather than the request is the substance, or anything a customer or investor could later hold me to. These must not go out as routine replies. Say which and why.\n\nOUTPUT RULES\nGroup findings by check, quoting the exact sentence in every case. Do not rewrite, reword or suggest replacement text. Do not approve, pass, score or rank the drafts - I make that call. If a check produces nothing, write \"no findings\" rather than inventing an item. Where you are uncertain whether something is supported, raise it and say why you are uncertain.\nEnd with a single list headed FOUNDER HANDLES PERSONALLY, naming each thread and the one-line reason."
+    }
+   ]
+  }
+ ]
+}

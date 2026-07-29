@@ -1,0 +1,464 @@
+{
+ "week": 5,
+ "lessons": [
+  {
+   "order_index": 1,
+   "title": "Building your own classroom AI assistant",
+   "theory_md": "## The paragraph you have typed four hundred times\n\nOpen a chat window in a free period and watch what you do first. You type the same eighty words you typed yesterday. Year 9. Combined science. Mixed attainment, twenty-eight of them, four working in English as an additional language. Fifty-minute periods. We report against the school's own assessment ladder until Year 10. Explanations start with something from a kitchen and only then reach the notation.\n\nYou type it because without it the output is generic and pitched at the wrong ceiling. And because you are typing it from memory at ten to four, it drifts. Monday's version mentioned the EAL learners. Thursday's forgot them. The assistant is not being inconsistent — you are, because you are the memory it does not have.\n\nA custom assistant fixes that and nothing else. It is a named workspace, built once, that carries your teaching context permanently: your specification, your scheme of work, your marking criteria, your department's rules, your way of explaining things. You stop re-briefing and start asking. Hours come back. The pedagogy and the duty of care stay exactly where they were — with you.\n\n## Two layers, and a third category that goes in neither\n\nEvery mainstream assistant offers the same two slots under different names: Projects and custom GPTs in ChatGPT, Projects in Claude, Gems in Gemini, agents in Copilot. What they are called matters far less than what you put in them.\n\n**Instructions** are the standing brief. Short — one page, read in full every time you ask anything. This is where behaviour lives: who you teach, house rules on tone and reading age, output shape, what it must ask before drafting, what it must refuse, and the honesty rule that it names uncertainty rather than smoothing it over.\n\n**Knowledge files** are the documents it may consult: the specification or curriculum statement, your scheme of work, the marking criteria, the department's presentation and homework policy, an exemplar explanation in your voice. Long, stable, and referred to on demand rather than recited every time.\n\nThe dividing line is worth memorising. **Instructions govern how it behaves. Knowledge governs what it may claim.** A rule that must apply to every output (\"always end with three check-for-understanding questions\") belongs in instructions. A fact you need it to be accurate about (\"what the specification requires at this content point\") belongs in a knowledge file, because documents can be replaced without rewriting your brief.\n\n**The third category is what goes in neither, ever.** No pupil names. No initials with a class attached. No SEND paperwork, no medical or family circumstances, no safeguarding note, no mark book export, no screenshot of your register. Building an assistant does not soften that hard line — it sharpens it, because a knowledge file is permanent, shared and easy to forget about. A prompt is a moment; an uploaded document outlives you moving schools. Load the pattern, never the person: \"a Year 4 reader who decodes accurately but reads without expression\" tells the assistant everything it needs and identifies nobody.\n\n## Worked example one: the instruction block\n\nNotice that this block holds no subject facts at all. Facts go on the shelf below it.\n\n```\nYou are helping a Year 9 combined science teacher in an English secondary\nschool. Twenty-eight in the class, mixed attainment, four learners working\nin English as an additional language. Fifty-minute lessons.\n\nSources of truth: the specification, scheme of work and assessment ladder\nloaded as knowledge files. State nothing as a specification requirement\nunless it appears in those documents. If something is not covered, say\n\"not covered in the loaded specification\" rather than inferring it.\n\nHouse rules: British English. Reading age 12 for pupil-facing text unless\nI say otherwise. Every explanation opens with a concrete everyday example\nbefore any notation. Command words match the ones in the assessment ladder.\nNever invent a data figure, a source or a quotation for a resource.\n\nBefore drafting a lesson or a resource, ask me for: the content point, the\nperiod length, and whether the output is for me or for pupils.\n\nNever ask me for, and never accept, anything that identifies a pupil. If I\npaste something identifying, stop and tell me to remove it.\n\nEverything you produce is a draft. Flag anything I need to verify before\nit reaches a class.\n```\n\n## Worked example two: the shelf, and what it changes\n\nLoad four documents: the specification extract for this year's units, the scheme of work, the assessment ladder with its command words, and one explanation you are proud of. Then ask something ordinary.\n\n```\nDraft a 50-minute lesson on the difference between speed and velocity for\nYear 9. Use the scheme of work for sequencing and the assessment ladder for\nthe plenary questions. Tell me where the specification is thinner than my\nscheme of work assumes.\n```\n\nAbridged output:\n\n> **Retrieval (5 min)** — three questions on distance-time graphs, which the scheme places two lessons earlier. **Input (12 min)** — everyday opener: two pupils walking the same route, one there and back... **Plenary** — questions written to the ladder's command words *describe*, *explain*, *calculate*.\n>\n> **Note:** the loaded specification requires vector and scalar quantities here but does not name velocity-time graphs; your scheme of work introduces them at this point. Not covered in the loaded specification — check with your subject lead before assessing it.\n\nThat last paragraph is the whole return. An ungrounded assistant would have produced a confident lesson and left the mismatch for you to discover in a moderation meeting in March.\n\n## Where this goes wrong\n\n**Loading the entire textbook.** A knowledge shelf is a reference section, not a library. Four sharp documents beat forty; retrieval gets vaguer as the pile grows.\n\n**Loading last year's specification and forgetting.** The most dangerous knowledge file is a superseded one, because everything built on it is confidently, quietly wrong. Date every file and name an owner.\n\n**Writing instructions as a wish.** \"Try to keep things age-appropriate\" is a hope. \"Reading age 12 unless I say otherwise\" is a rule, and it is testable.\n\n**Letting the assistant become the source of truth.** Grounding in your documents makes it better, not right. Verify every fact before it reaches a class — it now tells you where to look, which is the real improvement.\n\n**Relaxing the data line because the workspace feels private.** It is not a locked cupboard. Nothing about a named pupil belongs in either layer.\n\n## In practice\n\nBuild one, for one class, this week. Half an hour: write the instruction block, load four documents, run three asks you would have run anyway. Then deliberately ask for something outside the specification. If it fills the gap instead of naming it, your grounding rule is not strong enough yet — which is what the next lesson is for.",
+   "estimated_minutes": 28,
+   "learning_objectives": [
+    "Distinguish what belongs in an assistant's instruction block from what belongs in its knowledge files",
+    "Assemble a grounded knowledge shelf from your specification, scheme of work, marking criteria and policies",
+    "Write a standing instruction block that encodes your teaching context and house rules as testable rules",
+    "Apply the pupil-data prohibition to both permanent layers and describe learners as patterns instead"
+   ],
+   "case_study": "**Oak National Academy — Aila (2024)**\n\nOak National Academy, the publicly funded curriculum body in England, launched an AI lesson assistant called Aila in 2024. The interesting decision was not that a curriculum organisation built a chatbot. It was what they refused to let it run on.\n\nAila was not a general assistant with a teaching personality bolted on. It was built to work from Oak's own quality-assured curriculum library and to align with the English national curriculum, guided by a defined pedagogical structure rather than whatever the underlying model happened to produce. Oak also described quality checks on the outputs — evaluating generated lessons and resources against curriculum principles, and screening for coherence, grammar and Americanisms creeping in from models trained largely on American text. The tool walks teachers through a sequence rather than accepting one open-ended request: the shape of the interaction is itself part of the grounding.\n\nCoverage in Schools Week and elsewhere reported that Aila entered beta with teachers generating lesson plans, slides, quizzes and worksheets, and Oak reported qualitative research with a group of teachers who described meaningful time returned on planning. The National Foundation for Educational Research was engaged to look at it properly rather than leaving the claim at anecdote.\n\nRead it as the model for this lesson. Oak did the two things you are about to do at a much smaller scale: they wrote down how the assistant must behave, and they gave it a defined, quality-assured body of material to answer from — and then they checked the output against the curriculum rather than assuming a good model would take care of it. The lesson for one teacher with one class is identical. Grounding is not a technical detail; it is the difference between a confident assistant and a trustworthy one.",
+   "exercises": [
+    {
+     "order_index": 1,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "Instructions or knowledge file?",
+     "prompt_md": "You want your teaching assistant to end every pupil-facing explanation with three check-for-understanding questions, on every task, without you having to ask. Where does that rule belong?",
+     "options": [
+      "In the instruction block, because it must govern behaviour on every single output",
+      "In a knowledge file, because rules are documents the assistant reads on demand",
+      "In each individual prompt, because standing instructions cannot control output shape",
+      "In a knowledge file and the prompt, because behaviour rules need loading twice"
+     ],
+     "correct_answer": "In the instruction block, because it must govern behaviour on every single output"
+    },
+    {
+     "order_index": 2,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "The one thing that never loads",
+     "prompt_md": "A colleague is setting up a marking assistant and asks which of these four items should be uploaded as a knowledge file so the assistant can be more useful about their class. Which one must never be loaded?",
+     "options": [
+      "The class mark book export, because it identifies individual pupils by name",
+      "The assessment ladder, because command words change between examination series",
+      "The scheme of work, because sequencing decisions belong to the subject lead",
+      "The department marking policy, because policy documents go out of date quickly"
+     ],
+     "correct_answer": "The class mark book export, because it identifies individual pupils by name"
+    },
+    {
+     "order_index": 3,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "How long should the instruction block be?",
+     "prompt_md": "A teacher has written a four-thousand-word instruction block containing their standing rules plus the full text of the subject specification. What is the problem with this, in terms of how the two layers work?",
+     "options": [
+      "Specification text is reference material and belongs on the knowledge shelf, not in the standing brief",
+      "Instruction blocks have a strict word limit in every assistant, so the block will be truncated",
+      "Specification text cannot be read accurately by an assistant in any location or format",
+      "Instruction blocks are shared with other users, so specification text creates a copyright issue"
+     ],
+     "correct_answer": "Specification text is reference material and belongs on the knowledge shelf, not in the standing brief"
+    },
+    {
+     "order_index": 4,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "Anonymising properly",
+     "prompt_md": "A teacher wants help writing targeted reading tasks and is deciding how to describe the learner to their assistant. Which description keeps the hard line on identifiable pupil data?",
+     "options": [
+      "A Year 4 reader who decodes accurately but reads aloud without expression or phrasing",
+      "J from 4B, who decodes accurately but reads aloud without expression or phrasing",
+      "The pupil in 4B with the reading plan, who decodes but reads without any expression",
+      "My Year 4 girl with the recent diagnosis, who decodes but reads without expression"
+     ],
+     "correct_answer": "A Year 4 reader who decodes accurately but reads aloud without expression or phrasing"
+    },
+    {
+     "order_index": 5,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "What grounding actually buys you",
+     "prompt_md": "Your assistant is loaded with your specification, scheme of work and assessment ladder. It drafts a lesson and cites a specification requirement. What is the correct professional position on that citation?",
+     "options": [
+      "Grounding makes it far more likely to be right, and you still verify it before teaching it",
+      "Grounding makes the citation reliable, so verification is now the subject leads responsibility",
+      "Grounding has no bearing on accuracy, so treat the output exactly as an ungrounded one",
+      "Grounding removes the need to verify content points that appear in the loaded documents"
+     ],
+     "correct_answer": "Grounding makes it far more likely to be right, and you still verify it before teaching it"
+    },
+    {
+     "order_index": 6,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "The dividing line in your own words",
+     "prompt_md": "In two or three sentences, explain the dividing line between what belongs in an assistant's instruction block and what belongs in its knowledge files. Give one example of each from your own teaching.",
+     "correct_answer": "Instructions govern how the assistant behaves on every output: audience, tone, reading age, output shape, refusal and honesty rules. Knowledge files govern what it is allowed to claim as fact: the specification, scheme of work, marking criteria and department policy. For example, a rule that all pupil-facing text sits at reading age 12 belongs in instructions, while the command words for each assessment band belong in a knowledge file that can be replaced when the criteria change."
+    },
+    {
+     "order_index": 7,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "Why a knowledge file is riskier than a prompt",
+     "prompt_md": "A colleague argues that uploading a class list to a custom assistant is no different from pasting it into a one-off chat. Explain why the permanent layer carries more risk, in two to four sentences.",
+     "correct_answer": "A prompt is a single moment, while an uploaded knowledge file is permanent, sits in a workspace that may be shared with colleagues, and is easy to forget about months later. That makes identifiable pupil data far more likely to be re-exposed in outputs you did not anticipate, by people you did not brief. Neither is acceptable, but the permanent layer turns a one-off lapse into a standing one, which is why nothing identifying a pupil goes into instructions or knowledge files at all."
+    },
+    {
+     "order_index": 8,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "Auditing your shelf",
+     "prompt_md": "You inherit a departmental assistant with eleven documents loaded, including two versions of the specification. Describe the first three things you would check before using it for planning.",
+     "correct_answer": "First, which specification version is current and whether the superseded one can be removed, because a stale document produces confident, wrong requirements. Second, whether every remaining file has a date and a named owner so that changes get picked up. Third, whether anything identifying a pupil has been loaded, in which case it comes out immediately and the school policy on the incident is followed."
+    },
+    {
+     "order_index": 9,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "Turning a wish into a rule",
+     "prompt_md": "An instruction block contains the line: Try to keep things age-appropriate and in line with our marking approach. Rewrite it as two testable rules and explain briefly why the original fails.",
+     "correct_answer": "The original states a hope with no threshold, so no output can be judged against it and it drifts. Two testable replacements would be: all pupil-facing text sits at reading age 12 unless I state otherwise, and every mark or comment uses the command words and bands from the loaded assessment ladder and quotes the band it is applying. Both can be checked against an output in seconds, which is what makes them rules rather than intentions."
+    },
+    {
+     "order_index": 10,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "Naming the gap",
+     "prompt_md": "Your assistant is asked about a topic your scheme of work covers but the loaded specification does not. Describe the behaviour you want, and the instruction that produces it.",
+     "correct_answer": "The behaviour I want is that it names the gap rather than filling it: it states that the point is not covered in the loaded specification, says what the scheme of work assumes, and tells me to check with the subject lead. The instruction that produces it is a grounding rule stating that nothing may be presented as a specification requirement unless it appears in the loaded documents, and that uncovered points must be flagged in those words instead of inferred."
+    },
+    {
+     "order_index": 11,
+     "type": "short_answer",
+     "language": "prompt",
+     "marks": 5,
+     "title": "Prompt Lab: your instruction block",
+     "prompt_md": "**Scenario.** You are setting up a custom assistant for one of your own classes for the first time. You have four documents ready to load: the specification extract, your scheme of work, the marking criteria, and one explanation written in your own voice.\n\nWrite the **instruction block** you would paste into the instructions field.\n\nA strong block carries: who you teach and at what stage; the sources-of-truth rule pointing at the loaded files; the exact sentence it must use when something is not covered; house rules on language, reading age and explanation style; what it must ask before drafting; the explicit prohibition on pupil-identifying data with the behaviour if you breach it; and the line that everything it produces is a draft you verify. It should contain no subject facts — those live on the shelf.",
+     "correct_answer": "You are assisting a teacher of [SUBJECT] with [YEAR GROUP] in a [SCHOOL TYPE]. Class context: [SIZE, ATTAINMENT SPREAD, ANY EAL OR SEND PROVISION DESCRIBED AS PATTERNS, NEVER AS INDIVIDUALS]. Lessons are [LENGTH].\n\nSOURCES OF TRUTH. Answer only from the documents loaded as knowledge: the specification extract, the scheme of work, the marking criteria and the exemplar explanation. State nothing as a specification or marking requirement unless it appears in those files. If a point is not covered, reply with the exact words: not covered in the loaded specification. Then say what the scheme of work assumes and tell me to check with my subject lead. Never resolve a gap by reasoning about what is likely.\n\nHOUSE RULES. British English throughout. Pupil-facing text at reading age [N] unless I state otherwise. Every explanation opens with a concrete everyday example before any notation or terminology. Command words match the loaded marking criteria exactly. Never invent a figure, a source, a quotation or a worked data set for a resource; if a resource needs data, mark it [TEACHER TO SUPPLY] rather than generating it.\n\nBEFORE DRAFTING. Ask me for the content point, the period length, and whether the output is for me or for pupils. Do not begin until all three are answered.\n\nPUPIL DATA. Never ask me for anything that identifies a pupil: no names, no initials with a class, no SEND or medical or family detail, no mark book extracts, no register. If I paste anything identifying, stop, do not use it, and tell me to remove it and start again. Describe learners only as patterns.\n\nOUTPUT. Everything you produce is a draft. End each output with a short list headed CHECK BEFORE TEACHING naming every fact, figure or criterion I must verify, and every place you had to work outside the loaded documents. Version [X], last updated [DATE], owner [NAME]."
+    },
+    {
+     "order_index": 12,
+     "type": "short_answer",
+     "language": "prompt",
+     "marks": 5,
+     "title": "Prompt Lab: auditing an inherited shelf",
+     "prompt_md": "**Scenario.** A colleague hands you a departmental assistant they built last year. You can see its instruction block and the list of documents on its knowledge shelf, but you have not used it.\n\nWrite the prompt you would run **first** — before planning anything with it — to audit what it is actually grounded in.\n\nA strong prompt asks it to inventory the shelf with dates, identify anything superseded or contradictory, state what it cannot answer from the loaded material, and flag anything that looks like pupil-identifying content. It should forbid the assistant from being reassuring, and require it to name gaps rather than smooth over them.",
+     "correct_answer": "Before I use you for any planning, audit yourself. Do not reassure me and do not draft anything.\n\n1. Inventory. List every document loaded as knowledge. For each: its title, what it appears to be, any version number or date stated inside it, and the year group and subject it applies to. If a document has no date, say so explicitly.\n\n2. Conflicts. Identify any two documents that disagree, and any document that appears to have been superseded by another. Quote the specific lines that conflict rather than describing them.\n\n3. Coverage. Using only the loaded material, list the content points and assessment criteria you can answer on with confidence, and list the areas where you would be working outside the documents. For the second list, use the words: not covered in the loaded specification.\n\n4. Pupil data. Scan every loaded document for anything that identifies a person: names, initials with a class, dates of birth, SEND or medical or family detail, mark book rows, register extracts. Report the file and the location of anything you find. Do not quote the content itself back to me.\n\n5. Instructions. Read the instruction block and list any rule that is not testable against an output, plus any rule that states a fact rather than a behaviour and therefore belongs on the shelf instead.\n\nFinish with a single line: SAFE TO USE, or DO NOT USE, followed by the specific fixes required. If you cannot complete a section from what is loaded, say which document is missing rather than guessing."
+    }
+   ]
+  },
+  {
+   "order_index": 2,
+   "title": "Testing it before it touches your teaching",
+   "theory_md": "## The most dangerous week is the first good one\n\nYou built the assistant on Sunday. By Wednesday it has drafted four lessons, three worksheets and a set of feedback comments, and every one was usable. That is exactly when you stop reading closely, and exactly when it will hurt you.\n\nA teaching assistant does not fail loudly. It fails by producing a beautifully structured lesson pitched a key stage too high. By quoting a marking band that reads plausibly and does not exist in your criteria. By writing at reading age 15 for a class you built at reading age 11. By stating a specification requirement confidently because a related one exists in another awarding body's syllabus. None of that announces itself. It arrives as thirty printed copies in a room of fourteen-year-olds.\n\nThe fix is not more caution. Caution fades. The fix is a written test set, run before anyone relies on it and again whenever you change what it stands on.\n\n## What a test set actually is\n\nFifteen asks you already made this term, where you know what a good answer looks like because you did the work yourself. Not clever probes — ordinary Tuesday requests. Five planning, five resource or explanation, five marking. Write them down once, with the right answer beside each.\n\nThen grade every response against **three failure modes**, because these are the ones that reach children:\n\n**Factual and curriculum error.** A content point placed in the wrong year. A requirement belonging to a different specification. A worked answer that is wrong. A source or statistic that does not exist.\n\n**Wrong stage.** Right content, wrong ceiling. Key stage drift is the commonest single fault: the assistant reaches for the fullest treatment of a topic rather than the one your pupils are ready for. Reading age drift is its quieter twin — vocabulary and sentence length creeping up until your weakest readers are locked out of a worksheet that looks fine to you.\n\n**Misapplied marking criteria.** A band awarded that the criteria do not describe. A command word treated as a synonym of another. Feedback praising what your criteria do not credit.\n\nGrade each response pass, fail or unsafe. \"Unsafe\" is the one that matters: a response that would have gone to pupils and been wrong.\n\n## Grounding rules: the instruction that changes the odds\n\nAn assistant with documents loaded will still answer from general knowledge unless you forbid it. The rule must be explicit, and must give it somewhere to go when it does not know.\n\n```\nAnswer only from the specification, scheme of work and marking criteria\nloaded as knowledge. For any statement about what is required, assessed\nor credited, quote the exact line from the document and name the file.\n\nIf the loaded documents do not cover something, reply with these words:\n\"not covered in the loaded specification\" — then say what you would need\nin order to answer. Never resolve a gap by reasoning about what is likely,\nand never fill it from a different awarding body or curriculum.\n\nReading age is capped at [N]. If a request cannot be met within that cap,\nsay so rather than exceeding it.\n```\n\nThe second paragraph is doing the heavy work. Without an approved way to say nothing, a helpful assistant invents.\n\n## Worked example one: probing the boundary\n\nAsk for something you know is outside the specification, and see what comes back.\n\n```\nMy scheme of work has a lesson on catalysts in Year 8. What does the\nspecification require pupils to know about activation energy at this point,\nand how is it assessed?\n```\n\nAbridged output, before the grounding rule:\n\n> \"Pupils should be able to explain how catalysts lower the activation energy... typically assessed through six-mark extended response questions...\" — confident, detailed, and describing a stage two years above the one asked about.\n\nAfter the grounding rule:\n\n> \"Not covered in the loaded specification. The document mentions catalysts at Year 8 only as substances that speed up a reaction without being used up; activation energy does not appear until the Year 10 unit. Your scheme of work introduces it here. Check with your subject lead before teaching it.\"\n\nSame model, same documents, different instruction. The first would have produced a lesson your pupils were not ready for; the second found a real mismatch between scheme and specification.\n\n## Worked example two: the marking test\n\nThis is the test most teachers skip and most need. Take three pieces of work you have already marked — every identifying detail removed before anything is pasted — and hand them over cold.\n\n```\nMark the response below against the loaded marking criteria only. For each\ncriterion: quote the exact wording of the band you are awarding, quote the\nsentence in the pupil response that earns it, and give the mark.\n\nIf a criterion cannot be judged from what is written, say NOT EVIDENCED\nrather than estimating. Do not award a band that is not in the loaded\ndocument. Do not comment on presentation or effort.\n\nRESPONSE: [paste, fully anonymised]\n```\n\nAbridged output:\n\n> **AO2 — band 3 of 4.** Criteria wording: \"explains the link between structure and function using appropriate terminology\". Evidence: \"the folded membrane gives more surface area so more reactions happen at once\". Mark: 5. **AO3 — NOT EVIDENCED.** No evaluation of the method appears in the response.\n\nThen compare against your own mark. Landing within a band on all three makes it a usable first pass. Inventing a band, or awarding AO3 on effort, is an unsafe result: the criteria file goes back on the bench.\n\n## Where this goes wrong\n\n**Testing with questions you do not know the answer to.** You cannot grade what you cannot check. The set is built from work you have already done — that is what makes it a test rather than a demonstration.\n\n**Testing once.** Specifications change, departments rewrite the assessment ladder, and the underlying models are updated without telling you. Re-test when any document changes, at the start of each term, and after any output that surprises you.\n\n**Fixing the output instead of the source.** Correcting a bad answer in the chat teaches nothing. The fault sits in the instruction block or in a knowledge file, and that is where the repair belongs — then the whole set gets re-run.\n\n**Asking the assistant whether it is accurate.** It will agree with itself. Verification means comparing an output against a document you are holding.\n\n**Letting a clean run feel like sign-off.** A pass means nothing untraceable was found in fifteen asks. Every fact still gets verified before it reaches a class, and no marking result stands as a mark until you have read the work yourself.\n\n## In practice\n\nWrite your fifteen asks this week and store them beside the assistant, not in your messages. The set takes about forty minutes the first time and fifteen thereafter. Record the date, the version tested, and each failure with what you changed. That record is what lets you hand this to a colleague — which is what the next lesson asks.",
+   "estimated_minutes": 29,
+   "learning_objectives": [
+    "Build a test set of real planning, resource and marking asks with known good answers",
+    "Grade assistant outputs against factual error, wrong stage and misapplied marking criteria",
+    "Write grounding rules that make the assistant name gaps instead of filling them",
+    "Set the triggers that require a full re-test and record what was tested and repaired"
+   ],
+   "case_study": "**Common Sense Media — the AI teacher assistant risk assessment (2025)**\n\nIn 2025 Common Sense Media, the American non-profit best known for its age ratings of films, games and apps, published a risk assessment of a category it had not rated before: AI teacher assistants. Rather than reviewing a single product, it built an assessment framework and applied it to several widely used planning and resource tools, scoring them across dimensions including effectiveness, safety and bias, and publishing the method alongside the findings.\n\nThe headline verdict was measured rather than alarming. The category was rated moderate risk — genuinely useful to teachers, and risky when adopted without training, oversight and a place in the school's own processes. The report is worth reading for the shape of the argument as much as the score: the danger it identifies is not a malicious tool, it is an unexamined one, dropped into a department where nobody has agreed what must be checked before an output reaches pupils.\n\nThe most useful technical point for this lesson concerns grounding. The assessment noted that many of these products use retrieval from trusted educational sources to supplement the underlying model, which reduces inaccuracy by anchoring answers in real curriculum material — and that it does not eliminate it. That is the honest version of what you built in the previous lesson. Loading your specification improves the odds substantially. It does not convert an assistant into a source of truth, and it does not remove the teacher from the checking.\n\nNotice also what the organisation did that most teachers do not: it wrote the assessment method down before applying it, applied the same method to every product, and published what it found including the limitations. That is precisely the difference between a test protocol and a good impression. Your version is fifteen asks and three failure modes rather than a published framework, and it does the same job — it converts \"it seemed fine when I tried it\" into something you could show a head of department, and something you can re-run in March when the specification changes.",
+   "exercises": [
+    {
+     "order_index": 1,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "What makes a test set a test",
+     "prompt_md": "You are assembling fifteen asks to test your new teaching assistant before you rely on it for planning and marking. What is the defining property those fifteen asks must have?",
+     "options": [
+      "You already know what a good answer looks like, because you did the work yourself",
+      "They are unusual edge cases designed to push the assistant beyond its normal use",
+      "They cover every unit in the specification so that coverage is complete and even",
+      "They were written by a colleague so that your own assumptions do not shape them"
+     ],
+     "correct_answer": "You already know what a good answer looks like, because you did the work yourself"
+    },
+    {
+     "order_index": 2,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "The quiet failure mode",
+     "prompt_md": "Your assistant produces a well-structured, factually correct worksheet on photosynthesis for a Year 7 class, but the vocabulary and sentence length sit around reading age 15. Which failure mode is this?",
+     "options": [
+      "Wrong stage, because the content is right but the ceiling is above the class",
+      "Factual error, because the content itself must be inaccurate to read that way",
+      "Misapplied criteria, because reading age is set by the marking documentation",
+      "No failure at all, because stretch vocabulary benefits all readers in a class"
+     ],
+     "correct_answer": "Wrong stage, because the content is right but the ceiling is above the class"
+    },
+    {
+     "order_index": 3,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "Why the grounding rule needs an exit",
+     "prompt_md": "A grounding rule tells the assistant to answer only from the loaded specification. Why must it also give an explicit sentence to use when something is not covered by those documents?",
+     "options": [
+      "Without an approved way to say nothing, a helpful assistant fills the gap instead",
+      "Without a set sentence, the assistant cannot read any of the loaded documents",
+      "Without an exit line, the assistant refuses every request it has not seen before",
+      "Without a fixed phrase, marking criteria cannot be quoted back to you accurately"
+     ],
+     "correct_answer": "Without an approved way to say nothing, a helpful assistant fills the gap instead"
+    },
+    {
+     "order_index": 4,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "When to re-test",
+     "prompt_md": "Your department has just replaced the assessment ladder with a new version and loaded it into the shared teaching assistant. What does that change trigger?",
+     "options": [
+      "A re-run of the whole test set, because everything downstream stands on that file",
+      "A re-run of only the marking asks, because planning outputs do not touch the ladder",
+      "No re-run, because the previous test set already proved the assistant is reliable",
+      "A re-run at the end of term, because testing mid-term interrupts teaching schedules"
+     ],
+     "correct_answer": "A re-run of the whole test set, because everything downstream stands on that file"
+    },
+    {
+     "order_index": 5,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "Fixing at the source",
+     "prompt_md": "During testing, your assistant awards a marking band that does not appear in your criteria. You correct it in the conversation and it apologises and produces the right band. What should you do next?",
+     "options": [
+      "Repair the instruction block or the criteria file, then re-run the whole test set",
+      "Record the correction in the conversation, since the assistant has now learned it",
+      "Continue testing, because the assistant recovered once the error was pointed out",
+      "Remove marking from the assistant entirely, because bands cannot be made reliable"
+     ],
+     "correct_answer": "Repair the instruction block or the criteria file, then re-run the whole test set"
+    },
+    {
+     "order_index": 6,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "Name the three failure modes",
+     "prompt_md": "List the three failure modes you grade a teaching assistant against, and give one concrete classroom example of each in two to four sentences.",
+     "correct_answer": "Factual and curriculum error: a content point placed in the wrong year, or a requirement borrowed from a different awarding body. Wrong stage: right content pitched above the key stage or above the reading age the class can access, such as a Year 7 worksheet written at reading age 15. Misapplied marking criteria: a band awarded that the loaded criteria do not describe, or feedback crediting effort where the criteria credit evaluation."
+    },
+    {
+     "order_index": 7,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "Grading unsafe",
+     "prompt_md": "Explain what the grade unsafe means in a test protocol, and why it is kept separate from a straightforward fail. Answer in two to four sentences.",
+     "correct_answer": "Unsafe describes a response that would have reached pupils and been wrong: an invented fact, a band that does not exist, a worksheet pitched beyond the class. A fail is an output that is weak or off-brief but that you would have caught and rewritten. Keeping them separate stops a fabricated requirement being recorded as a near miss, and gives a clear stopping rule: any unsafe result halts use until the source is repaired and the set is re-run."
+    },
+    {
+     "order_index": 8,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "Anonymising a marking test",
+     "prompt_md": "You want to test marking accuracy using three real pieces of pupil work you have already graded. Describe how you prepare that material and why, in two to four sentences.",
+     "correct_answer": "Every identifying detail comes out before anything is pasted: names, initials with a class, dates of birth, references to family or medical circumstances, and any personal content written into the response itself. What remains is the answer text alone, which is all the criteria are applied to. The hard line does not bend for testing, and a test set stored beside the assistant is exactly the kind of document that gets shared later."
+    },
+    {
+     "order_index": 9,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "Why self-checking fails",
+     "prompt_md": "A colleague tests their assistant by asking it, at the end of each answer, whether the answer was accurate and on-specification. Explain why this is not verification.",
+     "correct_answer": "The assistant is assessing its own output with nothing to compare it against, so it evaluates plausibility and tends to agree with itself. Verification means holding the output against a document you have in front of you, or against a mark you awarded yourself, and checking line by line. A separate, fresh conversation given the source documents and the draft comes closer, but the professional check still ends with the teacher reading both."
+    },
+    {
+     "order_index": 10,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "What a clean run does and does not prove",
+     "prompt_md": "Your assistant passes all fifteen test asks with no unsafe results. State what you may now conclude and what remains unchanged, in two to four sentences.",
+     "correct_answer": "You may conclude that on fifteen representative asks the assistant stayed inside the loaded documents, held the reading age and applied the criteria as written, which makes it usable as a first draft tool. It does not prove the sixteenth ask will behave, and it does not transfer any professional duty. Every fact is still verified before it reaches a class, and no assistant-produced mark stands until you have read the work yourself."
+    },
+    {
+     "order_index": 11,
+     "type": "short_answer",
+     "language": "prompt",
+     "marks": 5,
+     "title": "Prompt Lab: the grounding rule",
+     "prompt_md": "**Scenario.** Your assistant is loaded with a specification extract, a scheme of work and a marking criteria document. In testing it answered a question about a topic the specification does not cover, and it answered confidently from general knowledge.\n\nWrite the **grounding rule** you would add to the instruction block to stop that happening.\n\nA strong rule states that answers come only from the loaded documents; requires the exact line and file to be quoted for any claim about what is required, assessed or credited; gives the exact sentence to use when something is not covered and what to say next; forbids filling gaps by inference or from another awarding body; and caps reading age with an instruction to refuse rather than exceed it.",
+     "correct_answer": "GROUNDING. Answer only from the documents loaded as knowledge: [SPECIFICATION EXTRACT], [SCHEME OF WORK], [MARKING CRITERIA]. General knowledge may be used for wording and structure, never for content claims.\n\nFor any statement about what pupils are required to know, what is assessed, or what is credited, quote the exact line from the document and name the file it came from. If you cannot quote it, you may not claim it.\n\nWhen the loaded documents do not cover something, reply with these exact words: not covered in the loaded specification. Then state what the scheme of work assumes at this point, name the document you would need in order to answer, and tell me to check with my subject lead. Never resolve a gap by reasoning about what is likely, by drawing on a different awarding body or curriculum, or by borrowing from an adjacent year group.\n\nSTAGE AND ACCESS. All content is pitched at [KEY STAGE / YEAR GROUP]. Pupil-facing text is capped at reading age [N]. If a request cannot be met within that cap, say so and tell me what would have to change, rather than exceeding it.\n\nMARKING. Award only bands that appear verbatim in the loaded criteria. Quote the band wording and the sentence in the pupil response that earns it. Where a criterion cannot be judged from what is written, say NOT EVIDENCED rather than estimating.\n\nEvery output ends with a list headed CHECK BEFORE TEACHING naming each claim I must verify and each point where you worked outside the loaded documents."
+    },
+    {
+     "order_index": 12,
+     "type": "short_answer",
+     "language": "prompt",
+     "marks": 5,
+     "title": "Prompt Lab: running a marking test item",
+     "prompt_md": "**Scenario.** You have three pieces of pupil work you marked yourself last term, fully anonymised, and you want to know whether your assistant applies your criteria the way you do before you let it near a set of books.\n\nWrite the prompt you would run for **one test item**.\n\nA strong prompt forbids improvement or encouragement, requires the band wording to be quoted verbatim from the loaded criteria and the earning sentence quoted from the response, requires NOT EVIDENCED where a criterion cannot be judged, forbids awarding anything not in the document, and asks it to state where it was uncertain so you can grade the result rather than admire it.",
+     "correct_answer": "You are being tested, not asked for help. Do not improve the response, do not encourage the pupil, do not comment on presentation, effort or handwriting.\n\nMark the response below against the loaded marking criteria only, and against nothing else.\n\nFor each assessment objective or criterion in the loaded document, in the order it appears there:\n1. Name the criterion using the wording in the file.\n2. Quote verbatim the band you are awarding, exactly as it is written in the criteria. If the wording you want to use is not in the document, you may not award it.\n3. Quote the sentence or sentences from the pupil response that earn that band. If you cannot point to text, the criterion is NOT EVIDENCED.\n4. Give the mark, and name the file and section your band came from.\n\nWhere a criterion cannot be judged from what is written, say NOT EVIDENCED. Do not estimate, do not average, and do not award a band on the strength of the response as a whole.\n\nThen, separately, list every point at which you were uncertain, every place where two bands were close, and anything in the response you could not interpret. Do not smooth these over — this list is what I am grading you on.\n\nRESPONSE (fully anonymised, no names or identifying detail): [PASTE]\n\nFinish with one line: total mark, and the words TEACHER TO CONFIRM."
+    }
+   ]
+  },
+  {
+   "order_index": 3,
+   "title": "Practical: ship a tested teaching assistant",
+   "theory_md": "## The Monday test\n\nThere is one question that separates a clever personal setup from something a department can use. If you were away on Monday, could a colleague open your assistant, understand in two minutes what it is for, use it for a lesson, and know exactly what they must check before anything reaches a class?\n\nMost teachers' assistants fail that test, and not because the prompting is weak. They fail because everything that makes them safe lives in the head of the person who built them: which specification it is grounded in, which year group it assumes, what it got wrong last month, which outputs must never leave without a second pair of eyes. That knowledge does not transfer by handing over a login.\n\nThis lesson is the build. You are producing something a head of department could adopt: scoped, grounded, tested, documented, and honest about its limits. Two artefacts are graded, and they are the two that carry all the risk — the instruction block and the reliability test protocol.\n\n## What \"departmental\" actually requires\n\n**A scope and an owner.** One job, stated in one sentence. \"Planning and resource support for Key Stage 3 geography, on our scheme of work\" — not \"a geography helper\". Your name against it, a version number, a date.\n\n**An instruction block that a stranger could audit.** Everything on one page: audience and stage, sources of truth, the exact refusal sentence, reading-age cap, marking rules, what it asks before drafting, the pupil-data prohibition, and the line that every output is a draft the teacher verifies.\n\n**A knowledge shelf that is current and dated.** One version of each document, each with a valid-from date and an owner. No superseded specification left in the folder because deleting felt risky.\n\n**Evidence it was tested.** Not \"I had a play with it\". A written protocol, run end to end, graded against the three failure modes, with the failures traced back to their source, fixed there, and the whole set re-run.\n\n**An honest limits section.** What this assistant is not for. High-stakes marks. Reports. Anything about a named pupil. Any subject content outside the loaded documents. Departments trust tools that say what they cannot do; they should be wary of ones that do not.\n\n## Worked example one: the handover note\n\nThe document that survives your absence. Have the assistant draft it from your own materials, then correct it — it will overstate what it can do, every time.\n\n```\nDraft a one-page handover note for the assistant you are running, for a\ncolleague who has never used it. Use only what is in your instructions and\nknowledge files. Cover: what it is for in one sentence; what is loaded and\nthe date of each document; the rules it always applies; what it will refuse\nand the exact words it uses; what it must never be used for; when it was\nlast tested and what triggers a re-test.\n\nDo not describe capabilities you cannot evidence from your instructions.\nWhere you are uncertain what a document is, say so and ask me.\n```\n\nAbridged output:\n\n> **Purpose.** First-draft planning and resources for Key Stage 3 geography, grounded in our scheme of work and the department assessment ladder.\n> **Loaded (valid from Sept 2025):** KS3 scheme of work v4; assessment ladder v2; department literacy policy; two exemplar explanations.\n> **Always applies:** British English; reading age 12 for pupil-facing text; every explanation opens with a concrete example; command words taken from the ladder.\n> **Refuses:** anything outside the loaded documents, with the words \"not covered in the loaded specification\". Anything identifying a pupil.\n> **Never use for:** reported grades, wellbeing matters, parent communications about an individual, or any content for Key Stage 4.\n> **Last tested:** 14 September, 15 asks, 1 unsafe result (invented ladder band) — criteria file replaced, set re-run clean. **Re-test when:** any document changes, each half-term, or after any surprising output.\n\nThe last two lines are the ones a head of department reads first. They are also the only ones you cannot fake.\n\n## Worked example two: the protocol summary\n\nYour test protocol needs a results table that fits on a page.\n\n```\n| # | Ask (real, from my term)            | Mode tested   | Result |\n|---|-------------------------------------|---------------|--------|\n| 1 | Plan 50 min on river landforms, Y8  | Stage         | Pass   |\n| 2 | Differentiate task 3, three levels   | Stage         | Pass   |\n| 7 | What does the ladder credit at band 3| Criteria      | UNSAFE |\n| 8 | Mark this anonymised paragraph       | Criteria      | Fail   |\n|11 | Explain longshore drift, reading 11  | Stage         | Pass   |\n|14 | Requirement on glaciation at KS3     | Curriculum    | Pass   |\n```\n\nItem 7 returned a band that does not exist in the ladder. Item 8 marked generously on effort. Both trace to the same cause: an outdated criteria file with the bands described loosely. Replace the file, tighten the marking rule in the instruction block, re-run all fifteen. That sequence — find, trace, fix at source, re-run everything — is the protocol. A protocol that fixes item 7 and moves on is a to-do list.\n\n## Where this goes wrong\n\n**Shipping the prompt and not the protocol.** The instruction block is the interesting artefact and the test record is the load-bearing one. A colleague who inherits the prompt without the evidence will trust it further than you do.\n\n**Claiming a coverage you cannot support.** If the shelf holds Key Stage 3 material, the handover note says Key Stage 3. Colleagues will use it for whatever the note implies.\n\n**No version, no date, no owner.** When an output goes wrong, the only useful question is what changed and when. Undated assistants cannot answer it.\n\n**Documenting everything.** One page per assistant is sustainable. A twenty-page manual written in a weekend is stale by half-term and read by nobody.\n\n**Handing over the tool but not the judgement.** If your colleague cannot say which outputs must never leave without a second reader, the handover has not happened. Verify every fact before it reaches a class; never paste identifiable pupil data into a general assistant. Those two lines belong in the note, in the instruction block, and in the conversation.\n\n## In practice\n\nSubmit two artefacts. First, the **instruction block** for your assistant, carrying the pupil-data prohibition in full. Second, the **reliability test protocol**: what you tested, how each result is graded, what counts as unsafe, what happens when a failure is found, and what triggers a full re-test.\n\nWrite both for the colleague who covers your class in March, not for the marker. Then do the thing that makes it real — hand it to someone in your department and watch them use it for ten minutes without your commentary. Every place they hesitate is a line missing from your note.",
+   "estimated_minutes": 30,
+   "learning_objectives": [
+    "Scope, version and own an assistant so a colleague could adopt it without you",
+    "Write a handover note stating what is loaded, what it refuses and when it was tested",
+    "Produce a reliability test protocol that traces every failure to its source document",
+    "Ship the graded pack: the instruction block with the pupil-data prohibition and the protocol"
+   ],
+   "case_study": "**Department for Education (England) — the AI content store and marking prototypes (2024–25)**\n\nEngland's Department for Education spent 2024 and 2025 doing something unusual for a ministry: rather than buying AI tools for schools, it built the material those tools would have to stand on. Backed by around three million pounds of funding announced with the Department for Science, Innovation and Technology, the department assembled a curriculum \"content store\" — curriculum guidance, lesson plans and anonymised pupil work, pooled and prepared so that education technology companies could ground their products in real, checked, legally usable teaching material rather than in whatever the open internet contained.\n\nThe reason given for doing it is the reason this week exists. The department reported early testing indicating that supplying generative models with targeted educational data raised accuracy substantially compared with the same models working without it — a difference of the order of ninety-something per cent against roughly two-thirds, as reported in coverage of the programme. That is the grounding effect you have been building at classroom scale: the model did not get cleverer, it got something reliable to answer from.\n\nThe second decision matters as much. Alongside the store, the department funded a group of education technology companies to build prototype marking and feedback tools drawing on that material, on a defined timetable, and published guidance for schools and colleges on using AI safely and lawfully. Building the material, funding the tools and writing the guidance were treated as one piece of work rather than three.\n\nFor a teacher shipping an assistant to a department, the pattern is the whole lesson in miniature. Ground it in checked material. Test it and be able to say what the testing showed. Write down the rules for using it, including what it must never touch. A tool without those three things is not ready to be adopted by anyone other than the person who made it — which is a reasonable place to be on a Sunday evening, and not a reasonable place to be when a colleague picks it up on a Monday you are away.",
+   "exercises": [
+    {
+     "order_index": 1,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "The Monday test",
+     "prompt_md": "A colleague opens your teaching assistant while you are absent and wants to use it for a Year 8 lesson. What single artefact tells them fastest whether they can trust its output for that purpose?",
+     "options": [
+      "The handover note, because it states the scope, what is loaded and when it was tested",
+      "The chat history, because previous outputs show what the assistant has produced before",
+      "The knowledge shelf, because reading the loaded documents reveals every standing rule",
+      "The instruction block, because the wording alone proves how the outputs were checked"
+     ],
+     "correct_answer": "The handover note, because it states the scope, what is loaded and when it was tested"
+    },
+    {
+     "order_index": 2,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "Scope, stated properly",
+     "prompt_md": "You are writing the one-sentence scope for an assistant you intend to hand to your department. Which of these is a usable scope statement rather than an invitation to misuse?",
+     "options": [
+      "Planning and resource support for Key Stage 3 geography, on our scheme of work",
+      "A geography helper for the department to use across lessons and marking generally",
+      "An assistant that supports teachers with anything geography-related and beyond",
+      "A general classroom tool for our subject area, adaptable to whatever is needed"
+     ],
+     "correct_answer": "Planning and resource support for Key Stage 3 geography, on our scheme of work"
+    },
+    {
+     "order_index": 3,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "Find, trace, fix, re-run",
+     "prompt_md": "Item 7 of your test protocol returns a marking band that does not exist in your criteria. You trace it to an outdated criteria file. What does the protocol require you to do after replacing that file?",
+     "options": [
+      "Re-run the whole test set, because the repaired file sits underneath every other ask",
+      "Re-run item 7 alone, because only that ask was affected by the outdated criteria file",
+      "Record the fix and continue, because the source of the fault has now been corrected",
+      "Re-run the marking asks only, because planning outputs never draw on marking criteria"
+     ],
+     "correct_answer": "Re-run the whole test set, because the repaired file sits underneath every other ask"
+    },
+    {
+     "order_index": 4,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "The limits section",
+     "prompt_md": "Your handover note includes a section headed what this assistant must never be used for. Which set of items belongs there for a Key Stage 3 planning assistant?",
+     "options": [
+      "Reported grades, wellbeing matters, anything about a named pupil, Key Stage 4 content",
+      "Retrieval starters, three-level differentiation, plenary questions, worked examples",
+      "Anything a colleague has not been trained on, or any task taking over thirty minutes",
+      "Any output that has not been read by the head of department before it is used at all"
+     ],
+     "correct_answer": "Reported grades, wellbeing matters, anything about a named pupil, Key Stage 4 content"
+    },
+    {
+     "order_index": 5,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "What travels with the tool",
+     "prompt_md": "You are handing your tested assistant to a colleague in your department. Beyond the login and the instruction block, what must travel with it for the handover to be complete?",
+     "options": [
+      "The test record and the rule about which outputs never leave without a second reader",
+      "The full chat history, so the colleague can see every output the assistant has produced",
+      "A copy of every source document saved separately, in case the shelf is changed later",
+      "A written statement from the head of department approving the tool for classroom use"
+     ],
+     "correct_answer": "The test record and the rule about which outputs never leave without a second reader"
+    },
+    {
+     "order_index": 6,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "Five marks of a departmental assistant",
+     "prompt_md": "Name the five things a teaching assistant needs before a department could adopt it, and say in a sentence which one teachers most often miss.",
+     "correct_answer": "A one-sentence scope with a named owner and version; an instruction block a stranger could audit; a dated, current knowledge shelf; written evidence that it was tested against the three failure modes; and an honest section on what it must never be used for. The one most often missing is the test evidence, because building feels like progress and testing feels like delay. Without it a colleague inherits confidence they have no basis for."
+    },
+    {
+     "order_index": 7,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "Why the protocol outranks the prompt",
+     "prompt_md": "A colleague asks for your instruction block but not your test record, saying the prompt is the useful part. Explain why that is the wrong half to take, in two to four sentences.",
+     "correct_answer": "The instruction block describes intended behaviour; the test record is the only evidence that the behaviour actually happens on your documents. Taking the prompt alone means inheriting the confident half without the checking half, and a colleague will trust the outputs more than the person who built it does. The record also carries what went wrong before and what triggers a re-test, which is what keeps the tool honest after the first term."
+    },
+    {
+     "order_index": 8,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "Version, date, owner",
+     "prompt_md": "An output from a shared departmental assistant turns out to be wrong three weeks after it was used. Explain what a version number, a date and a named owner let you do that you otherwise could not.",
+     "correct_answer": "They let you answer the only question that helps: what changed, when, and who changed it. With a version history you can see which documents were loaded at the time the output was produced and whether a file was replaced in between, so the fault can be traced to a source rather than argued about. Without them the investigation stops at the output, the same fault stays in place, and nobody can say whether other outputs from that period are affected."
+    },
+    {
+     "order_index": 9,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "The prohibition, stated for colleagues",
+     "prompt_md": "Write the pupil-data prohibition as it should appear in a handover note for colleagues who did not build the assistant. Two to four sentences, plain and unambiguous.",
+     "correct_answer": "Nothing that identifies a pupil goes into this assistant: no names, no initials with a class, no dates of birth, no SEND, medical or family detail, no mark book extracts, no register or register screenshots, and no safeguarding notes. Describe learners as patterns instead, for example a Year 8 reader who decodes accurately but struggles with inference. If identifying material is pasted by mistake, stop, remove it, and report it under the school policy on data incidents rather than carrying on."
+    },
+    {
+     "order_index": 10,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "Ten minutes of watching",
+     "prompt_md": "You hand your assistant to a colleague and watch them use it for ten minutes without commenting. Explain what you are looking for and how you use what you see.",
+     "correct_answer": "I am watching for every point where they hesitate, ask me a question, or use it for something outside its scope, because each of those is a line missing from the handover note or a rule missing from the instruction block. I note them without intervening, so the artefacts are corrected rather than the person coached. Anything they tried that the assistant should refuse goes straight into the test set as a new item."
+    },
+    {
+     "order_index": 11,
+     "type": "short_answer",
+     "language": "prompt",
+     "marks": 5,
+     "title": "Prompt Lab: the assistant instruction block (graded deliverable)",
+     "prompt_md": "**Scenario.** You are shipping a teaching assistant your department could adopt: one subject, one key stage, grounded in your scheme of work, specification extract and marking criteria.\n\nWrite the complete **instruction block** you would paste into the instructions field.\n\nA strong block carries: scope, owner, version and date; audience and stage; the sources-of-truth rule and the exact refusal sentence; reading-age cap with an instruction to refuse rather than exceed; marking rules that forbid inventing bands; what it must ask before drafting; the pupil-data prohibition in full, including what it does if you breach it; the never-use-for list; and the closing rule that every output is a draft with a check-before-teaching list attached.",
+     "correct_answer": "ASSISTANT: [SUBJECT] planning and resource support, [KEY STAGE]. Owner [NAME]. Version [X], [DATE].\n\nSCOPE. You produce first drafts of lessons, resources, explanations and formative feedback for [YEAR GROUPS] in [SCHOOL TYPE]. Nothing else.\n\nSOURCES OF TRUTH. Answer only from the documents loaded as knowledge: [SCHEME OF WORK vX, DATE], [SPECIFICATION EXTRACT, DATE], [MARKING CRITERIA vX, DATE], [LITERACY POLICY]. For any claim about what is required, assessed or credited, quote the exact line and name the file. If you cannot quote it, you may not claim it. Where the documents do not cover something, reply with these exact words: not covered in the loaded specification. Then say what the scheme of work assumes, name the document you would need, and tell me to check with the subject lead. Never fill a gap by inference, from another awarding body, or from an adjacent year group.\n\nSTAGE AND ACCESS. All content pitched at [KEY STAGE]. Pupil-facing text capped at reading age [N]. If a request cannot be met inside that cap, say so and say what would have to change, rather than exceeding it. Every explanation opens with a concrete everyday example before terminology.\n\nMARKING. Award only bands that appear verbatim in the loaded criteria; quote the band wording and the sentence that earns it. Where a criterion cannot be judged from what is written, say NOT EVIDENCED. Never mark on effort, presentation or length. All marks are indicative until the teacher has read the work.\n\nBEFORE DRAFTING. Ask for the content point, the lesson length, and whether the output is for the teacher or for pupils. Do not begin until all three are answered.\n\nPUPIL DATA. Never request and never accept anything identifying a pupil: names, initials with a class, dates of birth, SEND, medical or family detail, mark book extracts, registers, safeguarding notes. Learners are described as patterns only. If identifying material is pasted, stop immediately, do not use it, do not repeat it back, and tell me to remove it and start a new conversation.\n\nNEVER USE FOR. Reported grades, references, wellbeing or safeguarding matters, communications about a named pupil, or content outside [KEY STAGE].\n\nOUTPUT. Everything you produce is a draft. End every output with a list headed CHECK BEFORE TEACHING naming each fact, figure and criterion the teacher must verify, and every point where you worked outside the loaded documents."
+    },
+    {
+     "order_index": 12,
+     "type": "short_answer",
+     "language": "prompt",
+     "marks": 5,
+     "title": "Prompt Lab: the reliability test protocol (graded deliverable)",
+     "prompt_md": "**Scenario.** Before your department adopts the assistant, you must be able to show that it stays accurate, on-specification and age-appropriate — and that you know what to do when it does not.\n\nWrite the **reliability test protocol** as a prompt you can run, together with the rules that govern it.\n\nA strong protocol names the test items and where they come from; grades every response against factual or curriculum error, wrong stage, and misapplied marking criteria; defines pass, fail and unsafe; forbids the assistant from being reassuring or from improving its own answers; requires each failure to be traced to a source document or instruction line; states the stopping rule when a result is unsafe; and names the triggers for a full re-run.",
+     "correct_answer": "RELIABILITY PROTOCOL — [ASSISTANT NAME] v[X], run [DATE] by [NAME].\n\nTEST SET. Fifteen asks taken from work I actually did this term and marked or planned myself, so a correct answer exists to compare against: five planning, five resource or explanation, five marking. Marking items use pupil work with every identifying detail removed. The set is stored with the assistant, not in a chat.\n\nPROMPT TO RUN, one item at a time, in a fresh conversation:\n\nYou are being tested. Do not reassure me, do not improve your answer after the fact, and do not comment on how well you have done. Answer the ask below exactly as you normally would.\n\nThen, in a separate section headed SELF-REPORT, list: every claim you made that you can quote from a loaded document, naming file and line; every claim you could not quote; the key stage and reading age you were working to and how you determined them; and every marking band you awarded with its verbatim wording from the criteria file. Where you were uncertain, say so plainly rather than choosing the likeliest option.\n\nASK: [ITEM]\n\nGRADING. I grade each response myself against three failure modes: (1) factual or curriculum error, including a requirement borrowed from another specification; (2) wrong stage, meaning key stage drift or reading age above the cap; (3) misapplied marking criteria, including invented bands, command words treated as synonyms, or credit for effort. Each item scores PASS, FAIL or UNSAFE. UNSAFE means the output would have reached pupils and been wrong.\n\nRULES. Any UNSAFE result stops use of the assistant immediately. Every failure is traced to its cause — a specific knowledge file or a specific line of the instruction block — and fixed there, never in the conversation. After any fix, all fifteen items are re-run from the start; a partial re-run does not count. Results are recorded with the date, the version tested, each failure, the cause, the repair, and the outcome of the re-run.\n\nRE-TEST TRIGGERS. Any change to a knowledge file. Any change to the instruction block. The start of each half-term. Any output that surprises me, whether or not it was wrong. A new colleague adopting the assistant.\n\nLIMITS. A clean run means nothing untraceable was found in fifteen asks. It does not transfer professional duty: every fact is verified before it reaches a class, and no assistant-produced mark stands until the teacher has read the work."
+    }
+   ]
+  }
+ ]
+}

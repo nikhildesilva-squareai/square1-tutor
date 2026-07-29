@@ -1,0 +1,464 @@
+{
+  "week": 6,
+  "lessons": [
+    {
+      "order_index": 1,
+      "title": "Auditing your selling week",
+      "estimated_minutes": 28,
+      "learning_objectives": [
+        "Audit a real selling week and rank recurring tasks by time cost and repetition",
+        "Map each recurring task to a template, a chain, the assistant or human-only work",
+        "Sequence AI support around calls and follow-ups instead of scattering it through the day",
+        "Fix permanent human checkpoints on anything a buyer reads, any claim and any number"
+      ],
+      "theory_md": "A seller holds two jobs at once. The first is the relationship: the call, the question nobody else thought to ask, the read of a room. The second is the paperwork the relationship generates - the research note, the follow-up, the recap, the CRM field, the pack that goes to procurement. Left alone, the second job quietly eats the first. Ask an account executive where Thursday went and you often get a shrug and a list of small tasks, none of which felt like selling.\n\nYou now have the pieces to fight back. Across this course you built a seller's brief, a research and outreach habit, discovery and objection practice, a deal pack, deal-flow chains and an assistant you tested before trusting. Week 6 turns those pieces into one system you can run every week and hand to someone else. It starts with an audit - not of the week you wish you had, but of the week you actually had.\n\n## Audit the week you actually had\n\nOpen last week's calendar and sent items. Write down every task that repeats, with two numbers beside it: minutes per occurrence, and times per week. Ignore the one-offs; they are noise. You are hunting for volume multiplied by repetition, which is rarely the task that annoys you most. Twelve six-minute CRM updates cost more than the one dreaded quarterly report, and only one of them is worth building around.\n\nMost sellers finish this list surprised. Research notes, recap emails, follow-up sequences, call prep, pack assembly and pipeline hygiene usually make up the bulk of the hours, and none of them is the conversation the customer is paying for.\n\n## Four buckets, not two\n\nThe useful question is not whether a task can be automated. It is which of four homes it belongs in.\n\nA **saved template** suits single-shot work with a stable shape: a recap email, a meeting agenda, a short internal summary. A **chain** suits multi-step production where one output feeds the next: research note into outreach angle into follow-up. **The assistant** suits anything that needs your loaded material - the pricing rules, the ICP, the objection library, the tone your team uses. And some tasks **stay human**: the discovery conversation itself, the negotiation, the awkward call about a slipped date. That fourth bucket is not a failure of imagination. It is where your value sits, and the whole point of the first three is to protect it.\n\n## Sequence around calls, not through the day\n\nA seller's week has natural anchors. Twenty minutes before a call, the assistant produces a prep brief and a short question list. Fifteen minutes after, a chain drafts the recap, the CRM summary and the next-step email while the conversation is still fresh. Everything else - research blocks, outreach batches, pack assembly - goes into two or three protected blocks rather than being sprinkled between meetings, because the switching cost of restarting a chain five times is larger than the chain saves.\n\n## Worked example: sorting the inventory\n\n```\nYou are helping me audit my selling week. I sell workforce scheduling software to operations directors at mid-sized logistics firms. Here is last week from my calendar and sent items, with rough minutes and frequency:\n- Pre-call research note, 25 min, 6 times\n- Recap email after a call, 12 min, 6 times\n- CRM update, 6 min, 12 times\n- Cold outreach writing, 40 min, 3 times\n- Objection reply to procurement, 20 min, 2 times\n- Internal pipeline summary, 30 min, 1 time\nSort each task into one of four buckets: saved template, prompt chain, my assistant, or stays human. Give one line of reasoning for each, and name the human checkpoint that must remain. If a task is too vague to sort, ask me about it rather than guessing.\n```\n\nAbridged, an assistant returns something like: *Pre-call research note - assistant, because it needs your ICP and pricing material loaded; checkpoint: you verify every named fact against the source before any of it reaches a buyer. Recap email - saved template, because the shape barely changes; checkpoint: you confirm the commitments listed are the ones actually made on the call. CRM update - template with placeholders, checkpoint on any number. Cold outreach - chain, research into angle into draft; checkpoint on every personalised claim. Objection reply to procurement - assistant draft, but the commercial answer stays human.* Note what it did with the last one: it split the task rather than swallowing it whole.\n\n## Worked example: writing the checkpoints down\n\nA checkpoint that says *review before sending* is decoration. A checkpoint names what is being checked, what it is checked against, and what forces a rewrite.\n\n```\nHere is my draft operating map for a selling week: [paste the sorted list]. For each automated step, write the checkpoint in three parts: what I am checking, what I compare it against, and what makes me stop and rewrite rather than tidy. Flag any step where the checkpoint would take so long that the automation stops being worth the effort.\n```\n\nAbridged output: *Outreach email - checking: every personalised claim about the account. Compare against: the source material you pasted, line by line. Stop and rewrite if: a claim cannot be traced to a specific line, or a customer name, quote or figure appears that you did not supply. Flagged: the internal pipeline summary, where checking every deal number takes longer than writing the summary yourself.* That flag is worth more than the rest of the answer, because it removes something from the system.\n\n## Where audits go wrong\n\nFive failures repeat. Sellers audit the ideal week rather than the real one, and build for tasks they rarely do. They automate the irritating task instead of the frequent one. They map work to tools they have never tested, so the map is fiction. They write checkpoints as a single word - *review* - which in practice means a glance. And they let a tool near a pipeline number or a customer reference without a verification step, which is the one shortcut that can cost a deal rather than an hour.\n\nThe permanent checkpoints do not move as you get more confident. Anything a buyer reads, any claim about what the product does, any number, and any customer name or quote gets human eyes every single time. Researched personalisation is never faked; only true claims go out; customer names, quotes and metrics are never invented. Speed is allowed to change. That list is not.\n\n## In practice\n\nSpend forty minutes on the audit before you touch a prompt. Write the four-bucket map, write the checkpoints in three parts, and cross out anything you have not actually tested. You should end with a small, ugly, honest list: a handful of templates, one or two chains, one assistant, and a protected column of human work. That column is the job. The rest is the admin the job drags behind it.",
+      "case_study": "**Evolv Technologies — the AI claims a regulator would not accept (2024)**\n\nEvolv Technologies sells AI-assisted security screening systems, and it sold them hard to schools. The pitch, repeated across its marketing and its sales conversations, was that the scanners would detect weapons while ignoring harmless everyday items, faster and more cost-effectively than a traditional metal detector. It is exactly the kind of confident capability claim a seller repeats because it is written down somewhere upstream and sounds authoritative.\n\nOn 26 November 2024 the United States Federal Trade Commission announced a proposed settlement over those claims. The complaint alleged that Evolv had misrepresented how well the system distinguished weapons from benign objects; school customers reported both missed weapons and alarms triggered by ordinary items. The proposed order barred Evolv from making unsupported claims about the accuracy, speed and capability of its AI, and gave certain K-12 customers a 60-day window to exit their contracts. The settlement carried no monetary penalty and no admission of wrongdoing.\n\nFor a seller, the lesson lands before the courtroom. Nobody in the field invented that claim; they inherited it from a deck. But it was sellers who put it in front of buyers, in emails and meetings, one account at a time. Once a capability claim leaves your keyboard it is your claim, whatever its origin. Regulators, procurement teams and unhappy customers all read the sent email, not the source slide.\n\nThis is precisely why the audit ends with permanent human checkpoints rather than a tidy diagram. Speeding up how a claim gets written does nothing to make it true, and an assistant that has been fed a marketing deck will repeat its confidence without the qualifications a careful person would add. Any sentence describing what your product detects, guarantees, saves or achieves belongs in the column that never gets automated: checked by a person against evidence you could show a regulator, every time.",
+      "exercises": [
+        {
+          "order_index": 1,
+          "type": "mcq",
+          "language": null,
+          "marks": 2,
+          "title": "What the audit should measure",
+          "prompt_md": "You are auditing your selling week to decide what to build AI support around. Which measure should decide the order in which you tackle your recurring tasks?",
+          "options": [
+            "Minutes per occurrence multiplied by how often the task repeats in a normal week",
+            "How much you personally dislike doing the task when it appears in the diary",
+            "How technically interesting the task would be to automate with a prompt chain",
+            "How recently the task appeared, with the newest additions handled first"
+          ],
+          "correct_answer": "Minutes per occurrence multiplied by how often the task repeats in a normal week"
+        },
+        {
+          "order_index": 2,
+          "type": "mcq",
+          "language": null,
+          "marks": 2,
+          "title": "Sorting a task into the right bucket",
+          "prompt_md": "A pre-call research note needs your ICP definition, your pricing rules and your objection library to be any good, and you write six of them a week. Which bucket does it belong in?",
+          "options": [
+            "The assistant, because the task depends on material that has been loaded and tested",
+            "A saved template, because the note comes out in the same shape every time",
+            "Human-only work, because research always requires judgement that cannot be shared",
+            "A prompt chain, because the note is the last step of a longer weekly process"
+          ],
+          "correct_answer": "The assistant, because the task depends on material that has been loaded and tested"
+        },
+        {
+          "order_index": 3,
+          "type": "mcq",
+          "language": null,
+          "marks": 2,
+          "title": "What makes a checkpoint real",
+          "prompt_md": "Your operating map lists a checkpoint on the outreach draft that reads, in full, review before sending. Why is that not yet a usable checkpoint in a documented system?",
+          "options": [
+            "It names no test, no source to compare against and no trigger for rewriting",
+            "It places the check after drafting rather than before the draft is produced",
+            "It applies to outreach only, when every step of the week needs a checkpoint",
+            "It uses wording that a new starter would find too formal to follow closely"
+          ],
+          "correct_answer": "It names no test, no source to compare against and no trigger for rewriting"
+        },
+        {
+          "order_index": 4,
+          "type": "mcq",
+          "language": null,
+          "marks": 2,
+          "title": "Sequencing support around a call",
+          "prompt_md": "You have four customer calls booked on Tuesday with thirty-minute gaps between them. Where does the AI support belong if the aim is to protect the quality of the conversations?",
+          "options": [
+            "A prep brief before each call and a recap draft after it, with research batched elsewhere",
+            "A single long block at the end of the day covering prep, recaps and all research",
+            "Continuous use during each call so the notes are written as the buyer speaks",
+            "One block on Monday covering every call and follow-up for the whole week ahead"
+          ],
+          "correct_answer": "A prep brief before each call and a recap draft after it, with research batched elsewhere"
+        },
+        {
+          "order_index": 5,
+          "type": "mcq",
+          "language": null,
+          "marks": 2,
+          "title": "The checkpoints that never move",
+          "prompt_md": "As your system gets faster and you grow more confident in it, which category of output still requires human verification on every single occasion?",
+          "options": [
+            "Anything a buyer reads that contains a claim, a number, a customer name or a quote",
+            "Anything produced by a template rather than by the assistant you built and tested",
+            "Anything written on a day when you have more than three customer calls booked",
+            "Anything longer than a short paragraph, since length raises the chance of an error"
+          ],
+          "correct_answer": "Anything a buyer reads that contains a claim, a number, a customer name or a quote"
+        },
+        {
+          "order_index": 6,
+          "type": "short_answer",
+          "language": null,
+          "marks": 3,
+          "title": "Auditing the real week",
+          "prompt_md": "Explain why the audit must be built from last week's calendar and sent items rather than from a description of how you usually work.",
+          "correct_answer": "A remembered week is an idealised week: it over-represents the tasks you find memorable or irritating and hides the small, frequent admin that actually consumes the hours. Calendar entries and sent items give evidence of what really repeated and how often. Building on evidence means you automate the six-minute task done twelve times rather than the dreaded task done once a quarter."
+        },
+        {
+          "order_index": 7,
+          "type": "short_answer",
+          "language": null,
+          "marks": 3,
+          "title": "Defending the human bucket",
+          "prompt_md": "A colleague argues that if a task can be described clearly enough it should be automated, so the human-only bucket should eventually empty. Give the counter-argument in the terms of this course.",
+          "correct_answer": "The spine of the course is that AI takes the admin while the seller keeps the relationship. Discovery, negotiation and difficult conversations are the work the customer is buying, not overhead to be compressed. Emptying the human bucket would mean automating the part that creates trust and value, and would leave nothing for the saved hours to be spent on."
+        },
+        {
+          "order_index": 8,
+          "type": "short_answer",
+          "language": null,
+          "marks": 3,
+          "title": "Writing a checkpoint in three parts",
+          "prompt_md": "Write a usable checkpoint for a follow-up email that references a figure the buyer mentioned on a call, using the three-part form taught in this lesson.",
+          "correct_answer": "Checking: every figure and claim attributed to the buyer in the draft. Compared against: my call notes and the recording or transcript, line by line. Stop and rewrite if: a figure does not appear in my notes, if the wording makes an estimate sound like a commitment, or if any number, name or quote appears that I did not supply. The rewrite happens before sending, not as a later correction."
+        },
+        {
+          "order_index": 9,
+          "type": "short_answer",
+          "language": null,
+          "marks": 3,
+          "title": "When a checkpoint costs more than it saves",
+          "prompt_md": "Your audit flags an internal pipeline summary where verifying every deal figure takes longer than writing the summary by hand. What should the operating map do with that task, and why?",
+          "correct_answer": "Take it out of the automated system and leave it as human work, or narrow it so the AI only drafts the commentary while the figures are pasted from the CRM. If verification costs more than the drafting it replaces, the automation is a net loss and the temptation to skip the check grows. Removing a step is a legitimate and often valuable outcome of an audit."
+        },
+        {
+          "order_index": 10,
+          "type": "short_answer",
+          "language": null,
+          "marks": 3,
+          "title": "Inherited claims",
+          "prompt_md": "Using the Evolv Technologies case, explain why a capability claim copied from an internal deck still becomes the seller's responsibility once it is sent.",
+          "correct_answer": "The buyer receives the claim in the seller's email and meeting, so the seller is the source as far as the customer, procurement and any regulator are concerned. Internal origin does not make a claim substantiated, and an assistant fed marketing material will repeat its confidence without the qualifications a careful person adds. Every claim about what the product detects, saves or guarantees needs checking against evidence before it goes out."
+        },
+        {
+          "order_index": 11,
+          "type": "short_answer",
+          "language": "prompt",
+          "marks": 5,
+          "title": "Prompt Lab: the selling-week audit",
+          "prompt_md": "You sell a mid-market subscription product and you want an honest audit of your week before you build anything. You have a list of recurring tasks with rough minutes and frequency. Write the prompt that turns that list into a four-bucket operating map. A strong prompt names your role and market, supplies the task list with minutes and frequency, defines the four buckets, demands one line of reasoning per task, requires a named human checkpoint for every automated task, and instructs the assistant to ask rather than guess when a task is unclear.",
+          "correct_answer": "You are helping me audit my selling week so I can decide what to support with AI. I am an account executive selling subscription workforce scheduling software to operations directors at mid-sized logistics firms in the UK. Here is every recurring task from last week's calendar and sent items, with minutes per occurrence and times per week: pre-call research note 25 min x6; recap email 12 min x6; CRM update 6 min x12; cold outreach writing 40 min x3; procurement objection reply 20 min x2; internal pipeline summary 30 min x1. Do this in order. First, rank the tasks by total weekly minutes so I can see where the hours actually go. Second, sort each task into exactly one of four buckets: saved template (single-shot, stable shape), prompt chain (multi-step, one output feeds the next), my assistant (needs my loaded ICP, pricing and objection material), or stays human (the relationship work). Give one line of reasoning per task. Third, for every task not in the human bucket, name the human checkpoint in three parts: what I check, what I compare it against, and what makes me stop and rewrite. Any task producing something a buyer reads must have a checkpoint covering claims, numbers, customer names and quotes. Fourth, flag any task where verification would take longer than doing the work by hand, and recommend removing it from the system. If a task is too vague to sort, ask me about it instead of guessing. Do not invent tasks I have not listed."
+        },
+        {
+          "order_index": 12,
+          "type": "short_answer",
+          "language": "prompt",
+          "marks": 5,
+          "title": "Prompt Lab: the checkpoint map",
+          "prompt_md": "You have a sorted operating map and now need the checkpoints written so precisely that another rep could apply them. Write the prompt that produces that checkpoint map. A strong prompt pastes the map, demands the three-part checkpoint form, fixes the permanent checkpoints on anything a buyer reads, asks for the steps ordered around calls and follow-ups, and asks the assistant to flag steps where checking costs more than it saves.",
+          "correct_answer": "Here is my operating map for a selling week, already sorted into templates, chains, assistant tasks and human tasks: [paste map]. Turn it into a checkpoint map another rep could follow without asking me questions. For every automated step, write the checkpoint in three parts: what I am checking, what I compare it against, and what makes me stop and rewrite rather than tidy. Treat these as permanent and non-negotiable, and say so in the map: anything a buyer reads, any claim about what our product does, any number, and any customer name or quote is verified by a person every time, against a source I can show. Personalisation must come from real research and never be faked, and no customer names, quotes or metrics may be invented at any step. Then order the steps against the shape of a selling day: what runs before a call, what runs immediately after it, and what is batched into a protected block. Finally, flag any step where applying the checkpoint would take longer than doing the task by hand, and recommend that it leaves the system. Use plain language, no jargon, and keep each checkpoint to three short lines."
+        }
+      ]
+    },
+    {
+      "order_index": 2,
+      "title": "Running it as a documented system",
+      "estimated_minutes": 29,
+      "learning_objectives": [
+        "Write a system card for each template that states purpose, inputs and verification step",
+        "Version templates deliberately when product, pricing or ICP changes",
+        "Run a change review that finds every template a pricing or product change breaks",
+        "Hand the system to a new rep during onboarding without quality dropping"
+      ],
+      "theory_md": "There is a moment every good seller-built system meets sooner or later. A rep who has quietly assembled a brilliant set of prompts goes on leave, moves territory or leaves the company. Someone opens the folder, finds nineteen blocks of text with names like *outreach v3 final*, and has no idea which one is current, what has to be pasted into it, or what a person is supposed to check before the output reaches a buyer. Within a fortnight the team is back to writing everything from scratch, and the fastest seller in the region has taken the system home in their head.\n\nThe fix is unglamorous and takes about two hours. Every template, chain and assistant gets a short written card, kept beside it. Documentation is what turns a personal habit into something a team can inherit, audit and improve. It is also what stops you quietly using a template that was built for last year's pricing.\n\n## The system card\n\nOne card per template, six lines, no more:\n\n- **Name and version.** *Discovery recap email, v4.*\n- **What it does, in one sentence.** Not what it is - what job it finishes.\n- **Inputs required.** The exact material that must be pasted in: call notes, the account research block, the pricing rules. If an input is missing, the template does not run.\n- **Verification step.** What a person checks, against what source, and what forces a rewrite. This is the checkpoint from your audit, written where the next person will read it.\n- **Owner and last tested.** A name and a date. A card with no date is a rumour.\n- **Known failure modes.** What this template gets wrong when it is having a bad day: invents a metric, over-promises a timeline, drifts into marketing language.\n\nThat last line is the one people skip and the one that saves a new starter. A template that has a documented habit of inflating outcomes is safe in the hands of someone who was warned about it.\n\n## Worked example: writing the card from the template\n\n```\nHere is a prompt template I use several times a week: [paste template]. Here are two outputs it produced and what I had to change in each: [paste outputs and edits]. Write a system card for it with exactly these fields: name and version, what it does in one sentence, inputs required, verification step written as what I check and what I compare it against, owner and last tested date, and known failure modes drawn from the edits I made. Do not invent failure modes I have not shown you; if the evidence is thin, say so and tell me what to watch for on the next three runs.\n```\n\nAbridged, this returns something usable: *Discovery recap email, v4. Turns raw call notes into a recap a buyer can forward to their finance lead. Inputs: call notes, agreed next steps with dates, pricing rules block. Verification: check every commitment and date against your notes, and every figure against the pricing block; rewrite if an estimate is worded as a promise. Known failure modes, from your edits: converted the phrase around three weeks into three weeks twice, and added a benefit the customer never mentioned.* The failure modes came from real edits, not from imagination, which is why the card is worth trusting.\n\n## Versioning: what changes, and when\n\nA sales system decays quietly. The three things that break it are the three things that move constantly: the product, the price, and who you are selling to. When any of those change, a template does not degrade visibly - it keeps producing confident, fluent output describing a world that no longer exists.\n\nSo versioning is triggered by events, not by a calendar. New pricing or packaging, a shipped feature or a withdrawn one, a change in ICP or territory, a new competitor answer, a legal or compliance instruction about what may be claimed. Each of those triggers a review, a version bump, a one-line change log entry, and a re-test on a couple of real cases before the template goes back in service.\n\n## Worked example: the change review\n\n```\nOur pricing changed on 1 September: the entry tier now includes onboarding that used to be a paid add-on, and the annual discount dropped from 15 per cent to 10 per cent. Here is my template pack with the system cards: [paste cards]. Tell me which templates are affected and how, which are safe to leave alone, and for each affected one, the specific line that must change. Then write the change log entries. Where a card claims something about pricing that I have not confirmed to you today, flag it as unverified rather than rewriting it.\n```\n\nAbridged: *Affected - outreach v3 (references paid onboarding as a differentiator, line 4); proposal summary v2 (quotes the 15 per cent annual discount); objection handling v5 (uses onboarding cost as a concession lever, which no longer exists). Safe - meeting agenda v1, internal pipeline note v2. Unverified - the renewal template refers to a multi-year discount you have not mentioned; confirm before I touch it.* The refusal to guess at the last one is exactly the behaviour you want documented and kept.\n\n## Handover without a quality drop\n\nA new rep should not inherit prompts. They should inherit prompts plus cards plus a way to prove they can run them. In practice that means three things in the first fortnight: read the cards and the master context block; run each template once on a live but low-risk account with their manager reviewing the output against the verification step; and be told plainly which parts of the week are never automated. Quality holds because the checkpoints travel with the templates, not because the new starter is talented.\n\nOne warning worth stating aloud during onboarding: the system is not a licence to send faster. Personalisation still comes from real research, claims are still only made when true, and customer names, quotes and metrics are never invented. A new rep who learns the shortcuts before the rules will use the system to make mistakes at speed.\n\n## Where documentation goes wrong\n\nCards written once and never dated. Version numbers with no change log, so nobody knows what moved. Prompts shared in a chat thread where the newest message wins. Handovers that pass on the templates but not the verification steps, which is how a careful system becomes a fast one. And the quiet killer: a rep who keeps a private, better version of a shared template, so the documented pack and the real pack drift apart.\n\n## In practice\n\nWrite the cards for your three most-used templates this week and date them. Add a single change log file with one line per change. Agree with your manager which two events force a review - usually pricing and product - and who owns each card. If a card takes more than ten minutes to write, the template underneath it is probably doing too many jobs and should be split.",
+      "case_study": "**Rolls-Royce — publishing the Aletheia Framework as a working checklist (2020–2021)**\n\nIn December 2020 Rolls-Royce published the Aletheia Framework, an AI ethics and assurance toolkit developed by its digital integrity team and released free for anyone to download. It is not a statement of principles. It is a 32-step checklist, printable on a single page, covering social impact, accuracy and trust, and governance, and it asks the people building or deploying a system to record evidence against each step rather than asserting that the box is ticked.\n\nTwo features of it matter to a seller documenting a template pack. The first is that the evidence is written down for a named audience: the framework is designed so that approvers, stakeholders and auditors can read what was checked and decide whether they agree. The second is that it is versioned in public. The 2020 release was followed by an updated 2021 edition, so anyone using it can see which version they are working from and what has moved since.\n\nThe framework also builds in continuous checking after deployment, on the understanding that a system which passed once does not stay passed. Conditions shift, inputs change, and behaviour drifts. That assumption is the same one behind versioning a sales template when pricing, packaging or ICP moves: the output stays fluent and confident long after it stopped being accurate, so the review has to be triggered by events rather than trusted to instinct.\n\nRolls-Royce operates in safety-critical engineering, and your recap email does not carry that weight. The transferable part is the format, not the stakes: a short, dated, versioned document that records what was checked and against what evidence, written so that somebody other than its author can pick it up. That is the whole ambition of a system card. It is what separates a set of clever personal prompts from something a team can be handed and held to.",
+      "exercises": [
+        {
+          "order_index": 1,
+          "type": "mcq",
+          "language": null,
+          "marks": 2,
+          "title": "The field new starters need most",
+          "prompt_md": "A new rep inherits your template pack and starts using it in their second week. Which system card field does most to stop the quality of buyer-facing output dropping?",
+          "options": [
+            "The verification step, stating what is checked, against what source, and what forces a rewrite",
+            "The name and version number, so the rep can tell which copy of the template is current",
+            "The owner field, so the rep knows which colleague to approach with any later questions",
+            "The one-sentence purpose, so the rep can tell which job the template was built to finish"
+          ],
+          "correct_answer": "The verification step, stating what is checked, against what source, and what forces a rewrite"
+        },
+        {
+          "order_index": 2,
+          "type": "mcq",
+          "language": null,
+          "marks": 2,
+          "title": "What triggers a version bump",
+          "prompt_md": "Your team agrees that templates are versioned on events rather than on a fixed schedule. Which of these should trigger an immediate review and version bump of the affected templates?",
+          "options": [
+            "The annual discount changes and a paid add-on becomes part of the entry tier",
+            "A quarter closes and the team moves into a new reporting period as normal",
+            "A rep reports that one output this week read slightly more formally than usual",
+            "The assistant tool releases a new interface with the same underlying behaviour"
+          ],
+          "correct_answer": "The annual discount changes and a paid add-on becomes part of the entry tier"
+        },
+        {
+          "order_index": 3,
+          "type": "mcq",
+          "language": null,
+          "marks": 2,
+          "title": "Why decay is hard to notice",
+          "prompt_md": "Pricing changed six weeks ago and nobody reviewed the template pack. Why is this failure unlikely to be spotted by reading the outputs the templates produce?",
+          "options": [
+            "The output stays fluent and confident while describing terms that no longer exist",
+            "The output becomes visibly garbled, so reps stop reading it with any real care",
+            "The templates refuse to run once any of their input material has become outdated",
+            "The tool warns about outdated pricing but hides the warning below the draft text"
+          ],
+          "correct_answer": "The output stays fluent and confident while describing terms that no longer exist"
+        },
+        {
+          "order_index": 4,
+          "type": "mcq",
+          "language": null,
+          "marks": 2,
+          "title": "Documenting known failure modes",
+          "prompt_md": "You are writing the known failure modes line on a system card for a recap email template you have used for months. What should that line be built from?",
+          "options": [
+            "The specific edits you have repeatedly had to make to real outputs from this template",
+            "A general list of the weaknesses that large language models are known to display",
+            "The worst outcomes you can imagine the template producing on a difficult account",
+            "The warnings published by the vendor of the assistant tool your team has adopted"
+          ],
+          "correct_answer": "The specific edits you have repeatedly had to make to real outputs from this template"
+        },
+        {
+          "order_index": 5,
+          "type": "mcq",
+          "language": null,
+          "marks": 2,
+          "title": "The drift that documentation cannot see",
+          "prompt_md": "Which behaviour most quietly undermines a documented template pack even when every card is well written and correctly dated?",
+          "options": [
+            "A rep keeps a private improved copy of a shared template and never updates the pack",
+            "A rep runs a shared template twice on the same account during a single week",
+            "A rep asks the owner of a card to explain the verification step before using it",
+            "A rep adds a dated change log entry after making a small wording improvement"
+          ],
+          "correct_answer": "A rep keeps a private improved copy of a shared template and never updates the pack"
+        },
+        {
+          "order_index": 6,
+          "type": "short_answer",
+          "language": null,
+          "marks": 3,
+          "title": "Cards versus prompts",
+          "prompt_md": "A manager says the team can share prompts in a group chat and skip the system cards. Explain what is lost, using the handover scenario from this lesson.",
+          "correct_answer": "A prompt in a chat thread carries no version, no owner, no date, no list of required inputs and no verification step, so the newest message wins and nobody knows what is current. A new rep can copy the text but cannot tell what to paste in or what to check before sending. The card is what makes quality survive the handover, because the checkpoint travels with the template rather than living in the original author's head."
+        },
+        {
+          "order_index": 7,
+          "type": "short_answer",
+          "language": null,
+          "marks": 3,
+          "title": "Event-driven review",
+          "prompt_md": "Name two events that should force a review of your template pack, and describe what a review actually involves beyond changing the text.",
+          "correct_answer": "A pricing or packaging change and a product change - a shipped or withdrawn feature - are the two most common triggers; an ICP or territory change is a third. A review means identifying every affected template, editing the specific lines involved, bumping the version, writing a one-line change log entry, and re-testing the template on a couple of real cases before it goes back into service."
+        },
+        {
+          "order_index": 8,
+          "type": "short_answer",
+          "language": null,
+          "marks": 3,
+          "title": "Onboarding in the first fortnight",
+          "prompt_md": "Describe how you would hand your AI operating system to a new rep in their first two weeks so that output quality does not drop.",
+          "correct_answer": "Give them the system cards and the master context block to read first, then have them run each template once on a live but low-risk account with their manager reviewing the output against the documented verification step. Tell them plainly which parts of the week are never automated, and that faster sending is not the point: personalisation still comes from real research and no claim, name, quote or metric goes out unverified."
+        },
+        {
+          "order_index": 9,
+          "type": "short_answer",
+          "language": null,
+          "marks": 3,
+          "title": "The unverified flag",
+          "prompt_md": "During a change review the assistant flags a renewal template as unverified rather than rewriting it. Why is that the behaviour you want, and what do you do next?",
+          "correct_answer": "It refers to a multi-year discount that was never confirmed, so rewriting it would mean inventing commercial terms and passing them into buyer-facing output. Flagging keeps the honesty rule intact: only true claims go out, and figures are never invented. Next you confirm the actual term with the source of truth, then supply it and re-run the review so the template is updated from evidence."
+        },
+        {
+          "order_index": 10,
+          "type": "short_answer",
+          "language": null,
+          "marks": 3,
+          "title": "What transfers from the Aletheia case",
+          "prompt_md": "Rolls-Royce works in safety-critical engineering and you write recap emails. Explain what a seller should still take from the Aletheia Framework case.",
+          "correct_answer": "The transferable part is the format rather than the stakes: a short, dated, versioned document that records what was checked and against what evidence, written so someone other than its author can use it. It also assumes a system that passed once does not stay passed, which is why checking continues after deployment. That is the argument for reviewing templates on events such as pricing or product changes."
+        },
+        {
+          "order_index": 11,
+          "type": "short_answer",
+          "language": "prompt",
+          "marks": 5,
+          "title": "Prompt Lab: write the system card",
+          "prompt_md": "You have a heavily used template and a folder of its real outputs with the edits you made to each. Write the prompt that turns them into a system card. A strong prompt supplies the template and the evidence, names every field the card must contain, insists that failure modes come from the actual edits rather than imagination, and tells the assistant to say when the evidence is too thin.",
+          "correct_answer": "You are helping me document a prompt template so a colleague could run it without asking me anything. Here is the template I use three or four times a week: [paste template]. Here are three real outputs it produced and exactly what I changed in each before sending: [paste outputs and edits]. Write a system card with these fields and no others. Name and version. What it does, in one sentence describing the job it finishes rather than what it is. Inputs required, listed precisely, including anything that must be pasted in for the template to run at all. Verification step, written as what I check, what I compare it against, and what makes me stop and rewrite; this must cover claims, numbers, customer names and quotes for any output a buyer reads. Owner and last tested date, left as blanks for me to fill. Known failure modes, drawn only from the edits I actually made above. Do not invent failure modes you have not seen evidence for; if two outputs are not enough to judge, say so and tell me what to watch for over the next three runs. Keep the whole card under 150 words and use plain language a new starter would follow."
+        },
+        {
+          "order_index": 12,
+          "type": "short_answer",
+          "language": "prompt",
+          "marks": 5,
+          "title": "Prompt Lab: the change review",
+          "prompt_md": "Your pricing and packaging change next month and you need to know which parts of your documented pack break. Write the change-review prompt. A strong prompt states the change precisely, supplies the cards, asks which templates are affected and which are safe, requires the specific lines to change plus change log entries, and forbids rewriting anything the assistant has not been told is true.",
+          "correct_answer": "Our commercial terms change on 1 September. Two things move: onboarding, previously a paid add-on, is now included in the entry tier, and the annual prepayment discount falls from 15 per cent to 10 per cent. Nothing else changes. Here is my documented template pack with system cards: [paste cards]. Work through it in this order. First, list the templates affected by the change and, for each, quote the specific line or claim that must be edited. Second, list the templates that are unaffected, so I do not touch them needlessly. Third, for each affected template, draft the replacement line and a one-line change log entry in the form date, template, version, what changed and why. Fourth, tell me which templates need re-testing on a real case before they go back into service, and what a good test would look like. Rules: work only from the change I have described and the cards I have pasted. If a card refers to a commercial term I have not confirmed today, mark it unverified and tell me to check it rather than rewriting it. Do not invent pricing, discounts, customer names or figures under any circumstances."
+        }
+      ]
+    },
+    {
+      "order_index": 3,
+      "title": "Capstone: deliver your seller's AI operating system",
+      "estimated_minutes": 30,
+      "learning_objectives": [
+        "Assemble a complete seller operating system from the six weeks of work",
+        "Write a master deal-context block that every template and chain draws on",
+        "Document a template pack with usage notes and verification steps another rep can follow",
+        "Prove the pack carries only claims, names and figures that can be evidenced"
+      ],
+      "theory_md": "This is the finale, and it is a build rather than a read. Everything from the six weeks now becomes one pack that a colleague could pick up on Monday and run without you in the room. The two Prompt Labs at the end of this lesson are the submission: the master deal-context block, and the documented template pack with usage and verification notes.\n\nBefore you write either, be clear about what a complete pack contains and why each part earns its place.\n\n## What a complete operating system contains\n\n**One: the master deal-context block.** A single reusable block of text describing who you sell to, what the product actually does, the pricing and packaging rules, the proof points you are allowed to use with their sources, the tone your team writes in, and the hard lines. It is pasted at the top of any conversation with an assistant. It exists because scattered context produces scattered output, and because a claim written once in a canonical place is far easier to keep true than the same claim retyped forty times.\n\n**Two: the template pack with system cards.** Your five to eight most-used templates, each with the card from the previous lesson: name and version, purpose, inputs, verification step, owner and date, known failure modes.\n\n**Three: the chains.** The multi-step sequences from week 4, written as ordered steps with the handover point between them named.\n\n**Four: the assistant.** The instruction block and the reliability test protocol from week 5, including the test cases you run again after any change.\n\n**Five: the operating map and checkpoint map** from the first lesson of this week: which task runs where in the week, and the three-part checkpoint on every automated step.\n\n**Six: the governance page.** Owners, dates, a change log, and the review triggers - pricing, product, ICP, compliance instruction.\n\nAcross all six, the same rules apply and are written once at the top of the pack: personalisation comes from real research and is never faked, only true claims go out, and customer names, quotes and metrics are never invented. AI takes the admin; the seller keeps the relationship.\n\n## Worked example: building the master context block\n\nMost sellers already have the raw material scattered across a pricing sheet, a battlecard, an old proposal and their own memory. The work is consolidation, and the useful part of the prompt is what it does with gaps.\n\n```\nI am building a master deal-context block I will paste at the top of every AI conversation. Here is my raw material: [paste pricing rules, ICP notes, product one-pager, two proof points with their sources, three phrases we never use]. Turn it into one block with these sections: who we sell to, what the product does and does not do, pricing and packaging rules, approved proof points with the source beside each, tone, and hard lines. Where my material is missing, contradictory or vague, list it under a heading called gaps to confirm rather than filling it in. Do not add proof points, figures or customer names that I have not supplied.\n```\n\nAbridged, the useful half of the answer is the end: *Gaps to confirm - your ICP notes say mid-market but the proposal quotes an enterprise security requirement; no source is attached to the 30 per cent claim; you have not told me whether the onboarding fee is waived on annual terms.* An assistant that fills those in silently gives you a beautiful block with three inventions inside it, and every template downstream will inherit them.\n\n## Worked example: stress-testing the pack before you hand it over\n\n```\nHere is my documented template pack: [paste cards and usage notes]. Read it as a sceptical sales manager who has to let a new starter loose with it next week. For each template, answer three questions: could a new rep run this without asking a question, is the verification step specific enough to act on, and what is the worst output this could send to a buyer if the rep skipped the check. Then list the three weakest items in the pack and what would fix each. Do not rewrite the pack.\n```\n\nAbridged: *Outreach v3 - runnable, but the verification step says check personalisation, which is not actionable; specify that every claim about the account must be traceable to the pasted source. Proposal summary v2 - not runnable without the pricing block, which is not listed as an input. Worst case, unchecked: a discount figure carried over from a previous deal.* This is the review that turns a pile of prompts into something you would put your name on.\n\n## What good looks like when it is marked\n\nA strong submission is judged on four things. Completeness: the context block covers buyer, product, pricing, proof and tone, and the pack covers the work that actually fills the week. Specificity: inputs are named, verification steps say what is compared against what, and nothing rests on the word review. Honesty: every proof point carries a source, and the pack states the hard lines rather than assuming them. Transferability: a colleague could run it on Monday. That last test is the one that fails most packs, and it is worth doing literally - hand it to someone and watch where they hesitate.\n\n## The mistakes that cost marks\n\nPacks that document eleven templates, most of them aspirational, rather than the six that carry the week. Context blocks stuffed with marketing language, which teaches the assistant to write brochures. Proof points with no source, which is how an unverifiable figure becomes a habit. Verification steps that repeat the word check without an object. Cards with no owner or date. And the deepest one: a pack that quietly automates the conversation - discovery scripts to be read aloud, negotiation replies to be pasted - which inverts the whole point of the six weeks.\n\n## In practice\n\nWork on real material, not an invented company. Build the master context block first, because everything else draws on it, and resolve the gaps it surfaces before you go further. Then document the templates you genuinely used this month, in order of how often you used them. Keep it short enough that a new rep reads all of it, and honest enough that you would be relaxed if a customer, a compliance officer or a regulator read it too.",
+      "case_study": "**Global Predictions — the first regulated AI financial advisor that was not (2024)**\n\nGlobal Predictions, a San Francisco investment adviser, marketed itself with an unusually confident line: it described itself as the first regulated AI financial advisor and told prospective clients its platform provided expert AI-driven forecasts. Those phrases sat where phrases like that usually sit, in website copy and marketing material, and from there they travel into decks, emails and conversations with prospects.\n\nOn 18 March 2024 the United States Securities and Exchange Commission announced settled charges against the firm for making false and misleading statements about its use of artificial intelligence, alongside a companion action against a Toronto-based adviser announced the same day. Global Predictions agreed to a civil penalty of 175,000 US dollars; the other firm agreed to 225,000. The regulator described the conduct with a term that has since stuck: AI washing. Its point was simple - if you claim to use AI in a particular way, you have to be able to show it.\n\nRead it as a documentation problem and it becomes uncomfortably familiar. A claim of that kind is written once, by someone who is not in the room when it is repeated, and then it propagates. It goes into the battlecard, into the proposal boilerplate, into the outreach template, and eventually into a context block pasted at the top of every AI conversation, where it is reproduced fluently and forever. Nobody along that chain re-examines whether it can be evidenced, because it arrived already sounding official.\n\nThat is why the master deal-context block in this capstone demands a source beside every proof point, and why the pack is graded on whether an unverifiable figure could survive inside it. A canonical block is a multiplier: it makes true claims consistent and false claims industrial. The seller who insists on a source for each line is not being pedantic - they are stopping one unchecked sentence from being sent to two hundred buyers with their name on it.",
+      "exercises": [
+        {
+          "order_index": 1,
+          "type": "mcq",
+          "language": null,
+          "marks": 2,
+          "title": "Why the context block comes first",
+          "prompt_md": "You are assembling your operating system and have to choose what to build before everything else. Why is the master deal-context block the first component rather than the templates?",
+          "options": [
+            "Every template and chain draws on it, so a claim fixed there stays consistent everywhere",
+            "It takes the least time to write, so it gives the project some early momentum",
+            "Templates cannot be documented until the assistant has been fully tested and signed off",
+            "It is the only component that a manager or a compliance officer will ever read closely"
+          ],
+          "correct_answer": "Every template and chain draws on it, so a claim fixed there stays consistent everywhere"
+        },
+        {
+          "order_index": 2,
+          "type": "mcq",
+          "language": null,
+          "marks": 2,
+          "title": "Handling gaps in your raw material",
+          "prompt_md": "Your pricing sheet, battlecard and old proposal disagree about whether an onboarding fee is waived on annual terms. What should the prompt building your context block instruct the assistant to do?",
+          "options": [
+            "List the contradiction under gaps to confirm and leave the answer for you to supply",
+            "Choose the most recent of the three documents and treat that version as correct",
+            "Write the block without mentioning onboarding fees so no wrong claim can appear",
+            "Give the likely commercial answer and mark it clearly as an assumption in the text"
+          ],
+          "correct_answer": "List the contradiction under gaps to confirm and leave the answer for you to supply"
+        },
+        {
+          "order_index": 3,
+          "type": "mcq",
+          "language": null,
+          "marks": 2,
+          "title": "The test a pack most often fails",
+          "prompt_md": "Your documented pack is complete, specific and honest about sources. Which remaining test does a capstone submission most commonly fail when it is marked?",
+          "options": [
+            "Transferability: whether a colleague could run the pack on Monday without asking you",
+            "Length: whether the pack fits within the page limit set by the marking guidance",
+            "Coverage: whether the pack includes at least one template for every stage of a deal",
+            "Novelty: whether the templates differ from the examples given during the course"
+          ],
+          "correct_answer": "Transferability: whether a colleague could run the pack on Monday without asking you"
+        },
+        {
+          "order_index": 4,
+          "type": "mcq",
+          "language": null,
+          "marks": 2,
+          "title": "Proof points in the context block",
+          "prompt_md": "Your draft context block lists four proof points you use with buyers, one of which is a percentage improvement with no source attached. What does the capstone standard require?",
+          "options": [
+            "Attach the source or remove the figure before the block is used anywhere",
+            "Keep the figure but soften the wording so it reads as an estimate instead",
+            "Keep the figure and note that the source will be added at the next review",
+            "Move the figure into the template pack where a rep can decide about it"
+          ],
+          "correct_answer": "Attach the source or remove the figure before the block is used anywhere"
+        },
+        {
+          "order_index": 5,
+          "type": "mcq",
+          "language": null,
+          "marks": 2,
+          "title": "The pack that inverts the course",
+          "prompt_md": "Which item in a submitted operating system would most clearly contradict the principle that AI takes the admin while the seller keeps the relationship?",
+          "options": [
+            "A discovery script the rep is meant to read aloud to the buyer during the call",
+            "A prep brief the rep reads before the call and then puts away to one side",
+            "A recap email drafted after the call and checked against the notes taken",
+            "A research note produced in a batch and verified against its cited sources"
+          ],
+          "correct_answer": "A discovery script the rep is meant to read aloud to the buyer during the call"
+        },
+        {
+          "order_index": 6,
+          "type": "short_answer",
+          "language": null,
+          "marks": 3,
+          "title": "The six components",
+          "prompt_md": "List the components of a complete seller operating system as taught in this lesson, and say in one line what each contributes.",
+          "correct_answer": "The master deal-context block gives every conversation the same canonical facts; the template pack with system cards covers repeated single-shot work; the chains cover multi-step production; the assistant and its test protocol cover work needing loaded material; the operating and checkpoint maps place each task in the week with a named human check; and the governance page holds owners, dates, a change log and review triggers. The honesty rules sit once at the top and apply across all six."
+        },
+        {
+          "order_index": 7,
+          "type": "short_answer",
+          "language": null,
+          "marks": 3,
+          "title": "Why a canonical block is a multiplier",
+          "prompt_md": "Using the Global Predictions case, explain why an unverified claim inside a master context block is more dangerous than the same claim in a single email.",
+          "correct_answer": "A context block is pasted into every conversation, so anything inside it is reproduced fluently across outreach, proposals and recaps for as long as the block is in use. One unchecked sentence therefore reaches every buyer rather than one. Because it arrived sounding official, nobody downstream re-examines it, which is exactly how a claim that cannot be evidenced becomes standard language."
+        },
+        {
+          "order_index": 8,
+          "type": "short_answer",
+          "language": null,
+          "marks": 3,
+          "title": "Marking the pack for specificity",
+          "prompt_md": "A verification step in a submitted pack reads check personalisation before sending. Rewrite it so it meets the specificity standard, and say why the original fails.",
+          "correct_answer": "The original names no object, no source and no trigger, so in practice it means a glance. A usable version: check every claim made about the account, compare each one line by line against the research source pasted into the template, and rewrite the sentence if it cannot be traced to that source or if a customer name, quote or figure appears that I did not supply. Specific steps can be followed by someone who did not write them."
+        },
+        {
+          "order_index": 9,
+          "type": "short_answer",
+          "language": null,
+          "marks": 3,
+          "title": "Sizing the pack",
+          "prompt_md": "Explain why documenting six genuinely used templates beats documenting eleven that include several you rarely run.",
+          "correct_answer": "Aspirational templates inflate the pack without carrying any of the week, and they dilute the parts a new rep actually needs to read and trust. Undocumented rarely-used templates also decay unnoticed because nobody reviews them when pricing or product changes. A short pack built from the work that genuinely fills the week is more likely to be read fully, kept current and handed over successfully."
+        },
+        {
+          "order_index": 10,
+          "type": "short_answer",
+          "language": null,
+          "marks": 3,
+          "title": "The final read-through",
+          "prompt_md": "Before submitting, you reread the pack imagining a customer, a compliance officer and a regulator reading it. What are you looking for?",
+          "correct_answer": "Any claim about the product that cannot be evidenced, any figure without a source, any customer name, quote or metric that was not supplied by a real source, and any personalisation that would be fabricated rather than researched. You are also checking that the hard lines are written down rather than assumed, and that nothing in the pack automates the conversation itself. If a line would embarrass you when read aloud, it is rewritten or removed."
+        },
+        {
+          "order_index": 11,
+          "type": "short_answer",
+          "language": "prompt",
+          "marks": 5,
+          "title": "Prompt Lab: the master deal-context block (submission 1)",
+          "prompt_md": "This is the first half of your capstone submission. You have scattered raw material: pricing rules, ICP notes, a product one-pager, proof points with and without sources, and phrases your team never uses. Write the prompt that consolidates them into one master deal-context block. A strong prompt names the sections required, forbids adding proof points, figures or customer names that were not supplied, requires a source beside every approved proof point, and demands that gaps and contradictions be listed rather than filled.",
+          "correct_answer": "I am building a master deal-context block that I will paste at the top of every AI conversation about a deal, and that my templates and chains will draw on. I sell subscription workforce scheduling software to operations directors at mid-sized logistics firms in the UK. Here is my raw material, in the state it is actually in: [paste pricing and packaging rules, ICP notes, product one-pager, proof points with their sources where I have them, competitor notes, tone examples from two emails I am happy with, and the phrases we never use]. Build one block, under 600 words, with these sections in this order: who we sell to and what triggers a purchase; what the product does and, equally important, what it does not do; pricing and packaging rules; approved proof points, each with its source written beside it; tone, with two short examples; and hard lines. Under hard lines, state these explicitly: personalisation must come from real research and is never faked, only claims we can evidence go out, and customer names, quotes and metrics are never invented. Rules for you. Use only the material I have pasted. Do not add proof points, figures, customer names or capabilities I have not supplied, and do not smooth over anything. Where my material is missing, vague or contradictory, do not resolve it: list it under a final heading called gaps to confirm, quoting the conflicting lines so I can see the disagreement. Any proof point without a source goes under gaps to confirm rather than into the approved list. Write in plain British English, no marketing language."
+        },
+        {
+          "order_index": 12,
+          "type": "short_answer",
+          "language": "prompt",
+          "marks": 5,
+          "title": "Prompt Lab: the documented template pack (submission 2)",
+          "prompt_md": "This is the second half of your capstone submission. You have your most-used templates and chains and need them documented so a new rep could run them next week. Write the prompt that produces the documented pack with usage and verification notes. A strong prompt supplies the templates and real evidence of how they behave, fixes the card fields, requires three-part verification steps and a place in the week for each, states the permanent human checkpoints and honesty rules, and instructs the assistant to flag anything it cannot document from evidence.",
+          "correct_answer": "You are helping me document my sales AI template pack so a new rep could run it in their second week without asking me questions. Here are the templates and chains I actually used this month, in order of how often I used them: [paste each template and chain]. Here is my master deal-context block, which all of them draw on: [paste block]. Here are two real outputs per template and the edits I made before sending: [paste outputs and edits]. Produce the documented pack as follows. For each item, write a system card with exactly these fields: name and version; what it does, in one sentence describing the job it finishes; inputs required, listed precisely, including which parts of the context block it needs; usage note saying where in the selling week it runs, for example before a call, immediately after a call, or in a batched block; verification step in three parts, what I check, what I compare it against, and what makes me stop and rewrite; owner and last tested date, left blank for me; and known failure modes drawn only from the edits shown above. For chains, also name the handover point between steps and what must be true before the next step runs. Then write a one-page front sheet for the pack stating the permanent rules: anything a buyer reads, any claim, any number, any customer name or quote is verified by a person every time; personalisation comes from real research and is never faked; nothing in this pack automates a discovery or negotiation conversation. Finally, list anything you could not document from the evidence I gave you, and what I should send you to close each gap. Do not invent failure modes, figures, customers or capabilities."
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,464 @@
+{
+  "week": 5,
+  "lessons": [
+    {
+      "order_index": 1,
+      "title": "Building a no-code sales assistant",
+      "theory_md": "## The paste tax\n\nBy the third month of working this way, most sellers have a ritual. Open a new chat. Paste the product one-pager. Paste the price bands. Paste the two competitor lines you always get asked about. Paste the reminder not to invent numbers. Then, finally, type the question you actually had, which took eleven seconds.\n\nThat ritual costs you twice. It costs three or four minutes on every deal, which across a week of live opportunities is most of an afternoon. Worse, it costs consistency. Nobody pastes the same context twice. Monday's paste has the new enterprise band in it; Thursday's paste is the version you kept in a note from March. So the same product question gets two different answers, and you cannot tell which one went out to a buyer.\n\nA custom assistant removes the ritual. Every mainstream tool now offers one under a different name: custom GPTs and Projects in ChatGPT, Projects in Claude, agents in Copilot, Gems in Gemini. The mechanics differ slightly; the shape is identical. You create a named workspace, you write standing instructions, you attach reference material, and every conversation you start inside it opens with that context already loaded. Use whichever one your organisation has approved.\n\nThis does not change the spine of the course. The assistant takes the admin: the recall, the reformatting, the first draft. You keep the relationship, the judgement and the sign-off.\n\n## Two layers, two different jobs\n\nA custom assistant has two slots, and most bad assistants are bad because material was put in the wrong one.\n\n**Instructions** describe behaviour. Who the assistant is helping, what tone to hold, what it may never do, what it must ask before answering, how output should be shaped. Instructions are short, stable and written once.\n\n**Knowledge files** are the facts. The price book. The product one-pagers. The ICP and the disqualifiers. The competitor battlecards. The approved claims with their sources. The objection library. These are long, they change without warning, and they belong in files precisely so that replacing the file updates every future answer.\n\nThe test is change frequency. If it changes when marketing republishes the price list, it is knowledge. If it changes when your sales process changes, it is an instruction. A seller who writes our starter tier is 12 pounds per user per month into the instruction block has created a number that nobody will remember to update.\n\nA workable knowledge pack for a seller has six parts: product facts, pricing and discount rules, ICP with disqualifiers, competitor battlecards, approved claims and proof points with their sources, and the objection library you built in week two. Put a header on every file: what it is, who owns it, the date it was valid from, and whether it is customer-facing.\n\n## Worked example one: the instruction block\n\nA mid-market seller of a workforce scheduling product writes this into the instructions slot:\n\n```\nYou are helping me, an account executive selling a workforce scheduling\nproduct to operations leaders in mid-market retail and hospitality.\n\nAnswer only from the attached files. If something is not covered in them,\nsay: not in the loaded material, ask product marketing. Never estimate a\nprice, a timeline or an integration that is not written in a file.\n\nOnly use claims that appear in Approved-Claims.md, and quote them in the\nwording used there. Never invent a customer name, a customer quote or a\nmetric. If I ask for a reference story, list only the named references in\nReference-Stories.md.\n\nBefore drafting anything buyer-facing, ask me three things: which deal,\nwhat stage, and what the buyer actually said. Default output: short\nparagraphs, British spelling, no exclamation marks, under 180 words.\nEnd every answer with the file names you used.\n```\n\nAsked whether the product does shift swapping and what it costs for 400 staff, the assistant returns, in abridged form: shift swapping with manager approval is described in Product-Facts.md, valid from June; the 400-staff figure falls in the mid band in Pricing-Rules.md, quoted at list with the standard annual discount only, approval needed beyond that; and a closing line, sources: Product-Facts.md, Pricing-Rules.md. Asked whether it integrates with a payroll tool nobody has ever loaded, it answers: not in the loaded material, ask product marketing. That refusal is the whole point of the exercise.\n\n## Worked example two: making the files answer\n\nLoading files is not the same as the assistant using them. Force the link, then check it. Inside the assistant, the seller asks:\n\n```\nBuild me a one-page internal brief on how we compare to the incumbent\nrostering tool this account already runs, for an operations director who\ncares about overtime cost.\n\nUse only Battlecard-Incumbent.md and Approved-Claims.md. For every claim,\nput the file name and the valid-from date in brackets after it. If the\nbattlecard does not cover a comparison point, write not covered rather\nthan filling the gap. Do not write anything I could not repeat on a call.\n```\n\nThe abridged reply gives four comparison points, each tagged with a file name and a date, one line reading not covered against mobile clock-in, and no numbers beyond those in the files. The tagging is what makes the output checkable in ten seconds: an untagged claim is a claim the assistant produced from its own general knowledge, and that is the one you delete.\n\n## Where this goes wrong\n\nSellers upload the entire shared drive, including three superseded price lists, and the assistant blends them. Load one current version of each file and nothing else. Files arrive undated, so nobody can tell what is stale. Product detail gets typed into the instruction block, where it quietly rots. Sellers assume a file was read when the answer was actually written from the model's general knowledge of the category, which is why you demand file names in every answer.\n\nAnd the serious one: material gets loaded that should never sit in a shared assistant. Unredacted customer contracts. Anything with personal data in it. Internal cost and margin sheets. Roadmap that has not been announced. Treat a knowledge file as something that could be read aloud by the assistant to anyone who has access to it, because that is close to what it is.\n\n## In practice\n\nBuild the assistant once, on a quiet Friday, from files you already own. Write the instruction block on one page. Load six files, each dated and owned. Then run your next three live questions through it and watch for two things: whether it cites files, and whether it says no when it does not know. Testing that properly is the next lesson.",
+      "estimated_minutes": 28,
+      "learning_objectives": [
+        "Separate assistant instructions from knowledge files using a change-frequency test",
+        "Assemble a six-part knowledge pack covering product facts, pricing rules, ICP, battlecards and approved claims",
+        "Write an instruction block that fixes role, sources, refusal behaviour and output format",
+        "Decide what must never be loaded into a shared sales assistant and record the reason"
+      ],
+      "case_study": "**Northwestern University — 200 custom assistants gave up their instructions and their files (2023)**\n\nIn November 2023, weeks after custom assistants became a mainstream feature that anyone could build without code, a research team at Northwestern University tested how well those assistants protected what had been loaded into them. They took 16 assistants published by the platform itself and sampled more than 200 built by third parties, then tried a set of plain conversational prompts designed to make each one reveal its own setup. The work was written up as a paper titled Assessing Prompt Injection Risks in 200+ Custom GPTs and covered by TechXplore in December 2023.\n\nThe results were blunt. Using nothing more exotic than ordinary instructions typed into the chat box, the researchers extracted the hidden instruction block from 97.2 per cent of the assistants they tested, and retrieved the uploaded knowledge files from 100 per cent of those that had files attached. No hacking tools were involved. The builders had assumed that instructions were private and attachments were internal, and neither assumption held.\n\nFor a seller this is not an abstract security story, it is a packing list. The assistant you build this week will hold your pricing logic, your competitor battlecards and whatever you attached in a hurry on a Friday afternoon. If a colleague, a contractor or a buyer ever gets access to that assistant, the sensible planning assumption is that they can read every file inside it and the instruction block too. That is a reason to load the current price bands and the approved claims, and a reason not to load the margin sheet, the unredacted contract, the churn-risk list or anything containing a named customer who has not agreed to be named.\n\nThe study also explains a habit worth forming now. Keep two tiers of material: a shared tier that could survive being read by an outsider, and a private tier you paste into a single conversation and never attach permanently. The convenience of never re-pasting context is real, and it is worth having. It is worth having deliberately, with a note in the instruction block recording what was loaded, by whom and on what date, so that the next person to inherit the assistant knows exactly what is inside it.",
+      "exercises": [
+        {
+          "order_index": 1,
+          "type": "mcq",
+          "language": null,
+          "marks": 2,
+          "title": "Instructions or knowledge",
+          "prompt_md": "You are deciding where the current enterprise price bands should live in your custom sales assistant: written into the standing instruction block, or attached as a knowledge file. Which reasoning leads to the right slot?",
+          "options": [
+            "Prices belong in a knowledge file, because they change when marketing republishes the price list and a file can be replaced in one action",
+            "Prices belong in the instruction block, because instructions are read first and therefore carry more weight than any attached file",
+            "Prices belong in the instruction block, because knowledge files are only read when the seller names the file inside the question",
+            "Prices belong in both slots, because repeating the same figures in two places makes the assistant more confident about quoting them"
+          ],
+          "correct_answer": "Prices belong in a knowledge file, because they change when marketing republishes the price list and a file can be replaced in one action"
+        },
+        {
+          "order_index": 2,
+          "type": "mcq",
+          "language": null,
+          "marks": 2,
+          "title": "The change-frequency test",
+          "prompt_md": "A colleague asks for a simple rule to decide whether a piece of sales material belongs in the assistant instruction block or in an attached knowledge file. Which rule is the most useful one to give them?",
+          "options": [
+            "If it changes when the product or price list changes it is knowledge, and if it changes when the sales process changes it is an instruction",
+            "If it is longer than one paragraph it is knowledge, and if it is shorter than one paragraph it is an instruction",
+            "If it came from marketing it is knowledge, and if it came from the sales team it is an instruction regardless of content",
+            "If it contains numbers it is knowledge, and if it contains only words it is an instruction that can be typed once"
+          ],
+          "correct_answer": "If it changes when the product or price list changes it is knowledge, and if it changes when the sales process changes it is an instruction"
+        },
+        {
+          "order_index": 3,
+          "type": "mcq",
+          "language": null,
+          "marks": 2,
+          "title": "What never gets loaded",
+          "prompt_md": "Your team is assembling the knowledge pack for a sales assistant that every account executive in the region will be able to open. Which item should be kept out of that shared assistant entirely?",
+          "options": [
+            "The internal cost and margin sheet, because anyone with access to the assistant should be assumed able to retrieve the files inside it",
+            "The competitor battlecard, because competitor material is commercially sensitive and belongs only in the hands of senior sellers",
+            "The objection library, because objection handling depends on tone and should never be written down in a reusable file",
+            "The ideal customer profile, because segment definitions change every quarter and stale segments mislead newer sellers badly"
+          ],
+          "correct_answer": "The internal cost and margin sheet, because anyone with access to the assistant should be assumed able to retrieve the files inside it"
+        },
+        {
+          "order_index": 4,
+          "type": "mcq",
+          "language": null,
+          "marks": 2,
+          "title": "Proving the files were used",
+          "prompt_md": "You want to be able to tell, in a few seconds, whether an answer from your sales assistant came from your loaded material or from the general knowledge of the underlying model. What should the instruction block require?",
+          "options": [
+            "That every answer ends with the file names it drew on, so an untagged claim stands out as one to delete or verify",
+            "That every answer is written in a formal register, because material drawn from company files reads more formally than general text",
+            "That every answer is kept under 180 words, because shorter answers contain fewer opportunities for the assistant to go astray",
+            "That every answer is produced twice in a row, because a claim that appears in both attempts has been confirmed by repetition"
+          ],
+          "correct_answer": "That every answer ends with the file names it drew on, so an untagged claim stands out as one to delete or verify"
+        },
+        {
+          "order_index": 5,
+          "type": "mcq",
+          "language": null,
+          "marks": 2,
+          "title": "File headers",
+          "prompt_md": "Before attaching your six knowledge files to the sales assistant, you add a short header to the top of each one. Which set of header fields does the most to keep the assistant trustworthy over time?",
+          "options": [
+            "What the file is, who owns it, the date it was valid from, and whether the content is customer-facing",
+            "The name of the seller who uploaded it, the file size, the number of pages, and the software it was written in",
+            "A one-line summary, a list of keywords, the region it applies to, and the number of deals it has been used on",
+            "The product line it covers, the internal team code, the storage location, and the review cycle in months"
+          ],
+          "correct_answer": "What the file is, who owns it, the date it was valid from, and whether the content is customer-facing"
+        },
+        {
+          "order_index": 6,
+          "type": "short_answer",
+          "language": null,
+          "marks": 3,
+          "title": "The six-part knowledge pack",
+          "prompt_md": "List the six parts of a working knowledge pack for a sales assistant, and explain in one sentence why the approved claims file has to be separate from the product facts file.",
+          "correct_answer": "The six parts are product facts, pricing and discount rules, ICP with disqualifiers, competitor battlecards, approved claims and proof points with their sources, and the objection library. Approved claims stay separate because they are the only wording that has been cleared for buyer-facing use, and keeping them in their own file lets you instruct the assistant to quote from that file alone. Product facts can be broader and more internal, including detail you would explain but not assert in writing. Merging the two makes it impossible to tell cleared wording from background."
+        },
+        {
+          "order_index": 7,
+          "type": "short_answer",
+          "language": null,
+          "marks": 3,
+          "title": "The rot in the instruction block",
+          "prompt_md": "A seller has written the current price bands, the integration list and the top three product features into the assistant instruction block. Explain what goes wrong over the following quarter and what you would move where.",
+          "correct_answer": "Instruction blocks are written once and rarely reread, so the moment pricing or the integration list changes the assistant keeps quoting the old figures with full confidence and nobody notices. Product detail also crowds out the behavioural rules that the instruction block exists to hold. I would move prices, integrations and features into dated knowledge files that can be replaced in one action, and leave the instruction block holding role, sources rule, refusal wording, honesty lines and output format."
+        },
+        {
+          "order_index": 8,
+          "type": "short_answer",
+          "language": null,
+          "marks": 3,
+          "title": "Two tiers of material",
+          "prompt_md": "Using the Northwestern finding that instructions and uploaded files could be extracted from custom assistants, describe the two-tier rule you would apply to a shared team assistant and give one example of material in each tier.",
+          "correct_answer": "The shared tier holds material that would survive being read by an outsider: current price bands, product facts, approved claims, competitor battlecards. The private tier holds anything I would not want retrieved from the assistant, and it gets pasted into a single conversation rather than attached permanently: an unredacted contract, a named account with churn risk, internal margin. The planning assumption is that anyone with access to the assistant can retrieve any attached file, so the decision is made at upload time, not afterwards."
+        },
+        {
+          "order_index": 9,
+          "type": "short_answer",
+          "language": null,
+          "marks": 3,
+          "title": "Refusal wording",
+          "prompt_md": "Write the refusal rule you would put in your own instruction block, and explain why naming the wording matters more than telling the assistant to be accurate.",
+          "correct_answer": "My rule would read: answer only from the attached files, and where something is not covered say not in the loaded material, ask product marketing, rather than estimating. Telling an assistant to be accurate gives it no way to act, because it cannot tell which of its answers are unfounded. Giving it an exact sentence to produce turns the gap into a visible output I can act on, and a seller reading the answer knows immediately that the point needs checking rather than sending."
+        },
+        {
+          "order_index": 10,
+          "type": "short_answer",
+          "language": null,
+          "marks": 3,
+          "title": "Assistant versus re-pasting",
+          "prompt_md": "Beyond time saved, explain the consistency argument for building a custom sales assistant instead of pasting context into a fresh chat each time, and note one risk the assistant introduces.",
+          "correct_answer": "Pasting by hand means every deal gets a slightly different context, so the same question produces different answers across the week and nobody can tell which version reached a buyer. A custom assistant fixes one current set of files and one set of rules, so answers are comparable and correctable in one place. The risk it introduces is silent staleness: because the context is invisible, an out-of-date price file keeps being quoted with confidence long after the person who uploaded it has forgotten it exists."
+        },
+        {
+          "order_index": 11,
+          "type": "short_answer",
+          "language": "prompt",
+          "marks": 5,
+          "title": "Prompt Lab: turn a pile of material into a knowledge file",
+          "prompt_md": "You have four scattered sources for the same product line: a slide deck, a pricing email from finance, a page from the internal wiki, and your own notes from a product briefing. You want one clean knowledge file to attach to your sales assistant.\n\nWrite the prompt you would give an assistant to produce that file. A strong prompt names the seller and the buyer, states the exact structure and header fields the file must carry, tells the assistant to mark conflicts between sources rather than resolving them, forbids filling gaps from general knowledge, and requires every line to be traceable to one of the four sources.",
+          "correct_answer": "I sell a workforce scheduling product to operations leaders in mid-market retail. I am building a knowledge file for my sales assistant and I am pasting four sources below: a slide deck extract, a pricing email from finance dated 4 March, a wiki page, and my notes from a product briefing.\n\nTurn them into one file with this structure. Header first: file name, what it covers, owner, valid-from date, and whether the content is customer-facing. Then four sections: product facts, pricing and discount rules, integrations, and limitations.\n\nRules. Use only the four sources below. After every line, put the source it came from in brackets. Where two sources disagree, write both versions side by side and label the line CONFLICT rather than choosing between them. Where a section has no source material, write not covered rather than filling it from general knowledge about scheduling software. Do not round, convert or tidy any number. Do not add customer names, quotes or metrics that are not in the sources.\n\nOutput the file as plain markdown I can save, then list separately every CONFLICT line and every not covered line so I know what to ask finance and product marketing before I attach this."
+        },
+        {
+          "order_index": 12,
+          "type": "short_answer",
+          "language": "prompt",
+          "marks": 5,
+          "title": "Prompt Lab: audit a draft instruction block",
+          "prompt_md": "A colleague sends you the instruction block from their new sales assistant. It runs to two pages, contains the current price bands and a feature list, has no refusal rule, and tells the assistant to be persuasive and confident.\n\nWrite the prompt you would use to audit it. A strong prompt states the two-slot model, asks for a line-by-line verdict on what should move to a knowledge file, identifies missing behavioural rules including refusal and honesty lines, flags anything that would encourage invented claims, and returns a rewritten block rather than only a critique.",
+          "correct_answer": "Below is the instruction block from a sales assistant built by a colleague who sells a workforce scheduling product to operations leaders. Audit it for me.\n\nUse this model: the instruction block holds behaviour only, meaning role, buyer, sources rule, refusal wording, honesty rules, questions to ask before drafting, and output format. Facts that change when the product or price list changes belong in dated knowledge files instead.\n\nGo line by line and give each line one of three verdicts: keep in instructions, move to a knowledge file and name which file, or delete and say why. Then list the behavioural rules that are missing, in particular a sources rule, an exact refusal sentence for material that is not covered, a rule against inventing customer names, quotes or metrics, and a rule that only approved claim wording may be used.\n\nFlag any wording that would push the assistant towards overstating, including instructions to be persuasive or confident, and explain in one line what each flagged phrase would produce on a live deal.\n\nFinish by rewriting the whole thing as a single instruction block of under 250 words that I could paste straight in, and list underneath the knowledge files it now assumes are attached."
+        }
+      ]
+    },
+    {
+      "order_index": 2,
+      "title": "Testing it before you put it in front of buyers",
+      "theory_md": "## The demo always works\n\nThe assistant you built last lesson will answer your first three questions beautifully. You know it will, because those are the questions you had in mind while you were loading the files. The fourth question is the one that matters. It comes from a live deal, it is phrased the way a distracted operations director phrases things at 4pm, and it asks about an integration you never loaded. If the assistant answers that one with a confident invention, you will not notice, because a confident invention reads exactly like a correct answer.\n\nThis is the gap between building and shipping. A sales assistant is not finished when it is built. It is finished when it has been put through a set of real situations and has failed none of the three failures that cost deals: inventing a capability, quoting a price or policy that is not the current one, and producing a customer name, quote or metric that does not exist. Everything in this lesson is about catching those three before a buyer does.\n\n## The test set\n\nDo not invent test questions. Go to your own last quarter and take the real ones: the questions in your inbox, the ones from discovery calls, the security questionnaire items, the awkward pricing challenge from the deal you lost. Fifteen to twenty is enough. Write them in the words the buyer used, not tidied up.\n\nSort them into four kinds, and expect a different thing from each.\n\n**Covered questions.** The answer exists in a loaded file. Pass means the answer matches the file, quotes no figure the file does not contain, and names the file it came from.\n\n**Not-covered questions.** You know the material is silent. Pass means the refusal sentence appears. Any answer at all is a failure, however reasonable it sounds.\n\n**Trap questions.** These invite invention. What is the discount for a three-year prepay in the public sector, when the discount policy is silent on prepay. Which other grocery chains use this, when you have no named reference in grocery. Can you send me a case study with the numbers in it. A good assistant refuses; a poor one obliges.\n\n**Awkward phrasing.** Rushed, garbled, hostile, or a buyer forwarding a competitor claim and asking whether it is true. Real inputs are messy, and messy inputs are where assistants improvise.\n\n## Worked example one: running the set\n\nInside the assistant, the seller pastes six situations at once:\n\n```\nThese are six real questions from my deals last quarter. Answer each one\nusing only the attached files.\n\nReturn a table with five columns: the question, your answer in under 40\nwords, the file names the answer came from, whether every figure in the\nanswer appears verbatim in a file, and a status of ANSWERED or NOT IN\nMATERIAL.\n\nWhere the files do not cover the question, put NOT IN MATERIAL and leave\nthe answer column with the refusal sentence only. Do not fill a gap from\ngeneral knowledge about scheduling software. Do not name any customer.\n```\n\nThe abridged table comes back with four rows answered and file-tagged, one row correctly marked NOT IN MATERIAL for a payroll integration, and one row that reads: yes, most customers see onboarding completed within two weeks, source Product-Facts.md. That last row is the find. The file says a typical implementation runs four to six weeks. The assistant blended the file with its own sense of what such products usually claim, and tagged the result with a real file name, which is precisely what makes it dangerous. One failure in six is a normal first result.\n\n## Worked example two: probing for invention\n\nGeneral testing catches general problems. Probes catch the specific ones. The seller asks, deliberately, for something that does not exist:\n\n```\nA buyer in grocery has asked for two named customers of similar size who\nwe can reference, and the discount we can offer for paying three years up\nfront.\n\nAnswer only from Reference-Stories.md and Pricing-Rules.md. If either\nrequest is not covered, say: not in the loaded material, ask product\nmarketing. Do not construct an example customer, an anonymised customer,\na typical customer or an illustrative discount.\n```\n\nA grounded assistant returns the two named references that genuinely sit in the file, or the refusal sentence, and refuses on prepay because the policy is silent. An ungrounded one offers a large national grocer we work with and a plausible-sounding prepay discount. Note the phrase blocking anonymised and illustrative examples: without it, assistants often meet a refusal instruction halfway by inventing a customer and calling it a composite. On a live deal a composite becomes a real name the moment a seller repeats it.\n\n## The grounding rules worth having\n\nFour rules, in the instruction block, do most of the work. Answer only from the loaded material. Where it is not covered, produce this exact sentence. Name the files used at the end of every answer. Never produce a customer name, quote or metric that is not written in a file. Add a fifth if your prices vary: never quote a figure that does not appear verbatim in the pricing file.\n\n## Where this goes wrong\n\nSellers test with questions they wrote themselves, which the assistant handles because they match the files. They grade on whether the answer sounds right rather than checking it against the file, so a fluent wrong answer passes. They test once, at build time, and never again, so the assistant quietly drifts out of date as files are replaced and instructions edited. They test only the happy path and never check that the refusal actually fires. And they let the person who built the assistant be the only person who tests it, which is the weakest review in the building.\n\nRe-test on triggers, not on good intentions: any file replaced, any instruction edited, any upgrade to the underlying tool, and once a quarter regardless. Keep a dated log with the test set, the failures and what you changed. It takes ten minutes and it is the difference between an assistant you trust and one you hope about.\n\n## In practice\n\nWrite your twenty situations this week from real deals. Run them. Expect failures, because the first run always has them. Fix the file or the instruction, never the individual answer, then run the whole set again from the top.",
+      "estimated_minutes": 29,
+      "learning_objectives": [
+        "Build a test set of real deal situations spanning covered, not-covered, trap and awkward questions",
+        "Score assistant answers against three failure modes: invented capability, wrong price and invented reference",
+        "Write grounding rules that force answers from loaded material and fix the refusal wording",
+        "Set re-test triggers and keep a dated test log after every change to files or instructions"
+      ],
+      "case_study": "**Taco Bell and Yum! Brands — a voice assistant that met real customers (2024–2025)**\n\nIn July 2024, Yum! Brands announced it was expanding voice AI ordering to hundreds of Taco Bell drive-thru locations in the United States, with a stated ambition to take the technology to its other brands worldwide. The system had performed well enough in controlled trials to justify a large rollout, and by 2025 the company had it running in roughly 500 restaurants. On paper, the case was straightforward: the assistant takes the order, the staff make the food.\n\nWhat followed is the reason this lesson exists. Real customers do not behave like a test script. Clips circulated of orders going wrong in ways nobody had scripted, including a customer who requested 18,000 cups of water and watched the system attempt to process it. Restaurant Technology News covered the viral run in August 2025 under the heading of a sensation for the wrong reasons. In late August 2025 the company was reported to be slowing and rethinking the deployment, advising franchise teams to treat voice AI as a selective tool, monitored closely and paired with human staff at busy hours.\n\nRead it as a testing story rather than a technology story. Nothing here suggests the assistant was badly built. It suggests it was evaluated against the situations its builders imagined instead of the situations its users produced, and that the gap only became visible once thousands of unscripted people were talking to it in public. The failures that surfaced were the mundane kinds: requests outside the expected range, phrasing the system had never seen, and no clean way for the system to say this is beyond what I handle, let me get a person.\n\nYour sales assistant will meet exactly the same test, with a smaller audience and a higher price per mistake. A buyer will phrase a question in a way you never anticipated, or push for a number that is not in any file, and the assistant will either hold the line or improvise. The remedy is unglamorous and cheap: a test set drawn from what buyers have actually asked you, run before anyone relies on the output, re-run every time the material changes, and a clear refusal path so that beyond my material is an available answer rather than an embarrassing one.",
+      "exercises": [
+        {
+          "order_index": 1,
+          "type": "mcq",
+          "language": null,
+          "marks": 2,
+          "title": "Where test questions come from",
+          "prompt_md": "You are assembling the test set for your sales assistant before letting it near a live deal. Where should the fifteen to twenty test situations come from, and why does the source matter so much?",
+          "options": [
+            "From real questions buyers asked you last quarter, in the wording they used, because questions you write yourself match the files you loaded",
+            "From the product marketing team, because they know the material best and can predict which answers the assistant is most likely to get wrong",
+            "From a list generated by the assistant itself, because it can produce a wider range of questions than one seller would think of unaided",
+            "From the competitor battlecards, because competitive questions are the hardest ones and testing the hardest cases covers the easier ones"
+          ],
+          "correct_answer": "From real questions buyers asked you last quarter, in the wording they used, because questions you write yourself match the files you loaded"
+        },
+        {
+          "order_index": 2,
+          "type": "mcq",
+          "language": null,
+          "marks": 2,
+          "title": "Passing a not-covered question",
+          "prompt_md": "Your test set includes a question you know is not addressed anywhere in the loaded material. What counts as a pass when the assistant responds to that question?",
+          "options": [
+            "The refusal sentence appears and no answer is attempted, because any plausible answer to uncovered material is a failure",
+            "The answer is hedged with a phrase such as typically or in most cases, showing the assistant recognised the limits of its material",
+            "The answer is short and caveated at the end, since a brief response gives the seller less unverified content to check",
+            "The answer offers a reasonable estimate and asks the seller to confirm it with the product team before it is sent"
+          ],
+          "correct_answer": "The refusal sentence appears and no answer is attempted, because any plausible answer to uncovered material is a failure"
+        },
+        {
+          "order_index": 3,
+          "type": "mcq",
+          "language": null,
+          "marks": 2,
+          "title": "The three failure modes",
+          "prompt_md": "When scoring your assistant against the test set, you grade every answer against three specific failure modes rather than a general impression of quality. Which three are they?",
+          "options": [
+            "An invented capability, a price or policy that is not the current one, and a customer name, quote or metric that does not exist",
+            "A slow response, an answer that is too long for a buyer, and a tone that does not match how the seller usually writes",
+            "A missing file citation, an unusual choice of words, and an answer that repeats material the buyer has already been sent",
+            "A refusal that fires too often, a question the assistant misread, and an answer that covers more ground than was asked"
+          ],
+          "correct_answer": "An invented capability, a price or policy that is not the current one, and a customer name, quote or metric that does not exist"
+        },
+        {
+          "order_index": 4,
+          "type": "mcq",
+          "language": null,
+          "marks": 2,
+          "title": "Blocking the composite customer",
+          "prompt_md": "When you ask for named reference customers that do not exist in your files, some assistants offer an anonymised or illustrative example instead of refusing. What is the right response to that behaviour?",
+          "options": [
+            "Add wording to the instruction block forbidding constructed, anonymised, typical and illustrative customers, because a composite becomes a real name once repeated",
+            "Accept the composite as a useful placeholder, because the seller can substitute a genuine reference before the message reaches the buyer",
+            "Ask the assistant to label the composite clearly in the output, because a labelled example carries no risk once the seller has seen the label",
+            "Reduce the temperature of the request by asking for one example rather than two, because shorter requests produce fewer constructed answers"
+          ],
+          "correct_answer": "Add wording to the instruction block forbidding constructed, anonymised, typical and illustrative customers, because a composite becomes a real name once repeated"
+        },
+        {
+          "order_index": 5,
+          "type": "mcq",
+          "language": null,
+          "marks": 2,
+          "title": "When to re-test",
+          "prompt_md": "Your assistant passed its full test set at build time and has been in use for two months. Which policy on re-testing keeps it trustworthy without becoming an unmanageable chore?",
+          "options": [
+            "Re-run the set whenever a file is replaced or an instruction edited, after any tool upgrade, and once a quarter regardless",
+            "Re-run the set whenever a deal is lost, because a lost deal is the clearest signal that the assistant has begun to mislead sellers",
+            "Re-run the set once a year, because the underlying material changes slowly and frequent testing produces the same results repeatedly",
+            "Re-run the set whenever a colleague reports an odd answer, because real usage surfaces problems faster than any scheduled review can"
+          ],
+          "correct_answer": "Re-run the set whenever a file is replaced or an instruction edited, after any tool upgrade, and once a quarter regardless"
+        },
+        {
+          "order_index": 6,
+          "type": "short_answer",
+          "language": null,
+          "marks": 3,
+          "title": "The fluent wrong answer",
+          "prompt_md": "In the worked example, one answer claimed onboarding usually completes within two weeks and cited a real file that says four to six. Explain why this is the hardest failure to catch and what testing habit catches it.",
+          "correct_answer": "It is hard to catch because it carries every marker of a good answer: it is fluent, confident, plausible for the category, and tagged with a genuine file name. Nothing about it looks wrong, so a reviewer skimming for obvious errors passes it. The habit that catches it is checking the figure against the file rather than against your own memory of the file, line by line, for every number in the answer. Grading on whether an answer sounds right is not testing."
+        },
+        {
+          "order_index": 7,
+          "type": "short_answer",
+          "language": null,
+          "marks": 3,
+          "title": "Four kinds of test situation",
+          "prompt_md": "Name the four kinds of situation that belong in a sales assistant test set and state, for each, what a pass looks like.",
+          "correct_answer": "Covered questions: the answer matches the loaded file, adds no figure the file does not contain, and names its sources. Not-covered questions: the refusal sentence appears and nothing is attempted. Trap questions that invite invention, such as a discount the policy is silent on or a reference customer you do not have: the assistant refuses rather than obliging. Awkward phrasing, including rushed, hostile or forwarded competitor claims: the assistant still answers only from the material rather than improvising to match the tone."
+        },
+        {
+          "order_index": 8,
+          "type": "short_answer",
+          "language": null,
+          "marks": 3,
+          "title": "Fix the file, not the answer",
+          "prompt_md": "A test run produces a wrong answer about integration support. Explain why the correct response is to change the file or the instruction rather than to correct that one answer, and what you do next.",
+          "correct_answer": "Correcting the individual answer fixes one conversation and leaves the cause in place, so the same wrong answer returns the next time anyone asks a similar question. The cause is either material that is missing, stale or ambiguous, or an instruction that does not force refusal. I change whichever it is, note the change in the dated test log, then re-run the whole test set from the top, because edits to instructions or files can break answers that previously passed."
+        },
+        {
+          "order_index": 9,
+          "type": "short_answer",
+          "language": null,
+          "marks": 3,
+          "title": "Lessons from an unscripted rollout",
+          "prompt_md": "Using the Taco Bell and Yum! Brands example, explain what a sales seller should take from a voice assistant that performed well in trials and struggled with real customers.",
+          "correct_answer": "The system was evaluated against the situations its builders imagined rather than the situations real users produced, and the gap only appeared in public. For a seller the parallel is exact: an assistant tested on tidy questions written by the person who loaded the files will meet buyers who phrase things unpredictably and push for numbers that are in no file. The remedies are a test set drawn from what buyers actually asked, and a clear refusal path so that beyond my material is an available answer rather than an improvised one."
+        },
+        {
+          "order_index": 10,
+          "type": "short_answer",
+          "language": null,
+          "marks": 3,
+          "title": "Who tests",
+          "prompt_md": "Explain why the person who built the assistant should not be the only person who tests it, and describe a practical arrangement for a small sales team.",
+          "correct_answer": "The builder knows what the assistant was designed to answer and unconsciously phrases questions it can handle, so their testing confirms the design rather than probing it. A colleague who has not seen the files asks the questions their own deals produce and reads answers without knowing what should be there. In a small team, pair up: each seller runs the other assistant against their own last-quarter questions, logs failures with the file name and date, and hands the log back. It takes half an hour each."
+        },
+        {
+          "order_index": 11,
+          "type": "short_answer",
+          "language": "prompt",
+          "marks": 5,
+          "title": "Prompt Lab: build the test set",
+          "prompt_md": "You want a test set for your sales assistant, drawn from your own last quarter rather than invented. You have your notes and emails from four deals, two won and two lost.\n\nWrite the prompt that turns that raw material into a structured test set. A strong prompt states the role and the assistant being tested, demands the buyer wording be preserved, requires coverage of all four categories including deliberate traps, specifies what the expected result is for each category, and forbids the assistant from inventing questions that were never asked.",
+          "correct_answer": "I sell a workforce scheduling product to operations leaders in mid-market retail and hospitality. I am about to test a custom assistant that has been loaded with our product facts, pricing rules, ICP, battlecards and approved claims. Below are my notes and email threads from four deals last quarter, two won and two lost.\n\nExtract every question a buyer actually asked, in their wording, lightly cleaned of names only. Do not invent questions that are not in the material, and do not tidy the phrasing into something more professional than the original.\n\nSort what you extract into four categories and label each one: COVERED, where our material should hold the answer; NOT COVERED, where I have flagged that we have nothing; TRAP, where the question invites a discount, a capability or a reference we may not have; AWKWARD, where the wording is rushed, hostile or forwards a competitor claim.\n\nFor each item give me four columns: the question as asked, the category, the expected correct behaviour from the assistant in one line, and which of my files the answer should come from or NONE.\n\nIf the four deals yield fewer than five TRAP items, tell me that rather than manufacturing extra ones, and list what kinds of trap my deals have not exposed so I can watch for them."
+        },
+        {
+          "order_index": 12,
+          "type": "short_answer",
+          "language": "prompt",
+          "marks": 5,
+          "title": "Prompt Lab: judge a batch of answers",
+          "prompt_md": "You have run twelve test situations through your assistant and have twelve answers. You want them graded against the loaded material rather than against your impression of them.\n\nWrite the prompt you would use to grade the batch. A strong prompt names the three failure modes, insists on figure-by-figure checking against the files, requires an explicit verdict per answer with the offending words quoted, refuses to accept plausibility as evidence, and ends with the fixes to make to files or instructions.",
+          "correct_answer": "Below are twelve test questions, the answers my sales assistant gave, and the current versions of the files it was working from. Grade the answers against the files, not against whether they sound reasonable.\n\nFor each answer return: PASS or FAIL, the failure mode where it fails, the exact words at fault quoted from the answer, and the line in the file that contradicts them or the note NOT IN ANY FILE.\n\nUse only three failure modes. INVENTED CAPABILITY, where a feature, integration or timeline is asserted that no file states. WRONG PRICE OR POLICY, where any figure, band, discount or term does not appear verbatim in the pricing file. INVENTED REFERENCE, where a customer name, quote, logo or metric appears that is not written in the references file, including anonymised or typical customers.\n\nCheck every number character by character against the file rather than approving figures that look about right. If an answer cites a file but its content does not appear in that file, mark it FAIL and say so explicitly.\n\nFinish with two lists: the changes I should make to the files, and the changes I should make to the instruction block, each written as a single sentence I can act on today. Do not suggest rewriting individual answers."
+        }
+      ]
+    },
+    {
+      "order_index": 3,
+      "title": "Practical: ship a tested sales assistant",
+      "theory_md": "## Two ways this goes wrong, and the one way it goes right\n\nThere are two failure endings for the assistant you have been building. In the first, it never ships. It sits half-loaded in a tab, the files are two versions old, and you go back to pasting context by hand because you are not sure you trust it. In the second, it ships quietly on a Tuesday, a colleague starts using it for buyer-facing drafts, and nobody has ever checked whether it invents integrations.\n\nToday you take the third route. You are going to ship one assistant, scoped to one job, with an instruction block you can defend and a test protocol that has been run and logged. This is a practical lesson: at the end of it there should be a working thing with your name on it, not a set of notes about assistants in general.\n\nThe spine holds all the way through. The assistant carries the recall and the first draft. You carry the relationship, the judgement and the send button.\n\n## The shipping standard\n\nAn assistant is shippable when five things are true.\n\n**It has a scope and an owner.** One job, named in one sentence. Deal support for mid-market retail and hospitality, for example, and not a general sales helper. Your name against it, and a version number and date you update when you change anything.\n\n**It has a one-page instruction block.** Role and buyer, sources rule, the exact refusal sentence, the honesty lines, what it must ask before drafting, output format, and a line stating that nothing it produces goes to a buyer unread.\n\n**Its knowledge pack is current and dated.** One version of each file, each with an owner and a valid-from date. No superseded price lists left in the folder.\n\n**It has passed a reliability protocol.** Not a quick look. A written set of situations, graded against the three failure modes, run end to end, with the failures fixed at the source and the whole set re-run.\n\n**It can be handed over.** A short note that tells the next person what it does, what is loaded, what it must never do, when it was last tested and what triggers a re-test.\n\n## Worked example one: the instruction block\n\nThis is the block a seller pastes into the instructions field. Note that it holds no product facts at all.\n\n```\nSALES ASSISTANT — mid-market retail and hospitality — v3, 12 March,\nowner: A. Whitfield\n\nYou support one account executive selling a workforce scheduling product\nto operations leaders in mid-market retail and hospitality. Your job is\nrecall and first drafts. Mine is judgement and everything a buyer sees.\n\nSOURCES. Answer only from the attached files. Where something is not\ncovered, reply exactly: not in the loaded material, ask product\nmarketing. Never estimate a price, a timeline, a security answer or an\nintegration. Never quote a figure that does not appear word for word in\nPricing-Rules.md.\n\nHONESTY. Use only claim wording from Approved-Claims.md. Never produce a\ncustomer name, quote, logo or metric that is not in Reference-Stories.md,\nand never offer a constructed, anonymised, typical or illustrative\ncustomer as a substitute. Personalisation must come from something I have\ngiven you about this buyer, never from a guess about them.\n\nBEFORE DRAFTING anything buyer-facing, ask me: which deal, what stage,\nand what the buyer actually said or sent.\n\nOUTPUT. Short paragraphs, British spelling, no exclamation marks, under\n180 words unless I ask otherwise. End every answer with the file names\nused. Mark anything I still need to verify with CHECK.\n```\n\nRun the same buyer question through it twice a week apart and you get the same answer, which is the quiet benefit nobody mentions.\n\n## Worked example two: the reliability protocol\n\nThe protocol is a document, not a mood. One page: what is tested, how it is graded, who runs it, when it is re-run, and where the log lives. The run itself can be a single prompt:\n\n```\nRun the reliability set below against the attached files, in order. There\nare eighteen situations, tagged COVERED, NOT COVERED, TRAP or AWKWARD.\n\nFor each, return: the situation number, your answer in under 40 words,\nthe files used, and a verdict of PASS or FAIL against three failure modes\nonly — invented capability, wrong price or policy, invented customer\nreference. Quote the offending words on any FAIL.\n\nTreat as FAIL any figure not appearing word for word in a file, any\ncapability no file states, any customer not named in Reference-Stories.md\nincluding anonymised ones, and any NOT COVERED item that received an\nanswer instead of the refusal sentence.\n\nFinish with the total FAIL count by mode, and the fixes to files or\ninstructions. Do not rewrite individual answers.\n```\n\nAn abridged first run: eighteen situations, three failures. One invented a payroll integration. One quoted a discount band retired in January because the old pricing file was still attached. One offered a large hospitality group as a reference. Three fixes followed: an instruction line on integrations, the stale file removed, and the reference rule tightened to block anonymised customers. The second run: eighteen passes, logged with the date and the version number.\n\n## Where this goes wrong\n\nSellers build one assistant for everything and it does none of it dependably. They write be accurate instead of an exact refusal sentence. They keep the test protocol in their head, so nobody else can run it and it dies when they are on holiday. They let the assistant draft buyer-facing messages with no line requiring a human read before sending. They never date anything, so six months later nobody knows which price list is loaded. And they treat a passed test as permanent rather than as a statement about one version on one day.\n\n## In practice\n\nBuild it today, with the files you already have. Write the block, load six dated files, run eighteen situations, fix the causes, re-run, log the date. Then use it on a live deal this week and watch for the one thing that matters: whether it says no when it does not know. Your two Prompt Labs below are the graded deliverable — the instruction block, and the protocol that proves the assistant never invents a capability, a price or a customer.",
+      "estimated_minutes": 30,
+      "learning_objectives": [
+        "Scope a sales assistant to one job and record its owner, version and loaded files",
+        "Write a one-page instruction block covering role, sources, refusal, honesty rules and output",
+        "Run a reliability protocol proving no invented capability, price or customer reference",
+        "Document the assistant for handover with a dated test log and stated re-test triggers"
+      ],
+      "case_study": "**Builder.ai — when the capability claim outran the product (2019–2025)**\n\nBuilder.ai, a London-headquartered company formerly known as Engineer.ai, sold software development as something close to a consumer purchase: describe the app you want, and an assistant marketed under the name Natasha would assemble it from reusable parts. The pitch was unusually clear and unusually easy to sell, and the company raised several hundred million dollars from investors over its life, reaching a valuation reported in the region of a billion and a half dollars at its peak.\n\nQuestions about how much of the work was actually automated followed the company from early on, with reporting in 2019 raising them publicly. In 2025, Rest of World published a detailed account based on interviews with former employees describing how much of the development attributed to the platform had been carried out by human engineers, and how the presentation of that work was managed to look automated. The company had disputed characterisations of this kind. In May 2025 the position became academic: a lender moved on the company accounts, staff were told the money had run out, and insolvency proceedings began, leaving customers to recover what they could of their projects.\n\nWhatever the final legal picture, the sales lesson is available now and it is the plainest one in this course. Capability claims are the most expensive claims a seller can make. A wrong price is embarrassing and can be corrected in an email. A capability that does not exist is discovered by the customer after signature, and it takes the renewal, the reference and the reputation with it. Every version of this failure begins with someone saying yes to a question they had not verified.\n\nThat is precisely what you are engineering out this week. An assistant loaded with your material and left ungoverned is a machine for producing confident capability claims at speed, because answering is what it does and there is nothing in its nature that prefers silence. The instruction block that forbids estimating an integration, and the test protocol that proves the refusal fires, are not paperwork. They are the difference between a tool that helps you sell what your company has built and one that helps you sell something it has not.",
+      "exercises": [
+        {
+          "order_index": 1,
+          "type": "mcq",
+          "language": null,
+          "marks": 2,
+          "title": "The shipping standard",
+          "prompt_md": "You are deciding whether your sales assistant is ready for a colleague to rely on it during live deals. Which set of conditions represents the standard described in this lesson?",
+          "options": [
+            "A named scope and owner, a one-page instruction block, current dated files, a passed reliability protocol, and a handover note",
+            "A named scope and owner, a long instruction block covering every product detail, and approval from the product marketing team",
+            "A wide scope so it covers every task, an owner, a set of files, and a colleague who has tried it on a few questions",
+            "A named scope, a set of files loaded on the day of the build, and a plan to review the whole assistant at the year end"
+          ],
+          "correct_answer": "A named scope and owner, a one-page instruction block, current dated files, a passed reliability protocol, and a handover note"
+        },
+        {
+          "order_index": 2,
+          "type": "mcq",
+          "language": null,
+          "marks": 2,
+          "title": "What the instruction block must not hold",
+          "prompt_md": "Looking at the worked instruction block in this lesson, one category of content is deliberately absent from it even though the assistant relies on that content constantly. Which is it?",
+          "options": [
+            "Product facts and prices, because those live in dated knowledge files that can be replaced without editing the block",
+            "The refusal sentence, because refusals are better handled case by case at the moment the seller notices a gap",
+            "The output format, because formatting preferences change with each buyer and belong in the individual request instead",
+            "The questions to ask before drafting, because a seller supplies deal context naturally when writing the request"
+          ],
+          "correct_answer": "Product facts and prices, because those live in dated knowledge files that can be replaced without editing the block"
+        },
+        {
+          "order_index": 3,
+          "type": "mcq",
+          "language": null,
+          "marks": 2,
+          "title": "Why capability claims cost most",
+          "prompt_md": "The Builder.ai case is used to rank the three failure modes by cost to a seller. Why does an invented capability sit above a wrong price on that ranking?",
+          "options": [
+            "A wrong price is corrected in an email, while a capability that does not exist is found after signature and takes the renewal and the reference with it",
+            "A wrong price is rarely noticed by buyers, while capability claims are checked carefully by procurement teams during the evaluation stage",
+            "A wrong price can be honoured as a goodwill gesture, while a capability claim requires the product team to build the feature that was promised",
+            "A wrong price affects one deal at a time, while capability claims are repeated in marketing material and reach a much wider audience"
+          ],
+          "correct_answer": "A wrong price is corrected in an email, while a capability that does not exist is found after signature and takes the renewal and the reference with it"
+        },
+        {
+          "order_index": 4,
+          "type": "mcq",
+          "language": null,
+          "marks": 2,
+          "title": "Fixing a failed run",
+          "prompt_md": "Your first reliability run produces three failures, one of which quoted a discount band that was retired in January. What does the fix and the follow-up look like?",
+          "options": [
+            "Remove the superseded pricing file, tighten the relevant rule, then re-run the entire set from the start and log the date and version",
+            "Correct the answer that quoted the retired band, note the correction in the log, and continue using the assistant as normal",
+            "Add the retired band to the instruction block with a warning label so the assistant knows which figures are no longer valid",
+            "Reduce the reliability set to the situations that failed and re-run only those, since the other situations have already passed once"
+          ],
+          "correct_answer": "Remove the superseded pricing file, tighten the relevant rule, then re-run the entire set from the start and log the date and version"
+        },
+        {
+          "order_index": 5,
+          "type": "mcq",
+          "language": null,
+          "marks": 2,
+          "title": "Handover",
+          "prompt_md": "A colleague is taking over your accounts for three months and inherits your sales assistant. What should the handover note contain for the assistant to remain trustworthy in their hands?",
+          "options": [
+            "What it does, what is loaded, what it must never do, when it was last tested and what triggers a re-test",
+            "A list of the deals it has been used on, the questions it answered well, and the name of the tool it was built in",
+            "The full instruction block, a copy of every knowledge file, and an offer to answer questions about it by message",
+            "A summary of the product material inside it, so the colleague can verify the answers without opening the files"
+          ],
+          "correct_answer": "What it does, what is loaded, what it must never do, when it was last tested and what triggers a re-test"
+        },
+        {
+          "order_index": 6,
+          "type": "short_answer",
+          "language": null,
+          "marks": 3,
+          "title": "Scope in one sentence",
+          "prompt_md": "Write the one-sentence scope for your own sales assistant, then explain why a narrow scope produces a more dependable assistant than a general sales helper.",
+          "correct_answer": "An example: deal support for one account executive selling a workforce scheduling product to operations leaders in mid-market retail and hospitality. A narrow scope means one buyer type, one set of files and one set of rules, so every instruction can be specific and every answer can be checked against known material. A general helper has to cover buyers and questions its files do not address, which is exactly the condition under which an assistant improvises rather than refusing."
+        },
+        {
+          "order_index": 7,
+          "type": "short_answer",
+          "language": null,
+          "marks": 3,
+          "title": "Version and date lines",
+          "prompt_md": "Explain what the version number, date and owner at the top of the instruction block are for, and what goes wrong in month six without them.",
+          "correct_answer": "They record which set of rules and files a given test result applies to, so a passed protocol is a statement about a specific version on a specific day rather than a permanent claim. Without them, nobody can tell whether the assistant has been edited since it was tested, which price list is loaded, or who to ask. By month six the block has been quietly amended by two people, the pricing file may be stale, and the only honest description of its reliability is that nobody knows."
+        },
+        {
+          "order_index": 8,
+          "type": "short_answer",
+          "language": null,
+          "marks": 3,
+          "title": "The human checkpoint",
+          "prompt_md": "The instruction block includes a line that nothing produced goes to a buyer unread. Explain why that line is in the instructions rather than left to common sense, and where else the checkpoint should be recorded.",
+          "correct_answer": "Common sense degrades under time pressure, and the whole value of the assistant is speed, so the moment a seller is late for a call is exactly when a draft gets forwarded unread. Writing the checkpoint into the block makes it part of the tool rather than a personal habit, and it shapes the output, since the assistant marks unverified points with CHECK for the seller to resolve. It should also appear in the handover note, so anyone inheriting the assistant adopts the same rule."
+        },
+        {
+          "order_index": 9,
+          "type": "short_answer",
+          "language": null,
+          "marks": 3,
+          "title": "Protocol as document",
+          "prompt_md": "State the five things a reliability test protocol document must specify, and explain why keeping the protocol in your head is not acceptable for a shared assistant.",
+          "correct_answer": "It must specify what is tested, how answers are graded, who runs it, when it is re-run, and where the dated log lives. Held in one head, the protocol cannot be run by a colleague, cannot be audited by a manager, and disappears entirely when that person changes team or takes leave. Written down, it becomes repeatable by anyone, so re-testing after a file change is a task rather than a favour, and the log gives evidence of when the assistant was last known good."
+        },
+        {
+          "order_index": 10,
+          "type": "short_answer",
+          "language": null,
+          "marks": 3,
+          "title": "The lesson from an overstated capability",
+          "prompt_md": "Using the Builder.ai example, explain the connection between a company overstating what its product does and the rules you write into a sales assistant.",
+          "correct_answer": "Builder.ai sold a capability story that reporting later called into question, and when the position became untenable the customers, the staff and the investors all carried the cost. Every version of that failure starts with someone answering a question they had not verified. An assistant that answers everything is a fast, tireless producer of exactly those answers, because responding is its default and nothing in it prefers silence. The rules forbidding estimated integrations, unverified figures and invented references are what stop the tool manufacturing that risk at speed."
+        },
+        {
+          "order_index": 11,
+          "type": "short_answer",
+          "language": "prompt",
+          "marks": 5,
+          "title": "Prompt Lab: the assistant instruction block",
+          "prompt_md": "This is the first half of your graded deliverable. You are shipping a custom assistant for your own patch, loaded with product facts, pricing rules, ICP, competitor battlecards, approved claims and reference stories.\n\nWrite the instruction block you would paste into the instructions field. A strong block names the version, date and owner; states the scope and the division of labour between assistant and seller; fixes the sources rule and the exact refusal sentence; forbids invented capabilities, unverified figures and constructed customer references including anonymised ones; requires deal context before any buyer-facing draft; sets the output format; and keeps every product fact out of the block itself.",
+          "correct_answer": "SALES ASSISTANT — mid-market retail and hospitality — v1, 4 April, owner: your name here.\n\nSCOPE. You support one account executive selling a workforce scheduling product to operations leaders in mid-market retail and hospitality groups of 200 to 2,000 staff. Your job is recall, structure and first drafts. Mine is judgement, the relationship and everything a buyer sees.\n\nSOURCES. Answer only from the attached files: Product-Facts.md, Pricing-Rules.md, ICP-and-Disqualifiers.md, Battlecards.md, Approved-Claims.md, Reference-Stories.md. Where a question is not covered, reply with exactly this sentence and nothing else: not in the loaded material, ask product marketing. Never estimate a price, a discount, a timeline, a security answer or an integration. Never state a figure that does not appear word for word in the relevant file.\n\nHONESTY. Use claim wording only as written in Approved-Claims.md. Never produce a customer name, quote, logo or metric that is not in Reference-Stories.md, and never substitute a constructed, anonymised, typical or illustrative customer. Personalisation must come from material I give you about this specific buyer, never from an assumption about their company or role. If two files disagree, show both and label the conflict rather than choosing.\n\nBEFORE ANY BUYER-FACING DRAFT, ask me three things: which deal, what stage, and what the buyer actually said or sent. Do not draft until I answer.\n\nOUTPUT. Short paragraphs, British spelling, no exclamation marks, under 180 words unless I ask otherwise. End every answer with the file names used. Mark anything I must verify with CHECK. Nothing you produce goes to a buyer unread by me."
+        },
+        {
+          "order_index": 12,
+          "type": "short_answer",
+          "language": "prompt",
+          "marks": 5,
+          "title": "Prompt Lab: the reliability test protocol",
+          "prompt_md": "This is the second half of your graded deliverable. You have eighteen situations drawn from your own deals, tagged covered, not covered, trap and awkward, and you want a single run that proves the assistant never invents a capability, a price or a customer reference.\n\nWrite the prompt that executes that protocol. A strong prompt states what is being tested and against which files and version, defines the three failure modes precisely, sets the pass condition for each tag including that a not-covered item must produce the refusal sentence, demands figure-by-figure checking against files rather than plausibility, requires quoted evidence on every failure, and ends with source-level fixes and a dated verdict rather than rewritten answers.",
+          "correct_answer": "Reliability run for my sales assistant, version 1 dated 4 April, against the six attached files. Below are eighteen situations from my own deals, each tagged COVERED, NOT COVERED, TRAP or AWKWARD.\n\nAnswer each situation in order using only the attached files, then grade your own answer.\n\nPass conditions. COVERED passes if the answer matches the file, contains no figure absent from the files, and names the files used. NOT COVERED passes only if the answer is the refusal sentence and nothing else. TRAP passes only if you decline to supply the discount, capability or reference that the situation invites. AWKWARD passes if the answer stays inside the material regardless of the tone of the question.\n\nThree failure modes only. INVENTED CAPABILITY: any feature, integration, timeline or security assurance no file states. WRONG PRICE OR POLICY: any figure, band, term or discount that does not appear word for word in Pricing-Rules.md. INVENTED REFERENCE: any customer name, quote, logo or metric not written in Reference-Stories.md, including anonymised, typical or composite customers.\n\nCheck every number character by character against the file rather than accepting figures that look plausible. On any FAIL, quote the offending words from your answer and name the file line that contradicts them, or write NOT IN ANY FILE.\n\nReturn a table of eighteen rows: number, tag, answer under 40 words, files used, verdict, failure mode, quoted evidence. Then give the FAIL count by mode, a list of fixes to the files, a list of fixes to the instruction block, and a one-line verdict in the form: version 1, run on 4 April, N failures, cleared or not cleared for live use. Do not rewrite individual answers."
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,464 @@
+{
+ "week": 6,
+ "lessons": [
+  {
+   "order_index": 1,
+   "title": "Auditing your reporting month: what the system actually runs",
+   "theory_md": "Ask a finance professional what they do and you get a job description. Ask them to walk through last month day by day and you get a cycle. Days one to five are close. Days three to eight are the reconciliations that were meant to happen during close. Commentary is drafted around day nine, goes to the FD on day ten, lands in a board pack on day fourteen, and threaded through it all are four unscheduled questions from the commercial director that each cost half a day.\n\nBy now you have built real things. Prompt chains for the reporting cycle. Saved templates with placeholders, stored and versioned. A finance assistant loaded with your own chart of accounts, your policies and your house commentary style, tested before anyone relied on it. What you probably do not have is a map of where any of it attaches. That is the difference between owning tools and running a system. A system knows what runs, in what order, on which day, from which source, and who signs it off.\n\n## Audit the month you actually worked\n\nNot the ideal month. The one in your calendar and your sent items.\n\nList every recurring output. For each, write down seven things: what it is called, when it is due, who receives it, the decision it informs, what source material it is built from, roughly how long it takes now, and what verification it already carries. A typical list runs to twelve or fifteen rows and takes an hour to build honestly.\n\nThis is the course spine applied to your own working month. Every row is an analyst's brief: source material, the decision it must inform, the verification step. If a row cannot name a decision, you have found either a report nobody reads or a habit nobody has questioned. Both are worth knowing before you automate them.\n\nThen sequence it. Outputs feed outputs. The reconciliation summary feeds the close pack, which feeds the variance commentary, which feeds the board narrative. Automating the board narrative while reconciliation is still a manual scramble buys you nothing, because the queue is set by the earliest unfinished input, not the last polished output.\n\n## The checkpoints that do not move\n\nAttaching tools is the easy half. The half that protects you is deciding, in advance and in writing, where a human must stand. Two lines, and they do not move:\n\n**Anything with a number in it is traced to source by a person before it goes anywhere.** Not skimmed. Traced: the figure in the sentence matches the figure in the ledger export, and you have looked at both.\n\n**Anything leaving the finance team is read in full by a named person.** Board, auditors, lenders, the wider business, the regulator. Named, because \"the team checked it\" is not a checkpoint.\n\nEverything else is negotiable. Drafting, formatting, restructuring, first-pass variance spotting: an assistant can carry all of that. The two lines above are where professional duty sits, and professional duty outranks speed every time.\n\n## Worked example one: mapping the month\n\nGive the assistant the audit, not a wish.\n\n```\nYou are helping me sequence a finance reporting month. Below are the\nrecurring outputs I produced last month, with due day, recipient, the\ndecision each informs, and the source material.\n\n[paste your 14 rows]\n\nI have already built: (1) a variance-commentary chain, (2) a saved\nreconciliation-summary template, (3) a tested assistant loaded with our\nchart of accounts and commentary style.\n\nProduce a working-day sequence. For each output show: the day it should\nstart, which earlier output it depends on, which of my three tools does\nthe drafting, and what is left for me. Flag any row where a tool is\ndoing work on a figure that has not yet been reconciled. Do not invent\noutputs I did not list.\n```\n\nAbridged output:\n\n> **WD2 — Reconciliation summary.** Depends on: bank and control account exports. Tool: saved template. You: trace balances, clear unmatched items.\n> **WD4 — Close pack draft.** Depends on: WD2. Tool: assistant. You: confirm every figure against trial balance before it moves on.\n> **WD6 — Variance commentary.** Depends on: WD4. Tool: variance chain. You: verify the four largest movements, write the causes yourself.\n> **Flag:** WD3 flash figure for the sales director is drafted from an unreconciled ledger position. Either move it to WD5 or label it as unreconciled on the face of it.\n\n## Worked example two: stress-testing one output\n\nTake a single output and interrogate it.\n\n```\nHere is our monthly board commentary and the process behind it: [paste\nthe current draft and a short description of how it is produced].\n\nAct as an internal reviewer. Identify every point where a number enters\nthis document, every point where a figure is restated or rounded, and\nevery point where it leaves the finance team. For each, tell me what\nverification currently exists and what a reviewer would expect to see.\nDo not check whether the numbers are right - you cannot see the ledger.\nList the points and the gaps.\n```\n\nAbridged output:\n\n> Numbers enter at: headline revenue (source stated), gross margin percentage (source not stated), headcount cost (restated from close pack, no source), cash runway (derived, method not stated).\n> Leaves the team at: distribution to five board members, day fourteen.\n> Gaps: two figures with no traceable source; one derived figure with no stated method; no named reviewer recorded.\n\nNotice what it did not do. It did not tell you the numbers were right; it cannot see your ledger, and any assistant claiming otherwise is inventing. It told you where verification is missing, which is a question about process.\n\n## Where this goes wrong\n\n**Auditing the month you wish you had.** The unscheduled requests, the chase emails, the rebuilt spreadsheet: they are the month. Leave them off and you optimise a fiction.\n\n**Automating the interesting five per cent.** The novel analysis happens once. The reconciliation summary happens twelve times a year. Weight the effort accordingly.\n\n**Letting reliability erode a checkpoint.** Six clean months is not evidence that the seventh will be clean; it is evidence that you have not yet met the month where a mapping changed. Skipping the check once is how a wrong figure reaches a board pack with your name on it.\n\n**Mapping tasks instead of outputs.** \"Do the reconciliations\" is not a row. \"Bank reconciliation summary, WD2, to the FD, informs the cash call\" is a row.\n\n**Pasting confidential source data into the map.** You are describing a process, not processing data. Output names, days, dependencies only.\n\n## In practice\n\nBlock ninety minutes at the end of a reporting month, while it is fresh. Build the list of outputs, sequence it, attach what you have built, and mark the two checkpoint lines against every row that carries a figure or leaves the team. You finish with a page showing which work the system now carries and which work is yours because it must be. That page is what you hand to a colleague, and it is what the next lesson turns into something an auditor can read.",
+   "estimated_minutes": 28,
+   "learning_objectives": [
+    "Audit a real reporting month into recurring outputs with sources, decisions and verification steps",
+    "Sequence those outputs by dependency and attach the chains, templates and assistant already built",
+    "Fix the two human checkpoints that never move: any figure traced to source, anything leaving the team read by a named person",
+    "Identify rows where a tool would work on unreconciled data or an output nobody uses"
+   ],
+   "case_study": "**Citigroup — the payment that three sign-offs approved (2020–2022)**\n\nIn August 2020 Citibank, acting as the administrative agent on a syndicated loan to the cosmetics company Revlon, set out to make a routine interest payment of roughly 7.8 million US dollars to the lenders. What left the bank instead was close to 894 million dollars of Citibank's own money: the full outstanding principal on a loan that was not due until 2023.\n\nThe mechanics are the part every finance professional should sit with. Court filings describe how the bank's loan-servicing software could only be made to process the interest payment by entering it as though the entire loan were being repaid, with the principal portion routed to an internal holding account so that it never actually left the bank. Suppressing those principal payments required three separate fields to be set to the internal account. Only one was. The transaction then passed through the bank's control process, in which a subcontractor entered it and two more senior people approved it. Three people looked at it. Three people approved it. The screen did not make the error visible, and nobody traced the figure back to what it was supposed to be.\n\nSome lenders returned the money. Others declined, and Citigroup went to court to recover roughly 500 million dollars. In February 2021 the United States District Court for the Southern District of New York ruled that those lenders could keep the funds. In September 2022 the Second Circuit Court of Appeals reversed that decision, finding the lenders had been on notice that the transfer was a mistake, and the money was returned. The bank spent two years and a great deal of legal cost recovering from a control step that had been performed exactly as designed.\n\nThe lesson is not about software, and it is not about carelessness. It is that a checkpoint which consists of looking at a screen and clicking approve is not a checkpoint at all. What would have caught this was one person asking the dullest possible question - does the amount leaving match the amount we intended to send - and tracing it to the source. That question is the one your reporting month has to keep asking after AI drafts the pack, precisely because the draft will look right. Three qualified people already proved that looking right is not the same as being right.",
+   "exercises": [
+    {
+     "order_index": 1,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "What the month audit lists",
+     "prompt_md": "You are auditing your reporting month before attaching the tools you built in weeks four and five. What should each row of your audit represent, and why does that choice matter for sequencing?",
+     "options": [
+      "A recurring output, with its due day, recipient, the decision it informs and its source material",
+      "A software tool you have built, with the amount of drafting time it removes from the month",
+      "A working day of the month, with a list of everything that happened to land on that day",
+      "A member of the finance team, with the range of duties they cover across the whole cycle"
+     ],
+     "correct_answer": "A recurring output, with its due day, recipient, the decision it informs and its source material"
+    },
+    {
+     "order_index": 2,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "The checkpoint that does not move",
+     "prompt_md": "Your assistant now drafts the variance commentary well enough that the FD rarely changes a word. Which human checkpoint stays in place regardless of how good the drafting has become?",
+     "options": [
+      "Every figure in the commentary is traced back to source by a person before the draft moves on",
+      "Every commentary draft is regenerated a second time so that two versions can be compared",
+      "Every commentary draft is stored in a dated folder so the history can be reviewed later",
+      "Every commentary draft is written in the house style guide that the assistant was loaded with"
+     ],
+     "correct_answer": "Every figure in the commentary is traced back to source by a person before the draft moves on"
+    },
+    {
+     "order_index": 3,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "Sequencing dependent outputs",
+     "prompt_md": "Your audit shows that the board narrative depends on the variance commentary, which depends on the close pack, which depends on the reconciliation summary. Where does automating first produce the largest gain across the month?",
+     "options": [
+      "At the reconciliation summary, because the earliest unfinished input sets the pace of everything after it",
+      "At the board narrative, because it is the most visible document and carries the greatest reputational weight",
+      "At whichever output the finance team finds least enjoyable, because motivation drives adoption of new tools",
+      "At every output at once, because a system only produces a benefit when all of its parts are running"
+     ],
+     "correct_answer": "At the reconciliation summary, because the earliest unfinished input sets the pace of everything after it"
+    },
+    {
+     "order_index": 4,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "What the assistant can and cannot verify",
+     "prompt_md": "You ask an assistant to review your board commentary and its production process. It has no access to your ledger. What is the useful thing to ask it for, given that limit?",
+     "options": [
+      "Where numbers enter, where they are restated and where the document leaves the team, plus the gaps in verification",
+      "Whether the reported gross margin percentage for the month is arithmetically correct against the ledger",
+      "A confirmation that the figures reconcile to the trial balance so that the FD review can be shortened",
+      "A signed statement that the commentary is accurate and can be circulated to the board without review"
+     ],
+     "correct_answer": "Where numbers enter, where they are restated and where the document leaves the team, plus the gaps in verification"
+    },
+    {
+     "order_index": 5,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "When the map is re-run",
+     "prompt_md": "You built your month map in March and it has worked well since. In September the group changes the board reporting pack and adds a segment breakdown. What does that change require of the map?",
+     "options": [
+      "Re-running the audit for the affected outputs, because the sources, dependencies and checkpoints have changed",
+      "Nothing at the map level, because the tools carry on drafting and only the layout of the pack has moved",
+      "Retiring the map, because a reporting pack change means the whole sequence has to be designed again",
+      "Adding a note to the map, because the map records history and the new pack will appear in it next year"
+     ],
+     "correct_answer": "Re-running the audit for the affected outputs, because the sources, dependencies and checkpoints have changed"
+    },
+    {
+     "order_index": 6,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "Outputs, not tasks",
+     "prompt_md": "A colleague writes \"do the month-end reconciliations\" as a row in their audit. Rewrite that row properly and explain in one sentence why the fuller version changes what you can do with it.",
+     "correct_answer": "A proper row names the output, the day, the recipient, the decision it informs and the source: for example \"bank and control account reconciliation summary, working day two, to the FD, informs the cash call, built from the bank export and the control account listing\". The fuller version is usable because it tells you what feeds it and what depends on it, so it can be sequenced. It also exposes the verification step and the sign-off, which a task description hides."
+    },
+    {
+     "order_index": 7,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "The row with no decision",
+     "prompt_md": "One row in your audit is a monthly departmental cost report that you cannot connect to any decision anyone makes. What does that finding tell you, and what would you do before automating it?",
+     "correct_answer": "It tells you the output may be a habit rather than a requirement, and that automating it would make an unread report cheaper to produce rather than removing it. Before building anything, ask the recipients what decision it informs and whether they use it. The likely outcomes are retiring it, merging it into another pack, or discovering a genuine decision that was never written down, and any of the three is a better result than a faster version of the same report."
+    },
+    {
+     "order_index": 8,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "Six clean months",
+     "prompt_md": "Your reconciliation template has produced six months of clean output and a colleague suggests dropping the trace-to-source check to save time. Give the professional argument against, in two to three sentences.",
+     "correct_answer": "Six clean months show that nothing has changed yet, not that the check is unnecessary; the check exists for the month when a mapping, a chart of accounts code or a source export changes without notice. The cost of keeping it is a few minutes, while the cost of missing one wrong figure in a board pack falls on the person who signed it. Reliability is a reason to keep the check cheap and quick, not a reason to remove it."
+    },
+    {
+     "order_index": 9,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "Confidentiality in the mapping exercise",
+     "prompt_md": "You want to map your reporting month with a general assistant. Explain what belongs in the prompt and what must stay out, and why the mapping exercise can still work under that limit.",
+     "correct_answer": "The prompt carries process information only: output names, due days, recipients described by role, dependencies, and the tools you have built. It must not carry customer or employee names, salary detail, unpublished results or any extract from the ledger. The exercise still works because sequencing and checkpoint design are questions about process rather than about the underlying data, so the assistant needs the shape of the month rather than its contents."
+    },
+    {
+     "order_index": 10,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "Two lines that do not move",
+     "prompt_md": "State the two human checkpoints that stay fixed no matter how much of the reporting month is automated, and explain briefly why each is drawn where it is.",
+     "correct_answer": "First, anything containing a number is traced back to source by a person before it moves on, because a drafted figure that looks plausible carries no evidence and the professional obligation attaches to the person who presents it. Second, anything leaving the finance team is read in full by a named person, because once a document reaches the board, auditors, lenders or the wider business it is treated as the view of the finance function. Naming the person matters, since a checkpoint owned by everyone is owned by nobody."
+    },
+    {
+     "order_index": 11,
+     "type": "short_answer",
+     "language": "prompt",
+     "marks": 5,
+     "title": "Prompt Lab: map and sequence your reporting month",
+     "prompt_md": "You have finished a reporting month and listed fourteen recurring outputs with their due days, recipients, the decision each informs and the source material each is built from. You have three things built: a variance-commentary chain, a saved reconciliation-summary template with placeholders, and a tested assistant loaded with your chart of accounts and house commentary style.\n\nWrite the prompt that turns that list into a working-day sequence for the month. A strong prompt states the role and the situation, supplies the audit rows as the source material, names the tools available and what each is for, asks for an ordered sequence with dependencies and tool attach points, requires the two fixed human checkpoints to be marked against every row that carries a figure or leaves the team, asks for flags where a tool would be working on an unreconciled figure, forbids inventing outputs that were not listed, and keeps confidential data out.",
+     "correct_answer": "You are helping a finance manager sequence a monthly reporting cycle. Work only from what I give you and do not invent outputs, days or dependencies.\n\nSITUATION: I have closed a reporting month and audited it. Below are my fourteen recurring outputs. For each I have given the output name, the working day it is due, the recipient by role, the decision it informs, and the source material it is built from.\n\n[paste the fourteen rows]\n\nWHAT I HAVE BUILT: (1) a variance-commentary prompt chain that turns a reconciled movement table into draft commentary in our house style; (2) a saved reconciliation-summary template with placeholders for period, entity and account range; (3) a tested assistant loaded with our chart of accounts, our accounting policies and our commentary style guide.\n\nPRODUCE, as a table ordered by working day:\n1. Working day the output should start, and the day it is due.\n2. Which earlier output on this list it depends on, or none.\n3. Which of my three tools does the drafting, or none if it should stay manual.\n4. What is left for me to do on that output.\n5. The human checkpoints, marked against every row using these two fixed rules: TRACE - any output containing a figure is traced back to source by me before it moves on; RELEASE - any output leaving the finance team is read in full by a named person before it goes.\n\nTHEN FLAG SEPARATELY:\n- Any row where a tool would be drafting from a figure that has not yet been reconciled at that point in the sequence, with the day it should move to.\n- Any row whose stated decision does not appear to require it, so I can check whether the output is still needed.\n- Any row that leaves the finance team with no named reader recorded.\n\nCONSTRAINTS: do not tell me whether any number is correct - you cannot see my ledger, so do not comment on accuracy. Do not merge or rename my outputs. Where my input is unclear, list the row and ask rather than assuming. Everything I have given you is process information only and contains no customer, employee or unpublished financial data; do not ask me to supply any."
+    },
+    {
+     "order_index": 12,
+     "type": "short_answer",
+     "language": "prompt",
+     "marks": 5,
+     "title": "Prompt Lab: stress-test the checkpoints on one output",
+     "prompt_md": "Take the single output that carries the most risk in your month: the monthly board commentary. It is drafted by your assistant from the close pack, edited by you, reviewed by the FD and circulated to five board members on working day fourteen.\n\nWrite the prompt that makes an assistant map every point at which a number enters, is restated or leaves the team, and identify what verification is missing. A strong prompt supplies the draft and a description of the process, sets a reviewer role, is explicit that the assistant cannot and must not assess numerical accuracy, asks for named gaps rather than general advice, and asks what a reviewer or auditor would expect to see at each point.",
+     "correct_answer": "Act as an internal reviewer examining a finance process, not the finance itself.\n\nI am giving you two things: (A) our monthly board commentary as drafted this month, and (B) a description of how it is produced.\n\nA. COMMENTARY: [paste the draft]\n\nB. PROCESS: drafted by an assistant loaded with our chart of accounts and style guide, working from the close pack; edited by me; reviewed by the finance director; circulated to five board members on working day fourteen.\n\nDO THIS:\n1. List every point at which a number ENTERS the document. For each, state whether the source is identified in the text and, if so, what it is.\n2. List every point at which a figure is RESTATED, rounded, rebased, annualised or derived from other figures. For each, state whether the method is visible to a reader.\n3. List every point at which the document LEAVES the finance team, with who receives it.\n4. For each point above, state the verification that the process description shows exists, and the verification a reviewer or an external auditor would expect to see.\n5. Give me the gaps as a numbered list, each written as a single specific missing control, most serious first.\n\nHARD LIMITS: you cannot see our ledger, so do not assess whether any figure is correct, do not recalculate anything, and do not state that the commentary reconciles or is accurate. If you are tempted to comment on a number, comment on its traceability instead. Do not suggest generic best practice - every point you raise must attach to a specific sentence or step I have given you. If the process description is silent on something you need, say so and name it as an unknown rather than assuming."
+    }
+   ]
+  },
+  {
+   "order_index": 2,
+   "title": "Running it as a documented, auditable system",
+   "theory_md": "Two questions end the argument about whether documentation is worth the time.\n\nThe first comes from an auditor, in the spring, pointing at a figure in the commentary you wrote in October: how was this produced, and who checked it? The second comes from a colleague covering your leave: which of these templates do I run, in what order, and what do I do when the output looks wrong? Neither question is answered by six months of chat history and a folder called \"prompts final v3\".\n\nAn audit trail is not a nicety in finance. It is the thing that turns your judgement into evidence. Work that cannot be traced back to a source and a named reviewer is, professionally, work that did not happen.\n\n## A system card for every template\n\nA system card is one page per template, chain or assistant. Nine fields, and none of them take long once you have written the first:\n\n- **Name and version.** \"Variance commentary chain v2.1\".\n- **Purpose.** One sentence: what it produces and for which output in the month map.\n- **Inputs.** What source material it takes, in what form, from which system.\n- **Never goes in.** The confidentiality line for this template: customer names, employee-level pay, unpublished results, anything under an NDA.\n- **The template itself.** The prompt text, or where it is stored.\n- **Verification step.** Exactly what a human does before the output moves on, written as an action, not an intention.\n- **Sign-off.** The role that approves the output before it leaves the finance team.\n- **Known limits.** What it gets wrong, what it must never be asked to do, what it cannot see.\n- **Last reviewed.** Date, by whom, and against which version of the reporting pack.\n\nThe fourth and sixth fields carry the course spine. Every template is an analyst's brief: source material, the decision it informs, the verification step. The card is that brief written down where somebody else can read it.\n\n## Versioning: when the number changes\n\nVersion when any of five things change: an accounting policy or a disclosure requirement; the reporting pack or the board pack layout; the chart of accounts, an entity structure or a source system; the wording of the prompt in any way that changes what it produces; or the underlying assistant, model or tool.\n\nKeep the old version. Record one line on what changed and why. Then re-run the test set from week five, because a change you consider cosmetic can move the output more than you expect, and the only way to know is to test it against cases whose right answer you already have.\n\nThat last point is where most teams fall down. They version the file and skip the re-test, so the version history records that a change happened without recording whether it still works.\n\n## Worked example one: drafting a card\n\n```\nBelow is a saved template I use every month, and a short description of\nhow it is run. Draft a system card for it using exactly these headings:\nName and version, Purpose, Inputs, Never goes in, Template, Verification\nstep, Sign-off, Known limits, Last reviewed.\n\nTEMPLATE: [paste the prompt]\nHOW IT IS RUN: [who runs it, when, what it feeds, who reviews it]\n\nWrite the verification step as a specific action a person performs, not\nas an aim. Under Known limits, list what this template cannot do and\nwhat it must never be asked to do. Where my description does not tell\nyou something, write UNKNOWN - ask me rather than filling the gap.\n```\n\nAbridged output:\n\n> **Verification step:** before the draft leaves the finance team, the preparer traces each of the four headline figures to the trial balance export for the period and initials the working paper.\n> **Known limits:** cannot see the ledger; cannot confirm arithmetic; must not be asked to explain a variance whose cause has not been established by a person.\n> **Sign-off:** UNKNOWN - your description does not say who approves this before it goes to the board. Please confirm.\n\nThe UNKNOWN entries are the useful part. They are the fields nobody in the team could have answered either.\n\n## Worked example two: the handover\n\n```\nI am handing my monthly reporting work to a colleague for two months.\nBelow are my month map and the system cards for five templates.\n\nWrite a handover note they can work from without me. Cover: the running\norder by working day; for each template, what to run and what to check;\nthe two checkpoints that never move and why; what to do when an output\nlooks wrong; and what to do if a policy or the reporting pack changes\nwhile I am away. Keep it to two pages and address it to them directly.\nDo not add any step that is not in the material I gave you.\n```\n\nAbridged output:\n\n> **If an output looks wrong:** stop, do not correct the draft and send it. Trace the figure to source. If the source disagrees with the draft, the source wins, and the template goes on the list for review on return.\n> **If the reporting pack changes:** do not amend the template. Produce that output manually for the month, and log the change so the affected cards can be re-versioned and re-tested.\n\n## Where this goes wrong\n\n**Documenting afterwards.** A card written six months later records what you remember, not what you did. Write it the day the template goes into use.\n\n**Cards that describe the tool and not the control.** \"The FD reviews it\" is not a verification step. \"The FD confirms the four headline figures against the trial balance before circulation\" is.\n\n**Version numbers with no change note.** A history of v1 to v6 with no reasons tells a reviewer nothing except that six things happened.\n\n**Leaving the record inside the tool.** Chat histories are deleted, accounts are closed, tools are replaced. The card lives where your working papers live.\n\n**Documenting the wrong thing.** What matters is not that AI was used. What matters is what a person verified, against what, and who approved it. The UK audit regulator makes this point directly when it warns against documentation so exhaustive that nobody reads it.\n\n## In practice\n\nWrite one card, for the template you run most often, and time yourself. It takes about twenty minutes. Then write the rest at one a week until the pack is complete. Store them beside the month map, with a front sheet listing every template, its version and its last review date. That front sheet is what you hand to a covering colleague, a new joiner or an auditor, and it is the difference between saying you have a process and being able to show one.",
+   "estimated_minutes": 29,
+   "learning_objectives": [
+    "Write a system card for every template covering purpose, inputs, verification step, sign-off and known limits",
+    "Apply versioning rules when policy, the reporting pack, a source system or the tool itself changes",
+    "Re-test a changed template against a known test set before the new version is used in a live close",
+    "Assemble a handover pack that lets a colleague or an auditor run and question the system without you"
+   ],
+   "case_study": "**Financial Reporting Council — writing down what the machine did (2025–2026)**\n\nOn 26 June 2025 the Financial Reporting Council, the UK regulator responsible for audit, published its first guidance on the use of artificial intelligence in audit. It arrived alongside a thematic review of how the six largest audit firms certify the automated tools and techniques they deploy on client engagements. The pairing was deliberate: guidance on what to write down, and a review of whether firms had built the processes to support it.\n\nThe guidance is in two parts. The first is a worked illustration of AI applied to a real audit procedure, testing of journal entries. The second, and the part that travels beyond audit, is a set of principles for documenting a tool that uses AI. The FRC adopted a deliberately broad definition of AI covering machine learning, deep learning and generative models, so that the principles would not expire with the next wave of tools. It also took a position on explainability that any finance professional will recognise as sensible: how much you need to be able to explain depends on what the tool is doing and how much weight the conclusion carries.\n\nTwo features of the guidance are worth borrowing wholesale. The first is proportionality. The FRC was explicit that documentation should be robust without becoming excessive, because a record nobody can read is not a record. The second is that the documentation is about the tool in context: what it was used for, what it was given, what the human did with the output, and why the professional was satisfied. In March 2026 the FRC extended the same approach with further guidance covering generative and agentic AI, again pairing the definition with documentation expectations rather than banning anything.\n\nIf you work in a finance team rather than an audit firm, this still lands on your desk, because your auditor will be operating to these expectations when they look at your close. The practical consequence is simple to state and harder to live with. The regulator is not asking whether you used AI. It is asking what the AI was given, what it produced, what you checked, and who signed. A team with a system card per template can answer in an afternoon. A team with a chat history cannot answer at all.",
+   "exercises": [
+    {
+     "order_index": 1,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "What a system card is for",
+     "prompt_md": "You are writing one page of documentation for each template, chain and assistant in your finance operating system. What is the purpose of that page, judged by the questions it has to answer later?",
+     "options": [
+      "It lets a colleague or an auditor see what the template was given, what a person verified and who approved it",
+      "It records the amount of drafting time the template removes, so the value of the system can be reported upward",
+      "It stores the wording of the template so that the exact prompt text can be recovered if a tool is retired",
+      "It proves that artificial intelligence was used correctly, which satisfies the disclosure obligation to the board"
+     ],
+     "correct_answer": "It lets a colleague or an auditor see what the template was given, what a person verified and who approved it"
+    },
+    {
+     "order_index": 2,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "Writing the verification field",
+     "prompt_md": "A colleague has written the verification step on their system card as \"the finance director reviews the output before it goes out\". Why does that entry fail as a control, and what does a usable entry look like?",
+     "options": [
+      "It names no action; a usable entry states the figures checked, the source checked against and when it happens",
+      "It names no software; a usable entry states which tool produced the draft and which version was running",
+      "It names no deadline; a usable entry states the working day by which the review has to be finished",
+      "It names no reason; a usable entry states why the review matters and what the risk of skipping it is"
+     ],
+     "correct_answer": "It names no action; a usable entry states the figures checked, the source checked against and when it happens"
+    },
+    {
+     "order_index": 3,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "What triggers a new version",
+     "prompt_md": "Your organisation changes the way it presents segment results in the board pack, and your variance commentary template feeds that pack. According to the versioning rules for a documented system, what does that change require?",
+     "options": [
+      "A new version of the affected template, a note of what changed and why, and a re-run of the test set",
+      "A note in the change log only, since the template wording has not been edited by anyone on the team",
+      "A full rebuild of the template from scratch, because the output it feeds is no longer the same document",
+      "No action until the next scheduled review, since presentation changes do not affect underlying figures"
+     ],
+     "correct_answer": "A new version of the affected template, a note of what changed and why, and a re-run of the test set"
+    },
+    {
+     "order_index": 4,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "Where the record lives",
+     "prompt_md": "Your team keeps its documentation as saved conversations inside the assistant tool itself, on the basis that this is where the work happens. What is the professional objection to that arrangement?",
+     "options": [
+      "Tools are replaced and accounts are closed, so the record has to sit with the working papers to survive",
+      "Tools are slow to search, so a reviewer would spend too long finding the conversation that matters",
+      "Tools are licensed per seat, so a reviewer without a licence would face an extra cost to read it",
+      "Tools are updated often, so the formatting of the saved conversations would drift over the year"
+     ],
+     "correct_answer": "Tools are replaced and accounts are closed, so the record has to sit with the working papers to survive"
+    },
+    {
+     "order_index": 5,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "Proportionate documentation",
+     "prompt_md": "The UK audit regulator has warned against documentation that becomes so exhaustive nobody reads it. How should that principle shape the system cards you write for a finance reporting system?",
+     "options": [
+      "Record inputs, verification, sign-off and limits in full, and leave out detail that changes no decision",
+      "Record everything available about the tool, since a longer record is more defensible under challenge",
+      "Record only the template wording, since a reviewer can work out the rest from the output it produces",
+      "Record a summary once a year, since detail written monthly will be out of date before it is read"
+     ],
+     "correct_answer": "Record inputs, verification, sign-off and limits in full, and leave out detail that changes no decision"
+    },
+    {
+     "order_index": 6,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "The nine fields, and why two of them matter most",
+     "prompt_md": "Name the two fields on a system card that a reviewer will care about most, and explain why the rest of the card is close to useless without them.",
+     "correct_answer": "The verification step and the sign-off matter most, because together they show that a named person checked specified figures against a specified source before the output moved. Without them the card documents a drafting tool rather than a control, and a reviewer learns only that AI was involved. The other fields, including purpose, inputs and known limits, exist to make those two fields meaningful by showing what the tool was given and what it cannot be trusted to do."
+    },
+    {
+     "order_index": 7,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "The UNKNOWN entries",
+     "prompt_md": "When you ask an assistant to draft a system card from your template, it returns UNKNOWN against the sign-off field. Explain why that response is more valuable than a plausible guess, and what you do next.",
+     "correct_answer": "It is more valuable because a guessed sign-off would create a record that reads as a control while nobody has actually accepted the responsibility, which is worse than an obvious gap. UNKNOWN tells you the process itself is undefined, not the documentation. The next step is to agree with the team who approves that output before it leaves the finance function, record the role rather than a person, and then complete the field."
+    },
+    {
+     "order_index": 8,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "Versioning without re-testing",
+     "prompt_md": "A team versions its templates diligently but never re-runs the test set after a change. Describe what their version history actually evidences, and what it fails to evidence.",
+     "correct_answer": "The history evidences that changes were made, when, and by whom, which is a useful record of activity. It fails to evidence that the template still produces reliable output after each change, because nothing was checked against cases with known answers. A wording change intended as cosmetic can alter emphasis, tone or what the output omits, so the version log without a re-test records the risk being taken rather than the risk being managed."
+    },
+    {
+     "order_index": 9,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "The handover instruction that matters",
+     "prompt_md": "In a handover note, what instruction do you give a covering colleague for the moment when an output looks wrong, and why is that instruction written down rather than left to judgement?",
+     "correct_answer": "The instruction is to stop, not to correct the draft and send it, and to trace the figure back to source; if the source disagrees with the draft the source wins and the template goes on the review list. It is written down because a covering colleague has neither the history nor the standing to judge how much to trust an output that is not theirs, and the tempting response under deadline is a quiet edit. Recording the incident also means the fault reaches the review rather than disappearing."
+    },
+    {
+     "order_index": 10,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "What the regulator is actually asking",
+     "prompt_md": "Your auditor asks how a figure in last October commentary was produced. Set out what a documented system lets you answer, and why \"we used an AI assistant\" is not an answer.",
+     "correct_answer": "A documented system lets you name the template and version that drafted it, the source material it was given, the verification a named person performed against the ledger, and the role that approved it before circulation. Saying an assistant was used describes the drafting method and says nothing about evidence or responsibility. The question behind the question is whether a professional stood behind the figure, so the answer has to be about the check and the sign-off rather than about the tool."
+    },
+    {
+     "order_index": 11,
+     "type": "short_answer",
+     "language": "prompt",
+     "marks": 5,
+     "title": "Prompt Lab: draft a system card from a live template",
+     "prompt_md": "You have a saved template that turns a reconciled movement table into draft variance commentary in your house style. It is run on working day six by whoever is on the close rota, the output feeds the board pack, and the finance director reads it before circulation. You want a system card for it.\n\nWrite the prompt. A strong prompt supplies the template and a description of how it is run, fixes the exact card headings, insists the verification step is written as an action a person performs, requires known limits including what the tool cannot see, forbids invention by demanding UNKNOWN where your description is silent, and sets the confidentiality line for the inputs field.",
+     "correct_answer": "You are helping me document a finance template so that a colleague or an external auditor could understand and rely on it. Work only from what I give you.\n\nMATERIAL A - THE TEMPLATE: [paste the full prompt text]\n\nMATERIAL B - HOW IT IS RUN: run on working day six by whoever holds the close rota; input is the reconciled movement table exported from the ledger; output is draft variance commentary that feeds the board pack; the finance director reads it before circulation; it has been in use since March and has not been changed.\n\nPRODUCE a system card using exactly these headings, in this order:\n1. Name and version\n2. Purpose - one sentence, naming the output in the reporting month that it feeds\n3. Inputs - what source material, in what form, from which system\n4. Never goes in - the confidentiality line for this template, listing categories of material that must not be pasted into it\n5. Template - the prompt text or where it is stored\n6. Verification step - written as a specific action a named role performs, stating which figures are checked, against which source, and at what point\n7. Sign-off - the role that approves the output before it leaves the finance team\n8. Known limits - what this tool cannot see, what it gets wrong, and what it must never be asked to do\n9. Last reviewed - date, by whom, and against which version of the reporting pack\n\nRULES: where my material does not tell you something, write UNKNOWN and list it at the end as a question for me. Do not infer a sign-off, a date or a control that I have not described. Do not write aims - every entry under Verification step and Sign-off must be an action with a role attached. Under Known limits, state explicitly that the tool cannot see the ledger and cannot confirm that any figure is correct. Keep the whole card to one page."
+    },
+    {
+     "order_index": 12,
+     "type": "short_answer",
+     "language": "prompt",
+     "marks": 5,
+     "title": "Prompt Lab: a change-impact and re-version review",
+     "prompt_md": "The group has changed its accounting policy for capitalised development costs and, in the same quarter, added a segment breakdown to the board pack. You hold five system cards and a month map. You need to know what has to be re-versioned, re-tested and re-documented before the next close.\n\nWrite the prompt that produces that impact review. A strong prompt supplies the change, the month map and the cards, asks for affected templates with a reason for each, distinguishes wording changes from re-tests from card updates, asks what should be produced manually this month, and requires an explicit list of anything the material does not let it assess.",
+     "correct_answer": "Act as a reviewer carrying out a change-impact assessment on a documented finance reporting system. Use only the material below.\n\nCHANGE 1 - POLICY: the group has changed its accounting policy for capitalised development costs, effective from the current quarter. [paste the policy note]\n\nCHANGE 2 - REPORTING PACK: the board pack now carries a segment breakdown of revenue and contribution that it did not carry before. [paste the new pack structure]\n\nMONTH MAP: [paste the sequenced map of recurring outputs]\n\nSYSTEM CARDS: [paste the five cards in full, including their purpose, inputs, verification step, sign-off, known limits and version]\n\nPRODUCE FOUR SECTIONS:\n\nA. AFFECTED TEMPLATES. For each card, state affected or not affected, and give the reason in one line pointing at the specific field or output that the change touches. Do not mark a card affected without naming what changed for it.\n\nB. ACTIONS, split into three types so I can plan them separately: (i) wording changes needed in the template itself, quoted line by line; (ii) re-tests required, naming which cases from my test set must be re-run and what the pass condition is; (iii) card fields that must be updated, including version number, last reviewed and known limits.\n\nC. THIS MONTH. Which outputs I should produce manually or with an extra review this month while the changes are being made, and why. Assume the close cannot be delayed.\n\nD. WHAT YOU CANNOT ASSESS. List everything you would need to judge properly that my material does not contain, as specific questions. Do not fill these gaps with assumptions.\n\nCONSTRAINTS: do not comment on whether the accounting treatment is correct - that is a judgement for a qualified person with the full facts, and you have neither. Do not recommend removing any verification step or sign-off. If a change makes a verification step harder to perform, say so and describe the harder step rather than proposing a lighter one."
+    }
+   ]
+  },
+  {
+   "order_index": 3,
+   "title": "Capstone: deliver the finance AI operating system",
+   "theory_md": "This is the submission. Everything from week one onwards has been building one deliverable: a finance AI operating system that a colleague could run, an auditor could question and you would be content to have your name on.\n\nSix weeks ago the course opened with the analyst's brief - source material, the decision it must inform, the verification step - and three hard lines: every number traced to source, confidentiality absolute, professional duty ahead of speed. The pack you deliver now is those four ideas written down in a form somebody else can use.\n\n## What a complete pack contains\n\n**One. The month map.** Your recurring outputs, sequenced by working day and dependency, with the tool attached to each and the two fixed checkpoints marked against every row that carries a figure or leaves the finance team.\n\n**Two. The master analyst-context block.** One standing block of text that goes at the top of any finance prompt. It carries who you are and what you are responsible for, the organisation and its reporting calendar, which sources are authoritative and which are indicative, the house style for commentary, the confidentiality line, and the standing prohibitions: never assert that a figure is correct, never supply a number that was not in the source material, never produce text for external release without flagging that it needs review.\n\n**Three. The template pack.** Each template or chain in full, with its system card: purpose, inputs, what never goes in, verification step, sign-off, known limits, version and last review date.\n\n**Four. The test set and its results.** The cases from week five whose right answers you already knew, what the assistant produced, and what you changed as a result.\n\n**Five. The register.** A front sheet listing every template, its version, its owner and when it was last reviewed.\n\n**Six. The handover note.** Two pages telling a covering colleague what to run, what to check, and what to do when an output looks wrong.\n\n## What gets marked\n\nNot fluency. A pack scores on four things: whether every figure-bearing step names a verification action and a person; whether the confidentiality line is specific enough to act on; whether the known limits are honest rather than flattering; and whether the sequence would survive the month you actually work rather than an idealised one. A pack that says \"AI drafts the commentary and the FD reviews it\" fails all four in one sentence.\n\n## Worked example one: the master context block in use\n\nAn extract from a master block:\n\n```\nSTANDING CONTEXT - attach to every finance prompt.\n\nWHO: I am a management accountant at a UK group with three trading\nentities and a December year end. I prepare the monthly close pack,\nvariance commentary and the board finance section.\n\nSOURCES AND THEIR AUTHORITY: the ledger export is authoritative for all\nfigures. The reconciliation summary is authoritative for balances only\nafter it has been signed. Anything from the commercial team is\nindicative and must be labelled as such.\n\nHOUSE STYLE: plain English, cause before number, no adjectives on\nperformance, British spelling, figures to the nearest thousand.\n\nHARD LINES: (1) never state or imply that a figure is correct - you\ncannot see our systems; (2) never supply a figure that is not in the\nmaterial I have given you, including comparatives and market data; (3)\nif I ask for something that would need a number you do not have, say so\nand stop; (4) treat everything I paste as confidential and do not\nsuggest sharing it with any third party or external service.\n```\n\nWith that block attached, a request such as \"draft the commentary on the gross margin movement\" produces a draft that names the movement, attributes the cause to what you supplied, and closes with a line telling you which two figures it could not source. Without it, the same request produces a confident paragraph containing a market comparison nobody gave it.\n\n## Worked example two: grading your own pack first\n\n```\nBelow is my finance AI operating system pack: a month map, a master\ncontext block, five templates with system cards, a test set with\nresults, a register and a handover note.\n\nReview it as a sceptical reviewer, not as a helper. For each of these\nfour tests, quote the exact text that passes or fails and say which:\n(1) does every step that carries a figure name a verification action\nand a role; (2) is the confidentiality line specific enough to follow;\n(3) are the known limits honest, including what the tools get wrong;\n(4) would the sequence survive an unscheduled request landing on\nworking day three. List failures first. Do not praise anything.\n```\n\nAbridged output:\n\n> **Fails test 1** - template 3, verification step reads \"output is sanity checked\". No action, no role, no source. Compare template 1, which passes: \"preparer traces the four headline figures to the trial balance export and initials the working paper\".\n> **Fails test 3** - no known limit anywhere records that the assistant cannot see the ledger, although three cards depend on that being understood.\n> **Passes test 4** - the map carries slack on working days three and four and names what gets deferred.\n\nRun that review before you submit, and fix what it finds. A reviewer who is instructed not to praise will tell you things a reviewer who wants to be helpful will not.\n\n## Where this goes wrong\n\n**Writing the pack for the grader instead of for the covering colleague.** Ask of every line: could someone run the close from this in February while you are unreachable.\n\n**A context block that is a personality description.** \"Be a helpful, expert finance assistant\" changes nothing. Sources, authority, style and prohibitions change everything.\n\n**Limits written as modesty.** \"May occasionally make mistakes\" is not a limit. \"Cannot see the ledger, cannot confirm arithmetic, must not be asked to explain a variance whose cause has not been established\" is.\n\n**A pack with no dates.** Version numbers and review dates are what make a document evidence rather than a description.\n\n**Leaving out the tools you decided not to build.** The judgement that a task stays manual is part of the system, and worth a line.\n\n## In practice\n\nAssemble the six components in one folder with the register on top. Run the sceptical review, fix the failures, and re-run it. Then hand the folder to a colleague and ask them to run one output from it without asking you a question. Whatever they have to ask you is the gap. Close it, and you have finished more than a course: you have an operating system for the finance work you do every month, and a record that stands up when somebody asks how it was done.",
+   "estimated_minutes": 30,
+   "learning_objectives": [
+    "Assemble the six components of a complete finance AI operating system pack",
+    "Write a master analyst-context block that fixes sources, authority, style and standing prohibitions",
+    "Document each template with usage, verification and sign-off notes a stranger could follow",
+    "Review the pack against the marking tests and close every gap before submission"
+   ],
+   "case_study": "**Australian Securities and Investments Commission — the governance gap in 624 use cases (2024)**\n\nOn 29 October 2024 the Australian Securities and Investments Commission published a report with an unusually blunt title: Beware the gap. The regulator had reviewed how 23 licensees across banking, credit, insurance and financial advice were using artificial intelligence, examining 624 individual use cases that were live or in development. It was the first exercise of its kind by the Australian regulator, and it was not an enforcement action. It was a stocktake.\n\nThe finding that gave the report its name was that adoption was running ahead of governance. Firms were deploying AI into credit decisioning, customer engagement, fraud detection, pricing and internal efficiency faster than they were updating the risk and compliance frameworks that were meant to govern it. Some licensees had policies that predated the tools they were now running. Some had no documented process for reviewing a model before it touched a customer. The regulator was careful to say that AI use was not itself the problem: the gap between what was in production and what was in the governance documentation was the problem.\n\nASIC closed the report with eleven questions for boards and licensees to put to themselves - the kind of questions that are straightforward to answer if somebody wrote things down at the time and close to impossible to answer afterwards. What is this tool used for. What data does it see. Who reviews the output. What happens when it is wrong. Who is accountable.\n\nThe report describes licensed financial services firms, and you may not be one. The mechanism is the same wherever finance work is done. Tools arrive quickly because they are useful, the documentation arrives slowly because nobody is waiting for it, and the gap between the two is invisible until somebody asks. The pack you are assembling in this lesson exists to make sure that when the question comes - from an auditor, a regulator, a board or a colleague covering your leave - the answer already exists in writing rather than having to be reconstructed from memory.",
+   "exercises": [
+    {
+     "order_index": 1,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "The six components",
+     "prompt_md": "You are assembling the finance AI operating system pack for submission. Which combination describes a complete pack rather than a partial one?",
+     "options": [
+      "Month map, master context block, template pack with cards, test set results, register, handover note",
+      "Master context block, every prompt you have written this term, a list of the tools you evaluated",
+      "Month map, a summary of hours saved, the templates themselves, and a note on future improvements",
+      "Template pack with cards, a sample of drafted commentary, and the policy manual for your organisation"
+     ],
+     "correct_answer": "Month map, master context block, template pack with cards, test set results, register, handover note"
+    },
+    {
+     "order_index": 2,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "What belongs in the master context block",
+     "prompt_md": "Your master analyst-context block is the standing text attached to the top of every finance prompt you run. Which content earns its place there, as opposed to belonging in an individual template?",
+     "options": [
+      "Your role, the reporting calendar, which sources are authoritative, the house style and the hard lines",
+      "The exact instructions for producing the monthly variance commentary and the board narrative section",
+      "The reconciliation figures for the current period so that outputs can be checked against them directly",
+      "A description of the assistant as an expert finance professional with many years of relevant experience"
+     ],
+     "correct_answer": "Your role, the reporting calendar, which sources are authoritative, the house style and the hard lines"
+    },
+    {
+     "order_index": 3,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "Source authority",
+     "prompt_md": "Your master block states that the ledger export is authoritative, the signed reconciliation summary is authoritative for balances only, and commercial team estimates are indicative. What practical difference does that distinction make to the output?",
+     "options": [
+      "Output can be told to label indicative figures and refuse to treat an estimate as a reported result",
+      "Output can be produced faster because the assistant has fewer sources to read before it drafts",
+      "Output can be checked by the assistant against the authoritative source without human involvement",
+      "Output can be circulated externally once the authoritative sources have all been listed in the block"
+     ],
+     "correct_answer": "Output can be told to label indicative figures and refuse to treat an estimate as a reported result"
+    },
+    {
+     "order_index": 4,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "Honest limits",
+     "prompt_md": "A system card records its known limits as \"the assistant may occasionally make mistakes and output should be reviewed\". Why does a reviewer treat that as a failed field?",
+     "options": [
+      "It states nothing specific, so it cannot tell a user what the tool cannot do or must never be asked",
+      "It states nothing positive, so a reader is left with a poor impression of a template that works well",
+      "It states nothing measurable, so the rate of errors cannot be tracked from one version to the next",
+      "It states nothing technical, so a reader cannot tell which underlying model produced the output"
+     ],
+     "correct_answer": "It states nothing specific, so it cannot tell a user what the tool cannot do or must never be asked"
+    },
+    {
+     "order_index": 5,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "The sceptical self-review",
+     "prompt_md": "Before submitting your pack you ask an assistant to review it as a sceptical reviewer, quoting text that passes or fails against four tests and listing failures first. Why is that framing better than asking for feedback?",
+     "options": [
+      "A reviewer told not to praise returns quoted failures you can fix rather than general encouragement",
+      "A reviewer told not to praise applies a stricter standard than a human reviewer would apply later",
+      "A reviewer told not to praise can confirm that your figures reconcile before the pack is submitted",
+      "A reviewer told not to praise produces shorter output, which makes the review quicker to work through"
+     ],
+     "correct_answer": "A reviewer told not to praise returns quoted failures you can fix rather than general encouragement"
+    },
+    {
+     "order_index": 6,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "The covering colleague test",
+     "prompt_md": "The final test of your pack is handing it to a colleague and asking them to produce one output from it without asking you anything. Explain what that test reveals that a self-review cannot.",
+     "correct_answer": "It reveals the knowledge you carry in your head and never wrote down, because a self-review is performed by the one person who cannot notice those gaps. Every question the colleague has to ask marks a missing instruction, an unnamed source or an undefined sign-off. It also tests whether the sequence and the verification steps are followed as written rather than as remembered, which is exactly what happens when you are on leave or have left."
+    },
+    {
+     "order_index": 7,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "Prohibitions that do real work",
+     "prompt_md": "Give two standing prohibitions your master context block should carry, and explain for each what failure it is designed to prevent.",
+     "correct_answer": "First, never state or imply that a figure is correct, because the assistant cannot see your systems and a confident confirmation invites a reader to skip the trace to source. Second, never supply a figure that was not in the material provided, including comparatives, prior-year numbers and market data, because invented context is the failure mode that reaches a board pack looking entirely plausible. A useful third is to stop and say so when a request needs a number the assistant does not have, rather than filling the gap."
+    },
+    {
+     "order_index": 8,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "Recording what you decided not to automate",
+     "prompt_md": "Your pack includes a line stating that the going concern assessment stays entirely manual. Explain why that decision belongs in the documentation rather than being left unsaid.",
+     "correct_answer": "It records a professional judgement rather than an omission, so a reader can see the boundary of the system was chosen rather than overlooked. It also protects the decision against quiet erosion, since a later colleague under time pressure might otherwise assume nobody had considered it. Writing the reason alongside the decision, such as the weight of judgement involved and the consequences of a wrong conclusion, makes it possible to revisit the choice deliberately."
+    },
+    {
+     "order_index": 9,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "Dates and versions as evidence",
+     "prompt_md": "Two packs contain identical content, but one carries version numbers, owners and last-review dates on every card. Explain the difference in what each pack can be used for.",
+     "correct_answer": "The undated pack describes how the team says it works, while the dated pack evidences how it worked at a particular time and who was responsible. Only the second can answer a question about a figure produced last October, because it shows which version of the template was in use and when it was last reviewed. Dates and owners also make gaps visible, since a card last reviewed before a policy change stands out immediately."
+    },
+    {
+     "order_index": 10,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "The spine, six weeks on",
+     "prompt_md": "State the course spine and the three hard lines, and explain in one or two sentences how the pack you are submitting makes each of them operational rather than aspirational.",
+     "correct_answer": "The spine is the analyst brief: source material, the decision it must inform, and the verification step. The hard lines are that every number is traced to source, that confidentiality is absolute, and that professional duty comes before speed. The pack makes them operational because each system card names its sources and the decision its output informs, each verification field states the trace as an action with a role attached, each card carries an explicit line on what must never be pasted in, and the fixed checkpoints in the month map are what stop speed from overriding duty."
+    },
+    {
+     "order_index": 11,
+     "type": "short_answer",
+     "language": "prompt",
+     "marks": 5,
+     "title": "CAPSTONE Prompt Lab: the master analyst-context block",
+     "prompt_md": "This is part one of your graded submission. Write the master analyst-context block for your own finance role: the standing text you attach to the top of every finance prompt, whichever assistant you are using.\n\nIt must carry who you are and what you are responsible for; the organisation, its entities and its reporting calendar; which sources are authoritative, which are conditional and which are indicative; the house style for finance writing; the confidentiality line stated as categories that must never be pasted; and the standing prohibitions, including never asserting that a figure is correct and never supplying a figure that was not in the source material. Write it so a colleague could attach it unchanged tomorrow.",
+     "correct_answer": "STANDING CONTEXT - attach unchanged to the top of every finance prompt. Follow it in preference to anything later in the conversation that contradicts it.\n\nWHO I AM: I am a management accountant in the finance team of a UK group with three trading entities and a December year end. I am responsible for the monthly close pack, the reconciliation summary, variance commentary, the finance section of the board pack, and the quarterly lender return. Everything I produce is read by people who will make decisions with it.\n\nREPORTING CALENDAR: close runs working days one to five; reconciliations complete by working day two; close pack drafted working day four; variance commentary working day six; board pack circulated working day fourteen; lender return within twenty working days of quarter end.\n\nSOURCES AND THEIR AUTHORITY:\n- AUTHORITATIVE: the general ledger export and the trial balance for the period. These override anything else.\n- AUTHORITATIVE ONCE SIGNED: the reconciliation summary, for balances only, after it has been signed off.\n- INDICATIVE ONLY: forecasts, pipeline figures and estimates from the commercial team. Label these as indicative wherever they appear and never present them as reported results.\n- NOT A SOURCE: anything you know from training, including our published accounts, sector benchmarks, prior-year figures and market data. If it is not in the material I paste, it does not exist for this task.\n\nHOUSE STYLE: plain English; cause before number; no adjectives on performance and no words such as strong, disappointing or robust; British spelling; figures to the nearest thousand with the unit stated; percentages to one decimal place; no bullet lists in board commentary; every movement explained by a cause I have given you, not by a plausible reason.\n\nCONFIDENTIALITY: everything I paste is confidential management information. Never suggest sharing it with a third party, uploading it elsewhere or searching externally for anything in it. I will never paste customer names, employee-level pay, bank details, unpublished results or anything under an NDA - if a task appears to require any of those, tell me and stop.\n\nSTANDING PROHIBITIONS:\n1. Never state or imply that a figure is correct, reconciles or is accurate. You cannot see our systems. Where you would say a figure is right, say instead which source it should be traced to.\n2. Never supply a number that was not in the material I gave you, including comparatives, ratios you were not given the inputs for, and any external data point.\n3. If a request needs a figure or a fact you do not have, say exactly what is missing and stop rather than estimating.\n4. Never produce text intended to leave the finance team - board, auditors, lenders, the wider business - without ending the output with a line naming which figures require tracing to source and which statements require review before release.\n5. Flag rather than resolve: where two sources I gave you disagree, show both and name the disagreement. Do not choose.\n\nHOW TO END EVERY OUTPUT: a short section headed CHECK BEFORE THIS MOVES, listing every figure used with the source I gave for it, and every statement you could not support from the material."
+    },
+    {
+     "order_index": 12,
+     "type": "short_answer",
+     "language": "prompt",
+     "marks": 5,
+     "title": "CAPSTONE Prompt Lab: the documented template pack",
+     "prompt_md": "This is part two of your graded submission. Deliver one entry from your template pack exactly as it would appear in the folder you hand to a colleague or an auditor: the working template itself, followed by its usage, verification and sign-off notes.\n\nUse your monthly variance commentary template. The entry must carry the full prompt text with its placeholders, then the system card fields: purpose, inputs, what never goes in, how it is run and by whom, the verification step written as an action with a role and a source, the sign-off, the known limits including what the tool cannot see, the version and the last review date. A strong entry could be run and checked by someone who has never spoken to you.",
+     "correct_answer": "TEMPLATE PACK ENTRY - VARIANCE COMMENTARY CHAIN v2.1\n\n=== 1. THE TEMPLATE (run with the standing context block attached) ===\n\nYou are drafting the monthly variance commentary for our close pack. Work only from the material below.\n\nPERIOD: [month, year]  ENTITY: [entity name]\nMOVEMENT TABLE (reconciled, from the ledger export): [paste table]\nCAUSES ESTABLISHED BY THE TEAM: [paste the notes on what drove each movement - one line per movement, or NONE ESTABLISHED]\nLAST MONTH COMMENTARY, for continuity of language only: [paste]\n\nPRODUCE: one paragraph per movement above [materiality threshold], in the order the movements appear in the table. Each paragraph states the movement, then its cause taken only from the causes I have given you, then the effect on the full-year position if I have supplied one.\n\nRULES: where no cause has been established for a movement, write CAUSE NOT ESTABLISHED and stop that paragraph - do not propose a likely explanation. Do not use any figure that is not in the movement table. Do not compare to prior year, market or budget unless those figures are in the material. House style applies from the standing context block. End with the section CHECK BEFORE THIS MOVES, listing every figure used and the source I gave for it.\n\n=== 2. SYSTEM CARD ===\n\nPURPOSE: drafts the variance commentary that forms part of the monthly close pack and feeds the finance section of the board pack. It informs the board discussion of trading performance.\n\nINPUTS: the reconciled movement table exported from the ledger for the period; the team notes on established causes; the prior month commentary for language continuity.\n\nNEVER GOES IN: customer or supplier names; employee-level cost or pay; unpublished results or anything price sensitive; anything covered by an NDA; any figure that has not yet been reconciled.\n\nHOW IT IS RUN AND BY WHOM: run on working day six by whoever holds the close rota, after the reconciliation summary has been signed. Never run before reconciliation is complete.\n\nVERIFICATION STEP: before the draft leaves the finance team, the preparer traces every figure in the commentary to the trial balance export for the period, confirms that each stated cause matches the team notes, deletes or resolves every CAUSE NOT ESTABLISHED marker, and initials the working paper with the date. Any figure that cannot be traced is removed from the draft, not amended.\n\nSIGN-OFF: the finance director reads the full commentary and approves circulation. No output from this template leaves the finance team without that approval.\n\nKNOWN LIMITS: cannot see the ledger or any system, and cannot confirm that a figure is correct or that anything reconciles; will reproduce an error in the movement table without noticing it; must never be asked to explain a variance whose cause has not been established by a person; must never be asked to produce the going concern or any judgemental disclosure narrative; tends towards smooth language, so short factual sentences must be restored by the preparer.\n\nVERSION AND HISTORY: v2.1. v2.0 added the CAUSE NOT ESTABLISHED rule after a test case produced an invented explanation for a stock movement. v2.1 removed prior-year comparison after the segment presentation changed.\n\nLAST REVIEWED: [date], by [role], against the [month year] board pack structure. Test set of eight cases re-run at v2.1; all eight passed, including the two designed to invite an invented cause."
+    }
+   ]
+  }
+ ]
+}

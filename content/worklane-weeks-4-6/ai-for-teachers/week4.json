@@ -1,0 +1,464 @@
+{
+ "week": 4,
+ "lessons": [
+  {
+   "order_index": 1,
+   "title": "Prompt chains: scheme of work to assessment, one link at a time",
+   "theory_md": "## The Sunday that eats itself\n\nA half-term of Year 9 history is eighteen lessons. The scheme of work is three lines on a shared drive. You have a Sunday, a cup of tea and a slow-dawning sense that once the first three lessons are planned properly the Sunday will be gone — and the other fifteen taught off the back of a textbook nobody likes.\n\nWeeks 1 to 3 handed you the pieces: the teacher's brief, planning one lesson from outcome to ready-to-teach, differentiation, worksheets and model answers, assessment and feedback at scale. Each was one good conversation, done once. The trouble with once-at-a-time is that the planning cycle is not one job. It is four jobs that hand work to each other — scheme of work, lesson plan, resources, assessment — and each time you open a fresh conversation you retype the year group, the specification, the class context and the outcome wording. Every retyping is a chance for the four to drift apart. Drift is why the worksheet asks students to *explain* while the end-of-unit test asks them to *evaluate*, and why a child who did everything you asked still loses marks.\n\n## What a chain actually is\n\nA prompt chain is a short sequence of prompts in which the checked output of one step becomes the input to the next. It is not one enormous prompt demanding everything at once, and it is not four unrelated conversations. It is four linked steps, each doing one job, each producing something small enough to read, correct and hand on.\n\nFor the planning cycle the chain runs:\n\n1. **Scheme of work** — the half-term sequenced into lessons, one outcome each.\n2. **Lesson plan** — one lesson from that sequence, built to be taught.\n3. **Resources** — the worksheet, the slide text, the model answer for that lesson.\n4. **Assessment** — the exit ticket and end-of-unit questions, wired to the same outcomes.\n\nThe skill here is not clever wording. It is the checkpoint between the links. After each step you do two things, and neither is optional. You check the **pedagogy**: is this teachable to this class, in this order, in fifty minutes. And you check the **accuracy**: are the dates, definitions, formulae and quotations right. Only then does the corrected output go into the next prompt. Hours come back to you; the pedagogy and the duty of care stay with you. An error waved through at step one does not stay one error — it arrives at step four as eighteen lessons of wrong.\n\nTwo hard lines run through every link. Verify every fact before it reaches a class, because a chain multiplies your reach and your mistakes at the same rate. And never paste identifiable student data into a general AI assistant: no names, no SEN register, no diagnostic scores. \"Six learners reading well below age-related expectations\" carries everything the chain needs and identifies nobody.\n\n## Worked example one: step one hands to step two\n\nThe first link produces a sequence, not lessons. Keep it thin so checking is quick.\n\n```\nYou are helping me plan a half-term of Year 9 history for a UK\ncomprehensive. Topic: the Norman Conquest, 1066 to 1087.\nEighteen lessons of 50 minutes, three a week for six weeks.\n\nClass context: mixed attainment, 29 students. Six read well below\nage-related expectations, four work well above. Describe provision\nby group only — I am not sharing individual records.\n\nGive me the SEQUENCE ONLY, not full plans. For each lesson: number,\ntitle, one outcome written as \"Students can ...\", and the one prior\nidea it depends on. Flag any lesson whose outcome needs something\nthe sequence has not yet taught.\n```\n\nAbridged, what comes back looks like this:\n\n```\n1. Who had a claim in 1066? — Students can describe the three\n   claimants and the basis of each claim. Depends on: nothing.\n2. Stamford Bridge and Hastings — Students can explain how the\n   order of the two battles shaped the outcome. Depends on: L1.\n...\n7. The Harrying of the North — Students can explain why William\n   used force in 1069-70. Depends on: L5 (resistance), L6 (castles).\n   FLAG: this outcome assumes students can already weigh motive.\n   Motive is not taught until L12.\n```\n\nThat flag is worth the whole step: it is the job you would otherwise do with a highlighter at eleven at night. You still decide — move the motive work into lesson 6, or soften lesson 7's outcome. Then lesson 7's corrected line goes into the step-two planning prompt word for word. Retyping from memory is where command words start to wander.\n\n## Worked example two: resources hand to assessment\n\nBy step four you have an approved worksheet. Feed the assessment prompt the worksheet itself, not a description of it.\n\n```\nBelow is the worksheet I have approved for Lesson 7, and the outcome\nit serves: \"Students can explain why William used force in the north\nin 1069-70.\"\n\nWrite an exit ticket of three questions and four end-of-unit\nquestions. Use the same command words as the outcome and the\nworksheet. For each question, name the lesson that taught the\ncontent, and mark any question needing knowledge the worksheet\ndoes not contain.\n\n[worksheet pasted here]\n```\n\nAbridged output:\n\n```\nExit ticket\n1. Explain one reason William marched north in 1069. (Taught: L7)\n2. Explain what the chroniclers recorded about the effects. (L7)\n3. Explain one way castles helped William hold territory. (L6)\n\nEnd-of-unit\n...\n4. Evaluate how far the Harrying secured Norman control.\n   NOT COVERED - \"evaluate\" is not taught before L12, and this\n   needs the 1071 material from L9.\n```\n\nThe chain has caught its own drift in the one place drift hurts students. You delete question 4, or you teach evaluation earlier. What you do not do is take that line on trust: \"taught in L6\" is only as good as the sequence you approved, and the chroniclers' wording is still a fact to check against your own sources.\n\n## Where this goes wrong\n\n**The mega-prompt.** Scheme, plans, resources and tests in one reply is a wall of plausible text with no natural place to stop. You will skim it, and skimming is how errors travel.\n\n**Passing forward what you have not read.** A chain is only as strong as its weakest checkpoint; run at speed it is four unchecked steps rather than one.\n\n**Letting the chain set the curriculum.** An assistant does not know your specification, your department's sequence, or what this class covered last term. It proposes. You decide.\n\n**Losing the outcome wording.** Paraphrase it at any link and every later link inherits the paraphrase — which is how a worksheet and a test end up asking different things.\n\n**Reaching for the class data.** The moment a chain feels efficient is the moment the class list looks like useful context. It is not. Describe the need, never the child.\n\n## In practice\n\nBuild the chain once, on a unit you know well enough to spot nonsense in. Run it end to end. Time the checkpoints rather than the generation: that is where your judgment lives and where the hours are genuinely saved. When the chain holds up on a unit you know cold, it is ready for one you do not.\n",
+   "estimated_minutes": 29,
+   "learning_objectives": [
+    "Break the planning cycle into a chain of four linked prompts, each doing one job",
+    "Run a pedagogy and accuracy checkpoint between every link before anything is passed on",
+    "Carry outcome wording forward word for word so resources and assessment stop drifting apart",
+    "Describe a class to a chain by need and group without exposing identifiable student data"
+   ],
+   "case_study": "**Mason City Community School District — the book list nobody re-read (2023)**\n\nIn August 2023, administrators at Mason City Community School District in Iowa had a deadline and a problem. A new state law, Senate File 496, required school libraries to hold only age-appropriate material and excluded anything containing a description or depiction of a sex act. Nobody in the district had time to read every title on the shelves before term began.\n\nSo they built a chain. Step one: assemble a list of candidate titles, drawn from banned-book lists compiled by other districts around the United States — reporting at the time put the list at around 42 to 50 books. Step two: ask ChatGPT, title by title, whether the book contained a description or depiction of a sex act. Step three: act on the answers. Nineteen books came off the shelves, among them Margaret Atwood's *The Handmaid's Tale* and Toni Morrison's *Beloved*. The district was open about the method, which is how *Education Week*, *Popular Science* and others came to report it.\n\nLook at where the checkpoints were missing. The step-one input was somebody else's list, assembled under somebody else's law, and it was never checked against the district's own collection or curriculum. The step-two judgment was a yes-or-no answer from a general assistant about the contents of specific books — exactly the kind of question on which a language model will produce a confident answer whether or not it has reliable knowledge of the text. The step-three action was irreversible in the way that matters: the books left the library. Deborah Caldwell-Stone of the American Library Association's Office for Intellectual Freedom, quoted in the coverage, made the plain point that AI could not yet be treated as a definitive tool for this work.\n\nRead charitably, this was a small team trying to comply with an unclear law on an impossible timescale, and the chain was the only way the job fitted the week. That is precisely why it belongs here. The failure was not the model. It was a chain whose intermediate outputs were never read by the professionals accountable for the result. Your planning chain has the same shape and the same risk: put a checkpoint between every link, and never let a step act on the world without a human reading what the previous step produced.\n",
+   "exercises": [
+    {
+     "order_index": 1,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "What a prompt chain is",
+     "prompt_md": "A colleague in your department says she has started planning her half-terms with a prompt chain. Which description best matches what a prompt chain means in the planning cycle taught in this lesson?",
+     "options": [
+      "A short sequence of prompts where the checked output of one step feeds the next step",
+      "One very long prompt that asks for the scheme, plans, resources and tests in one reply",
+      "Four separate conversations about the same topic that never share any context at all",
+      "A tool that sends generated lesson resources to a class before a teacher has read them"
+     ],
+     "correct_answer": "A short sequence of prompts where the checked output of one step feeds the next step"
+    },
+    {
+     "order_index": 2,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "The checkpoint between links",
+     "prompt_md": "You have run step one of the planning chain and the eighteen-lesson sequence that came back looks broadly sensible at a glance. According to this lesson, what has to happen before that output is pasted into step two?",
+     "options": [
+      "You check the sequence for teachability and check every fact, then correct it yourself",
+      "You ask the assistant to grade its own sequence and accept the score it reports back",
+      "You run step two twice and compare the two versions to see which one reads more fluently",
+      "You forward the sequence to the whole department so that somebody else can check it later"
+     ],
+     "correct_answer": "You check the sequence for teachability and check every fact, then correct it yourself"
+    },
+    {
+     "order_index": 3,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "Class context without student data",
+     "prompt_md": "Your planning chain needs to know enough about a mixed-attainment class of 29 to propose sensible support for the weaker readers. Which way of describing that class is safe to paste into a general AI assistant?",
+     "options": [
+      "Six learners reading well below age-related expectations and four working well above",
+      "The class list with reading ages and the SEN register copied from the school system",
+      "The names of the six weakest readers together with their latest diagnostic test scores",
+      "A copy of the seating plan showing pupil premium and EAL flags against every child"
+     ],
+     "correct_answer": "Six learners reading well below age-related expectations and four working well above"
+    },
+    {
+     "order_index": 4,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "Why command words drift",
+     "prompt_md": "Across one planning chain, the approved worksheet asks students to explain, while the end-of-unit questions ask them to evaluate. What does this lesson give as the usual cause of that mismatch?",
+     "options": [
+      "The outcome wording was not carried forward word for word from one link to the next",
+      "The assistant cannot produce a worksheet and an assessment within the same subject area",
+      "Exit tickets are always written with different command words from the worksheets before them",
+      "Assessment questions have to be written before the worksheet or the wording always drifts"
+     ],
+     "correct_answer": "The outcome wording was not carried forward word for word from one link to the next"
+    },
+    {
+     "order_index": 5,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "Why an early error is the expensive one",
+     "prompt_md": "This lesson warns particularly about an uncorrected error at the first link of a planning chain. Why does it treat an error at step one as more costly than the same error at step four?",
+     "options": [
+      "Every later step inherits it, so one wrong outcome can shape a whole half-term of lessons",
+      "Early errors are harder to see because the first output is always the longest one produced",
+      "The assistant will refuse to alter a sequence once the teacher has agreed to it in writing",
+      "Later steps are checked by the school, so only the first step is the responsibility of staff"
+     ],
+     "correct_answer": "Every later step inherits it, so one wrong outcome can shape a whole half-term of lessons"
+    },
+    {
+     "order_index": 6,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "The four links",
+     "prompt_md": "Name the four links of the planning chain in order, and say in a few words what each link produces.",
+     "correct_answer": "The chain runs scheme of work, lesson plan, resources, then assessment. Step one produces the half-term sequenced into lessons with one outcome each. Step two turns one of those lines into a teachable lesson plan. Step three produces the worksheet, slide text and model answer for that lesson, and step four produces the exit ticket and end-of-unit questions wired to the same outcomes."
+    },
+    {
+     "order_index": 7,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "Four short prompts over one long one",
+     "prompt_md": "Explain in your own words why four short linked prompts beat one long prompt that asks for the whole half-term at once.",
+     "correct_answer": "A long prompt returns a wall of plausible text with no natural place to stop, so it gets skimmed rather than checked. Four short steps each produce something small enough to read properly, correct and approve before it is handed on. The value of a chain sits in the checkpoints between the links, and a single generation has none."
+    },
+    {
+     "order_index": 8,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "Acting on a dependency flag",
+     "prompt_md": "Your step-one sequence flags that lesson 7 needs students to weigh motive, which the sequence does not teach until lesson 12. Describe what you do next, and why the chain must not continue unchanged.",
+     "correct_answer": "I decide the fix myself, either moving the motive work forward into lesson 6 or rewriting lesson 7 to a lower-demand outcome, and correct the sequence before anything is passed on. The chain must not continue unchanged because step two builds a full lesson from whatever line it is given, so an unteachable outcome would become a plan, a worksheet and assessment questions all built on the same fault."
+    },
+    {
+     "order_index": 9,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "Class context, safely",
+     "prompt_md": "A colleague wants the chain to plan support properly and asks whether he can paste in his class list with reading ages against each name. Explain what he should do instead and why.",
+     "correct_answer": "He should describe the class by need and by group rather than by child, for example six learners reading well below age-related expectations and four working well above. Identifiable student data must never go into a general AI assistant, and the chain does not need it: the grouped description gives the assistant everything it requires to propose support while identifying nobody."
+    },
+    {
+     "order_index": 10,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "The two checks",
+     "prompt_md": "Describe the two checks you make between links of the chain, and give one example of what each check would catch.",
+     "correct_answer": "The first is a pedagogy check: is this teachable to this class, in this order, in the time available. It would catch a sequence that asks students to evaluate before evaluation has been taught. The second is an accuracy check on dates, definitions, formulae and quotations. It would catch a misattributed quotation or a wrong date before it reached a worksheet."
+    },
+    {
+     "order_index": 11,
+     "type": "short_answer",
+     "language": "prompt",
+     "marks": 5,
+     "title": "Prompt Lab: the first link of the chain",
+     "prompt_md": "You teach Year 8 geography and have a half-term on rivers ahead: twelve lessons of 55 minutes, mixed attainment, 30 students, five of whom read well below age-related expectations. Write the step-one prompt that produces a sequence you can check quickly and hand to step two.\n\nA strong prompt will: give the year group, subject, topic, lesson count and lesson length; describe the class by group and need with no identifiable student data; ask for the sequence only rather than full plans; specify the exact fields wanted per lesson, including an outcome in a fixed form and the prior idea it depends on; and require the assistant to flag any outcome that needs something not yet taught.",
+     "correct_answer": "You are helping me plan a half-term of Year 8 geography for a UK comprehensive. Topic: rivers, from source to mouth, covering erosion, transport, deposition, the main landforms and flood management. Twelve lessons of 55 minutes.\n\nClass context: mixed attainment, 30 students. Five read well below age-related expectations and need shorter text with key terms pre-taught. Describe provision by group only. I am not sharing names, individual records or scores.\n\nGive me the SEQUENCE ONLY, not full lesson plans. For each lesson give: the lesson number, a title, exactly one outcome written as \"Students can ...\", and the single prior idea that outcome depends on.\n\nThen flag, on its own line, any lesson whose outcome depends on knowledge or a skill the sequence has not yet taught, and say which earlier lesson it would need to move to.\n\nKeep the whole reply to under one page so I can check it quickly. Where a process or landform is described differently by different exam boards, say so rather than picking one silently."
+    },
+    {
+     "order_index": 12,
+     "type": "short_answer",
+     "language": "prompt",
+     "marks": 5,
+     "title": "Prompt Lab: the hand-off to resources",
+     "prompt_md": "You have approved the plan for lesson 6 of that rivers unit. Its outcome reads: \"Students can explain how meanders form.\" Write the prompt for the next link, which turns the approved plan into classroom resources without letting the wording drift.\n\nA strong prompt will: paste the approved plan rather than describe it; repeat the outcome word for word and hold the same command word throughout; name the resources wanted and their reading demand; ask for a version for the lower-attaining group described by need; require every fact or place name to be marked so it can be checked; and rule out invented data and any student detail.",
+     "correct_answer": "Below is the lesson plan I have approved for Lesson 6 of a Year 8 rivers unit, pasted in full. The outcome, word for word, is: \"Students can explain how meanders form.\"\n\nProduce three things from it.\n1. A one-page student worksheet, reading age around 11, with a short explanation, a labelled-diagram task and four questions.\n2. A shorter version of the same worksheet for the group reading well below age-related expectations: same outcome, same command word, fewer words per task, key terms defined on the page.\n3. A model answer to the final question, written as a strong Year 8 student would write it.\n\nRules. Use the command word \"explain\" throughout and do not substitute evaluate, assess or describe. Do not add content beyond the approved plan. Mark every fact, figure, place name or named river with [CHECK] so I can verify it against my own sources before printing. Do not invent statistics or sources. Do not include any student names or details: refer only to the groups as described here.\n\n[approved lesson plan pasted here]"
+    }
+   ]
+  },
+  {
+   "order_index": 2,
+   "title": "Templates and macros: the recurring load, built once",
+   "theory_md": "## The prompt that worked in September\n\nBy February, the folder you built in week 3 has gone quietly out of date. The differentiation prompt still references last year's specification. The feedback prompt was written for a set you no longer teach. The parent-comms prompt produces a tone the new head of year would not sign off. And the colleague you generously shared it all with got a noticeably weaker result, because half of what made your version work was never written down — it lived in the way you filled the gaps.\n\nA prompt library is a folder of things that worked once. That was the right week-3 move: capture what works. This week is the next move. A template is a prompt built to be reused by someone who was not there when it was written, including the version of you that is tired in February.\n\n## What turns a prompt into a template\n\nThree things. A **fixed spine** that nobody edits: the task, the constraints, the checking rules, the output format. **Named placeholders** for everything that changes: year group, specification, outcome, class needs, length. And a **header** that tells the next reader whether it can still be trusted.\n\nWrite placeholders so they are impossible to miss and impossible to fill lazily:\n\n```\nTEMPLATE: Differentiated task set\nOwner: J. Adeyemi (Science)  |  Version 4\nLast checked against: AQA Combined Science spec, 12 Jan\nReview when: the spec changes, the assessment policy changes, or\n             at the start of each academic year\n\nFill these before running:\n  [YEAR GROUP]        e.g. Year 10\n  [OUTCOME]           word for word from the scheme of work\n  [CLASS NEEDS]       by group, no names, no records\n  [LENGTH]            e.g. 20 minutes\n```\n\nAlongside the templates sits one thing you fill once a term and paste at the top of everything: the **context block**. Your school type, your key stages, your exam boards, your house style for parent communication, your hard lines. It is the difference between briefing a colleague and starting from scratch every morning.\n\n## Worked example one: the differentiation template\n\nThe spine below never changes. Only the bracketed lines do.\n\n```\nContext block: [paste]\n\nTASK. From the outcome below, produce three versions of the same\n20-minute task for [YEAR GROUP]: core, support, stretch. Same\noutcome, same command word, different scaffolding.\n\nOUTCOME (word for word): [OUTCOME]\nCLASS NEEDS (by group): [CLASS NEEDS]\n\nCONSTRAINTS. Support version: reading age two years below the year\ngroup, key terms defined on the page, one worked example first.\nStretch: no extra content beyond the outcome, greater independence.\n\nCHECKING RULES. Mark every fact, date, figure or named example with\n[CHECK]. Do not invent data or sources. Do not include any student\nname or individual record. If the outcome is too broad for one task,\nsay so instead of narrowing it silently.\n\nOUTPUT. Three headed sections. Under each, the task and one sentence\nsaying what the scaffolding is doing.\n```\n\nFilled with an outcome about rates of reaction and a class described as \"eight learners reading well below age-related expectations, four working well above\", it returns something like:\n\n```\nSUPPORT — Task: sort six statements into cause and effect...\n  Scaffolding: reduces reading load, keeps the same explaining.\nCORE — Task: explain, using the data table, why...\n  Scaffolding: none beyond the table.\nSTRETCH — ...\nNOTE: \"rates of reaction increase with surface area\" [CHECK] —\nworth confirming against your spec wording before printing.\n```\n\nThat [CHECK] tag is the template doing your job with you. Verify every fact before it reaches a class: a template makes generation faster, and nothing about it makes verification optional.\n\n## Worked example two: a template built to be handed on\n\nParent communication is where a borrowed template does the most damage, because tone carries the school's reputation and the details carry a child's dignity.\n\n```\nTEMPLATE: Progress email to a parent  |  Owner: Head of Year 9\nVersion 6  |  Last checked against: school comms policy, 3 Feb\n\nContext block: [paste]\n\nTASK. Draft a short email to a parent about one student's progress\nin [SUBJECT] this half-term.\n\nINPUT (I will paste): my own factual notes, written by me, with the\nstudent referred to as \"your child\" only.\n\nCONSTRAINTS. 150-200 words. Warm, specific, no jargon, no labels.\nOne strength, one area to work on, one thing home can do. Offer a\nconversation. Never state or imply a diagnosis.\n\nHARD RULE. No student name, no attendance data, no SEN or safeguarding\ndetail, no assessment scores go into this prompt. I add the name\nmyself, in the school system, after the draft is written.\n\nOUTPUT. Subject line plus body. Flag any sentence you inferred rather\nthan took from my notes.\n```\n\nAbridged, the draft comes back with a closing line such as: `INFERRED: \"has grown in confidence\" — not in your notes.` You then keep it, cut it, or replace it with something you have actually seen. The template has told you where it guessed.\n\n## Keeping them current, and sharing them\n\nCurrency is a maintenance habit, not a feeling. Give every template an owner, a version number and a \"last checked against\" line naming the real source — the specification, the assessment policy, the comms policy. Set the review trigger in writing: a spec change, a policy change, a new class, the start of the year. A template with no date on it is a claim that nothing in education has changed since you wrote it.\n\nSharing with a department needs two moves. Strip what is yours — your class description, your subject examples, your context block. Keep what protects everyone — the checking rules and the hard lines, written into the template itself, so the next teacher inherits the safety along with the speed. Agree one owner per template. Two people quietly maintaining the same file is how a department ends up with three versions and no idea which one the trainee is using.\n\n## Where this goes wrong\n\n**Templates with no placeholders**, so each user edits the middle and the spine erodes. **Placeholders that hide the thinking**, such as `[EVERYTHING ABOUT MY CLASS]`. **Stale templates** naming a superseded specification, which produce confidently wrong material at speed. **A real class list pasted into a stored template**, which turns a filing habit into a data breach. **Sharing the task without the checking rules**, which hands a colleague the speed and none of the protection. And **thirty templates**: five you trust and maintain beat thirty you half-remember.\n\n## In practice\n\nPick the four jobs that recur most for you — planning, differentiation, feedback, parent comms. Turn the best prompt you already have for each into a template with a header, placeholders and checking rules. Use them for a fortnight, fix what annoys you, then take them to your department meeting. Four maintained templates change a working week. A folder of thirty changes nothing.\n",
+   "estimated_minutes": 28,
+   "learning_objectives": [
+    "Convert a prompt that worked once into a template with a fixed spine and named placeholders",
+    "Write a context block that carries school, key stage and house style into every prompt",
+    "Keep templates current with an owner, a version and a written review trigger",
+    "Share templates with a department so the checking rules travel with the speed"
+   ],
+   "case_study": "**Jisc and TeacherMatic — templates as a sector experiment (2023-2025)**\n\nTeacherMatic is a generative AI platform for teachers built around what it calls generators: fixed, reusable structures for producing lesson plans, schemes of work, quizzes, grading criteria and classroom activities. A teacher fills the variable parts and the generator supplies the spine. That is the idea of this lesson, sold as a product — which makes what happened next unusually useful, because somebody evaluated it in public.\n\nJisc, the UK body providing digital services to further and higher education, ran a year-long pilot of TeacherMatic through its national centre for AI. The first phase ran from May to June 2023 with eight further education colleges, among them Basingstoke College of Technology, Milton Keynes College, Northampton College and West College Scotland; each institution received 50 licences and around 400 staff took part. A second phase ran to February 2024, and the published FE report was followed in October 2024 by a report on a separate pilot with seven higher education institutions.\n\nThe findings were positive and carefully bounded. Jisc reported that the platform saved staff time and produced good-quality resources, with participants commending its ease of use and the effect on workload. What the reports did not claim is that the outputs were ready to teach. Staff still edited what came out, still needed guidance on where the tool fitted, and institutions still had to decide policy around it. The template accelerated the drafting; it did not remove the professional standing behind the material.\n\nThree things transfer to your own template set. Structure travels better than one-off prompts, which is why an entire sector pilot could be built on generators rather than on teaching several hundred staff to write prompts. Evaluation beats assumption — Jisc published what it found rather than asserting a time saving, and you should time your own templates over a half-term rather than trusting the feeling of speed. And the edit at the end never went away. Whether a template comes from a vendor or from your own folder, the last read before material reaches a class is yours.\n",
+   "exercises": [
+    {
+     "order_index": 1,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "What makes a prompt a template",
+     "prompt_md": "You want to turn a differentiation prompt that worked well in September into something the whole department can use in March. According to this lesson, what does a template need that a saved prompt does not?",
+     "options": [
+      "A fixed spine, named placeholders for what changes, and a header showing its currency",
+      "A longer wording so that it covers every subject and every key stage in the school",
+      "A note of the assistant it was written for so that nobody runs it on a different tool",
+      "A worked example of the output attached below it so colleagues can copy that instead"
+     ],
+     "correct_answer": "A fixed spine, named placeholders for what changes, and a header showing its currency"
+    },
+    {
+     "order_index": 2,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "The context block",
+     "prompt_md": "This lesson recommends keeping one context block alongside your templates and pasting it at the top of everything you run. What belongs in that block, and how often is it filled in?",
+     "options": [
+      "School type, key stages, exam boards, house style and hard lines, refreshed each term",
+      "The full text of every template you own, rewritten and renumbered every single week",
+      "A class list with reading ages and support needs, updated whenever the class changes",
+      "The last three outputs the assistant produced, kept so it can copy its earlier tone"
+     ],
+     "correct_answer": "School type, key stages, exam boards, house style and hard lines, refreshed each term"
+    },
+    {
+     "order_index": 3,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "Keeping a template current",
+     "prompt_md": "Your department agrees that every shared template will carry a review trigger written into its header. Which set of triggers matches the approach taught in this lesson?",
+     "options": [
+      "A specification change, an assessment or comms policy change, or the start of the year",
+      "Any week in which the template was used more than three times by any member of staff",
+      "Whenever the assistant releases a new version, and at no other point in the school year",
+      "Only when a colleague reports that an output was wrong after it had reached a class"
+     ],
+     "correct_answer": "A specification change, an assessment or comms policy change, or the start of the year"
+    },
+    {
+     "order_index": 4,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "What never goes into a stored template",
+     "prompt_md": "A colleague suggests saving time by storing the parent-comms template with the class already filled in, so nobody has to type the details each week. Why does this lesson rule that out?",
+     "options": [
+      "Storing identifiable student data in a reusable prompt turns a filing habit into a breach",
+      "The assistant produces weaker drafts when a template contains more than 500 words of text",
+      "Templates holding filled placeholders cannot be shared across two different subject areas",
+      "Parent emails have to be written from scratch every week under most school comms policies"
+     ],
+     "correct_answer": "Storing identifiable student data in a reusable prompt turns a filing habit into a breach"
+    },
+    {
+     "order_index": 5,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "Handing a template to the department",
+     "prompt_md": "You are about to share your best feedback template with three colleagues who teach the same course. What does this lesson say you should strip out and what must stay in?",
+     "options": [
+      "Strip your class description and your examples, keep the checking rules and hard lines",
+      "Strip the checking rules to keep it short, keep your class description as a worked sample",
+      "Strip the output format so each colleague can choose one, keep your subject examples in",
+      "Strip everything except the task line, because colleagues prefer to add their own rules"
+     ],
+     "correct_answer": "Strip your class description and your examples, keep the checking rules and hard lines"
+    },
+    {
+     "order_index": 6,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "Library versus template set",
+     "prompt_md": "In week 3 you built a prompt library. Explain what changes when those prompts become templates, and why the change matters by February.",
+     "correct_answer": "A library captures prompts that worked once, usually for one class and one specification, with much of what made them work living in the head of whoever wrote them. A template set writes that down: a fixed spine, named placeholders for everything that varies, checking rules and a header showing when it was last verified. By February the class, the specification and the policies have moved on, and only the template makes that visible."
+    },
+    {
+     "order_index": 7,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "The header",
+     "prompt_md": "List what belongs in a template header and say why each part earns its place.",
+     "correct_answer": "An owner, so one person maintains it and a department does not end up with three versions. A version number, so colleagues know which one they hold. A line naming what it was last checked against and when, so its currency is a fact rather than a feeling. And a written review trigger, so updating it is a rule rather than somebody remembering."
+    },
+    {
+     "order_index": 8,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "Diagnosing a borrowed template",
+     "prompt_md": "A colleague uses your template and gets a noticeably weaker result than you do. Give two likely causes and how you would fix each.",
+     "correct_answer": "The first is a placeholder that hides the thinking, such as one asking for the class in general terms, so she filled it thinly where I fill it precisely. I would split it into named fields with an example of a good fill. The second is that some of what makes my version work was never written down, for example my context block or my constraints on length and command word. I would move that into the template spine so it travels with the file."
+    },
+    {
+     "order_index": 9,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "The specification has changed",
+     "prompt_md": "Your exam board publishes a revised specification in September. Describe what you do to your template set, and what you do about material already produced from it.",
+     "correct_answer": "I work through every template whose header names that specification, update the wording, raise the version number and change the last-checked line to the new spec and date. Material already generated from the old version is not automatically safe, so anything still in circulation is re-checked against the new specification before it is taught again, and anything shared with the department is reissued with a note saying what changed."
+    },
+    {
+     "order_index": 10,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "Five over thirty",
+     "prompt_md": "This lesson argues that five maintained templates beat thirty half-remembered ones. Explain the reasoning in your own words.",
+     "correct_answer": "Every template carries a maintenance cost, because each one has to be re-checked when a specification or policy changes. Thirty templates make that upkeep impossible, so most drift out of date while still looking usable, which is how confidently wrong material gets produced quickly. Five templates covering the jobs that actually recur can be kept current, trusted and shared, and they cover most of the working week."
+    },
+    {
+     "order_index": 11,
+     "type": "short_answer",
+     "language": "prompt",
+     "marks": 5,
+     "title": "Prompt Lab: the differentiation template",
+     "prompt_md": "Build the reusable differentiation template for your own subject. It has to work in March for a colleague who was not there when you wrote it.\n\nA strong template will: carry a header with owner, version, what it was last checked against and the review trigger; name its placeholders explicitly, including the outcome to be copied word for word and the class described by group only; hold a fixed spine of task, constraints, checking rules and output format; require facts to be marked for checking; and rule out invented data and any identifiable student detail.",
+     "correct_answer": "TEMPLATE: Differentiated task set | Owner: [YOUR NAME], [DEPARTMENT] | Version 1\nLast checked against: [SPECIFICATION OR SCHEME], [DATE]\nReview when: the specification changes, the assessment policy changes, or at the start of the academic year.\n\nContext block: [PASTE TERM CONTEXT BLOCK]\n\nFill before running:\n  [YEAR GROUP]\n  [OUTCOME] - copied word for word from the scheme of work\n  [CLASS NEEDS] - by group only, no names, no records, no scores\n  [LENGTH]\n\nTASK. From the outcome below, produce three versions of the same [LENGTH] task for [YEAR GROUP]: support, core and stretch. Same outcome, same command word, different scaffolding only.\n\nOUTCOME: [OUTCOME]\nCLASS NEEDS: [CLASS NEEDS]\n\nCONSTRAINTS. Support: reading age two years below the year group, key terms defined on the page, one worked example first. Core: no scaffolding beyond the resource named in the outcome. Stretch: greater independence, no content beyond the outcome.\n\nCHECKING RULES. Mark every fact, date, figure, quotation or named example with [CHECK]. Do not invent data, statistics or sources. Do not include any student name or individual record. If the outcome is too broad for one task, say so rather than narrowing it silently.\n\nOUTPUT. Three headed sections. Under each, the task itself and one sentence naming what the scaffolding is doing."
+    },
+    {
+     "order_index": 12,
+     "type": "short_answer",
+     "language": "prompt",
+     "marks": 5,
+     "title": "Prompt Lab: a template built for the department",
+     "prompt_md": "Write the parent-comms template your department will adopt: a short progress email to a parent, drafted from a teacher's own notes. It will be used by staff you will never watch use it, including a trainee in their first term.\n\nA strong template will: carry the header and review trigger; state the hard rule on student data in words a trainee cannot misread; take the teacher's factual notes as the input rather than any school record; set tone, length and structure; require the draft to flag anything it inferred rather than took from the notes; and make clear what the teacher does before the email is sent.",
+     "correct_answer": "TEMPLATE: Progress email to a parent | Owner: [HEAD OF YEAR] | Version 1\nLast checked against: school communications policy, [DATE]\nReview when: the comms policy changes, the reporting cycle changes, or at the start of the academic year.\n\nContext block: [PASTE TERM CONTEXT BLOCK - school type, key stages, house style]\n\nHARD RULE, read before use. Nothing identifiable about a child goes into this prompt. No name, no attendance record, no SEN, safeguarding or medical detail, no assessment scores, no screenshots of school systems. Refer to the student only as \"your child\". You add the name yourself, in the school system, after the draft exists. If you are unsure whether something is identifiable, leave it out.\n\nINPUT. My own factual notes about this student this half-term, written by me and pasted below.\n\nTASK. Draft one short email to a parent about progress in [SUBJECT] this half-term.\n\nCONSTRAINTS. 150 to 200 words. Warm, specific and plain: no jargon, no labels, no diagnosis stated or implied. Include exactly one strength, one area to work on and one thing that would help at home, each drawn from my notes. Close by offering a conversation.\n\nCHECKING RULES. Flag any sentence you inferred rather than took from my notes, on a line beginning INFERRED. Invent nothing: no incidents, no grades, no dates.\n\nOUTPUT. A subject line, the body, then the INFERRED list.\n\nBEFORE SENDING. Read every line against your own notes, delete or replace anything inferred, add the student name in the school system, and follow the school comms policy on who is copied in.\n\n[my notes pasted here]"
+    }
+   ]
+  },
+  {
+   "order_index": 3,
+   "title": "Practical: build your reusable planning chain and its verification gate",
+   "theory_md": "## Forty minutes, once\n\nThis is a build lesson. By the end of it you should have two things saved somewhere you will find them again: a **master chain template** that plans a unit from scheme of work to assessment, and a **verification prompt** that inspects anything classroom-bound before it is used. Both are graded in the Prompt Labs below. Neither is theory. The first one saves the hours; the second one is why the hours are safe to save.\n\nGive it a single sitting on a unit you know well. Building a chain on unfamiliar content means you cannot tell a good output from a confident one.\n\n## What you are building\n\n**The master chain template** is lesson 1's four links plus lesson 2's discipline. One document. At the top, a header and a context block you fill once. Then four numbered prompts, each with its own placeholders, and between each pair a checkpoint written into the document as an instruction to yourself. Written down, because a checkpoint you hold in your head is a checkpoint you skip in week six.\n\n**The verification prompt** is the gate. It runs on the finished thing — the worksheet, the quiz, the slide text, the parent letter — and asks four questions:\n\n1. **Factual accuracy.** What claims does this make, and which are checkable?\n2. **Age-appropriateness.** Reading demand, content, tone, images described.\n3. **Curriculum alignment.** Does it serve the stated outcome, using the stated command word, with nothing untaught assumed?\n4. **Student data.** Does anything here identify a child, directly or by inference?\n\nRun it in a **fresh conversation**. A chain that wrote the material is a poor judge of it: ask the same thread to check its own work and you will mostly be told it is fine. A separate conversation, given only the material and the rules, argues with you properly.\n\n## Worked example one: the master chain, top and first link\n\n```\nMASTER PLANNING CHAIN  |  Owner: [YOUR NAME]  |  Version 1\nLast checked against: [SPECIFICATION], [DATE]\nReview when: the spec changes, the assessment policy changes, or\nat the start of the academic year.\n\nCONTEXT BLOCK (fill once per term, paste into every link):\nSchool: [TYPE]. Key stages: [KS]. Exam board: [BOARD].\nHouse style: [TONE FOR PARENT-FACING TEXT].\nHard lines: no student names, records or scores in any link.\nEvery fact marked [CHECK] and verified by me before use.\n\nLINK 1 - SEQUENCE\nPlan [NUMBER] lessons of [MINUTES] on [TOPIC] for [YEAR GROUP].\nClass by group only: [CLASS NEEDS].\nSequence only, no full plans. Per lesson: number, title, one\noutcome as \"Students can ...\", and the prior idea it depends on.\nFlag any outcome needing something not yet taught.\n\n>>> CHECKPOINT 1 (me, not the assistant): is this teachable in\nthis order, in this time? Are the facts right? Correct it, then\npaste the corrected lines into Link 2. Do not paraphrase them.\n```\n\nRun on a Year 7 unit, link 1 returns something like:\n\n```\n1. What is a biome? — Students can define a biome and name three.\n   Depends on: nothing.\n...\n5. Deforestation in the Amazon — Students can explain two causes.\n   Depends on: L3 (climate), L4 (soils).\n   FLAG: \"two causes\" is narrower than the spec wording, which\n   asks for causes and consequences.\n```\n\nYou widen it or you keep it narrow deliberately. Either way you decided, and the decision is now written into the sequence the next link receives.\n\n## Worked example two: the verification prompt in use\n\n```\nYou are checking a classroom resource before it is used with\nstudents. You did not write it. Be sceptical.\n\nMATERIAL: [paste]\nINTENDED FOR: [YEAR GROUP], [SUBJECT]\nSTATED OUTCOME (word for word): [OUTCOME]\nCURRICULUM REFERENCE: [SPEC OR SCHEME]\n\nReport under four headings, in this order.\n1. FACTUAL ACCURACY. List every checkable claim, date, figure,\n   quotation and named example. Mark each VERIFY (I must check it),\n   LIKELY WRONG (say why), or NOT CHECKABLE. Do not assert that\n   something is true because it is widely repeated.\n2. AGE-APPROPRIATENESS. Estimate reading demand against the year\n   group. Flag content, tone or examples unsuitable for the age or\n   likely to distress. Flag any instruction a child could misread.\n3. CURRICULUM ALIGNMENT. Does every task serve the stated outcome?\n   Is the command word the same throughout? Name anything assumed\n   but not taught, and anything in the outcome not assessed here.\n4. STUDENT DATA. Flag anything identifying a real child, directly\n   or by inference - names, initials, incidents, results, dates.\n\nEnd with: GO, GO WITH FIXES (list them), or DO NOT USE (say why).\nDo not rewrite the material. State uncertainty plainly.\n```\n\nAbridged, on a Year 8 geography worksheet:\n\n```\n1. FACTUAL ACCURACY - \"the Amazon produces 20 per cent of the\n   world's oxygen\": LIKELY WRONG, widely repeated but disputed.\n   \"Deforestation rate fell in 2023\": VERIFY, no source given.\n2. AGE-APPROPRIATENESS - reading demand roughly age 13-14, above\n   the stated Year 8 support group. Question 6 describes a fire\n   in detail; consider the class before using.\n3. CURRICULUM ALIGNMENT - outcome says \"explain\"; Q4 and Q7 ask\n   students to \"evaluate\". Q7 needs the 1980s policy material,\n   not in this unit.\n4. STUDENT DATA - none found.\nVERDICT: GO WITH FIXES.\n```\n\nNotice what it did not do. It did not tell you the oxygen claim is false; it told you it is disputed and shifted the burden back to you. Verification narrows the search for problems. It does not end it. The gate is you.\n\n## Where this goes wrong\n\n**Grading your own homework** — running the check in the same conversation that wrote the material. **Treating GO as a sign-off**, when a clean report means nothing was flagged, not that nothing is wrong. **Checking the pack instead of the page**, so a forty-page unit gets one skim; run the gate on each item that will be in front of children. **Pasting a real child into the checker** while asking it to look for student data. **Building the chain on unfamiliar content**, where every output looks plausible. And **skipping the checkpoints once it works**, which is how a good chain becomes a fast way to be wrong.\n\n## In practice\n\nSave both documents beside your templates from the last lesson, with an owner, a version and a review date on each. Then use them for one real unit this half-term. Time the checkpoints. Note what the verifier caught that you would have missed, and what you caught that it missed — that second list is the honest measure of what a teacher is still for. Hours come back to you; the pedagogy and the duty of care never leave your desk.\n",
+   "estimated_minutes": 30,
+   "learning_objectives": [
+    "Assemble a master chain template with a context block, four links and written checkpoints",
+    "Write a verification prompt covering accuracy, age-appropriateness, alignment and student data",
+    "Run verification in a fresh conversation so material is not checked by whatever produced it",
+    "Treat a clean verification report as a narrowed search rather than as professional sign-off"
+   ],
+   "case_study": "**Ofsted — what the inspectorate asked the early adopters (2024-2025)**\n\nOfsted, the body that inspects schools and further education in England, went looking for the settings that were already doing this. Its study of early adopters of AI in education was built on 21 interviews with school, college and multi-academy trust leaders who had been using AI in earnest for at least a year, and its stated purpose was to understand what the technology meant for inspection and regulation.\n\nWhat those leaders described will sound familiar by now. The reason they gave for introducing AI was workload, for teaching and administrative staff alike, and the common applications were lesson planning, resource creation and drafting communications to parents — almost exactly the automation layer this week is about. Nearly all of the providers had an AI champion, usually a teacher with some technology confidence who could demystify the tools for colleagues and show what they were good for in a specific classroom. Adoption spread through a trusted colleague rather than through a policy document.\n\nOfsted's own position is the part worth pinning to your wall. It does not treat AI use as a separate thing to be inspected. Leaders are responsible for ensuring that the use of AI does not have a detrimental effect on their setting, on its outcomes, decisions or quality of provision, and are expected to monitor how AI is used, including its unintended impacts, and to govern the risks to staff and to pupils. Nothing about adopting a tool moves the accountability anywhere.\n\nYour verification gate is the classroom-scale version of that expectation, and it answers the same question a regulator would ask: how do you know the material you handed out was fit for the children in front of you? \"The assistant produced it\" is not an answer. \"I ran it through a checking prompt and it said GO\" is not much better on its own. What works is the thing Ofsted asked leaders for, done at the scale of one teacher — a check you actually perform, and an honest record of what it caught, what it missed and what you changed as a result.\n",
+   "exercises": [
+    {
+     "order_index": 1,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "The four verification checks",
+     "prompt_md": "You are writing the verification prompt that will run on anything heading for your classroom. Which four checks does this lesson require it to make, in the order given?",
+     "options": [
+      "Factual accuracy, age-appropriateness, curriculum alignment, then identifiable student data",
+      "Spelling and grammar, layout, printing cost, then the length of the finished resource",
+      "Tone of voice, choice of assistant, time taken to generate, then the file naming convention",
+      "Student engagement, likely test scores, parental opinion, then departmental preference"
+     ],
+     "correct_answer": "Factual accuracy, age-appropriateness, curriculum alignment, then identifiable student data"
+    },
+    {
+     "order_index": 2,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "Why a fresh conversation",
+     "prompt_md": "This lesson insists the verification prompt is run in a new conversation rather than in the thread that produced the material. What is the reason given?",
+     "options": [
+      "A thread that produced the material tends to approve it rather than argue with it",
+      "A long conversation costs more to run and most schools cap the spending per member of staff",
+      "Verification prompts are unable to read material that appears earlier in the same thread",
+      "School policies generally require every classroom resource to be produced in two threads"
+     ],
+     "correct_answer": "A thread that produced the material tends to approve it rather than argue with it"
+    },
+    {
+     "order_index": 3,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "What a clean report means",
+     "prompt_md": "Your verification prompt returns a report with nothing flagged and a verdict of GO on a worksheet due to be printed for tomorrow. What does this lesson say that verdict actually tells you?",
+     "options": [
+      "Nothing was flagged, which narrows the search for problems but does not sign the work off",
+      "The worksheet has been checked against the specification and can be used without review",
+      "The facts in the worksheet have been confirmed against sources and need no further checking",
+      "The material is now approved by the assistant, so responsibility has passed away from you"
+     ],
+     "correct_answer": "Nothing was flagged, which narrows the search for problems but does not sign the work off"
+    },
+    {
+     "order_index": 4,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "Where the checkpoints live",
+     "prompt_md": "In the master chain template you are building, this lesson says the checkpoints between links must be written into the document itself rather than remembered. Why?",
+     "options": [
+      "A checkpoint held only in your head is the one skipped in a busy week six of term",
+      "Assistants are unable to continue a chain unless the checkpoint text appears in the prompt",
+      "Written checkpoints make the template shorter and therefore quicker for colleagues to read",
+      "School policy in most settings requires every stored prompt to contain numbered headings"
+     ],
+     "correct_answer": "A checkpoint held only in your head is the one skipped in a busy week six of term"
+    },
+    {
+     "order_index": 5,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "Building on familiar content",
+     "prompt_md": "This lesson tells you to build and test the chain on a unit you already know well rather than on next term's unfamiliar topic. What is the reasoning?",
+     "options": [
+      "On unfamiliar content you cannot tell a good output from a merely confident one",
+      "Familiar units contain fewer facts, so the verification step finishes considerably faster",
+      "Unfamiliar topics cannot be planned by an assistant until the teacher has taught them once",
+      "Chains work only on units that have already been taught at least twice in the same school"
+     ],
+     "correct_answer": "On unfamiliar content you cannot tell a good output from a merely confident one"
+    },
+    {
+     "order_index": 6,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "The two deliverables",
+     "prompt_md": "Describe the two documents you are building in this lesson and what each is for.",
+     "correct_answer": "The first is a master chain template: a header, a context block filled once a term, the four planning links with their placeholders, and a written checkpoint between each pair of links. It is what saves the hours. The second is a verification prompt, run separately on any finished material before it reaches students, checking accuracy, age-appropriateness, curriculum alignment and student data. It is what makes the saved hours safe."
+    },
+    {
+     "order_index": 7,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "Where accountability sits",
+     "prompt_md": "The case study sets out what the inspectorate expects of leaders whose settings use AI. Explain what that expectation means for material you generate, and how your verification gate is the classroom-scale version of it.",
+     "correct_answer": "The expectation is that adopting a tool moves no accountability: leaders must ensure AI use does not damage outcomes, decisions or quality, and must monitor its unintended impacts. At the scale of one teacher that means neither the assistant nor a clean checking report can answer for material I handed to a class. The gate is how I discharge that, and keeping an honest record of what it caught, what it missed and what I changed is how I monitor the unintended part."
+    },
+    {
+     "order_index": 8,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "Checking the page, not the pack",
+     "prompt_md": "A colleague runs the verification prompt once on a whole forty-page unit and reports that it came back clean. Explain the problem and what he should do instead.",
+     "correct_answer": "A single pass over forty pages gives every item a skim and none of them a check, so the report is close to meaningless. He should run the gate on each item that will actually be in front of children, one at a time, with the stated outcome for that item pasted in. That way the alignment and age-appropriateness checks have something specific to test against."
+    },
+    {
+     "order_index": 9,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "The student-data check",
+     "prompt_md": "Your verification prompt asks whether anything in the material identifies a child. Explain why this check has to look for inference as well as names, and give one example.",
+     "correct_answer": "A child can be identified without being named, because a small school community fills in the gaps. A worksheet example describing the only wheelchair user in Year 9, or a feedback exemplar built from one student who missed a fortnight in March, identifies that child to anyone who was there. The check therefore has to flag details, incidents and dates that make a single person recognisable, not only names and initials."
+    },
+    {
+     "order_index": 10,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "What the verifier missed",
+     "prompt_md": "This lesson asks you to record what the verification prompt caught that you would have missed, and what you caught that it missed. Why is the second list the important one?",
+     "correct_answer": "The second list shows what still depends on a teacher: knowing this class, this school and this year group, spotting a task that will collapse in a real room, or catching a fact that reads as plausible but is wrong in your subject. It is the honest measure of where the tool stops. It also keeps the checkpoints from being quietly abandoned once the chain feels reliable."
+    },
+    {
+     "order_index": 11,
+     "type": "short_answer",
+     "language": "prompt",
+     "marks": 5,
+     "title": "Prompt Lab: the master chain template (graded deliverable)",
+     "prompt_md": "Write the master planning chain template you will actually use: a single document that plans a unit from scheme of work through lesson plan and resources to assessment.\n\nA strong template will: carry a header with owner, version, what it was last checked against and the review trigger; hold a context block filled once a term; contain four numbered links with explicit placeholders; carry an instruction to pass outcome wording forward word for word; place a written checkpoint between every pair of links naming the pedagogy and accuracy checks; and state the hard lines on facts and student data so they travel with the document.",
+     "correct_answer": "MASTER PLANNING CHAIN | Owner: [YOUR NAME], [DEPARTMENT] | Version 1\nLast checked against: [SPECIFICATION OR SCHEME], [DATE]\nReview when: the specification changes, the assessment policy changes, or at the start of the academic year.\n\nCONTEXT BLOCK - fill once per term, paste into every link.\nSchool: [TYPE]. Key stages: [KS]. Exam board or scheme: [BOARD].\nHouse style for anything parent-facing: [TONE].\nHARD LINES, apply to every link: no student names, records, scores or screenshots of school systems go into any prompt; classes are described by group and need only. Every fact, date, figure, quotation and named example is marked [CHECK] and verified by me before it reaches a class.\n\nLINK 1 - SEQUENCE\nPlan [NUMBER] lessons of [MINUTES] on [TOPIC] for [YEAR GROUP]. Class by group only: [CLASS NEEDS]. Give the sequence only, not full plans. Per lesson: number, title, one outcome written as \"Students can ...\", and the single prior idea it depends on. Flag any outcome that needs something the sequence has not yet taught.\n>>> CHECKPOINT 1 (me). Is this teachable to this class, in this order, in this time? Are the facts right? Correct it myself, then paste the corrected lines into Link 2 word for word, without paraphrasing.\n\nLINK 2 - LESSON PLAN\nUsing the corrected line for lesson [N] below, build a [MINUTES] plan: hook, explanation, guided practice, independent practice, check for understanding. Keep the outcome and command word exactly as given. Name the likely misconception at each stage.\n[paste corrected line]\n>>> CHECKPOINT 2 (me). Does this survive a real room? Is the timing honest? Is anything factually wrong or assumed but untaught? Correct, then pass on.\n\nLINK 3 - RESOURCES\nFrom the approved plan below, produce the worksheet, the slide text and a model answer. Same outcome, same command word. Produce a support version for the group described in [CLASS NEEDS]. Mark every fact with [CHECK]. Invent no data or sources.\n[paste approved plan]\n>>> CHECKPOINT 3 (me). Verify every [CHECK] against my own sources. Check reading demand against the year group. Correct, then pass on.\n\nLINK 4 - ASSESSMENT\nFrom the approved worksheet below and the outcome as written, produce a three-question exit ticket and [N] end-of-unit questions. Use the same command word. Name the lesson that taught each question, and mark any question needing knowledge the resources do not contain.\n[paste approved worksheet and outcome]\n>>> CHECKPOINT 4 (me). Remove or teach anything marked as not covered. Then run the verification prompt on every item going in front of students, in a fresh conversation."
+    },
+    {
+     "order_index": 12,
+     "type": "short_answer",
+     "language": "prompt",
+     "marks": 5,
+     "title": "Prompt Lab: the verification prompt (graded deliverable)",
+     "prompt_md": "Write the verification prompt that runs, in a fresh conversation, on any material about to be used with a class: a worksheet, a quiz, slide text or a letter home.\n\nA strong prompt will: set a sceptical role and state that the checker did not write the material; take the material, the year group, the outcome word for word and the curriculum reference as inputs; report against factual accuracy, age-appropriateness, curriculum alignment and identifiable student data; require claims to be labelled rather than asserted as true; forbid rewriting; require uncertainty to be stated; and end in a plain verdict the teacher then acts on.",
+     "correct_answer": "You are checking a classroom resource before it is used with students. You did not write it and you have no stake in it. Be sceptical, be specific, and do not soften findings.\n\nINPUTS\nMATERIAL: [paste the full item]\nINTENDED FOR: [YEAR GROUP], [SUBJECT]\nSTATED OUTCOME, word for word: [OUTCOME]\nCURRICULUM REFERENCE: [SPECIFICATION OR SCHEME]\n\nReport under these four headings, in this order, and add nothing else.\n\n1. FACTUAL ACCURACY. List every checkable claim, date, figure, statistic, quotation and named example. Label each one VERIFY (I must confirm it against a source), LIKELY WRONG (say why, and what the accurate version appears to be), or NOT CHECKABLE. Do not treat a claim as true because it is widely repeated. Name any claim that is disputed among sources.\n\n2. AGE-APPROPRIATENESS. Estimate the reading demand against the stated year group and say which parts sit above it. Flag content, imagery, tone or examples that are unsuitable for the age group or likely to distress a child, including anything touching bereavement, violence, family circumstances or body image. Flag any instruction a child could reasonably misread.\n\n3. CURRICULUM ALIGNMENT. State whether every task serves the stated outcome. Confirm the command word is the same in the outcome and in every question. Name anything the material assumes but does not teach, and anything in the outcome the material never assesses. Note where the material goes beyond the curriculum reference given.\n\n4. IDENTIFIABLE STUDENT DATA. Flag anything that identifies a real child directly or by inference: names, initials, incidents, dates, results, or details that would make one person recognisable within a small school community.\n\nRULES. Do not rewrite the material. Do not summarise it back to me. Where you are unsure, say \"cannot tell\" and say what you would need in order to judge, rather than guessing. Do not reassure.\n\nEND WITH ONE LINE: GO, GO WITH FIXES (numbered list of the fixes), or DO NOT USE (with the reason). Treat this verdict as advice to a teacher who remains responsible for the decision."
+    }
+   ]
+  }
+ ]
+}

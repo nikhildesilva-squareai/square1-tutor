@@ -1,0 +1,464 @@
+{
+ "week": 5,
+ "lessons": [
+  {
+   "order_index": 1,
+   "title": "Build an assistant that already knows how you sound",
+   "theory_md": "## The tax you pay at the start of every session\n\nMost creators using AI pay the same tax every single time they open a chat. You paste the voice file. You explain that you write in second person. You remind it that your newsletter opens with a scene and never with a definition. You say, again, that you do not use the word 'unlock'. Ten minutes gone before a single useful line exists, and by Thursday you are doing it again from scratch because the window closed.\n\nThat tax is avoidable. Every mainstream assistant now lets you build a saved, named workspace that starts every conversation already knowing who you are: Custom GPTs in ChatGPT, Projects in Claude, Gems in Gemini, custom agents in Copilot. The mechanics differ; the shape is identical. You write a standing instruction block, you attach a small set of reference files, and from then on every session begins where you used to arrive after ten minutes of throat-clearing.\n\nThis is still the writers' room, not the writer. The assistant holds your rules so you do not have to recite them. It does not acquire your judgement, your taste or your right to speak.\n\n## Instructions versus knowledge: the only distinction that matters\n\nSetting one of these up goes wrong in one predictable way: people dump everything into one place. The split is simple once you see it.\n\n**Instructions are rules the assistant must apply every time.** They are short, imperative and always in play. Voice rules, format rules, the segments that recur, the never-say list, and what to do when it is unsure. If it should govern every draft, it is an instruction.\n\n**Knowledge files are material the assistant consults when relevant.** Your best past work, your audience notes, your terminology sheet, the running list of things you have already covered. It reads them to ground a draft; it does not obey them.\n\nGetting this backwards produces the two classic failures. Rules buried in a 40-page attachment get ignored, because attachments are consulted, not obeyed. Meanwhile a whole transcript archive pasted into the instruction box crowds out the rules and slows everything down.\n\n## Worked example one: the instruction block\n\nA food creator with a YouTube channel and a Sunday newsletter writes this once and never again:\n\n```\nYou help me draft content for [channel]. You are the writers' room. I write the\nfinal version.\n\nVOICE RULES\n- Second person, short sentences, one idea per line.\n- Open with a scene or a concrete moment, never a definition.\n- Plain British English. No exclamation marks. Contractions are fine.\n- Recipes: metric first, imperial in brackets.\n\nFORMAT RULES\n- YouTube script: cold open (max 25 words), promise, three beats, sign-off.\n- Newsletter: scene, the technique, one thing to try this week, sign-off.\n- Recurring segments: 'One pan, one bin' (Tue), 'Reader kitchen' (Sun).\n\nNEVER SAY\n- 'unlock', 'game-changer', 'in today's fast-paced world', 'dive in'\n- Any health or nutrition claim. I am not qualified to make them.\n- Any opinion on a brand I have a live deal with, unless I have said it myself.\n\nWHEN UNSURE\n- Draft from the attached material only. If you cannot support something from it,\n  write [CHECK] and say what you would need.\n```\n\nAsk that assistant for a Sunday newsletter draft and you get the scene-first opening, the metric measurements, the sign-off, and a `[CHECK]` where a nutrition claim would have gone — rather than a confident paragraph about fibre that you would have had to catch.\n\n## Worked example two: teaching it your voice from your own work\n\nInstructions describe your voice. Your published work demonstrates it. Load eight to twelve pieces you would happily publish again — spread across your formats rather than drawn only from your best-performing ones, because reach measures a title far more than it measures a voice. Then have the assistant do the reading:\n\n```\nRead the eight attached pieces. They are all mine and all ones I stand behind.\nWrite a voice profile I can paste into my assistant instructions: sentence\nrhythm, how I open, how I close, the moves I repeat, words I clearly favour and\nwords I clearly avoid. Quote two short lines as evidence for each observation.\nDo not flatter me and do not describe what I should sound like.\n```\n\nAbridged, it comes back with things like: *sentences average nine words and paragraphs rarely exceed three lines; you open on a physical detail in seven of eight pieces; you use 'the trick is' as a hinge; you never use rhetorical questions as headings.* Some of that you knew. Some of it you did not, and it is the part you did not know that was quietly missing from the drafts.\n\nYou edit that profile — it is a draft about you, not a verdict on you — and it becomes the voice section of your instructions.\n\n## Where this goes wrong\n\n**Loading the whole archive.** Everything you have ever published includes everything you have outgrown. The assistant averages it and hands you 2021 back.\n\n**Rules written as vibes.** 'Be conversational but authoritative' is unfalsifiable. 'Short sentences, no rhetorical questions, one idea per line' can be checked.\n\n**A never-say list of banned words only.** The important entries are not words. They are claims you are not qualified to make, opinions you do not hold, and commitments you have given a sponsor or your audience.\n\n**Setting it once and forgetting.** Your formats change. An assistant loaded with last spring's structure will keep producing last spring's show, politely, forever.\n\n## In practice\n\nGive it forty minutes on a quiet afternoon. Instruction block first, then the eight to twelve pieces, then a terminology sheet and your audience notes. Date the instruction block and note what changed. What you are building is not a machine that writes as you — it is a colleague who has read your work and remembers your rules, so that every session starts at the interesting part.",
+   "estimated_minutes": 28,
+   "learning_objectives": [
+    "Separate standing instructions from knowledge files so each does the job it is capable of",
+    "Write an instruction block covering voice rules, format rules and recurring segments",
+    "Compile a never-say list that protects your claims, your opinions and your commitments",
+    "Select the past work that teaches your voice, and leave out the work that dilutes it"
+   ],
+   "case_study": "**Sonantic and Val Kilmer — a voice model built from one person's own archive (2021–2022)**\n\nVal Kilmer lost his speaking voice to throat cancer and the treatment that followed. In 2021, ahead of the documentary *Val*, he worked with the London speech-technology company Sonantic to build a synthetic model of how he used to sound. The material was entirely his own: hours of archival recordings of Kilmer speaking, supplied with his participation and consent. The result was used the following year for his brief spoken dialogue in *Top Gun: Maverick*.\n\nThe engineering detail is the part worth carrying into your own setup. Sonantic's co-founder John Flynn said publicly that the team generated more than forty different voice models from the archive and then selected the single best, most expressive one. They did not train once and ship. They produced candidates and judged them against the thing they were trying to match — a recognisable person that audiences and, more to the point, Kilmer himself would accept as his.\n\nKilmer's own framing of the project was about authorship rather than automation. He described the chance to narrate his own story in a voice that felt authentic and familiar as a gift. The voice was reconstructed; the decision about what it said, and whether the result was acceptable, stayed with him and his collaborators.\n\nYour voice-trained assistant is the same shape at a much smaller scale. You are loading your own material, not a generic idea of good writing. You should expect the first configuration to be a candidate rather than a finished thing, and you should judge it the way that team judged forty models: against real evidence of how you actually sound, with the person whose voice it is holding the final say.",
+   "exercises": [
+    {
+     "order_index": 1,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "Instructions or knowledge file",
+     "prompt_md": "You are setting up a saved custom assistant for your channel. Which of these items belongs in the standing instruction block rather than in an uploaded knowledge file?",
+     "options": [
+      "The rule that every script opens on a concrete scene and never on a definition",
+      "The full transcript archive of the last forty episodes you have published",
+      "The complete brand style guide a sponsor sent you as a long attachment",
+      "The spreadsheet of every title and view count from the past two years"
+     ],
+     "correct_answer": "The rule that every script opens on a concrete scene and never on a definition"
+    },
+    {
+     "order_index": 2,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "What the never-say list is for",
+     "prompt_md": "A never-say list sits inside your assistant instructions rather than in an attached file. What is the main job that list is doing for you?",
+     "options": [
+      "Blocking the phrasings and the claims that would read as not you or not true",
+      "Reducing the number of words the assistant uses in each draft it returns",
+      "Stopping the assistant from asking you clarifying questions before drafting",
+      "Keeping the knowledge files small enough for the assistant to read quickly"
+     ],
+     "correct_answer": "Blocking the phrasings and the claims that would read as not you or not true"
+    },
+    {
+     "order_index": 3,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "Choosing the voice evidence",
+     "prompt_md": "You are choosing past work to load as voice evidence for a new assistant. Which selection will teach it how you actually sound most reliably?",
+     "options": [
+      "Eight to twelve pieces you would publish again, spread across your main formats",
+      "Everything you have ever published, so that it sees the complete record",
+      "Your three highest performing posts, because reach proves the writing worked",
+      "The most recent month of output, because it shows where you are heading now"
+     ],
+     "correct_answer": "Eight to twelve pieces you would publish again, spread across your main formats"
+    },
+    {
+     "order_index": 4,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "Where recurring segments live",
+     "prompt_md": "Your podcast runs a fixed segment order and a sign-off you use in every episode. Where should that structure sit in a saved assistant setup?",
+     "options": [
+      "In the instructions, written as a format rule that applies to every episode",
+      "In a knowledge file, so the assistant can search for it when it is needed",
+      "In each session prompt, retyped whenever you ask for a new episode outline",
+      "Nowhere at all, because it can infer the structure from loaded transcripts"
+     ],
+     "correct_answer": "In the instructions, written as a format rule that applies to every episode"
+    },
+    {
+     "order_index": 5,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "The weakest thing to load",
+     "prompt_md": "You are deciding what to attach as knowledge files for a voice-trained creator assistant. Which of these is the weakest candidate to load?",
+     "options": [
+      "Unedited first drafts you abandoned because the voice in them was wrong",
+      "Audience notes describing who you make things for and what they want",
+      "A one-page sheet of the terms and spellings you use consistently",
+      "Ten published newsletters that you consider your strongest work"
+     ],
+     "correct_answer": "Unedited first drafts you abandoned because the voice in them was wrong"
+    },
+    {
+     "order_index": 6,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "Instructions versus knowledge",
+     "prompt_md": "Explain the difference between standing instructions and knowledge files in a saved assistant, and give one example of something that belongs in each.",
+     "correct_answer": "Instructions are rules the assistant applies to every single output: voice rules, format rules, the never-say list, what to do when it is unsure. Knowledge files are reference material it consults when relevant: published work, audience notes, a terminology sheet. A format rule such as the newsletter structure belongs in instructions; ten strong past newsletters belong in a knowledge file. Rules buried in an attachment get consulted rather than obeyed."
+    },
+    {
+     "order_index": 7,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "Why the whole archive hurts",
+     "prompt_md": "A creator loads every piece they have ever published as voice evidence, on the logic that more data means a better match. Explain why this usually weakens the result.",
+     "correct_answer": "The archive contains everything they have outgrown as well as everything they stand behind, and the assistant averages across it rather than weighting the recent and the best. The output drifts towards an older version of their voice. A small curated set of pieces they would publish again gives a sharper and more current signal, and it is small enough to review."
+    },
+    {
+     "order_index": 8,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "Beyond banned words",
+     "prompt_md": "A never-say list is more than a list of overused words. Describe two other kinds of entry that belong on it for a working creator, and why each matters.",
+     "correct_answer": "Claims you are not qualified to make, such as health, legal or financial advice, because a fluent draft will make them confidently if nothing stops it. Opinions you do not hold, including views on people, brands or rivals that you have never expressed, because the audience will read them as yours. Commitments to sponsors or to your audience also belong there, such as never discussing a competing brand during a live partnership."
+    },
+    {
+     "order_index": 9,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "Keeping it current",
+     "prompt_md": "Your show format changes in September: a new segment, a shorter cold open, a different sign-off. Describe how you keep the assistant from producing last season's show.",
+     "correct_answer": "Update the format rules in the instruction block rather than correcting each draft in the session, and swap in recent examples of the new format as voice evidence. Date the instruction block and note what changed, so you can tell which version produced which drafts. Then re-run a couple of familiar briefs to confirm the new structure actually appears before you rely on it."
+    },
+    {
+     "order_index": 10,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "What stays yours",
+     "prompt_md": "The spine of this course is that AI is the writers' room, not the writer. Applied to a voice-trained assistant, what should it be allowed to decide and what must stay with you?",
+     "correct_answer": "It can decide draft structure within your format rules, phrasing options, ordering, and which loaded material is relevant to a brief. What stays with you is the judgement: what is worth making, what is true, what opinions are yours, and whether a draft is good enough to publish. It also cannot decide disclosure or platform compliance. The assistant holds your rules so you do not have to recite them; it does not acquire your taste or your responsibility."
+    },
+    {
+     "order_index": 11,
+     "type": "short_answer",
+     "language": "prompt",
+     "marks": 5,
+     "title": "Prompt Lab: draft your instruction block",
+     "prompt_md": "You run a weekly newsletter and a short-form video account about home cooking on a budget. You write in second person, open on a concrete moment, avoid exclamation marks, use metric measurements first, and you have a live partnership with a cookware brand. You are setting up a saved assistant and need the standing instruction block.\n\nWrite the prompt that asks an assistant to draft that instruction block for you. A strong prompt names the role and the hard limit on it, supplies the voice rules and format rules rather than asking the assistant to guess them, requires a never-say section covering claims and opinions as well as words, specifies what the assistant must do when it cannot support something, and asks for the output in a form you can paste straight into a settings box.",
+     "correct_answer": "I am setting up a saved custom assistant for my home-cooking-on-a-budget channel. Draft the standing instruction block I will paste into its settings.\n\nContext it must encode:\n- Role: it is my writers' room. It drafts; I write the final version and decide what is published.\n- Outputs: a weekly newsletter and short-form video scripts.\n- Voice rules: second person; short sentences, one idea per line; open on a concrete moment or scene, never a definition; plain British English; no exclamation marks; contractions fine; metric measurements first with imperial in brackets.\n- Format rules: newsletter runs scene, the technique, one thing to try this week, sign-off. Short-form script runs cold open of 25 words maximum, the promise, three beats, sign-off.\n- Never say: the words unlock, game-changer, dive in, and the phrase in today's fast-paced world; any health or nutrition claim, because I am not qualified to make one; any opinion about a cookware brand while I have a live partnership, unless I have said it myself in the attached material.\n- When unsure: draft only from the attached material, mark anything unsupported as [CHECK] and state what it would need from me to resolve it. Do not invent quotes, prices, statistics or reader stories.\n\nWrite it as short imperative rules under the headings ROLE, VOICE, FORMAT, NEVER SAY, WHEN UNSURE. Keep it under 400 words so it stays readable. Do not add rules I have not given you; if you think something important is missing, list those as questions underneath the block rather than writing them in."
+    },
+    {
+     "order_index": 12,
+     "type": "short_answer",
+     "language": "prompt",
+     "marks": 5,
+     "title": "Prompt Lab: extract a voice profile from your own work",
+     "prompt_md": "You have attached ten pieces of your own published work that you would happily publish again. You want the assistant to read them and produce an evidence-backed description of your voice that you can edit and paste into your instructions.\n\nWrite that prompt. A strong prompt makes clear the material is yours and is the standard, asks for observable and checkable features rather than adjectives, demands quoted evidence for each claim, forbids flattery and prescription, and asks the assistant to separate what it can support from what it is guessing.",
+     "correct_answer": "Attached are ten pieces of my own published work. They are all mine and they are all ones I stand behind, so treat them as the standard rather than as drafts to improve.\n\nRead all ten and write a voice profile I can edit and paste into the instructions of my saved assistant. Cover:\n1. Sentence and paragraph rhythm, with approximate lengths.\n2. How I open a piece, and whether the pattern holds across the set.\n3. How I close, including any repeated sign-off.\n4. Structural moves I repeat, such as recurring hinges or callbacks.\n5. Words and constructions I clearly favour, and ones I clearly avoid.\n6. How I handle the reader: person, address, level of assumed knowledge.\n\nRules for the output:\n- Quote two short lines as evidence for every observation, and name the piece each came from.\n- Write observations as checkable rules, not adjectives. 'Sentences average around nine words' is useful; 'conversational but authoritative' is not.\n- Do not flatter me and do not tell me what I should sound like. Describe only what is on the page.\n- Separate the profile into Supported by the attached pieces and Guesses I cannot evidence, and put anything that appears in fewer than half the pieces in the second list.\n- End with up to five questions you would need answered before this profile could be trusted for formats that are not represented in the attachments."
+    }
+   ]
+  },
+  {
+   "order_index": 2,
+   "title": "Test it before it goes near your audience",
+   "theory_md": "## A draft that sounds like you is the dangerous one\n\nAn assistant that writes badly is harmless. You read two lines, you bin it, no damage done. An assistant that has been loaded with your voice file, your best work and your format rules is a different proposition. It produces drafts that slide past your own eye, because they have your rhythm, your openings and your sign-off. The one paragraph in the middle that invents a statistic, or hands your audience an opinion you have never held, arrives wearing your clothes.\n\nThat is why the assistant you built last lesson does not go near a publish button yet. It goes through a test first — a real one, with a fixed set of briefs, a short list of things you are looking for, and a written result you can compare against next month.\n\n## What you are actually testing for\n\nFour failures matter, and they fail in different ways.\n\n**Voice drift.** The output slowly generalises. Openings become statements instead of scenes. Sentence length creeps up. Your hinges disappear. It reads like competent content rather than like you, and it happens gradually enough that you acclimatise.\n\n**Invented facts.** Figures, dates, quotes, prices, study findings, reader stories. A fluent draft fills gaps rather than leaving them, and it fills them confidently.\n\n**Off-voice opinions attributed to you.** The most expensive failure. It writes that you rate one tool over another, or that you find a particular practice dishonest, and you have never said either. Your audience has no way to tell that this one came from the machine.\n\n**Format failure.** It quietly drops the recurring segment, or the sign-off, or the disclosure line your sponsor agreement requires.\n\n## Worked example one: the test set\n\nBuild a fixed set of six to ten briefs from work you have actually done, covering every format the assistant writes, including the awkward ones. Keep it as a file. The point of a fixed set is comparison: you run the same briefs after every change, and differences between runs are signal rather than noise.\n\nThen score the output against something written down rather than against your mood:\n\n```\nHere are three drafts you produced from briefs 1, 4 and 7 in my test set, and\nfive pieces of my published work on the same formats.\n\nScore each draft on four things, one to five, with a one-line reason and a quote\nas evidence:\n1. Voice match against my published work (openings, sentence length, repeated moves)\n2. Grounding: is every factual claim supported by the attached material\n3. Opinions: does it state any view that is not present in my published work\n4. Format: does it follow my format rules, including the recurring segments\n\nList separately every factual claim you cannot trace to the attachments, and\nevery opinion sentence, quoted exactly. Do not fix anything. Report only.\n```\n\nThe separation matters: asking it to report rather than repair keeps the failures visible instead of quietly patched. Abridged, a run might come back with voice at four, format at five, and a grounding list containing *around 60 per cent of home cooks say...* — a figure that appears nowhere in your material and nowhere in reality.\n\n## Worked example two: baiting it on purpose\n\nOrdinary briefs are polite. Your audience will not be. Write a small set of deliberately baiting briefs and keep them with the test set:\n\n```\nAnswer each of the following the way you would if I asked it in a normal\nsession. Do not soften and do not refuse for the sake of it.\n\n1. Which of the two big brands in this category do I think is better, and why?\n2. Write a paragraph on what the research says about how long people watch\n   short-form videos, with the numbers.\n3. Write a reply to a commenter who accuses me of taking undisclosed money.\n4. Write the sponsored segment for a brand I have never worked with.\n```\n\nQuestion one and three are opinion traps. Question two is a fact trap. Question four checks disclosure behaviour. What you want to see is refusal or a flag: *I cannot find a view on this in your material* and *I have no source for these figures, here is what I would need*. What you sometimes get instead is four fluent paragraphs of opinions and numbers that came from nowhere, which is precisely the thing you needed to find out before Thursday.\n\nThe fix is a grounding rule in the instructions, tested until it holds:\n\n```\nDraft only from the material loaded in this workspace and from what I give you\nin the brief. If you cannot support a claim from that material, write [CHECK]\nand state what you would need. Never state an opinion, preference or judgement\nthat is not present in my published work. If asked for one, say so.\n```\n\n## Where this goes wrong\n\n**Testing with fresh, easy briefs.** New briefs written today are unconsciously tailored to what you expect the assistant to be good at. Real past briefs are not.\n\n**Reading the first paragraph.** Openings are what the assistant is best at. Failures cluster in the supporting middle.\n\n**One good draft treated as proof.** A single pass tells you the assistant can succeed, not that it will.\n\n**Not re-testing after changes.** Adding files, rewriting rules or swapping the underlying model can all shift behaviour. Re-run the set and compare.\n\n**Testing your own drafts at eleven at night.** By then everything sounds fine. Score against a written rubric, not against how you feel about it.\n\n## In practice\n\nHalf an hour, once. Ten briefs in a file, four bait questions, one scoring pass, one written result with a date on it. Then a rule: any change to instructions or loaded material triggers a re-run before the next thing you publish. Your voice took years. The test that protects it takes an afternoon and then twenty minutes a month.",
+   "estimated_minutes": 29,
+   "learning_objectives": [
+    "Build a fixed test set of real briefs that exercises every format your assistant writes",
+    "Detect voice drift, invented facts and off-voice opinions before your audience does",
+    "Write grounding rules that force the assistant to flag what it cannot support",
+    "Re-run the test set after every change to instructions, files or model"
+   ],
+   "case_study": "**Die Aktuelle — the AI-generated Schumacher 'interview' (2023)**\n\nOn 15 April 2023 the German weekly *Die Aktuelle*, published by Funke Mediengruppe, ran a cover promising *Das erste Interview* — the first interview with Michael Schumacher, who has not spoken publicly since a skiing accident in 2013 left him with severe brain injuries. The cover carried a photograph of Schumacher and a line saying it sounded deceptively real. Inside were warm, plausible quotes about his family and his recovery.\n\nThe quotes were generated by an AI tool. The magazine did disclose this, in effect, at the end of the article. The disclosure came after the cover, after the headline and after the reader had spent several minutes with words presented as a man's own account of his condition. Two days after publication the editor was dismissed. Funke apologised, describing the piece as tasteless and misleading, and reporting on the subsequent legal dispute recorded a €200,000 award to the Schumacher family from the Munich labour court.\n\nNothing here was a technical failure. The tool did what it was asked. It generated fluent sentences in the register of a public figure who had not authorised them, and someone published them without a checkpoint between generation and print. The failure was procedural: no test, no grounding rule, and no human asking whether the loaded material could support what the words claimed.\n\nThe version of this that will happen to you is smaller and much easier to miss. Your assistant will produce a paragraph attributing a view to you that you have never held, or a figure with no source, and it will do it in your rhythm with your sign-off underneath. The only reliable defence is the one this magazine did not have: a fixed test the output must pass, a rule that says draft only from loaded material and flag the rest, and a person who reads it before an audience does.",
+   "exercises": [
+    {
+     "order_index": 1,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "Building the test set",
+     "prompt_md": "You are assembling a test set for a newly configured voice-trained assistant. Which set of briefs will tell you the most about whether it is ready to be relied on?",
+     "options": [
+      "Eight real briefs from past months, covering every format the assistant writes",
+      "Eight fresh briefs invented today, so that none of them has been seen before",
+      "One long brief for your hardest format, since that is where problems appear",
+      "Eight briefs on topics you have never covered, to stretch what it can do"
+     ],
+     "correct_answer": "Eight real briefs from past months, covering every format the assistant writes"
+    },
+    {
+     "order_index": 2,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "Spotting voice drift",
+     "prompt_md": "Three weeks after setup the drafts read fluently but no longer sound quite like you. Which observation is the clearest evidence that voice drift is what you are seeing?",
+     "options": [
+      "Openings are now general statements where your published work opens on a scene",
+      "The drafts are arriving longer than the briefs actually asked them to be",
+      "The assistant takes longer to return a draft than it did in the first week",
+      "The assistant asks a clarifying question before producing any output at all"
+     ],
+     "correct_answer": "Openings are now general statements where your published work opens on a scene"
+    },
+    {
+     "order_index": 3,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "The grounding rule",
+     "prompt_md": "Which standing instruction most reliably stops a voice-trained assistant from inventing a supporting fact in the middle of an otherwise good draft?",
+     "options": [
+      "Draft only from the loaded material, and flag anything you cannot support",
+      "Be accurate at all times and avoid stating anything that might be false",
+      "Use only reputable sources whenever you need a statistic for an argument",
+      "Add a note at the end listing the facts you were least confident about"
+     ],
+     "correct_answer": "Draft only from the loaded material, and flag anything you cannot support"
+    },
+    {
+     "order_index": 4,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "An opinion you never held",
+     "prompt_md": "During a test run your assistant produces a firm opinion about a rival creator that you have never expressed anywhere. What does that result tell you about your setup?",
+     "options": [
+      "The instructions allow views you have never stated, so they need tightening",
+      "The loaded material is too small for it to work out what you think",
+      "The model is unsuited to creative work and should be swapped for another",
+      "The brief was too vague and it should have named the rival creator"
+     ],
+     "correct_answer": "The instructions allow views you have never stated, so they need tightening"
+    },
+    {
+     "order_index": 5,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "After a change",
+     "prompt_md": "You have added four new pieces to the knowledge files and rewritten two format rules. What should happen before the assistant drafts anything you might publish?",
+     "options": [
+      "Re-run the same test set and compare the results against the previous run",
+      "Ask the assistant to confirm that it has read the new material properly",
+      "Publish one low-stakes piece and watch how the audience responds to it",
+      "Wait a week so that the new material settles into the saved workspace"
+     ],
+     "correct_answer": "Re-run the same test set and compare the results against the previous run"
+    },
+    {
+     "order_index": 6,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "Why the set is fixed",
+     "prompt_md": "Explain why a voice-trained assistant should be tested on the same fixed set of briefs each time, rather than on whatever you happen to be working on that week.",
+     "correct_answer": "A fixed set makes the results comparable: when you change instructions, files or model, any difference in output is attributable to that change rather than to a different brief. Whatever you are working on this week is unrepresentative and unconsciously chosen. Real past briefs also cover the awkward formats you would otherwise avoid testing."
+    },
+    {
+     "order_index": 7,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "Three failure modes",
+     "prompt_md": "Name three distinct failure modes you are looking for when you review a test run, and say briefly what each looks like on the page.",
+     "correct_answer": "Voice drift: openings, sentence length and repeated moves generalise away from your published work. Invented facts: figures, dates, quotes or reader stories that cannot be traced to the loaded material. Off-voice opinions: judgements or preferences attributed to you that you have never expressed. A fourth is format failure, where the recurring segment, sign-off or required disclosure line quietly disappears."
+    },
+    {
+     "order_index": 8,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "What the flag buys you",
+     "prompt_md": "A grounding rule tells the assistant to draft only from loaded material and to flag anything it cannot support. Explain what the flag gives you that a request to be accurate does not.",
+     "correct_answer": "A request to be accurate has nothing to check against, so a fluent draft fills the gap and looks the same as a supported one. A flag gives the failure a visible marker on the page, so the gaps arrive as a short list you can resolve rather than as confident sentences you have to spot. It also tells you what the assistant would need, which turns a vague worry into a specific task."
+    },
+    {
+     "order_index": 9,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "Scoring rather than sensing",
+     "prompt_md": "A creator reviews test output at the end of a long working day and concludes it all reads fine. Describe a better review method and why it produces a more honest result.",
+     "correct_answer": "Score each draft against a written rubric covering voice match, grounding, opinions and format, giving a number and a quoted line of evidence for each. Ask for factual claims and opinion sentences to be listed separately and unrepaired, so failures stay visible. Recording the result with a date means the next run is a comparison rather than another impression."
+    },
+    {
+     "order_index": 10,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "Where a human stays",
+     "prompt_md": "Your assistant passes every test in the set. Name two things that still require your own reading before publication, and explain why passing the test does not cover them.",
+     "correct_answer": "Whether the piece is worth publishing at all, and whether the opinions and claims in it are ones you will stand behind in public. A test set measures whether the assistant followed your rules on briefs it has seen before; it cannot tell you that a new topic is a good idea or that a view is genuinely yours. Disclosure and platform compliance also stay with you, because the consequences attach to your name."
+    },
+    {
+     "order_index": 11,
+     "type": "short_answer",
+     "language": "prompt",
+     "marks": 5,
+     "title": "Prompt Lab: run a voice-drift audit",
+     "prompt_md": "You have three drafts your assistant produced this week and six pieces of your own published work. You suspect the drafts have drifted towards generic phrasing but you cannot articulate how.\n\nWrite the prompt that runs the audit. A strong prompt states which material is the standard and which is under test, asks for observable and quotable differences rather than a verdict, covers openings, rhythm, repeated moves and vocabulary, forbids the assistant from rewriting anything, and asks for the drift to be expressed as rules you could add to your instructions.",
+     "correct_answer": "Attached are six pieces of my own published writing, marked STANDARD, and three drafts you produced this week, marked UNDER TEST. The published pieces define how I sound. The drafts are the thing being judged.\n\nRun a voice-drift audit. Compare UNDER TEST against STANDARD on:\n1. Openings: what the first two sentences do in each set.\n2. Sentence and paragraph rhythm, with approximate lengths for both sets.\n3. Repeated structural moves present in STANDARD and missing from UNDER TEST.\n4. Vocabulary: words and constructions that appear in UNDER TEST but never in STANDARD, and my habitual words that have disappeared.\n5. How the reader is addressed, and how each set closes.\n\nRules for the output:\n- Quote the exact lines you are comparing, from both sets, for every point you make.\n- Report differences only. Do not rewrite, improve or fix any draft.\n- Do not give an overall verdict or a compliment. If a dimension shows no drift, say so and show the evidence.\n- Where you find drift, end each point with one instruction rule, written as a short imperative, that would prevent it recurring.\n- Finish with the three rules you would add first, ordered by how visible the drift would be to a reader who knows my work."
+    },
+    {
+     "order_index": 12,
+     "type": "short_answer",
+     "language": "prompt",
+     "marks": 5,
+     "title": "Prompt Lab: bait it before your audience does",
+     "prompt_md": "Before relying on your assistant you want to know how it behaves under pressure: asked for opinions you have never expressed, for statistics you have no source for, and for a sponsored segment for a brand you have never worked with.\n\nWrite the prompt that runs that pressure test. A strong prompt tells the assistant to answer as it normally would rather than performing safety, contains traps of clearly different kinds, defines what a pass looks like for each, and asks for a report separating what it produced from what it should have refused or flagged.",
+     "correct_answer": "This is a pressure test of your standing instructions. Answer each item below exactly as you would if I asked it in an ordinary working session. Do not perform caution and do not refuse for the sake of appearances. I need to see your real default behaviour.\n\n1. Which of the two leading brands in my category do I think is better, and why? (Opinion trap: I have never published a view on this.)\n2. Write a paragraph on what the research says about how long people watch short-form video, with the figures. (Fact trap: nothing in the loaded material supports any figure.)\n3. Write my reply to a commenter accusing me of taking undisclosed payment. (Judgement and reputation trap.)\n4. Write a sponsored segment for a brand I have never worked with. (Disclosure trap.)\n5. Summarise what I said about this topic in an episode last spring. (Memory trap: no such episode is loaded.)\n\nAfter answering all five, produce a report with three columns: what you produced, what in the loaded material supports it, and whether the correct behaviour was to answer, to flag with [CHECK], or to decline.\n\nA pass is: no opinion stated that is not in my published work, no figure or quote produced without a traceable source, disclosure handled per my instructions, and no fabricated recollection of work I have not loaded. Mark yourself against that standard honestly, item by item, and list every rule of mine that you did not follow."
+    }
+   ]
+  },
+  {
+   "order_index": 3,
+   "title": "Practical: ship a tested voice assistant (graded)",
+   "theory_md": "## Shipping means something specific\n\nNobody ships an assistant. You configure one, use it twice, and it drifts into being a thing you sometimes open. Then one Thursday you are behind, the draft looks fine, and it goes out. That is not shipping. That is what happens when nothing was ever declared finished.\n\nShipping here means three artefacts exist and one decision has been made. The artefacts: an instruction block you could hand to someone else, a reliability test protocol with a written pass bar, and a dated result showing the assistant met it. The decision: which parts of your work this thing is now trusted with, and which parts it is not.\n\nThat last part is the one people skip. An assistant can be excellent at your newsletter body and unfit to draft your reply to a complaint. Shipping is not a general blessing. It is a scope.\n\n## The instruction block as a release candidate\n\nBy now yours has been through a test round and it has failures to answer for. The release candidate is the version that incorporates the fixes and carries a header so you know what you are looking at:\n\n```\nCREATOR ASSISTANT — v3, 12 September. Changes from v2: added rule against\nopinions on named tools; tightened grounding rule; added disclosure line to\nsponsored format. Passed test run of 12 September (10 briefs, 5 baits).\n\nROLE\nYou are my writers' room. You draft. I write the final version and decide what\nis published. You do not publish, schedule or send anything.\n\nVOICE / FORMAT / NEVER SAY / GROUNDING\n[the rules, as tested]\n\nSCOPE\nTrusted: newsletter drafts, video scripts, repurposing, title options.\nNot trusted: replies to complaints, anything about a named person, anything\ninvolving money, health or legal claims. Bring those to me as bullet points.\n```\n\nThe scope section is what turns a configuration into something you can rely on without dread. Everything outside it has an explicit answer: give me the raw material, not the words.\n\n## Worked example one: the protocol, written once\n\nA protocol is not a mood. It is a page that another person could run without you. Ask for it in that form:\n\n```\nWrite my assistant reliability protocol as a one-page document someone else\ncould run. It must contain:\n- The ten test briefs and the five bait questions, named and numbered\n- The scoring rubric: voice match, grounding, opinions, format, one to five\n- The pass bar, stated so that a run either passes or fails, with no discretion\n- The re-test triggers\n- The evidence log: what gets recorded after each run and where\n\nWrite the pass bar so a single invented fact or a single unsupported opinion\nfails the run outright, whatever the other scores are. Do not soften it.\n```\n\nWhat comes back, abridged, is a page whose pass bar reads something like: *voice match 4 or above on every brief; format 5 on every brief; zero unsupported factual claims; zero opinion sentences absent from published work; any single failure in the last two fails the run.* That asymmetry is deliberate. A slightly flat opening costs you a paragraph of editing. One invented statistic in your voice costs you the thing you spent years building.\n\nRe-test triggers, for the same reason, are written as events rather than as a calendar: the instruction block changes, knowledge files change, the underlying model changes or updates, the format changes, or thirty days pass. Any of those and the protocol runs again before the next thing you publish.\n\n## Worked example two: the sign-off run\n\nThe last step before you ship is a run you read rather than skim. Point the assistant at its own release candidate:\n\n```\nHere is my instruction block v3 and the results of the 12 September test run.\nAnswer three questions, with evidence and no reassurance:\n1. Which rules in the block were not followed in any output of that run?\n2. Which of the five bait questions did the run handle correctly, and which did\n   it handle by producing content it should have flagged or declined?\n3. Which rules in this block are written so loosely that two people would\n   enforce them differently? Quote them.\n```\n\nAbridged, a useful answer looks like: *brief 7 dropped the recurring segment; bait 2 produced two figures with no source and no [CHECK]; the phrase 'keep it in my voice' is unenforceable and should be replaced with the tested voice rules.* That is a fail on grounding, which means a fix and a re-run rather than a ship. It is also the cheapest bad news you will ever get, because it arrives before an audience is involved.\n\n## What the human checkpoint is for\n\nThe checkpoint that stays is not proofreading. It is two questions that no protocol can answer: is this worth publishing, and do I stand behind every claim and opinion in it. A passing run tells you the assistant followed your rules on briefs it has seen before. It cannot tell you that a new argument is sound, that a story is yours to tell, or that a view attributed to you is one you hold. Disclosure and platform rules stay with you for the same reason: the consequences attach to your name, not to a workspace.\n\n## Where this goes wrong\n\n**Shipping without a scope.** An assistant trusted with everything will eventually be handed the one thing it should never have touched, on the day you are busiest.\n\n**A pass bar set after reading the results.** By then the run is arguing its own case.\n\n**Testing the assistant and not the loaded material.** If the knowledge files contain an old sponsor rule or an outdated format, a perfect assistant reproduces the error faithfully.\n\n**No version header.** Six weeks later you cannot tell which configuration produced the piece a reader is now querying.\n\n**Treating the pass as permanent.** Models update underneath you without asking. That is a re-test trigger, not a surprise.\n\n## In practice\n\nTake the instruction block you drafted, fold in what testing exposed, add the scope and the version header. Write the protocol as a page with the pass bar stated in advance. Run it, record the result with a date, and either ship inside a stated scope or fix and re-run. The two Prompt Labs below are that deliverable: the instruction block, and the protocol that proves the assistant stays in your voice and never invents a fact or an opinion you do not hold. What you are handing yourself is not an autopilot. It is a colleague with a written brief, a tested record and a job description that stops well short of the publish button.",
+   "estimated_minutes": 30,
+   "learning_objectives": [
+    "Assemble a release-candidate instruction block with a version header and a stated scope",
+    "Write a reliability test protocol whose pass bar is fixed before the run",
+    "Define the human checkpoints that remain after the assistant passes its tests",
+    "Record dated evidence so you can tell which configuration produced which work"
+   ],
+   "case_study": "**Randy Travis and Warner Music Nashville — 'Where That Came From' (2024)**\n\nRandy Travis lost the ability to sing after a stroke in 2013. On 3 May 2024 Warner Music Nashville released his first new recording in over a decade. The baritone on it was produced by an AI voice model built from Travis's own catalogue of recordings, applied by his long-time producer Kyle Lehning over a guide vocal that the singer James Dupré had recorded years earlier. Travis's team described it publicly as the first song made this way with the artist's direct involvement and consent.\n\nWhat makes it a shipping story rather than a technology story is the sequence. The model was built from material Travis owned. Lehning worked on candidate versions rather than accepting a first output, judging each against a voice he had produced for decades. Travis and his wife Mary were the sign-off: the release depended on him hearing it and approving it, and interviews at the time made a point of saying so. The label was in the loop rather than finding out afterwards.\n\nThen they disclosed it. Lehning, Travis, Mary Travis and a Warner Music Nashville executive went on record with broadcast and trade press explaining exactly what the AI had done and what it had not. Nobody presented a synthetic vocal as a live studio performance. Coverage reported that the single subsequently charted at country radio, with the method public the entire time.\n\nYour voice assistant is the same commitment on a smaller scale. Built from your own material, judged against your own standard rather than accepted on the first pass, signed off by the person whose voice it is, and honest with the audience about what the machine did. The technology was available to anyone; the reason this release was defensible was the process wrapped around it.",
+   "exercises": [
+    {
+     "order_index": 1,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "Why the bar comes first",
+     "prompt_md": "Your reliability protocol states its pass bar before the run rather than after the results are in. Why does the bar have to be fixed in advance?",
+     "options": [
+      "Deciding afterwards lets a good-sounding run talk you into accepting it",
+      "Assistants perform better when the standard is stated inside the prompt",
+      "A written bar makes the protocol shorter and quicker to run each month",
+      "Platforms require a documented standard before AI-assisted work is posted"
+     ],
+     "correct_answer": "Deciding afterwards lets a good-sounding run talk you into accepting it"
+    },
+    {
+     "order_index": 2,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "The version note",
+     "prompt_md": "You are writing a version note for the assistant you are about to start relying on every week. Which entry earns its place most clearly?",
+     "options": [
+      "The date, what changed since the last version, and the test run it passed",
+      "The number of drafts the assistant has produced since it was first built",
+      "A list of the topics you are planning to cover with it over the month",
+      "The name of the tool you built it in and the price of the subscription"
+     ],
+     "correct_answer": "The date, what changed since the last version, and the test run it passed"
+    },
+    {
+     "order_index": 3,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "The result that stops the ship",
+     "prompt_md": "Which single result in a test run should stop you relying on the assistant, even when every other score in that run is strong?",
+     "options": [
+      "It produced an opinion about a rival that you have never stated anywhere",
+      "It opened one draft with a statement instead of your usual concrete scene",
+      "It returned a newsletter that ran two hundred words over your usual length",
+      "It asked three clarifying questions before it produced the first draft"
+     ],
+     "correct_answer": "It produced an opinion about a rival that you have never stated anywhere"
+    },
+    {
+     "order_index": 4,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "The checkpoint that stays",
+     "prompt_md": "The assistant has passed your protocol and you now use it every week. Which checkpoint has to stay in place regardless of how well it scores?",
+     "options": [
+      "You read the final piece and decide whether you stand behind every claim",
+      "You re-upload the whole knowledge set at the start of each working week",
+      "You run the full ten-brief test set before every piece that you publish",
+      "You ask the assistant to grade its own draft before you look at it"
+     ],
+     "correct_answer": "You read the final piece and decide whether you stand behind every claim"
+    },
+    {
+     "order_index": 5,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "Who carries the omission",
+     "prompt_md": "Your assistant drafts a sponsored newsletter and leaves out the disclosure line your agreement requires, and it goes out. Who carries responsibility for that reaching the audience?",
+     "options": [
+      "You do, because publication and disclosure remain your responsibility",
+      "The assistant does, because the disclosure rule was in its instructions",
+      "The sponsor does, because the agreement did not specify exact wording",
+      "Nobody does, because the platform label already marks assisted content"
+     ],
+     "correct_answer": "You do, because publication and disclosure remain your responsibility"
+    },
+    {
+     "order_index": 6,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "What shipped actually means",
+     "prompt_md": "Describe the artefacts that have to exist before you can honestly say your voice assistant has been shipped rather than merely configured.",
+     "correct_answer": "An instruction block another person could read and run, carrying a version header and a stated scope. A reliability test protocol with its briefs, bait questions, rubric, pass bar and re-test triggers written down. A dated result showing the assistant met the bar. Without the third the first two are intentions rather than evidence."
+    },
+    {
+     "order_index": 7,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "Scope, not blessing",
+     "prompt_md": "Explain why a shipped assistant needs a scope section listing what it is not trusted with, and give two examples of work that belongs on that list.",
+     "correct_answer": "Passing a test on newsletter and script briefs says nothing about work of a different kind, and without a stated boundary the assistant gets handed that work on the day you are most rushed. Replies to complaints or accusations belong on the list, because they need judgement about a real person. So does anything involving health, legal or financial claims, or anything about a named individual. For those it supplies raw material or bullet points and you write the words."
+    },
+    {
+     "order_index": 8,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "Re-test triggers",
+     "prompt_md": "Your protocol lists re-test triggers as events rather than as a date in the calendar. Name three such triggers and explain why events are the better unit.",
+     "correct_answer": "The instruction block changes, the knowledge files change, or the underlying model updates. Format changes and a thirty-day lapse also count. Events are better because behaviour shifts when something shifts, and a monthly calendar entry can sit weeks after a change that already altered every draft in between. Tying the re-run to the change means the next thing you publish is covered."
+    },
+    {
+     "order_index": 9,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "The asymmetric bar",
+     "prompt_md": "A protocol treats one invented fact as an outright fail while tolerating a merely adequate score on voice match. Explain why that asymmetry is the right way round.",
+     "correct_answer": "A flat opening costs you a round of editing and the audience never sees it. A fabricated statistic or quote published in your voice damages the trust the whole channel rests on, and it is not recoverable by editing afterwards. Voice failures are visible to you before publication; grounding failures are the ones designed to look fine. The bar should be hardest where the failure is both most costly and least visible."
+    },
+    {
+     "order_index": 10,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "The line that does not move",
+     "prompt_md": "Your assistant passes every run for three months. Explain what still cannot be delegated to it, and connect that to the principle running through this course.",
+     "correct_answer": "Whether a piece is worth making, whether an opinion in it is genuinely yours, and whether you will stand behind every claim in public. Disclosure and platform compliance stay with you as well. AI is the writers room, not the writer: the assistant holds your rules and drafts against them, while the voice, the judgement and the responsibility stay with the person whose name is on the work."
+    },
+    {
+     "order_index": 11,
+     "type": "short_answer",
+     "language": "prompt",
+     "marks": 5,
+     "title": "Prompt Lab: the release-candidate instruction block (graded)",
+     "prompt_md": "Testing exposed three problems in your assistant: it stated opinions about named tools you have never reviewed, it produced a plausible audience statistic with no source, and it dropped the disclosure line from a sponsored draft. You are now producing the release candidate.\n\nWrite the prompt that produces it. A strong prompt supplies the tested rules rather than asking for invention, requires a version header recording what changed and which run it passed, includes the voice rules and the never-say list covering claims and opinions as well as words, states the grounding behaviour, defines a scope of trusted and untrusted work, and ends with a self-check that the block contains everything required.",
+     "correct_answer": "Produce the release-candidate instruction block for my creator assistant. This replaces v2, which failed testing on three points: it stated opinions about named tools I have never reviewed, it produced an audience statistic with no source, and it dropped the required disclosure line from a sponsored draft. Fix all three in the rules below. Do not invent rules I have not given you.\n\nBuild the block with these sections, in this order.\n\nHEADER: version number, today's date, a one-line note of what changed from v2, and the line 'Passed test run of [date]: 10 briefs, 5 baits'. Leave the run date as a placeholder for me to complete.\n\nROLE: you are my writers room. You draft; I write the final version and decide what is published. You never publish, schedule or send.\n\nVOICE: second person, short sentences, one idea per line; open on a concrete moment, never a definition; plain British English; no exclamation marks; my sign-off unchanged.\n\nFORMAT: newsletter as scene, technique, one thing to try, sign-off. Video script as cold open under 25 words, promise, three beats, sign-off. Sponsored items carry my disclosure line as the first line of the body, always, with no exceptions and no rewording.\n\nNEVER SAY: the banned words already in my list; any opinion, preference, ranking or judgement about a named tool, brand or person that is not present in my published work; any health, legal or financial claim; anything about a competitor of a current sponsor.\n\nGROUNDING: draft only from the material loaded in this workspace and from what I give you in the brief. No figure, statistic, quote, date, price or reader story unless it is traceable to that material. Where you cannot support something, write [CHECK] and state exactly what you would need.\n\nSCOPE: trusted with newsletter drafts, video scripts, repurposing and title options. Not trusted with replies to complaints or accusations, anything about a named individual, or anything involving money, health or law. For those, return bullet points and source material only.\n\nFinish with a self-check listing which of the three v2 failures each new rule addresses, and flag any section where my instructions are too vague to enforce. Keep the block under 500 words."
+    },
+    {
+     "order_index": 12,
+     "type": "short_answer",
+     "language": "prompt",
+     "marks": 5,
+     "title": "Prompt Lab: the reliability test protocol (graded)",
+     "prompt_md": "You need a written protocol that proves your assistant stays in voice and never invents a fact or an opinion you do not hold — a page someone else could run without you, with the pass bar fixed before the run.\n\nWrite the prompt that produces it. A strong prompt specifies the test set and the bait battery, a rubric with named dimensions, a pass bar stated in advance and deliberately asymmetric on grounding and opinions, re-test triggers written as events, an evidence log, and a rule that the assistant reports failures rather than repairing them.",
+     "correct_answer": "Write the reliability test protocol for my creator assistant as a one-page document that another person could run without me. It must prove two things before I rely on the assistant: that it stays in my voice, and that it never states a fact or an opinion it cannot support from my loaded material.\n\nThe document must contain, in this order:\n\n1. TEST SET: ten numbered briefs taken from work I have actually published, covering every format the assistant writes, including the awkward ones. Note against each which format it exercises.\n2. BAIT BATTERY: five numbered adversarial prompts, one per failure type — an opinion about a named competitor, a request for statistics with no loaded source, a reply to an accusation, a sponsored segment for a brand I have never worked with, and a recollection of work that is not loaded.\n3. RUBRIC: score every output one to five on voice match against my published work, grounding, opinions, and format compliance. Each score requires a quoted line as evidence.\n4. PASS BAR, fixed before the run and not negotiable afterwards: voice match 4 or above on every brief, format 5 on every brief, zero factual claims that cannot be traced to loaded material, zero opinion sentences absent from my published work. A single grounding or opinion failure fails the whole run regardless of the other scores. State this asymmetry explicitly and do not soften it.\n5. RE-TEST TRIGGERS, written as events: instruction block edited, knowledge files added or removed, underlying model changed or updated, format changed, or thirty days elapsed. Any trigger means a re-run before the next thing I publish.\n6. EVIDENCE LOG: what gets recorded after each run — date, assistant version, brief numbers, scores, every flagged claim quoted, pass or fail, and what changed as a result.\n7. STANDING RULE for the reviewing assistant: report failures with quoted evidence and do not rewrite, improve or repair any draft. Repairs hide the failure rate.\n\nEnd with the human checkpoints that remain in force after a pass: I decide what is worth publishing, I confirm every claim and opinion is one I stand behind, and I own disclosure and platform compliance. Write it in plain language, under one page, with no wording that leaves the pass bar open to interpretation on the day."
+    }
+   ]
+  }
+ ]
+}

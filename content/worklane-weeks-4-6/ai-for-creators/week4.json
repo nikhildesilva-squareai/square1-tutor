@@ -1,0 +1,485 @@
+{
+ "week": 4,
+ "lessons": [
+  {
+   "order_index": 1,
+   "title": "Prompt chains for content production: research, outline, script, cuts",
+   "theory_md": "You have one good idea on Monday. By Friday it has to be a long video, three short cuts, a newsletter and a caption. Most creators do that by opening a fresh chat for each piece, retyping who they are and what the idea is, and accepting four slightly different versions of themselves back. The video says the study was from 2021. The newsletter says 2019. The short cut invents a statistic that appears nowhere in the script. Nothing was reviewed, because nothing looked wrong on its own.\n\nThe fix is not a longer prompt. It is a chain.\n\n## What a chain actually is\n\nA chain is a short sequence of prompts where the output of one link becomes the input to the next, and every link is anchored to the same voice file you built in week 1. Three rules make it work:\n\n- **One job per link.** Research. Outline. Script. Cut-downs. A link that researches and drafts at the same time hides its own invention inside good prose.\n- **Every output is inspectable.** You can read what the assistant believed before that belief becomes a script.\n- **The chain moves forwards only.** Link three writes from link two, not from the idea in your head and not from a fresh search.\n\nThe writers' room analogy holds all the way through. A room does not hand the showrunner a finished episode. It hands over research, then a beat sheet, then a draft, and the showrunner reads at every stage. You are the showrunner. The chain is the room.\n\n## Worked example one: research, then outline\n\n**Link 1 — evidence, and only evidence.**\n\n```\nHere is my voice file: [paste].\nMy idea: why most home coffee setups over-invest in the grinder and under-invest in water.\nBelow are the sources I have gathered: [paste three articles and my own notes].\n\nBuild an evidence table from those sources only:\nclaim | who said it | year | where in my pasted material it appears.\nDo not add claims from your own knowledge.\nAnything I have asserted without a source, list separately under MY OPINION.\nNo prose, no introduction.\n```\n\nAbridged output:\n\n```\n| Claim | Who | Year | Where |\n| Water hardness changes extraction | pasted brewing guide | 2022 | para 4 |\n| Grinder uniformity matters most below 15g doses | my own notes | - | note 3 |\n\nMY OPINION: \"most people waste money on grinders\"; \"water is the cheapest upgrade\"\n```\n\nRead that table before you go on. This is the link where a made-up study gets caught, while it is still one row in a table rather than a confident line in your intro.\n\n**Link 2 — outline from the table, nothing else.**\n\n```\nUsing only the evidence table above and my voice file, outline a nine-minute video:\na cold open, four sections, a close.\nFor each section give the one claim it rests on and the row it comes from.\nAnything in MY OPINION must be labelled as my opinion in the outline, not as fact.\nMark any section where the evidence is thin with [WEAK].\n```\n\nTwo [WEAK] flags in an outline is a gift. It tells you where to film yourself saying \"I have not tested this\" instead of discovering the gap in the comments.\n\n## Worked example two: script, then cut-downs\n\n**Link 3 — the script, in your voice.**\n\n```\nWrite the full script from the outline above, in the voice file's rhythm:\nsecond person, short sentences, no hype words, one joke maximum.\nKeep every claim attached to the source named in the outline.\nWhere the outline says [WEAK], write the line as a question I ask on camera.\nReturn the script with section headers so I can move blocks around.\n```\n\n**Link 4 — cut-downs from the finished script, not the outline.**\n\n```\nHere is the final script after my edits: [paste].\nCut three sixty-second verticals from it. Rules:\nuse only sentences that exist in this script, lightly trimmed for pace;\neach cut must stand alone without the others;\nno new claims, no new numbers, no invented framing;\nend each with the question the full video answers.\n```\n\nThat single constraint — only sentences that exist in this script — is the whole discipline. It means the short-form clips cannot drift away from the version you checked and approved. If a claim was cut from the long video for being shaky, it cannot reappear in the clip that travels furthest.\n\n## The check between links\n\nBetween every link you ask two questions, in this order, and neither takes long.\n\n**Is it true?** Every claim in this output, can I point at where it came from? If the answer is \"it sounds right\", it is not sourced, and a link that sounds right is exactly how a made-up figure gets into a caption seen by fifty thousand people.\n\n**Is it mine?** Read one paragraph aloud. If you would not say it in that order, with those words, at that speed, then the voice file has stopped doing its job and you correct the output before it becomes the input to the next link. Correcting at link two costs a minute. Correcting at link four means redoing the script, the clips and the captions.\n\nNeither question is a formality you can delegate to a fifth prompt. The whole point of a chain is that a human sits in the gaps between the links, and the gaps are where your judgement lives.\n\n## Where creators get chains wrong\n\n**Chaining from something you have not read.** If you paste link two into link three without reading it, you have not built a chain. You have built a longer single prompt with extra steps.\n\n**Letting a late link go looking for new material.** Cut-downs, captions and thumbnails must be made from the approved script. The moment a late link is allowed to research, an unchecked claim enters at the point where you are least likely to look.\n\n**One mega-prompt because it feels faster.** It is faster, once. Then a wrong date at the research stage arrives inside a polished script and you either miss it or rebuild everything.\n\n**Treating the chain as approval.** Four steps of AI is still nought steps of judgement. Your name is on it either way.\n\n**Losing the voice file halfway.** Paste it into every link. By link four, an assistant that has not seen it since link one is writing generic internet voice with your face on it.\n\n## In practice\n\nPick the piece of work you make most often and write down its links on one line: research, outline, script, cuts. Build each prompt once, run one real idea through it, and note where you had to intervene. That intervention point is not a failure of the chain. It is the checkpoint that has to stay human, and knowing exactly where it sits is what turns a pile of prompts into a production line you can trust with your name.",
+   "estimated_minutes": 28,
+   "learning_objectives": [
+    "Design a four-link prompt chain that carries one idea from evidence to short-form cuts",
+    "Separate sourced claims from your own untested opinions before any script is written",
+    "Apply the truth-and-voice check to the output of every link before it feeds the next",
+    "Constrain late links so that clips and captions cannot introduce unchecked material"
+   ],
+   "case_study": "**Cosmos Magazine — six AI-written explainers and the missing check (2024)**\n\nIn July and August 2024, the Australian science publication Cosmos Magazine published a series of explainer articles produced with generative AI as part of an experimental project, developed with funding from a journalism grant administered by the Walkley Foundation. The magazine, published by CSIRO Publishing, positioned the trial as a test of whether AI could help produce accurate science explainers at volume.\n\nScience journalists and former staff reacted quickly. Science writer Jackson Ryan examined one of the pieces, an explainer on what happens to the human body after death, and pointed out that its account of rigor mortis presented a simplified timeline as settled fact, glossing over the variables that make the real answer far less tidy. Others noted that the explainers were oversimplified or inaccurate in ways a subject editor would have caught in minutes.\n\nThe more revealing detail was procedural. Former editor-in-chief Ian Connellan told reporters he had not been informed about the project before it went live and would have advised against it; former editor Gail MacCallum described herself as a supporter of exploring AI while placing article generation beyond her comfort zone. Contributors and two co-founders of the magazine criticised the decision publicly. By late August, CSIRO confirmed the project had been placed on hold.\n\nThe chain here was not wrong in principle: gather material, draft an explainer, publish. What was missing was the link between drafting and publishing, where a person who knows the science reads what the machine believed. Cosmos had that expertise in the building. The pipeline was built so that it never had to pass through it. For a creator working alone, the lesson is sharper still — you are the only expert review your chain will ever get, so the check between links is not a nicety, it is the entire quality system.",
+   "exercises": [
+    {
+     "order_index": 1,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "Why a chain beats one very long prompt",
+     "prompt_md": "A creator writes one long prompt asking an assistant to research an idea, outline it, script it and cut three verticals from it, all in a single response. Why does splitting that work into four chained links usually produce a more trustworthy set of assets?",
+     "options": [
+      "Each link produces an output the creator can read before it becomes the input to the next link",
+      "Assistants refuse very long prompts because there is a strict limit on how much text they accept",
+      "Splitting the work makes the assistant switch to a stronger model for the scripting part of the job",
+      "Four separate links guarantee that no claim mentioned early can ever appear in the final assets"
+     ],
+     "correct_answer": "Each link produces an output the creator can read before it becomes the input to the next link"
+    },
+    {
+     "order_index": 2,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "What the first link of a content chain should return",
+     "prompt_md": "In the chain taught in this lesson, the first link takes the idea, the pasted sources and the voice file, and returns an evidence table plus a separate list. What should that first link deliberately avoid producing at that stage?",
+     "options": [
+      "Any drafted prose, because prose hides invented claims inside sentences that read well",
+      "Any reference to the sources that were pasted in, because they belong only in the outline",
+      "Any mention of the creator opinions, because opinions cannot be labelled until scripting",
+      "Any table structure at all, because tables are harder for an assistant to fill accurately"
+     ],
+     "correct_answer": "Any drafted prose, because prose hides invented claims inside sentences that read well"
+    },
+    {
+     "order_index": 3,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "The rule that keeps short-form cuts honest",
+     "prompt_md": "The cut-down link in the lesson chain is told to use only sentences that already exist in the approved script, lightly trimmed for pace. What is the main risk that this one constraint is designed to remove from your publishing week?",
+     "options": [
+      "Clips drifting into claims and framings that never passed the checks you ran on the long video",
+      "Clips being too similar to each other, which platforms treat as duplicate uploads and suppress",
+      "Clips running longer than sixty seconds, which is the only length short-form audiences will watch",
+      "Clips being written in a voice that differs from the voice used by other creators in your niche"
+     ],
+     "correct_answer": "Clips drifting into claims and framings that never passed the checks you ran on the long video"
+    },
+    {
+     "order_index": 4,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "Reading the WEAK flags in an outline",
+     "prompt_md": "Your outline link returns a nine-minute structure in which two of the six sections carry a [WEAK] marker because the evidence behind them is thin. What is the most useful response to those two markers before you record anything?",
+     "options": [
+      "Rewrite those sections as questions you openly put to the audience, or find better evidence first",
+      "Delete the markers so the script reads with confidence throughout and the audience is not unsettled",
+      "Ask the assistant to supply supporting studies from its own knowledge to fill the two thin sections",
+      "Move the two sections to the end of the video where fewer viewers will still be watching them"
+     ],
+     "correct_answer": "Rewrite those sections as questions you openly put to the audience, or find better evidence first"
+    },
+    {
+     "order_index": 5,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "Where the voice file belongs in a chain",
+     "prompt_md": "A creator pastes the voice file into the research link at the start of a four-link chain and then leaves it out of the outline, script and cut-down links to save time. What tends to happen to the assets by the end of that chain?",
+     "options": [
+      "The later assets drift towards a generic internet voice that no longer matches the creator",
+      "The later assets become shorter than requested because the assistant lacks length guidance",
+      "The later assets repeat the research table word for word instead of building on it properly",
+      "The later assets refuse to run at all because a required input is missing from the request"
+     ],
+     "correct_answer": "The later assets drift towards a generic internet voice that no longer matches the creator"
+    },
+    {
+     "order_index": 6,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "Outlining from the table, not from the idea",
+     "prompt_md": "Link two of the chain is told to build its outline using only the evidence table from link one and the voice file, rather than from the original idea and sources. Explain in two to four sentences why that constraint makes the finished video safer.",
+     "options": null,
+     "correct_answer": "The evidence table has already separated sourced claims from your own untested opinions, so an outline built from it can only rest on material you have seen and approved. Outlining from the raw idea lets a comfortable phrase you never checked slide in as though it were established. It also makes every section traceable: if a claim in the video is wrong, you can find the row it came from and the source behind it. The cost is one extra step, and the return is that nothing enters the script unexamined."
+    },
+    {
+     "order_index": 7,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "The two questions between links",
+     "prompt_md": "Between every link in a content chain you ask two questions of the output before passing it on. State those two questions in your own words and explain in two to four sentences why both are needed rather than only one.",
+     "options": null,
+     "correct_answer": "The two questions are: is this true, and is this mine. Truth alone is not enough, because an accurate script written in a voice that is not yours still damages the relationship with your audience and reads as generic. Voice alone is not enough either, because a piece that sounds exactly like you while carrying an invented statistic is the fastest way to lose trust. Checking both at every link means an error is caught while it is still cheap to fix, instead of after it has been repeated across four assets."
+    },
+    {
+     "order_index": 8,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "Why late links must not research",
+     "prompt_md": "A creator lets the caption and cut-down links search for extra context so the clips feel richer than the script allowed. Explain in two to four sentences why allowing a late link to introduce new material is riskier than allowing it at the research stage.",
+     "options": null,
+     "correct_answer": "New material introduced late has not passed any of the checks you ran earlier in the chain, so it arrives already dressed in the credibility of an approved script. It also arrives at the point where you are least likely to look closely, because the clip feels like a trimmed version of work you have already signed off. Short-form assets travel further than the long video, so an unchecked claim in a clip reaches more people with less context. Research belongs in link one, where you are still expecting to interrogate what you are given."
+    },
+    {
+     "order_index": 9,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "What the Cosmos episode teaches a solo creator",
+     "prompt_md": "Cosmos Magazine had subject expertise in the building, yet its AI explainer pipeline never routed a draft through it before publication. Explain in two to four sentences what a solo creator should take from that, given that they have no colleagues to route work through.",
+     "options": null,
+     "correct_answer": "The failure was structural rather than technical: the chain was built so that expert review was not a required step, and so it did not happen. A solo creator is the only review their chain will ever receive, which makes the checkpoint between drafting and publishing the entire quality system rather than an optional extra. The practical response is to design the chain so that a piece cannot reach the publish step without a named human read against evidence and voice. Speed gained by skipping that read is borrowed against your own credibility."
+    },
+    {
+     "order_index": 10,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "Choosing where to break a chain",
+     "prompt_md": "You currently make a weekly podcast episode, a newsletter and five clips from the same idea. Describe in two to four sentences how you would decide where to break that work into separate links rather than running fewer, larger prompts.",
+     "options": null,
+     "correct_answer": "Break the work wherever you would want to read the output before anything is built on top of it, which usually means a break after research, after structure and after the approved master asset. A useful test is to ask what would be expensive to discover later: a wrong fact, a wrong structure or a wrong tone each deserve their own checkpoint. Links that only reformat approved material, such as clips or captions, can be grouped because they are not introducing anything new. The aim is the smallest number of links that still lets you catch each kind of error while it is cheap."
+    },
+    {
+     "order_index": 11,
+     "type": "short_answer",
+     "language": "prompt",
+     "marks": 5,
+     "title": "Prompt Lab: the evidence link",
+     "prompt_md": "You make videos about personal finance for people in their twenties. This week's idea is that most subscription audits fail because people cancel the cheap things and keep the expensive ones. You have three saved articles, a regulator page and a page of your own notes, some of which are opinions you have never checked.\n\nWrite link one of your chain: the prompt that turns your idea and your pasted material into an inspectable evidence table plus an explicit list of what is only your opinion.\n\nA strong prompt will: name your voice file and require it to be pasted in; require the sources to be pasted in; specify the exact table columns including who said it, when, and where in the pasted material it appears; forbid the assistant from adding claims from its own knowledge; require unsourced assertions to be quarantined under a clear heading; ban prose and preamble so the output stays inspectable; and state what to do when a source is ambiguous rather than letting it be resolved silently.",
+     "options": null,
+     "correct_answer": "Here is my voice file: [paste]. Here are my sources: three articles, one regulator page and my own notes: [paste all, labelled S1 to S5].\n\nMy idea: most subscription audits fail because people cancel the cheap subscriptions and keep the expensive ones.\n\nAct as a researcher preparing material for me before I write anything. Using only the material I have pasted, build one table with these columns exactly: claim | who said it | year | source label and location in the pasted text.\n\nRules:\n1. Do not add any claim, figure or example from your own knowledge, even if you are confident it is correct.\n2. Anything I have asserted in my own notes without a source goes in a separate list headed MY OPINION, quoted in my words, not in the table.\n3. If a source is ambiguous about who is making a claim or when, put the row under a third heading called NEEDS ME TO CHECK and say what is unclear. Do not resolve it yourself.\n4. Where two sources disagree, give both rows and mark them as conflicting rather than choosing one.\n5. Return the table and the two lists only. No introduction, no summary, no suggestions for the video.\n\nI will read this table and correct it before anything is outlined, so completeness and traceability matter more than polish."
+    },
+    {
+     "order_index": 12,
+     "type": "short_answer",
+     "language": "prompt",
+     "marks": 5,
+     "title": "Prompt Lab: the cut-down link",
+     "prompt_md": "Your fourteen-minute video on subscription audits is finished, checked and published. You now want three sixty-second vertical cuts and one caption for each, produced from the approved script and nothing else.\n\nWrite the cut-down link of your chain.\n\nA strong prompt will: require the final approved script and the voice file to be pasted in; restrict the cuts to sentences that already exist in that script; forbid new claims, numbers, framings or hooks; require each cut to stand alone without the other two; state the disclosure and platform rules that apply to the clips; specify what to return, including which script lines each cut uses so you can verify it; and say what the assistant should do if a requested cut cannot be made within those limits rather than inventing material to fill the gap.",
+     "options": null,
+     "correct_answer": "Here is my voice file: [paste]. Here is the final approved script of my fourteen-minute video, exactly as published: [paste].\n\nCut three sixty-second vertical clips from this script.\n\nHard rules:\n1. Use only sentences that already exist in the script. You may trim words for pace and join two adjacent sentences, but you may not write a new one.\n2. No new claims, figures, examples, hooks or framings. If it is not in the script, it does not go in a clip.\n3. Each clip must make sense on its own to someone who has not seen the video or the other clips.\n4. Any clip that mentions a product I was gifted or paid to feature must carry the paid partnership line from my voice file, and must fit the platform rules I have pasted below: [paste rules].\n\nFor each clip return: a title; the clip script; the exact line numbers or opening words of the script lines you used; and the closing question it leaves the viewer with.\n\nIf a clip cannot be built to these rules from the material available, say so and tell me which part of the script would need me to record a new line. Do not fill the gap yourself."
+    }
+   ]
+  },
+  {
+   "order_index": 2,
+   "title": "Saved templates and macros: a prompt pack that survives your publishing rhythm",
+   "theory_md": "Somewhere in your chat history is the hook prompt that worked. You wrote it in March, it produced the title that outperformed everything else that quarter, and you have not been able to find it since. So you rewrite it from memory each week, slightly worse each time, and wonder why the channel feels harder than it used to.\n\nEvery working creator has this graveyard. The fix is not better memory. It is turning the prompts that work into saved assets with placeholders, kept somewhere you can find them in four seconds, and updated on purpose when the channel changes.\n\n## What makes a prompt a template\n\nA template is a prompt with the variable parts pulled out and the fixed parts locked down. Six things turn a lucky prompt into an asset:\n\n- **A name you would actually search for.** \"Hook v3 — long-form YouTube\" beats \"prompt 2\".\n- **When to use it.** One line. Templates without this get used on the wrong job and blamed for the result.\n- **Placeholders in brackets.** [TOPIC], [AUDIENCE], [EVIDENCE TABLE], [VOICE FILE]. Anything you retype every time is a placeholder you have not written down yet.\n- **The fixed rules.** Voice file pasted, disclosure line, platform rules, banned words. These do not change per topic, so they should not be retyped per topic.\n- **The output shape.** How many options, in what format, with what marked. Shape is what makes outputs comparable week to week.\n- **A version and a date.** v3, updated May, because the channel moved to a two-video week.\n\nThat last one is the difference between a prompt library and a filing cabinet full of drafts.\n\n## Worked example one: the hook template\n\n```\nNAME: Hook v3 - long-form video\nUSE WHEN: I have an approved outline and need title and opening options.\n\nVoice file: [VOICE FILE]\nOutline: [OUTLINE]\nAudience: [AUDIENCE - who they are, what they already know]\nPromise: [WHAT THE VIEWER CAN DO AFTERWARDS]\n\nGive me eight title options and, for the three strongest, a spoken opening\nof no more than four sentences.\nRules:\n- Every title must be true to what the outline actually delivers.\n- No curiosity gaps I cannot pay off in the first ninety seconds.\n- Banned: shocking, secret, nobody tells you, this changes everything.\n- Mark any title that promises more than the evidence supports with [OVERSELL].\nReturn as a numbered list, shortest first.\n```\n\nAbridged output:\n\n```\n1. The subscription audit most people get backwards\n2. Why cancelling cheap subscriptions costs you money [OVERSELL]\n3. I audited my own subscriptions for a year\n...\nOpening for 1: \"You have probably done this. You sit down...\"\n```\n\nThe [OVERSELL] tag is doing work no generic prompt does: it tells you the machine noticed it was writing a cheque your outline cannot cash. That tag exists because you put it there once, and it now runs every week for free.\n\n## Worked example two: the repurposing macro\n\n```\nNAME: Repurpose v2 - one episode to five assets\nUSE WHEN: An episode is published and checked.\n\nVoice file: [VOICE FILE]\nApproved transcript: [TRANSCRIPT]\nPlatform rules in force: [PLATFORM RULES]\nSponsor status this episode: [NONE / GIFTED / PAID - name]\n\nProduce, using only material in the transcript:\n1. Show notes, 200 words, with timestamps for the three turning points.\n2. Three vertical clips, each standing alone.\n3. One newsletter section, 300 words, in my written voice not my spoken voice.\n4. Five discussion prompts for the community.\n5. One line I can pin, in my words.\nIf sponsor status is not NONE, place the disclosure line from the voice file\nat the top of the show notes and in the first line of each clip.\nFlag anything you could not build without inventing material.\n```\n\nNotice what the sponsor placeholder prevents. You are never one distracted Tuesday away from a paid episode going out with no disclosure, because the template asks the question before you can forget it.\n\n## Versioning: templates go stale, quietly\n\nA template is a snapshot of a channel that no longer exists the moment anything moves. Four things reliably move: your format, your audience, the platform rules, and your commercial arrangements. When one moves, the template gets a new version, a date, and one line saying what changed and why.\n\n```\nHook v3 - May. Changed from v2: audience skews newer since the beginners\nseries, so openings now define one term before using it. Banned \"game-changer\".\n```\n\nKeep the old version. When a format experiment fails and you want to go back, you want the exact prompt that worked, not your memory of it. And when someone joins you — an editor, a VA, a co-host — a versioned pack is the difference between handing over your standards and hoping they absorb them.\n\n## Where creators get this wrong\n\n**Baking examples in that age badly.** A template stuffed with last year's references keeps producing last year's channel.\n\n**Placeholder sprawl.** Fifteen brackets and you are writing a brief from scratch anyway. If a placeholder is the same value nine times out of ten, promote it to a fixed rule.\n\n**Never retiring anything.** Eleven near-identical hook prompts is not a library, it is indecision saved to disk. One live version per job, everything else archived with dates.\n\n**Templates that live only in your head.** If it is not written down, it is not a template, and it cannot be handed to anyone or checked by anyone.\n\n**Hard-coding a platform rule and forgetting it.** Disclosure requirements and format rules change. Point the template at your rules file rather than retyping the rule inside twelve prompts you would then have to find and edit individually.\n\n## In practice\n\nTake your four highest-frequency jobs — hooks, scripts, show notes, repurposing — and write one template each this week. Give each a name, a use-when line, brackets round everything you retype, and a version date. Then run next week's real work through them and change them where they fight you. A prompt library is not built by writing fifty templates; it is built by four templates surviving contact with four weeks of publishing.",
+   "estimated_minutes": 28,
+   "learning_objectives": [
+    "Convert a prompt that worked into a named template with placeholders and fixed rules",
+    "Build hook, script, show-notes and repurposing templates that carry disclosure by default",
+    "Version and archive templates as your format, audience, platform rules or sponsors change",
+    "Diagnose stale templates by quoting the lines that no longer describe your channel"
+   ],
+   "case_study": "**Wizards of the Coast — the artist guidelines that had gone out of date (2023)**\n\nIn August 2023, ahead of the release of the Dungeons & Dragons sourcebook Bigby Presents: Glory of the Giants, readers examining preview artwork raised questions about images credited to Ilya Shkipin, an illustrator who had worked on D&D projects since 2014. Shkipin acknowledged in posts, later deleted, that he had used AI tools on the work, describing painted elements that were enhanced or polished with AI and details that were generated rather than drawn.\n\nWizards of the Coast responded publicly that it had not been aware, that the illustrations would be reworked before release, and that Shkipin would not use AI on the publisher's work in future. The more consequential part of the response, reported by GeekWire, was procedural: the company said it was revising its process and updating its artist guidelines to state explicitly that artists must refrain from using AI art generation as part of creating D&D art.\n\nThat is the detail worth sitting with. The guidelines were not broken by anything anyone did. They were written for a world in which \"did you draw this\" had one obvious meaning, and the tools moved underneath them. Nobody had to argue about whether the old wording had been breached, because the old wording did not contemplate the situation. The fix was to version the standard and re-issue it to everyone working to it.\n\nYour templates are the same kind of document. The hook prompt that was right when you published once a fortnight to an expert audience is quietly wrong once you publish twice a week to beginners. The show-notes template that never mentions disclosure was fine until the first gifted product arrived. The failure mode is not dramatic; it is a standard that keeps being followed after it stopped describing your channel. Dating a version and writing one line on what changed is the cheapest insurance a creator can buy.",
+   "exercises": [
+    {
+     "order_index": 1,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "What turns a working prompt into a saved template",
+     "prompt_md": "You wrote a prompt that produced unusually good title options for a long-form video, and you want it to keep earning for the next year. Beyond saving the text somewhere, what most reliably turns that lucky prompt into a reusable asset?",
+     "options": [
+      "Pulling the parts you retype every time into named placeholders and locking the rules that never change",
+      "Making the prompt considerably longer so that the assistant has more instruction to work from",
+      "Copying the prompt into every assistant you use so the same wording is available in all of them",
+      "Adding the best titles it produced as examples so future outputs stay close to that first result"
+     ],
+     "correct_answer": "Pulling the parts you retype every time into named placeholders and locking the rules that never change"
+    },
+    {
+     "order_index": 2,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "The purpose of a use-when line",
+     "prompt_md": "Every template in the lesson pack carries a one-line note saying when to use it, sitting directly under the name. What problem does that single line solve in a library that has grown to fifteen or twenty saved prompts?",
+     "options": [
+      "It stops a template being run on the wrong job and then blamed for a weak result",
+      "It tells the assistant which model to use for that particular category of work",
+      "It replaces the need for placeholders because the context is already described",
+      "It records who wrote the template, which matters once an editor joins the channel"
+     ],
+     "correct_answer": "It stops a template being run on the wrong job and then blamed for a weak result"
+    },
+    {
+     "order_index": 3,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "Why the repurposing macro asks about sponsors",
+     "prompt_md": "The repurposing template in this lesson opens with a sponsor status placeholder that must be filled with none, gifted or paid before anything is produced. What is the main protection that placeholder provides across a busy publishing year?",
+     "options": [
+      "The disclosure question is asked every time, so a paid episode cannot go out undisclosed by accident",
+      "The assistant can price the sponsorship correctly when it writes the show notes and the clips",
+      "Sponsored episodes are automatically excluded from repurposing, which most platforms require",
+      "The sponsor name is stored for later so the media kit can be assembled without extra work"
+     ],
+     "correct_answer": "The disclosure question is asked every time, so a paid episode cannot go out undisclosed by accident"
+    },
+    {
+     "order_index": 4,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "When a template needs a new version",
+     "prompt_md": "Your channel has shifted from one long video a fortnight for experienced listeners to two videos a week aimed at complete beginners, and your hook template has not changed. What is the correct response to that shift under the approach taught in this lesson?",
+     "options": [
+      "Write a new dated version, note what changed and why, and archive rather than delete the old one",
+      "Edit the existing template in place, since keeping older versions only clutters the library",
+      "Keep both versions live without dates and choose between them by feel each publishing week",
+      "Leave the template alone, because a hook that worked once will keep working for any audience"
+     ],
+     "correct_answer": "Write a new dated version, note what changed and why, and archive rather than delete the old one"
+    },
+    {
+     "order_index": 5,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "Placeholder sprawl",
+     "prompt_md": "A creator reviews a script template and finds it contains fifteen placeholders, of which nine are filled with exactly the same value almost every week. What does the lesson recommend doing with those nine, and why does it matter?",
+     "options": [
+      "Promote them to fixed rules inside the template, because a template you refill entirely is only a fresh brief",
+      "Delete them entirely, because any value repeated weekly is already known to the assistant in use",
+      "Move them into the name of the template so their values are visible whenever it is searched for",
+      "Keep all fifteen as they are, because more placeholders always make a template more flexible"
+     ],
+     "correct_answer": "Promote them to fixed rules inside the template, because a template you refill entirely is only a fresh brief"
+    },
+    {
+     "order_index": 6,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "Pointing at a rules file rather than retyping rules",
+     "prompt_md": "The lesson warns against hard-coding a platform or disclosure rule inside a dozen separate templates. Explain in two to four sentences what you should do instead, and what goes wrong when the rule later changes.",
+     "options": null,
+     "correct_answer": "Keep the rules in one file that the templates refer to and require to be pasted in, rather than writing the rule text into each prompt. When a platform changes its disclosure requirement, you then update one file and every template is current. If the rule is copied into twelve prompts, you have to find and edit all twelve, and the one you miss is the one that publishes the undisclosed post. Single source, many pointers, is the same discipline as the voice file."
+    },
+    {
+     "order_index": 7,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "Why archive instead of delete",
+     "prompt_md": "When a template is superseded, the lesson says to archive the old version with its date rather than delete it. Explain in two to four sentences why a solo creator with limited time should bother keeping old versions.",
+     "options": null,
+     "correct_answer": "Format experiments fail often, and when one does you want the exact prompt that used to work rather than your reconstruction of it from memory. Dated versions also let you connect a change in results to a change in method, which is the only way to learn anything from a quarter of publishing. If you later bring in an editor or a co-host, the version history explains not only what your standards are but why they moved. Archiving costs one folder and one line of text."
+    },
+    {
+     "order_index": 8,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "What the Wizards of the Coast episode says about templates",
+     "prompt_md": "Wizards of the Coast responded to AI-assisted artwork appearing in a sourcebook by revising its artist guidelines rather than only addressing the individual piece. Explain in two to four sentences what a creator should take from that response.",
+     "options": null,
+     "correct_answer": "The guidelines had not been broken so much as outgrown: they were written for a situation the tools had since changed, so no amount of enforcing the old wording would have prevented the outcome. The useful response was to version the standard, state the expectation explicitly and re-issue it to everyone working to it. A creator template ages the same way, quietly, while still being followed. That is why a version, a date and a line describing what changed belong on every template you keep."
+    },
+    {
+     "order_index": 9,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "The four triggers for a template review",
+     "prompt_md": "The lesson names four things that reliably move underneath a template and make it stale. List them and explain in two to four sentences how you would notice each one in a normal publishing month.",
+     "options": null,
+     "correct_answer": "The four are your format, your audience, the platform rules and your commercial arrangements. A format shift shows up as templates that ask for the wrong length or the wrong number of assets; an audience shift shows up in comments asking about terms you assumed people knew. Platform changes usually arrive as a policy notice or a new disclosure control appearing in the upload flow. A commercial change is the easiest to spot and the easiest to forget: the first gifted or paid item should trigger a review of every template that produces something public."
+    },
+    {
+     "order_index": 10,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "Templates and the voice that stays yours",
+     "prompt_md": "A creator worries that templating their hooks, scripts and show notes will flatten their voice into something formulaic. Explain in two to four sentences how the approach in this lesson answers that worry.",
+     "options": null,
+     "correct_answer": "The template does not hold the voice; the voice file does, and the template requires it to be present in every job. What the template standardises is the shape of the request and the checks that run each time, such as banned words and oversell flags, not the sentences you end up saying. Because the same shape runs every week, the differences you notice in the output are real signals about the work rather than noise from an inconsistent brief. Judgement about what to keep, cut and rewrite stays entirely with you."
+    },
+    {
+     "order_index": 11,
+     "type": "short_answer",
+     "language": "prompt",
+     "marks": 5,
+     "title": "Prompt Lab: the show-notes template",
+     "prompt_md": "You publish a weekly interview podcast. You want one saved template that turns an approved transcript into show notes you would be happy to publish without rewriting them, week after week, whoever the guest is.\n\nWrite that template.\n\nA strong template will: carry a searchable name, a use-when line and a version with a date; use bracketed placeholders for the transcript, the guest, the voice file, the platform rules and the sponsor status; lock the rules that never change, including that nothing may appear in the notes that is not in the transcript; specify the exact output shape, including length, timestamps and links; require the disclosure line whenever sponsor status is not none; and tell the assistant what to do when something cannot be produced from the transcript alone.",
+     "options": null,
+     "correct_answer": "NAME: Show notes v1 - weekly interview podcast (updated July)\nUSE WHEN: An episode is recorded, edited and the transcript is final.\n\nVoice file: [VOICE FILE]\nApproved transcript with timestamps: [TRANSCRIPT]\nGuest: [NAME, ROLE, WHAT THEY ARE KNOWN FOR]\nPlatform rules in force: [RULES FILE]\nSponsor status: [NONE / GIFTED / PAID - name]\n\nWrite show notes for this episode using only what is in the transcript.\n\nOutput shape:\n1. One-sentence summary, under 25 words, in my written voice.\n2. A 180 to 220 word description of the conversation, no hype words, no claims the guest did not make.\n3. Five timestamped chapter markers taken from the transcript timings.\n4. Three pull quotes, word for word, each with the timestamp where it appears.\n5. A links section listing only things the guest or I named on tape, marked [I MUST ADD URL].\n\nFixed rules:\n- Nothing may appear here that is not in the transcript. No background research, no biography you happen to know, no rounding of figures.\n- Do not describe the guest with credentials they did not state on tape.\n- If sponsor status is not NONE, put the disclosure line from my voice file as the first line of the description, and follow the platform rules pasted above.\n- If something in this shape cannot be produced from the transcript, leave it out and list it under CANNOT PRODUCE with the reason. Do not fill the gap.\n\nI read every line before publishing, so flag anything uncertain rather than smoothing it."
+    },
+    {
+     "order_index": 12,
+     "type": "short_answer",
+     "language": "prompt",
+     "marks": 5,
+     "title": "Prompt Lab: the version review",
+     "prompt_md": "Your channel has changed: you moved from fortnightly deep dives for an expert audience to two beginner-facing videos a week, you have taken your first paid brand deal, and the platform you publish on has introduced a control for labelling altered or synthetic content.\n\nWrite the prompt you would use to review your existing template pack against those changes and produce a versioning plan.\n\nA strong prompt will: require the current templates, the voice file and the new rules to be pasted in; ask for a per-template verdict rather than a general opinion; require the assistant to quote the exact lines that have gone stale; ask for a proposed new version line with a date and a stated reason for each change; require anything touching disclosure or platform rules to be listed separately and escalated to you; and forbid the assistant from rewriting the templates itself in this step.",
+     "options": null,
+     "correct_answer": "Here is my voice file: [paste]. Here is my current template pack, each with its name, version and date: [paste all templates]. Here are the changes to my channel: fortnightly expert deep dives to two beginner-facing videos a week; first paid brand deal signed; the platform has added a labelling control for altered or synthetic content, rules pasted here: [paste].\n\nReview the pack against those three changes. Do not rewrite any template in this step.\n\nFor each template return:\n1. Template name and current version.\n2. Verdict: still fits / needs a new version / should be retired.\n3. The exact lines that have gone stale, quoted from the template, and which of the three changes made them stale.\n4. A proposed version line in this form: name, new version, date, one sentence on what changed and why.\n\nThen return two separate lists:\n- DISCLOSURE AND PLATFORM: every template that produces something public and does not currently reference my rules file or a disclosure line. Treat these as urgent and say what each one risks publishing.\n- OPEN QUESTIONS FOR ME: anything where the right change depends on a judgement about my audience or my commercial arrangements that you cannot make.\n\nBe specific and quote my own wording back to me. I will decide each change and write the new versions myself."
+    }
+   ]
+  },
+  {
+   "order_index": 3,
+   "title": "Practical: build a reusable content production chain with a verification gate",
+   "theory_md": "This is the build week. You have links that pass work forwards and templates that stop you rewriting the same prompt every Monday. On their own they are still a pile of clever text files. This lesson assembles them into one thing you can run when you are tired, behind, and publishing anyway — a chain with a gate on the end that nothing gets past unchecked.\n\nThe gate is the part most creators skip, and it is the part that protects the name on the channel.\n\n## What you are building\n\nFour parts, in one document.\n\n**The inputs shelf.** The things every link needs: your voice file, your rules file (disclosure lines, platform requirements, banned claims), and this week's evidence. Named once at the top so no link has to go looking.\n\n**The chain.** Your links in run order, each one a saved template with its placeholders: evidence, outline, script, cut-downs and captions.\n\n**The verification gate.** One prompt that reads a finished draft against three things — the voice file, factual accuracy, and disclosure and platform rules — and returns a list of problems. It does not approve anything. It cannot; approval is a decision, and decisions are yours.\n\n**The publish log.** Three lines per piece: what ran, what the gate flagged, what you did about it. This is the thing that turns \"I think my process works\" into evidence.\n\n## Worked example one: the master chain\n\n```\nCONTENT CHAIN v1 - [CHANNEL NAME], updated [DATE]\n\nINPUTS\nVoice file: [VOICE FILE]\nRules file: [DISCLOSURE AND PLATFORM RULES]\nSponsor status this piece: [NONE / GIFTED / PAID - name]\nThis week: [IDEA IN ONE SENTENCE] for [AUDIENCE]\n\nLINK 1 - EVIDENCE   [run template: Evidence v2]\n  In: sources, notes. Out: evidence table + MY OPINION list.\n  I CHECK: is every row sourced? Anything I cannot place, delete.\n\nLINK 2 - OUTLINE    [run template: Outline v3]\n  In: evidence table only. Out: structure with [WEAK] flags.\n  I CHECK: does this argument still hold without the weak sections?\n\nLINK 3 - SCRIPT     [run template: Script v4]\n  In: approved outline. Out: full script in my voice.\n  I CHECK: read one page aloud. Is that how I talk?\n\nLINK 4 - CUTS       [run template: Repurpose v2]\n  In: my edited script only. Out: clips, captions, notes.\n  I CHECK: does anything here say something the script does not?\n\nGATE               [run template: Verify v1] - before anything is scheduled.\n```\n\nThe value is in the four lines beginning \"I CHECK\". They name what a human is looking at, at which point, in words specific enough to be done in ninety seconds. A checkpoint you cannot describe is a checkpoint you will skip.\n\n## Worked example two: the verification gate\n\n```\nVoice file: [VOICE FILE]. Rules file: [RULES]. Sponsor status: [STATUS].\nEvidence table this piece was built from: [TABLE].\nDraft for checking: [DRAFT].\n\nCheck this draft in three separate passes and keep them separate.\n\nPASS 1 - VOICE. Quote up to eight lines that do not match the voice file and\nsay which rule each breaks (rhythm, vocabulary, banned words, hype).\n\nPASS 2 - TRUTH. List every factual claim, figure, date, name and attribution.\nFor each, mark SOURCED (give the evidence table row), UNSOURCED, or\nCONTRADICTED. Do not verify anything from your own knowledge and do not\ncorrect anything - report only.\n\nPASS 3 - RULES. Against the rules file and sponsor status: is any required\ndisclosure missing, misplaced or too vague? Does anything here breach a\nplatform rule? Does anything imply an endorsement I have not stated?\n\nFinish with a list headed STOP: things that must be fixed before publishing.\nDo not judge whether the piece is good and do not say it is ready.\n```\n\nAbridged output:\n\n```\nPASS 1: \"this changes everything\" - banned hype phrase; \"one might argue\" -\nnot my rhythm, voice file says first person direct.\nPASS 2: \"up 40% since 2021\" - UNSOURCED, not in evidence table.\n        \"the regulator said in March\" - CONTRADICTED, table row 4 says April.\nPASS 3: Sponsor status PAID but no disclosure line in the first clip.\nSTOP: unsourced 40% figure; wrong month; missing disclosure on clip 1.\n```\n\nThree problems that would each have been embarrassing in public, found in about a minute, before anything was scheduled. Note what the gate did not do: it did not fix them, and it did not tell you the piece was good. It handed you a list. You decide whether the 40% figure gets sourced or cut.\n\n## Where creators get the gate wrong\n\n**Checking the draft with the chat that wrote it.** The same context that produced the invention will happily defend it. Run the gate in a clean chat, with the evidence table pasted in as the only permitted source of truth.\n\n**Vague instructions.** \"Check this for errors\" returns a compliment and three commas. Passes, quotes, row references and a STOP list are what make the output actionable.\n\n**Verifying after scheduling.** A gate you run once the upload is queued is a formality. It sits before scheduling or it does nothing.\n\n**Treating a clean pass as permission.** The gate cannot know that your source was wrong, that the guest misremembered, or that your framing is unfair. It narrows what you have to look at. It never replaces your read.\n\n**Skipping it when you are late.** Late is exactly when the unsourced figure gets through. If the gate only runs on calm weeks, it is not part of the system.\n\n## In practice\n\nAssemble the four parts in one document this week and run a real piece through it, gate included. Keep the gate output, even the ugly one — especially the ugly one. Your submission is the master chain template with its placeholders and its I CHECK lines, and the verification prompt that reads a draft against voice, truth, and disclosure and platform rules. Between them they say the thing this course has been saying since week 1: the room drafts, the creator decides, and nothing goes out that you have not read.",
+   "estimated_minutes": 30,
+   "learning_objectives": [
+    "Assemble your links, templates and rules into one runnable content chain document",
+    "Place a specific human checkpoint under every link in the chain",
+    "Write a three-pass verification prompt covering voice, factual accuracy and platform rules",
+    "Keep a publish log that records what the gate flagged and what you decided"
+   ],
+   "case_study": "**The Irish Times — the gap in pre-publication procedures (2023)**\n\nOn 11 May 2023, The Irish Times published an opinion article arguing that Irish women's use of fake tan was problematic, under the byline of Adriana Acosta-Cortez, described as an Ecuadorian healthcare worker living in Dublin. Within a day, questions were being raised about whether the writer existed. She did not. The person behind the hoax told reporters they had used a general-purpose chatbot to produce roughly eighty per cent of the text, and an image generator to create the author photograph that ran alongside it.\n\nThe newspaper removed the article and published an apology. Editor Ruadhán Mac Cormaic wrote that its publication had been a breach of trust between the paper and its readers, that the paper was genuinely sorry, and — in the sentence that matters most for this lesson — that the incident had highlighted a gap in the paper's pre-publication procedures. A publication with sub-editors, legal review and a century of editorial process had a gap precisely where the new tools were pointed.\n\nWhat is instructive is where the gap sat. Nothing in the piece was outrageous enough to trip an editor's instinct. The prose was competent, the argument was arguable, the photograph looked like a person. Every individual signal was ordinary. The check that would have caught it was not a judgement about quality at all; it was a procedural question asked of every submission — can I confirm this person and this claim from something other than the submission itself?\n\nThat is what your verification gate is for, and it is why the gate asks mechanical questions rather than aesthetic ones. Is this claim in the evidence table? Is this attribution traceable? Is the disclosure present and in the right place? A creator reviewing their own draft at eleven at night is in roughly the position of a duty editor with a plausible file in front of them: the piece reads well, the deadline is real, and the only thing standing between it and the audience is a checklist that runs whether or not anything feels wrong.",
+   "exercises": [
+    {
+     "order_index": 1,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "Why the gate runs in a clean chat",
+     "prompt_md": "The lesson insists that the verification prompt is run in a fresh conversation, with the evidence table pasted in, rather than in the same chat that drafted the script. What is the main reason for moving the check away from the drafting context?",
+     "options": [
+      "The context that produced an invented claim will tend to defend it rather than flag it",
+      "Long conversations eventually stop responding, so a new chat is needed for the final step",
+      "Assistants apply stricter factual standards to text they are seeing for the very first time",
+      "A fresh chat is the only way to attach the evidence table as an input to a checking prompt"
+     ],
+     "correct_answer": "The context that produced an invented claim will tend to defend it rather than flag it"
+    },
+    {
+     "order_index": 2,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "What the verification gate must never do",
+     "prompt_md": "Your verification prompt reads a finished draft against the voice file, the evidence table and your rules file, then returns its findings. Which instruction belongs in that prompt to keep the gate doing its job rather than quietly taking over yours?",
+     "options": [
+      "Report problems only, without correcting anything or stating that the piece is ready",
+      "Rewrite every flagged line so the fixes are ready to paste back into the draft",
+      "Score the draft out of ten so you can decide quickly whether it is worth publishing",
+      "Compare the draft with your best performing video and note where it falls short"
+     ],
+     "correct_answer": "Report problems only, without correcting anything or stating that the piece is ready"
+    },
+    {
+     "order_index": 3,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "The three passes of the gate",
+     "prompt_md": "The verification prompt in this lesson deliberately runs three separate passes over the same draft and keeps their outputs apart, rather than asking for one combined review. What do those three passes cover?",
+     "options": [
+      "Voice against the voice file, factual claims against the evidence, and disclosure and platform rules",
+      "Spelling and grammar, length against the platform limit, and the strength of the opening hook",
+      "Audience fit, competitor comparison, and whether the topic has been covered on the channel before",
+      "Thumbnail quality, title performance prediction, and the timing of the scheduled publication slot"
+     ],
+     "correct_answer": "Voice against the voice file, factual claims against the evidence, and disclosure and platform rules"
+    },
+    {
+     "order_index": 4,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "The I CHECK lines in the master chain",
+     "prompt_md": "The master chain document places a short line beginning I CHECK under every link, naming what the creator looks at before the output moves on. Why does the lesson treat those lines as the most valuable part of the whole document?",
+     "options": [
+      "A checkpoint you cannot describe in one specific sentence is a checkpoint you will skip",
+      "They tell the assistant which parts of the output it should present most prominently",
+      "They allow the chain to run unattended once each check has been performed a few times",
+      "They record how long each link takes, which is needed for planning the publishing week"
+     ],
+     "correct_answer": "A checkpoint you cannot describe in one specific sentence is a checkpoint you will skip"
+    },
+    {
+     "order_index": 5,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "Reading a clean gate output",
+     "prompt_md": "You run your verification gate on a finished script and the output contains no entries under STOP at all. Under the approach taught in this lesson, what does that result actually entitle you to conclude about the piece?",
+     "options": [
+      "That the mechanical checks found nothing, which narrows but does not replace your own read",
+      "That the piece is accurate and compliant, so it can be scheduled without further review",
+      "That the evidence table was complete, because the gate cannot pass an incomplete table",
+      "That the voice file is working well enough that it no longer needs to be pasted in"
+     ],
+     "correct_answer": "That the mechanical checks found nothing, which narrows but does not replace your own read"
+    },
+    {
+     "order_index": 6,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "Why the gate sits before scheduling",
+     "prompt_md": "The lesson states that a verification gate run after the upload has been queued is a formality rather than a control. Explain in two to four sentences why the position of the gate in your week matters as much as its content.",
+     "options": null,
+     "correct_answer": "Once a piece is scheduled, the cost of acting on a flag rises sharply: you have to unpick the upload, re-cut assets and possibly move the publishing slot, so borderline findings get rationalised away. A gate placed before scheduling is cheap to obey, which is the only reason it will be obeyed on a bad week. The point of a control is that it changes what happens, and it can only do that while the outcome is still open. Position determines whether the gate is a decision point or a receipt."
+    },
+    {
+     "order_index": 7,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "Mechanical questions rather than aesthetic ones",
+     "prompt_md": "The Irish Times piece read competently and its argument was arguable, so nothing about its quality triggered concern. Explain in two to four sentences why your verification gate asks mechanical, traceable questions instead of asking whether a draft seems credible.",
+     "options": null,
+     "correct_answer": "Plausibility is exactly what generated text is good at, so asking whether something seems credible tests the weakest signal available. Mechanical questions - is this claim in the evidence table, is this attribution traceable, is the disclosure present and correctly placed - can be answered the same way whether or not anything feels wrong. That means the check still works late at night, under deadline, on a piece you are pleased with. It also produces a specific list you can act on rather than an impression you can argue with."
+    },
+    {
+     "order_index": 8,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "The publish log",
+     "prompt_md": "The fourth part of the build is a three-line log per published piece: what ran, what the gate flagged, and what you did about it. Explain in two to four sentences what that log gives a creator that memory does not.",
+     "options": null,
+     "correct_answer": "It turns a belief that your process works into evidence of what it has actually caught, which is the only basis for changing it sensibly. Patterns become visible: if the same kind of unsourced figure is flagged every third week, the fault is in the evidence link, not in your attention. If a claim is ever challenged publicly, the log shows what you checked and when, which is a materially different position from remembering that you were careful. It also makes handover possible when someone else starts running the chain."
+    },
+    {
+     "order_index": 9,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "Running the gate when you are late",
+     "prompt_md": "The lesson argues that a gate which only runs on calm weeks is not part of the system. Explain in two to four sentences how you would design your chain so the check still happens on the week everything goes wrong.",
+     "options": null,
+     "correct_answer": "Make the gate short enough to run under pressure - one pasted prompt, three passes, a STOP list - so that skipping it saves almost no time. Put it in the chain document as the step before scheduling rather than as a separate habit you have to remember. Agree with yourself in advance what a STOP entry means: the piece waits, or the flagged claim comes out, and neither option requires a fresh decision at midnight. Anything that depends on discipline in a bad week should be replaced by something that depends on order of operations."
+    },
+    {
+     "order_index": 10,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "What the chain does not decide",
+     "prompt_md": "Your finished chain can research, outline, script, cut and check. Explain in two to four sentences which judgements stay with you regardless of how well the chain runs, and why the course treats that line as fixed.",
+     "options": null,
+     "correct_answer": "Whether the idea is worth making, whether the framing is fair to the people in it, and whether you are willing to put your name to it stay with you, because none of them can be derived from the evidence table or the rules file. The chain can tell you that a claim is unsourced; it cannot tell you that a sourced claim is being used misleadingly. Voice and judgement are the things the audience is actually subscribed to, so delegating them removes the reason anyone is watching. The chain exists to give those judgements more of your attention, not less."
+    },
+    {
+     "order_index": 11,
+     "type": "short_answer",
+     "language": "prompt",
+     "marks": 5,
+     "title": "Prompt Lab: the master chain template",
+     "prompt_md": "This is the first of your two graded deliverables. Build the master chain template for your own channel: the single document you would run on any normal publishing week, from raw idea to finished assets.\n\nA strong template will: name the channel and carry a version and date; list the inputs once at the top, including the voice file, the rules file and sponsor status, as bracketed placeholders; set out the links in run order with the template each one calls and what goes in and comes out; place a specific human check under every link, written as something you can do in about ninety seconds; forbid late links from introducing material that is not in the approved master asset; and end by routing the work to the verification gate before anything can be scheduled.",
+     "options": null,
+     "correct_answer": "CONTENT CHAIN v1 - [CHANNEL NAME] - updated [DATE]\n\nINPUTS (paste once, used by every link)\nVoice file: [VOICE FILE]\nRules file - disclosure lines and platform rules: [RULES FILE]\nSponsor status for this piece: [NONE / GIFTED / PAID - name of brand]\nIdea: [ONE SENTENCE] for [AUDIENCE - who they are, what they already know]\nSources gathered: [S1...Sn]\n\nLINK 1 - EVIDENCE [template: Evidence v2]\nIn: sources, my notes, voice file. Out: evidence table (claim, who, year, source location) plus a separate MY OPINION list.\nRule: no claims from the assistant own knowledge.\nI CHECK: can I point at the source for every row? Delete anything I cannot place. Confirm my opinions are not sitting in the table.\n\nLINK 2 - OUTLINE [template: Outline v3]\nIn: evidence table only, voice file. Out: structure with the supporting row named per section and [WEAK] on thin evidence.\nI CHECK: does the argument still stand if I cut the [WEAK] sections?\n\nLINK 3 - SCRIPT [template: Script v4]\nIn: approved outline, voice file. Out: full script, claims still attached to rows, [WEAK] lines written as open questions.\nI CHECK: read one page aloud. Is that my rhythm, my vocabulary, my speed?\n\nLINK 4 - CUTS AND CAPTIONS [template: Repurpose v2]\nIn: my edited script only, voice file, rules file, sponsor status. Out: clips, captions, show notes.\nRule: use only sentences that exist in the edited script. No new claims, numbers or framings. If sponsor status is not NONE, the disclosure line goes first.\nI CHECK: does any asset say something the script does not?\n\nGATE [template: Verify v1] - runs on every asset before anything is scheduled. Nothing is queued while a STOP item is open.\n\nLOG: what ran, what the gate flagged, what I did. Three lines, same document."
+    },
+    {
+     "order_index": 12,
+     "type": "short_answer",
+     "language": "prompt",
+     "marks": 5,
+     "title": "Prompt Lab: the verification prompt",
+     "prompt_md": "This is your second graded deliverable. Write the verification prompt that stands between any finished draft and the publish button.\n\nThe scenario: you have a scripted video and three clips built from it, the episode features a product you were paid to feature, and the platform you publish on requires paid partnerships to be labelled and altered or synthetic content to be disclosed.\n\nA strong prompt will: require the voice file, the rules file, the sponsor status, the evidence table and the draft to be pasted in; run separate passes for voice, factual accuracy, and disclosure and platform rules; require exact quotation of offending lines and a verdict of sourced, unsourced or contradicted for every claim; forbid the assistant from verifying facts from its own knowledge or correcting anything; forbid any statement that the piece is good or ready; and end with a STOP list of what must be resolved before publishing.",
+     "options": null,
+     "correct_answer": "You are checking a draft before publication. Do not improve it, rewrite it, or tell me whether it is any good.\n\nVoice file: [VOICE FILE]\nRules file - my disclosure lines and the platform rules in force: [RULES FILE]\nSponsor status for this piece: PAID - [BRAND]\nEvidence table this piece was built from: [TABLE]\nDraft under check - full script plus three clips and captions: [DRAFT]\n\nRun three passes and keep them completely separate.\n\nPASS 1 - VOICE. Quote up to eight lines that do not match the voice file. For each, name the rule it breaks: rhythm, vocabulary, banned words, hype, or a claim of expertise I have not made. Quote exactly, do not paraphrase.\n\nPASS 2 - TRUTH. List every factual claim, figure, date, name, quotation and attribution in the draft, including in the clips and captions. Mark each SOURCED with the evidence table row, UNSOURCED, or CONTRADICTED with the row it conflicts with. Do not use your own knowledge to confirm or deny anything, and do not correct anything. If a figure has been rounded, restated or given new context, treat it as changed and say how.\n\nPASS 3 - DISCLOSURE AND PLATFORM. Sponsor status is PAID, so check: is my disclosure line present, in my own wording, and early enough to be seen before the product is discussed, in the script and in every clip and caption? Is the platform paid-partnership label required here, and does anything in the draft need the altered or synthetic content disclosure? Does any line imply an endorsement, a result or a relationship I have not stated? Quote each problem.\n\nFinish with STOP: the numbered list of items that must be resolved before this is scheduled, each with the pass it came from and the exact line.\n\nDo not say the draft is ready, complete, accurate or compliant. I make that decision after reading your list."
+    }
+   ]
+  }
+ ]
+}

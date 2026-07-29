@@ -1,0 +1,464 @@
+{
+ "week": 4,
+ "lessons": [
+  {
+   "order_index": 1,
+   "title": "Prompt chains: from call notes to the next step",
+   "theory_md": "## The Friday-afternoon pile\n\nBy five o'clock on a Friday a working seller has six sets of call notes, four half-written follow-ups and one proposal that was promised \"by the end of the week\". None of it is difficult. All of it is admin sitting between a good conversation and the next step. What makes the pile heavy is that every piece starts from nothing, and every piece needs the same context typed out again: who the buyer is, what they said, what has changed, what you are asking for next.\n\nWeeks one to three handled those jobs one at a time — the seller's brief, the follow-up, the proposal, the deal pack. This week joins them up. The automation layer is not a robot that sells for you. It is a set of small, linked steps that carry your context forward so you stop retyping it, and stop at the point where a human buyer would otherwise read something no human has read.\n\n## What a chain actually is\n\nA prompt chain is a short sequence of prompts in which the output of one step becomes the input of the next. Each link does one job. Because each link produces something you can read, you can catch a mistake at the link where it was made rather than after it has been baked into three documents.\n\nThe alternative is the mega-prompt: one enormous instruction asking the assistant to tidy the notes, draft the email and outline the proposal all at once. It feels faster. It fails quietly. When the assistant misreads one detail, that detail is already sitting in every deliverable and there is no clean place to correct it.\n\nThe deal-flow chain has three links:\n\n- **Link 1 — call notes to deal record.** Messy notes become a structured record: what was said, what changed, who was in the room, what is still unknown.\n- **Link 2 — deal record to follow-up.** The record becomes a short buyer-facing message confirming what you heard and proposing one next step. This is the link that touches a buyer, so this is the link with the checkpoint.\n- **Link 3 — record plus follow-up to next-step proposal.** The record becomes an internal outline of what you will put in front of the buyer, with the open questions flagged before anyone builds a price.\n\nYour brief still sits at the top of every link: deal context, the one next step you are seeking, and the trust rule — researched personalisation is never faked, only true claims go out, and you never invent customer names, quotes or metrics.\n\n## Worked example one: notes to deal record\n\n```\nYou are helping me tidy my raw notes from a discovery call into a deal record.\n\nDeal context: Meridian Logistics, mid-market freight firm, 400 staff. We sell\nwarehouse scheduling software. Second call. Contacts on the call: Priya Raman\n(Head of Operations, our champion) and Tom Ellery (IT).\nNext step I want: a 30-minute session with their finance lead in the next\nfortnight.\n\nMy raw notes are below. Turn them into a record with these headings:\nWhat was said - What changed since last call - Who was in the room and what\neach one cares about - Open questions - Anything I recorded as a number or a\nquote.\n\nRules: use only what is in my notes. Do not add detail that is not there. Put\nanything my notes do not answer under a final heading called Not stated.\n\nNOTES: [paste raw notes]\n```\n\nAn abridged version of what comes back:\n\n> **What changed since last call:** the pilot has moved from Q3 to \"after the peak season\", driven by a warehouse move. **Who was in the room:** Priya wants fewer manual rotas; Tom raised single sign-on and asked who holds the data. **Open questions:** whether the warehouse move is confirmed or proposed. **Not stated:** budget, the finance lead by name, the current scheduling tool, any figure for time lost to manual rota building.\n\nThat last heading is the most valuable thing link 1 produces. A chain fails when a later step quietly fills a gap with something plausible. Naming the gaps stops that.\n\n## Worked example two: deal record to follow-up\n\n```\nDraft a follow-up email to Priya Raman at Meridian Logistics using the deal\nrecord below. Nothing may appear in the email that is not in the record.\n\nPurpose: confirm what I heard and ask for a 30-minute session with their\nfinance lead within the next fortnight.\nLength: under 150 words. Plain British English, no superlatives, no\nmanufactured urgency.\nReference only claims I can evidence about our product. If the record marks\nsomething as Not stated, do not refer to it at all.\nEnd with a list headed Check before sending, naming every sentence that\ndepends on something the record does not confirm.\n\nDEAL RECORD: [paste the output of step one]\n```\n\nAbridged output:\n\n> \"Thanks for the time on Tuesday. To make sure I have it right: the pilot now sits after peak season, and the warehouse move is the thing driving that timing...\" followed by one clear ask for the finance session. Then: **Check before sending — the sentence about the warehouse move assumes it is confirmed; the record lists that as an open question.**\n\nYou now have a draft and a short list of exactly what to verify. That is a two-minute job instead of a rewrite.\n\n## Where the chain must stop\n\nThe checkpoint sits at the last link before a human buyer reads anything, and again before any number reaches a document. An assistant carrying context forward will carry an error forward with equal confidence. Three questions, every time: is every fact here in my record, is every claim about us one I can evidence, and would I be comfortable if the buyer forwarded this to their procurement team?\n\n## The mistakes people make\n\n**Chaining without reading.** Passing link 1 straight into link 2 without looking is where an assumption becomes a sentence in a buyer's inbox. **Letting the chain invent the gap.** If the record says \"budget not stated\" and the email says \"given your budget constraints\", the chain has manufactured a fact. **Automating the relationship rather than the admin.** The chain drafts; you decide what is said and when. **Running one chain for every deal shape.** A renewal, a competitive displacement and a first-time buyer need different link 3s. **Losing the audit trail.** Keep the record. When a buyer asks in six weeks what was agreed, the record is the answer, not your memory of a draft.\n\n## In practice\n\nStart with the sequence you already repeat every week and write it down as three links before you prompt anything. Run it on a live deal, read every intermediate output, and mark where you had to correct the assistant — those corrections belong in the prompt next time. AI takes the admin between the conversations. The conversation, and everything a buyer reads, stays yours.",
+   "estimated_minutes": 28,
+   "learning_objectives": [
+    "Break a recurring deal-flow task into a chain of linked prompts, each doing one job",
+    "Write a handover between chain links that carries deal context and names what is unknown",
+    "Place a human checkpoint at every point where chain output could reach a buyer",
+    "Diagnose chain failures where an early error is carried forward into a buyer-facing draft"
+   ],
+   "case_study": "**HelloFresh — when the sending never stopped (2024)**\n\nOn 12 January 2024 the UK Information Commissioner's Office fined the meal-kit company HelloFresh 140,000 pounds over a marketing campaign that ran for seven months. The regulator found the company had sent around 79 million marketing emails and roughly one million text messages in breach of the Privacy and Electronic Communications Regulations. Between August 2021 and February 2023 the ICO recorded 15,221 complaints about unsolicited messages from the company.\n\nThe detail matters more than the total. The consent wording people agreed to at sign-up referred to marketing by email but did not mention texts, so the text messages had no valid basis. People who had cancelled their subscriptions were kept on the list for up to two years without being told clearly that this would happen. Some individuals who had asked to be left alone were contacted anyway. No single message in that campaign was dramatic. The system around them had no place where a person asked whether this message should go to this person at all.\n\nRead as an automation story, every link worked exactly as built. The list-building link built lists. The templating link filled templates. The sending link sent. What was missing was the checkpoint - the last step before a real human reads something, where somebody asks whether the permission is genuine and whether the message tells the truth about how the relationship started.\n\nThe transfer to a seller building a deal-flow chain is direct. Your chain will be smaller and your volumes tiny by comparison, which is exactly why the checkpoint is affordable. Link 1 and link 3 are yours to iterate on freely. Link 2 touches a buyer, and no output of link 2 should reach anyone until you have read it against the record it came from and the permission you actually hold.",
+   "exercises": [
+    {
+     "order_index": 1,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "What a prompt chain is",
+     "prompt_md": "A colleague says she has started using a prompt chain for her deal follow-ups. Which description best matches what a prompt chain actually is in the sales workflow taught here?",
+     "options": [
+      "A sequence of prompts where the output of one step becomes the input to the next step",
+      "A single very long prompt that asks for every deal document to be produced in one go",
+      "A stored list of prompts run in any order, none of which shares context with another",
+      "An automated tool that emails buyers directly with no seller reading the drafts first"
+     ],
+     "correct_answer": "A sequence of prompts where the output of one step becomes the input to the next step"
+    },
+    {
+     "order_index": 2,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "The most useful output of the first link",
+     "prompt_md": "In the worked example, the first link turns raw call notes into a structured deal record. Which part of that record does the most work in protecting the rest of the chain from error?",
+     "options": [
+      "The closing section that lists what the notes did not state, so later steps cannot fill it",
+      "The opening summary that restates the call in shorter and more readable business language",
+      "The section naming who attended the call, because it decides the tone of the later message",
+      "The heading order, because a consistent order makes the record faster for a seller to scan"
+     ],
+     "correct_answer": "The closing section that lists what the notes did not state, so later steps cannot fill it"
+    },
+    {
+     "order_index": 3,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "Where the checkpoint belongs",
+     "prompt_md": "You have built a three-link chain running from call notes to deal record to follow-up email to internal next-step proposal. Where does the non-negotiable human checkpoint sit?",
+     "options": [
+      "At the last link before anything reaches a buyer, and again before a number enters a document",
+      "At the very start, because reviewing the raw notes removes the need for later review of drafts",
+      "At the end of the whole chain, once the proposal outline and the email have both been drafted",
+      "Wherever the assistant flags low confidence, since it reliably signals the risky parts of a draft"
+     ],
+     "correct_answer": "At the last link before anything reaches a buyer, and again before a number enters a document"
+    },
+    {
+     "order_index": 4,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "Why the mega-prompt fails",
+     "prompt_md": "A seller asks one very large prompt to tidy her notes, draft the follow-up and outline the proposal in a single response. What is the main risk compared with running three linked steps?",
+     "options": [
+      "One misread detail is baked into every output at once, with no clean point to correct it",
+      "The response takes longer to generate, so the seller loses time waiting for a finished draft",
+      "The assistant refuses long instructions, so parts of the request are dropped without warning",
+      "The wording becomes too formal for a buyer, because long prompts produce stiff business prose"
+     ],
+     "correct_answer": "One misread detail is baked into every output at once, with no clean point to correct it"
+    },
+    {
+     "order_index": 5,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "Applying the trust rule inside a chain",
+     "prompt_md": "Your deal record marks the buyer budget as not stated, yet the drafted follow-up email refers to their tight budget this year. Under the trust rule carried through this course, what should you do?",
+     "options": [
+      "Remove the reference, because the chain has produced a claim the record does not support",
+      "Keep it but soften the wording, since most buyers in this segment do face budget pressure",
+      "Keep it and ask the buyer to confirm it, letting the reply settle whether the claim was fair",
+      "Keep it and note the assumption in the internal record so the team can correct it in future"
+     ],
+     "correct_answer": "Remove the reference, because the chain has produced a claim the record does not support"
+    },
+    {
+     "order_index": 6,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "Name the three links",
+     "prompt_md": "Describe the three links of the deal-flow chain in your own words, and say which single link is buyer-facing.",
+     "correct_answer": "Link one turns raw call notes into a structured deal record covering what was said, what changed, who was present and what is still unknown. Link two turns that record into a short follow-up message to the buyer confirming what was heard and asking for one next step. Link three turns the record and the follow-up into an internal next-step proposal outline with open questions flagged. Only link two is buyer-facing, which is why the checkpoint sits there."
+    },
+    {
+     "order_index": 7,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "Why unknowns must be named",
+     "prompt_md": "Explain why a deal record should include an explicit section for what the notes did not state, rather than leaving those points out.",
+     "correct_answer": "A later link in the chain has no way of telling the difference between a fact that is absent and a fact that was never mentioned, so it may fill the gap with something plausible. Naming the gaps converts silence into an instruction the next step can obey. It also gives the seller a ready-made question list for the next conversation, which is more useful than a tidy record that hides what is missing."
+    },
+    {
+     "order_index": 8,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "Diagnosing a chain failure",
+     "prompt_md": "A follow-up email drafted by your chain states that the buyer lost two days a month to manual scheduling. That figure appears nowhere in your notes. Explain where the failure happened and how you would repair the chain.",
+     "correct_answer": "The failure happened at the handover between links: the deal record either omitted a not-stated section or the drafting prompt was not told to use only what the record contains. The immediate repair is to cut the figure from the email. The lasting repair is to add an explicit instruction to both links that no number, quote or customer name may appear unless it is in the record, and to keep the check-before-sending list so invented detail is surfaced rather than buried."
+    },
+    {
+     "order_index": 9,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "What the HelloFresh case teaches a seller",
+     "prompt_md": "Using the HelloFresh case study, explain what a seller building an automation layer should take from a marketing system that ran for seven months without a human checkpoint.",
+     "correct_answer": "Every link in that system worked as built; what was missing was the last step where a person asks whether this message should reach this person and whether it is honest about how the relationship began. Volume made the failure enormous, but the design flaw was the absent checkpoint, not the scale. A seller runs far smaller volumes, so a human read of everything buyer-facing costs minutes and is the cheapest protection available."
+    },
+    {
+     "order_index": 10,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "Deciding what not to chain",
+     "prompt_md": "Give two parts of your deal flow that should stay outside the chain entirely, and justify each in one sentence.",
+     "correct_answer": "Deciding what to say and when to say it stays with the seller, because judgement about timing and tone is the relationship rather than the admin. Any commitment on price, scope or delivery dates stays outside, because those bind the business and must come from an approved source rather than a draft. Reading the room in a live conversation also stays human, since the chain only ever sees what you wrote down afterwards."
+    },
+    {
+     "order_index": 11,
+     "type": "short_answer",
+     "language": "prompt",
+     "marks": 5,
+     "title": "Prompt Lab: the notes-to-record link",
+     "prompt_md": "You have finished a second call with a mid-market manufacturer about a quality-inspection system. Your notes are messy and typed one-handed. Write the first link of your chain: a prompt that turns those raw notes into a structured deal record another prompt can consume safely.\n\nA strong prompt will carry the deal context and the next step you are seeking, define the exact headings you want back, forbid any detail that is not in your notes, and require an explicit section naming what the notes do not answer. It should read like a brief to a colleague, not a search query.",
+     "correct_answer": "You are helping me turn raw notes from a sales call into a structured deal record that I will feed into a later prompt. Work only from the notes I paste. Add nothing.\n\nDeal context: Halvorsen Engineering, mid-market manufacturer, roughly 600 staff, three plants. We sell an automated quality-inspection system. This was our second call. My contact is the Head of Quality; a plant manager also joined.\nThe next step I want: agreement to a two-week trial on one production line, scoped in a session with their operations director this month.\n\nReturn the record under exactly these headings:\n1. What was said - the substance, in short bullets.\n2. What changed since the last call.\n3. Who was in the room and what each person appears to care about, based only on what they said.\n4. Objections or hesitations raised, in their words where I recorded their words.\n5. Any number, date, name or quotation I recorded, listed separately so I can verify each one.\n6. Open questions I should ask next time.\n7. Not stated - everything a follow-up might want that my notes do not answer, including budget, timeline, decision process and competing options.\n\nRules: do not infer, estimate or round any figure. Do not invent names, job titles, customer references or metrics. If my notes are ambiguous, put the point under Open questions rather than resolving it. Keep it under 400 words. Plain British English.\n\nMY RAW NOTES: [paste]"
+    },
+    {
+     "order_index": 12,
+     "type": "short_answer",
+     "language": "prompt",
+     "marks": 5,
+     "title": "Prompt Lab: the record-to-follow-up handover",
+     "prompt_md": "You now have a clean deal record from the first link. Write the second link: the prompt that turns that record into the follow-up email to the buyer. This is the only buyer-facing link in the chain, so the prompt must make the handover safe.\n\nA strong prompt will state the single next step being sought, bind the draft to the record and nothing else, forbid invented names, quotes and metrics, ban manufactured urgency, and require the assistant to hand back a list of anything in the draft that rests on something the record does not confirm.",
+     "correct_answer": "Draft a follow-up email from me to the Head of Quality at Halvorsen Engineering, using only the deal record pasted below. If a fact is not in the record, it may not appear in the email.\n\nPurpose of the email: confirm accurately what I heard on the call and ask for one thing - a scoping session with their operations director this month to agree a two-week trial on a single line.\n\nWrite it as I would: plain British English, under 160 words, warm but unadorned. No superlatives, no invented deadlines, no manufactured scarcity, no flattery about their company that the record does not support. Refer to our product only in terms I can evidence, and never name another customer, quote anyone, or state a performance figure.\n\nWhere the record lists something under Not stated, do not allude to it at all - not as an assumption, not as a question dressed up as a statement.\n\nAfter the draft, give me two short lists:\nCheck before sending - every sentence that depends on something the record marks as open or not stated, with the sentence quoted.\nRemoved - anything you would have written naturally but left out because the record does not support it.\n\nDEAL RECORD: [paste the output of the previous step]"
+    }
+   ]
+  },
+  {
+   "order_index": 2,
+   "title": "Saved templates and macros for repeatable selling",
+   "theory_md": "## The prompt you wrote once and lost\n\nMost sellers have had the good version. One afternoon the wording came out right, the buyer replied within the hour, and the prompt behind it was never saved. Three weeks later you are writing the same thing from scratch and it is worse. Meanwhile the colleague who joined last month is inventing her own version of a message you already solved, and neither of you knows that the pricing page changed on Monday.\n\nWeek three gave you a prompt library. This lesson turns that library into working assets: templates with named slots, a header that says who owns them and when they were last checked, and a habit of retiring the ones that have quietly gone out of date. A template is only an asset while it is true.\n\n## Templates, macros and placeholders\n\nA **template** is a saved prompt you reuse with different inputs. A **macro** is a template short enough to fire without thinking — three lines you paste before a call, or after one. The thing that makes either safe is the **placeholder**: a named, bracketed slot you must fill before running.\n\nPlaceholders do two jobs. They stop you retyping context, and they make an omission visible. `[BUYER ROLE]` sitting unfilled in a prompt is obvious in a way that a missing sentence is not. The rule that goes with them is short: **you fill the slots, never the assistant.** If a slot is empty because you do not know the answer, the answer is to find out or to delete the sentence that needed it — not to let a language model produce something plausible.\n\nEvery stored template gets a header. Not paperwork; four lines that decide whether it can be trusted:\n\n- **Owner** — the person who fixes it when it breaks.\n- **Version and last checked** — a date, not a feeling.\n- **Sources of truth** — where the price, the claim and the product wording come from.\n- **Must never say** — the claims this template is forbidden to make.\n\n## Worked example one: a saved outreach template\n\n```\nTEMPLATE: First-touch outreach, operations buyer\nOwner: me | v4, last checked 14 March | Source of truth: current price\nsheet and the approved claims list\nMust never say: any named customer, any performance figure, any implied\ndeadline that we have not set\n\nWrite a first-touch email to [BUYER NAME], [BUYER ROLE] at [COMPANY],\na [COMPANY SIZE AND SECTOR] business.\n\nResearched detail I have verified myself: [ONE SPECIFIC, SOURCED\nOBSERVATION - what it is and where I read it].\nThe problem I believe this creates for someone in their role: [PROBLEM].\nThe one thing I am asking for: [SINGLE NEXT STEP].\n\nUnder 120 words, plain British English, no superlatives, no urgency I have\nnot earned. Reference our product only in terms on the approved claims\nlist. Do not name other customers, quote anyone, or state any metric.\nIf any slot above is still in brackets, stop and tell me which, rather\nthan writing the email.\n```\n\nThat last line is the difference between a template and a trap. Fill the slots and the output is a short, specific email; leave one empty and you get back \"COMPANY SIZE AND SECTOR is unfilled\" instead of an invented description of a company you have not researched.\n\n## Worked example two: the objection macro\n\nObjections repeat far more than opening lines do. A macro for the three you hear weekly is worth more than twenty clever cold-email variants.\n\n```\nMACRO: Objection response draft\nOwner: me | v2, last checked 14 March | Source: approved claims list,\ncurrent price sheet\n\nThe objection, in the words the buyer used: [QUOTE FROM MY NOTES]\nWho said it and what they are responsible for: [PERSON AND ROLE]\nWhat the deal record says about their situation: [PASTE RELEVANT LINES]\n\nDraft a response of under 100 words that: acknowledges the objection as\nstated, without restating it more weakly than they put it; answers with\nsomething I can evidence from the sources above; and ends with a question\nthat moves us to [NEXT STEP].\n\nThen list, separately: anything in your draft that is not supported by\nthe sources above, and any point where the honest answer is that we do\nnot do this.\n```\n\nAbridged output for a price objection:\n\n> \"You said the number is above what you had set aside for this year, and that the board signed the budget in November...\" followed by an evidenced response and one question about phasing. Then: **Not supported by sources — the sentence implying we can hold this price beyond quarter end. Honest gap — we do not currently integrate with the system named in the record.**\n\nThat second list is the point of the macro. A template that only ever produces confident prose will eventually produce a confident untruth.\n\n## Keeping templates current\n\nProducts change, prices change, and integrations that were on the roadmap become real or get dropped. A template written in March and used in September is a claim about the world in March. Put a recurring half-hour in the diary and run each stored template against three questions: has anything in the sources of truth changed, does the must-never-say list still cover the risks, and has this template been used at all since the last review? Templates nobody uses should be deleted; an unused library is one where nobody can find the good one.\n\n## The mistakes people make\n\n**Letting the assistant fill the blanks.** The single fastest route to a fabricated detail in a buyer's inbox. **Baking a price into the prompt.** Point at the price sheet instead; a number written into a template is out of date the moment it changes. **Templating the relationship.** Personalisation slots are for researched, specific observations, not for a name dropped into a generic sentence. **Sharing a template without its header.** A colleague who inherits the wording without the must-never-say list will make the claim you were careful to avoid. **Keeping every version.** One current template beats four near-identical ones with different claims in them. **Never re-reading the output.** Reuse breeds trust, and trust is where the unchecked send happens.\n\n## In practice\n\nPick the three prompts you have retyped most in the past month. Give each a header, turn the repeated context into named slots, add the stop-if-unfilled line, and store them where your colleagues can find them. Date them. Then diarise the review. AI takes the admin; the seller keeps the relationship — and the seller stays responsible for every claim the template makes on their behalf.",
+   "estimated_minutes": 28,
+   "learning_objectives": [
+    "Convert a repeatedly retyped prompt into a stored template with clearly named placeholders",
+    "Attach a header naming owner, version, sources of truth and the claims a template must never make",
+    "Build objection and follow-up macros that return unsupported claims alongside the draft",
+    "Run a currency review that separates claims now false from claims merely out of date"
+   ],
+   "case_study": "**Wowcher — when the countdown never really counted down (2023–2024)**\n\nIn March 2023 the UK Competition and Markets Authority opened an investigation into the deals site Wowcher over urgency claims: countdown timers on offers and labels such as \"in high demand\". The regulator was concerned that a large number of products in a promotion remained on sale at the same or a similar price after the timer had reached zero, and that a permanent timer on the homepage counting down to midnight suggested deals were ending when they were not.\n\nThe investigation widened to cover pre-ticked boxes that enrolled shoppers into a paid VIP membership many did not realise they had bought. The CMA issued a warning in November 2023, and in July 2024 Wowcher signed formal undertakings. It agreed that timers must be accurate and must not create false urgency, removed the permanent homepage countdown, stopped using pre-ticked boxes for the membership, and provided refund credits worth around four million pounds to more than 870,000 customers.\n\nNobody sat down and wrote a lie 870,000 times. What existed was a reusable asset — a timer, a badge, a checkbox — applied wholesale across offers regardless of whether the claim it made was true for the particular deal it sat on. Reuse is what made it efficient, and reuse is what made a small piece of dishonest design into a very large number.\n\nThat is the risk a template carries into selling. A stored prompt containing \"our clients typically see\", or an urgency line, or a price, makes the same claim on every deal it touches, including the ones where it is untrue. A template is a claim you have decided to make repeatedly, so it earns an owner, a date, a source of truth and a list of things it must never say. Nothing in this course objects to reuse; the objection is to reuse without review.",
+   "exercises": [
+    {
+     "order_index": 1,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "What placeholders are for",
+     "prompt_md": "You are converting a prompt you keep retyping into a saved template with bracketed slots such as [BUYER ROLE]. Beyond saving typing, what is the main reason placeholders make a stored prompt safer to reuse?",
+     "options": [
+      "They make a missing piece of context visible instead of leaving a silent gap in the brief",
+      "They let the assistant choose the most suitable wording for each buyer and market segment",
+      "They shorten the stored prompt so that more of it fits inside a single assistant response",
+      "They keep the saved wording consistent so every buyer receives the same message from us"
+     ],
+     "correct_answer": "They make a missing piece of context visible instead of leaving a silent gap in the brief"
+    },
+    {
+     "order_index": 2,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "Who fills the slots",
+     "prompt_md": "Your saved outreach template contains a slot for a researched observation about the buyer, and you have not done the research yet. Under the rule taught in this lesson, what is the correct action?",
+     "options": [
+      "Fill the slot yourself with a sourced observation, or cut the sentence that needed it",
+      "Ask the assistant to suggest a likely observation and then adjust the wording afterwards",
+      "Leave the slot bracketed and send the message, since buyers ignore that part in any case",
+      "Replace the slot with a general statement about the sector that applies to most companies"
+     ],
+     "correct_answer": "Fill the slot yourself with a sourced observation, or cut the sentence that needed it"
+    },
+    {
+     "order_index": 3,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "What a template header must carry",
+     "prompt_md": "A colleague asks why your stored templates each begin with four short lines before the instruction itself. Which set best describes what those header lines are for?",
+     "options": [
+      "Owner, version and date last checked, sources of truth, and what it must never say",
+      "Audience, tone of voice, preferred length, and the assistant the template works with",
+      "Deal stage, buyer persona, expected reply rate, and the campaign it was written for",
+      "Author, date created, folder location, and the colleagues allowed to edit the wording"
+     ],
+     "correct_answer": "Owner, version and date last checked, sources of truth, and what it must never say"
+    },
+    {
+     "order_index": 4,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "Prices inside stored prompts",
+     "prompt_md": "You are tempted to write your current list price directly into a saved quoting template so that drafts come back complete. Why does this lesson advise against writing the figure into the template?",
+     "options": [
+      "A number inside a template goes out of date silently and then repeats on every deal",
+      "A number inside a template makes the response longer and harder for a buyer to read",
+      "A number inside a template stops the assistant from producing the rest of the message",
+      "A number inside a template must be approved by finance before any seller can store it"
+     ],
+     "correct_answer": "A number inside a template goes out of date silently and then repeats on every deal"
+    },
+    {
+     "order_index": 5,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "The lesson of the Wowcher undertakings",
+     "prompt_md": "The CMA case against Wowcher concerned countdown timers and badges applied across offers regardless of whether the urgency was real. What is the transferable warning for a seller building a template library?",
+     "options": [
+      "A reusable asset repeats whatever claim it carries, including on the deals where it is untrue",
+      "A reusable asset should be reviewed by a lawyer before any seller is allowed to reuse it",
+      "A reusable asset works best when the wording stays vague enough to fit every possible deal",
+      "A reusable asset creates risk mainly at scale, so small sales teams can reuse without review"
+     ],
+     "correct_answer": "A reusable asset repeats whatever claim it carries, including on the deals where it is untrue"
+    },
+    {
+     "order_index": 6,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "Template versus macro",
+     "prompt_md": "Explain the difference between a template and a macro as this lesson uses the terms, and give one example of each from your own selling week.",
+     "correct_answer": "A template is a saved prompt reused with different inputs, usually long enough to carry a header, several slots and explicit rules, such as a first-touch outreach prompt for an operations buyer. A macro is a template short enough to fire without thinking, three or four lines pasted before or after a call, such as a pre-call prep macro or an objection response draft. Both need an owner and a review date; the macro earns its keep through frequency rather than length."
+    },
+    {
+     "order_index": 7,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "The stop-if-unfilled instruction",
+     "prompt_md": "Your template ends with an instruction telling the assistant to stop and name any slot still in brackets rather than writing the message. Explain what failure this prevents.",
+     "correct_answer": "Without it, an unfilled slot is treated as a gap to be closed, and the assistant will produce a plausible description of a company, a role or a problem that nobody has verified. That invented detail then reads as researched personalisation, which is exactly what the trust rule forbids. The instruction converts a silent fabrication into a visible error message, and it costs the seller nothing when the slots are properly filled."
+    },
+    {
+     "order_index": 8,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "Reviewing a stored template",
+     "prompt_md": "Describe the three questions you would ask of each stored template at a regular review, and say what you would do with a template that fails the last one.",
+     "correct_answer": "First, has anything in the sources of truth changed, such as pricing, packaging, integrations or the approved claims list. Second, does the must-never-say list still cover the current risks. Third, has this template been used at all since the last review. A template that has not been used should be deleted rather than kept, because a crowded library hides the good templates and makes colleagues more likely to invent their own unreviewed version."
+    },
+    {
+     "order_index": 9,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "The second list a macro returns",
+     "prompt_md": "The objection macro asks for a draft and then two extra lists: unsupported claims, and points where the honest answer is that the product does not do this. Explain why those lists matter more than the draft.",
+     "correct_answer": "The draft is the easy part and will always read confidently, whether or not it is true. The unsupported-claims list shows the seller precisely which sentences rest on nothing in the sources of truth, which is where a reused macro would otherwise repeat the same overreach on every deal. The honest-gap list is what allows a seller to answer an objection straight, which builds more trust in a live negotiation than a smooth non-answer ever does."
+    },
+    {
+     "order_index": 10,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "Handing a template to a colleague",
+     "prompt_md": "A new colleague asks for your best outreach template. Explain what you must hand over alongside the wording itself, and why.",
+     "correct_answer": "The header goes with it: owner, version and date, the sources of truth it points at, and the must-never-say list. Without those, the colleague inherits the phrasing but none of the restraint, and will make the claims you deliberately kept out because nothing in the file tells them the boundary exists. It is also worth handing over one filled example, so the standard of researched personalisation expected in the slots is visible rather than assumed."
+    },
+    {
+     "order_index": 11,
+     "type": "short_answer",
+     "language": "prompt",
+     "marks": 5,
+     "title": "Prompt Lab: a stored follow-up template",
+     "prompt_md": "Build the saved template you would reuse after every discovery call: a post-call follow-up you can fire in two minutes for any deal.\n\nA strong submission is a stored asset, not a one-off prompt. It should carry a header naming the owner, a version and review date, the sources of truth, and what it must never say; use clearly named bracketed slots for everything that changes deal to deal; bind the draft to your notes and the approved claims; and refuse to run when a slot is still unfilled.",
+     "correct_answer": "TEMPLATE: Post-discovery follow-up\nOwner: [MY NAME] | v1, last checked [DATE] | Sources of truth: current price sheet, approved claims list, my deal record for this account\nMust never say: any named customer, any performance figure, any integration we have not shipped, any deadline we have not actually set\n\nDraft a follow-up email from me to [BUYER NAME], [BUYER ROLE] at [COMPANY], after a [CALL NUMBER] call held on [DATE].\n\nWhat I heard, in my words: [THREE TO FIVE LINES FROM MY DEAL RECORD]\nWhat changed in this call: [WHAT CHANGED, OR NOTHING]\nThe single next step I am asking for: [NEXT STEP AND THE TIMEFRAME]\nKnown gaps my record marks as not stated: [LIST]\n\nWrite under 150 words in plain British English. Open by confirming what I heard accurately, so they can correct me if I have it wrong. Make one ask. No superlatives, no manufactured urgency, no flattery the record does not support. Describe our product only in wording from the approved claims list, and never name another customer, quote anyone or state a metric. Do not refer to anything listed under known gaps, even as a question dressed up as a statement.\n\nThen return two short lists: Check before sending, quoting any sentence that depends on something my record does not confirm; and Removed, naming anything you would normally have written but left out because the sources do not support it.\n\nIf any slot above is still in brackets, do not write the email. Tell me which slots are unfilled and stop."
+    },
+    {
+     "order_index": 12,
+     "type": "short_answer",
+     "language": "prompt",
+     "marks": 5,
+     "title": "Prompt Lab: the template currency review",
+     "prompt_md": "Your product shipped two new features last quarter, one integration was dropped from the roadmap and list prices rose. Write the prompt you would run against a stored template to find out what in it has gone out of date.\n\nA strong prompt supplies the template and the change notes as separate inputs, asks for a line-by-line comparison rather than a rewrite, distinguishes claims that are now false from claims that are merely stale, and insists that anything it cannot verify from the supplied material is reported as unverifiable rather than assumed.",
+     "correct_answer": "I am reviewing a stored sales prompt template to find out what has gone out of date. Do not rewrite it yet. Work only from the two inputs below.\n\nINPUT A - the stored template, including its header: [PASTE]\nINPUT B - what has changed since the date in that header: our current price sheet, the approved claims list as it now stands, and my notes on product changes this quarter: [PASTE]\n\nGo through Input A line by line and return a table with four columns: the exact line from the template, what it claims or assumes, its status, and what I should do about it.\n\nUse only these statuses: FALSE NOW - the line makes a claim that Input B contradicts. STALE - the line is still true but no longer reflects how we describe this, or names something that has moved. UNVERIFIABLE - I have not given you enough in Input B to judge, so say so rather than guessing. STILL GOOD - no change needed.\n\nThen answer three questions separately. First, does the must-never-say list in the header still cover the risks created by the changes in Input B, and what would you add to it. Second, is there anything new in Input B that the template should now allow a seller to say, quoted in the wording used in the approved claims list. Third, which slots in the template are now ambiguous or unnecessary.\n\nDo not invent product capability, pricing or customer detail. If a judgement depends on something I have not supplied, list it under a heading called Ask a human, naming who I should ask."
+    }
+   ]
+  },
+  {
+   "order_index": 3,
+   "title": "Practical: build a reusable deal-flow chain",
+   "theory_md": "## Parts on the bench\n\nBy now you have the pieces. A chain that runs from call notes to deal record to follow-up. Templates with slots and headers. Macros for the objections you hear weekly. What most sellers do not have is the thing that turns those parts into something they use on a Tuesday when the day has gone sideways: one asset, in one place, that carries its own context and refuses to let anything reach a buyer unchecked.\n\nThis lesson is the build. You are assembling a reusable deal-flow chain and the gate that sits at its end. The two Prompt Labs are the deliverable: the master chain template, and the verification prompt that reads any buyer-facing draft against your deal context, the trust rule and plain factual accuracy before you send it.\n\n## The shape of the finished thing\n\nA working chain has four parts, in this order.\n\n**The context block.** Written once at the top and pasted into every link: who you are, what you sell, the sources of truth you point at, and the trust rule stated as an instruction rather than a hope. Researched personalisation is never faked. Only claims you can evidence. Never invent a customer name, a quotation or a metric.\n\n**The links.** Notes to record. Record to follow-up. Record and follow-up to next-step proposal. Each one named, each one producing something you can read on its own.\n\n**The slots.** Everything that changes between deals, bracketed and named, with the instruction to stop rather than run when one is unfilled.\n\n**The gate.** A separate prompt, run in a fresh conversation, that checks the buyer-facing draft against the deal record and the sources. Separate is the operative word. Asking the same conversation that wrote a draft whether the draft is accurate produces agreement, not verification; the model has the draft in front of it and nothing to compare it against.\n\n## Worked example one: the master chain, abridged\n\n```\nCONTEXT BLOCK - paste at the top of every link\nI sell [PRODUCT] to [BUYER TYPE] at [COMPANY TYPE]. My sources of truth\nare the current price sheet, the approved claims list and my deal record\nfor this account. Nothing may be stated as fact unless it appears in one\nof those. Do not invent customer names, quotations or metrics. Do not\ncreate urgency I have not set. British English, plain, no superlatives.\n\nLINK 1 - notes to deal record\nTurn my raw notes into a record under these headings: what was said,\nwhat changed, who was present and what each cares about, objections in\ntheir words, every number or quotation I recorded, open questions, and\nNOT STATED. Add nothing that is not in the notes.\nNOTES: [PASTE]\n\nLINK 2 - record to buyer-facing draft\nUsing only the record from Link 1, draft [EMAIL OR MESSAGE] to [BUYER\nNAME, ROLE] asking for [SINGLE NEXT STEP]. Under [WORD COUNT] words.\nIgnore anything under NOT STATED entirely.\nRECORD: [PASTE OUTPUT OF LINK 1]\n\nLINK 3 - record to next-step proposal, internal only\nOutline what I should put in front of them next: sections, what evidence\neach needs, and which open questions must be answered before any number\nis written. Mark anything that would require a claim we cannot evidence.\n```\n\nRun once end to end and the whole thing takes minutes. The output of Link 3 is not a proposal; it is a list of what you still have to find out before writing one, which is the more useful of the two.\n\n## Worked example two: the gate\n\n```\nYou are checking a draft before I send it. You did not write it. Do not\nimprove it, rewrite it or comment on style.\n\nINPUT A - the deal record: [PASTE]\nINPUT B - the approved claims list and current price sheet: [PASTE]\nINPUT C - the draft I intend to send: [PASTE]\n\nGo through Input C sentence by sentence. For each sentence give: the\nsentence, and one verdict from SUPPORTED (it appears in A or B),\nUNSUPPORTED (it does not), or CONTRADICTED (A or B says otherwise).\nFor anything that is a name, a number, a date or a quotation, say\nexactly where in A or B you found it. If you cannot find it, mark it\nUNSUPPORTED. Never resolve a gap by reasoning about what is likely.\n\nThen three separate checks:\n1. Deal context - does the draft ask for the next step I named, and does\nit contradict anything in the record about stage, people or timing?\n2. Trust rule - flag any invented customer, quotation, metric, implied\ndeadline, or personalisation not sourced from Input A.\n3. Factual accuracy - flag anything about our product, pricing or\ndelivery that Input B does not support.\n\nFinish with a single line: SEND, or DO NOT SEND, followed by the\nspecific sentences to fix. If a check cannot be completed with the\ninputs given, say which input is missing rather than passing it.\n```\n\nAbridged output:\n\n> \"Most teams your size see the benefit within a quarter.\" — **UNSUPPORTED**, no such claim in Input B. | \"You mentioned the audit deadline in October.\" — **CONTRADICTED**, the record has November, marked as unconfirmed. | Trust rule: implied deadline in the closing sentence. | **DO NOT SEND** — three sentences listed.\n\nA gate that never says do not send is not a gate. If yours passes everything, it is reading the draft rather than checking it, and the fix is usually that you gave it no Input B.\n\n## The mistakes people make\n\n**Verifying in the same breath.** The chain that wrote the draft will defend the draft. Open a fresh conversation, paste the sources, paste the draft. **Asking for a general opinion.** \"Is this accurate?\" earns you reassurance. Sentence-by-sentence verdicts with a source or an admission earn you a check. **Treating a pass as permission.** The gate reduces what you have to check; it does not remove your name from the email. **Building the chain for one deal.** If it only works on the account you built it around, the slots are not real slots. **Never updating it.** A chain is a template; it goes stale the same way, and it earns the same review date.\n\n## In practice\n\nBuild it on a live deal this week, not a hypothetical one. Run the chain, run the gate, and keep the first draft the gate rejected — it is the best evidence you will ever get of what your prompts quietly invent. Then store the whole thing as one asset with a header, so the version your colleague picks up is the version you fixed. AI takes the admin; the seller keeps the relationship, and the seller signs the send.",
+   "estimated_minutes": 30,
+   "learning_objectives": [
+    "Assemble a context block, three links and named slots into one reusable chain asset",
+    "Write a verification gate that runs separately from the chain that produced the draft",
+    "Judge a draft sentence by sentence against the deal record and the approved claims",
+    "Decide which points in the deal flow keep a human checkpoint once the chain is built"
+   ],
+   "case_study": "**Gannett — the mascot that was never filled in (2023)**\n\nIn August 2023 the US newspaper group Gannett began publishing automatically generated recaps of local high school sport across titles including the Columbus Dispatch and The Tennessean, produced using a tool from the vendor LedeAI. Within days the stories were being shared widely online, for the wrong reasons.\n\nOne recap opened: \"The Worthington Christian [[WINNING_TEAM_MASCOT]] defeated the Westerville North [[LOSING_TEAM_MASCOT]] 2-1 in an Ohio boys soccer game on Saturday.\" Others reached for phrases such as \"a close encounter of the athletic kind\", or reported that one team had \"took victory away from\" another. Player names were missing. Several stories carried corrections referring to errors in coding, programming or style. By the end of the month Gannett had paused the experiment.\n\nNotice where it actually broke. Not in the reasoning, and not in the writing tool being incapable — in the handover. Unfilled placeholders reached readers verbatim, which means nothing between generation and publication asked the most elementary question available: is every slot filled, and does this sentence say something true about what happened? Ten seconds of human reading would have caught it.\n\nThe seller's version of this failure is quieter and considerably worse. A follow-up that goes out with a bracketed slot still in it is embarrassing and instantly obvious. A follow-up where the model has helpfully filled the slot for you — a plausible company description, a confident figure, a customer you have never served — reads perfectly and is the failure you never see. That asymmetry is the whole argument for a gate: a separate pass, with the sources in front of it, over every sentence, before anything reaches a buyer.",
+   "exercises": [
+    {
+     "order_index": 1,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "Why the gate runs separately",
+     "prompt_md": "You have drafted a follow-up in a long chain conversation and you now want it checked before sending. Why does this lesson insist that the verification prompt runs in a fresh conversation rather than as the next message?",
+     "options": [
+      "A conversation holding the draft tends to agree with it, having no sources to compare against",
+      "A conversation holding the draft runs out of room, so later instructions get dropped in part",
+      "A conversation holding the draft cannot read pasted material such as a record or price sheet",
+      "A conversation holding the draft applies the earlier word limit, which shortens the checking"
+     ],
+     "correct_answer": "A conversation holding the draft tends to agree with it, having no sources to compare against"
+    },
+    {
+     "order_index": 2,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "What the context block carries",
+     "prompt_md": "Your master chain begins with a context block that is pasted into every link rather than written once at the start. Which set of contents makes that block worth repeating?",
+     "options": [
+      "What I sell and to whom, the sources of truth, and the trust rule written as an instruction",
+      "The buyer name, the deal value, the stage in the pipeline, and the date of the last contact",
+      "The tone of voice, the word limit, the preferred greeting, and the signature block to append",
+      "The competitor list, the discount authority, the renewal date, and the account team members"
+     ],
+     "correct_answer": "What I sell and to whom, the sources of truth, and the trust rule written as an instruction"
+    },
+    {
+     "order_index": 3,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "Reading a verification verdict",
+     "prompt_md": "Your verification prompt returns a sentence marked CONTRADICTED, noting that the deal record gives November while the draft says October. What does that verdict oblige you to do before sending?",
+     "options": [
+      "Correct the draft against the record, or confirm the date with the buyer before you send it",
+      "Send as drafted, because a date given verbally on a call outranks a written internal record",
+      "Remove both dates from the draft, since any timing reference invites a dispute about scope",
+      "Ask the assistant which date is more likely correct and then use whichever it recommends"
+     ],
+     "correct_answer": "Correct the draft against the record, or confirm the date with the buyer before you send it"
+    },
+    {
+     "order_index": 4,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "A gate that passes everything",
+     "prompt_md": "A colleague reports that her verification prompt has returned SEND on every draft for a fortnight, including drafts you know contained unsourced claims. What is the most likely cause?",
+     "options": [
+      "She gave it the draft but no sources, so it has nothing to check the sentences against",
+      "She gave it too many sources, so the checking instruction was crowded out by the inputs",
+      "She gave it drafts that were short, and short messages rarely contain checkable claims",
+      "She gave it a fresh conversation each time, so it lost the standard applied previously"
+     ],
+     "correct_answer": "She gave it the draft but no sources, so it has nothing to check the sentences against"
+    },
+    {
+     "order_index": 5,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "What the Gannett pause teaches",
+     "prompt_md": "The Gannett sports recaps published in 2023 reached readers with unfilled template placeholders such as the winning team mascot still sitting in the text. Where did that process actually fail?",
+     "options": [
+      "In the handover, where nothing checked the finished output before readers ever saw it",
+      "In the template, which should have been written without any named slots to fill at all",
+      "In the vendor, whose writing tool was not capable of reporting on local sport results",
+      "In the volume, because a smaller number of recaps would have read far more naturally"
+     ],
+     "correct_answer": "In the handover, where nothing checked the finished output before readers ever saw it"
+    },
+    {
+     "order_index": 6,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "The four parts of the chain",
+     "prompt_md": "List the four parts of a finished deal-flow chain as this lesson defines them, and say in one sentence what each contributes.",
+     "correct_answer": "The context block carries who I am, what I sell, the sources of truth and the trust rule, and is pasted into every link. The links do one job each, running from notes to record to buyer-facing draft to internal next-step proposal. The slots are the named brackets holding everything that changes between deals, with an instruction to stop rather than run when one is unfilled. The gate is a separate verification prompt that checks any buyer-facing draft against the record and the sources before anything is sent."
+    },
+    {
+     "order_index": 7,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "Three verdicts, not one opinion",
+     "prompt_md": "Explain why the verification prompt asks for a verdict on every sentence rather than an overall judgement on the draft.",
+     "correct_answer": "An overall judgement invites reassurance, because a fluent draft reads as a good one and nothing forces a comparison with the sources. Sentence-level verdicts force the check to happen against the record and the claims list, and they make the seller a short list of exact fixes rather than a vague sense that something may be off. Requiring a source location for every name, number, date and quotation is what turns the exercise into verification rather than reading."
+    },
+    {
+     "order_index": 8,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "What the gate does not do",
+     "prompt_md": "A colleague says the verification prompt means he no longer needs to read his own drafts. Explain what is wrong with that, and what the gate actually changes.",
+     "correct_answer": "The gate narrows what needs attention; it does not transfer responsibility. It has only the inputs pasted into it, so anything the record itself gets wrong passes through unnoticed, and judgement about timing, tone and whether the message should be sent at all is outside its remit. The seller signs the send, so the honest use of the gate is a faster and better-targeted read, not the absence of one."
+    },
+    {
+     "order_index": 9,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "Testing that the slots are real",
+     "prompt_md": "You built your chain around one live account. Describe how you would test whether it is genuinely reusable, and what result would tell you it is not.",
+     "correct_answer": "Run it unchanged on a different deal of a different shape, such as a renewal or a competitive displacement, filling only the slots. If it needs the instructions rewritten rather than the brackets refilled, the account-specific detail is still buried in the prompt text and the slots are not real slots. The other tell is a colleague running it and producing something you would not send, which usually means the context block or the must-never-say list was carried in your head rather than in the asset."
+    },
+    {
+     "order_index": 10,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "Where human checkpoints stay",
+     "prompt_md": "Having built the chain and the gate, name the points in your deal flow where a human decision must remain, and explain why automation stops there.",
+     "correct_answer": "The decision to send, and what is being asked of the buyer, stays human because that is the relationship rather than the admin. Any commitment on price, scope or dates stays human because it binds the business and must come from an approved source. Anything the gate marks unsupported or contradicted stays human, since resolving it needs a fact from outside the chain. Reading the room in a live conversation also stays human, because the chain only ever sees what was written down afterwards."
+    },
+    {
+     "order_index": 11,
+     "type": "short_answer",
+     "language": "prompt",
+     "marks": 5,
+     "title": "Prompt Lab: the master deal-flow chain",
+     "prompt_md": "This is the graded deliverable. Write your master chain template: one reusable asset, with a context block, three named links and clearly named placeholders, that you could hand to a colleague and they could run on a live deal tomorrow.\n\nA strong submission states the trust rule as an instruction rather than an aspiration, points at sources of truth instead of hard-coding prices or claims, names every slot that changes deal to deal, makes each link produce a readable output that feeds the next, marks which link is buyer-facing, and refuses to run when a slot is still unfilled.",
+     "correct_answer": "MASTER DEAL-FLOW CHAIN\nOwner: [MY NAME] | v1, last checked [DATE] | Run the links in order, in one conversation. Run the verification gate separately.\n\nCONTEXT BLOCK - paste at the top of every link below\nI sell [PRODUCT] to [BUYER TYPE] at [COMPANY TYPE AND SIZE]. My sources of truth are the current price sheet, the approved claims list, and my deal record for this account; nothing may be stated as fact unless it appears in one of those. Do not invent customer names, quotations, metrics or case studies. Do not imply a deadline, a discount or a scarcity I have not set. Personalisation must come from research I have supplied, never from plausible inference. Plain British English, no superlatives. If any bracketed slot below is still unfilled, do not produce the output - name the unfilled slots and stop.\n\nLINK 1 - CALL NOTES TO DEAL RECORD\nTurn my raw notes into a record under exactly these headings: What was said; What changed since last contact; Who was present and what each appears to care about, based only on what they said; Objections in their own words where I recorded them; Every number, date, name and quotation I recorded, listed separately for verification; Open questions; NOT STATED - anything a follow-up might want that my notes do not answer, including budget, decision process, timeline and competing options. Add nothing that is not in the notes.\nMY NOTES: [PASTE]\n\nLINK 2 - DEAL RECORD TO BUYER-FACING DRAFT (this is the only link a buyer sees)\nUsing only the record produced by Link 1, draft [EMAIL / MESSAGE] to [BUYER NAME], [BUYER ROLE], under [WORD COUNT] words. Purpose: confirm what I heard so they can correct me, and ask for exactly one next step - [NEXT STEP AND TIMEFRAME]. Ignore everything under NOT STATED entirely, including as an implied question. Describe our product only in wording from the approved claims list. Then list, separately, every sentence that depends on something the record marks open or not stated.\nRECORD: [PASTE LINK 1 OUTPUT]\n\nLINK 3 - RECORD AND DRAFT TO NEXT-STEP PROPOSAL (internal only)\nOutline what I should put in front of [COMPANY] next: the sections it needs, what evidence each section requires and where that evidence comes from, which open questions must be answered before any number is written, and anything that would need a claim we cannot currently evidence. Do not write pricing. Do not write the proposal.\nRECORD AND DRAFT: [PASTE]\n\nBEFORE SENDING: run the verification gate in a fresh conversation. Do not send anything from Link 2 that the gate has not cleared."
+    },
+    {
+     "order_index": 12,
+     "type": "short_answer",
+     "language": "prompt",
+     "marks": 5,
+     "title": "Prompt Lab: the verification gate",
+     "prompt_md": "This is the second graded deliverable. Write the verification prompt you will run, in a fresh conversation, on any draft before it reaches a buyer.\n\nA strong submission takes the sources and the draft as separate inputs, forbids rewriting or improving, works sentence by sentence with a limited set of verdicts, demands a source location for every name, number, date and quotation, runs the three checks of deal context, the trust rule and factual accuracy, ends with a clear send or do-not-send line, and reports a missing input rather than passing a check it could not perform.",
+     "correct_answer": "You are checking a draft before I send it to a customer. You did not write it. Do not rewrite it, improve it, shorten it or comment on style. Your only job is to tell me what in it is supported and what is not.\n\nINPUT A - my deal record for this account: [PASTE]\nINPUT B - the approved claims list and current price sheet: [PASTE]\nINPUT C - the draft I intend to send: [PASTE]\n\nStep 1. Go through Input C sentence by sentence. For each sentence, return the sentence and one verdict only: SUPPORTED - it is stated in A or B; UNSUPPORTED - it is not; CONTRADICTED - A or B says otherwise. For every customer name, figure, percentage, date, deadline and quotation, state exactly where in A or B you found it. If you cannot point to it, the verdict is UNSUPPORTED. Never close a gap by reasoning about what is probably true, and never treat something as established because it appears elsewhere in the draft.\n\nStep 2. Run three checks and report each separately.\nDeal context: does the draft ask for the single next step named in Input A, and does anything in it contradict the record on stage, people, timing or what was agreed?\nTrust rule: flag any invented customer name, quotation or metric; any implied deadline, discount or scarcity not set by me; and any personalisation that does not trace to research recorded in Input A.\nFactual accuracy: flag any statement about our product, pricing, integrations or delivery that Input B does not support, including statements that are true but described in wording the claims list does not use.\n\nStep 3. Finish with one line: SEND, or DO NOT SEND. If DO NOT SEND, list only the sentences to fix, each with the reason in a few words. Do not produce a corrected version.\n\nIf you cannot complete a check with what I have given you - for example if Input B does not cover a claim in the draft - say which input is missing and mark that check INCOMPLETE. Do not pass a check you could not perform."
+    }
+   ]
+  }
+ ]
+}

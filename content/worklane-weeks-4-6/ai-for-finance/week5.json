@@ -1,0 +1,464 @@
+{
+ "week": 5,
+ "lessons": [
+  {
+   "order_index": 1,
+   "title": "Building a finance assistant that speaks your organisation's language",
+   "theory_md": "Ask three people in a finance team what sits inside \"other operating costs\" and you can get three answers. Ask what the capitalisation threshold is, or what the cut-off is for intercompany recharges, and the answers are somewhere: in the chart of accounts, in a policy note somebody wrote four years ago, in a calendar on a shared drive, and in the head of whoever has been there longest. So the same questions get asked every close, and the controller answers them in three separate meetings.\n\nType one of those questions into a general assistant and you get a fluent, textbook answer: standard accounting-framework flavour, and no relationship to your policy, your thresholds, your account names. That is worse than an unhelpful answer, because it reads as authoritative.\n\n## What a custom assistant actually is\n\nEvery major tool offers the same shape without a line of code: custom GPTs in ChatGPT, Projects in Claude, agents in Copilot, Gems in Gemini. Under the branding they are the same three parts.\n\n**Instructions** - a standing block of text the assistant reads before every answer. This is behaviour: who it is for, what it may use, how it writes, what it refuses, when it escalates.\n\n**Knowledge** - files it can consult. This is your organisation speaking: the chart of accounts, the reporting definitions, the policy notes, the glossary.\n\n**Settings** - who can use it, and what happens to what they type.\n\nThis is the analyst's brief in a durable form. Source material becomes the knowledge files; the decision it must inform becomes the scope line; the verification step stops being something you remember to do and becomes a rule the assistant obeys out loud.\n\n## What belongs in instructions, and what belongs in knowledge\n\nThe test that settles almost every case is change frequency. Instructions are *how it behaves* and change when your standards change. Knowledge is *what it knows* and changes when a document is reissued.\n\nInto knowledge: the chart of accounts with what each account is genuinely used for; the reporting definitions manual (how gross margin, headcount and recurring revenue are defined here, not in general); policy notes on capitalisation, revenue recognition and accruals; the reporting calendar with cut-offs and owners; the glossary of internal terms and entity codes; materiality thresholds; and three or four pieces of commentary the finance director accepted, as the style reference.\n\nInto instructions: the citation rule, the refusal rule, the confidentiality rule, the commentary house style, the escalation path.\n\nInto neither: this month's actuals. Live numbers do not belong in permanent knowledge, because a knowledge file has no expiry date and a stale figure quoted with confidence is the failure this course exists to prevent. Actuals go in per conversation, with the period stated.\n\n## The tier question, which is a confidentiality question\n\nConsumer tiers are built for individuals. Depending on the provider and the settings, conversations may be retained, reviewed, or used to improve the model, and no administrator can see or control any of it. Enterprise and team tiers exist because organisations demanded the opposite: no training on your content by default, administrative control, retention settings.\n\nThe hard line: if you cannot answer *who can see this, how long is it kept, and is it used for training*, the file does not go in. Management accounts before release, anything price-sensitive, payroll data, customer-identifying detail - none of that goes into a consumer-tier assistant.\n\nThere is usually a middle path. Definitions, policies and the glossary are rarely confidential; they are internal. An assistant loaded with those alone gets most of the value at a fraction of the exposure.\n\n## Worked example one: the instruction block\n\nA management-reporting assistant for a three-entity group, with the definitions pack loaded:\n\n```\nYou are the reporting assistant for the group finance team.\nYou answer questions about our reporting definitions, chart of\naccounts, accounting policies and commentary standards.\n\nAnswer only from the attached files. If the answer is not in\nthem, say \"not covered in the loaded documents\" and name who\nowns that question. Every answer cites the file and section.\n\nNever produce a figure. If asked for a number, say where that\nnumber is sourced from and what the definition is.\n\nStyle: driver first, quantified, no adjectives, British\nspelling, no speculation about future performance.\n\nThis runs on our enterprise workspace. Do not paste unreleased\nresults, payroll data or named customer data into it.\n```\n\nAsked \"do we capitalise the new warehouse software?\", it answers in the shape you wanted: *Policy note 4.2: internal-use software is capitalised where the licence term exceeds twelve months and spend exceeds the threshold in 4.2.1; configuration is expensed. Implementation labour is not covered in the loaded documents - the Group Financial Controller owns that call.*\n\n## Worked example two: building the definitions file\n\nYou rarely have a clean definitions pack. You have fragments. Give the fragments to an assistant and ask for the pack, with the conflicts left in:\n\n```\nI am building a reporting definitions file for our finance\nassistant. Below are four sources: the close checklist, two\npages of the FY24 policy notes, the ledger account\ndescriptions, and my handover notes.\n\nProduce one file: header (owner, valid-from date, sources),\nthen revenue definitions, cost definitions, thresholds, calendar.\n\nWhere sources disagree, write both versions under a heading\n\"CONFLICT - needs owner decision\". Do not resolve them.\nDo not add anything from general accounting knowledge.\nList every term you expected to find and did not.\n```\n\nAbridged output: *CONFLICT - needs owner decision. Recurring revenue: the close checklist says contracted revenue with a term of twelve months or more; the ledger description says all subscription billings including monthly. Gaps: no definition supplied for intercompany recharge, headcount basis, or FX rate policy.*\n\nTwo conflicts and three gaps, surfaced in a minute, that would otherwise have produced two different answers to the same board question.\n\n## Where this goes wrong\n\nUploading the entire finance drive: more files make retrieval worse, and superseded policy notes get quoted as current. Writing instructions as personality rather than policy - \"be a helpful finance expert\" tells it nothing, while \"answer only from the attached files and cite the section\" tells it everything. Loading numbers, which it will quote for months. And choosing the tier after the files have gone in.\n\n## In practice\n\nBuild it once, in an hour, from documents you have. Name an owner and a review date on every knowledge file. Keep the instruction block short enough to read aloud. And remember what you have built: not a source of numbers, but a fast, literal colleague who has read every policy note and never pretends to remember one it never saw.",
+   "estimated_minutes": 28,
+   "learning_objectives": [
+    "Separate assistant instructions from knowledge files using a change-frequency test",
+    "Assemble a finance knowledge pack from the chart of accounts, definitions, policies, glossary and accepted commentary",
+    "Decide the enterprise-versus-consumer tier question before any confidential material is loaded",
+    "Write an instruction block that fixes sources, citation, refusal behaviour and commentary style"
+   ],
+   "case_study": "**Standard Chartered — putting the bank's own material behind an internal assistant (2025)**\n\nIn March 2025 Standard Chartered announced SC GPT, a generative AI tool rolled out across 41 markets and made available to more than 70,000 employees. According to the bank's own announcement, the intended uses were operational: content generation, translation and client-enablement material, software engineering support, and scaling how risks are measured, managed, recorded and reported. It was not launched as a public-facing product, and it was not launched as a free-for-all.\n\nTwo details in the bank's framing matter more to a finance team than the headline number of users. The first is that the deployment was internal and governed: the Group Chief Data Officer described the tool as built with strong governance, with ethical AI principles at its core. A bank does not put an assistant in front of 70,000 people on a consumer subscription; the whole exercise depends on knowing where the material goes and who can see it. That is the tier question, decided at scale before any file is loaded.\n\nThe second is the pace. Later trade coverage noted that although the tool was made available to more than 70,000 staff, active use had reached roughly 20,000 across functions such as operations, technology, risk and communications - meaning adoption ran well behind availability. That gap is the ordinary reality of internal assistants. Making one available is a week of work; making one that people trust with their own reporting questions is a matter of what you load into it and how visibly it behaves.\n\nFor a finance analyst the transferable point is not the scale but the sequence. Decide the tier and the governance first, because that constrains what may be loaded at all. Load the organisation's own material second, because that is what makes the answers yours rather than generic. Expect adoption to follow trust rather than announcements - people use an assistant that has been right about their chart of accounts twice, and quietly abandon one that has been confidently wrong once.",
+   "exercises": [
+    {
+     "order_index": 1,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "Instructions or knowledge",
+     "prompt_md": "You are deciding where your capitalisation policy should live in a custom finance assistant: written into the standing instruction block, or attached as a knowledge file. Which reasoning puts it in the right place?",
+     "options": [
+      "It belongs in a knowledge file, because it is source material that changes when the policy note is reissued and a file can be replaced in one action",
+      "It belongs in the instruction block, because instructions are read before every answer and therefore carry more authority than an attachment",
+      "It belongs in the instruction block, because knowledge files are only consulted when the analyst names the document inside the question",
+      "It belongs in both places at once, because repeating the same policy twice makes the assistant more certain when it applies the rule"
+     ],
+     "correct_answer": "It belongs in a knowledge file, because it is source material that changes when the policy note is reissued and a file can be replaced in one action"
+    },
+    {
+     "order_index": 2,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "The file that should not be loaded",
+     "prompt_md": "A colleague proposes loading four items as permanent knowledge into the team assistant: the chart of accounts, the reporting definitions manual, the glossary of entity codes, and the current month trial balance. Which item should be kept out, and why?",
+     "options": [
+      "The trial balance, because a knowledge file has no expiry date and the assistant would keep quoting last month figures as current",
+      "The glossary of entity codes, because internal codes are the kind of detail an assistant tends to confuse with account numbers",
+      "The chart of accounts, because it is long enough to crowd out the shorter policy documents whenever the assistant searches",
+      "The reporting definitions manual, because definitions are behaviour and behaviour always belongs in the instruction block instead"
+     ],
+     "correct_answer": "The trial balance, because a knowledge file has no expiry date and the assistant would keep quoting last month figures as current"
+    },
+    {
+     "order_index": 3,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "Consumer tier, confidential file",
+     "prompt_md": "You want to build a commentary assistant this afternoon, but the only tool you can access is a personal consumer subscription, and the material you wanted to load includes the unreleased half-year results. What is the professional response?",
+     "options": [
+      "Load the definitions and policy documents only, leave the unreleased results out, and request the enterprise tier before going any further",
+      "Load everything and delete the conversation afterwards, since removing the history removes the material from the provider systems",
+      "Load everything but rename the entities and the periods, on the basis that disguised results are no longer confidential information",
+      "Load nothing at all and abandon the assistant, because no useful finance material can ever be placed on a consumer subscription"
+     ],
+     "correct_answer": "Load the definitions and policy documents only, leave the unreleased results out, and request the enterprise tier before going any further"
+    },
+    {
+     "order_index": 4,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "The line that does the most work",
+     "prompt_md": "You have room for one more sentence in the instruction block of a finance assistant that will be used by non-finance business partners. Which sentence protects the team most, given the course rule that every number must be traceable to source?",
+     "options": [
+      "Answer only from the attached documents, cite the file and section, and say plainly when something is not covered",
+      "Be a helpful and knowledgeable finance expert who explains accounting concepts clearly to non-specialist colleagues",
+      "Keep every answer under two hundred words and use plain language wherever an accounting term can be avoided",
+      "Where the loaded documents are unclear, apply standard accounting practice to give the most likely answer"
+     ],
+     "correct_answer": "Answer only from the attached documents, cite the file and section, and say plainly when something is not covered"
+    },
+    {
+     "order_index": 5,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "Header discipline",
+     "prompt_md": "Your reporting definitions pack has been in the assistant for seven months and nobody can remember whether it reflects the current policy. Which single practice would have prevented that situation from arising in the first place?",
+     "options": [
+      "A header on every knowledge file naming the owner, the valid-from date and the review date, checked when the pack is loaded",
+      "A monthly instruction to the assistant asking it to confirm whether the documents it holds are still current and accurate",
+      "A rule that only the finance systems manager may upload files, so that the number of people making changes stays small",
+      "A longer instruction block explaining the policy area in detail, so the loaded file matters less to the quality of answers"
+     ],
+     "correct_answer": "A header on every knowledge file naming the owner, the valid-from date and the review date, checked when the pack is loaded"
+    },
+    {
+     "order_index": 6,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "The change-frequency test",
+     "prompt_md": "Explain the test you use to decide whether something goes into the instruction block or into a knowledge file, and apply it to two items: the house style for variance commentary, and the group materiality thresholds.",
+     "correct_answer": "The test is what the item is and what makes it change. Instructions describe how the assistant behaves and change when our standards change; knowledge files describe what the organisation knows and change when a document is reissued. House style for variance commentary is behaviour, so it belongs in the instruction block, where it applies to every answer. Materiality thresholds are source material owned by a policy document, so they belong in a knowledge file with an owner and a valid-from date, and that file is replaced when the policy is reissued."
+    },
+    {
+     "order_index": 7,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "Two questions before you upload",
+     "prompt_md": "Before loading any finance document into an assistant you ask two questions about the tool itself. State them, and explain what you do when you cannot answer either one.",
+     "correct_answer": "The two questions are who can see what I put in, and what happens to it afterwards - specifically how long it is retained and whether the content is used to train the model. If I cannot answer both, the document does not go in. I fall back to material that is internal but not confidential, such as definitions, the chart of accounts structure and the glossary, and I escalate the tier question to whoever owns tooling before any results, payroll or customer data is loaded."
+    },
+    {
+     "order_index": 8,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "Why the whole drive fails",
+     "prompt_md": "A colleague suggests saving time by loading the entire finance shared drive as knowledge, on the basis that more material can only help. Give the two strongest reasons this makes the assistant less reliable rather than more.",
+     "correct_answer": "First, retrieval degrades: with hundreds of overlapping documents the assistant surfaces whichever text looks most similar to the question rather than the authoritative one, so two people asking the same question get different answers. Second, superseded material gets quoted as current, because a drive holds every prior version of every policy note and the assistant has no way of knowing which one is in force. A small curated pack with owners and dates outperforms a large one, and it can actually be reviewed."
+    },
+    {
+     "order_index": 9,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "Speaking the organisation language",
+     "prompt_md": "Your assistant writes technically correct commentary that nobody in your organisation would recognise as ours. Describe what you would add to the build to fix this, and where each part belongs.",
+     "correct_answer": "I would add two things. In the instruction block, an explicit house style: driver first, quantified against the stated comparative, no adjectives, no speculation about future performance, British spelling. In the knowledge files, three or four pieces of commentary the finance director actually accepted, labelled as the style reference, so the assistant can pattern-match against real approved output rather than a description of it. The glossary of internal terms and entity codes goes into knowledge as well, so the vocabulary matches ours."
+    },
+    {
+     "order_index": 10,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "Numbers and the assistant",
+     "prompt_md": "Your finance assistant is loaded with definitions and policies but no figures. A business partner asks it what the September gross margin was. Explain what it should do, and why that behaviour is the right design.",
+     "correct_answer": "It should decline to produce the figure, state that it holds definitions and policies rather than actuals, give the reporting definition of gross margin as used here, and point to the system of record and the owner who can supply the number. That is the right design because the hard line in this work is that every number is traced to source; an assistant that supplies figures from memory or from a stale loaded file breaks that line invisibly. Keeping numbers out of permanent knowledge makes the failure impossible rather than unlikely."
+    },
+    {
+     "order_index": 11,
+     "type": "short_answer",
+     "language": "prompt",
+     "marks": 5,
+     "title": "Prompt Lab: build the reporting definitions pack",
+     "prompt_md": "You have four fragments covering how your organisation defines things: an extract from the month-end close checklist, two pages of last year policy notes, the account descriptions exported from the ledger, and your own notes from a handover.\n\nWrite the prompt that turns them into a single reporting definitions file you could load as knowledge. A strong prompt states the role and the purpose, fixes the exact structure including a header with owner and valid-from date, forbids anything drawn from general accounting knowledge, requires conflicts between sources to be surfaced rather than resolved, and asks for the gaps to be listed by name.",
+     "correct_answer": "I am a management accountant in a three-entity group. I am building the reporting definitions file that will be loaded as knowledge into our finance assistant, so it must contain only what our own documents say.\n\nBelow are four sources: an extract from our month-end close checklist, two pages of the FY24 policy notes, the account descriptions exported from the ledger, and my handover notes.\n\nProduce one file with this structure. Header: file name, owner, valid-from date, review date, and the list of the four sources with their dates. Then four sections - revenue definitions, cost definitions, thresholds and materiality, calendar and cut-offs. Under each definition, give the wording and then the source it came from in brackets.\n\nRules. Use only the four sources below. Do not add anything from general accounting practice, and do not smooth over vague wording - quote it as it stands. Where two sources define the same term differently, write both versions under a heading CONFLICT - needs owner decision, name the two sources, and do not choose between them. Where a term is used in one source but never defined anywhere, list it at the end under GAPS - definition required, with the source that used it.\n\nFinish with a short note to me listing what has to be decided by a named owner before this file is safe to load."
+    },
+    {
+     "order_index": 12,
+     "type": "short_answer",
+     "language": "prompt",
+     "marks": 5,
+     "title": "Prompt Lab: classify the material before it is loaded",
+     "prompt_md": "Before building the assistant you have to decide what may be loaded at all. You have a list of fifteen candidate documents ranging from the chart of accounts to the unreleased half-year pack and a payroll reconciliation.\n\nWrite the prompt that produces a defensible loading decision for each one. A strong prompt describes the tier you are actually on and who can reach the assistant, sets the classification categories, requires a reason and a named approver for every exclusion, insists that anything uncertain is treated as excluded, and asks for a redacted or substitute alternative wherever a document is refused.",
+     "correct_answer": "I am a finance analyst preparing to build a custom assistant for our management reporting team. It will run on our organisation enterprise workspace, where content is not used for model training and an administrator controls retention; it will be available to the eleven people in finance and to four business partners outside finance.\n\nBelow is a list of fifteen candidate documents with a one-line description of each.\n\nFor every document, return a row with: document, classification (public, internal, confidential, restricted), decision (load, load redacted, do not load), the reason in one sentence, and the person or role who has to approve it if the decision is anything other than load.\n\nRules. Treat anything unreleased, price-sensitive, personally identifying or customer-identifying as at least confidential. If you cannot tell from my description which category a document falls into, classify it as confidential and mark the decision as do not load pending clarification - do not guess in the permissive direction. Where you refuse a document, propose the nearest safe substitute that would give the assistant the same capability, for example the definitions behind a report rather than the report itself.\n\nThen give me two short lists: what I can load today, and what I need a decision on first. Do not include general advice about AI policy - only decisions about these fifteen documents."
+    }
+   ]
+  },
+  {
+   "order_index": 2,
+   "title": "Testing it before finance relies on it",
+   "theory_md": "No finance team would put a new reporting spreadsheet into the close without reconciling it to something. You would tie it back, you would test the edge months, you would get a second pair of eyes on the formulas. Then the same team stands up a custom assistant, asks it four questions it happens to answer well, and tells the business partners it is ready.\n\nAn assistant that is right nine times out of ten is not ninety per cent useful. It is a device for putting one wrong number into a board pack while everybody has stopped checking, because the first nine answers were good. The reason for testing is not scepticism about the technology. It is that you cannot tell a right answer from a wrong one by looking at it, and neither can the business partner who asked.\n\n## What a test set for a finance assistant looks like\n\nNot a demo. A written list of fifteen to twenty-five real questions, with the answers already known to you, kept in a file next to the assistant. Draw them from the queue you already answer: the questions business partners actually asked last quarter.\n\nFour categories, and the last two matter most.\n\n**Answerable.** Questions your loaded documents genuinely cover. Does it get them right, and does it cite the file and section?\n\n**Not covered.** Questions that sound like finance questions but are not in the pack at all - the treatment of a lease modification, the FX rate policy you never wrote down. The correct answer is \"not covered in the loaded documents\". Anything else is a fabrication, and this is the category people leave out.\n\n**Superseded.** Questions whose answer changed. The threshold that moved in April, the definition the board revised. If the old policy note is still loaded anywhere, the assistant will quote it with total confidence.\n\n**Out of bounds.** Requests for a figure, for an opinion on whether to capitalise something material, for a draft to an external party, for anything confidential. The correct behaviour is a refusal and a named escalation.\n\n## The two failures you are hunting\n\nThe first is the invented figure. You ask what the software capitalisation threshold is and get a number that appears nowhere in your documents but is entirely plausible, because thresholds like that exist elsewhere. Easy to catch if you check, invisible if you do not.\n\nThe second is worse: misapplied policy. The assistant quotes your policy accurately and applies it to a situation the policy does not cover. Every sentence is traceable. The conclusion is still wrong. Only somebody who knows the policy will see it, which is why testing has to be done by the person who owns the definitions, not by whoever built the assistant.\n\n## Grounding rules\n\nThese are the instruction-block lines that make the failures visible instead of silent:\n\n```\nAnswer only from the loaded documents.\nCite the file and section for every statement.\nWhere a definition is asked for, quote the wording rather\nthan paraphrasing it.\nIf the documents do not cover the question, reply exactly:\n\"Not covered in the loaded documents\" and name the owner.\nIf two documents conflict, show both and do not choose.\nNever state a figure. Point to the system of record.\n```\n\nThe exact-refusal wording matters more than it looks. A vague instruction to say when it does not know produces a soft hedge in the middle of a confident paragraph, which readers skim past. A fixed phrase is searchable, countable and impossible to misread.\n\n## Worked example one: running the test set\n\n```\nYou are being tested, not consulted. Below are 20 questions\nabout our reporting definitions and policies.\n\nFor each one, return a row: question number, your answer,\nthe file and section you took it from, and a flag - GROUNDED\nif every part came from the loaded documents, PARTIAL if any\npart did not, NOT COVERED if the documents do not answer it.\n\nDo not use general accounting knowledge to fill a gap.\nDo not soften a NOT COVERED into a partial answer.\n```\n\nAbridged output: *Q7. Capitalisation threshold for internal-use software: the threshold is 5,000 per item. Source: Policy note 4.2. Flag: PARTIAL - the policy note states a threshold applies but the figure is not in the loaded text.* That PARTIAL flag is the whole exercise. The assistant produced a plausible figure and, because it was asked to declare its grounding, told you it had no source for it.\n\n## Worked example two: catching the misapplied policy\n\nTrap question, from the not-covered category: *We are terminating a software licence eighteen months early and paying an exit fee. How is the exit fee treated?*\n\nBefore the grounding rules, the answer arrived as three assured paragraphs applying the capitalisation policy to a termination payment - our own wording, wrong situation. After the rules were added and the assistant re-tested: *Not covered in the loaded documents. Policy note 4.2 addresses initial recognition of internal-use software and does not address termination payments. Owner: Group Financial Controller.*\n\nSame model, same files. The difference was one instruction line and one question that somebody thought to ask.\n\n## Re-test after every change\n\nEvery one of these invalidates your last test run: a policy note reissued, a knowledge file replaced, a line added to the instructions, a new user group given access, and the one nobody controls - the underlying model being updated by the provider. Behaviour drifts without any change of yours.\n\nSo keep the test file with the expected answers, the date it was last run, who ran it, and the result. Re-run it after every change, and put a review date in the diary regardless. It takes twenty minutes. Change one thing at a time, or you will not know which change caused the new failure.\n\n## Where this goes wrong\n\nTesting with questions you already know it handles. Accepting an answer because it reads well, without opening the cited section. Letting the builder be the only tester. Running the test once, at launch, and never again. And treating a refusal as a bad result - a \"not covered\" is the assistant working, and the number you want to watch is how often it refuses things it should answer.\n\n## In practice\n\nTwenty questions, four categories, written down before anyone else touches the assistant. Run them, record the flags, fix the instructions, re-run. Publish the pass rate to the people who will rely on it, including what it refuses to do. Trust in finance is built the way it always has been: by being checkable.",
+   "estimated_minutes": 29,
+   "learning_objectives": [
+    "Build a four-category test set of real questions with known answers before anyone else uses the assistant",
+    "Detect invented figures and misapplied policy using grounding flags and cited sections",
+    "Write grounding rules that force citation, exact refusal wording and conflict disclosure",
+    "Operate a re-test routine triggered by every policy, file, instruction or model change"
+   ],
+   "case_study": "**Patronus AI — FinanceBench, and what testing on real filings revealed (2023)**\n\nIn November 2023 Patronus AI, an AI evaluation company, published FinanceBench, described as the first benchmark built to measure how language models perform on real financial questions. It was not a toy set. The benchmark paired 150 real-world questions with 84 public company filings, so every question had a documented answer sitting in a real document, in the format finance people actually work from.\n\nThe team tested sixteen model configurations, including leading models paired with retrieval systems and with long context windows, and reviewed the answers by hand across roughly 2,400 responses. The headline result was uncomfortable: a leading model used with a retrieval system incorrectly answered or refused to answer 81% of the questions in the sample. The same configuration, given the relevant evidence directly in a long context window rather than retrieving it, failed 21% of the time - and the researchers noted that feeding entire filings into context is not a realistic enterprise pattern, because of latency and the size of real financial documents.\n\nTwo things in that result deserve care, because the number is easy to quote badly. The metric counts refusals alongside wrong answers, so part of the 81% is a model declining rather than inventing - which is the behaviour a finance team wants. And the gap between the retrieval configuration and the long-context configuration is the point: the same model, on the same questions, performed very differently depending on how the source material reached it. How you ground an assistant is not a detail. It is most of the outcome.\n\nFor a finance analyst the transferable lesson is not that assistants cannot read filings. It is that confidence and accuracy are unrelated, that the difference between a well-grounded and a poorly grounded setup is enormous and invisible from the answer itself, and that the only evidence that matters for your assistant is a test set built from your own documents and your own questions. A published benchmark tells you the failure is normal. Your own twenty questions tell you whether yours has it.",
+   "exercises": [
+    {
+     "order_index": 1,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "The category people leave out",
+     "prompt_md": "You are building a twenty-question test set for a finance assistant loaded with your definitions and policy notes. Which category of question is most often missing, and why does its absence matter most?",
+     "options": [
+      "Questions the loaded documents do not cover at all, because they are the only ones that reveal whether the assistant invents an answer",
+      "Questions with very long and detailed wording, because they reveal whether the assistant can hold a complex instruction together",
+      "Questions about prior year comparatives, because they reveal whether the assistant can handle more than one period at a time",
+      "Questions phrased in casual language, because they reveal whether the assistant copes with how business partners actually write"
+     ],
+     "correct_answer": "Questions the loaded documents do not cover at all, because they are the only ones that reveal whether the assistant invents an answer"
+    },
+    {
+     "order_index": 2,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "Two failure modes",
+     "prompt_md": "Your assistant answers a question about an early lease exit by quoting your capitalisation policy word for word and applying it to the exit payment. Every sentence is traceable to a real section. What has actually gone wrong here?",
+     "options": [
+      "Misapplied policy: the wording is genuinely yours but the situation is outside what that policy covers, so the citation hides the error",
+      "An invented figure: the assistant has produced a plausible number from general knowledge and attached one of your section references to it",
+      "A retrieval failure: the assistant has picked up an old version of the policy note that should have been removed from the knowledge pack",
+      "A refusal failure: the assistant should have declined the question but instead produced a confident answer with an unrelated citation"
+     ],
+     "correct_answer": "Misapplied policy: the wording is genuinely yours but the situation is outside what that policy covers, so the citation hides the error"
+    },
+    {
+     "order_index": 3,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "The wording of the refusal",
+     "prompt_md": "Two grounding rules are proposed for the instruction block. One says to mention it when the answer is uncertain; the other fixes an exact phrase to use when the documents do not cover a question. Why is the fixed phrase the stronger rule?",
+     "options": [
+      "A fixed phrase is searchable and countable, so gaps can be measured, while a soft hedge inside a confident paragraph gets skimmed past",
+      "A fixed phrase makes the assistant refuse more often overall, which lowers the number of answers a reviewer has to check by hand",
+      "A fixed phrase is easier for the assistant to comply with, because short instructions are followed more reliably than longer ones",
+      "A fixed phrase removes the need for citations elsewhere, because the reader can assume anything unflagged came from the documents"
+     ],
+     "correct_answer": "A fixed phrase is searchable and countable, so gaps can be measured, while a soft hedge inside a confident paragraph gets skimmed past"
+    },
+    {
+     "order_index": 4,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "When to re-test",
+     "prompt_md": "Your assistant passed its twenty-question test set in March. Since then nobody has edited the instructions or replaced a file, but it is now July. Which statement best describes whether the March result still stands?",
+     "options": [
+      "It does not stand, because the underlying model can be updated by the provider and behaviour drifts without any change of yours",
+      "It stands, because the assistant can only change when somebody edits its instructions or replaces one of its knowledge files",
+      "It stands, because the test set was passed in full and a passed test set covers every question the assistant will later face",
+      "It does not stand, because test sets expire after a fixed period and have to be rewritten from scratch each reporting quarter"
+     ],
+     "correct_answer": "It does not stand, because the underlying model can be updated by the provider and behaviour drifts without any change of yours"
+    },
+    {
+     "order_index": 5,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "Who should run the test",
+     "prompt_md": "The analyst who built the assistant offers to run the test set as well, since they know the material best and can do it quickly this afternoon. What is the better arrangement, and what is the reason behind it?",
+     "options": [
+      "The owner of the definitions should run it, because misapplied policy is only visible to someone who knows what the policy does not cover",
+      "The analyst who built it should run it, because they know which questions the knowledge pack was assembled to be able to answer",
+      "A business partner outside finance should run it, because they will ask in the natural language that real users of the assistant use",
+      "Anyone available should run it, because the grounding flags make every failure visible without needing knowledge of the subject"
+     ],
+     "correct_answer": "The owner of the definitions should run it, because misapplied policy is only visible to someone who knows what the policy does not cover"
+    },
+    {
+     "order_index": 6,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "Four categories",
+     "prompt_md": "Name the four categories of question in a finance assistant test set, and give one example question for the category that tests fabrication.",
+     "correct_answer": "The four categories are answerable from the loaded documents, not covered by them, superseded where the answer has changed, and out of bounds where the assistant should refuse and escalate. The fabrication test is the not-covered category: a question that sounds like an ordinary finance question but is genuinely absent from the pack, such as how we treat an early termination fee on a software licence when the policy notes only address initial recognition. The correct answer is the exact refusal phrase plus the named owner."
+    },
+    {
+     "order_index": 7,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "The grounding flag",
+     "prompt_md": "Explain what a grounding flag such as GROUNDED, PARTIAL or NOT COVERED adds to a test run, using the example of a threshold figure the assistant produces that is not in the loaded text.",
+     "correct_answer": "The flag forces the assistant to declare where each part of its answer came from, which turns an invisible failure into a visible one. If it produces a capitalisation threshold that is plausible but absent from the policy note, an unflagged answer reads as authoritative and passes review; a PARTIAL flag states that the figure has no source in the loaded documents. It does not stop fabrication, but it makes fabrication reportable, which is what lets you count failures and fix the instructions."
+    },
+    {
+     "order_index": 8,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "Refusals are not failures",
+     "prompt_md": "A colleague reviewing your test results says the assistant is unusable because it refused six of twenty questions. Explain why that reading is wrong, and state what you would actually measure instead.",
+     "correct_answer": "A refusal on a question the documents genuinely do not cover is the assistant working as designed, so counting refusals as failures gets the picture backwards. What matters is two separate numbers: how often it refuses something the loaded documents do answer, which is a coverage problem to fix by loading the missing material, and how often it answers something the documents do not cover, which is fabrication and the serious failure. I would report both, with the questions attached."
+    },
+    {
+     "order_index": 9,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "One change at a time",
+     "prompt_md": "After a failed test run you want to replace a knowledge file, add two instruction lines and switch the model version. Explain the discipline you would apply and why it matters for a tool finance will rely on.",
+     "correct_answer": "I would make one change at a time and re-run the test set after each, because if three things change together and the result improves or worsens I cannot say which change caused it, and I cannot undo the harmful one without losing the useful one. I would record each run with the date, who ran it, what changed and the result, so the assistant has a history. That record is also what lets me answer an auditor or a controller asking why the tool is trusted."
+    },
+    {
+     "order_index": 10,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "The superseded policy",
+     "prompt_md": "Your materiality threshold changed in April. Describe how a superseded-policy question works in your test set, and what a failure on it tells you to go and fix.",
+     "correct_answer": "The question asks for the threshold in plain terms and the expected answer is the post-April figure, quoted from the current policy note with its section. If the assistant returns the old figure, the fault is almost never the model: an outdated document is still in the knowledge pack, or the current one was never loaded. So the fix is to the pack rather than the instructions, and the check afterwards is to search the loaded material for the old wording and confirm no copy of it remains."
+    },
+    {
+     "order_index": 11,
+     "type": "short_answer",
+     "language": "prompt",
+     "marks": 5,
+     "title": "Prompt Lab: build the test set",
+     "prompt_md": "You have a custom assistant loaded with your reporting definitions, chart of accounts and three policy notes, and a folder of real questions business partners asked last quarter.\n\nWrite the prompt that produces the test set itself. A strong prompt states what the assistant holds, requires the four categories with a stated number of questions in each, insists that the not-covered questions be genuinely absent from the loaded material rather than obscure, asks for the expected answer and the acceptance criterion for every question, and forbids the assistant from answering the questions while it is writing them.",
+     "correct_answer": "I own a custom finance assistant for our management reporting team. It holds four knowledge files: our reporting definitions manual, the chart of accounts with usage notes, and three policy notes covering capitalisation, revenue recognition and accruals. I am pasting the contents list of those files below, plus thirty real questions our business partners asked last quarter.\n\nWrite me a twenty-question test set, as a table, in four categories: eight ANSWERABLE questions the loaded files genuinely answer, five NOT COVERED questions that sound like ordinary finance questions but are absent from these files, four SUPERSEDED questions where an answer may have changed, and three OUT OF BOUNDS questions asking for a figure, an opinion or an external draft.\n\nFor every question give: the number, the question as a business partner would phrase it, the category, the expected answer, the file and section the expected answer should be cited from (or NONE), and the acceptance criterion in one line - what the response must contain to count as a pass.\n\nRules. Do not answer the questions yourself in the table. For NOT COVERED, choose subjects a finance team plausibly asks about but that these specific files do not address, and state in one line why each is absent. Flag any question you are unsure about rather than including it silently. Finish by listing which of my thirty real questions you did not use and why."
+    },
+    {
+     "order_index": 12,
+     "type": "short_answer",
+     "language": "prompt",
+     "marks": 5,
+     "title": "Prompt Lab: the grounded test run",
+     "prompt_md": "Your test set is written and you are about to run it against the assistant for the first time.\n\nWrite the prompt that runs it. A strong prompt puts the assistant into test mode rather than advice mode, fixes the output as one row per question, requires a source citation and a grounding flag on every answer, forbids the use of general accounting knowledge to fill a gap, forbids softening a not-covered result, and ends by asking for the summary counts you will report to whoever is deciding whether to trust the tool.",
+     "correct_answer": "You are being tested, not consulted. Below are twenty numbered questions about our reporting definitions and policies. Answer each one using only the documents loaded into this assistant.\n\nReturn one row per question with these columns: number, your answer in no more than three sentences, the file and section you took it from, and a grounding flag. Use GROUNDED when every part of the answer came from the loaded documents, PARTIAL when any part of it did not, and NOT COVERED when the documents do not answer the question at all.\n\nRules. Do not use general accounting knowledge, standard practice or anything you know from outside these files to fill a gap - flag the gap instead. Do not soften a NOT COVERED into a partial answer, and do not add caveats in place of a flag. If two loaded documents disagree, show both and mark the row CONFLICT. Where you state any figure, the row must name the document and section that figure appears in, or the flag must be PARTIAL.\n\nAfter the table, give me four counts: GROUNDED, PARTIAL, NOT COVERED and CONFLICT, and then list the question numbers where you stated a figure without a source. Do not offer improvements to the questions and do not comment on your own performance."
+    }
+   ]
+  },
+  {
+   "order_index": 3,
+   "title": "Practical: ship a tested finance assistant",
+   "theory_md": "This is a build session. By the end of it you should have an assistant that somebody other than you has used successfully, a test run you can show, and two written artefacts: the instruction block and the reliability protocol. Those two are what you are graded on, and they are also what you would hand to a colleague if you left tomorrow.\n\nEverything the course has taught converges here. The analyst's brief - source material, the decision it must inform, the verification step - is what an assistant is, written down and made permanent. The hard lines carry across unchanged: every number traced to source, confidentiality respected, professional duty over speed.\n\n## The build, in six steps\n\n**One: scope and tier, before anything is loaded.** Write three sentences. Who uses it. What it is for. What it must never do. Then name the tier you are actually on and who administers it. If the answer is a personal consumer subscription, the scope narrows to material that is internal but not confidential.\n\n**Two: the knowledge pack.** Four to six files, no more. Reporting definitions, chart of accounts with usage notes, the policy notes that generate the most questions, the glossary, and three or four pieces of accepted commentary as a style reference. Every file gets a header: owner, valid-from date, review date. No file contains live figures.\n\n**Three: the instruction block.** Seven elements, in this order: role and audience; scope and boundary; sources and the citation rule; the exact refusal phrase; the confidentiality rule; commentary style; escalation, owner and version.\n\n**Four: the test set.** Twenty questions in the four categories from the last lesson - answerable, not covered, superseded, out of bounds - each with its expected answer and acceptance criterion, written before the first test run.\n\n**Five: run, fix, re-run.** One change at a time. Record the date, who ran it, what changed, and the counts.\n\n**Six: the card.** Half a page pinned where the assistant lives: name, version, owner, what it does, what it refuses to do, last tested date, pass rate, and where to report a wrong answer. Without this, nobody outside your desk can tell whether to believe it.\n\n## Worked example one: the instruction block\n\n```\nROLE. You are the reporting assistant for the group finance\nteam. Your users are finance staff and four business partners.\n\nSCOPE. You answer questions on our reporting definitions,\nchart of accounts, accounting policies and commentary\nstandards. You do not forecast, advise on treatment of new\ntransactions, or draft anything for an external party.\n\nSOURCES. Answer only from the loaded documents. Cite the file\nand section in every answer. Quote definitions rather than\nparaphrasing them. If two documents conflict, show both and\ndo not choose.\n\nREFUSAL. If the documents do not cover it, reply exactly:\n\"Not covered in the loaded documents\" and name the owner.\n\nFIGURES. Never state a figure. Name the system of record and\nthe reporting definition instead.\n\nCONFIDENTIALITY. This assistant runs on our enterprise\nworkspace. Unreleased results, payroll data, customer-\nidentifying data and live deal material must not be pasted\nin. If a user pastes them, do not process the request: say\nso and tell them to route it to the Financial Controller.\n\nSTYLE. Driver first, quantified against the stated\ncomparative, no adjectives, British spelling, no speculation.\n\nOWNER. Version 1.2, owned by the Management Accountant.\nLast tested 14 October. Report wrong answers to that owner.\n```\n\nProbed with *here is the draft half-year pack, tell me what the commentary should say*, it should decline rather than oblige: *I cannot work with unreleased results in this assistant. Route this to the Financial Controller. If it helps, the commentary standard in Definitions section 6 is: driver first, quantified against budget, exceptions above the materiality threshold only.*\n\nThat is the behaviour worth having. It refused the request and still gave the user something useful.\n\n## Worked example two: the reliability protocol\n\nThe protocol is a page, not a paragraph. It states what is tested, how, by whom, how often, and what result blocks release:\n\n```\nRun the 20-question set. Record for each: answer, source\ncited, grounding flag. Then report four counts and two\nspecific lists.\n\nBlocking failures - the assistant is not released if either\noccurs: any figure stated without a document and section, or\nany NOT COVERED question answered from general knowledge.\n\nNon-blocking: a question the documents do answer but the\nassistant refused. Log it as a coverage gap and load the\nmissing material.\n\nRe-run in full after: any file replaced, any instruction\nedited, any policy reissued, any change of model version,\nand every quarter regardless.\n```\n\nAn abridged first run: *GROUNDED 13, PARTIAL 4, NOT COVERED 3, CONFLICT 0. Figures stated without a source: Q7, Q12. Not-covered questions answered anyway: Q16.* One instruction line was added about figures, nothing else changed, and the re-run returned *GROUNDED 15, PARTIAL 0, NOT COVERED 5, figures without source: none*. That is a releasable result, and the two runs together are the evidence.\n\n## What shipped means\n\nNot that it exists. Shipped means somebody other than you asked it a real question and got a defensible answer; it has an owner, a version and a test date; and the finance director knows what it does and what it refuses. If the test has not been run, it has not shipped, whatever the close calendar says. That is professional duty over speed, applied to your own tooling.\n\n## Where this goes wrong\n\nAnnouncing it before testing it. Shipping the demo. Letting scope creep from definitions into forecasting because somebody asked nicely. Publishing no card, so users invent their own idea of what it can do. And leaving no owner, which means the first wrong answer has nowhere to go and quietly ends the whole thing.\n\n## In practice\n\nGive it ninety minutes. The assistant is the smaller half of the work; the instruction block and the protocol are what make it trustworthy, and they are the two things you can hand over. Build it, test it, card it, then tell people it exists - in that order.",
+   "estimated_minutes": 30,
+   "learning_objectives": [
+    "Build a scoped finance assistant in six steps from tier decision to published card",
+    "Write an instruction block carrying all seven elements including confidentiality and citation rules",
+    "Operate a reliability protocol that separates blocking failures from coverage gaps",
+    "Judge when an assistant has shipped rather than merely been built"
+   ],
+   "case_study": "**Morningstar — an assistant that answered only from the firm's own research (2023)**\n\nOn 11 May 2023 the investment research firm Morningstar launched a beta version of a generative AI chatbot called Mo across several of its platforms, including Morningstar Investor, its Research Portal, Direct and Advisor Workstation. What makes it worth studying is not the launch but the architecture the company described publicly, which reads like a checklist for anyone shipping a grounded assistant.\n\nMo was powered by what Morningstar called its Intelligence Engine, which paired the firm's own investment research library with a hosted enterprise model service. A user question was routed to the engine, which held a database of embeddings built from Morningstar content; the engine identified the most responsive material and supplied that to the language model to construct a response, and the response was tested for relevance and responsiveness before being returned to the user. The design intent was explicit: to surface and summarise Morningstar's own independent research in conversational form, rather than to answer from whatever a general model happened to know.\n\nTwo boundaries went with it. Morningstar stated plainly that Mo does not provide investment advice - a scope refusal published alongside the product rather than discovered by users. And the company said it chose the hosted enterprise service partly because of the provider commitment not to use its data to train the underlying model, which is the tier decision made explicitly and for the right reason. The product also shipped labelled as a beta, which sets what a user should expect from it.\n\nFor a finance team the parallels are close enough to copy. Ground the assistant in your own material rather than the model's general knowledge. Put a check between retrieval and the user. State the scope boundary in public, not in a footnote. Decide the tier on confidentiality grounds and be able to say why. And label what stage the thing is at, so that trust in it is calibrated rather than assumed.",
+   "exercises": [
+    {
+     "order_index": 1,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "First step in the build",
+     "prompt_md": "You have ninety minutes to build and ship a finance assistant, and the knowledge files are already sitting in a folder on your desktop ready to upload. What should you do first, and why does the order matter?",
+     "options": [
+      "Write the scope and settle the tier, because what may be loaded at all depends on who administers the tool and who can reach it",
+      "Upload the knowledge files, because the assistant cannot be scoped sensibly until you can see how it behaves with real material",
+      "Write the test set, because the questions you plan to ask determine which of the files on your desktop are worth loading at all",
+      "Draft the commentary style rules, because house style is the part colleagues notice first and the hardest part to add later on"
+     ],
+     "correct_answer": "Write the scope and settle the tier, because what may be loaded at all depends on who administers the tool and who can reach it"
+    },
+    {
+     "order_index": 2,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "The blocking failure",
+     "prompt_md": "Your reliability protocol distinguishes blocking failures from non-blocking ones. Which result should block release of a finance assistant, given the course rule that every number must be traced to source?",
+     "options": [
+      "A figure stated in an answer with no document and section behind it, because that is fabrication reaching a reader unmarked",
+      "A question the loaded documents do answer that the assistant declined, because a refusal makes the tool look unreliable to users",
+      "An answer that cites the correct section but expresses the definition in different words from the ones the policy note uses",
+      "An answer that runs longer than the house style allows, because verbose commentary is what reviewers complain about most"
+     ],
+     "correct_answer": "A figure stated in an answer with no document and section behind it, because that is fabrication reaching a reader unmarked"
+    },
+    {
+     "order_index": 3,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "The confidentiality probe",
+     "prompt_md": "A business partner pastes the unreleased half-year pack into your assistant and asks it to draft the commentary. Which response shows the instruction block is doing its job properly?",
+     "options": [
+      "It declines to process unreleased results, names who the request should go to, and offers the commentary standard from the definitions file",
+      "It drafts the commentary but adds a warning at the end reminding the user that unreleased results are confidential within the group",
+      "It drafts the commentary using only the pasted figures and omits any citation, on the basis that nothing was taken from a loaded file",
+      "It declines the request without explanation, so that no further detail about the confidential material is repeated back to the user"
+     ],
+     "correct_answer": "It declines to process unreleased results, names who the request should go to, and offers the commentary standard from the definitions file"
+    },
+    {
+     "order_index": 4,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "What the card is for",
+     "prompt_md": "You are asked why the half-page card matters when the assistant already works and the team can see it in the tool list. What is the strongest justification for publishing one?",
+     "options": [
+      "Without a stated owner, version and last-tested date, users have no way to calibrate how far to trust an answer they cannot check",
+      "Without a card the assistant cannot be found by colleagues in other teams, so adoption stays limited to the people who built it",
+      "Without a card there is no record of which files were loaded, so the knowledge pack cannot be rebuilt if the assistant is deleted",
+      "Without a card the provider cannot apply enterprise retention settings, since those are configured per documented internal tool"
+     ],
+     "correct_answer": "Without a stated owner, version and last-tested date, users have no way to calibrate how far to trust an answer they cannot check"
+    },
+    {
+     "order_index": 5,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "Scope creep",
+     "prompt_md": "Three weeks after launch, business partners are asking your definitions assistant to sense-check their forecasts, and it is answering. Which response protects the work you shipped?",
+     "options": [
+      "Restate the scope boundary in the instructions, refuse forecasting explicitly, and treat forecast support as a separate tested build",
+      "Allow it, because the assistant is already loaded with the definitions that any forecast sense-check would need to draw upon anyway",
+      "Allow it but add a caution to every answer, so that users understand forecast responses carry less weight than definition responses",
+      "Withdraw the assistant from business partners entirely, since a tool used outside its scope cannot be governed once users expect more"
+     ],
+     "correct_answer": "Restate the scope boundary in the instructions, refuse forecasting explicitly, and treat forecast support as a separate tested build"
+    },
+    {
+     "order_index": 6,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "The seven elements",
+     "prompt_md": "List the seven elements of a finance assistant instruction block, and say which one a reviewer should check first when a wrong answer is reported.",
+     "correct_answer": "The seven are role and audience, scope and boundary, sources and citation rule, the exact refusal phrase, the confidentiality rule, commentary style, and escalation with owner and version. When a wrong answer is reported I would check the sources and citation rule first, because most wrong answers are either an uncited statement that came from general knowledge or a citation to a document that should no longer be in the pack. Both are visible immediately if citation is enforced."
+    },
+    {
+     "order_index": 7,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "Two runs as evidence",
+     "prompt_md": "Explain why your release evidence is two test runs rather than one, using the example of a first run that showed two figures stated without a source.",
+     "correct_answer": "One run shows a state; two runs show that a specific change fixed a specific failure. If the first run reports figures without sources at questions seven and twelve, I add one instruction line about figures, change nothing else, and re-run. A clean second run demonstrates the fix worked and that nothing else moved. Together the two runs, with the date and what changed between them, are the record I can show a controller or an auditor who asks why the tool is relied upon."
+    },
+    {
+     "order_index": 8,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "Shipped, not built",
+     "prompt_md": "Your assistant works well when you use it, but nobody else has tried it and it has no owner recorded. State whether it has shipped, and give the conditions you would insist on before saying that it had.",
+     "correct_answer": "It has not shipped. Shipped means somebody other than me has asked it a real question and received a defensible answer, the test set has been run and recorded, and it has a named owner, a version and a last-tested date published on its card so users know what it does and refuses to do. Until then it is a prototype on my desk, and calling it more than that transfers risk to colleagues who cannot check its answers."
+    },
+    {
+     "order_index": 9,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "Duty over speed",
+     "prompt_md": "It is day three of close, the assistant has not been re-tested since the policy note was reissued, and a business partner wants access today. Describe what you do and how you explain it.",
+     "correct_answer": "I do not give access until the test set has been re-run against the reissued policy note, because a superseded policy quoted confidently is exactly the failure that costs credibility, and close pressure is when a wrong answer is least likely to be checked. I explain it in those terms rather than as process: the note changed, the assistant may still hold the old wording, and the re-run takes twenty minutes. In the meantime I answer the partner myself and cite the section."
+    },
+    {
+     "order_index": 10,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "Handing it over",
+     "prompt_md": "A colleague is taking over your assistant while you are on leave for a month. State the four artefacts you hand across and what each one lets them do without asking you.",
+     "correct_answer": "The instruction block, so they can see exactly how it is meant to behave and change one line safely. The knowledge pack list with owners and valid-from dates, so they know what is loaded and who to ask when a document is reissued. The test set with expected answers, so they can re-run it after any change without designing anything. And the run log with the card, so they know when it was last tested, what the pass rate was, and what the assistant refuses to do."
+    },
+    {
+     "order_index": 11,
+     "type": "short_answer",
+     "language": "prompt",
+     "marks": 5,
+     "title": "Prompt Lab: the assistant instruction block (graded deliverable)",
+     "prompt_md": "This is the first of two graded deliverables. Write the complete instruction block for your finance assistant - the text that would be pasted into the instructions field of a custom GPT, a Claude Project, a Copilot agent or a Gem.\n\nA strong block covers all seven elements: role and audience; scope and explicit boundary; sources with the citation rule; the exact refusal phrase; the confidentiality rule naming the tier and what must never be pasted in; commentary style; and escalation with owner and version. It must forbid stating figures, require quoted definitions, and say what to do when two loaded documents conflict.",
+     "correct_answer": "ROLE. You are the reporting assistant for the group finance team of a three-entity group. Your users are eleven finance staff and four business partners outside finance.\n\nSCOPE. You answer questions about our reporting definitions, our chart of accounts, our accounting policy notes and our commentary standards, using the files loaded into you. You do not forecast, you do not advise on the treatment of new or unusual transactions, and you do not draft anything intended for a party outside the group.\n\nSOURCES AND CITATION. Answer only from the loaded documents. Every statement cites the file and the section it came from. Where a definition is requested, quote the wording from the definitions file rather than paraphrasing it. If two loaded documents conflict, show both versions with their sources, mark the answer CONFLICT, and do not choose between them.\n\nREFUSAL. If the loaded documents do not answer the question, reply exactly: Not covered in the loaded documents. Then name the owner of that subject - policy questions to the Group Financial Controller, definitions to the Management Accountant. Do not fill the gap from general accounting knowledge or standard practice, and do not offer a likely answer.\n\nFIGURES. Never state a figure, a rate, a threshold or a balance unless it appears in a loaded document, and where it does, cite the file and section. If asked for a number that is not in the documents, name the system of record and give the reporting definition instead.\n\nCONFIDENTIALITY. This assistant runs on our enterprise workspace, where content is not used to train the model and retention is administered by our IT team. Unreleased results, payroll or personal data, customer-identifying data and live deal material must never be pasted in. If a user pastes such material, do not process the request: say that you cannot work with it here and tell them to route it to the Financial Controller.\n\nSTYLE. Driver first, quantified against the stated comparative, no adjectives, British spelling, no speculation about future performance. Keep answers under two hundred words unless asked to expand.\n\nOWNER AND VERSION. Version 1.2, owned by the Management Accountant, last tested 14 October. Wrong answers are to be reported to that owner."
+    },
+    {
+     "order_index": 12,
+     "type": "short_answer",
+     "language": "prompt",
+     "marks": 5,
+     "title": "Prompt Lab: the reliability test protocol (graded deliverable)",
+     "prompt_md": "This is the second graded deliverable. Write the reliability test protocol for the assistant you have just specified - the document that proves it never invents a number or a policy.\n\nA strong protocol states what is tested and in what categories, the exact instruction given to the assistant during a run, the flags and counts recorded, which results block release and which do not, who runs it and how often, the triggers that force a re-run, and the record kept afterwards. It must be usable by a colleague who was not involved in the build.",
+     "correct_answer": "PURPOSE. To prove, before anyone relies on this assistant, that it does not state a figure without a source and does not answer a question the loaded documents do not cover.\n\nTEST SET. Twenty questions held in the test file with their expected answers: eight ANSWERABLE from the loaded documents, five NOT COVERED, four SUPERSEDED where an answer changed, three OUT OF BOUNDS asking for a figure, an opinion or an external draft. Each question carries an acceptance criterion.\n\nRUN INSTRUCTION. Paste into a fresh conversation: You are being tested, not consulted. Answer each numbered question below using only the loaded documents. Return one row per question with the number, your answer in up to three sentences, the file and section cited, and a flag - GROUNDED, PARTIAL, NOT COVERED or CONFLICT. Do not use general accounting knowledge to fill a gap. Do not soften a NOT COVERED into a partial answer. After the table, report the four counts and list every question number where a figure was stated without a source.\n\nBLOCKING FAILURES. The assistant is not released, and is withdrawn if already live, where either occurs: any figure stated without a document and section behind it, or any NOT COVERED question answered from general knowledge. Fix, then re-run in full.\n\nNON-BLOCKING. A question the documents do answer but the assistant refused is logged as a coverage gap; the missing material is loaded and the question re-run.\n\nWHO AND WHEN. Run by the owner of the definitions rather than the person who built the assistant, because misapplied policy is only visible to someone who knows what the policy does not cover. A second reviewer opens every cited section on the ANSWERABLE rows.\n\nRE-RUN TRIGGERS. Any knowledge file replaced, any instruction line edited, any policy reissued, any change of model or tool version, any new user group, and every quarter regardless. Change one thing at a time between runs.\n\nRECORD. Each run logged with date, who ran it, what changed since the last run, the four counts, the blocking failures and the fix applied. The current pass rate and last-tested date are published on the assistant card."
+    }
+   ]
+  }
+ ]
+}

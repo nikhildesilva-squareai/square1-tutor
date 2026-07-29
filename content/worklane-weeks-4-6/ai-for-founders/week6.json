@@ -1,0 +1,464 @@
+{
+ "week": 6,
+ "lessons": [
+  {
+   "order_index": 1,
+   "title": "Audit the founder’s month: what the system actually has to carry",
+   "theory_md": "## The month you actually run\n\nAsk a founder what they do and you get the vision. Look at the calendar and you get the truth: the same handful of jobs come round again and again. An investor update at the end of the month. A pipeline that goes cold unless someone chases it every week. Two hiring loops running at once. Product calls that only you can make. Support escalations that reach you because there is nobody else for them to reach. None of it is glamorous. All of it is load. And it is the same load next month.\n\nOver five weeks you have built pieces of an answer — the business context file, the chains that produce your recurring work, the assistant that answers from your own material. What you have not yet done is look at the month as a whole and decide which piece carries which load, in what order you will build the rest, and which parts you will never hand over no matter how good the tools get.\n\n## The audit: load, leverage, line\n\nTake one real month — the one that has ended, not an idealised one. List every job that recurs. For each one, write three things.\n\n**Load.** How often it happens, roughly how long it takes, and how much of that time is genuinely you rather than anyone else. A monthly investor update that eats a full day is a different problem from a weekly pipeline review that eats twenty minutes.\n\n**Leverage.** What already exists that could carry part of it — a chain from week four, the assistant from week five, a template, a colleague, or nothing yet. Be honest about \"nothing yet\"; that is the build list.\n\n**Line.** The human checkpoint that stays, and whose name is on it. The three never-outsource zones have not moved: the founder owns the decision, the founder owns the relationships, and the founder owns anything an investor or a customer will hold them to. A draft can be produced by a machine. The send cannot be automatic.\n\nThen sequence. Rank each job by frequency multiplied by hours multiplied by how damaging a poor output would be if it went out unchecked. Build for the top of that list first. Founders reliably get this backwards — they automate the interesting rare thing and keep hand-writing the weekly thing.\n\n## Worked example: the audit itself\n\nPaste your business context file, then brief the assistant like a chief of staff on their first day.\n\n```\nHere is our business context file: <paste>.\n\nBelow is my last month, taken from my calendar and sent items: <paste a plain list>.\n\nGroup it into recurring jobs. For each: how often it recurs, my rough hours,\nwhat portion needs my judgement versus my typing, and what would go wrong\nif the output were mediocre. Flag anything that touches an investor, a\ncustomer commitment, a hiring decision or a legal claim. Give it to me as a\ntable, most time-consuming first. Ask me for anything you are missing rather\nthan guessing.\n```\n\nAbridged, the reply comes back as a table: *Investor update — monthly — 6 hours — judgement 30%, assembly 70% — flag: investor-facing.* *Pipeline follow-up — weekly — 3 hours — judgement 20% — flag: customer commitment.* *Support escalations — 8 per month — 4 hours — judgement 60%.* Two useful things happen at once. You see where the hours really go, and the flags column has already drawn the line you were going to draw by hand.\n\n## Worked example: the sequencing call\n\nNow make it decide, and make it argue.\n\n```\nUsing that table and our context file, rank these jobs for me to systematise\nover the next quarter. Score each on frequency, hours, and damage-if-wrong.\nFor the top four, tell me what already exists in my pack that covers part of\nit and what is missing. For every one, name the checkpoint I keep and say who\nholds it once I hire an operations lead. Then argue the opposite ranking and\ntell me what that view would get right.\n```\n\nThe output is a build order with a reason attached to each item, plus a second ranking you can disagree with. Expect it to put the weekly pipeline chase above the monthly investor update on raw hours, and expect to override that — because the update is the one an investor will hold you to, so it earns the tighter checkpoint even though the chase eats more time. Overriding the ranking is the point. The founder still makes the call; the tool made the call visible.\n\n## Where this goes wrong\n\n**Automating the rare and interesting.** The strategy memo you write twice a year feels worth systematising. The weekly follow-up that quietly leaks deals does not feel that way, and it is the one that pays.\n\n**Counting hours saved instead of decisions improved.** Hours saved is the easy metric and the shallow one. The better question is whether the update was more honest, whether the follow-up went out at all, whether the hire was assessed against the same bar as the last one.\n\n**Letting the line drift as you grow.** The checkpoint you hold at three people quietly becomes nobody at eleven, because everyone assumes someone else has it. Write the holder down. When you hire an operations lead, the checkpoint transfers explicitly or it does not transfer at all.\n\n**Treating the context file as finished.** It was written when you had one product and no team. If it still says that after a pivot, every output built on it is confidently wrong.\n\n## In practice\n\nBlock ninety minutes. Run the audit on last month. Come out with three artefacts: a table of your recurring load, a build order for the next quarter, and a one-line note per job naming the human checkpoint and its holder. Most founders discover they have built well for two jobs and not at all for the three that consume the most time. That gap is the plan for the rest of this week — and the audit itself is worth repeating each quarter, because a growing company changes shape faster than any pack written for it.",
+   "estimated_minutes": 28,
+   "learning_objectives": [
+    "Map a real founder month into recurring jobs with load, leverage and a human checkpoint recorded against each",
+    "Sequence what to systematise next by frequency, hours consumed and damage if the output goes out unchecked",
+    "Name the checkpoint holder for every investor, customer, hiring and legal item so accountability survives hiring",
+    "Defend the three never-outsource zones as headcount rises and informal checks quietly stop happening"
+   ],
+   "case_study": "**iTutorGroup — the hiring rule that ran for years unread (2022–2023)**\n\niTutorGroup recruited English-language tutors in the United States for its online tutoring business. At some point somebody configured the application software to reject female applicants aged 55 or older and male applicants aged 60 or older automatically. This was not a model behaving oddly or a prompt producing a strange answer. It was a rule, entered deliberately, that then ran on every application that arrived afterwards. By the US Equal Employment Opportunity Commission account, more than 200 qualified applicants were rejected on that basis.\n\nThe rule surfaced the way these things usually do — by accident. An applicant who had been turned down submitted a fresh application with a more recent date of birth and was offered an interview. The EEOC brought suit in 2022 in the Eastern District of New York, and in August 2023 announced a settlement: 365,000 dollars distributed among the rejected applicants, a new anti-discrimination policy, mandatory training for everyone involved in hiring tutors, injunctions against screening on age or sex, and agency monitoring for at least five years. The commission described it as its first settlement of a case concerning the discriminatory use of AI in hiring.\n\nRead it as a founder rather than as a lawyer and the shape is familiar. Hiring is one of the five jobs that recurs every month in almost every growing company. Somebody automated part of it once, which was reasonable, and the automation then carried a decision forward indefinitely because no human checkpoint was attached to it. Nobody re-read the rule. The company kept growing around an assumption made in a single afternoon.\n\nThat is exactly what the month audit is for. Hiring goes on the load table, it gets flagged, and the line beside it names a person who reviews rejections and owns the criteria in writing. Scheduling interviews, summarising transcripts, drafting the job description — delegable, all of it. Deciding who is out is the founder zone, because it is a decision, it touches a person, and it is the kind of thing a company gets held to years later.",
+   "exercises": [
+    {
+     "order_index": 1,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "Ranking the recurring load",
+     "prompt_md": "You have listed every job that recurred in your company last month and now have to decide which one to systematise first. Which ranking basis does the founder month audit use?",
+     "options": [
+      "How often the job recurs, the hours it consumes, and how damaging a poor output would be",
+      "How interesting the job is to you, how visible it is to the team, and how new it feels",
+      "How recently the job appeared, how many tools already exist, and how quickly it finishes",
+      "How much the job costs in software fees, how technical it is, and who complains loudest"
+     ],
+     "correct_answer": "How often the job recurs, the hours it consumes, and how damaging a poor output would be"
+    },
+    {
+     "order_index": 2,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "Which column the flags belong in",
+     "prompt_md": "In the audit table you produce for a month of founder work, one column exists specifically to mark investor-facing, customer-commitment, hiring and legal-claim items. What is that column for?",
+     "options": [
+      "Marking where a human checkpoint must stay and naming the person who holds it",
+      "Marking which items can be deleted from the calendar to free up founder time",
+      "Marking which items should be moved to a cheaper assistant to reduce the bill",
+      "Marking which items produce the most output so they can be published faster"
+     ],
+     "correct_answer": "Marking where a human checkpoint must stay and naming the person who holds it"
+    },
+    {
+     "order_index": 3,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "The weekly chase versus the monthly update",
+     "prompt_md": "Your audit shows the weekly pipeline chase eating three hours a week and the monthly investor update eating six hours a month. The ranking puts the chase first. What is the sound founder response?",
+     "options": [
+      "Accept the chase as the bigger time win but keep the tighter checkpoint on the update",
+      "Reject the ranking entirely because time spent is never a useful signal for founders",
+      "Automate both fully this week so the calendar clears before the next board meeting",
+      "Drop the update from the audit because investors read it rarely and rank it lower"
+     ],
+     "correct_answer": "Accept the chase as the bigger time win but keep the tighter checkpoint on the update"
+    },
+    {
+     "order_index": 4,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "What the never-outsource zones are drawn around",
+     "prompt_md": "Across this course the never-outsource zones have stayed the same three things as the toolkit around them has changed. What are those zones drawn around, and why does that survive new tools?",
+     "options": [
+      "Accountability: the decision, the relationships, and anything you will be held to",
+      "Technology: whichever tasks the current models handle badly in this release cycle",
+      "Cost: whichever tasks are expensive to run at volume across a full trading month",
+      "Speed: whichever tasks are slower to run through a tool than to type out by hand"
+     ],
+     "correct_answer": "Accountability: the decision, the relationships, and anything you will be held to"
+    },
+    {
+     "order_index": 5,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "The checkpoint at eleven people",
+     "prompt_md": "At three people you personally read every investor update before it left. At eleven people the update went out unread by anyone senior. What failure does the audit exist to prevent here?",
+     "options": [
+      "A checkpoint with no named holder quietly becomes nobody as the company grows",
+      "A checkpoint that is named in writing becomes too slow once headcount rises",
+      "A checkpoint held by the founder stops being needed once revenue is predictable",
+      "A checkpoint written into the pack blocks the team from shipping anything at all"
+     ],
+     "correct_answer": "A checkpoint with no named holder quietly becomes nobody as the company grows"
+    },
+    {
+     "order_index": 6,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "Load, leverage, line",
+     "prompt_md": "Explain the three things you record against every recurring job in the founder month audit, and what each one is used for.",
+     "correct_answer": "Load is how often the job recurs, how long it takes and how much of it genuinely needs you, which tells you where the hours actually go. Leverage is what already exists that could carry part of it — a chain, the assistant, a template, a colleague, or nothing yet, which gives you the build list. Line is the human checkpoint that stays and the name of the person holding it. Together they turn a month of scattered work into a ranked build order with the accountability marked."
+    },
+    {
+     "order_index": 7,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "Why the interesting job is the wrong first build",
+     "prompt_md": "A founder wants to systematise the twice-yearly strategy memo before the weekly customer follow-up. Explain why the sequencing rule points the other way, and what it would cost to get this wrong.",
+     "correct_answer": "The sequencing rule ranks by frequency multiplied by hours multiplied by damage if the output is poor, and a twice-yearly memo scores low on the first two however interesting it is. The weekly follow-up recurs fifty times a year, consumes more total hours and quietly leaks deals when it does not go out. Building for the rare job leaves the recurring load untouched, so the month feels the same in three months even though something was built."
+    },
+    {
+     "order_index": 8,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "A better measure than hours saved",
+     "prompt_md": "Hours saved is the metric founders reach for first when judging their AI system. Explain why it is shallow and give two questions that measure the system better.",
+     "correct_answer": "Hours saved counts typing removed, not judgement improved, so a system can save hours while producing weaker decisions and nobody notices. Better questions ask whether the output got more honest and more consistent: was the investor update franker about the bad month, did the follow-up actually go out to every open deal, was this candidate assessed against the same written bar as the last one. Those measure whether the system changed outcomes rather than keystrokes."
+    },
+    {
+     "order_index": 9,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "Reading the iTutorGroup settlement",
+     "prompt_md": "iTutorGroup configured its application software to reject applicants automatically above certain ages, and settled with the EEOC in August 2023. Explain what a founder should take from it when automating part of a recurring job.",
+     "correct_answer": "The failure was not a model behaving strangely but a rule entered once and never re-read, which then carried a decision forward on every application that arrived afterwards. Automating a recurring job freezes whatever judgement was applied on the day it was set up, so a checkpoint has to be attached to it or the judgement never gets revisited. In practice that means hiring appears on the load table with a named person who reviews rejections and owns the criteria in writing. Drafting, scheduling and summarising are delegable; deciding who is turned down is a decision about a person that the founder answers for."
+    },
+    {
+     "order_index": 10,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "A context file written for a company you no longer run",
+     "prompt_md": "Your business context file was written when you had one product and no employees. You have since pivoted and hired four people. Explain the risk of leaving it untouched and what you would change first.",
+     "correct_answer": "Every chain, template and assistant answer is built on that file, so a stale file makes the whole system confidently wrong — pitching a product you no longer sell, quoting economics that no longer hold, describing a team that no longer exists. The first changes are the ones everything else inherits: what the company now sells and to whom, the current numbers and their as-at date, and who now holds each checkpoint. Re-run one output from each chain afterwards to see the correction land."
+    },
+    {
+     "order_index": 11,
+     "type": "short_answer",
+     "language": "prompt",
+     "marks": 5,
+     "title": "Prompt Lab: audit last month",
+     "prompt_md": "You are the founder of an eleven-person company. Last month contained: one investor update, weekly pipeline follow-ups, two hiring loops, roughly eight support escalations that reached you, and three product decisions taken in Slack. Write the prompt that turns that raw month into a structured audit table. A strong prompt supplies the business context file, gives the raw month as input rather than asking the assistant to imagine it, defines the columns you want (frequency, hours, judgement versus assembly, damage if the output is poor), asks for investor, customer, hiring and legal items to be flagged, and tells the assistant to ask for missing information rather than invent it.",
+     "correct_answer": "Here is our business context file: <paste full file, including the as-at date>.\n\nBelow is my actual last month, pulled from my calendar and sent items — do not add anything that is not in this list: <paste raw list: one investor update; weekly pipeline follow-ups across 14 open deals; two hiring loops, one senior engineer and one customer success lead; eight support escalations that reached me; three product decisions taken in Slack>.\n\nAct as a chief of staff on their first day. Group this into recurring jobs and return one table, most time-consuming first, with these columns: job, how often it recurs, my rough hours per month, the split between work that needs my judgement and work that is assembly, what would go wrong if the output were mediocre, and a flag column marking anything investor-facing, customer-committing, hiring-related or legally claim-like.\n\nRules: use only what is in the list above and the context file. Where hours are not stated, leave the cell blank and ask me for it rather than estimating. Do not suggest tools or fixes yet — this pass is description only. End with a short list of the questions you need answered before the ranking pass."
+    },
+    {
+     "order_index": 12,
+     "type": "short_answer",
+     "language": "prompt",
+     "marks": 5,
+     "title": "Prompt Lab: sequence the build and hold the line",
+     "prompt_md": "You now have the audit table. Write the prompt that turns it into a build order for the next quarter and forces the human checkpoints to be explicit. A strong prompt carries the context file and the table, states the ranking basis, asks what already exists in your pack versus what is missing, requires a named checkpoint holder for every job including who inherits it after your first operations hire, and asks for the opposing ranking so you can overrule the tool rather than obey it.",
+     "correct_answer": "Context file: <paste>. Audit table from the previous pass: <paste>.\n\nRank these jobs for me to systematise over the next quarter. Score each on three factors and show the scores: how often it recurs, hours per month, and how damaging a poor output would be if it went out unchecked.\n\nFor the top four: name what in my existing pack already covers part of it (the saved chains, the templates, the tested assistant) and state precisely what is missing.\n\nFor every job without exception: name the human checkpoint that stays, who holds it today, and who inherits it when I hire an operations lead. Treat these as non-negotiable and never propose removing them — the decision, the relationships and anything an investor or customer will hold me to stay with me.\n\nThen produce the strongest opposing ranking and tell me what that view gets right that yours misses. Finish with the three questions you would ask me before I commit to this order."
+    }
+   ]
+  },
+  {
+   "order_index": 2,
+   "title": "Run it as a documented system that survives your first hires",
+   "theory_md": "## The folder nobody else can read\n\nHere is how it fails. You hire your first operations person. On day one you share the folder — the context file, the chains, the templates with the placeholders, the assistant. You say \"it is all in there\". Two weeks later they send an investor update built on a template you retired in March, using pricing from before the pivot, with none of the checks you run in your head because those checks were never written anywhere. Nothing was broken. Nothing was documented either, which turns out to be the same thing once you are not the only person using it.\n\nA pack that only works while you are the operator is not a system. It is a habit with files attached. The difference between the two is documentation you would be willing to hand to a stranger, versioning you can roll back, and a handover that transfers ownership rather than access.\n\n## The system card\n\nGive every template and chain in your pack a short card. One screen, no more. Six fields carry almost all the value.\n\n**Purpose.** What this produces and when it is used. One sentence. \"Monthly investor update, first draft, sent on the third working day.\"\n\n**Inputs.** Exactly what must be pasted in before it runs — the business context file, this month's numbers with their as-at date, last month's update, the list of asks. If an input is missing, the template does not run; that is a rule, not a preference.\n\n**The prompt itself.** The current version, with its placeholders marked.\n\n**What good looks like.** Two or three lines describing an acceptable output, and one line describing the near-miss you keep seeing — the polished draft that quietly drops the bad news, the follow-up that invents a feature you do not ship.\n\n**Verification step.** The specific check run before anything leaves the building: which claims get traced to a source, which numbers get read against the actual figures, and who signs it off. This field is the reason the card exists.\n\n**Version and holder.** A version number, the date of the last change, one line on what changed, and the name of the person who holds the checkpoint today.\n\n## Worked example: turning a template into a card\n\nYou already have the templates. Have the assistant draft the cards, then correct them — it is faster than writing from a blank page and it exposes what you never made explicit.\n\n```\nHere is our business context file: <paste>. Here is one of my saved templates,\nthe monthly investor update: <paste the template with its placeholders>.\n\nDraft a system card for it with these fields: purpose, required inputs, the\nprompt, what a good output looks like, the near-miss to watch for, the\nverification step, and version and checkpoint holder. Where you cannot tell\nfrom the template what the verification step should be, write UNKNOWN and ask\nme the question rather than inventing a check. Keep it to one screen.\n```\n\nAbridged, it returns a clean card with two UNKNOWNs — usually the verification step and the checkpoint holder, because those live in your head. Filling those two blanks in your own words is the actual work of this lesson.\n\n## Worked example: the pivot sweep\n\nCompanies change faster than their documentation. When the context file changes materially — a pivot, a new pricing model, a first enterprise customer — everything built on it inherits the change.\n\n```\nOur business context file has been updated. Old version: <paste>. New version:\n<paste>. Below are the system cards for all nine templates in the pack:\n<paste>.\n\nFor each card, tell me: does anything in it now contradict the new context\nfile, which specific line, and how serious is that if the output goes out\nuncorrected. Rank them worst first. Do not rewrite anything yet — I want the\ndamage list, then I will decide what gets re-versioned this week.\n```\n\nThe output is a triage list: three templates broken, two cosmetically stale, four fine. You re-version the broken ones, bump the version number, add a change line, and — this is the part people skip — re-run each changed template against the small test set you built in week five. A template that has changed and not been re-tested is untested, whatever it says on the card.\n\n## The handover\n\nHanding the system to an operations hire or a chief of staff is not sending a folder link. It is a short induction with three artefacts: the index of what exists, the cards, and a checkpoint register listing every human sign-off with the name against it. Walk them through one template end to end, live, including a deliberate near-miss so they see what a bad output looks like before they see a good one.\n\nThen set the change protocol: they may edit any template, but every edit bumps the version, adds a change line, and gets re-tested before it is used on anything real. And the line does not move with the folder. They own the running of the system. You still own the decision, the relationships, and anything an investor or customer will hold you to. A new hire producing the investor update is normal. A new hire deciding what the update admits is not.\n\n## Where this goes wrong\n\n**Cards that describe the prompt and skip the check.** The prompt is the easy field. The verification step is the one that stops a confident, wrong document from leaving.\n\n**Versioning nothing.** Without a version and a change line you cannot answer the only question that matters after a bad output: what changed, and when.\n\n**Documenting everything.** A card per template is sustainable. A forty-page operations manual written in one weekend is not, and it will be stale within a month.\n\n**Handing over the templates but not the judgement.** If your ops hire cannot tell you which two outputs must never leave without you, the handover has not happened yet.\n\n## In practice\n\nPick your three most-used templates and write their cards this week — the rest can follow. Add the version line, name the holder, and put the checkpoint register somewhere your future first hire will find it on day one. You will know it worked when someone else runs a month of your system and you find out by reading the output, not by being asked how it works.",
+   "estimated_minutes": 29,
+   "learning_objectives": [
+    "Write a one-screen system card for each template covering purpose, inputs, verification and checkpoint holder",
+    "Version every change with a dated change line and re-test the template before it is used on real work",
+    "Sweep the whole pack against a rewritten context file and triage what breaks after a pivot",
+    "Hand the running of the system to an operations hire while keeping the decisions the founder cannot delegate"
+   ],
+   "case_study": "**Sage — the assistant that was switched off for an afternoon (2024–2025)**\n\nSage, the UK accounting-software group, launched Sage Copilot at its Transform event in early 2024 and rolled it out through an early-access programme that eventually reached tens of thousands of businesses across the UK, US and Europe. The pitch was ordinary back-office work: bank reconciliation, invoice handling, cash-flow prompts, spotting anomalies in the ledger. For small-company founders it was exactly the kind of assistant this course has been building — pointed at the most sensitive material a business has.\n\nIn January 2025 a customer asked Copilot for a list of recent invoices and the answer contained information relating to other businesses as well as their own. Sage took the feature offline within hours, investigated, and shipped a fix. The company said the problem affected a very small number of customers, that unrelated business information rather than invoices themselves had been surfaced, and that the feature was in early access at the time, which limited exposure.\n\nWhat is instructive is not the bug — a retrieval assistant returning a neighbouring record is a known and unglamorous failure mode — but the machinery that contained it. A staged early-access group rather than a full release. A named owner who could pull the feature the same day. A version to roll back to. A public statement in the founder-facing press within days. Those are documentation and change-control artefacts, not clever engineering, and they are the difference between an afternoon of downtime and a scandal.\n\nA four-person company will never have a release-management function, and does not need one. It needs the small version of the same thing: a card that says what each template is for, a version number and a change line so it can answer \"what changed and when\", a named human who signs off before anything touches a customer, and a re-test after every edit. The company that cannot roll back cannot recover quickly, and a founder without a change log is guessing about their own system.",
+   "exercises": [
+    {
+     "order_index": 1,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "The field that earns the system card",
+     "prompt_md": "Your system cards each fit on one screen and cover purpose, inputs, the prompt, what good looks like, verification, and version with holder. Which field is the reason the card exists at all?",
+     "options": [
+      "The verification step, because it names the check run before anything leaves the company",
+      "The prompt text, because it is the longest field and the hardest one to reconstruct",
+      "The purpose line, because it explains to a new hire why the template was written",
+      "The version number, because it shows how mature and well used the template has become"
+     ],
+     "correct_answer": "The verification step, because it names the check run before anything leaves the company"
+    },
+    {
+     "order_index": 2,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "After a template is edited",
+     "prompt_md": "Your new operations hire improves the wording of the sales follow-up template and bumps the version number correctly. What must happen before that version is used on a real customer?",
+     "options": [
+      "It is re-run against the small test set, because a changed template is an untested template",
+      "It is sent to you for approval, because only the founder may approve any wording change",
+      "It is left for a week in draft, because recent edits need time to settle before use",
+      "It is copied into a second folder, because every edit should keep the old text nearby"
+     ],
+     "correct_answer": "It is re-run against the small test set, because a changed template is an untested template"
+    },
+    {
+     "order_index": 3,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "What a handover actually transfers",
+     "prompt_md": "You are handing your AI operating system to a chief of staff. Sharing the folder is access. What does a genuine handover transfer that a folder link does not?",
+     "options": [
+      "Ownership of running the system, with a checkpoint register naming who signs off what",
+      "Ownership of the customer relationships and the investor narrative from that day on",
+      "Ownership of every decision the templates touch, so the founder can stop reviewing",
+      "Ownership of the software subscriptions and the billing account for the assistant"
+     ],
+     "correct_answer": "Ownership of running the system, with a checkpoint register naming who signs off what"
+    },
+    {
+     "order_index": 4,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "After the pivot",
+     "prompt_md": "Your business context file has been rewritten after a pivot and you have nine templates built on the old one. What is the sensible first move before rewriting any of them?",
+     "options": [
+      "Run a sweep that lists which cards now contradict the new file, ranked by damage",
+      "Delete the whole pack and rebuild from scratch against the new positioning",
+      "Rewrite the three templates you use most often and leave the others untouched",
+      "Freeze all templates until the pivot settles and go back to writing by hand"
+     ],
+     "correct_answer": "Run a sweep that lists which cards now contradict the new file, ranked by damage"
+    },
+    {
+     "order_index": 5,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "The lesson from the Sage pause",
+     "prompt_md": "Sage took its Copilot feature offline within hours in January 2025 when it surfaced unrelated business information, then fixed and restored it. What should a four-person company copy from that?",
+     "options": [
+      "A named owner, a staged rollout and a version to roll back to, at small-company scale",
+      "A full release-management function with change boards before any template is used",
+      "A policy of never pointing an assistant at financial records under any circumstances",
+      "A public statement template prepared in advance for every possible product failure"
+     ],
+     "correct_answer": "A named owner, a staged rollout and a version to roll back to, at small-company scale"
+    },
+    {
+     "order_index": 6,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "Six fields, one screen",
+     "prompt_md": "List the fields a system card carries and explain why the card is deliberately held to a single screen.",
+     "correct_answer": "A card carries purpose, required inputs, the current prompt with its placeholders, what a good output looks like alongside the near-miss to watch for, the verification step, and the version with its date, change line and checkpoint holder. It is held to one screen because documentation that takes a weekend to write goes stale within a month and nobody reads it. A card short enough to update in two minutes after every change is the only kind that stays true."
+    },
+    {
+     "order_index": 7,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "What changed and when",
+     "prompt_md": "An investor update went out with a wrong figure and you cannot work out how. Explain what versioning would have given you, and what to record on every future edit.",
+     "correct_answer": "Versioning answers the only useful question after a bad output: what changed, when, and who changed it. Without it you are re-reading a template that has silently drifted through several edits and guessing which one introduced the error. Every edit should bump the version number, carry a one-line note on what changed and why, record the date and the editor, and trigger a re-run against the test set before that version is used on anything real."
+    },
+    {
+     "order_index": 8,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "The induction, not the folder link",
+     "prompt_md": "Describe how you would spend the first thirty minutes handing your AI operating system to a new operations hire, and what they should be able to do afterwards.",
+     "correct_answer": "Start with the three artefacts — the index of what exists, the system cards, and the checkpoint register naming every human sign-off — then walk one template end to end live, including a deliberate near-miss so they see a bad output before a good one. Finish with the change protocol: any edit bumps the version, adds a change line and is re-tested before real use. Afterwards they should be able to run the template unaided and tell you which outputs must never leave without you."
+    },
+    {
+     "order_index": 9,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "What does not move with the folder",
+     "prompt_md": "Your chief of staff now produces the monthly investor update from your template. Explain precisely where their authority stops and why that boundary does not soften as the company grows.",
+     "correct_answer": "They own the running of the system: gathering inputs, producing the draft, applying the verification step and flagging what looks wrong. They do not own what the update admits, what is promised to an investor, or the relationship itself. Producing the document is delegable; deciding what the company is prepared to be held to is not. That boundary holds as headcount rises because accountability still lands on the founder however many people touched the draft."
+    },
+    {
+     "order_index": 10,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "Over-documenting",
+     "prompt_md": "A founder responds to this lesson by writing a forty-page operations manual in one weekend. Explain why that is a worse outcome than nine one-screen cards, and what you would advise instead.",
+     "correct_answer": "A long manual is written once, read rarely and stale within a month, so people quietly go back to asking the founder and the documentation becomes actively misleading. Nine one-screen cards are cheap enough to update on every edit, which is what keeps them true. Advise starting with cards for the three most-used templates, adding the version line and checkpoint holder, and letting the rest follow as each template is next used."
+    },
+    {
+     "order_index": 11,
+     "type": "short_answer",
+     "language": "prompt",
+     "marks": 5,
+     "title": "Prompt Lab: draft the system card",
+     "prompt_md": "Take your most-used template — say the weekly sales follow-up. Write the prompt that drafts its system card. A strong prompt supplies the business context file and the template itself, names the exact fields the card must carry, forbids invented verification steps by requiring UNKNOWN plus a question where the answer is not inferable, sets the one-screen limit, and asks for the near-miss failure mode as well as the good output.",
+     "correct_answer": "Business context file: <paste, including its as-at date>. Template to document — the weekly sales follow-up, current wording with placeholders marked: <paste>.\n\nDraft a system card for this template. Use exactly these fields and this order:\n1. Purpose — one sentence: what it produces and when it is used.\n2. Required inputs — every input that must be supplied before it runs, named specifically.\n3. The prompt — the current version with placeholders left in place.\n4. What good looks like — two or three lines.\n5. Near-miss to watch for — the plausible, polished output that is quietly wrong for this template.\n6. Verification step — the check performed before anything is sent, and who signs it off.\n7. Version, date, change line, checkpoint holder.\n\nRules: infer only from the context file and the template. Where you cannot tell — especially the verification step and the checkpoint holder — write UNKNOWN and list the question you need me to answer. Do not invent a check. Keep the whole card to one screen, plain text, no preamble."
+    },
+    {
+     "order_index": 12,
+     "type": "short_answer",
+     "language": "prompt",
+     "marks": 5,
+     "title": "Prompt Lab: the handover briefing",
+     "prompt_md": "You are hiring your first operations lead and they start on Monday. Write the prompt that produces their induction briefing from your existing pack. A strong prompt supplies the context file, the card index and the checkpoint register, asks for a thirty-minute walkthrough plan with one template demonstrated end to end including a near-miss, states the change protocol that every edit must follow, and draws the line explicitly around what the hire may never decide alone.",
+     "correct_answer": "Business context file: <paste>. Index of the nine templates in our pack with their system cards: <paste>. Checkpoint register — every human sign-off and who holds it today: <paste>.\n\nWrite the induction briefing for our first operations lead, who starts Monday. Structure it as a thirty-minute session:\n- Five minutes on what the pack is and where the three artefacts live.\n- Fifteen minutes walking through one template end to end, using the weekly sales follow-up: inputs gathered, prompt run, output produced, verification step applied. Include one deliberately near-miss output and the specific reason it fails, so they see a bad one before a good one.\n- Five minutes on the change protocol: every edit bumps the version, adds a dated change line, and is re-run against the test set before it is used on anything real.\n- Five minutes on the line: list which outputs may never leave without me and state plainly that they own running the system while I keep the decisions, the relationships, and anything an investor or customer will hold me to.\n\nWrite it as a briefing I can read aloud, not as a policy document. Where the register leaves a checkpoint unowned, flag it as a gap rather than assigning it yourself."
+    }
+   ]
+  },
+  {
+   "order_index": 3,
+   "title": "Capstone: deliver the founder’s AI operating system (graded)",
+   "theory_md": "## The thing you actually hand over\n\nSix weeks ago the promise was a founder who could operate like a much larger company without hiring one. What you have now is not a clever prompt. It is a pack — a context file, chains that produce the recurring work, an assistant tested against your own material, cards, checkpoints. This lesson is the finale, and it is graded on one question: could someone else pick this up on Monday and run your month without ringing you every twenty minutes?\n\nThe pack you built in week three was a milestone — proof you could produce founder work with a machine and keep your judgement in the loop. This is the whole system: everything you have built, documented well enough to survive your attention wandering, your company pivoting, and your first operations hire arriving.\n\n## What a complete pack contains\n\nSix components. Nothing else is required, and the marking follows them.\n\n**1. The master business-context block.** The anchor everything else inherits. Who the company is and what it sells, the customer in their own words, the product as it exists today rather than on the roadmap, the numbers that matter each with an as-at date, the voice, and the hard lines — the claims you will not make, the confidential material that never gets pasted, the things you do not yet know. Brief once, use everywhere: this block is pasted at the top of everything, which is exactly why a stale line in it poisons nine outputs at once.\n\n**2. The template pack.** At least five templates covering the jobs your month audit put at the top: the investor update, the pipeline follow-up, the hiring loop, the customer or support reply, the product or strategy brief. Each carries its placeholders, not a finished document about a company you had last quarter.\n\n**3. A system card per template.** Purpose, required inputs, what good looks like and the near-miss to watch for, the verification step, the version and the checkpoint holder. Cards are what turn templates into a system.\n\n**4. The checkpoint register.** Every human sign-off in one list, with a name against it. This is where the never-outsource zones become operational rather than principled: the founder owns the decision, the relationships, and anything an investor or customer will hold them to.\n\n**5. The tested assistant.** The assistant from week five, its instruction block, and the test set you re-run after every change.\n\n**6. The change log.** Version numbers and dated one-line entries. Short, dull, and the only way to answer \"what changed?\" after a bad output.\n\n## Worked example: writing the anchor\n\nDo not write the master block from scratch. Assemble it from what already exists and let the gaps show.\n\n```\nBelow are my raw materials: the business context file I have been using\n<paste>, our current pricing page <paste>, last month's investor update\n<paste>, and three customer emails in their own words <paste>.\n\nAssemble a single master business-context block I can paste at the top of\nevery template. Sections: company and what we sell today; the customer and\nthe words they use; the numbers that matter, each with an as-at date; voice;\nhard lines — claims we will not make, material never to be pasted in, and\nwhat we do not yet know. Use only what is in the materials. Where a section\nhas no source, write GAP and the question you need me to answer. Do not\nsmooth over contradictions between the sources — list them.\n```\n\nAbridged, the reply returns a usable block with four GAPs and one flagged contradiction: the pricing page says fourteen-day trial, the investor update says thirty. That contradiction is worth more than the draft. Every template you own has been inheriting it.\n\n## Worked example: the stranger test\n\nBefore you submit, have the pack read by someone who was not in your head when you wrote it.\n\n```\nHere is my complete founder AI operating system: master context block, five\ntemplates, five system cards, checkpoint register, assistant instructions and\ntest set, change log. <paste>.\n\nRead it as an incoming chief of staff on day one. Tell me: which templates you\ncould run unaided; where you would have to ask me a question and exactly what\nthe question would be; any output you could produce that would leave the\ncompany without a human sign-off; and any claim in the context block you can\nsee no evidence for. Be blunt and specific. Do not fix anything.\n```\n\nThe answer is your marking sheet before it is marked. A pack that produces three questions is strong. A pack that produces fifteen is a folder.\n\n## Where submissions lose marks\n\n**Prompts without inputs or verification.** A list of clever prompts is not an operating system. Every template needs to state what must be pasted in and what is checked before the output leaves.\n\n**Numbers with no as-at date.** Undated figures are the most common way a pack goes quietly wrong, because the output stays confident long after the number stops being true.\n\n**Claims the pack cannot support.** If the context block says something about the company or the system that you could not evidence to a customer, it does not belong in the block. You will be held to it.\n\n**A mega-prompt instead of a pack.** One enormous instruction that does everything is impossible to version, test or hand over. Five documented templates beat one heroic prompt.\n\n**No honest-limits section.** Strong packs say what the system is not for. That is a sign of judgement, and it is marked as one.\n\n## In practice\n\nSubmit the two artefacts below: the master business-context block, and the documented template pack with usage and verification notes. Write them for the person who joins next, not for the marker. Then do the thing that makes this real — run next month out of the pack, and note what you had to fix. A system that survives one real month with three small corrections is worth more than a beautiful pack that has never met a Tuesday.",
+   "estimated_minutes": 30,
+   "learning_objectives": [
+    "Assemble a master business-context block from real source materials with gaps and contradictions surfaced",
+    "Document a five-template pack with usage notes, verification steps and named checkpoint holders",
+    "Test the pack against a stranger reading so the questions it raises are answered before handover",
+    "Submit a complete founder AI operating system that states honestly what it is and is not for"
+   ],
+   "case_study": "**Lemonade — two sentences the company was held to (2021)**\n\nIn May 2021 Lemonade, a founder-led US insurance company built around automation, published a thread on social media describing how its systems handled claims. One line said its AI could pick up \"non-verbal cues\" in the videos policyholders record to explain a claim, and that this contributed to its fraud signals. The company had spent years marketing its technology; this was more of the same, written quickly, approved by nobody in particular.\n\nThe reaction was immediate and it was not about insurance. Readers asked the obvious questions: what happens to an autistic claimant, or a nervous one, or someone whose face the system reads differently. Coverage in the trade and mainstream press through late May framed it as an algorithm judging faces. Within two days the thread was deleted and Lemonade published a post calling \"non-verbal cues\" a poor choice of words, explaining that the reference was to facial-recognition checks used to spot the same person filing under multiple identities, and stating that its AI does not automatically decline claims.\n\nThe clarification was probably accurate. It did not matter much, because the company had already been held to the sentence rather than to the system. What the founders described their AI as doing became, for a week, what their AI did — to customers, to regulators reading the coverage, and to every journalist who now had a file on them.\n\nThis is why a founder pack ends with a written description of what the system actually does, in language you would be comfortable seeing quoted, and a limits section saying what it is not for. A system card is not bureaucracy. It is the difference between a company that can answer a hard question in one paragraph and a company improvising under pressure with its own marketing copy in front of it.",
+   "exercises": [
+    {
+     "order_index": 1,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "The anchor of the whole pack",
+     "prompt_md": "Your operating system contains templates, cards, a checkpoint register, an assistant and a change log. Which component do all the others inherit from, and why does that make it the riskiest one?",
+     "options": [
+      "The master business-context block, because a stale line in it poisons every output at once",
+      "The checkpoint register, because it lists everyone who signs off work before it is sent",
+      "The change log, because every version number in the pack is recorded and dated there",
+      "The tested assistant, because it is the newest component and the least well understood"
+     ],
+     "correct_answer": "The master business-context block, because a stale line in it poisons every output at once"
+    },
+    {
+     "order_index": 2,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "Why every figure carries a date",
+     "prompt_md": "Marking penalises a context block that states revenue, burn and headcount without recording when each figure was true. What is the specific risk of undated numbers in a founder pack?",
+     "options": [
+      "Outputs stay confident long after the figure stops being true, and nobody catches it",
+      "Outputs become shorter because the assistant has fewer details to work with overall",
+      "Outputs cannot be produced at all until every historical figure has been supplied",
+      "Outputs cost more to generate because the numbers must be recalculated each time"
+     ],
+     "correct_answer": "Outputs stay confident long after the figure stops being true, and nobody catches it"
+    },
+    {
+     "order_index": 3,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "Reading the stranger test result",
+     "prompt_md": "You ask an assistant to read your pack as an incoming chief of staff and it comes back with fifteen questions it would have to ask you before running anything. What does that result tell you?",
+     "options": [
+      "The pack is still a folder, because too much of it lives in your head rather than on paper",
+      "The pack is close to complete, because a thorough reader always generates many questions",
+      "The pack is too long, because a shorter document would produce fewer follow-up questions",
+      "The pack is fine, because an incoming hire is expected to ask a great deal in week one"
+     ],
+     "correct_answer": "The pack is still a folder, because too much of it lives in your head rather than on paper"
+    },
+    {
+     "order_index": 4,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "One heroic prompt or five documented templates",
+     "prompt_md": "A founder submits a single enormous instruction that produces investor updates, follow-ups, job descriptions and support replies from one paste. Why does this score poorly against five templates?",
+     "options": [
+      "It cannot be versioned, tested or handed over one piece at a time when something breaks",
+      "It takes longer to run and therefore costs more across a full month of company work",
+      "It produces lower-quality writing because long instructions always confuse an assistant",
+      "It cannot include the business context file because the instruction is already too long"
+     ],
+     "correct_answer": "It cannot be versioned, tested or handed over one piece at a time when something breaks"
+    },
+    {
+     "order_index": 5,
+     "type": "mcq",
+     "language": null,
+     "marks": 2,
+     "title": "What the Lemonade episode teaches about documentation",
+     "prompt_md": "Lemonade deleted its 2021 thread within two days and published a correction explaining what its systems actually did. What does that episode argue a founder pack must contain?",
+     "options": [
+      "A written description of what the system does, in words you would accept being quoted",
+      "A social media policy requiring legal review before any company account posts anything",
+      "A ban on describing any AI capability publicly until the company has external audits",
+      "A marketing section listing every automated capability the product currently offers"
+     ],
+     "correct_answer": "A written description of what the system does, in words you would accept being quoted"
+    },
+    {
+     "order_index": 6,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "The six components",
+     "prompt_md": "Name the six components of a complete founder AI operating system and state in a phrase what each one is for.",
+     "correct_answer": "The master business-context block anchors everything and is pasted at the top of every template, and the templates themselves cover the recurring jobs the month audit ranked highest. A system card per template records purpose, inputs, good and near-miss outputs, the verification step and the version, while the checkpoint register lists every human sign-off with a name against it. The tested assistant carries its instruction block and the test set re-run after each change. The change log records dated version entries so you can answer what changed after a bad output."
+    },
+    {
+     "order_index": 7,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "The contradiction is the prize",
+     "prompt_md": "While assembling your master context block from existing materials, the assistant reports that your pricing page says a fourteen-day trial and your last investor update says thirty. Explain why that finding matters more than the draft it came with.",
+     "correct_answer": "Every template in the pack pastes the context block at the top, so a contradiction sitting inside it has been silently inherited by every output built on it — sales follow-ups promising one trial length while investor material describes another. The draft can be rewritten in minutes; the contradiction has been shaping real documents sent to real people. It also shows the assembly prompt was written correctly, because it was told to surface conflicts between sources rather than smooth them into one confident sentence."
+    },
+    {
+     "order_index": 8,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "The honest-limits section",
+     "prompt_md": "Strong submissions include a section stating what the system is not for. Explain what belongs there and why its presence is evidence of judgement rather than weakness.",
+     "correct_answer": "It records the work the pack must not be used for and the claims it must never make: no final hiring decisions, no pricing commitments to a customer, no investor figure that has not been read against the source, no confidential material pasted into a general tool. Its presence shows the founder has mapped where a confident output would be most damaging and has drawn the line in advance rather than after an incident. A pack claiming to handle everything is the one nobody can trust with anything."
+    },
+    {
+     "order_index": 9,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "Held to the sentence, not the system",
+     "prompt_md": "Using the Lemonade episode, explain the difference between what a company says its AI does and what it actually does, and what a founder should carry into their own pack because of it.",
+     "correct_answer": "Lemonade described its claims process in a hurried phrase about non-verbal cues, and for a week that phrase was what the public, the press and regulators understood the system to do, regardless of the more limited reality it later described. Founders are held to their own description first and their architecture second. The practical response is to keep a written, accurate description of what each part of the system does and does not do, phrased in language you would accept being quoted back to you, and to check public statements against it before they are published."
+    },
+    {
+     "order_index": 10,
+     "type": "short_answer",
+     "language": null,
+     "marks": 3,
+     "title": "Running the pack for a real month",
+     "prompt_md": "You have submitted the pack. Explain what you would do in the following month to find out whether it is a real operating system, and what evidence would tell you it is working.",
+     "correct_answer": "Run the actual month out of the pack rather than around it: produce the investor update, the follow-ups, the hiring documents and the support replies from the templates, applying each verification step and recording every correction you had to make. Evidence it is working is a small number of specific fixes, checkpoints that were used rather than skipped, and someone other than you producing at least one output unaided. If you find yourself writing from scratch instead of from a template, that job was documented badly and needs its card revisited."
+    },
+    {
+     "order_index": 11,
+     "type": "short_answer",
+     "language": "prompt",
+     "marks": 5,
+     "title": "Prompt Lab (capstone 1 of 2): the master business-context block",
+     "prompt_md": "This is half of your graded submission. Write the prompt that assembles the master business-context block your whole pack will inherit. A strong prompt supplies real source materials rather than asking the assistant to imagine the company, names every required section (company and product as it exists today, the customer in their own words, numbers each with an as-at date, voice, hard lines and confidentiality, what is not yet known), forbids invention by requiring GAP plus a question, and requires contradictions between sources to be listed rather than smoothed away.",
+     "correct_answer": "Below are my raw materials. Use only what is in them.\n- The context file I have been working from: <paste>\n- Our current pricing and product page: <paste>\n- Last month's investor update: <paste>\n- Three customer emails in the customer's own words: <paste>\n- Our last two months of numbers as recorded: <paste>\n\nAssemble one master business-context block that I will paste at the top of every template in my pack. Use these sections in this order:\n1. Company and what we sell today — the product as it exists, not the roadmap.\n2. The customer — who they are and the words they actually use, quoted from the emails.\n3. Numbers that matter — each figure with the date it was true as at.\n4. Voice — how we write, with one line on what we never sound like.\n5. Hard lines — claims we will not make, material that is never pasted into a general tool, and decisions that always stay with me.\n6. What we do not yet know — open questions a reader should not assume answers to.\n\nRules: invent nothing. Where a section has no source in the materials, write GAP and the exact question you need me to answer. Where two sources disagree, list the contradiction with both sources named rather than choosing one. No marketing language, no adjectives I did not write myself. Keep it to two pages and end with the list of GAPs and contradictions as a checklist I can work through."
+    },
+    {
+     "order_index": 12,
+     "type": "short_answer",
+     "language": "prompt",
+     "marks": 5,
+     "title": "Prompt Lab (capstone 2 of 2): the documented template pack",
+     "prompt_md": "This is the other half of your graded submission. Write the prompt that turns your working templates into a documented pack with usage and verification notes, ready to hand to an incoming operations hire. A strong prompt supplies the master context block and every template, specifies the documentation each template must carry (purpose, when it is used, required inputs, good versus near-miss output, verification step, version and checkpoint holder), demands UNKNOWN plus a question instead of invented checks, requires a consolidated checkpoint register and an honest-limits section, and asks for the gaps to be reported rather than filled in silently.",
+     "correct_answer": "Master business-context block: <paste final version with its as-at date>.\nMy working templates, verbatim with placeholders marked: <paste all five — investor update, pipeline follow-up, hiring loop, customer reply, product brief>.\nAssistant instruction block and its test set: <paste>.\n\nProduce a documented template pack I can hand to an operations lead on their first day. Deliver it in this structure:\n\nA. A one-page index: each template, one line on what it produces and how often it is used.\n\nB. For each template, a one-screen card with exactly these fields: purpose; when it is used and by whom; required inputs listed specifically, including anything that must be pasted in before it will run; what a good output looks like in two or three lines; the near-miss — the plausible, polished output that is quietly wrong for this template; the verification step, naming what is checked against what source before anything is sent; version, date, change line and the person holding the checkpoint.\n\nC. A consolidated checkpoint register: every human sign-off across the pack in one table, with the holder named and a column for who inherits it after the first operations hire.\n\nD. An honest-limits section: what this pack is not to be used for, and the claims it must never make.\n\nRules: use only my materials. Where a verification step or a checkpoint holder cannot be inferred, write UNKNOWN and list it as a question — never invent a check. Do not improve my template wording in this pass; document what exists. Finish with a gap report: everything you could not complete, and the single question that would unblock each one."
+    }
+   ]
+  }
+ ]
+}
