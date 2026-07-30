@@ -3,6 +3,10 @@ import { createAdminClient, isAdminEmail } from "@/lib/supabase/admin";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { NEWS_TOPICS, NEWS_REGIONS } from "@/lib/newsroom";
+import { ingestNews } from "@/lib/newsroom-pipeline";
+
+// The ingest action fans out feed fetches + model calls; give it headroom.
+export const maxDuration = 60;
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // Newsroom review desk API. This is the ONLY write path to news_articles
@@ -55,7 +59,11 @@ const createSchema = z.object({
   course_slugs: z.array(z.string().max(80)).max(6).default([]),
 });
 
-const bodySchema = z.discriminatedUnion("action", [updateSchema, transitionSchema, createSchema]);
+// Manual pipeline run — the "Fetch today's stories" button. Same code path as
+// the cron, same 12/day cap (it counts drafts already created today).
+const ingestSchema = z.object({ action: z.literal("ingest") });
+
+const bodySchema = z.discriminatedUnion("action", [updateSchema, transitionSchema, createSchema, ingestSchema]);
 
 function slugify(headline: string): string {
   const base = headline
@@ -95,6 +103,11 @@ export async function POST(request: Request) {
   try {
     const body = bodySchema.parse(await request.json());
     const admin = createAdminClient();
+
+    if (body.action === "ingest") {
+      const summary = await ingestNews(45_000);
+      return NextResponse.json({ summary });
+    }
 
     if (body.action === "create") {
       const { data, error } = await admin

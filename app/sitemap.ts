@@ -2,8 +2,8 @@ import type { MetadataRoute } from "next";
 import { RESEARCH_ARTICLES } from "@/lib/research";
 import { createAdminClient } from "@/lib/supabase/admin";
 
-// TODO: switch BASE to the custom domain (square1ai.com) once DNS points to Vercel.
-const BASE = "https://square1-tutor.vercel.app";
+// Canonical host. square1ai.com 301s to www at the Vercel domain layer.
+const BASE = "https://www.square1ai.com";
 
 // Genuinely-public, crawlable pages only. NOTE: /courses + /courses/[slug] are
 // currently auth-gated (in the (app) group), so they're intentionally NOT listed

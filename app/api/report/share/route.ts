@@ -46,7 +46,7 @@ export async function POST(request: Request) {
       }
     }
 
-    const host = request.headers.get("host") ?? "square1-tutor.vercel.app";
+    const host = request.headers.get("host") ?? "www.square1ai.com";
     const proto = host.includes("localhost") ? "http" : "https";
     return NextResponse.json({ ok: true, token, url: `${proto}://${host}/report/${token}` });
   } catch (err) {

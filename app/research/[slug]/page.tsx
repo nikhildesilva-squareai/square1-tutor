@@ -8,7 +8,7 @@ import { RESEARCH_ARTICLES, getArticle } from "@/lib/research";
 import { getArticleHtml } from "@/lib/research-content";
 import { ReadingProgress } from "@/components/research/ReadingProgress";
 
-const BASE = "https://square1-tutor.vercel.app";
+const BASE = "https://www.square1ai.com";
 
 // Articles are fully known at build time (registry + content files ship with
 // the build), so reject unknown slugs at the routing layer — this returns a

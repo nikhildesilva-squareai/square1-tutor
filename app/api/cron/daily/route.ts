@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { runStreakReminders, runWeeklyDigest, runActivationNudges, runInviteReminders, runManagerDigests } from "@/lib/email/jobs";
 import { checkAllIncompleteEnrollments } from "@/lib/enrollment-completion";
+import { ingestNews } from "@/lib/newsroom-pipeline";
 
 export const maxDuration = 60;
 
@@ -63,6 +64,16 @@ export async function GET(request: Request) {
     results.inviteReminders = await runInviteReminders();
   } catch (err) {
     results.inviteReminders = { error: err instanceof Error ? err.message : "failed" };
+  }
+
+  // Newsroom: draft the day's stories into the /desk/newsroom review queue.
+  // Drafts only — nothing publishes without a human click on the desk. Runs
+  // inside this consolidated cron because Vercel Hobby caps cron entries at 2.
+  // Time-budgeted so a slow model can't starve the email jobs above of runtime.
+  try {
+    results.newsroom = await ingestNews(30_000);
+  } catch (err) {
+    results.newsroom = { error: err instanceof Error ? err.message : "failed" };
   }
 
   if (isSunday) {

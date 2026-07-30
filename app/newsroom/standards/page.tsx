@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Logo } from "@/components/ui/logo";
 
-const BASE = "https://square1-tutor.vercel.app";
+const BASE = "https://www.square1ai.com";
 
 export const metadata: Metadata = {
   title: "Editorial Standards — Square 1 AI Newsroom",

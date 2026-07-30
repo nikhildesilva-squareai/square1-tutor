@@ -147,7 +147,7 @@ export default function Image() {
             display: "flex",
           }}
         >
-          square1-tutor.vercel.app
+          www.square1ai.com
         </div>
       </div>
     ),

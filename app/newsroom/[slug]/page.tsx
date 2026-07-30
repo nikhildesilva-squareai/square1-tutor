@@ -9,7 +9,7 @@ import {
   publishedArticleBySlug, publishedArticles, renderNewsBody, newsReadingMinutes,
 } from "@/lib/newsroom";
 
-const BASE = "https://square1-tutor.vercel.app";
+const BASE = "https://www.square1ai.com";
 
 export const dynamic = "force-dynamic";
 

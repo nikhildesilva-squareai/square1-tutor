@@ -45,7 +45,7 @@ export function ShareResultButton({
 }: ShareResultButtonProps) {
   const [copied, setCopied] = useState(false);
   const [downloading, setDownloading] = useState<string | null>(null);
-  const origin = typeof window !== "undefined" ? window.location.origin : "https://square1-tutor.vercel.app";
+  const origin = typeof window !== "undefined" ? window.location.origin : "https://www.square1ai.com";
   const url = shareUrl ?? `${origin}/diagnostic`;
   const text = shareUrl
     ? `I just took the Square 1 AI ${courseTitle} skill scan — ${level} level. Take yours free:`

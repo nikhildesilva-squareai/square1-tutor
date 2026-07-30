@@ -116,7 +116,7 @@ export async function GET(request: Request) {
         {/* Footer CTA */}
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
           <div style={{ display: "flex", color: "#7EA6D8", fontSize: big ? 24 : 20, fontWeight: 600 }}>
-            Take your free skill check → square1-tutor.vercel.app
+            Take your free skill check → www.square1ai.com
           </div>
           <div style={{ display: "flex", padding: "10px 22px", borderRadius: 999, background: "rgba(52,211,153,0.14)", border: "2px solid rgba(52,211,153,0.45)", color: "#34D399", fontSize: big ? 22 : 18, fontWeight: 700 }}>
             AI-graded

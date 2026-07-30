@@ -1,7 +1,7 @@
 import type { MetadataRoute } from "next";
 
-// TODO: switch BASE to the custom domain (square1ai.com) once DNS points to Vercel.
-const BASE = "https://square1-tutor.vercel.app";
+// Canonical host. square1ai.com 301s to www at the Vercel domain layer.
+const BASE = "https://www.square1ai.com";
 
 export default function robots(): MetadataRoute.Robots {
   return {

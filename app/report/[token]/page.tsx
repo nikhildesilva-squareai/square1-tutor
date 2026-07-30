@@ -6,7 +6,7 @@ import { SkillReportView } from "@/components/SkillReportView";
 import { ShareReportPanel } from "@/components/ShareReportPanel";
 import { getSharedReport } from "@/lib/report-share";
 
-const BASE = "https://square1-tutor.vercel.app";
+const BASE = "https://www.square1ai.com";
 
 export const dynamic = "force-dynamic";
 
@@ -84,7 +84,7 @@ export default async function SharedReportPage(
 
       {/* Print/PDF footer — only visible on paper */}
       <p className="hidden print:block text-center text-xs text-ink-muted py-6">
-        Verified skill report · Square 1 AI · square1-tutor.vercel.app/report/{token}
+        Verified skill report · Square 1 AI · www.square1ai.com/report/{token}
       </p>
     </div>
   );

@@ -83,7 +83,7 @@ export default async function ManagerDashboard() {
   const billingOk = isFree || org.status === "active";
 
   const h = await headers();
-  const host = h.get("host") ?? "square1-tutor.vercel.app";
+  const host = h.get("host") ?? "www.square1ai.com";
   const proto = host.includes("localhost") ? "http" : "https";
   const inviteUrl = `${proto}://${host}/business/join?code=${org.join_code}`;
 

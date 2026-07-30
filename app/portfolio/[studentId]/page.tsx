@@ -67,7 +67,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const title = `${displayName} — AI-Ready Portfolio | Square 1 AI`;
   const description = `${displayName} has deployed ${projectCount} AI project${projectCount !== 1 ? "s" : ""} with an average score of ${avgScore}/100. Verified by Square 1 AI.`;
 
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://square1-tutor.vercel.app";
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.square1ai.com";
 
   return {
     title,

@@ -417,7 +417,7 @@ export default function ResultsClient({ initialSeats = null, coursePath = null, 
   const bandIdx = getBandIndex(result.score);
   const bandLabel = READINESS_BANDS[bandIdx];
 
-  const origin = typeof window !== "undefined" ? window.location.origin : "https://square1-tutor.vercel.app";
+  const origin = typeof window !== "undefined" ? window.location.origin : "https://www.square1ai.com";
   const answersParam = encodeAnswers(answers);
   const shareUrl = `${origin}/diagnostic/${slug}/results?a=${answersParam}`;
   const readinessScore = ((result.score / result.total) * 10).toFixed(1);

@@ -5,7 +5,7 @@ import { RESEARCH_ARTICLES } from "@/lib/research";
 import { getReadingMinutes } from "@/lib/research-content";
 import { ResearchIndex, type ResearchCard } from "@/components/research/ResearchIndex";
 
-const BASE = "https://square1-tutor.vercel.app";
+const BASE = "https://www.square1ai.com";
 
 export const metadata: Metadata = {
   title: "Research — Square 1 AI",

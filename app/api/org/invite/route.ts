@@ -70,7 +70,7 @@ export async function POST(request: Request) {
     // Best-effort invite emails (deliver once the domain is verified)
     if (invited.length > 0) {
       try {
-        const host = request.headers.get("host") ?? "square1-tutor.vercel.app";
+        const host = request.headers.get("host") ?? "www.square1ai.com";
         const proto = host.includes("localhost") ? "http" : "https";
         const inviteUrl = `${proto}://${host}/business/join?code=${org.join_code}`;
         const { sendTeamInvite } = await import("@/lib/email/resend");

@@ -11,7 +11,7 @@ import { FirstPartyAnalytics } from "@/components/FirstPartyAnalytics";
 const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
 const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"] });
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://square1-tutor.vercel.app";
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.square1ai.com";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),

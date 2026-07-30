@@ -272,7 +272,7 @@ export default async function PortfolioPage() {
           {/* Share portfolio */}
           <div className="mt-4 flex items-center justify-between">
             <p className="text-[10px] text-slate-500 uppercase tracking-widest font-bold">Share your portfolio</p>
-            <SharePortfolioButton url={`${process.env.NEXT_PUBLIC_SITE_URL ?? "https://square1-tutor.vercel.app"}/portfolio/${student.id}`} />
+            <SharePortfolioButton url={`${process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.square1ai.com"}/portfolio/${student.id}`} />
           </div>
         </div>
       </div>

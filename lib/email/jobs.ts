@@ -449,7 +449,7 @@ export async function runInviteReminders(): Promise<JobResult> {
       result.skipped++;
       continue;
     }
-    const inviteUrl = `https://square1-tutor.vercel.app/business/join?code=${invite.org.join_code}`;
+    const inviteUrl = `https://www.square1ai.com/business/join?code=${invite.org.join_code}`;
     try {
       await sendInviteReminder(invite.email, invite.org.name, inviteUrl);
       await supabase.from("org_invites").update({ reminded_at: new Date().toISOString() }).eq("id", invite.id);
@@ -505,7 +505,7 @@ export async function runManagerDigests(): Promise<JobResult> {
       continue;
     }
 
-    const inviteUrl = `https://square1-tutor.vercel.app/business/join?code=${org.join_code}`;
+    const inviteUrl = `https://www.square1ai.com/business/join?code=${org.join_code}`;
     try {
       await sendManagerDigest(manager.email, org.name, {
         seatsUsed: stats.seatsUsed,
