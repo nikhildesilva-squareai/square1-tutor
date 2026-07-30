@@ -2,6 +2,8 @@ import { createClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { rateLimit } from "@/lib/rate-limit";
+import { getFirstLessonId } from "@/lib/lessons";
+import { DIAG_SUBJECTS } from "@/lib/diagnostic";
 
 const OnboardSchema = z.object({
   name: z.string().min(1).max(100).optional(),
@@ -109,33 +111,53 @@ export async function POST(request: Request) {
       studentId = created.id;
     }
 
-    // Send welcome email (non-blocking)
+    // Resolve where to send them next. The diagnostic's subject list includes a
+    // few tracks with no live course, and /courses/[slug] calls notFound() on an
+    // unknown slug - so validate here rather than bouncing a brand-new signup
+    // onto a 404. Null means "no live course for that track": land on /dashboard.
+    //
+    // The track can arrive three ways: an explicit courseSlug (OTP signups from
+    // the diagnostic), the subject TITLE (mapped back to a slug via
+    // DIAG_SUBJECTS), or — for Google signups whose first onboard call is the
+    // country step — the signup_subject stashed on the auth user's metadata.
+    const metaSubject = (user.user_metadata?.signup_subject as string | undefined) ?? undefined;
+    const titleToSlug = (title?: string) =>
+      title ? DIAG_SUBJECTS.find((s) => s.title.toLowerCase() === title.toLowerCase())?.slug ?? null : null;
+    const candidateSlug = courseSlug ?? titleToSlug(subject) ?? titleToSlug(metaSubject);
+
+    let resolvedCourseSlug: string | null = null;
+    let resolvedCourseTitle: string | null = null;
+    let firstLessonId: string | null = null;
+    if (candidateSlug) {
+      const { data: course } = await supabase
+        .from("courses")
+        .select("id, slug, title")
+        .eq("slug", candidateSlug)
+        .eq("status", "active")
+        .maybeSingle();
+      if (course) {
+        resolvedCourseSlug = course.slug;
+        resolvedCourseTitle = course.title;
+        firstLessonId = await getFirstLessonId(supabase, course.id);
+      }
+    }
+
+    // Send welcome email (non-blocking). When we know their track, the CTA
+    // deep-links into Lesson 1 — day-0 activation — instead of the dashboard.
     if (!existing && user.email) {
       try {
         const { sendWelcomeEmail } = await import("@/lib/email/resend");
-        await sendWelcomeEmail(user.email, name || user.email.split("@")[0]);
+        await sendWelcomeEmail(user.email, name || user.email.split("@")[0], {
+          courseTitle: resolvedCourseTitle ?? undefined,
+          lessonUrl: firstLessonId ? `https://www.square1ai.com/learn/${firstLessonId}` : undefined,
+        });
       } catch {
         // Non-blocking — don't fail onboarding if email fails
         console.warn("[onboard] Welcome email failed — RESEND_API_KEY may not be set");
       }
     }
 
-    // Resolve where to send them next. The diagnostic's subject list includes a
-    // few tracks with no live course, and /courses/[slug] calls notFound() on an
-    // unknown slug - so validate here rather than bouncing a brand-new signup
-    // onto a 404. Null means "no live course for that track": land on /dashboard.
-    let resolvedCourseSlug: string | null = null;
-    if (courseSlug) {
-      const { data: course } = await supabase
-        .from("courses")
-        .select("slug")
-        .eq("slug", courseSlug)
-        .eq("status", "active")
-        .maybeSingle();
-      resolvedCourseSlug = course?.slug ?? null;
-    }
-
-    return NextResponse.json({ studentId, courseSlug: resolvedCourseSlug });
+    return NextResponse.json({ studentId, courseSlug: resolvedCourseSlug, firstLessonId });
   } catch {
     return NextResponse.json({ error: "Something went wrong" }, { status: 500 });
   }

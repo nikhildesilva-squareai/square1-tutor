@@ -23,13 +23,24 @@ export function WelcomeCountryForm() {
     setLoading(true);
     setError(null);
     try {
+      // Forward the diagnostic-picked track if one was stashed pre-signup —
+      // Google signups' FIRST onboard call is this country step, and passing
+      // the subject here lets the welcome email deep-link to their Lesson 1.
+      let subject: string | null = null;
+      try { subject = localStorage.getItem("sq1_subject"); } catch { /* ignore */ }
       const res = await fetch("/api/onboard", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ country }),
+        body: JSON.stringify({ country, ...(subject ? { subject } : {}) }),
       });
       if (!res.ok) throw new Error("save failed");
-      router.push("/dashboard");
+      // Return to where they were heading (the layout gate passes it through) —
+      // typically the post-signup Lesson 1 deep link. Same-origin paths only.
+      const next = new URLSearchParams(window.location.search).get("next");
+      const dest = next && next.startsWith("/") && !next.startsWith("//") && !next.includes("://")
+        ? next
+        : "/dashboard";
+      router.push(dest);
       router.refresh();
     } catch {
       setError("Something went wrong. Please try again.");

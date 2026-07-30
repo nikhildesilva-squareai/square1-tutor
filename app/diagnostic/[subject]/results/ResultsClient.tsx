@@ -639,9 +639,14 @@ export default function ResultsClient({ initialSeats = null, coursePath = null, 
               </>
               )}
 
-              {/* CTA */}
-              <Link href={signupHref} style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8, height: 56, borderRadius: 12, background: CTA_GRADIENT, boxShadow: CTA_INSET, color: "#FFFFFF", fontWeight: 800, fontSize: 17, letterSpacing: "-0.01em", maxWidth: 420, margin: "22px auto 0" }}>
-                Start free — it&apos;s free for now →
+              {/* CTA — lesson first, account second. Sending them into the real
+                  first lesson (no signup wall) converts far better than a signup
+                  form: 20 minutes into a lesson, the account is worth creating. */}
+              <Link href={`/try/${slug}`} style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8, height: 56, borderRadius: 12, background: CTA_GRADIENT, boxShadow: CTA_INSET, color: "#FFFFFF", fontWeight: 800, fontSize: 17, letterSpacing: "-0.01em", maxWidth: 420, margin: "22px auto 0" }}>
+                Start Lesson 1 now — free, no signup →
+              </Link>
+              <Link href={signupHref} style={{ display: "block", textAlign: "center", marginTop: 14, fontSize: 14, fontWeight: 600, color: C.blue, textDecoration: "none" }}>
+                or create your free account first
               </Link>
               <p style={{ fontSize: 12.5, color: C.ter, margin: "12px 0 0" }}>
                 Free for now — no card required · Get your full report, all {subject.title} courses, projects and Nova · Founding rate locked for life

@@ -195,6 +195,39 @@ export default async function DashboardPage({ searchParams }: DashboardProps) {
                 Your first lesson is ready — free, no test, about 5 minutes. Finish it
                 and you&apos;re already ahead of most people who sign up anywhere.
               </p>
+
+              {/* Endowed progress — the journey is already underway, not at zero.
+                  Steps shown are only ones that truly happened: picking a track on
+                  the skill check (when they did) and creating the account. */}
+              {(() => {
+                const hasTrack = Boolean(matchedSubject ?? preferredCourse);
+                const steps = [
+                  ...(hasTrack ? [{ label: "Track chosen", done: true }] : []),
+                  { label: "Account created", done: true },
+                  { label: "First lesson", done: false },
+                ];
+                const doneCount = steps.filter((s) => s.done).length;
+                const pct = Math.round((doneCount / steps.length) * 100);
+                return (
+                  <div className="mt-5 max-w-md">
+                    <div className="h-1.5 rounded-full overflow-hidden bg-white/20">
+                      <div className="h-full rounded-full bg-white transition-all" style={{ width: `${pct}%` }} />
+                    </div>
+                    <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1">
+                      {steps.map((s) => (
+                        <span key={s.label} className={`inline-flex items-center gap-1.5 text-xs font-semibold ${s.done ? "text-white" : "text-white/60"}`}>
+                          {s.done ? (
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" aria-hidden><polyline points="20 6 9 17 4 12" /></svg>
+                          ) : (
+                            <span className="w-3 h-3 rounded-full border-2 border-white/50 inline-block" aria-hidden />
+                          )}
+                          {s.label}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                );
+              })()}
             </div>
 
             {/* The first-win card — a named lesson, not an abstract ask */}

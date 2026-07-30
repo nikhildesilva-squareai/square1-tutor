@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import { headers } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient, isAdminEmail } from "@/lib/supabase/admin";
 import { ensureCommunityProfile } from "@/lib/community/ensure-profile";
@@ -41,7 +42,12 @@ export default async function AppLayout({ children }: { children: React.ReactNod
     fetchedOk = false;
   }
   if (fetchedOk && (!student || !student.country)) {
-    redirect("/welcome");
+    // Carry the intended destination through the country step, so a new signup
+    // heading for their first lesson comes back to it instead of /dashboard.
+    const path = (await headers()).get("x-pathname");
+    redirect(path && path.startsWith("/") && !path.startsWith("//")
+      ? `/welcome?next=${encodeURIComponent(path)}`
+      : "/welcome");
   }
 
   // Team managers get a "Manager portal" nav entry — without it there is no

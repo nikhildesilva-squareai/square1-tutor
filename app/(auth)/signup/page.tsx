@@ -234,8 +234,14 @@ export default function SignupPage() {
           }),
         });
         if (res.ok) {
-          const { courseSlug } = (await res.json()) as { courseSlug?: string | null };
-          if (courseSlug) destination = `/courses/${courseSlug}`;
+          const { courseSlug, firstLessonId } = (await res.json()) as {
+            courseSlug?: string | null;
+            firstLessonId?: string | null;
+          };
+          // Straight into Lesson 1 — the activation moment — with the course
+          // page as fallback when the track has no resolvable first lesson.
+          if (firstLessonId) destination = `/learn/${firstLessonId}`;
+          else if (courseSlug) destination = `/courses/${courseSlug}`;
         }
         localStorage.removeItem("sq1_pending_subject");
         localStorage.removeItem("sq1_pending_course");

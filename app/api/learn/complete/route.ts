@@ -68,7 +68,7 @@ export async function POST(request: Request) {
     }
 
     // Find enrollment for this course
-    const { data: enrollment } = await supabase
+    let { data: enrollment } = await supabase
       .from("student_enrollments")
       .select("id")
       .eq("student_id", student.id)
@@ -76,8 +76,38 @@ export async function POST(request: Request) {
       .eq("status", "active")
       .maybeSingle();
 
+    // Auto-enrol on first completion. New signups land straight in Lesson 1
+    // (dashboard first-win card, post-signup redirect, welcome-email deep link)
+    // BEFORE enrolling — a hard 403 here was a dead end at the exact moment of
+    // activation. Finishing a lesson IS choosing the course, so record it
+    // (mirrors the enroll-free payload). The placement assessment stays offered
+    // on the course page; it levels the plan, it no longer gates learning.
     if (!enrollment) {
-      return NextResponse.json({ error: "Not enrolled in this course" }, { status: 403 });
+      const { data: courseRow } = await supabase
+        .from("courses")
+        .select("level")
+        .eq("id", lesson.course_id)
+        .maybeSingle();
+      const targetDate = new Date();
+      targetDate.setMonth(targetDate.getMonth() + 6);
+      const { data: createdEnrollment, error: enrolError } = await supabase
+        .from("student_enrollments")
+        .insert({
+          student_id: student.id,
+          course_id: lesson.course_id,
+          assessment_level: courseRow?.level === "advanced" ? "advanced" : "beginner",
+          current_lesson_id: lessonId,
+          target_completion_date: targetDate.toISOString().split("T")[0],
+          plan_months: 6,
+          status: "active",
+        })
+        .select("id")
+        .single();
+      if (enrolError || !createdEnrollment) {
+        console.error("[learn/complete] auto-enrol failed:", enrolError);
+        return NextResponse.json({ error: "Could not start this course" }, { status: 500 });
+      }
+      enrollment = createdEnrollment;
     }
 
     // Upsert lesson completion (enrollment_id is required by the table).

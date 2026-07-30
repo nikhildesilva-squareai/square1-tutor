@@ -25,6 +25,11 @@ const PUBLIC_PATHS = [
 ];
 
 export async function proxy(request: NextRequest) {
+  // Expose the request path to server layouts (they can't read the URL), so
+  // the (app) layout's /welcome gate can send the user BACK to where they were
+  // heading (e.g. a post-signup Lesson 1 deep link) instead of /dashboard.
+  request.headers.set("x-pathname", request.nextUrl.pathname);
+
   let supabaseResponse = NextResponse.next({ request });
 
   const supabase = createServerClient(

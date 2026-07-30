@@ -88,39 +88,61 @@ export async function sendSupportMessageAlert(opts: {
 }
 
 /* ─── Welcome Email ──────────────────────────────────────────────────────── */
-export async function sendWelcomeEmail(to: string, name: string) {
+/**
+ * Day-0 welcome. When the signup came from a diagnostic track we know their
+ * course, so the CTA deep-links straight into Lesson 1 (the activation moment)
+ * instead of a generic dashboard. Falls back to the dashboard CTA otherwise.
+ */
+export async function sendWelcomeEmail(
+  to: string,
+  name: string,
+  opts?: { courseTitle?: string; lessonUrl?: string },
+) {
   const r = getResend();
+  const lessonMode = Boolean(opts?.lessonUrl);
+  const ctaHref = opts?.lessonUrl ?? "https://www.square1ai.com/dashboard";
+  const ctaLabel = lessonMode ? "Start your first lesson (5 min) →" : "Go to Dashboard";
+  const steps = lessonMode
+    ? [
+        `Start your first ${opts?.courseTitle ?? ""} lesson — it takes about 5 minutes`.replace(/\s+/g, " "),
+        "Every lesson ends with quick checks, so you know it stuck",
+        "Nova, your AI tutor, is one click away whenever you're stuck",
+      ]
+    : [
+        "Pick a course from our tech subjects",
+        "Take the free AI-graded skill assessment",
+        "Get your personalised learning plan",
+      ];
   return r.emails.send({
     from: FROM,
     to,
-    subject: "Welcome to Square 1 AI",
+    subject: lessonMode
+      ? `${name}, your first lesson is ready (takes ~5 min)`
+      : "Welcome to Square 1 AI",
     html: `
       <div style="font-family:system-ui,-apple-system,sans-serif;max-width:520px;margin:0 auto;padding:40px 20px;">
         <div style="text-align:center;margin-bottom:32px;">
           <img src="https://www.square1ai.com/logo-square1.png" alt="Square 1 AI" width="150" style="display:inline-block;margin-bottom:16px;max-width:150px;height:auto;" />
           <h1 style="color:#0F172A;font-size:24px;font-weight:800;margin:0 0 8px;">Welcome, ${name}!</h1>
-          <p style="color:#64748B;font-size:14px;margin:0;">Your journey to a tech career starts now.</p>
+          <p style="color:#64748B;font-size:14px;margin:0;">${lessonMode ? `Your ${opts?.courseTitle ?? "course"} journey starts with one short lesson.` : "Your journey to a tech career starts now."}</p>
         </div>
 
         <div style="background:#F8FAFC;border:1px solid #E2E8F0;border-radius:12px;padding:24px;margin-bottom:24px;">
           <h3 style="color:#0F172A;font-size:16px;font-weight:700;margin:0 0 12px;">What happens next?</h3>
-          <div style="margin-bottom:12px;">
-            <span style="display:inline-block;width:24px;height:24px;background:#0056CE;color:white;border-radius:50%;text-align:center;line-height:24px;font-size:12px;font-weight:700;margin-right:8px;">1</span>
-            <span style="color:#334155;font-size:14px;">Pick a course from our 12 tech subjects</span>
-          </div>
-          <div style="margin-bottom:12px;">
-            <span style="display:inline-block;width:24px;height:24px;background:#0056CE;color:white;border-radius:50%;text-align:center;line-height:24px;font-size:12px;font-weight:700;margin-right:8px;">2</span>
-            <span style="color:#334155;font-size:14px;">Take the free AI-graded skill assessment</span>
-          </div>
-          <div>
-            <span style="display:inline-block;width:24px;height:24px;background:#0056CE;color:white;border-radius:50%;text-align:center;line-height:24px;font-size:12px;font-weight:700;margin-right:8px;">3</span>
-            <span style="color:#334155;font-size:14px;">Get your personalised learning plan</span>
-          </div>
+          ${steps
+            .map(
+              (s, i) => `
+          <div style="${i < steps.length - 1 ? "margin-bottom:12px;" : ""}">
+            <span style="display:inline-block;width:24px;height:24px;background:#0056CE;color:white;border-radius:50%;text-align:center;line-height:24px;font-size:12px;font-weight:700;margin-right:8px;">${i + 1}</span>
+            <span style="color:#334155;font-size:14px;">${s}</span>
+          </div>`,
+            )
+            .join("")}
         </div>
 
         <div style="text-align:center;margin-bottom:32px;">
-          <a href="https://www.square1ai.com/dashboard" style="display:inline-block;background:#0056CE;color:white;font-weight:700;font-size:14px;text-decoration:none;padding:12px 32px;border-radius:12px;">
-            Go to Dashboard
+          <a href="${ctaHref}" style="display:inline-block;background:#0056CE;color:white;font-weight:700;font-size:14px;text-decoration:none;padding:12px 32px;border-radius:12px;">
+            ${ctaLabel}
           </a>
         </div>
 

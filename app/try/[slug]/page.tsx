@@ -166,7 +166,7 @@ export default async function TryLessonPage({ params }: { params: Promise<{ slug
                 className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-xl text-white font-bold text-sm hover:-translate-y-0.5 transition-transform"
                 style={{ background: "linear-gradient(135deg,#0056CE,#4F46E5)", boxShadow: "0 12px 32px rgba(0,86,206,0.35)" }}
               >
-                Get your free skill report →
+                Continue to Lesson 2 — free account →
               </Link>
               <Link
                 href="/diagnostic"
