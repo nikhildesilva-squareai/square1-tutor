@@ -53,7 +53,7 @@ export const NEWS_FEEDS: Feed[] = [
 // Topic → course chips ("we teach this"). Core courses only; slugs verified
 // against the live catalog. The model picks FROM this list, never invents.
 const TOPIC_COURSES: Record<NewsTopic, string[]> = {
-  "ai":            ["artificial-intelligence", "generative-ai", "ai-foundations"],
+  "ai":            ["artificial-intelligence", "generative-ai", "ai-foundations", "agentic-ai", "llm-agent-architect"],
   "cybersecurity": ["cybersecurity"],
   "cloud":         ["fullstack-development", "cybersecurity"],
   "quantum":       ["artificial-intelligence", "data-science"],
@@ -309,6 +309,79 @@ export interface IngestResult {
   candidates: number;
   drafted: number;
   skipped: { duplicates: number; unusable: number; overCap: number; outOfTime: number };
+}
+
+/** Targeted editorial sweep: draft stories matching the given keywords, with a
+ * wider lookback than the daily run. Used when the editor asks for more
+ * coverage of a topic ("write some more on agentic AI"). Deliberately NOT
+ * subject to the 12/day cap — it's a human-initiated batch, and everything it
+ * produces still lands as a draft behind the review gate. Dedupe against the
+ * last 14 days still applies, so it never re-drafts covered stories. */
+export async function ingestTopic(
+  keywords: string[],
+  opts?: { max?: number; maxAgeH?: number; timeBudgetMs?: number },
+): Promise<IngestResult> {
+  const deadline = Date.now() + (opts?.timeBudgetMs ?? 120_000);
+  const max = opts?.max ?? 6;
+  const maxAgeH = opts?.maxAgeH ?? 7 * 24;
+  const admin = createAdminClient();
+  const result: IngestResult = {
+    feedsFetched: 0, itemsSeen: 0, candidates: 0, drafted: 0,
+    skipped: { duplicates: 0, unusable: 0, overCap: 0, outOfTime: 0 },
+  };
+
+  const kw = keywords.map((k) => k.toLowerCase());
+  const matches = (i: FeedItem) => {
+    const hay = `${i.title} ${i.excerpt}`.toLowerCase();
+    return kw.some((k) => hay.includes(k));
+  };
+
+  const perFeed = await Promise.all(NEWS_FEEDS.map(fetchFeed));
+  result.feedsFetched = perFeed.filter((items) => items.length > 0).length;
+  result.itemsSeen = perFeed.reduce((s, f) => s + f.length, 0);
+
+  const cutoff = Date.now() - maxAgeH * 3600_000;
+  let items = perFeed.flat().filter((i) => i.publishedAt.getTime() > cutoff && matches(i));
+
+  // Same 14-day dedupe as the daily run.
+  const since = new Date(Date.now() - 14 * 86400_000).toISOString();
+  const { data: recent } = await admin
+    .from("news_articles").select("headline, sources").gte("created_at", since);
+  const seenUrls = new Set<string>();
+  const seenTitles = new Set<string>();
+  for (const r of recent ?? []) {
+    seenTitles.add(titleKey(r.headline as string));
+    for (const s of (r.sources as { url?: string }[]) ?? []) if (s.url) seenUrls.add(s.url);
+  }
+  items = items.filter((i) => {
+    const tk = titleKey(i.title);
+    if (seenUrls.has(i.link) || seenTitles.has(tk)) { result.skipped.duplicates++; return false; }
+    seenUrls.add(i.link); seenTitles.add(tk);
+    return true;
+  });
+
+  items.sort((a, b) => b.publishedAt.getTime() - a.publishedAt.getTime());
+  result.skipped.overCap = Math.max(0, items.length - max);
+  items = items.slice(0, max);
+  result.candidates = items.length;
+
+  for (const item of items) {
+    if (Date.now() > deadline) { result.skipped.outOfTime++; continue; }
+    try {
+      const draft = await draftFromItem(item);
+      if (!draft) { result.skipped.unusable++; continue; }
+      let { error } = await admin.from("news_articles").insert(draft);
+      if (error?.code === "23505") {
+        ({ error } = await admin.from("news_articles").insert({ ...draft, slug: `${draft.slug}-${submissionToken().slice(0, 4).toLowerCase()}` }));
+      }
+      if (error) { console.error("[newsroom] insert failed:", error.message); result.skipped.unusable++; }
+      else result.drafted++;
+    } catch (e) {
+      console.error(`[newsroom] topical draft failed for "${item.title}":`, e instanceof Error ? e.message : e);
+      result.skipped.unusable++;
+    }
+  }
+  return result;
 }
 
 export async function ingestNews(timeBudgetMs = 45_000): Promise<IngestResult> {
