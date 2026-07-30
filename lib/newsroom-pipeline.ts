@@ -24,7 +24,7 @@ import { NEWS_TOPICS, NEWS_REGIONS, isNewsTopic, isNewsRegion, type NewsTopic, t
 
 export const MAX_DRAFTS_PER_DAY = 12;
 const MAX_ITEM_AGE_H = 36;
-const MAX_PER_FEED = 3;
+const MAX_PER_FEED = 4;
 const FEED_TIMEOUT_MS = 8_000;
 const DRAFT_CONCURRENCY = 4;
 
@@ -40,14 +40,40 @@ interface Feed {
 // changed its URL. Reddit and aggregators are deliberately absent: leads only,
 // never citable sources.
 export const NEWS_FEEDS: Feed[] = [
-  { outlet: "TechCrunch",            url: "https://techcrunch.com/feed/",                    defaultTopic: "industry",      region: "global" },
-  { outlet: "The Verge",             url: "https://www.theverge.com/rss/index.xml",          defaultTopic: "industry",      region: "global" },
-  { outlet: "Ars Technica",          url: "https://feeds.arstechnica.com/arstechnica/index", defaultTopic: "industry",      region: "global" },
-  { outlet: "The Hacker News",       url: "https://feeds.feedburner.com/TheHackersNews",     defaultTopic: "cybersecurity", region: "global" },
-  { outlet: "BleepingComputer",      url: "https://www.bleepingcomputer.com/feed/",          defaultTopic: "cybersecurity", region: "global" },
-  { outlet: "MIT Technology Review", url: "https://www.technologyreview.com/feed/",          defaultTopic: "ai",            region: "global" },
-  { outlet: "VentureBeat",           url: "https://venturebeat.com/feed/",                   defaultTopic: "ai",            region: "global" },
-  { outlet: "iTnews",                url: "https://www.itnews.com.au/RSS/rss.ashx",          defaultTopic: "industry",      region: "anz" },
+  // General technology + industry
+  { outlet: "TechCrunch",            url: "https://techcrunch.com/feed/",                        defaultTopic: "industry",      region: "global" },
+  { outlet: "The Verge",             url: "https://www.theverge.com/rss/index.xml",              defaultTopic: "industry",      region: "global" },
+  { outlet: "Ars Technica",          url: "https://feeds.arstechnica.com/arstechnica/index",     defaultTopic: "industry",      region: "global" },
+  { outlet: "The Register",          url: "https://www.theregister.com/headlines.atom",          defaultTopic: "industry",      region: "global" },
+  { outlet: "iTnews",                url: "https://www.itnews.com.au/RSS/rss.ashx?type=News",    defaultTopic: "industry",      region: "anz" },
+
+  // AI / ML / data science
+  { outlet: "MIT Technology Review", url: "https://www.technologyreview.com/feed/",              defaultTopic: "ai",            region: "global" },
+  { outlet: "VentureBeat",           url: "https://venturebeat.com/feed/",                       defaultTopic: "ai",            region: "global" },
+  { outlet: "MIT News",              url: "https://news.mit.edu/rss/topic/artificial-intelligence2", defaultTopic: "ai",        region: "north-america" },
+  { outlet: "Hugging Face",          url: "https://huggingface.co/blog/feed.xml",                defaultTopic: "ml",            region: "global" },
+  { outlet: "KDnuggets",             url: "https://www.kdnuggets.com/feed",                      defaultTopic: "data-science",  region: "global" },
+  { outlet: "Nature Computational Science", url: "https://www.nature.com/subjects/computational-science.rss", defaultTopic: "data-science", region: "global" },
+  { outlet: "Simon Willison",        url: "https://simonwillison.net/atom/everything/",          defaultTopic: "ai",            region: "global" },
+
+  // Cybersecurity
+  { outlet: "The Hacker News",       url: "https://feeds.feedburner.com/TheHackersNews",         defaultTopic: "cybersecurity", region: "global" },
+  { outlet: "BleepingComputer",      url: "https://www.bleepingcomputer.com/feed/",              defaultTopic: "cybersecurity", region: "global" },
+  { outlet: "Krebs on Security",     url: "https://krebsonsecurity.com/feed/",                   defaultTopic: "cybersecurity", region: "global" },
+  { outlet: "Dark Reading",          url: "https://www.darkreading.com/rss.xml",                 defaultTopic: "cybersecurity", region: "global" },
+
+  // Cloud + infrastructure
+  { outlet: "InfoQ",                 url: "https://feed.infoq.com/",                             defaultTopic: "cloud",         region: "global" },
+  { outlet: "AWS News",              url: "https://aws.amazon.com/blogs/aws/feed/",              defaultTopic: "cloud",         region: "global" },
+  { outlet: "Google Cloud Blog",     url: "https://cloudblog.withgoogle.com/rss/",               defaultTopic: "cloud",         region: "global" },
+
+  // Data centres
+  { outlet: "Data Center Dynamics",  url: "https://www.datacenterdynamics.com/rss/",             defaultTopic: "data-centres",  region: "global" },
+  { outlet: "Data Center Knowledge", url: "https://www.datacenterknowledge.com/rss.xml",         defaultTopic: "data-centres",  region: "global" },
+
+  // Quantum
+  { outlet: "The Quantum Insider",   url: "https://thequantuminsider.com/feed/",                 defaultTopic: "quantum",       region: "global" },
+  { outlet: "Phys.org",              url: "https://phys.org/rss-feed/physics-news/quantum-physics/", defaultTopic: "quantum",    region: "global" },
 ];
 
 // Topic → course chips ("we teach this"). Core courses only; slugs verified
