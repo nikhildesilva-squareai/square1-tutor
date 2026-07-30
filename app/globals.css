@@ -699,3 +699,34 @@ body {
   .chip-enter { animation: none; opacity: 1; }
   .animate-pulse-dot, .animate-blob-1, .animate-blob-2 { animation: none; }
 }
+
+/* ── Newsroom article body — editorial serif over the research base ────────
+   Applied WITH .research-prose; overrides only what makes news read like news:
+   serif body, no drop cap (news isn't an essay), tighter H2s. */
+.newsroom-prose {
+  font-family: Georgia, "Times New Roman", Times, serif;
+  font-size: 1.125rem;
+  line-height: 1.75;
+  color: #1e293b;
+}
+.newsroom-prose > p:first-child {
+  font-size: 1.125rem;
+  line-height: 1.75;
+  color: #1e293b;
+}
+.newsroom-prose > p:first-child::first-letter {
+  all: unset;
+}
+.newsroom-prose h2 {
+  font-family: Georgia, "Times New Roman", Times, serif;
+  font-size: 1.375rem;
+  color: #0f172a;
+  margin-top: 2rem;
+  margin-bottom: 0.6rem;
+}
+.newsroom-prose ul {
+  padding-left: 1.25rem;
+}
+.newsroom-prose li {
+  margin-bottom: 0.6rem;
+}
