@@ -1,14 +1,11 @@
 import Link from "next/link";
-import { NEWS_TOPICS, publishedArticles, newsReadingMinutes } from "@/lib/newsroom";
+import { NEWS_TOPICS, NEWS_REGIONS, publishedArticles, newsReadingMinutes } from "@/lib/newsroom";
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// "Today in technology" — landing-page strip in the newsroom's editorial style
-// (serif headlines, newspaper rules). Server component; renders NOTHING until
-// at least one article is published, so the landing page never shows an empty
-// news section.
+// "Today in technology" — landing-page strip, styled with the same card system
+// as the rest of the landing page. Server component; renders NOTHING until at
+// least one article is published, so the page never shows an empty section.
 // ═══════════════════════════════════════════════════════════════════════════════
-
-const SERIF = 'Georgia, "Times New Roman", Times, serif';
 
 export async function NewsroomStrip() {
   const articles = await publishedArticles({ limit: 3 });
@@ -17,35 +14,37 @@ export async function NewsroomStrip() {
   return (
     <section className="relative bg-white">
       <div className="max-w-6xl mx-auto px-6 sm:px-8 py-14 sm:py-18">
-        <div className="flex items-end justify-between gap-4 pb-4 border-b-2 border-slate-900 mb-2">
+        <div className="flex items-end justify-between gap-4 mb-7">
           <div>
-            <span className="text-[10px] sm:text-[11px] tracking-[0.35em] uppercase text-brand font-bold">
+            <span className="text-[10px] sm:text-[11px] tracking-[0.35em] uppercase text-slate-500 font-bold">
               Newsroom
             </span>
-            <h2 className="mt-1.5 font-bold tracking-tight text-slate-900 leading-tight"
-              style={{ fontFamily: SERIF, fontSize: "clamp(24px, 3vw, 36px)" }}>
+            <h2 className="mt-2 font-black tracking-tight text-slate-900 leading-tight"
+              style={{ fontSize: "clamp(22px, 2.8vw, 34px)", letterSpacing: "-0.02em" }}>
               Today in technology
             </h2>
           </div>
-          <Link href="/newsroom" className="shrink-0 text-xs sm:text-sm font-bold text-brand hover:underline pb-1">
+          <Link href="/newsroom" className="shrink-0 text-xs sm:text-sm font-bold text-brand hover:underline">
             All stories →
           </Link>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-x-8">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           {articles.map((a) => (
-            <article key={a.id} className="border-b sm:border-b-0 border-slate-200 last:border-b-0">
+            <article key={a.id}>
               <Link href={`/newsroom/${a.slug}`}
-                className="group block py-5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-sm">
-                <p className="text-[10px] font-bold tracking-[0.18em] uppercase text-brand mb-2">
-                  {NEWS_TOPICS[a.topic].label}
-                </p>
-                <h3 className="text-lg font-bold text-slate-900 leading-snug group-hover:text-brand transition-colors"
-                  style={{ fontFamily: SERIF, textWrap: "balance" }}>
+                className="group h-full flex flex-col rounded-2xl border border-slate-200 bg-white p-5 transition-all hover:-translate-y-0.5 hover:border-brand/30 hover:shadow-[0_12px_30px_rgba(0,86,206,0.07)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand">
+                <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[10px] font-bold tracking-wider uppercase mb-2.5">
+                  <span className="text-brand">{NEWS_TOPICS[a.topic].label}</span>
+                  <span className="w-1 h-1 rounded-full bg-slate-300" aria-hidden />
+                  <span className="text-slate-400">{NEWS_REGIONS[a.region].short}</span>
+                </div>
+                <h3 className="text-base font-bold text-slate-900 leading-snug group-hover:text-brand transition-colors"
+                  style={{ textWrap: "balance" }}>
                   {a.headline}
                 </h3>
-                {a.dek && <p className="mt-2 text-[13px] text-slate-600 leading-relaxed line-clamp-2">{a.dek}</p>}
-                <p className="mt-2.5 text-[11px] font-semibold text-slate-400">
+                {a.dek && <p className="mt-2 text-[13px] text-slate-500 leading-relaxed line-clamp-2">{a.dek}</p>}
+                <p className="mt-auto pt-3 text-[11px] font-semibold text-slate-400">
                   {newsReadingMinutes(a.body_md)} min read
                 </p>
               </Link>
