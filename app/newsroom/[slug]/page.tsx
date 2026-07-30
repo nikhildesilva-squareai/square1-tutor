@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { GraduationCap } from "lucide-react";
 import { Logo } from "@/components/ui/logo";
+import { ArticleArt } from "@/components/newsroom/ArticleArt";
 import { PrimaryCta } from "@/components/ui/primary-cta";
 import { createClient } from "@/lib/supabase/server";
 import {
@@ -125,6 +126,11 @@ export default async function NewsArticlePage({ params }: PageProps) {
               <span className="w-1 h-1 rounded-full bg-slate-300" aria-hidden />
               <span>{minutes} min read</span>
             </div>
+          </div>
+
+          {/* ── Cover art ───────────────────────────────────────────────── */}
+          <div className="mt-7 aspect-[16/7] w-full overflow-hidden rounded-2xl">
+            <ArticleArt slug={article.slug} topic={article.topic} label={article.headline} variant="hero" />
           </div>
 
           {/* ── The report — same prose system as /research ──────────────── */}

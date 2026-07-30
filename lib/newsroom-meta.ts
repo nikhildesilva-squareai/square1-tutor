@@ -18,7 +18,9 @@ export const NEWS_TOPICS = {
 export type NewsTopic = keyof typeof NEWS_TOPICS;
 
 export const NEWS_REGIONS = {
-  "global":        { label: "Global",        short: "Global" },
+  // "Worldwide", not "Global" — the filter row also has an "All editions"
+  // control, and "All / Global" read as the same thing to a reader.
+  "global":        { label: "Worldwide",     short: "Worldwide" },
   "anz":           { label: "Australia & NZ", short: "AU/NZ" },
   "north-america": { label: "North America", short: "N. America" },
   "europe":        { label: "Europe & UK",   short: "Europe" },

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Logo } from "@/components/ui/logo";
+import { ArticleArt } from "@/components/newsroom/ArticleArt";
 import {
   NEWS_TOPICS, NEWS_REGIONS, isNewsTopic, isNewsRegion,
   publishedArticles, newsReadingMinutes,
@@ -142,7 +143,7 @@ export default async function NewsroomPage({ searchParams }: PageProps) {
             className={`shrink-0 px-3 py-1.5 rounded-full text-[11px] font-bold border transition-colors ${
               !region ? "bg-slate-900 text-white border-slate-900" : "bg-white text-slate-500 border-slate-200 hover:border-slate-400"
             }`}>
-            All
+            All editions
           </Link>
           {(Object.keys(NEWS_REGIONS) as (keyof typeof NEWS_REGIONS)[]).map((r) => (
             <Link key={r} href={regionHref(r)}
@@ -173,7 +174,11 @@ export default async function NewsroomPage({ searchParams }: PageProps) {
               {lead && (
                 <article className={latest.length > 0 ? "lg:col-span-8" : "lg:col-span-12"}>
                   <Link href={`/newsroom/${lead.slug}`}
-                    className="group block h-full rounded-3xl border border-slate-200 bg-white p-6 sm:p-8 transition-all hover:-translate-y-0.5 hover:border-brand/30 hover:shadow-[0_16px_40px_rgba(0,86,206,0.08)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand">
+                    className="group block h-full rounded-3xl border border-slate-200 bg-white overflow-hidden transition-all hover:-translate-y-0.5 hover:border-brand/30 hover:shadow-[0_16px_40px_rgba(0,86,206,0.08)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand">
+                  <div className="aspect-[16/7] w-full overflow-hidden">
+                    <ArticleArt slug={lead.slug} topic={lead.topic} label={lead.headline} />
+                  </div>
+                  <div className="p-6 sm:p-8">
                     <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1 text-[10px] font-bold tracking-wider uppercase mb-3">
                       <span className="px-2.5 py-1 rounded-full bg-brand/10 text-brand">
                         {NEWS_TOPICS[lead.topic].label}
@@ -197,6 +202,7 @@ export default async function NewsroomPage({ searchParams }: PageProps) {
                       Read the story →
                       <span className="text-slate-400 font-semibold">{newsReadingMinutes(lead.body_md)} min</span>
                     </span>
+                    </div>
                   </Link>
                 </article>
               )}
@@ -212,16 +218,21 @@ export default async function NewsroomPage({ searchParams }: PageProps) {
                       {latest.map((a) => (
                         <li key={a.id} className="border-b border-slate-100 last:border-b-0">
                           <Link href={`/newsroom/${a.slug}`}
-                            className="group block py-3.5 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand">
-                            <p className="text-[10px] font-bold tracking-[0.16em] uppercase text-brand mb-1.5">
-                              {NEWS_TOPICS[a.topic].label}
-                            </p>
-                            <h4 className="text-sm font-bold text-slate-900 leading-snug group-hover:text-brand transition-colors">
-                              {a.headline}
-                            </h4>
-                            <p className="mt-1.5 text-[11px] font-semibold text-slate-400">
-                              {fmtDate(a.published_at)} · {newsReadingMinutes(a.body_md)} min
-                            </p>
+                            className="group flex gap-3 py-3.5 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand">
+                            <div className="w-16 h-16 shrink-0 rounded-lg overflow-hidden">
+                              <ArticleArt slug={a.slug} topic={a.topic} label={a.headline} />
+                            </div>
+                            <div className="min-w-0">
+                              <p className="text-[10px] font-bold tracking-[0.16em] uppercase text-brand mb-1">
+                                {NEWS_TOPICS[a.topic].label}
+                              </p>
+                              <h4 className="text-sm font-bold text-slate-900 leading-snug group-hover:text-brand transition-colors">
+                                {a.headline}
+                              </h4>
+                              <p className="mt-1 text-[11px] font-semibold text-slate-400">
+                                {fmtDate(a.published_at)} · {newsReadingMinutes(a.body_md)} min
+                              </p>
+                            </div>
                           </Link>
                         </li>
                       ))}
@@ -241,7 +252,11 @@ export default async function NewsroomPage({ searchParams }: PageProps) {
                   {remainder.map((a) => (
                     <article key={a.id}>
                       <Link href={`/newsroom/${a.slug}`}
-                        className="group h-full flex flex-col rounded-2xl border border-slate-200 bg-white p-5 transition-all hover:-translate-y-0.5 hover:border-brand/30 hover:shadow-[0_12px_30px_rgba(0,86,206,0.07)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand">
+                        className="group h-full flex flex-col rounded-2xl border border-slate-200 bg-white overflow-hidden transition-all hover:-translate-y-0.5 hover:border-brand/30 hover:shadow-[0_12px_30px_rgba(0,86,206,0.07)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand">
+                        <div className="aspect-[16/9] w-full overflow-hidden">
+                          <ArticleArt slug={a.slug} topic={a.topic} label={a.headline} />
+                        </div>
+                        <div className="p-5 flex flex-col flex-1">
                         <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[10px] font-bold tracking-wider uppercase mb-2.5">
                           <span className="text-brand">{NEWS_TOPICS[a.topic].label}</span>
                           <span className="w-1 h-1 rounded-full bg-slate-300" aria-hidden />
@@ -257,6 +272,7 @@ export default async function NewsroomPage({ searchParams }: PageProps) {
                         <p className="mt-auto pt-3 text-[11px] font-semibold text-slate-400">
                           {fmtDate(a.published_at)} · {newsReadingMinutes(a.body_md)} min
                         </p>
+                        </div>
                       </Link>
                     </article>
                   ))}
