@@ -72,8 +72,10 @@ async function getModule(courseId, week) {
   console.log(`${APPLY ? "APPLYING" : "DRY RUN"}${ONLY ? ` (only ${ONLY})` : ""}${FILE ? ` (file ${FILE})` : ""} — advanced case studies\n`);
 
   if (!fs.existsSync(CONTENT)) throw new Error(`missing ${CONTENT}`);
+  // <slug>-w<week>.json, optionally -p<part> where one week was split across
+  // agents (agentic-ai runs 15/10/15/15 lessons per module).
   const files = fs.readdirSync(CONTENT)
-    .filter((f) => /^[a-z-]+-w\d+\.json$/.test(f))
+    .filter((f) => /^[a-z-]+-w\d+(?:-p\d+)?\.json$/.test(f))
     .sort();
 
   let written = 0, skipped = 0, missing = 0;
