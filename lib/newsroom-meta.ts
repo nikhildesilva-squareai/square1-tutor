@@ -36,6 +36,47 @@ export interface NewsSource {
   url: string;
 }
 
+/** Optional teaching diagram. Structure only — never statistics, so it cannot
+ * fabricate figures. See components/newsroom/ConceptDiagram.tsx. */
+export interface ArticleDiagram {
+  type: "flow" | "compare" | "layers";
+  title: string;
+  items: { label: string; detail?: string }[];
+}
+
+const DIAGRAM_TYPES = new Set(["flow", "compare", "layers"]);
+
+/** Validate + clamp a diagram from the model or the DB. Returns null unless the
+ * shape is fully well-formed — a malformed diagram renders nothing rather than
+ * a broken figure. */
+export function parseDiagram(raw: unknown): ArticleDiagram | null {
+  if (!raw || typeof raw !== "object") return null;
+  const d = raw as Record<string, unknown>;
+  const type = typeof d.type === "string" && DIAGRAM_TYPES.has(d.type) ? d.type : null;
+  if (!type) return null;
+
+  const items = (Array.isArray(d.items) ? d.items : [])
+    .map((it) => {
+      const o = (it ?? {}) as Record<string, unknown>;
+      const label = typeof o.label === "string" ? o.label.trim().slice(0, 60) : "";
+      const detail = typeof o.detail === "string" ? o.detail.trim().slice(0, 160) : undefined;
+      return label ? { label, ...(detail ? { detail } : {}) } : null;
+    })
+    .filter(Boolean)
+    .slice(0, 5) as { label: string; detail?: string }[];
+
+  // flow needs a sequence, compare needs exactly two sides, layers needs a stack.
+  const min = type === "compare" ? 2 : 3;
+  if (items.length < min) return null;
+  if (type === "compare" && items.length > 2) items.length = 2;
+
+  return {
+    type: type as ArticleDiagram["type"],
+    title: typeof d.title === "string" ? d.title.trim().slice(0, 80) : "How it works",
+    items,
+  };
+}
+
 export interface NewsArticle {
   id: string;
   slug: string;
@@ -46,6 +87,7 @@ export interface NewsArticle {
   region: NewsRegion;
   sources: NewsSource[];
   course_slugs: string[];
+  diagram: ArticleDiagram | null;
   status: "draft" | "published" | "rejected";
   published_at: string | null;
   created_at: string;

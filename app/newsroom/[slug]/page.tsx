@@ -4,11 +4,12 @@ import { notFound } from "next/navigation";
 import { GraduationCap } from "lucide-react";
 import { Logo } from "@/components/ui/logo";
 import { ArticleArt } from "@/components/newsroom/ArticleArt";
+import { ConceptDiagram } from "@/components/newsroom/ConceptDiagram";
 import { PrimaryCta } from "@/components/ui/primary-cta";
 import { createClient } from "@/lib/supabase/server";
 import {
   NEWS_TOPICS, NEWS_REGIONS,
-  publishedArticleBySlug, publishedArticles, renderNewsBody, newsReadingMinutes,
+  publishedArticleBySlug, publishedArticles, renderNewsBody, newsReadingMinutes, parseDiagram,
 } from "@/lib/newsroom";
 
 const BASE = "https://www.square1ai.com";
@@ -48,6 +49,22 @@ export default async function NewsArticlePage({ params }: PageProps) {
   const splitAt = article.body_md.indexOf(LEARNING_HEADING);
   const reportMd = splitAt === -1 ? article.body_md : article.body_md.slice(0, splitAt);
   const learningMd = splitAt === -1 ? null : article.body_md.slice(splitAt + LEARNING_HEADING.length).trim();
+
+  // Pull quote: the sharpest line of "Why it matters" — that section exists to
+  // state the significance, so its opening sentence is the article's thesis.
+  // Only used when it's a well-formed sentence of a readable length; otherwise
+  // the article simply renders without one.
+  const whyIdx = reportMd.indexOf("## Why it matters");
+  const pullQuote = (() => {
+    if (whyIdx === -1) return null;
+    const section = reportMd.slice(whyIdx + "## Why it matters".length).trim();
+    const first = section.split(/(?<=[.!?])\s+/)[0]?.trim() ?? "";
+    return first.length >= 60 && first.length <= 190 ? first : null;
+  })();
+
+  // Re-validated on read, not trusted from the DB: the shape is jsonb, so a bad
+  // row (hand-edited, or written before the validator) renders nothing.
+  const diagram = parseDiagram(article.diagram);
 
   const reportHtml = renderNewsBody(reportMd);
   const learningHtml = learningMd ? renderNewsBody(learningMd) : null;
@@ -95,7 +112,9 @@ export default async function NewsArticlePage({ params }: PageProps) {
       </div>
 
       <main className="px-6 sm:px-8 pb-24">
-        <article className="max-w-[720px] mx-auto">
+        {/* 660px ≈ 66 characters at the body size — the readable measure.
+              720 was running ~78, past the comfortable band. */}
+        <article className="max-w-[660px] mx-auto">
           {/* ── Headline block ──────────────────────────────────────────── */}
           <div className="pt-8 sm:pt-12">
             <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1 text-[10px] font-bold tracking-wider uppercase">
@@ -109,11 +128,13 @@ export default async function NewsArticlePage({ params }: PageProps) {
               {article.headline}
             </h1>
             {article.dek && (
-              <p className="mt-4 text-base sm:text-lg text-slate-600 leading-relaxed">
+              <p className="mt-5 text-[19px] sm:text-[22px] font-light text-slate-500 leading-[1.45]"
+                style={{ textWrap: "pretty" }}>
                 {article.dek}
               </p>
             )}
-            <div className="mt-5 pb-6 border-b border-slate-200 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-slate-500">
+            <div className="mt-6 pb-6 border-b border-slate-200 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-slate-500"
+              style={{ fontVariantNumeric: "tabular-nums" }}>
               <span className="font-semibold text-slate-700">Square 1 AI Newsroom</span>
               <span className="w-1 h-1 rounded-full bg-slate-300" aria-hidden />
               {article.published_at && (
@@ -134,7 +155,15 @@ export default async function NewsArticlePage({ params }: PageProps) {
           </div>
 
           {/* ── The report — same prose system as /research ──────────────── */}
-          <div className="research-prose" dangerouslySetInnerHTML={{ __html: reportHtml }} />
+          <div className="research-prose newsroom-body" dangerouslySetInnerHTML={{ __html: reportHtml }} />
+
+          {/* ── Pull quote — breaks the grey, restates the significance ──── */}
+          {pullQuote && (
+            <p className="newsroom-pullquote">{pullQuote}</p>
+          )}
+
+          {/* ── Teaching diagram — the mechanism, when the story has one ─── */}
+          {diagram && <ConceptDiagram diagram={diagram} />}
 
           {/* ── The lesson — the article's purpose, visually first-class ── */}
           {learningHtml && (

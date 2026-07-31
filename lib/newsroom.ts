@@ -35,7 +35,7 @@ export async function publishedArticles(opts?: {
   const supabase = await createClient();
   let query = supabase
     .from("news_articles")
-    .select("id, slug, headline, dek, body_md, topic, region, sources, course_slugs, status, published_at, created_at")
+    .select("id, slug, headline, dek, body_md, topic, region, sources, course_slugs, diagram, status, published_at, created_at")
     .eq("status", "published")
     .order("published_at", { ascending: false })
     .limit(opts?.limit ?? 60);
@@ -49,7 +49,7 @@ export async function publishedArticleBySlug(slug: string): Promise<NewsArticle 
   const supabase = await createClient();
   const { data } = await supabase
     .from("news_articles")
-    .select("id, slug, headline, dek, body_md, topic, region, sources, course_slugs, status, published_at, created_at")
+    .select("id, slug, headline, dek, body_md, topic, region, sources, course_slugs, diagram, status, published_at, created_at")
     .eq("status", "published")
     .eq("slug", slug)
     .maybeSingle();

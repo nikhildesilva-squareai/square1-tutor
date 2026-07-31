@@ -713,3 +713,38 @@ body {
 }
 .newsroom-learning ul { padding-left: 1.15rem; }
 .newsroom-learning li { margin-bottom: 0.55rem; }
+
+/* ── Newsroom article body ─────────────────────────────────────────────────
+   Sits on .research-prose. News is scanned before it's read, so the report
+   section gets tighter paragraph rhythm and a stronger H2 step than an essay. */
+.newsroom-body > p:first-child::first-letter {
+  all: unset;               /* no drop cap — this is a report, not an essay */
+}
+.newsroom-body > p:first-child {
+  font-size: 1.125rem;      /* one clear step above body, not a different world */
+  line-height: 1.72;
+  color: #1e293b;
+}
+.newsroom-body p {
+  margin-bottom: 1.15rem;
+}
+.newsroom-body h2 {
+  font-size: 1.3rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  color: #0F172A;
+  margin-top: 2.25rem;
+  margin-bottom: 0.7rem;
+}
+/* Pull quote — the sharpest line, lifted out to break the grey. */
+.newsroom-pullquote {
+  border-left: 3px solid var(--color-brand);
+  padding-left: 1.15rem;
+  margin: 2rem 0;
+  font-size: 1.3rem;
+  line-height: 1.4;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  color: #0F172A;
+  text-wrap: balance;
+}

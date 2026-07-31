@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Logo } from "@/components/ui/logo";
 import { ArticleArt } from "@/components/newsroom/ArticleArt";
+import { CoveragePanel } from "@/components/newsroom/CoveragePanel";
 import {
   NEWS_TOPICS, NEWS_REGIONS, isNewsTopic, isNewsRegion,
   publishedArticles, newsReadingMinutes,
@@ -185,16 +186,18 @@ export default async function NewsroomPage({ searchParams }: PageProps) {
                       </span>
                       <span className="text-slate-400">{NEWS_REGIONS[lead.region].label}</span>
                       <span className="w-1 h-1 rounded-full bg-slate-300" aria-hidden />
-                      <span className="text-slate-400 normal-case tracking-normal font-semibold">
+                      <span className="text-slate-400 normal-case tracking-normal font-semibold"
+                        style={{ fontVariantNumeric: "tabular-nums" }}>
                         {fmtDate(lead.published_at)}
                       </span>
                     </div>
                     <h2 className="font-black tracking-tight text-slate-900 leading-[1.08] group-hover:text-brand transition-colors"
-                      style={{ fontSize: "clamp(26px, 3.6vw, 40px)", letterSpacing: "-0.02em", textWrap: "balance" }}>
+                      style={{ fontSize: "clamp(28px, 3.9vw, 44px)", letterSpacing: "-0.025em", textWrap: "balance" }}>
                       {lead.headline}
                     </h2>
                     {lead.dek && (
-                      <p className="mt-3.5 text-sm sm:text-base text-slate-600 leading-relaxed max-w-2xl">
+                      <p className="mt-4 text-[17px] sm:text-[19px] font-light text-slate-500 leading-[1.5] max-w-2xl"
+                        style={{ textWrap: "pretty" }}>
                         {lead.dek}
                       </p>
                     )}
@@ -229,7 +232,8 @@ export default async function NewsroomPage({ searchParams }: PageProps) {
                               <h4 className="text-sm font-bold text-slate-900 leading-snug group-hover:text-brand transition-colors">
                                 {a.headline}
                               </h4>
-                              <p className="mt-1 text-[11px] font-semibold text-slate-400">
+                              <p className="mt-1 text-[11px] font-semibold text-slate-400"
+                                style={{ fontVariantNumeric: "tabular-nums" }}>
                                 {fmtDate(a.published_at)} · {newsReadingMinutes(a.body_md)} min
                               </p>
                             </div>
@@ -269,7 +273,8 @@ export default async function NewsroomPage({ searchParams }: PageProps) {
                         {a.dek && (
                           <p className="mt-2 text-[13px] text-slate-500 leading-relaxed line-clamp-2">{a.dek}</p>
                         )}
-                        <p className="mt-auto pt-3 text-[11px] font-semibold text-slate-400">
+                        <p className="mt-auto pt-3 text-[11px] font-semibold text-slate-400"
+                          style={{ fontVariantNumeric: "tabular-nums" }}>
                           {fmtDate(a.published_at)} · {newsReadingMinutes(a.body_md)} min
                         </p>
                         </div>
@@ -281,6 +286,9 @@ export default async function NewsroomPage({ searchParams }: PageProps) {
             )}
           </>
         )}
+
+        {/* Chart built from our own data — renders only once there's enough. */}
+        <CoveragePanel />
       </main>
     </div>
   );

@@ -50,6 +50,16 @@ const TOPIC_ART: Record<NewsTopic, { from: string; to: string; ink: string; moti
 
 type Motif = "nodes" | "shield" | "layers" | "orbit" | "curve" | "bars" | "racks" | "grid";
 
+// Four compositions, applied around the 400×225 centre. Subtle on purpose —
+// enough that adjacent cards read as different pictures, never so much that the
+// motif leaves the frame.
+const COMPOSITIONS = [
+  "translate(0 0)",
+  "translate(-38 6) scale(1.1)",
+  "translate(34 -4) scale(0.92)",
+  "rotate(-6 200 112) scale(1.05)",
+];
+
 /** The motif geometry. Everything is seeded, so each article's art differs
  * within its topic's visual language. Viewbox is 400×225 (16:9). */
 function Motif({ motif, seed, ink }: { motif: Motif; seed: number; ink: string }) {
@@ -221,9 +231,21 @@ export function ArticleArt({
           <stop offset="0%" stopColor={art.from} />
           <stop offset="100%" stopColor={art.to} />
         </linearGradient>
+        <radialGradient id={`${gid}-v`} cx={seed % 2 === 0 ? "0.15" : "0.85"} cy="0.85" r="0.9">
+          <stop offset="0%" stopColor={art.to} stopOpacity="0.55" />
+          <stop offset="100%" stopColor={art.to} stopOpacity="0" />
+        </radialGradient>
       </defs>
       <rect width="400" height="225" fill={`url(#${gid})`} />
-      <Motif motif={art.motif} seed={seed} ink={art.ink} />
+      {/* Composition varies per article as well as the motif's own seeding —
+          otherwise a section page of 12 stories draws the same picture 12
+          times. Four layouts: centred, offset left, offset right, tilted. */}
+      <g transform={COMPOSITIONS[seed % COMPOSITIONS.length]}>
+        <Motif motif={art.motif} seed={seed} ink={art.ink} />
+      </g>
+      {/* A soft vignette in the corner opposite the motif's weight, so the
+          card's text side stays calm. */}
+      <rect width="400" height="225" fill={`url(#${gid}-v)`} opacity={0.35} />
     </svg>
   );
 }
