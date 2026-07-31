@@ -103,11 +103,23 @@ export default function SignupPage() {
   // after verifying, so they arrive in the course they were just tested on
   // rather than on a generic dashboard.
   const courseSlugRef = useRef<string>("");
+  // An explicit ?next= from the caller (the diagnostic results CTA sends
+  // /learn/<firstLessonId>). It wins over the derived course page, so the
+  // visitor lands where the CTA promised: in the lesson, not next to it.
+  const nextRef = useRef<string>("");
   // Guard: OAuth is a full-page redirect; a double-tap must not start it twice
   // (that overwrites the PKCE verifier → "bad_code_verifier" on the callback).
   const oauthStartedRef = useRef(false);
   useEffect(() => {
-    const slug = new URLSearchParams(window.location.search).get("subject");
+    const params = new URLSearchParams(window.location.search);
+    // Same shape check the auth callback applies — a relative path only, never
+    // protocol-relative or absolute, so this can't be turned into an open
+    // redirect by a crafted link.
+    const nxt = params.get("next");
+    if (nxt && nxt.startsWith("/") && !nxt.startsWith("//") && !nxt.includes("://")) {
+      nextRef.current = nxt;
+    }
+    const slug = params.get("subject");
     if (!slug) return;
     if (SLUG_TO_SUBJECT[slug]) subjectRef.current = SLUG_TO_SUBJECT[slug];
     courseSlugRef.current = slug;
@@ -131,10 +143,13 @@ export default function SignupPage() {
     setLoading(true);
     setError(null);
     const supabase = createClient();
-    // Google sign-ups never reach handleVerify, so carry the diagnostic's track
-    // through the callback instead. The callback sanitises `next` and already
-    // permits /courses/... ; an unknown slug there falls back to /dashboard.
-    const next = courseSlugRef.current ? `?next=/courses/${courseSlugRef.current}` : "";
+    // Google sign-ups never reach handleVerify, so the destination has to ride
+    // through the callback. An explicit ?next= (the results CTA sends
+    // /learn/<firstLessonId>) wins; otherwise fall back to the picked track's
+    // course page. The callback re-sanitises either way and already permits
+    // /learn/... and /courses/... ; anything else lands on /dashboard.
+    const dest = nextRef.current || (courseSlugRef.current ? `/courses/${courseSlugRef.current}` : "");
+    const next = dest ? `?next=${encodeURIComponent(dest)}` : "";
     const { error } = await supabase.auth.signInWithOAuth({
       provider,
       options: {
@@ -223,7 +238,8 @@ export default function SignupPage() {
 
       // Default destination. If they came from the diagnostic, /api/onboard
       // tells us whether that track has a live course and we land them on it.
-      let destination = "/dashboard";
+      // An explicit ?next= from the CTA wins over the derived destination.
+      let destination = nextRef.current || "/dashboard";
       try {
         const res = await fetch("/api/onboard", {
           method: "POST",
@@ -240,8 +256,11 @@ export default function SignupPage() {
           };
           // Straight into Lesson 1 — the activation moment — with the course
           // page as fallback when the track has no resolvable first lesson.
-          if (firstLessonId) destination = `/learn/${firstLessonId}`;
-          else if (courseSlug) destination = `/courses/${courseSlug}`;
+          // Only override when the caller didn't already name a destination.
+          if (!nextRef.current) {
+            if (firstLessonId) destination = `/learn/${firstLessonId}`;
+            else if (courseSlug) destination = `/courses/${courseSlug}`;
+          }
         }
         localStorage.removeItem("sq1_pending_subject");
         localStorage.removeItem("sq1_pending_course");

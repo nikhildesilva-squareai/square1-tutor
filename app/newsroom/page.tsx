@@ -5,7 +5,7 @@ import { ArticleArt } from "@/components/newsroom/ArticleArt";
 import { CoveragePanel } from "@/components/newsroom/CoveragePanel";
 import {
   NEWS_TOPICS, NEWS_REGIONS, isNewsTopic, isNewsRegion,
-  publishedArticles, newsReadingMinutes,
+  publishedArticles, publishedCounts, newsReadingMinutes,
 } from "@/lib/newsroom";
 
 const BASE = "https://www.square1ai.com";
@@ -38,11 +38,34 @@ function fmtDate(iso: string | null): string {
   return new Date(iso).toLocaleDateString("en-AU", { day: "numeric", month: "short", year: "numeric" });
 }
 
+/** The one filter control for this page — same pill as /research, so the two
+ * public sections read as one product. A zero count stays visible but dimmed:
+ * an empty section is information, not something to hide. */
+function FilterChip({ href, active, label, count }: {
+  href: string; active: boolean; label: string; count: number;
+}) {
+  return (
+    <Link href={href} aria-current={active ? "page" : undefined}
+      className="shrink-0 px-3.5 py-1.5 rounded-full text-xs font-bold transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-1"
+      style={active
+        ? { background: BRAND_GRADIENT, color: "#FFF", boxShadow: "0 4px 14px rgba(0,86,206,0.25)" }
+        : { background: "#FFF", color: count === 0 ? "#94A3B8" : "#475569", border: "1px solid #E2E8F0" }}>
+      {label}{" "}
+      <span className={active ? "opacity-70" : "text-slate-400"} style={{ fontVariantNumeric: "tabular-nums" }}>
+        {count}
+      </span>
+    </Link>
+  );
+}
+
 export default async function NewsroomPage({ searchParams }: PageProps) {
   const params = await searchParams;
   const topic = isNewsTopic(params.topic) ? params.topic : undefined;
   const region = isNewsRegion(params.region) ? params.region : undefined;
-  const articles = await publishedArticles({ topic, region });
+  const [articles, counts] = await Promise.all([
+    publishedArticles({ topic, region }),
+    publishedCounts(),
+  ]);
 
   // Filter links keep the OTHER dimension's selection so they compose.
   const topicHref = (t?: string) => {
@@ -109,51 +132,41 @@ export default async function NewsroomPage({ searchParams }: PageProps) {
         </p>
       </header>
 
-      {/* ── Section nav (topics) ────────────────────────────────────────── */}
-      <nav aria-label="Topics"
-        className="sticky top-0 z-30 border-y border-slate-200 bg-white/90 backdrop-blur-sm">
-        <div className="max-w-6xl mx-auto px-6 sm:px-8 flex items-center gap-1 overflow-x-auto no-scrollbar">
-          {[{ key: undefined, label: "Front Page" } as { key?: string; label: string }]
-            .concat((Object.keys(NEWS_TOPICS) as (keyof typeof NEWS_TOPICS)[]).map((t) => ({ key: t, label: NEWS_TOPICS[t].label })))
-            .map((s) => {
-              const active = topic === s.key || (!topic && !s.key);
-              return (
-                <Link key={s.label} href={topicHref(s.key)}
-                  className={`relative shrink-0 px-3 py-3.5 text-xs font-bold tracking-wide transition-colors rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand ${
-                    active ? "text-brand" : "text-slate-500 hover:text-slate-900"
-                  }`}
-                  aria-current={active ? "page" : undefined}>
-                  {s.label}
-                  {active && (
-                    <span className="absolute inset-x-2 -bottom-px h-[3px] rounded-full"
-                      style={{ background: BRAND_GRADIENT }} aria-hidden />
-                  )}
-                </Link>
-              );
-            })}
-        </div>
-      </nav>
+      {/* ── Filters ──────────────────────────────────────────────────────
+          Sections and Editions do the same job — narrow the list — so they use
+          the SAME control: the site's filter pill (as on /research), active =
+          brand gradient. Hierarchy comes from order and the row label, not from
+          two different widgets. Counts are unfiltered, so a chip tells you how
+          many stories it holds before you click it. */}
+      <div className="sticky top-0 z-30 border-y border-slate-200 bg-white/90 backdrop-blur-sm">
+        <div className="max-w-6xl mx-auto px-6 sm:px-8 py-3 flex flex-col gap-2">
+          <div className="flex items-center gap-2.5">
+            <span className="shrink-0 w-[58px] text-[10px] font-bold tracking-[0.18em] uppercase text-slate-400">
+              Sections
+            </span>
+            <div className="flex items-center gap-2 overflow-x-auto no-scrollbar py-0.5"
+              role="group" aria-label="Filter by section">
+              <FilterChip href={topicHref()} active={!topic} label="Front Page" count={counts.total} />
+              {(Object.keys(NEWS_TOPICS) as (keyof typeof NEWS_TOPICS)[]).map((t) => (
+                <FilterChip key={t} href={topicHref(t)} active={topic === t}
+                  label={NEWS_TOPICS[t].label} count={counts.byTopic[t] ?? 0} />
+              ))}
+            </div>
+          </div>
 
-      {/* ── Region row — pill chips, matching the site's filter language ── */}
-      <div className="max-w-6xl mx-auto px-6 sm:px-8 pt-5">
-        <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-1">
-          <span className="shrink-0 text-[10px] font-bold tracking-[0.2em] uppercase text-slate-400 mr-1">
-            Editions
-          </span>
-          <Link href={regionHref()}
-            className={`shrink-0 px-3 py-1.5 rounded-full text-[11px] font-bold border transition-colors ${
-              !region ? "bg-slate-900 text-white border-slate-900" : "bg-white text-slate-500 border-slate-200 hover:border-slate-400"
-            }`}>
-            All editions
-          </Link>
-          {(Object.keys(NEWS_REGIONS) as (keyof typeof NEWS_REGIONS)[]).map((r) => (
-            <Link key={r} href={regionHref(r)}
-              className={`shrink-0 px-3 py-1.5 rounded-full text-[11px] font-bold border transition-colors ${
-                region === r ? "bg-brand text-white border-brand" : "bg-white text-slate-500 border-slate-200 hover:border-slate-400"
-              }`}>
-              {NEWS_REGIONS[r].short}
-            </Link>
-          ))}
+          <div className="flex items-center gap-2.5">
+            <span className="shrink-0 w-[58px] text-[10px] font-bold tracking-[0.18em] uppercase text-slate-400">
+              Editions
+            </span>
+            <div className="flex items-center gap-2 overflow-x-auto no-scrollbar py-0.5"
+              role="group" aria-label="Filter by edition">
+              <FilterChip href={regionHref()} active={!region} label="All editions" count={counts.total} />
+              {(Object.keys(NEWS_REGIONS) as (keyof typeof NEWS_REGIONS)[]).map((r) => (
+                <FilterChip key={r} href={regionHref(r)} active={region === r}
+                  label={NEWS_REGIONS[r].short} count={counts.byRegion[r] ?? 0} />
+              ))}
+            </div>
+          </div>
         </div>
       </div>
 

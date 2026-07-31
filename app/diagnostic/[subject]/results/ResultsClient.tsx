@@ -276,7 +276,9 @@ function SkillMatrixTile({ topics, relevance, score, total, className }: { topic
   );
 }
 
-type CoursePath = { modules: { title: string; lessons: number }[]; guidedHours: number; totalLessons: number; totalProjects: number };
+// Re-declared locally rather than imported because page.tsx is a server
+// component; keep it in step with the CoursePath there.
+type CoursePath = { modules: { title: string; lessons: number }[]; guidedHours: number; totalLessons: number; totalProjects: number; firstLessonId: string | null };
 
 /* ── Strengths & gaps — a donut of correct vs to-improve + edge/focus lines ─── */
 function StrengthsDonut({ topics, score, total, className }: { topics: { topic: string; correct: boolean }[]; score: number; total: number; className?: string }) {
@@ -422,7 +424,16 @@ export default function ResultsClient({ initialSeats = null, coursePath = null, 
   const shareUrl = `${origin}/diagnostic/${slug}/results?a=${answersParam}`;
   const readinessScore = ((result.score / result.total) * 10).toFixed(1);
   const pct = result.score / result.total;
-  const signupHref = `/signup?subject=${slug}`;
+  // The whole point of this screen is to turn a visitor into a STUDENT. The
+  // old primary CTA sent them to /try/<slug> — a read-only preview with no
+  // account, no progress and no student row, so a reader never became a
+  // learner and never showed up in any number. Now the primary path runs
+  // through auth and lands directly in Lesson 1; /welcome carries the
+  // destination through the country step, and /learn needs no enrolment to
+  // open (enrolment happens automatically on first completion).
+  const firstLessonId = coursePath?.firstLessonId ?? null;
+  const afterAuth = firstLessonId ? `/learn/${firstLessonId}` : `/courses/${slug}`;
+  const signupHref = `/signup?subject=${slug}&next=${encodeURIComponent(afterAuth)}`;
 
   // Founding-plan pricing derived from the shared source: numeric per-month, the
   // 3-mo baseline (highest rate), % saved vs baseline, and the billed total.
@@ -639,14 +650,14 @@ export default function ResultsClient({ initialSeats = null, coursePath = null, 
               </>
               )}
 
-              {/* CTA — lesson first, account second. Sending them into the real
-                  first lesson (no signup wall) converts far better than a signup
-                  form: 20 minutes into a lesson, the account is worth creating. */}
-              <Link href={`/try/${slug}`} style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8, height: 56, borderRadius: 12, background: CTA_GRADIENT, boxShadow: CTA_INSET, color: "#FFFFFF", fontWeight: 800, fontSize: 17, letterSpacing: "-0.01em", maxWidth: 420, margin: "22px auto 0" }}>
-                Start Lesson 1 now — free, no signup →
+              {/* Primary: account + straight into Lesson 1. The reading-only
+                  preview stays available as the secondary, low-commitment path
+                  for anyone not ready to sign up. */}
+              <Link href={signupHref} style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8, height: 56, borderRadius: 12, background: CTA_GRADIENT, boxShadow: CTA_INSET, color: "#FFFFFF", fontWeight: 800, fontSize: 17, letterSpacing: "-0.01em", maxWidth: 420, margin: "22px auto 0" }}>
+                Start Lesson 1 — free →
               </Link>
-              <Link href={signupHref} style={{ display: "block", textAlign: "center", marginTop: 14, fontSize: 14, fontWeight: 600, color: C.blue, textDecoration: "none" }}>
-                or create your free account first
+              <Link href={`/try/${slug}`} style={{ display: "block", textAlign: "center", marginTop: 14, fontSize: 14, fontWeight: 600, color: C.blue, textDecoration: "none" }}>
+                or read the first lesson without an account
               </Link>
               <p style={{ fontSize: 12.5, color: C.ter, margin: "12px 0 0" }}>
                 Free for now — no card required · Get your full report, all {subject.title} courses, projects and Nova · Founding rate locked for life

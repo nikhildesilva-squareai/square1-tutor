@@ -27,6 +27,28 @@ export function renderNewsBody(md: string): string {
 
 // ─── Public read paths (RLS: published rows only) ────────────────────────────
 
+/** Published counts per topic and per region, for the filter chips. Counts are
+ * UNFILTERED — a chip has to show how many stories it would reveal, not how
+ * many survive the current filter, otherwise every inactive chip reads zero. */
+export async function publishedCounts(): Promise<{
+  total: number;
+  byTopic: Record<string, number>;
+  byRegion: Record<string, number>;
+}> {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("news_articles")
+    .select("topic, region")
+    .eq("status", "published");
+  const byTopic: Record<string, number> = {};
+  const byRegion: Record<string, number> = {};
+  for (const r of data ?? []) {
+    byTopic[r.topic as string] = (byTopic[r.topic as string] ?? 0) + 1;
+    byRegion[r.region as string] = (byRegion[r.region as string] ?? 0) + 1;
+  }
+  return { total: (data ?? []).length, byTopic, byRegion };
+}
+
 export async function publishedArticles(opts?: {
   topic?: NewsTopic;
   region?: NewsRegion;

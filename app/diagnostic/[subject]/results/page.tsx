@@ -20,6 +20,9 @@ export interface CoursePath {
   guidedHours: number;
   totalLessons: number;
   totalProjects: number;
+  /** Lesson 1 of this track — the destination a new signup lands on, so the
+   * CTA can send them THROUGH auth and INTO the lesson in one move. */
+  firstLessonId: string | null;
 }
 
 async function getCoursePath(slug: string): Promise<CoursePath | null> {
@@ -35,6 +38,16 @@ async function getCoursePath(slug: string): Promise<CoursePath | null> {
         .eq("course_id", course.id).order("order_index", { ascending: true }),
       supabase.from("lessons").select("id, estimated_minutes").eq("course_id", course.id),
     ]);
+
+    // Lesson 1 = first lesson of the first module, matching how the course page
+    // orders them. Null if the track has no lessons yet; the CTA falls back.
+    const { data: firstModule } = await supabase
+      .from("modules").select("id").eq("course_id", course.id)
+      .order("order_index", { ascending: true }).limit(1).maybeSingle();
+    const { data: firstLesson } = firstModule
+      ? await supabase.from("lessons").select("id").eq("module_id", firstModule.id)
+          .order("order_index", { ascending: true }).limit(1).maybeSingle()
+      : { data: null };
 
     const modules = (mods ?? []).map((m) => ({
       title: m.title as string,
@@ -57,6 +70,7 @@ async function getCoursePath(slug: string): Promise<CoursePath | null> {
       guidedHours: learnableHours(lessonMinutes, ex),
       totalLessons: modules.reduce((s, m) => s + m.lessons, 0),
       totalProjects: (course.total_projects as number) ?? 0,
+      firstLessonId: (firstLesson?.id as string) ?? null,
     };
   } catch {
     return null;
