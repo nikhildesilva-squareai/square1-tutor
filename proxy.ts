@@ -25,6 +25,41 @@ const PUBLIC_PATHS = [
 ];
 
 export async function proxy(request: NextRequest) {
+  // ── Canonical host: apex → www ──────────────────────────────────────────
+  // Auth cookies (session AND the PKCE code-verifier) are host-only, so a
+  // Google sign-in that starts on one host and returns on the other can never
+  // complete — the verifier is missing and the exchange fails. Serve the app
+  // on ONE host (www, the canonical since 2026-07-30) so the OAuth loop always
+  // closes where it started. GET/HEAD only — the first page load lands on www
+  // and everything after originates there.
+  if (
+    request.nextUrl.hostname === "square1ai.com" &&
+    (request.method === "GET" || request.method === "HEAD")
+  ) {
+    const url = request.nextUrl.clone();
+    url.hostname = "www.square1ai.com";
+    return NextResponse.redirect(url, 308);
+  }
+
+  // ── OAuth code catcher ──────────────────────────────────────────────────
+  // When Supabase can't match the OAuth return against its Redirect-URLs
+  // allow-list it falls back to the Site URL — the landing page — with the
+  // one-time ?code= in the query and nothing there to consume it. The user
+  // sees "Google bounced me back to the landing page", still signed out.
+  // Rescue it: forward the code to the real callback on this host. Supabase
+  // auth codes are UUIDs; the format guard keeps unrelated ?code= links alone.
+  const authCode = request.nextUrl.searchParams.get("code");
+  if (
+    authCode &&
+    /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(authCode) &&
+    !request.nextUrl.pathname.startsWith("/api/")
+  ) {
+    const url = request.nextUrl.clone();
+    url.pathname = "/api/auth/callback";
+    url.search = `?code=${authCode}`;
+    return NextResponse.redirect(url);
+  }
+
   // Expose the request path to server layouts (they can't read the URL), so
   // the (app) layout's /welcome gate can send the user BACK to where they were
   // heading (e.g. a post-signup Lesson 1 deep link) instead of /dashboard.
