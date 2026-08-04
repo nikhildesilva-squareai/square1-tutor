@@ -50,6 +50,42 @@ export async function POST(request: Request) {
 
     const { name, country, subject, experience, courseSlug } = parsed.data;
 
+    // Resolve the track FIRST (it's independent of the student row), so both
+    // the create and update paths below can store it. The track can arrive
+    // three ways: an explicit courseSlug (OTP signups from the diagnostic),
+    // the subject TITLE (mapped back to a slug via DIAG_SUBJECTS), or — for
+    // Google signups whose first onboard call is the country step — the
+    // signup_subject stashed on the auth user's metadata.
+    const metaSubject = (user.user_metadata?.signup_subject as string | undefined) ?? undefined;
+    const titleToSlug = (title?: string) =>
+      title ? DIAG_SUBJECTS.find((s) => s.title.toLowerCase() === title.toLowerCase())?.slug ?? null : null;
+    const candidateSlug = courseSlug ?? titleToSlug(subject) ?? titleToSlug(metaSubject);
+
+    let resolvedCourseSlug: string | null = null;
+    let resolvedCourseTitle: string | null = null;
+    let firstLessonId: string | null = null;
+    if (candidateSlug) {
+      const { data: course } = await supabase
+        .from("courses")
+        .select("id, slug, title")
+        .eq("slug", candidateSlug)
+        .eq("status", "active")
+        .maybeSingle();
+      if (course) {
+        resolvedCourseSlug = course.slug;
+        resolvedCourseTitle = course.title;
+        firstLessonId = await getFirstLessonId(supabase, course.id);
+      }
+    }
+    // The subject to persist: explicit param first, else derived from the
+    // course they arrived on (diagnostic title preferred — it's what the
+    // dashboard matches against to pick their recommended course).
+    const derivedSubject =
+      subject ??
+      (resolvedCourseSlug
+        ? DIAG_SUBJECTS.find((s) => s.slug === resolvedCourseSlug)?.title ?? resolvedCourseTitle ?? undefined
+        : undefined);
+
     // Find or create student record for this user
     //
     // Migration required — run these if the columns don't exist yet:
@@ -59,7 +95,7 @@ export async function POST(request: Request) {
     //   ALTER TABLE students ADD COLUMN IF NOT EXISTS consent_given_at timestamptz;
     const { data: existing, error: fetchError } = await supabase
       .from("students")
-      .select("id")
+      .select("id, subject_interest")
       .eq("user_id", user.id)
       .maybeSingle();
 
@@ -74,7 +110,12 @@ export async function POST(request: Request) {
       const updates: Record<string, string> = {};
       if (name) updates.name = name;
       if (country) updates.country = country;
+      // Explicit subject wins; otherwise backfill from the course they arrived
+      // on if the profile has no track yet — this is what makes the dashboard
+      // show the course they were just tested on (Google signups especially:
+      // their first onboard call is the country step, with no subject param).
       if (subject) updates.subject_interest = subject;
+      else if (!existing.subject_interest && derivedSubject) updates.subject_interest = derivedSubject;
       if (experience) updates.experience_level = experience;
       // updates.consent_given_at = new Date().toISOString(); // Uncomment after migration
 
@@ -98,7 +139,7 @@ export async function POST(request: Request) {
           email: user.email ?? "",
           name: name || null,
           country: country || null,
-          subject_interest: subject || null,
+          subject_interest: derivedSubject || null,
           experience_level: experience || null,
           // consent_given_at: new Date().toISOString(), // Uncomment after migration
         })
@@ -109,37 +150,6 @@ export async function POST(request: Request) {
         return NextResponse.json({ error: "Something went wrong" }, { status: 500 });
       }
       studentId = created.id;
-    }
-
-    // Resolve where to send them next. The diagnostic's subject list includes a
-    // few tracks with no live course, and /courses/[slug] calls notFound() on an
-    // unknown slug - so validate here rather than bouncing a brand-new signup
-    // onto a 404. Null means "no live course for that track": land on /dashboard.
-    //
-    // The track can arrive three ways: an explicit courseSlug (OTP signups from
-    // the diagnostic), the subject TITLE (mapped back to a slug via
-    // DIAG_SUBJECTS), or — for Google signups whose first onboard call is the
-    // country step — the signup_subject stashed on the auth user's metadata.
-    const metaSubject = (user.user_metadata?.signup_subject as string | undefined) ?? undefined;
-    const titleToSlug = (title?: string) =>
-      title ? DIAG_SUBJECTS.find((s) => s.title.toLowerCase() === title.toLowerCase())?.slug ?? null : null;
-    const candidateSlug = courseSlug ?? titleToSlug(subject) ?? titleToSlug(metaSubject);
-
-    let resolvedCourseSlug: string | null = null;
-    let resolvedCourseTitle: string | null = null;
-    let firstLessonId: string | null = null;
-    if (candidateSlug) {
-      const { data: course } = await supabase
-        .from("courses")
-        .select("id, slug, title")
-        .eq("slug", candidateSlug)
-        .eq("status", "active")
-        .maybeSingle();
-      if (course) {
-        resolvedCourseSlug = course.slug;
-        resolvedCourseTitle = course.title;
-        firstLessonId = await getFirstLessonId(supabase, course.id);
-      }
     }
 
     // Send welcome email (non-blocking). When we know their track, the CTA

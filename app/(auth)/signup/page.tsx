@@ -55,6 +55,8 @@ const SLUG_TO_SUBJECT: Record<string, string> = {
   "ai-for-teachers": "AI for Teachers",
   "ai-for-project-managers": "AI for Project Managers",
   "ai-for-sales": "AI for Sales",
+  "ai-for-operations": "AI for Operations",
+  "ai-for-students": "AI for Students",
 };
 
 /* ─── Brand SVG icons (inline — no external requests) ─────────────────────── */
