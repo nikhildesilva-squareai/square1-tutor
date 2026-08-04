@@ -143,13 +143,21 @@ export default async function LearnPage({ params }: PageProps) {
     correct_answer: ex.type === "mcq" ? ex.correct_answer : null,
   }));
 
-  // Check if already completed
-  const { data: completion } = await supabase
-    .from("lesson_completions")
-    .select("id")
-    .eq("student_id", student.id)
-    .eq("lesson_id", lessonId)
-    .maybeSingle();
+  // Check if already completed — and whether this student has ever completed
+  // ANY lesson (zero completions ⇒ the player shows the ~5-minute "first win"
+  // milestone card, the honest version of the 5-minute promise).
+  const [{ data: completion }, { count: completionsEver }] = await Promise.all([
+    supabase
+      .from("lesson_completions")
+      .select("id")
+      .eq("student_id", student.id)
+      .eq("lesson_id", lessonId)
+      .maybeSingle(),
+    supabase
+      .from("lesson_completions")
+      .select("id", { count: "exact", head: true })
+      .eq("student_id", student.id),
+  ]);
 
   // Advanced course — fetch for the "What's Next" CTA shown on the final lesson
   let advancedCourse: { slug: string; title: string } | null = null;
@@ -191,6 +199,7 @@ export default async function LearnPage({ params }: PageProps) {
       alreadyCompleted={!!completion}
       weakTopics={weakTopics}
       advancedCourse={advancedCourse}
+      firstEverLesson={(completionsEver ?? 0) === 0}
     />
   );
 }

@@ -50,11 +50,14 @@ interface LearnClientProps {
   outline: OutlineModule[];
   weakTopics: string[];
   advancedCourse?: { slug: string; title: string } | null;
+  /** True when this student has never completed ANY lesson — unlocks the
+   *  "first win" milestone card ~5 minutes in (see parseTheoryIntoCards). */
+  firstEverLesson?: boolean;
 }
 
 // ─── Card types ────────────────────────────────────────────────────────────
 
-type CardType = "objectives" | "theory" | "quiz" | "summary" | "casestudy" | "applied" | "practice" | "complete";
+type CardType = "objectives" | "theory" | "quiz" | "summary" | "casestudy" | "applied" | "practice" | "complete" | "milestone";
 
 interface LessonCard {
   type: CardType;
@@ -210,7 +213,7 @@ function renderSection(md: string): string {
 
 // ─── Parse theory into cards ───────────────────────────────────────────────
 
-function parseTheoryIntoCards(theory: string, exercises: ExerciseData[], objectives: string[], caseStudy: string, references: LessonReference[], hasAppliedTask: boolean): LessonCard[] {
+function parseTheoryIntoCards(theory: string, exercises: ExerciseData[], objectives: string[], caseStudy: string, references: LessonReference[], hasAppliedTask: boolean, firstEverLesson = false): LessonCard[] {
   const cards: LessonCard[] = [];
 
   // 1. Objectives card (if any)
@@ -287,6 +290,17 @@ function parseTheoryIntoCards(theory: string, exercises: ExerciseData[], objecti
     }
   });
 
+  // 3b. First-win milestone — ONLY on a student's very first lesson. The full
+  // lesson is a 30–40 minute ask; the honest "5-minute first win" is the first
+  // concept + its quick check. Right there we celebrate and offer a clean exit
+  // (momentum by choice, not by trap). Placed after the first quiz card, or
+  // after the opening cards when a lesson has no MCQs.
+  if (firstEverLesson && cards.length > 1) {
+    const firstQuiz = cards.findIndex((c) => c.type === "quiz");
+    const anchor = firstQuiz !== -1 ? firstQuiz + 1 : Math.min(cards.length, 3);
+    cards.splice(anchor, 0, { type: "milestone", title: "First win" });
+  }
+
   // 4. Summary card
   cards.push({ type: "summary", title: "Key Takeaways" });
 
@@ -353,7 +367,7 @@ function EmailLessonLinkButton({ lessonId }: { lessonId: string }) {
 export function LearnClient({
   lesson, module, course, exercises,
   lessonPosition, totalLessonsInModule, prevLessonId, nextLessonId, alreadyCompleted,
-  outline, weakTopics, advancedCourse,
+  outline, weakTopics, advancedCourse, firstEverLesson = false,
 }: LearnClientProps) {
   const router = useRouter();
   const styleRef = useRef(false);
@@ -382,7 +396,7 @@ export function LearnClient({
   // Parse theory into cards
   const references = lesson.reference_links ?? [];
   const appliedTask = lesson.applied_task ?? null;
-  const cards = parseTheoryIntoCards(lesson.theory_md ?? "", exercises, lesson.learning_objectives, lesson.case_study ?? "", references, !!(appliedTask && appliedTask.prompt));
+  const cards = parseTheoryIntoCards(lesson.theory_md ?? "", exercises, lesson.learning_objectives, lesson.case_study ?? "", references, !!(appliedTask && appliedTask.prompt), firstEverLesson);
   const [currentCard, setCurrentCard] = useState(0);
   const [animKey, setAnimKey] = useState(0);
   const [visitedCards, setVisitedCards] = useState<Set<number>>(new Set([0]));
@@ -985,6 +999,35 @@ export function LearnClient({
                 </div>
               );
             })()}
+
+            {/* ═══ FIRST-WIN MILESTONE (first-ever lesson only) ═══ */}
+            {card.type === "milestone" && (
+              <div className="max-w-2xl mx-auto text-center py-10 card-fade-up">
+                <div className="w-16 h-16 mx-auto rounded-full bg-emerald-50 border border-emerald-200 flex items-center justify-center text-3xl mb-5 check-pop">🎉</div>
+                <h2 className="text-2xl sm:text-3xl font-black text-ink mb-3">First win — banked.</h2>
+                <p className="text-ink-secondary max-w-md mx-auto mb-2">
+                  You just learned your first {course?.title ?? ""} concept and proved it with a check —
+                  about five minutes in. That&apos;s further than most people who sign up anywhere ever get.
+                </p>
+                <p className="text-sm text-ink-muted max-w-md mx-auto mb-8">
+                  Keep the momentum now, or stop here — this lesson stays one tap away on your dashboard.
+                </p>
+                <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                  <button
+                    onClick={() => goToCard(currentCard + 1)}
+                    className="inline-flex items-center justify-center gap-2 h-12 px-8 rounded-xl bg-brand text-white font-bold text-sm hover:bg-brand-dark transition-colors"
+                  >
+                    Keep going →
+                  </button>
+                  <Link
+                    href="/dashboard"
+                    className="inline-flex items-center justify-center h-12 px-6 rounded-xl border border-border text-ink-secondary font-semibold text-sm hover:text-ink hover:border-border-mid transition-colors"
+                  >
+                    I&apos;m done for today
+                  </Link>
+                </div>
+              </div>
+            )}
 
             {/* ═══ SUMMARY CARD ═══ */}
             {card.type === "summary" && (

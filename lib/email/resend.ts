@@ -207,6 +207,47 @@ export async function sendDiagnosticReport(
   });
 }
 
+/* ─── Lead follow-up (day-1, one-and-done) ───────────────────────────────── */
+/**
+ * The single follow-up to a results-page lead who never signed up: their
+ * report link + the 5-minute free lesson. Deliberately one email only — the
+ * footer says so, and diagnostic_leads.followup_sent_at makes re-sends
+ * impossible. Not a drip sequence.
+ */
+export async function sendLeadFollowup(
+  to: string,
+  opts: { subjectTitle: string; resultsUrl: string; lessonUrl: string },
+) {
+  const r = getResend();
+  return r.emails.send({
+    from: FROM,
+    to,
+    subject: `Your ${opts.subjectTitle} report is still here — and Lesson 1 takes ~5 minutes`,
+    html: `
+      <div style="font-family:system-ui,-apple-system,sans-serif;max-width:520px;margin:0 auto;padding:40px 20px;">
+        <h1 style="color:#0F172A;font-size:20px;font-weight:800;margin:0 0 8px;">Still thinking it over?</h1>
+        <p style="color:#64748B;font-size:14px;margin:0 0 20px;">
+          Yesterday you checked your ${opts.subjectTitle} skills. Your report hasn't gone anywhere —
+          and the fastest way to close the gaps it found is the first lesson, which is free,
+          needs no account, and takes about 5 minutes.
+        </p>
+        <div style="text-align:center;margin-bottom:14px;">
+          <a href="${opts.lessonUrl}" style="display:inline-block;background:#0056CE;color:white;font-weight:700;font-size:14px;text-decoration:none;padding:12px 32px;border-radius:12px;">
+            Start Lesson 1 free →
+          </a>
+        </div>
+        <p style="text-align:center;margin:0 0 28px;">
+          <a href="${opts.resultsUrl}" style="color:#0056CE;font-size:13px;font-weight:600;text-decoration:none;">Re-open my skill report</a>
+        </p>
+        <p style="color:#94A3B8;font-size:12px;text-align:center;">
+          Square 1 AI · tech@square1ai.com<br/>
+          You asked for your report on square1ai.com. This is the only follow-up we'll send.
+        </p>
+      </div>
+    `,
+  });
+}
+
 /* ─── Lesson link bridge (phone → computer) ──────────────────────────────── */
 /** One-tap "email me this lesson" from the mobile lesson player, so code
  *  exercises can be finished on a computer without losing the place. */

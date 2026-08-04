@@ -9,6 +9,7 @@ import {
   sendActivationNudge,
   sendInviteReminder,
   sendManagerDigest,
+  sendLeadFollowup,
 } from "@/lib/email/resend";
 
 /**
@@ -522,6 +523,69 @@ export async function runManagerDigests(): Promise<JobResult> {
       result.sent++;
     } catch (err) {
       result.errors.push(`${manager.email}: ${err instanceof Error ? err.message : "unknown"}`);
+    }
+  }
+
+  return result;
+}
+
+/* ─── Diagnostic-lead follow-up (day-1, one-and-done) ────────────────────── */
+/**
+ * The single follow-up to results-page leads ("Email me my report") who never
+ * became students. Sends 20h–14d after capture, once ever — the send is marked
+ * on the lead row itself (followup_sent_at), so a re-run can never double-send.
+ * Leads who signed up in the meantime are skipped (the activation sequence
+ * owns students); opted-out leads are never touched.
+ */
+export async function runLeadFollowups(): Promise<JobResult> {
+  const supabase = createAdminClient();
+  const result: JobResult = { sent: 0, skipped: 0, errors: [] };
+
+  const now = Date.now();
+  const newestEligible = new Date(now - 20 * 60 * 60 * 1000).toISOString(); // ≥20h old
+  const oldestEligible = new Date(now - 14 * 24 * 60 * 60 * 1000).toISOString(); // ≤14d old
+
+  const { data: leads } = await supabase
+    .from("diagnostic_leads")
+    .select("id, email, subject, results_url")
+    .is("followup_sent_at", null)
+    .eq("opted_out", false)
+    .lte("created_at", newestEligible)
+    .gte("created_at", oldestEligible)
+    .limit(100);
+
+  if (!leads || leads.length === 0) return result;
+
+  // Skip anyone who became a student since capturing their email — the
+  // activation emails own students; two competing nudges is one too many.
+  const emails = leads.map((l) => (l.email as string).toLowerCase());
+  const { data: students } = await supabase
+    .from("students")
+    .select("email")
+    .in("email", emails);
+  const studentEmails = new Set((students ?? []).map((s) => (s.email as string).toLowerCase()));
+
+  const { DIAG_SUBJECTS } = await import("@/lib/diagnostic");
+
+  for (const lead of leads) {
+    if (result.sent >= BATCH_CAP) break;
+    const email = (lead.email as string).toLowerCase();
+    if (studentEmails.has(email)) {
+      // Mark so they age out of the queue rather than re-checking forever.
+      await supabase.from("diagnostic_leads").update({ followup_sent_at: new Date().toISOString() }).eq("id", lead.id);
+      result.skipped++;
+      continue;
+    }
+    const slug = (lead.subject as string) ?? "";
+    const subjectTitle = DIAG_SUBJECTS.find((s) => s.slug === slug)?.title ?? "AI";
+    const resultsUrl = (lead.results_url as string) ?? `https://www.square1ai.com/diagnostic/${slug}`;
+    const lessonUrl = `https://www.square1ai.com/try/${slug}`;
+    try {
+      await sendLeadFollowup(email, { subjectTitle, resultsUrl, lessonUrl });
+      await supabase.from("diagnostic_leads").update({ followup_sent_at: new Date().toISOString() }).eq("id", lead.id);
+      result.sent++;
+    } catch (err) {
+      result.errors.push(`${email}: ${err instanceof Error ? err.message : "unknown"}`);
     }
   }
 

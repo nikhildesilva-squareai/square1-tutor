@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { runStreakReminders, runWeeklyDigest, runActivationNudges, runInviteReminders, runManagerDigests } from "@/lib/email/jobs";
+import { runStreakReminders, runWeeklyDigest, runActivationNudges, runInviteReminders, runManagerDigests, runLeadFollowups } from "@/lib/email/jobs";
 import { checkAllIncompleteEnrollments } from "@/lib/enrollment-completion";
 import { ingestNews } from "@/lib/newsroom-pipeline";
 
@@ -64,6 +64,14 @@ export async function GET(request: Request) {
     results.inviteReminders = await runInviteReminders();
   } catch (err) {
     results.inviteReminders = { error: err instanceof Error ? err.message : "failed" };
+  }
+
+  // Results-page leads: the single day-1 "your report is waiting" follow-up
+  // (one-and-done — marked on the lead row, never re-sent, skips signups).
+  try {
+    results.leadFollowups = await runLeadFollowups();
+  } catch (err) {
+    results.leadFollowups = { error: err instanceof Error ? err.message : "failed" };
   }
 
   // Newsroom: draft the day's stories into the /desk/newsroom review queue.
