@@ -270,10 +270,15 @@ export function HeroSection({
             <Link href="/login" className="hidden sm:block text-[11px] font-semibold tracking-[0.12em] uppercase text-slate-500 hover:text-slate-900 transition-colors" style={{ minHeight: "unset" }}>
               Sign In
             </Link>
-            {/* "GET STARTED" pill — solid Square 1 blue */}
-            <Link href="/diagnostic"
-              className="flex items-center gap-2.5 px-4 sm:px-5 py-2.5 rounded-full bg-brand text-white text-xs font-bold tracking-wide uppercase hover:bg-brand/90 transition-all shadow-[0_6px_20px_rgba(0,86,206,0.25)]"
-              style={{ minHeight: "unset" }}>
+            {/* "GET STARTED" pill — solid Square 1 blue.
+                globals.css gives buttons and links a 44px tap target under
+                768px, then opts nav links out again (`nav a { min-height:
+                unset }`) because the inline text links beside this are small by
+                design. That opt-out caught the primary CTA too and left it at
+                36px on a phone. The class below wins on specificity over the
+                element selector, and releases at sm so desktop is unchanged. */}
+            <Link href="/diagnostic" data-tap-target
+              className="flex items-center justify-center gap-2.5 px-4 sm:px-5 py-2.5 rounded-full bg-brand text-white text-xs font-bold tracking-wide uppercase hover:bg-brand/90 transition-all shadow-[0_6px_20px_rgba(0,86,206,0.25)]">
               Get Started
               <span className="w-2 h-2 rounded-full bg-white/70 shrink-0" />
             </Link>
