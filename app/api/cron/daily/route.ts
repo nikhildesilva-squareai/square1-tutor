@@ -3,6 +3,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { runStreakReminders, runWeeklyDigest, runActivationNudges, runInviteReminders, runManagerDigests, runLeadFollowups } from "@/lib/email/jobs";
 import { checkAllIncompleteEnrollments } from "@/lib/enrollment-completion";
 import { ingestNews } from "@/lib/newsroom-pipeline";
+import { sweepMonth } from "@/lib/ai/budget";
 
 export const maxDuration = 60;
 
@@ -33,7 +34,25 @@ export async function GET(request: Request) {
 
   const isSunday = new Date().getUTCDay() === 0;
   const isMonday = new Date().getUTCDay() === 1;
+  const isFirstOfMonth = new Date().getUTCDate() === 1;
   const results: Record<string, unknown> = {};
+
+  // ── Monthly wallet sweep (1st of the month) ─────────────────────────────
+  // Moved in from its own cron entry: Vercel Hobby allows only two crons, and
+  // that slot now belongs to the morning newsroom run. Same behaviour, just
+  // fired at 07:00 instead of 02:00 UTC on the 1st — immaterial for a sweep
+  // of the PREVIOUS month. /api/cron/sweep-wallets remains for manual runs.
+  if (isFirstOfMonth) {
+    try {
+      const now = new Date();
+      const prevMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+      const monthKey = `${prevMonth.getFullYear()}-${String(prevMonth.getMonth() + 1).padStart(2, "0")}`;
+      const { swept, count } = await sweepMonth(monthKey);
+      results.walletSweep = { monthKey, walletsSwept: count, totalRecovered: swept };
+    } catch (err) {
+      results.walletSweep = { error: err instanceof Error ? err.message : "failed" };
+    }
+  }
 
   // ── Check incomplete enrollments for completion (fallback for on-demand triggers) ──
   try {
