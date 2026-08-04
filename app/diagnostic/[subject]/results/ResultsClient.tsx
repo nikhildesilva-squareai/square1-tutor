@@ -72,6 +72,65 @@ const tileBase: React.CSSProperties = {
   background: C.card, border: `1px solid ${C.cardBorder}`, borderRadius: 14, boxShadow: SHADOW_XS,
 };
 
+/* ── "Email me my report" — lead capture for visitors not ready to commit ──
+   The report is URL-encoded, so the emailed link reproduces it exactly. This
+   is the only re-entry point we have for completers who leave without an
+   account — without it they are unreachable forever. */
+function EmailReportCapture({ slug, answersParam }: { slug: string; answersParam: string }) {
+  const [email, setEmail] = useState("");
+  const [status, setStatus] = useState<"idle" | "sending" | "sent" | "error">("idle");
+
+  async function submit(e: React.FormEvent) {
+    e.preventDefault();
+    if (!email.trim() || status === "sending") return;
+    setStatus("sending");
+    try {
+      const res = await fetch("/api/diagnostic/report-email", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: email.trim(), subject: slug, a: answersParam }),
+      });
+      setStatus(res.ok ? "sent" : "error");
+    } catch {
+      setStatus("error");
+    }
+  }
+
+  if (status === "sent") {
+    return (
+      <p style={{ marginTop: 18, fontSize: 14, fontWeight: 600, color: C.success, textAlign: "center" }}>
+        ✓ Sent — your report link is in your inbox.
+      </p>
+    );
+  }
+  return (
+    <form onSubmit={submit} style={{ marginTop: 18, maxWidth: 420, marginLeft: "auto", marginRight: "auto" }}>
+      <p style={{ fontSize: 13, color: C.sec2, margin: "0 0 8px", textAlign: "center" }}>
+        Not ready right now? <strong style={{ color: C.ink }}>Email yourself this report</strong> — the link brings it straight back.
+      </p>
+      <div style={{ display: "flex", gap: 8 }}>
+        <input
+          type="email" required value={email} onChange={(e) => setEmail(e.target.value)}
+          placeholder="you@example.com" aria-label="Email address for your report"
+          className="text-base sm:text-sm"
+          style={{ flex: 1, minWidth: 0, height: 44, padding: "0 14px", borderRadius: 10, border: `1px solid ${C.borderStrong}`, background: C.card, color: C.ink, outline: "none" }}
+        />
+        <button
+          type="submit" disabled={status === "sending"}
+          style={{ height: 44, padding: "0 16px", borderRadius: 10, border: "none", background: C.blue, color: "#FFFFFF", fontWeight: 700, fontSize: 13.5, cursor: "pointer", opacity: status === "sending" ? 0.6 : 1, whiteSpace: "nowrap" }}
+        >
+          {status === "sending" ? "Sending…" : "Email it"}
+        </button>
+      </div>
+      {status === "error" && (
+        <p style={{ fontSize: 12, color: C.error, margin: "6px 0 0", textAlign: "center" }}>
+          Couldn&apos;t send — check the address and try again.
+        </p>
+      )}
+    </form>
+  );
+}
+
 /* ── Topic-coverage radar (light) ─────────────────────────────────────────── */
 function LightRadar({ axes }: { axes: { label: string; pass: boolean }[] }) {
   const N = axes.length;
@@ -402,6 +461,19 @@ export default function ResultsClient({ initialSeats = null, coursePath = null, 
       .catch(() => {});
   }, []);
 
+  // Sticky mobile CTA. On a 390px screen this report runs past 5,000px and the
+  // only way forward used to sit at ~4,800 — roughly six screens of scrolling
+  // from the moment of highest intent. The bar appears once the result card is
+  // behind them, so the exit is always one thumb-reach away.
+  // Declared before the early return below so hook order stays stable.
+  const [showStickyCta, setShowStickyCta] = useState(false);
+  useEffect(() => {
+    const onScroll = () => setShowStickyCta(window.scrollY > 520);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
   if (!subject || !seo || !answers) {
     return (
       <div className="min-h-dvh flex flex-col items-center justify-center px-4" style={{ background: C.bg, color: C.ink }}>
@@ -504,6 +576,35 @@ export default function ResultsClient({ initialSeats = null, coursePath = null, 
                   <div key={name} style={{ flex: 1, textAlign: "center", fontSize: 11.5, fontWeight: i === bandIdx ? 700 : 500, color: i === bandIdx ? C.blue : C.ter }}>{name}</div>
                 ))}
               </div>
+            </div>
+          </div>
+
+          {/* Inline CTA — mobile only.
+              The report below is worth reading, but on a phone it runs past
+              5,000px and the only way forward sat at the very bottom. This puts
+              the exit directly under the score, at the moment intent peaks,
+              without touching the desktop bento (where the grid is four columns
+              and the page is a fraction of the height). */}
+          <div className="lg:hidden" style={{ ...tileBase, padding: 18 }}>
+            <div style={{ fontSize: 15, fontWeight: 700, letterSpacing: "-0.01em", margin: 0 }}>
+              Ready to close the gaps?
+            </div>
+            <p style={{ fontSize: 13.5, lineHeight: 1.5, color: C.sec2, margin: "6px 0 14px" }}>
+              Lesson 1 of {subject.title} is free, and it starts where your snapshot says you should.
+            </p>
+            <Link
+              href={signupHref}
+              style={{
+                display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
+                height: 52, borderRadius: 12, background: CTA_GRADIENT, boxShadow: CTA_INSET,
+                color: "#FFFFFF", fontWeight: 800, fontSize: 16, letterSpacing: "-0.01em",
+                textDecoration: "none",
+              }}
+            >
+              Start Lesson 1 — free →
+            </Link>
+            <div style={{ textAlign: "center", marginTop: 10, fontSize: 12.5, color: C.ter }}>
+              Keep scrolling for the full breakdown
             </div>
           </div>
 
@@ -662,10 +763,58 @@ export default function ResultsClient({ initialSeats = null, coursePath = null, 
               <p style={{ fontSize: 12.5, color: C.ter, margin: "12px 0 0" }}>
                 Free for now — no card required · Get your full report, all {subject.title} courses, projects and Nova · Founding rate locked for life
               </p>
+
+              {/* Lead capture — catches completers who leave without an account. */}
+              <EmailReportCapture slug={slug} answersParam={answersParam} />
             </div>
           </div>
         </div>
 
+        {/* Clearance for the sticky bar, so it never sits over the final CTA
+            or the email capture at the very bottom of the report. */}
+        <div className="lg:hidden" aria-hidden style={{ height: 84 }} />
+
+      </div>
+
+      {/* Sticky mobile action bar. Slides in once the result card is behind
+          them and stays until they act. Desktop never sees it — that layout is
+          four columns and a fraction of this height, so it has no problem to
+          solve there. The page gets bottom padding to match, so the bar never
+          covers the final CTA or the email capture. */}
+      <div
+        className="lg:hidden"
+        style={{
+          position: "fixed", left: 0, right: 0, bottom: 0, zIndex: 40,
+          padding: "10px 16px calc(10px + env(safe-area-inset-bottom))",
+          background: "rgba(255,255,255,0.92)",
+          backdropFilter: "blur(12px)",
+          borderTop: `1px solid ${C.border}`,
+          transform: showStickyCta ? "translateY(0)" : "translateY(110%)",
+          transition: "transform 220ms ease",
+          pointerEvents: showStickyCta ? "auto" : "none",
+        }}
+      >
+        <div style={{ display: "flex", alignItems: "center", gap: 12, maxWidth: 520, margin: "0 auto" }}>
+          <div style={{ minWidth: 0, flex: 1 }}>
+            <div style={{ fontSize: 13, fontWeight: 700, color: C.ink, lineHeight: 1.2 }}>
+              {bandLabel} · {result.score}/{result.total}
+            </div>
+            <div style={{ fontSize: 11.5, color: C.ter, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+              Lesson 1 is free
+            </div>
+          </div>
+          <Link
+            href={signupHref}
+            style={{
+              display: "inline-flex", alignItems: "center", justifyContent: "center",
+              height: 46, padding: "0 18px", borderRadius: 11, background: CTA_GRADIENT,
+              boxShadow: CTA_INSET, color: "#FFFFFF", fontWeight: 800, fontSize: 14.5,
+              letterSpacing: "-0.01em", textDecoration: "none", flexShrink: 0,
+            }}
+          >
+            Start free →
+          </Link>
+        </div>
       </div>
 
       <style>{`

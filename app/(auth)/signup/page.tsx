@@ -27,6 +27,7 @@ import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { Logo } from "@/components/ui/logo";
 import Link from "next/link";
+import { detectInAppBrowser, type InAppBrowser } from "@/lib/in-app-browser";
 
 const CODE_LENGTH = 6;
 
@@ -112,6 +113,10 @@ export default function SignupPage() {
   // Guard: OAuth is a full-page redirect; a double-tap must not start it twice
   // (that overwrites the PKCE verifier → "bad_code_verifier" on the callback).
   const oauthStartedRef = useRef(false);
+  // In-app webview (Instagram/Facebook/…): Google blocks OAuth there, so lead
+  // with the email code and say why. Set post-hydration (UA is client-only).
+  const [inApp, setInApp] = useState<InAppBrowser | null>(null);
+  useEffect(() => { setInApp(detectInAppBrowser()); }, []);
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     // Same shape check the auth callback applies — a relative path only, never
@@ -406,19 +411,38 @@ export default function SignupPage() {
               </p>
             </div>
 
-            {/* OAuth — Google is the primary, most reliable path */}
-            <div className="mb-3">
-              <button
-                type="button"
-                onClick={() => handleOAuth("google")}
-                disabled={loading}
-                className="w-full flex items-center justify-center gap-3 h-11 rounded-lg bg-white text-slate-900 font-semibold text-sm border-2 hover:bg-slate-50 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-                style={{ borderColor: "rgba(0,86,206,0.35)", boxShadow: "0 4px 16px rgba(0,86,206,0.10)" }}
+            {/* OAuth — Google is the primary path in a real browser. Inside a
+                raw in-app webview Google refuses OAuth outright
+                (disallowed_useragent), so there we hide the dead button,
+                explain, and let the email code do the work. */}
+            {inApp?.googleBlocked ? (
+              <div
+                className="mb-3 rounded-lg px-3.5 py-3 text-[12px] leading-relaxed text-amber-900"
+                style={{ background: "rgba(245,158,11,0.08)", border: "1px solid rgba(245,158,11,0.3)" }}
               >
-                <GoogleIcon />
-                Sign up with Google
-              </button>
-            </div>
+                You&apos;re browsing inside the {inApp.name === "this app" ? "app's" : `${inApp.name} app's`} built-in
+                browser, where Google sign-up isn&apos;t available. <strong>Use your email below — it works
+                perfectly here.</strong> Prefer Google? Open <strong>square1ai.com</strong> in Chrome or Safari.
+              </div>
+            ) : (
+              <div className="mb-3">
+                <button
+                  type="button"
+                  onClick={() => handleOAuth("google")}
+                  disabled={loading}
+                  className="w-full flex items-center justify-center gap-3 h-11 rounded-lg bg-white text-slate-900 font-semibold text-sm border-2 hover:bg-slate-50 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                  style={{ borderColor: "rgba(0,86,206,0.35)", boxShadow: "0 4px 16px rgba(0,86,206,0.10)" }}
+                >
+                  <GoogleIcon />
+                  Sign up with Google
+                </button>
+                {inApp && (
+                  <p className="mt-1.5 text-[10px] text-slate-500 text-center">
+                    If Google sign-up doesn&apos;t open here, use your email below instead.
+                  </p>
+                )}
+              </div>
+            )}
 
             {/* OAuth implied-consent note */}
             <p className="text-[10px] text-slate-500 text-center mb-4">

@@ -313,6 +313,40 @@ function parseTheoryIntoCards(theory: string, exercises: ExerciseData[], objecti
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
+//  Phone → computer bridge
+// ═══════════════════════════════════════════════════════════════════════════
+// Code exercises are painful on a phone keyboard. On small screens each code
+// exercise carries a one-tap "Email me this lesson" so the student can finish
+// on a computer without losing their place (deep link via /api/learn/email-link).
+function EmailLessonLinkButton({ lessonId }: { lessonId: string }) {
+  const [status, setStatus] = useState<"idle" | "sending" | "sent" | "error">("idle");
+  async function send() {
+    if (status === "sending" || status === "sent") return;
+    setStatus("sending");
+    try {
+      const res = await fetch("/api/learn/email-link", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ lessonId }),
+      });
+      setStatus(res.ok ? "sent" : "error");
+    } catch {
+      setStatus("error");
+    }
+  }
+  return (
+    <button
+      type="button"
+      onClick={send}
+      disabled={status === "sending" || status === "sent"}
+      className="shrink-0 text-[11px] font-bold text-amber-900 underline underline-offset-2 disabled:no-underline disabled:opacity-80"
+    >
+      {status === "sent" ? "✓ Sent to your inbox" : status === "sending" ? "Sending…" : status === "error" ? "Failed — tap to retry" : "Email me this lesson"}
+    </button>
+  );
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
 //  MAIN COMPONENT
 // ═══════════════════════════════════════════════════════════════════════════
 
@@ -1201,6 +1235,13 @@ export function LearnClient({
                         <div className="flex items-center gap-2 px-4 py-2 bg-[#0D1117] border-b border-white/10">
                           <div className="flex gap-1.5"><div className="w-2.5 h-2.5 rounded-full bg-[#FF5F57]" /><div className="w-2.5 h-2.5 rounded-full bg-[#FEBC2E]" /><div className="w-2.5 h-2.5 rounded-full bg-[#28C840]" /></div>
                           <span className="text-[10px] font-bold tracking-widest uppercase text-slate-500 ml-2">{ex.language ?? "python"}</span>
+                        </div>
+                        {/* Phone → computer bridge — writing code on a phone
+                            keyboard is the silent killer of these exercises.
+                            Hidden on lg+ where a real keyboard is likely. */}
+                        <div className="lg:hidden flex items-center justify-between gap-3 px-4 py-2 bg-amber-50 border-b border-amber-200">
+                          <span className="text-[11px] text-amber-900">💻 Easiest on a computer</span>
+                          <EmailLessonLinkButton lessonId={lesson.id} />
                         </div>
                         <CodeEditor
                           value={responses[ex.id]?.codeResponse ?? ""}

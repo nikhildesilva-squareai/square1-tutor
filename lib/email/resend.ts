@@ -154,6 +154,89 @@ export async function sendWelcomeEmail(
   });
 }
 
+/* ─── Diagnostic report (lead capture — no account required) ─────────────── */
+/**
+ * Sends a visitor their skill-check report link from the results page. The
+ * results are fully URL-encoded, so the link reproduces the exact report.
+ * This is the re-entry point for people not ready to sign up on the spot.
+ */
+export async function sendDiagnosticReport(
+  to: string,
+  opts: {
+    subjectTitle: string;
+    score: number;
+    total: number;
+    band: string;
+    weakTopics: string[];
+    resultsUrl: string;
+    lessonUrl: string;
+  },
+) {
+  const r = getResend();
+  const gaps = opts.weakTopics.length
+    ? `<p style="color:#334155;font-size:14px;margin:0 0 4px;"><strong>Where to focus first:</strong> ${opts.weakTopics.join(" · ")}</p>`
+    : "";
+  return r.emails.send({
+    from: FROM,
+    to,
+    subject: `Your ${opts.subjectTitle} skill report — ${opts.band} (${opts.score}/${opts.total})`,
+    html: `
+      <div style="font-family:system-ui,-apple-system,sans-serif;max-width:520px;margin:0 auto;padding:40px 20px;">
+        <div style="text-align:center;margin-bottom:28px;">
+          <img src="https://www.square1ai.com/logo-square1.png" alt="Square 1 AI" width="150" style="display:inline-block;margin-bottom:16px;max-width:150px;height:auto;" />
+          <h1 style="color:#0F172A;font-size:22px;font-weight:800;margin:0 0 6px;">Your ${opts.subjectTitle} skill snapshot</h1>
+          <p style="color:#64748B;font-size:14px;margin:0;">You scored <strong style="color:#0F172A;">${opts.score}/${opts.total}</strong> — ${opts.band}.</p>
+        </div>
+        <div style="background:#F8FAFC;border:1px solid #E2E8F0;border-radius:12px;padding:20px;margin-bottom:24px;">
+          ${gaps}
+          <p style="color:#64748B;font-size:13px;margin:${opts.weakTopics.length ? "10px" : "0"} 0 0;">Your full report — topic-by-topic breakdown, strengths, and your course path — is one click away.</p>
+        </div>
+        <div style="text-align:center;margin-bottom:14px;">
+          <a href="${opts.resultsUrl}" style="display:inline-block;background:#0056CE;color:white;font-weight:700;font-size:14px;text-decoration:none;padding:12px 32px;border-radius:12px;">
+            Open my full report →
+          </a>
+        </div>
+        <p style="text-align:center;margin:0 0 28px;">
+          <a href="${opts.lessonUrl}" style="color:#0056CE;font-size:13px;font-weight:600;text-decoration:none;">…or start Lesson 1 free — no signup, ~5 minutes</a>
+        </p>
+        <p style="color:#94A3B8;font-size:12px;text-align:center;">
+          Square 1 AI · tech@square1ai.com · You requested this report on square1ai.com.
+        </p>
+      </div>
+    `,
+  });
+}
+
+/* ─── Lesson link bridge (phone → computer) ──────────────────────────────── */
+/** One-tap "email me this lesson" from the mobile lesson player, so code
+ *  exercises can be finished on a computer without losing the place. */
+export async function sendLessonLink(
+  to: string,
+  opts: { lessonTitle: string; courseTitle: string; url: string },
+) {
+  const r = getResend();
+  return r.emails.send({
+    from: FROM,
+    to,
+    subject: `Pick up where you left off: ${opts.lessonTitle}`,
+    html: `
+      <div style="font-family:system-ui,-apple-system,sans-serif;max-width:520px;margin:0 auto;padding:40px 20px;">
+        <h1 style="color:#0F172A;font-size:20px;font-weight:800;margin:0 0 8px;">Your lesson, ready on the big screen</h1>
+        <p style="color:#64748B;font-size:14px;margin:0 0 20px;">
+          You asked for a link to <strong style="color:#0F172A;">${opts.lessonTitle}</strong> (${opts.courseTitle}) —
+          open it on your computer to write the code comfortably.
+        </p>
+        <a href="${opts.url}" style="display:inline-block;background:#0056CE;color:white;font-weight:700;font-size:14px;text-decoration:none;padding:12px 32px;border-radius:12px;">
+          Open the lesson →
+        </a>
+        <p style="color:#94A3B8;font-size:12px;margin-top:28px;">
+          Square 1 AI · tech@square1ai.com
+        </p>
+      </div>
+    `,
+  });
+}
+
 /* ─── Streak Reminder ────────────────────────────────────────────────────── */
 export async function sendStreakReminder(
   to: string,
