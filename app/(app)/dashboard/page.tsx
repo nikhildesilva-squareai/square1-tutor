@@ -9,6 +9,7 @@ import { RoutingQuestion } from "@/components/RoutingQuestion";
 import { CodingExperienceQuestion } from "@/components/CodingExperienceQuestion";
 import { WelcomeTour } from "@/components/WelcomeTour";
 import { DIAG_SUBJECTS } from "@/lib/diagnostic";
+import { AdminDeskStrip } from "@/components/AdminDeskStrip";
 
 // ─── Course career mapping ────────────────────────────────────────────────────
 const COURSES = [
@@ -160,6 +161,8 @@ export default async function DashboardPage({ searchParams }: DashboardProps) {
 
     return (
       <div className="min-h-full px-4 sm:px-6 py-8 max-w-6xl mx-auto">
+        {/* Admin only — renders nothing for a learner. */}
+        <AdminDeskStrip />
         {/* Attach the diagnostic subject choice to this profile (once). */}
         <SubjectSync />
 
@@ -436,6 +439,8 @@ export default async function DashboardPage({ searchParams }: DashboardProps) {
 
   return (
     <div className="min-h-full px-4 sm:px-6 py-8 max-w-6xl mx-auto">
+        {/* Admin only — renders nothing for a learner. */}
+        <AdminDeskStrip />
       {/* Attach the diagnostic subject choice to this profile (once). */}
       <SubjectSync />
 

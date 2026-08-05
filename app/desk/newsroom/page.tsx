@@ -31,9 +31,15 @@ export default async function NewsroomDeskPage() {
             <Link href="/"><Logo variant="dark" size="sm" /></Link>
             <span className="text-xs font-bold text-ink-muted uppercase tracking-widest">Newsroom desk</span>
           </div>
-          <Link href="/newsroom" className="text-sm font-semibold text-ink-muted hover:text-ink transition-colors">
-            View public newsroom →
-          </Link>
+          <div className="flex items-center gap-4 shrink-0">
+            {/* Both desks are reviewed in the same sitting. */}
+            <Link href="/desk/curriculum" className="text-sm font-semibold text-ink-muted hover:text-ink transition-colors">
+              Curriculum desk →
+            </Link>
+            <Link href="/newsroom" className="text-sm font-semibold text-ink-muted hover:text-ink transition-colors">
+              View public newsroom →
+            </Link>
+          </div>
         </div>
       </header>
 
