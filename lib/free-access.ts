@@ -24,11 +24,12 @@ const ENABLED = process.env.NEXT_PUBLIC_FREE_ACCESS_ENABLED !== "false";
  *  Override any time via NEXT_PUBLIC_FREE_ACCESS_CAP in Vercel (+ redeploy). */
 export const FREE_ACCESS_CAP = Number(process.env.NEXT_PUBLIC_FREE_ACCESS_CAP ?? "500");
 
-/** When the window closes (Australia/Sydney end-of-day). Extended for the
- *  July-14 public launch: first-100-free runs through end of July. Override
- *  any time via NEXT_PUBLIC_FREE_ACCESS_ENDS_AT in Vercel (+ redeploy). */
+/** When the window closes (Australia/Sydney end-of-day). Extended 2026-08-05
+ *  (user decision: "extend free") through end of August — the July window had
+ *  lapsed silently, leaving founding prices on the funnel with no pay path.
+ *  Override any time via NEXT_PUBLIC_FREE_ACCESS_ENDS_AT in Vercel (+ redeploy). */
 export const FREE_ACCESS_ENDS_AT =
-  process.env.NEXT_PUBLIC_FREE_ACCESS_ENDS_AT ?? "2026-07-31T23:59:59+10:00";
+  process.env.NEXT_PUBLIC_FREE_ACCESS_ENDS_AT ?? "2026-08-31T23:59:59+10:00";
 
 // Per-student trial AI wallet, ring-fenced on claim (USD). Sized for ~2 weeks,
 // not a full month — a full month is $1.20, so half is ~$0.60. NOTE: the budget
