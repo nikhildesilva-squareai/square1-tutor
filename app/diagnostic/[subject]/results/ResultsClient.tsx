@@ -1,9 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useParams, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Logo } from "@/components/ui/logo";
+import { createClient } from "@/lib/supabase/client";
+import { detectInAppBrowser, type InAppBrowser } from "@/lib/in-app-browser";
 import { ShareResultButton } from "@/components/ShareResultButton";
 import { foundingPlansFor } from "@/lib/founding";
 import type { RegionKey } from "@/lib/pricing";
@@ -71,6 +73,60 @@ const eyebrow: React.CSSProperties = {
 const tileBase: React.CSSProperties = {
   background: C.card, border: `1px solid ${C.cardBorder}`, borderRadius: 14, boxShadow: SHADOW_XS,
 };
+
+/* ── Express primary CTA — signup starts ON this page ──────────────────────
+   Every hop costs people on mobile; /signup was one hop too many for someone
+   already sold. Visually identical to the old primary Link, but one tap
+   starts Google OAuth right here and the auth callback lands them in
+   Lesson 1 of this track. In-app webviews (Google blocked there) and OAuth
+   errors fall back to the signup page, which leads with email. */
+function PrimaryStartCta({ afterAuth, signupHref }: { afterAuth: string; signupHref: string }) {
+  const [loading, setLoading] = useState(false);
+  const [inApp, setInApp] = useState<InAppBrowser | null>(null);
+  const startedRef = useRef(false); // OAuth must never double-fire (PKCE)
+  useEffect(() => { setInApp(detectInAppBrowser()); }, []);
+
+  async function start() {
+    if (startedRef.current) return;
+    startedRef.current = true;
+    setLoading(true);
+    if (inApp?.googleBlocked) {
+      window.location.href = signupHref;
+      return;
+    }
+    const { error } = await createClient().auth.signInWithOAuth({
+      provider: "google",
+      options: {
+        redirectTo: `${window.location.origin}/api/auth/callback?next=${encodeURIComponent(afterAuth)}`,
+      },
+    });
+    if (error) window.location.href = signupHref;
+  }
+
+  return (
+    <>
+      <button
+        onClick={start}
+        disabled={loading}
+        style={{
+          display: "flex", alignItems: "center", justifyContent: "center", gap: 8, height: 56,
+          borderRadius: 12, background: CTA_GRADIENT, boxShadow: CTA_INSET, color: "#FFFFFF",
+          fontWeight: 800, fontSize: 17, letterSpacing: "-0.01em", maxWidth: 420,
+          margin: "22px auto 0", width: "100%", border: "none",
+          cursor: "pointer", opacity: loading ? 0.75 : 1,
+        }}
+      >
+        {loading ? "Opening Google…" : "Start Lesson 1 — free →"}
+      </button>
+      <p style={{ textAlign: "center", margin: "8px 0 0", fontSize: 12, color: C.ter }}>
+        One tap with Google ·{" "}
+        <Link href={signupHref} style={{ color: C.sec2, fontWeight: 600, textDecoration: "underline" }}>
+          use email instead
+        </Link>
+      </p>
+    </>
+  );
+}
 
 /* ── "Email me my report" — lead capture for visitors not ready to commit ──
    The report is URL-encoded, so the emailed link reproduces it exactly. This
@@ -751,12 +807,11 @@ export default function ResultsClient({ initialSeats = null, coursePath = null, 
               </>
               )}
 
-              {/* Primary: account + straight into Lesson 1. The reading-only
-                  preview stays available as the secondary, low-commitment path
-                  for anyone not ready to sign up. */}
-              <Link href={signupHref} style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8, height: 56, borderRadius: 12, background: CTA_GRADIENT, boxShadow: CTA_INSET, color: "#FFFFFF", fontWeight: 800, fontSize: 17, letterSpacing: "-0.01em", maxWidth: 420, margin: "22px auto 0" }}>
-                Start Lesson 1 — free →
-              </Link>
+              {/* Primary: account + straight into Lesson 1, starting Google
+                  OAuth ON this page (no /signup hop; email + webview cases
+                  fall back to the signup page). The reading-only preview stays
+                  available as the secondary, low-commitment path. */}
+              <PrimaryStartCta afterAuth={afterAuth} signupHref={signupHref} />
               <Link href={`/try/${slug}`} style={{ display: "block", textAlign: "center", marginTop: 14, fontSize: 14, fontWeight: 600, color: C.blue, textDecoration: "none" }}>
                 or read the first lesson without an account
               </Link>

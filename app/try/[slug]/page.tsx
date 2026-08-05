@@ -3,14 +3,23 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { Logo } from "@/components/ui/logo";
-import { RichContent } from "@/components/ui/rich-content";
+import { TryLessonCards } from "./TryLessonCards";
 
-// Public, no-login preview of a course's FIRST lesson only.
-// Reads with the service-role client (read-only, lesson content is public
-// marketing material) so it works regardless of RLS, and only ever surfaces
-// lesson 1 — deeper lessons stay behind enrollment.
+// Public, no-login preview of a course's FIRST lesson only — served as an
+// interactive CARD PLAYER (sections + real quick checks + signup gate after
+// the first win), mirroring the in-app lesson experience instead of a wall
+// of reading. Reads with the service-role client (read-only, lesson content
+// is public marketing material) so it works regardless of RLS, and only ever
+// surfaces lesson 1 — deeper lessons stay behind enrollment.
 
 export const revalidate = 300;
+
+interface TryMcq {
+  id: string;
+  prompt: string;
+  options: string[];
+  correct: string;
+}
 
 interface FirstLesson {
   courseTitle: string;
@@ -22,6 +31,7 @@ interface FirstLesson {
   theory: string;
   objectives: string[];
   minutes: number | null;
+  mcqs: TryMcq[];
 }
 
 async function getFirstLesson(slug: string): Promise<FirstLesson | null> {
@@ -49,7 +59,7 @@ async function getFirstLesson(slug: string): Promise<FirstLesson | null> {
 
   let lessonQuery = supabase
     .from("lessons")
-    .select("title, theory_md, learning_objectives, estimated_minutes")
+    .select("id, title, theory_md, learning_objectives, estimated_minutes")
     .order("order_index", { ascending: true })
     .limit(1);
 
@@ -61,6 +71,26 @@ async function getFirstLesson(slug: string): Promise<FirstLesson | null> {
   const lesson = lessons?.[0];
   if (!lesson) return null;
 
+  // The lesson's first two quick checks power the interactive cards. MCQ
+  // correct answers for LESSON 1 are already public-by-design in the in-app
+  // player (instant inline feedback); this exposes nothing new.
+  const { data: mcqRows } = await supabase
+    .from("exercises")
+    .select("id, prompt_md, options, correct_answer")
+    .eq("lesson_id", lesson.id)
+    .eq("type", "mcq")
+    .order("order_index", { ascending: true })
+    .limit(2);
+
+  const mcqs: TryMcq[] = (mcqRows ?? [])
+    .filter((m) => Array.isArray(m.options) && m.options.length > 1 && m.correct_answer)
+    .map((m) => ({
+      id: m.id as string,
+      prompt: (m.prompt_md as string) ?? "",
+      options: m.options as string[],
+      correct: m.correct_answer as string,
+    }));
+
   return {
     courseTitle: course.title,
     courseSlug: course.slug,
@@ -71,6 +101,7 @@ async function getFirstLesson(slug: string): Promise<FirstLesson | null> {
     theory: (lesson.theory_md as string) ?? "",
     objectives: (lesson.learning_objectives as string[]) ?? [],
     minutes: (lesson.estimated_minutes as number) ?? null,
+    mcqs,
   };
 }
 
@@ -111,82 +142,19 @@ export default async function TryLessonPage({ params }: { params: Promise<{ slug
         </div>
       </header>
 
-      <main className="max-w-3xl mx-auto px-5 sm:px-6 py-10 sm:py-14">
-        {/* Free-preview banner */}
-        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-[11px] font-bold mb-6"
-          style={{ background: `${accent}12`, color: accent, border: `1px solid ${accent}30` }}>
-          <span className="w-1.5 h-1.5 rounded-full" style={{ background: accent }} />
-          FREE PREVIEW · LESSON 1 OF {data.totalLessons} · NO SIGNUP
-        </div>
-
-        {/* Course + lesson title */}
-        <div className="flex items-center gap-2 text-sm font-semibold mb-2" style={{ color: accent }}>
-          <span className="text-lg">{data.icon}</span> {data.courseTitle}
-        </div>
-        <h1 className="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight leading-tight mb-4">
-          {data.lessonTitle}
-        </h1>
-        {data.minutes && (
-          <p className="text-sm text-slate-500 mb-8">~{data.minutes} min read · taught by Nova inside the full course</p>
-        )}
-
-        {/* Objectives */}
-        {data.objectives.length > 0 && (
-          <div className="rounded-2xl border p-5 mb-8" style={{ borderColor: `${accent}25`, background: `${accent}08` }}>
-            <p className="text-[10px] tracking-widest uppercase font-bold text-slate-500 mb-3">What you&apos;ll learn</p>
-            <ul className="space-y-2">
-              {data.objectives.map((o, i) => (
-                <li key={i} className="flex gap-2.5 text-sm text-slate-700">
-                  <span className="font-black tabular-nums" style={{ color: accent }}>{String(i + 1).padStart(2, "0")}</span>
-                  <span>{o}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
-
-        {/* Lesson body */}
-        <article className="text-[15px] leading-relaxed">
-          <RichContent content={data.theory} />
-        </article>
-
-        {/* End-of-lesson conversion */}
-        <div className="mt-12 rounded-3xl border overflow-hidden">
-          <div className="p-7 sm:p-9 text-center" style={{ background: "linear-gradient(135deg,#050B14,#0B1626)" }}>
-            <h2 className="text-2xl sm:text-3xl font-black text-white leading-tight mb-3">
-              That&apos;s lesson 1 of {data.totalLessons}.
-            </h2>
-            <p className="text-sm sm:text-base text-slate-400 max-w-md mx-auto mb-6">
-              Inside the full course, Nova tutors you on this in real time, grades every line of code you write,
-              and walks you to {data.totalLessons - 1} more lessons plus real deployed projects.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-3 justify-center">
-              <Link
-                href={`/signup?subject=${data.courseSlug}`}
-                className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-xl text-white font-bold text-sm hover:-translate-y-0.5 transition-transform"
-                style={{ background: "linear-gradient(135deg,#0056CE,#4F46E5)", boxShadow: "0 12px 32px rgba(0,86,206,0.35)" }}
-              >
-                Continue to Lesson 2 — free account →
-              </Link>
-              <Link
-                href="/diagnostic"
-                className="inline-flex items-center justify-center px-6 py-4 rounded-xl text-white text-sm font-semibold transition-all hover:bg-white/[0.06]"
-                style={{ border: "1px solid rgba(255,255,255,0.15)" }}
-              >
-                Take the 3-min skill check
-              </Link>
-            </div>
-            <p className="text-[11px] text-slate-600 mt-4">Free forever · No credit card</p>
-          </div>
-        </div>
-
-        {/* Try another */}
-        <div className="text-center mt-8">
-          <Link href="/diagnostic" className="text-xs text-slate-400 hover:text-slate-700 transition-colors">
-            ← Explore other tracks
-          </Link>
-        </div>
-      </main>
+      {/* The card player: sections → quick checks → first-win signup gate. */}
+      <TryLessonCards
+        slug={slug}
+        courseTitle={data.courseTitle}
+        icon={data.icon}
+        color={data.color}
+        totalLessons={data.totalLessons}
+        lessonTitle={data.lessonTitle}
+        minutes={data.minutes}
+        objectives={data.objectives}
+        theory={data.theory}
+        mcqs={data.mcqs}
+      />
     </div>
   );
 }

@@ -37,9 +37,22 @@ export function DiagnosticExperience({ slug, subject, seo, modules, totalProject
   // already convinced. useEffect (not initial state) so SSR/CSR markup match.
   useEffect(() => {
     try {
-      if (new URLSearchParams(window.location.search).get("start") === "1") setStarted(true);
+      const params = new URLSearchParams(window.location.search);
+      if (params.get("start") === "1") setStarted(true);
+      // Hero/deep-link handoff: ?a0=<option index> carries an answer to THIS
+      // check's first question (same seeded option order everywhere), so the
+      // visitor arrives already one question in — momentum preserved.
+      const a0 = params.get("a0");
+      if (a0 !== null) {
+        const idx = Number(a0);
+        if (Number.isInteger(idx) && idx >= 0 && idx < (questions[0]?.options.length ?? 0)) {
+          setAnswers([idx]);
+          setQIdx(1);
+          setStarted(true);
+        }
+      }
     } catch { /* ignore */ }
-  }, []);
+  }, [questions]);
   const [answers, setAnswers] = useState<number[]>([]);
   const [picked, setPicked] = useState<number | null>(null);
 

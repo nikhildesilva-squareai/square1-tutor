@@ -199,15 +199,25 @@ function PromptCheck() {
               </div>
             </div>
 
+            {/* Momentum handoff: they just answered a question — continue
+                STRAIGHT INTO the skill check (question 1 of the GenAI test,
+                the highest-demand/highest-completion check), not to the track
+                picker. The picker was where this momentum went to die: only
+                31 sessions in 14 days survived the / → picker → test route. */}
             <Link
-              href="/diagnostic"
+              href="/diagnostic/generative-ai?start=1"
               className="flex items-center justify-center gap-2 h-12 rounded-xl text-white text-[15px] font-bold transition-transform duration-150 motion-safe:hover:-translate-y-0.5"
               style={{ background: BLUE_GRADIENT, boxShadow: "0 14px 30px -12px rgba(0,86,206,0.55)" }}
             >
-              See your full result — free
+              Keep going — your skill report in 5 questions
               <ArrowRight className="h-4 w-4" />
             </Link>
-            <p className="text-center text-[11px] text-slate-400 mt-2.5">3-minute check · maps your real level · no signup to start</p>
+            <p className="text-center text-[11px] text-slate-400 mt-2.5">
+              ~3 minutes · no signup ·{" "}
+              <Link href="/diagnostic" className="underline underline-offset-2 hover:text-slate-600">
+                prefer a different track?
+              </Link>
+            </p>
           </div>
         )}
       </div>
