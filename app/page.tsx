@@ -15,6 +15,7 @@ import { FAQSection } from "@/components/landing/FAQSection";
 import { JourneyHook } from "@/components/landing/JourneyHook";
 import { LaneMapSection } from "@/components/landing/LaneMapSection";
 import { BuildPremiseSection, type RailTrack } from "@/components/landing/BuildPremiseSection";
+import { ProductTour } from "@/components/landing/ProductTour";
 import { WorkBlock } from "@/components/landing/WorkBlock";
 import { NewsroomStrip } from "@/components/landing/NewsroomStrip";
 import { ToolsMarquee } from "@/components/landing/ToolsMarquee";
@@ -171,6 +172,14 @@ export default async function Home() {
       {/* ── 2b. The premise — practice-first: 10 real projects per track.
              Answers RealityBand's closing line ("project by graded project"). ── */}
       <div data-s1-section="build-premise"><BuildPremiseSection tracks={railTracks} /></div>
+
+      <SectionWave />
+
+      {/* Everything the funnel talks about lives behind sign-in, so a visitor has
+          to take our word for it. This walks the five surfaces — dashboard,
+          lesson, Nova marking, projects, outcome — using live curriculum rows and
+          captured real grading output. Renders null if the data fetch fails. */}
+      <div data-s1-section="product-tour"><ProductTour /></div>
 
       <SectionWave />
 
