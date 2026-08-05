@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { RefreshCw, Inbox, CheckCircle2, XCircle } from "lucide-react";
+import { RefreshCw, Inbox, CheckCircle2, XCircle, Check, X, Undo2, ChevronDown } from "lucide-react";
 import { NEWS_TOPICS, NEWS_REGIONS, type NewsArticle } from "@/lib/newsroom-meta";
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -220,6 +220,9 @@ function ArticleRow({ article, open, busy, onToggle, onTransition, onSave }: {
   const [dek, setDek] = useState(article.dek ?? "");
   const [body, setBody] = useState(article.body_md);
   const dirty = headline !== article.headline || dek !== (article.dek ?? "") || body !== article.body_md;
+  // The API rejects a publish with no sources (a CHECK constraint), so the row
+  // disables it rather than letting the click fail with an error banner.
+  const noSources = article.sources.length === 0;
 
   // Status is encoded in form (left accent stripe) as well as the tab the row
   // lives in, so a glance reads state without reading text.
@@ -230,24 +233,86 @@ function ArticleRow({ article, open, busy, onToggle, onTransition, onSave }: {
 
   return (
     <li className={`rounded-2xl border border-border border-l-4 ${stripe} bg-surface overflow-hidden transition-shadow ${open ? "shadow-card" : ""}`}>
-      {/* Summary row */}
-      <button type="button" onClick={onToggle} aria-expanded={open}
-        className="w-full text-left px-5 py-4 hover:bg-surface-soft transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-inset">
-        <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[10px] font-bold tracking-wider uppercase mb-1.5">
-          <span className="text-brand">{NEWS_TOPICS[article.topic]?.label ?? article.topic}</span>
-          <span className="w-1 h-1 rounded-full bg-border" aria-hidden />
-          <span className="text-ink-muted">{NEWS_REGIONS[article.region]?.label ?? article.region}</span>
-          <span className="w-1 h-1 rounded-full bg-border" aria-hidden />
-          <span className="text-ink-muted">{article.sources.length} source{article.sources.length === 1 ? "" : "s"}</span>
-          {article.sources.length === 0 && (
-            <span className="inline-flex items-center gap-1 text-red-600 normal-case tracking-normal">
-              <XCircle className="h-3 w-3" aria-hidden /> can&apos;t publish without sources
-            </span>
+      {/* Summary row — title on the left, decide/act on the right.
+          Split into a toggle button plus a sibling action cluster rather than
+          one big button: the actions cannot be nested inside it, and the point
+          of the row is that a reviewer who trusts the headline never has to
+          open the article at all. */}
+      <div className="flex items-start gap-2 pr-3">
+        <button type="button" onClick={onToggle} aria-expanded={open}
+          className="flex-1 min-w-0 text-left pl-5 pr-1 py-4 hover:bg-surface-soft transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-inset rounded-l-xl">
+          <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[10px] font-bold tracking-wider uppercase mb-1.5">
+            <span className="text-brand">{NEWS_TOPICS[article.topic]?.label ?? article.topic}</span>
+            <span className="w-1 h-1 rounded-full bg-border" aria-hidden />
+            <span className="text-ink-muted">{NEWS_REGIONS[article.region]?.label ?? article.region}</span>
+            <span className="w-1 h-1 rounded-full bg-border" aria-hidden />
+            <span className="text-ink-muted">{article.sources.length} source{article.sources.length === 1 ? "" : "s"}</span>
+            {noSources && (
+              <span className="inline-flex items-center gap-1 text-red-600 normal-case tracking-normal">
+                <XCircle className="h-3 w-3" aria-hidden /> can&apos;t publish without sources
+              </span>
+            )}
+            {dirty && (
+              <span className="text-amber-600 normal-case tracking-normal">unsaved edits</span>
+            )}
+          </div>
+          <p className="text-sm font-bold text-ink leading-snug">{article.headline}</p>
+          {article.dek && <p className="text-xs text-ink-muted mt-1 line-clamp-1">{article.dek}</p>}
+        </button>
+
+        {/* Decide from the row */}
+        <div className="flex items-center gap-1.5 shrink-0 self-center">
+          {article.status !== "published" && (
+            <button
+              type="button"
+              onClick={() => onTransition("publish")}
+              disabled={busy || dirty || noSources}
+              title={
+                noSources ? "Add at least one credited source before publishing"
+                : dirty ? "Save your edits first"
+                : "Publish this article"
+              }
+              aria-label={`Publish: ${article.headline}`}
+              className="inline-flex items-center gap-1.5 h-9 px-3 rounded-lg bg-brand text-white text-xs font-bold transition-colors hover:bg-brand/90 disabled:opacity-40 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-1"
+            >
+              {busy ? "…" : <><Check className="h-3.5 w-3.5" aria-hidden />Publish</>}
+            </button>
           )}
+
+          {article.status === "draft" && (
+            <button
+              type="button"
+              onClick={() => onTransition("reject")}
+              disabled={busy}
+              title="Reject this article"
+              aria-label={`Reject: ${article.headline}`}
+              className="inline-flex items-center justify-center w-9 h-9 rounded-lg border border-border bg-surface text-ink-muted transition-colors hover:border-red-300 hover:text-red-600 hover:bg-red-50 disabled:opacity-40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
+            >
+              <X className="h-4 w-4" aria-hidden />
+            </button>
+          )}
+
+          {article.status === "published" && (
+            <button
+              type="button"
+              onClick={() => onTransition("unpublish")}
+              disabled={busy}
+              title="Move back to drafts"
+              aria-label={`Unpublish: ${article.headline}`}
+              className="inline-flex items-center gap-1.5 h-9 px-3 rounded-lg border border-border bg-surface text-xs font-bold text-ink-muted transition-colors hover:text-ink hover:border-ink-muted/40 disabled:opacity-40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
+            >
+              {busy ? "…" : <><Undo2 className="h-3.5 w-3.5" aria-hidden />Unpublish</>}
+            </button>
+          )}
+
+          {/* Expand affordance — the row is clickable, so say so. */}
+          <button type="button" onClick={onToggle} aria-expanded={open} tabIndex={-1}
+            aria-label={open ? "Collapse article" : "Expand article"}
+            className="hidden sm:inline-flex items-center justify-center w-7 h-9 text-ink-muted/60 hover:text-ink transition-colors">
+            <ChevronDown className={`h-4 w-4 transition-transform ${open ? "rotate-180" : ""}`} aria-hidden />
+          </button>
         </div>
-        <p className="text-sm font-bold text-ink leading-snug">{article.headline}</p>
-        {article.dek && <p className="text-xs text-ink-muted mt-1 line-clamp-1">{article.dek}</p>}
-      </button>
+      </div>
 
       {/* Expanded editor */}
       {open && (
@@ -282,33 +347,20 @@ function ArticleRow({ article, open, busy, onToggle, onTransition, onSave }: {
             </div>
           )}
 
+          {/* Publish / reject / unpublish now live in the row itself, so the
+              editor keeps only the action that belongs to editing. */}
           <div className="flex items-center gap-2 pt-2 flex-wrap">
             {dirty && (
-              <Button type="button" variant="secondary" size="sm" disabled={busy}
-                onClick={() => onSave({ headline, dek, body_md: body })}>
-                Save edits
-              </Button>
+              <>
+                <Button type="button" variant="secondary" size="sm" disabled={busy}
+                  onClick={() => onSave({ headline, dek, body_md: body })}>
+                  Save edits
+                </Button>
+                <span className="text-[11px] text-ink-muted">
+                  Unsaved edits — save before publishing.
+                </span>
+              </>
             )}
-            {article.status !== "published" && (
-              <Button type="button" variant="primary" size="sm" disabled={busy || dirty}
-                onClick={() => onTransition("publish")}
-                title={dirty ? "Save your edits first" : undefined}>
-                {busy ? "…" : "Publish"}
-              </Button>
-            )}
-            {article.status === "published" && (
-              <Button type="button" variant="secondary" size="sm" disabled={busy}
-                onClick={() => onTransition("unpublish")}>
-                Unpublish
-              </Button>
-            )}
-            {article.status === "draft" && (
-              <Button type="button" variant="ghost" size="sm" disabled={busy}
-                onClick={() => onTransition("reject")}>
-                Reject
-              </Button>
-            )}
-            {dirty && <span className="text-[11px] text-ink-muted">Unsaved edits — save before publishing.</span>}
           </div>
         </div>
       )}

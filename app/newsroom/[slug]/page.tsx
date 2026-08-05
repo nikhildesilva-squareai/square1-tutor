@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { GraduationCap } from "lucide-react";
+import { GraduationCap, Wrench } from "lucide-react";
 import { Logo } from "@/components/ui/logo";
 import { ArticleArt } from "@/components/newsroom/ArticleArt";
 import { ConceptDiagram } from "@/components/newsroom/ConceptDiagram";
@@ -14,6 +14,10 @@ import {
 
 const BASE = "https://www.square1ai.com";
 const LEARNING_HEADING = "## What you can learn from this";
+// The third act: the story, then the lesson, then what to actually do on
+// Monday. Split out like the learning section so it renders as its own panel
+// rather than disappearing into the prose.
+const PRACTICE_HEADING = "## How to use this in practice";
 
 export const dynamic = "force-dynamic";
 
@@ -48,7 +52,17 @@ export default async function NewsArticlePage({ params }: PageProps) {
   // so it renders as a distinct branded panel instead of one more H2.
   const splitAt = article.body_md.indexOf(LEARNING_HEADING);
   const reportMd = splitAt === -1 ? article.body_md : article.body_md.slice(0, splitAt);
-  const learningMd = splitAt === -1 ? null : article.body_md.slice(splitAt + LEARNING_HEADING.length).trim();
+  const afterLearning = splitAt === -1 ? null : article.body_md.slice(splitAt + LEARNING_HEADING.length);
+
+  // Practice section is optional — older articles predate it and render exactly
+  // as they did before.
+  const practiceAt = afterLearning?.indexOf(PRACTICE_HEADING) ?? -1;
+  const learningMd = afterLearning === null
+    ? null
+    : (practiceAt === -1 ? afterLearning : afterLearning.slice(0, practiceAt)).trim();
+  const practiceMd = afterLearning !== null && practiceAt !== -1
+    ? afterLearning.slice(practiceAt + PRACTICE_HEADING.length).trim()
+    : null;
 
   // Pull quote: the sharpest line of "Why it matters" — that section exists to
   // state the significance, so its opening sentence is the article's thesis.
@@ -68,6 +82,7 @@ export default async function NewsArticlePage({ params }: PageProps) {
 
   const reportHtml = renderNewsBody(reportMd);
   const learningHtml = learningMd ? renderNewsBody(learningMd) : null;
+  const practiceHtml = practiceMd ? renderNewsBody(practiceMd) : null;
   const minutes = newsReadingMinutes(article.body_md);
 
   // "We teach this" — resolve the linked courses (visible ones only).
@@ -188,6 +203,23 @@ export default async function NewsArticlePage({ params }: PageProps) {
                   {courseChips}
                 </div>
               )}
+            </section>
+          )}
+
+          {/* ── Practice — what to actually do with it ───────────────────── */}
+          {practiceHtml && (
+            <section aria-labelledby="practice-heading"
+              className="mt-6 rounded-3xl border border-slate-200 bg-surface-soft p-6 sm:p-7">
+              <div className="flex items-center gap-2.5 mb-1">
+                <span className="w-8 h-8 rounded-xl bg-slate-900/[0.06] flex items-center justify-center shrink-0">
+                  <Wrench className="h-4 w-4 text-slate-700" aria-hidden />
+                </span>
+                <h2 id="practice-heading" className="text-lg sm:text-xl font-black tracking-tight text-slate-900">
+                  How to use this in practice
+                </h2>
+              </div>
+              <div className="research-prose newsroom-learning"
+                dangerouslySetInnerHTML={{ __html: practiceHtml }} />
             </section>
           )}
 
