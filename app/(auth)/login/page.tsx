@@ -162,12 +162,16 @@ export default function LoginPage() {
         setError("Invalid or expired code. Please try again.");
         setDigits(Array(CODE_LENGTH).fill(""));
         setTimeout(() => inputRefs.current[0]?.focus(), 50);
+        setLoading(false);
       } else {
-        router.push("/dashboard");
+        // Smart post-auth landing: fresh accounts go straight into Lesson 1
+        // of their track, accounts with history go to the dashboard — the
+        // same consistency the signup funnel has. Full navigation (route
+        // handler, not a page) — router.push can't follow it.
+        window.location.assign("/api/auth/landing");
       }
-      setLoading(false);
     },
-    [email, router],
+    [email],
   );
 
   /* ── OTP digit helpers ────────────────────────────────────────────────── */

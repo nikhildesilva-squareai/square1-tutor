@@ -6,7 +6,9 @@ import type { NextRequest } from "next/server";
 const ALLOWED_REDIRECTS = ["/dashboard", "/courses", "/tutor", "/projects", "/progress", "/settings", "/notes", "/portfolio"];
 
 function sanitizeRedirect(next: string | null): string {
-  if (!next) return "/dashboard";
+  // No explicit destination → the smart post-auth router: fresh accounts land
+  // in Lesson 1 of their track, accounts with history land on the dashboard.
+  if (!next) return "/api/auth/landing";
   // Must start with / and not contain // (prevents protocol-relative redirects like //evil.com)
   if (!next.startsWith("/") || next.startsWith("//") || next.includes("://")) return "/dashboard";
   // Only allow known paths or paths starting with known prefixes
