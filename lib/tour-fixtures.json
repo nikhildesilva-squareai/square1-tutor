@@ -1,0 +1,41 @@
+{
+  "capturedWith": "meta-llama/Llama-3.3-70B-Instruct",
+  "fixtures": [
+    {
+      "exerciseTitle": "Explain Hallucinations",
+      "prompt": "Explain what a \"hallucination\" is in the context of generative AI. Why do hallucinations occur, and give one practical strategy a developer could use to mitigate them in a production application.",
+      "maxMarks": 3,
+      "studentAnswer": "A hallucination is when the model makes up something that isn't true and states it confidently. It happens because the model is predicting the next token rather than looking anything up.",
+      "score": 2,
+      "correct": false,
+      "feedback": "The submission correctly defines hallucination and identifies a cause, but lacks a practical strategy to mitigate hallucinations in a production application, which is required for full marks."
+    },
+    {
+      "exerciseTitle": "Model Selection Framework",
+      "prompt": "A healthcare company needs to build an AI-powered clinical note summariser. Patient data cannot leave their infrastructure, they process 500 notes per day, and summaries must be high quality. Recommend a model strategy and justify your choice, considering at least three factors from: capability, cost, privacy, latency, and context length.",
+      "maxMarks": 3,
+      "studentAnswer": "I'd self-host an open-weights model on their own servers, because the patient data can't leave their infrastructure. That keeps everything private.",
+      "score": 1,
+      "correct": false,
+      "feedback": "The submission only considers the privacy factor and does not address other important aspects such as capability, cost, latency, or context length, which are crucial for a high-quality clinical note summariser."
+    },
+    {
+      "exerciseTitle": "Representation Bias Example",
+      "prompt": "Explain **representation bias** as a source of ML unfairness. Give a concrete, realistic example of how it arises and what harm it can cause.",
+      "maxMarks": 3,
+      "studentAnswer": "Representation bias is when the training data doesn't reflect the population the model is used on, so some groups are underrepresented and the model performs worse for them.",
+      "score": 1,
+      "correct": false,
+      "feedback": "The submission partially defines representation bias but lacks a concrete example and explanation of the harm it can cause, which are essential components of the reference answer."
+    },
+    {
+      "exerciseTitle": "FPR Disparity Analysis",
+      "prompt": "Your model's false positive rate (FPR) is **0.05** for group A but **0.18** for group B. What fairness criterion does this violate, and what are the real-world consequences for group B?",
+      "maxMarks": 3,
+      "studentAnswer": "The false positive rate is higher for one group than the other, which means the model is unfair and should be retrained.",
+      "score": 1,
+      "correct": false,
+      "feedback": "The submission correctly identifies that the model is unfair due to the difference in false positive rates, but fails to specify the fairness criterion violated (equalized odds) and does not discuss the real-world consequences for group B."
+    }
+  ]
+}
