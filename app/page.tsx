@@ -18,6 +18,7 @@ import { BuildPremiseSection, type RailTrack } from "@/components/landing/BuildP
 import { WorkBlock } from "@/components/landing/WorkBlock";
 import { NewsroomStrip } from "@/components/landing/NewsroomStrip";
 import { ToolsMarquee } from "@/components/landing/ToolsMarquee";
+import { PainMirror } from "@/components/landing/PainMirror";
 import { CodeReviewSlider } from "@/components/landing/CodeReviewSlider";
 import { CookieConsent } from "@/components/ui/cookie-consent";
 import { MobileStickyCta } from "@/components/landing/MobileStickyCta";
@@ -151,6 +152,11 @@ export default async function Home() {
 
       {/* ── Tool strip — the tools the curriculum trains on, drifting marquee ── */}
       <div data-s1-section="tools"><ToolsMarquee /></div>
+
+      {/* ── Pain mirror — name the visitor's situation with cited receipts,
+             then turn it: the hard part is PROVING, which is what we sell.
+             Placed before the lane map so the lane choice has a why. ── */}
+      <div data-s1-section="pain"><PainMirror /></div>
 
       {/* ── The lane map — every course fanned out from its lane, right after the hero ─ */}
       <div data-s1-section="courses" id="curriculum" className="scroll-mt-16"><LaneMapSection courses={courses} /></div>
