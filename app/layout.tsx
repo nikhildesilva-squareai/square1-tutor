@@ -7,6 +7,7 @@ import { CookieConsent } from "@/components/ui/cookie-consent";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { GoogleAnalytics } from "@/components/GoogleAnalytics";
 import { FirstPartyAnalytics } from "@/components/FirstPartyAnalytics";
+import { JsonLd } from "@/components/seo/JsonLd";
 
 const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
 const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"] });
@@ -49,6 +50,40 @@ export const metadata: Metadata = {
   icons: { icon: "/favicon.ico" },
 };
 
+// ─── Entity anchor ────────────────────────────────────────────────────────────
+// Site-wide identity for search and answer engines. Without this there is
+// nothing binding the name "Square 1 AI" to a single organisation, its social
+// profiles, or this domain — so an engine summarising the site has no entity to
+// attribute a claim to. Sitewide because the strongest entity signal is one
+// consistent definition on every page. Facts only: no founding date, employee
+// count or address until those are published somewhere on the site too.
+const ORGANIZATION_LD = {
+  "@context": "https://schema.org",
+  "@type": "EducationalOrganization",
+  "@id": `${siteUrl}/#organization`,
+  name: "Square 1 AI",
+  url: siteUrl,
+  logo: `${siteUrl}/logo-square1.png`,
+  description:
+    "AI education platform with two lanes: career tracks that train people for AI engineering roles through code and deployed projects, and no-code role tracks that teach professionals to use AI well in the job they already have. Work is graded by Nova, the platform's AI tutor.",
+  areaServed: "Worldwide",
+  sameAs: [
+    "https://www.linkedin.com/company/square-1-ai/",
+    "https://x.com/square1ai",
+    "https://youtube.com/@square1ai",
+  ],
+};
+
+const WEBSITE_LD = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "@id": `${siteUrl}/#website`,
+  url: siteUrl,
+  name: "Square 1 AI",
+  inLanguage: "en",
+  publisher: { "@id": `${siteUrl}/#organization` },
+};
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en-AU" className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`} suppressHydrationWarning>
@@ -57,6 +92,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         {/* Prevent flash of wrong theme. Dark is an app-shell feature: the
             public funnel is light-only, so the early class only applies on app
             routes (mirrors DARK_SURFACES in components/ThemeProvider.tsx). */}
+        <JsonLd data={ORGANIZATION_LD} />
+        <JsonLd data={WEBSITE_LD} />
         <script dangerouslySetInnerHTML={{ __html: `try{const p=location.pathname;if(/^\\/(dashboard|learn|courses|projects|progress|settings|notes|tutor|messages|community|certificate|inbox|admin)(\\/|$)/.test(p)){const t=localStorage.getItem("sq1-theme");if(t==="dark"||(t!=="light"&&matchMedia("(prefers-color-scheme:dark)").matches))document.documentElement.classList.add("dark")}}catch(e){}` }} />
       </head>
       <body className="min-h-full flex flex-col">

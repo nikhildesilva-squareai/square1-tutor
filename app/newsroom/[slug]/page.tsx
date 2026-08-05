@@ -19,6 +19,19 @@ const LEARNING_HEADING = "## What you can learn from this";
 // rather than disappearing into the prose.
 const PRACTICE_HEADING = "## How to use this in practice";
 
+// Force-dynamic on purpose: stories publish continuously, so a prerendered slug
+// list would 404 every article until the next build.
+//
+// Consequence, and it is deliberate: an unknown slug returns HTTP 200, not 404.
+// The root app/loading.tsx puts this route under a Suspense boundary, so the
+// response starts streaming — and therefore commits its status — before
+// notFound() below can run. Next handles the SEO half itself by injecting
+// <meta name="robots" content="noindex"> into the streamed 404 body, so these
+// URLs are not indexed; some crawlers will still log them as soft 404s.
+//
+// The alternatives are both worse: prerendering breaks daily publishing, and
+// checking slug existence in proxy.ts puts a DB round-trip in front of every
+// newsroom request. Revisit only if the root loading.tsx goes away.
 export const dynamic = "force-dynamic";
 
 interface PageProps {
