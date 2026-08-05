@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { Logo } from "@/components/ui/logo";
 import { getSubject, SUBJECT_SEO, DIAG_SUBJECTS } from "@/lib/diagnostic";
 import { DiagnosticExperience } from "./DiagnosticExperience";
@@ -42,7 +42,11 @@ export default async function SubjectDiagnosticPage({ params }: PageProps) {
   if (!subject || !seo) notFound();
 
   // Real course modules for the "What you'll learn" section.
-  const supabase = await createClient();
+  // Admin (service-role) client on purpose — see the note in app/roles/[slug].
+  // Reading cookies here forced dynamic rendering, which disabled the
+  // dynamicParams allowlist and let unknown subjects return 200 in production.
+  // Public course/module rows only.
+  const supabase = createAdminClient();
   const { data: course } = await supabase
     .from("courses")
     .select("id, title, description, total_lessons, total_projects")

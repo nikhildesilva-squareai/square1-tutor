@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { ArrowRight, Check } from "lucide-react";
 import { Logo } from "@/components/ui/logo";
 import { JsonLd } from "@/components/seo/JsonLd";
-import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { getRole, ROLES } from "@/lib/roles-directory";
 import { getSubject } from "@/lib/diagnostic";
 
@@ -56,7 +56,12 @@ export default async function RolePage({ params }: PageProps) {
 
   // "Skills you'll build" comes from real module titles, never from prose
   // written here — the page cannot advertise a skill the curriculum lacks.
-  const supabase = await createClient();
+  // Admin (service-role) client on purpose: it reads no cookies, so this page
+  // can be statically prerendered from generateStaticParams. The cookie-based
+  // client forced dynamic rendering, which silently disabled the dynamicParams
+  // allowlist and made unknown slugs return 200 instead of 404 in production.
+  // Only public course/module rows are read here — no user data is involved.
+  const supabase = createAdminClient();
   const courses: CourseInfo[] = [];
   for (const courseSlug of role.courseSlugs) {
     const { data: course } = await supabase
