@@ -5,6 +5,131 @@ import { useRouter } from "next/navigation";
 import { ArrowRight, Check } from "lucide-react";
 import { getDiagnostic, encodeAnswers, type DiagQuestion } from "@/lib/diagnostic";
 import { DiagnosticEvent } from "@/components/DiagnosticEvent";
+import { COUNTRIES } from "@/lib/countries";
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// The pre-test opt-in. Email + country, both optional, one screen, then straight
+// into question 1.
+//
+// It never blocks: "Skip" is a real control with equal prominence, not a greyed
+// afterthought, and a failed save still lets the visitor through. The check is
+// the product promise — losing someone at a mailing-list prompt would cost more
+// than the address is worth.
+// ═══════════════════════════════════════════════════════════════════════════════
+function OptInStep({
+  slug, subjectTitle, accent, onDone, onSkip,
+}: {
+  slug: string;
+  subjectTitle: string;
+  accent: string;
+  onDone: () => void;
+  onSkip: () => void;
+}) {
+  const [email, setEmail] = useState("");
+  const [country, setCountry] = useState("");
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const ready = email.trim().length > 3 && country !== "";
+
+  async function submit(e: React.FormEvent) {
+    e.preventDefault();
+    if (!ready || saving) return;
+    setSaving(true);
+    setError(null);
+    try {
+      const res = await fetch("/api/diagnostic/lead", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: email.trim(), country, subject: slug }),
+      });
+      if (!res.ok) {
+        // Never trap anyone behind our own outage — let them into the check.
+        setError("Couldn't save that, but you can carry on.");
+        setSaving(false);
+        return;
+      }
+      onDone();
+    } catch {
+      setError("Couldn't save that, but you can carry on.");
+      setSaving(false);
+    }
+  }
+
+  return (
+    <div className="mx-auto max-w-md animate-fade-in-up">
+      <span className="text-xs font-bold tracking-wide" style={{ color: accent }}>
+        {subjectTitle}
+      </span>
+      <h2 className="mt-2 text-2xl font-bold leading-snug text-slate-900">
+        Want your result emailed to you?
+      </h2>
+      <p className="mt-2.5 text-sm leading-relaxed text-slate-600">
+        Optional. Give us an address and we&apos;ll send your skill snapshot plus the
+        roadmap that goes with it, so you still have it after you close the tab.
+        You can skip this and take the check anyway — no account either way.
+      </p>
+
+      <form onSubmit={submit} className="mt-6 space-y-3">
+        <div>
+          <label htmlFor="optin-email" className="mb-1.5 block text-sm font-semibold text-slate-700">
+            Email
+          </label>
+          <input
+            id="optin-email"
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="you@example.com"
+            autoComplete="email"
+            className="h-11 w-full rounded-lg border border-slate-300 px-3.5 text-base outline-none transition-colors focus:border-[#0056CE] sm:text-sm"
+          />
+        </div>
+        <div>
+          <label htmlFor="optin-country" className="mb-1.5 block text-sm font-semibold text-slate-700">
+            Country
+          </label>
+          <select
+            id="optin-country"
+            value={country}
+            onChange={(e) => setCountry(e.target.value)}
+            autoComplete="country-name"
+            className="h-11 w-full rounded-lg border border-slate-300 bg-white px-3 text-base outline-none transition-colors focus:border-[#0056CE] sm:text-sm"
+          >
+            <option value="">Select your country</option>
+            {COUNTRIES.map((c) => <option key={c} value={c}>{c}</option>)}
+          </select>
+          <p className="mt-1.5 text-xs text-slate-500">
+            So we show you the right pricing and course times for where you are.
+          </p>
+        </div>
+
+        {error && <p className="text-xs font-semibold text-amber-700">{error}</p>}
+
+        <button
+          type="submit"
+          disabled={!ready || saving}
+          className="flex h-11 w-full items-center justify-center gap-2 rounded-lg text-sm font-bold text-white transition-transform enabled:hover:-translate-y-px disabled:opacity-40"
+          style={{ background: accent }}
+        >
+          {saving ? "Saving…" : "Send it and start the check"}
+          {!saving && <ArrowRight className="h-4 w-4" />}
+        </button>
+        <button
+          type="button"
+          onClick={onSkip}
+          className="h-11 w-full rounded-lg border border-slate-300 bg-white text-sm font-semibold text-slate-700 transition-colors hover:bg-slate-50"
+        >
+          Skip — just start the check
+        </button>
+      </form>
+
+      <p className="mt-4 text-center text-xs text-slate-500">
+        We email your result and occasional course updates. No spam, unsubscribe anytime.
+      </p>
+    </div>
+  );
+}
 
 interface Mod { title: string; lessons: number }
 interface Props {
@@ -38,7 +163,15 @@ export function DiagnosticExperience({ slug, subject, seo, modules, totalProject
   useEffect(() => {
     try {
       const params = new URLSearchParams(window.location.search);
-      if (params.get("start") === "1") setStarted(true);
+      if (params.get("start") === "1") {
+        // Still a first click, so it still gets the opt-in — unless this
+        // browser has already answered it once. Read storage directly rather
+        // than the optInDone state, which this effect races.
+        let asked = false;
+        try { asked = localStorage.getItem("s1-diag-optin") === "done"; } catch { /* ignore */ }
+        if (asked) setStarted(true);
+        else setShowOptIn(true);
+      }
       // Hero/deep-link handoff: ?a0=<option index> carries an answer to THIS
       // check's first question (same seeded option order everywhere), so the
       // visitor arrives already one question in — momentum preserved.
@@ -71,9 +204,57 @@ export function DiagnosticExperience({ slug, subject, seo, modules, totalProject
 
   const accent = subject.color;
 
-  function start() {
+  // ── Pre-test soft opt-in ──────────────────────────────────────────────────
+  // Shown once, between "Start the skill check" and question 1. Skippable by
+  // design: the check itself stays free and account-free, so every "no signup
+  // required" claim on this page (and in its FAQPage schema) stays true.
+  //
+  // Asked once per browser — a visitor who already gave us an address, or who
+  // skipped, is never asked again. Anyone arriving with ?a0= is exempt: they
+  // answered question 1 from the homepage hero, and interrupting a handoff
+  // built for momentum to ask for an email is the one place this clearly loses.
+  const [showOptIn, setShowOptIn] = useState(false);
+  const [optInDone, setOptInDone] = useState(false);
+
+  useEffect(() => {
+    try {
+      if (localStorage.getItem("s1-diag-optin") === "done") setOptInDone(true);
+    } catch { /* private mode — just ask again */ }
+  }, []);
+
+  function markOptInDone() {
+    setOptInDone(true);
+    try { localStorage.setItem("s1-diag-optin", "done"); } catch { /* ignore */ }
+  }
+
+  function beginQuiz() {
+    setShowOptIn(false);
     setStarted(true);
     if (typeof window !== "undefined") window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  function start() {
+    if (!optInDone) {
+      setShowOptIn(true);
+      if (typeof window !== "undefined") window.scrollTo({ top: 0, behavior: "smooth" });
+      return;
+    }
+    beginQuiz();
+  }
+
+  // ── Opt-in step ───────────────────────────────────────────────────────────
+  if (showOptIn) {
+    return (
+      <main className="flex-1 px-4 py-10 sm:px-6" style={{ background: "linear-gradient(180deg,#F8FAFC,#fff)" }}>
+        <OptInStep
+          slug={slug}
+          subjectTitle={subject.title}
+          accent={accent}
+          onDone={() => { markOptInDone(); beginQuiz(); }}
+          onSkip={() => { markOptInDone(); beginQuiz(); }}
+        />
+      </main>
+    );
   }
 
   function answer(optIdx: number) {

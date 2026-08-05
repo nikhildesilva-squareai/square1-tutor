@@ -10,13 +10,54 @@ import { QuickNotePanel } from "@/components/QuickNotePanel";
 import { FeedbackWidget } from "@/components/FeedbackWidget";
 import { CommunityOnboardingToast } from "@/components/CommunityOnboardingToast";
 import { COMMUNITY_ENABLED } from "@/lib/flags";
+import Link from "next/link";
+import { Logo } from "@/components/ui/logo";
+
+// ─── The one public window into the app group ─────────────────────────────────
+// The course catalogue is the strongest thing we have to be found for, and it
+// was invisible: /courses and /courses/{slug} 307'd to /login, so no crawler or
+// answer engine could see a single course. Both pages were ALREADY written to
+// render without a session (`user ? … : null`, and every lesson resolves to
+// "locked" when there is no student), so opening them needs no rewrite.
+//
+// The window is deliberately depth-limited to exactly two segments:
+//
+//   /courses                    → public   (catalogue)
+//   /courses/data-science       → public   (course overview, lesson TITLES only)
+//   /courses/data-science/plan  → GATED    (and everything else deeper)
+//
+// That precision is load-bearing. The deeper routes — assess, checkout, plan,
+// reassess, report, schedule — include client components with NO server-side
+// auth check of their own; they inherit this layout's gate and nothing else.
+// A prefix match instead of a length check would expose all of them.
+function isPublicCatalogue(pathname: string): boolean {
+  const segments = pathname.split("/").filter(Boolean);
+  return segments[0] === "courses" && segments.length <= 2;
+}
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
   const supabase = await createClient();
   const { data: { session } } = await supabase.auth.getSession();
 
   if (!session) {
-    redirect("/login");
+    const pathname = (await headers()).get("x-pathname") ?? "";
+    if (!isPublicCatalogue(pathname)) {
+      redirect("/login");
+    }
+    // Signed-out catalogue browsing: plain public chrome, matching /roles and
+    // /tools. No sidebar, no note panel, no community profile creation, and no
+    // country onboarding gate — all of those assume a student exists.
+    return (
+      <div className="flex min-h-dvh flex-col bg-white">
+        <header className="flex items-center justify-between px-6 py-5 sm:px-10">
+          <Link href="/"><Logo variant="dark" size="md" /></Link>
+          <Link href="/login" className="text-sm font-semibold text-slate-500 transition-colors hover:text-slate-900">
+            Sign in
+          </Link>
+        </header>
+        <main id="main" className="flex-1">{children}</main>
+      </div>
+    );
   }
 
   const email = session.user.email ?? "";

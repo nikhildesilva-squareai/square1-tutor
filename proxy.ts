@@ -2,27 +2,42 @@ import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 import { S1_REGION_COOKIE, parseRegion, regionForCountry } from "@/lib/pricing";
 
-const PUBLIC_PATHS = [
-  "/",
-  "/login",
-  "/signup",
-  "/privacy",
-  "/terms",
-  "/about",
-  "/diagnostic",
-  "/tools", // curated AI-tools directory (public discovery surface)
-  "/try",
-  "/business",
-  "/careers",
-  "/contact",
-  "/research",
-  "/newsroom", // daily tech news — public + crawlable (SEO surface like /research)
-  "/report", // tokenized public skill reports (opt-in shares)
-  "/api/auth/callback",
-  "/api/onboard",
-  "/portfolio/",
-  "/verify",
+// Signed-in-only surfaces. This is a DENYLIST on purpose: anything not named
+// here falls through to the app, so an unknown path renders a real 404 instead
+// of redirecting to /login. The old allowlist soft-404'd every unrecognised
+// URL, which told crawlers (and answer engines) the whole site was gated, and
+// silently broke public /portfolio/{id} shares.
+//
+// Safe because the proxy is defence-in-depth, not the gate: every surface below
+// re-checks the session server-side — (app)/layout.tsx, (admin)/layout.tsx,
+// desk/newsroom/page.tsx, inbox/page.tsx and welcome/page.tsx each redirect to
+// /login on their own. Add a route here only for the faster edge bounce.
+const PROTECTED_PREFIXES = [
+  // The (app) route group — the signed-in product.
+  "/dashboard",
+  "/learn",
+  // NOTE: /courses is deliberately absent. /courses and /courses/{slug} are
+  // public (the catalogue answer engines need to see); everything deeper is
+  // still gated, but by (app)/layout.tsx rather than here — a prefix match at
+  // the edge cannot express "two segments public, three segments private".
+  "/tutor",
+  "/notes",
+  "/progress",
+  "/projects",
+  "/settings",
+  "/certificate",
+  "/community",
+  "/messages",
+  // Post-signup onboarding, staff surfaces.
+  "/welcome",
+  "/inbox",
+  "/desk",
+  "/admin",
 ];
+
+// /portfolio is the signed-in builder; /portfolio/{studentId} is the public
+// share a student sends to an employer. Exact match only — never the children.
+const PROTECTED_EXACT = ["/portfolio"];
 
 export async function proxy(request: NextRequest) {
   // ── Canonical host: apex → www ──────────────────────────────────────────
@@ -114,26 +129,20 @@ export async function proxy(request: NextRequest) {
 
   const { pathname } = request.nextUrl;
 
-  const isPublic =
-    PUBLIC_PATHS.some((p) =>
-      p === "/" ? pathname === "/" : pathname === p || pathname.startsWith(p + "/")
-    ) ||
-    pathname.startsWith("/_next") ||
-    pathname.startsWith("/favicon") ||
-    // SEO / metadata routes (must be reachable by crawlers + social scrapers)
-    pathname === "/robots.txt" ||
-    pathname === "/sitemap.xml" ||
-    pathname.includes("opengraph-image") ||
-    pathname.includes("twitter-image") ||
-    // Static media in /public — videos, images, audio
-    pathname.startsWith("/videos") ||
-    pathname.startsWith("/images") ||
-    // Allow API routes (each route protects itself)
-    pathname.startsWith("/api") ||
-    // Dev-only fixture previews (the pages themselves 404 in production)
-    (process.env.NODE_ENV !== "production" && pathname.startsWith("/dev/"));
+  // /courses and /courses/{slug} are public; anything DEEPER (assess, checkout,
+  // plan, reassess, report, schedule) is private. Enforced here as well as in
+  // (app)/layout.tsx because only the edge can still set a real 307 — once the
+  // layout renders, the root loading.tsx has begun streaming and a redirect()
+  // there can only be delivered as a client-side hop inside a 200 body.
+  const segments = pathname.split("/").filter(Boolean);
+  const isDeepCourseRoute = segments[0] === "courses" && segments.length >= 3;
 
-  if (!user && !isPublic) {
+  const isProtected =
+    isDeepCourseRoute ||
+    PROTECTED_EXACT.includes(pathname) ||
+    PROTECTED_PREFIXES.some((p) => pathname === p || pathname.startsWith(p + "/"));
+
+  if (!user && isProtected) {
     const url = request.nextUrl.clone();
     url.pathname = "/login";
     return NextResponse.redirect(url);
