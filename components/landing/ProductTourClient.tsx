@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import {
   LayoutDashboard, BookOpen, Sparkles, FolderGit2, Trophy,
@@ -48,9 +48,92 @@ function Frame({ title, children }: { title: string; children: React.ReactNode }
   );
 }
 
+// How long each screen holds before the walkthrough moves on, and how long the
+// cursor takes to travel. The cursor arrives BEFORE the panel switches, so it
+// reads as "something clicked that, and then the screen changed".
+const DWELL_MS = 5200;
+const TRAVEL_MS = 650;
+
 export function ProductTourClient({ data }: { data: TourData }) {
   const [step, setStep] = useState<StepKey>("dashboard");
   const active = STEPS.find((s) => s.key === step)!;
+
+  // ── Autoplay walkthrough ──────────────────────────────────────────────────
+  // A simulated cursor drives the tabs so the section plays like a screen
+  // recording, without shipping a video: no megabytes against LCP, stays sharp
+  // at any width, and the panel content remains real DOM that crawlers read.
+  //
+  // It stops for good the moment someone clicks a tab — once a visitor is
+  // driving, having the page yank the screen out from under them is worse than
+  // no animation at all. It also idles while scrolled out of view, and never
+  // starts for anyone who asked for reduced motion.
+  const [playing, setPlaying] = useState(false);
+  const [cursor, setCursor] = useState<{ x: number; y: number } | null>(null);
+  const [clicking, setClicking] = useState(false);
+  const tabsRef = useRef<HTMLDivElement>(null);
+  const btnRefs = useRef<Record<string, HTMLButtonElement | null>>({});
+  const takenOver = useRef(false);
+
+  const reducedMotion =
+    typeof window !== "undefined" &&
+    window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+
+  // Only play while the section is actually on screen.
+  useEffect(() => {
+    if (reducedMotion) return;
+    const el = tabsRef.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(
+      ([entry]) => { if (!takenOver.current) setPlaying(entry.isIntersecting); },
+      { threshold: 0.35 },
+    );
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, [reducedMotion]);
+
+  const stopAutoplay = useCallback(() => {
+    takenOver.current = true;
+    setPlaying(false);
+    setCursor(null);
+  }, []);
+
+  useEffect(() => {
+    if (!playing || reducedMotion) return;
+    const idx = STEPS.findIndex((s) => s.key === step);
+    const next = STEPS[(idx + 1) % STEPS.length];
+
+    // Park the cursor on the current tab, then send it to the next one.
+    const settle = window.setTimeout(() => {
+      const el = btnRefs.current[step];
+      const box = tabsRef.current?.getBoundingClientRect();
+      if (el && box) {
+        const r = el.getBoundingClientRect();
+        setCursor({ x: r.left - box.left + r.width / 2, y: r.top - box.top + r.height / 2 });
+      }
+    }, 120);
+
+    const travel = window.setTimeout(() => {
+      const el = btnRefs.current[next.key];
+      const box = tabsRef.current?.getBoundingClientRect();
+      if (el && box) {
+        const r = el.getBoundingClientRect();
+        setCursor({ x: r.left - box.left + r.width / 2, y: r.top - box.top + r.height / 2 });
+      }
+    }, DWELL_MS - TRAVEL_MS);
+
+    const press = window.setTimeout(() => setClicking(true), DWELL_MS - 90);
+    const advance = window.setTimeout(() => {
+      setClicking(false);
+      setStep(next.key);
+    }, DWELL_MS);
+
+    return () => {
+      window.clearTimeout(settle);
+      window.clearTimeout(travel);
+      window.clearTimeout(press);
+      window.clearTimeout(advance);
+    };
+  }, [playing, step, reducedMotion]);
 
   return (
     <section className="px-4 py-16 sm:px-6" aria-labelledby="tour-heading">
@@ -69,30 +152,67 @@ export function ProductTourClient({ data }: { data: TourData }) {
         </div>
 
         {/* ── Step selector ──────────────────────────────────────────────── */}
-        <div role="tablist" aria-label="Product tour" className="mt-9 grid gap-2 sm:grid-cols-5">
-          {STEPS.map((s) => {
-            const on = s.key === step;
-            const Icon = s.icon;
-            return (
-              <button
-                key={s.key}
-                role="tab"
-                aria-selected={on}
-                aria-controls={`tour-panel-${s.key}`}
-                onClick={() => setStep(s.key)}
-                className="flex items-center gap-2.5 rounded-xl border-2 px-3.5 py-3 text-left transition-all sm:flex-col sm:items-start sm:gap-1.5"
-                style={{
-                  borderColor: on ? BRAND : "rgba(15,28,49,0.10)",
-                  background: on ? "#F2F8FF" : "#fff",
-                }}
-              >
-                <Icon className="h-4 w-4 shrink-0" style={{ color: on ? BRAND : "#94A3B8" }} aria-hidden />
-                <span className="text-sm font-bold" style={{ color: on ? BRAND : "#334155" }}>
-                  {s.label}
-                </span>
-              </button>
-            );
-          })}
+        <div ref={tabsRef} className="relative mt-9">
+          <div role="tablist" aria-label="Product tour" className="grid gap-2 sm:grid-cols-5">
+            {STEPS.map((s) => {
+              const on = s.key === step;
+              const Icon = s.icon;
+              return (
+                <button
+                  key={s.key}
+                  ref={(el) => { btnRefs.current[s.key] = el; }}
+                  role="tab"
+                  aria-selected={on}
+                  aria-controls={`tour-panel-${s.key}`}
+                  onClick={() => { stopAutoplay(); setStep(s.key); }}
+                  className="relative flex items-center gap-2.5 overflow-hidden rounded-xl border-2 px-3.5 py-3 text-left transition-all sm:flex-col sm:items-start sm:gap-1.5"
+                  style={{
+                    borderColor: on ? BRAND : "rgba(15,28,49,0.10)",
+                    background: on ? "#F2F8FF" : "#fff",
+                  }}
+                >
+                  <Icon className="h-4 w-4 shrink-0" style={{ color: on ? BRAND : "#94A3B8" }} aria-hidden />
+                  <span className="text-sm font-bold" style={{ color: on ? BRAND : "#334155" }}>
+                    {s.label}
+                  </span>
+                  {/* Time remaining on this screen — the "video is playing" cue. */}
+                  {on && playing && !reducedMotion && (
+                    <span
+                      key={`${s.key}-bar`}
+                      aria-hidden
+                      className="absolute bottom-0 left-0 h-0.5 tour-progress"
+                      style={{ background: BRAND }}
+                    />
+                  )}
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Simulated pointer. Decorative and inert — real focus and clicks are
+              unaffected, and it never intercepts a pointer event. */}
+          {cursor && playing && !reducedMotion && (
+            <span
+              aria-hidden
+              className="pointer-events-none absolute z-10 hidden sm:block"
+              style={{
+                left: cursor.x,
+                top: cursor.y,
+                transform: `translate(-4px,-2px) scale(${clicking ? 0.82 : 1})`,
+                transition: `left ${TRAVEL_MS}ms cubic-bezier(.4,.1,.2,1), top ${TRAVEL_MS}ms cubic-bezier(.4,.1,.2,1), transform 90ms ease`,
+              }}
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" style={{ filter: "drop-shadow(0 1px 2px rgba(0,0,0,.3))" }}>
+                <path d="M5 2l14 8.5-6.2 1.3L9.7 19 5 2z" fill="#0F172A" stroke="#fff" strokeWidth="1.4" strokeLinejoin="round" />
+              </svg>
+              {clicking && (
+                <span
+                  className="absolute -left-2.5 -top-2.5 h-8 w-8 rounded-full"
+                  style={{ border: `2px solid ${BRAND}`, animation: "tourPing .35s ease-out" }}
+                />
+              )}
+            </span>
+          )}
         </div>
 
         <p className="mt-4 text-center text-sm text-slate-600 sm:text-left">{active.blurb}</p>

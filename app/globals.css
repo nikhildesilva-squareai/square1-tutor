@@ -753,3 +753,25 @@ body {
   color: #0F172A;
   text-wrap: balance;
 }
+
+/* ─── Product tour walkthrough ───────────────────────────────────────────────
+   The landing tour plays itself like a screen recording. Duration here must
+   match DWELL_MS in components/landing/ProductTourClient.tsx — the bar is the
+   only cue that the screen is about to change, so a mismatch reads as a bug. */
+.tour-progress {
+  width: 0;
+  animation: tourProgress 5200ms linear forwards;
+}
+@keyframes tourProgress {
+  from { width: 0; }
+  to   { width: 100%; }
+}
+@keyframes tourPing {
+  from { transform: scale(0.4); opacity: 0.9; }
+  to   { transform: scale(1.15); opacity: 0; }
+}
+/* Anyone who asked for less motion gets a static, fully usable tour. The
+   component also skips autoplay entirely, so this is belt and braces. */
+@media (prefers-reduced-motion: reduce) {
+  .tour-progress { animation: none; width: 100%; }
+}
