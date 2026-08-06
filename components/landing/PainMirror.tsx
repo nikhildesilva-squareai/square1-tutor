@@ -76,8 +76,11 @@ export function PainMirror() {
           ))}
         </div>
 
-        {/* The turn */}
-        <div className="mt-6 sm:mt-8 rounded-3xl overflow-hidden" style={{ background: "linear-gradient(135deg,#050B14,#0B1626)" }}>
+        {/* The turn — brand navy panel (brand-dark #01224F → brand-deep
+            #00183A), CTA on the canonical brand gradient (#3388FF → #0056CE →
+            #01224F, same as the hero/auth CTAs) with a hairline ring so the
+            dark gradient end keeps its edge against the navy. */}
+        <div className="mt-6 sm:mt-8 rounded-3xl overflow-hidden" style={{ background: "linear-gradient(135deg,#01224F,#00183A)" }}>
           <div className="px-6 py-8 sm:px-10 sm:py-10 text-center">
             <h3 className="font-black text-white tracking-tight leading-[1.08]" style={{ fontSize: "clamp(24px, 3.6vw, 38px)", letterSpacing: "-0.02em" }}>
               The hard part isn&apos;t learning.{" "}
@@ -85,18 +88,18 @@ export function PainMirror() {
                 It&apos;s proving.
               </span>
             </h3>
-            <p className="mt-3 text-sm sm:text-base text-slate-400 max-w-xl mx-auto">
+            <p className="mt-3 text-sm sm:text-base text-slate-300 max-w-xl mx-auto">
               That&apos;s why every Square 1 track ends in proof — real projects graded against real rubrics,
               in public repos an employer can open, behind a certificate anyone can verify.
             </p>
             <Link
               href="/diagnostic"
               className="mt-6 inline-flex items-center justify-center gap-2 h-12 px-7 rounded-xl text-white text-[15px] font-bold transition-transform motion-safe:hover:-translate-y-0.5"
-              style={{ background: "linear-gradient(135deg,#0056CE,#4F46E5)", boxShadow: "0 14px 30px -12px rgba(0,86,206,0.55)" }}
+              style={{ background: "linear-gradient(135deg, #3388FF 0%, #0056CE 55%, #01224F 100%)", border: "1px solid rgba(255,255,255,0.18)", boxShadow: "0 14px 30px -12px rgba(0,86,206,0.55)" }}
             >
               Find out where you stand — free, 3 minutes
             </Link>
-            <p className="mt-2.5 text-[11px] text-slate-500">No account to start · real skill report at the end</p>
+            <p className="mt-2.5 text-[11px] text-slate-400">No account to start · real skill report at the end</p>
           </div>
         </div>
       </div>

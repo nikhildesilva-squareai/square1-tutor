@@ -199,7 +199,7 @@ export function TryLessonCards({ slug, courseTitle, icon, color, totalLessons, l
             <Link
               href={signupHref}
               className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-xl text-white font-bold text-[15px] hover:-translate-y-0.5 transition-transform"
-              style={{ background: "linear-gradient(135deg,#0056CE,#4F46E5)", boxShadow: "0 12px 32px rgba(0,86,206,0.35)" }}
+              style={{ background: "linear-gradient(135deg, #3388FF 0%, #0056CE 55%, #01224F 100%)", boxShadow: "0 12px 32px rgba(0,86,206,0.35)" }}
             >
               Continue free — Google or email →
             </Link>
@@ -218,7 +218,7 @@ export function TryLessonCards({ slug, courseTitle, icon, color, totalLessons, l
             onClick={next}
             disabled={!quizAnswered}
             className="inline-flex items-center gap-2 h-12 px-7 rounded-xl text-white text-sm font-bold transition-all disabled:opacity-40 motion-safe:hover:-translate-y-0.5"
-            style={{ background: "linear-gradient(135deg,#0056CE,#4F46E5)" }}
+            style={{ background: "linear-gradient(135deg, #3388FF 0%, #0056CE 55%, #01224F 100%)" }}
           >
             Continue →
           </button>

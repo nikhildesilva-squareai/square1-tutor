@@ -135,7 +135,7 @@ export default async function TryLessonPage({ params }: { params: Promise<{ slug
           <Link
             href={`/signup?subject=${data.courseSlug}`}
             className="text-sm font-bold text-white px-4 py-2 rounded-full hover:-translate-y-0.5 transition-transform"
-            style={{ background: "linear-gradient(135deg,#0056CE,#4F46E5)" }}
+            style={{ background: "linear-gradient(135deg, #3388FF 0%, #0056CE 55%, #01224F 100%)" }}
           >
             Start free →
           </Link>
