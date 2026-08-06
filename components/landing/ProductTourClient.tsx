@@ -2,10 +2,11 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import {
   LayoutDashboard, BookOpen, Sparkles, FolderGit2, Trophy,
-  Check, ArrowRight, GitBranch, Lock, X, type LucideIcon,
+  ArrowRight, Lock, X, type LucideIcon,
 } from "lucide-react";
 
 const BRAND = "#0056CE";
@@ -33,7 +34,7 @@ const STEPS: { key: StepKey; label: string; icon: LucideIcon; blurb: string }[] 
 ];
 
 /* ── Chrome shared by every panel: a small faux app window ─────────────────── */
-function Frame({ title, children }: { title: string; children: React.ReactNode }) {
+function Frame({ title, flush = false, children }: { title: string; flush?: boolean; children: React.ReactNode }) {
   return (
     <div className="overflow-hidden rounded-2xl bg-white"
          style={{ boxShadow: "0 40px 80px -30px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.14)" }}>
@@ -50,8 +51,31 @@ function Frame({ title, children }: { title: string; children: React.ReactNode }
           <span className="truncate text-[11px] font-medium text-slate-500">{title}</span>
         </span>
       </div>
-      <div className="p-5 sm:p-6">{children}</div>
+      <div className={flush ? undefined : "p-5 sm:p-6"}>{children}</div>
     </div>
+  );
+}
+
+/* ── A real captured screen inside the frame ───────────────────────────────────
+   These are actual screenshots of the product (a demo student account on the
+   live curriculum), not mockups — the honesty rule that governs the rest of the
+   landing page. Captions say what the viewer is looking at. */
+function Shot({ src, alt, caption }: { src: string; alt: string; caption: string }) {
+  return (
+    <figure className="m-0">
+      <Image
+        src={src}
+        alt={alt}
+        width={3200}
+        height={2000}
+        quality={85}
+        sizes="(max-width: 1100px) 100vw, 1040px"
+        className="block h-auto w-full"
+      />
+      <figcaption className="border-t border-slate-100 px-4 py-2.5 text-[11px] text-slate-400 sm:px-5">
+        {caption}
+      </figcaption>
+    </figure>
   );
 }
 
@@ -204,8 +228,8 @@ export function ProductTourClient({ data }: { data: TourData }) {
             The whole thing, before you sign up
           </h2>
           <p className="mx-auto mt-3.5 max-w-2xl text-base leading-relaxed" style={{ color: "rgba(255,255,255,0.72)" }}>
-            Five screens, using real content from the {data.courseTitle} track — the same
-            lessons, projects and marking you get on day one.
+            Five screens of the actual product, captured from the {data.courseTitle} track —
+            the same lessons, projects and marking you get on day one.
           </p>
         </div>
 
@@ -310,12 +334,13 @@ export function ProductTourClient({ data }: { data: TourData }) {
         </div>
 
         {/* ── Panels ─────────────────────────────────────────────────────────
-            All five render and the inactive ones are `hidden`, rather than only
-            mounting the active panel. Two reasons: switching tabs costs no
-            re-render, and — the real one — the lesson text, Nova's marking and
-            the project brief are then in the server HTML, where an answer engine
-            can actually read them. Conditional mounting would leave the four
-            unselected panels invisible to every crawler. */}
+            Four of the five are now REAL captured screenshots of the product
+            (2026-08: a demo student account on the live curriculum) — the DOM
+            replicas they replaced read as mockups, which undercut the whole
+            point of the section. The crawler-readable text lives on in the
+            descriptive alt texts and captions. All five stay mounted with the
+            inactive ones `hidden`, so switching tabs costs no re-render and the
+            alt/caption text is in the server HTML. */}
         <div className="relative mt-4">
           {/* Glow behind the frame, so the screen looks lit rather than pasted on. */}
           <span aria-hidden className="pointer-events-none absolute -inset-x-6 -inset-y-4 rounded-3xl opacity-60 blur-2xl"
@@ -325,10 +350,10 @@ export function ProductTourClient({ data }: { data: TourData }) {
               {/* Keyed so the entrance animation replays on every switch — the
                   screen changing is what sells it as a walkthrough. */}
               <div key={s.key === step ? `in-${step}` : "idle"} className={s.key === step ? "tour-panel-in" : undefined}>
-                {s.key === "dashboard" && <DashboardPanel data={data} />}
-                {s.key === "lesson" && <LessonPanel data={data} />}
-                {s.key === "nova" && <NovaPanel data={data} />}
-                {s.key === "projects" && <ProjectsPanel data={data} />}
+                {s.key === "dashboard" && <DashboardPanel />}
+                {s.key === "lesson" && <LessonPanel />}
+                {s.key === "nova" && <NovaPanel />}
+                {s.key === "projects" && <ProjectsPanel />}
                 {s.key === "outcome" && <OutcomePanel data={data} />}
               </div>
             </div>
@@ -406,166 +431,53 @@ export function ProductTourClient({ data }: { data: TourData }) {
 }
 
 /* ── 1. Dashboard ─────────────────────────────────────────────────────────── */
-function DashboardPanel({ data }: { data: TourData }) {
-  // Illustrative progress: there is no real student to show, and inventing one
-  // silently would be a fake screenshot. The caption says so plainly.
-  const done = 3;
-  const shown = data.modules.slice(0, 5);
+function DashboardPanel() {
   return (
-    <Frame title="square1ai.com/dashboard">
-      <div className="grid gap-5 sm:grid-cols-3">
-        <div className="sm:col-span-2">
-          <h3 className="text-base font-bold text-slate-900">{data.courseTitle}</h3>
-          <p className="mt-0.5 text-sm text-slate-500">
-            {data.modules.length} modules · {data.totalLessons} lessons · {data.totalProjects} projects
-          </p>
-          <ul className="mt-4 space-y-2">
-            {shown.map((m, i) => (
-              <li key={m} className="flex items-center gap-3 rounded-lg border border-slate-200 px-3.5 py-2.5">
-                <span
-                  className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-[11px] font-bold"
-                  style={
-                    i < done
-                      ? { background: BRAND, color: "#fff" }
-                      : { background: "#F1F5F9", color: "#94A3B8" }
-                  }
-                >
-                  {i < done ? <Check className="h-3.5 w-3.5" /> : i + 1}
-                </span>
-                <span className={`text-sm ${i < done ? "text-slate-500 line-through" : "font-semibold text-slate-800"}`}>
-                  {m}
-                </span>
-                {i === done && (
-                  <span className="ml-auto shrink-0 rounded-full px-2 py-0.5 text-[10px] font-bold text-white" style={{ background: BRAND }}>
-                    NEXT
-                  </span>
-                )}
-              </li>
-            ))}
-          </ul>
-        </div>
-        <div className="space-y-3">
-          <Stat label="Modules done" value={`${done} / ${data.modules.length}`} />
-          <Stat label="Projects shipped" value={`1 / ${data.totalProjects}`} />
-          <Stat label="Current level" value={data.levels[1]} />
-        </div>
-      </div>
-      <p className="mt-4 text-xs text-slate-400">
-        Module names and totals are live from the curriculum. Progress figures are illustrative.
-      </p>
+    <Frame title="square1ai.com/dashboard" flush>
+      <Shot
+        src="/product/dashboard.png"
+        alt="The Square 1 student dashboard: a Continue Learning hero for the Data Science track showing the Pandas DataFrames lesson and 49% course completion, stat cards for 33 lessons done and a 20-day streak, a 7-of-7 active days week strip, a 13-week activity heatmap, and quick actions for the next lesson, next project and Nova."
+        caption="The real dashboard — a demo student account, three modules into the Data Science track."
+      />
     </Frame>
   );
 }
 
-function Stat({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="rounded-lg border border-slate-200 px-3.5 py-3">
-      <p className="text-[11px] font-semibold uppercase tracking-wide text-slate-400">{label}</p>
-      <p className="mt-0.5 text-lg font-bold" style={{ color: BRAND }}>{value}</p>
-    </div>
-  );
-}
-
 /* ── 2. Lesson ────────────────────────────────────────────────────────────── */
-function LessonPanel({ data }: { data: TourData }) {
+function LessonPanel() {
   return (
-    <Frame title={`square1ai.com/learn/${data.courseSlug}-lesson-1`}>
-      <h3 className="text-lg font-bold text-slate-900">{data.lesson.title}</h3>
-      <p className="mt-0.5 text-sm text-slate-500">About {data.lesson.minutes} minutes</p>
-
-      {data.lesson.objectives.length > 0 && (
-        <div className="mt-4 rounded-lg border border-[#CCE1FF] bg-[#F2F8FF] p-4">
-          <p className="text-xs font-bold uppercase tracking-wide" style={{ color: BRAND }}>
-            By the end you can
-          </p>
-          <ul className="mt-2 space-y-1.5">
-            {data.lesson.objectives.map((o) => (
-              <li key={o} className="flex gap-2 text-sm leading-relaxed text-slate-700">
-                <Check className="mt-0.5 h-4 w-4 shrink-0" style={{ color: BRAND }} aria-hidden />
-                <span>{o}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
-
-      <p className="mt-4 text-sm leading-relaxed text-slate-700">{data.lesson.excerpt}</p>
-      <p className="mt-3 text-xs text-slate-400">Real lesson text, straight from the curriculum.</p>
+    <Frame title="square1ai.com/learn · Pandas DataFrames" flush>
+      <Shot
+        src="/product/lesson.png"
+        alt="The Square 1 lesson player showing the Pandas DataFrames lesson: a section header, an 'In short' takeaway strip summarising the section, then Why This Matters and Core Concepts prose with inline code, with lesson progress and Nova in the header."
+        caption="The real lesson player — no videos to sit through; read, then prove it, with Nova one tap away."
+      />
     </Frame>
   );
 }
 
 /* ── 3. Nova ──────────────────────────────────────────────────────────────── */
-function NovaPanel({ data }: { data: TourData }) {
-  const { nova } = data;
+function NovaPanel() {
   return (
-    <Frame title={`square1ai.com/learn/${data.courseSlug}-lesson-1  ·  Nova`}>
-      <p className="text-xs font-bold uppercase tracking-wide text-slate-400">Exercise</p>
-      <p className="mt-1.5 text-sm font-semibold text-slate-900">{nova.exerciseTitle}</p>
-      <p className="mt-1.5 text-sm leading-relaxed text-slate-600">{nova.prompt}</p>
-
-      <div className="mt-4 rounded-lg border border-slate-200 bg-slate-50 p-4">
-        <p className="text-xs font-bold uppercase tracking-wide text-slate-400">Your answer</p>
-        <p className="mt-1.5 text-sm leading-relaxed text-slate-700">{nova.studentAnswer}</p>
-      </div>
-
-      <div className="mt-3 rounded-lg border-2 p-4" style={{ borderColor: "#CCE1FF", background: "#F2F8FF" }}>
-        <div className="flex items-center justify-between gap-3">
-          <span className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wide" style={{ color: BRAND }}>
-            <Sparkles className="h-3.5 w-3.5" aria-hidden /> Nova
-          </span>
-          <span className="rounded-full px-2.5 py-0.5 text-xs font-bold text-white" style={{ background: BRAND }}>
-            {nova.score} / {nova.maxMarks}
-          </span>
-        </div>
-        <p className="mt-2.5 text-sm leading-relaxed text-slate-800">{nova.feedback}</p>
-      </div>
-
-      <p className="mt-3 text-xs text-slate-400">
-        Nova&apos;s words are verbatim from the real marking model — not written for this page.
-        Partial credit, and the specific thing that was missing.
-      </p>
+    <Frame title="square1ai.com/learn · graded by Nova" flush>
+      <Shot
+        src="/product/nova.png"
+        alt="A graded exercise in the Square 1 lesson player: the prompt asks the student to explain the difference between df.loc and df.iloc in Pandas, the student's written answer sits in a text box, and below it Nova's marking shows Correct 3/3 with feedback explaining what the answer demonstrated."
+        caption="A real answer, really graded — this score and feedback came from the live marking model, not copywriting."
+      />
     </Frame>
   );
 }
 
 /* ── 4. Projects ──────────────────────────────────────────────────────────── */
-function ProjectsPanel({ data }: { data: TourData }) {
-  const { project } = data;
+function ProjectsPanel() {
   return (
-    <Frame title={`square1ai.com/projects/${data.courseSlug}-01`}>
-      <div className="flex flex-wrap items-center gap-2">
-        <h3 className="text-lg font-bold text-slate-900">{project.title}</h3>
-        {project.difficulty && (
-          <span className="rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-semibold capitalize text-slate-600">
-            {project.difficulty}
-          </span>
-        )}
-        {project.hours > 0 && (
-          <span className="text-xs text-slate-500">~{project.hours} hours</span>
-        )}
-      </div>
-
-      {project.stack.length > 0 && (
-        <ul className="mt-3 flex flex-wrap gap-1.5">
-          {project.stack.map((t) => (
-            <li key={t} className="rounded-md border border-slate-200 px-2 py-0.5 text-xs font-semibold text-slate-600">
-              {t}
-            </li>
-          ))}
-        </ul>
-      )}
-
-      <p className="mt-4 text-sm leading-relaxed text-slate-700">{project.brief}</p>
-
-      {project.hasRepo && (
-        <p className="mt-4 inline-flex items-center gap-2 rounded-lg border border-slate-200 px-3 py-2 text-sm font-semibold text-slate-700">
-          <GitBranch className="h-4 w-4" aria-hidden /> Starter repo, cloned on day one
-        </p>
-      )}
-      <p className="mt-3 text-xs text-slate-400">
-        A real brief from the track — a scenario with a client and a deadline, not a toy exercise.
-      </p>
+    <Frame title="square1ai.com/projects/automated-eda-profiler" flush>
+      <Shot
+        src="/product/project.png"
+        alt="A Square 1 project brief: Automated EDA Profiler, a beginner Data Science project estimated at 8 hours with difficulty, deliverables and Nova-review scoring cards, a narrative client scenario at Meridian Market, and a Getting Started panel with a GitHub starter template button and clone command."
+        caption="A real project brief from the track — starter repo and dataset included, marked by Nova against a rubric."
+      />
     </Frame>
   );
 }
