@@ -6,6 +6,7 @@ import { Analytics } from "@vercel/analytics/next";
 import { CookieConsent } from "@/components/ui/cookie-consent";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { GoogleAnalytics } from "@/components/GoogleAnalytics";
+import { MetaPixel } from "@/components/MetaPixel";
 import { FirstPartyAnalytics } from "@/components/FirstPartyAnalytics";
 import { JsonLd } from "@/components/seo/JsonLd";
 
@@ -105,6 +106,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         </ThemeProvider>
         <CookieConsent />
         <GoogleAnalytics />
+        {/* Meta pixel — consent-gated, same as GA. Renders nothing without
+            NEXT_PUBLIC_META_PIXEL_ID or without an explicit "all". */}
+        <MetaPixel />
         {/* First-party attribution → `events` table (own Supabase). Feeds the
             internal dashboard's source/funnel views. */}
         <FirstPartyAnalytics />

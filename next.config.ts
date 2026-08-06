@@ -22,15 +22,16 @@ const securityHeaders = [
       // it the CSP silently blocked gtag.js, so GA4 never ran in production
       // despite being wired up. It stays consent-gated: nothing is requested
       // until the visitor picks "Allow analytics".
-      "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://assets.calendly.com https://www.googletagmanager.com",
+      "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://assets.calendly.com https://www.googletagmanager.com https://connect.facebook.net",
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://assets.calendly.com",
       "font-src 'self' https://fonts.gstatic.com",
-      "img-src 'self' data: blob: https://*.supabase.co https://*.google-analytics.com",
+      // www.facebook.com is the pixel's <noscript>/beacon image endpoint.
+      "img-src 'self' data: blob: https://*.supabase.co https://*.google-analytics.com https://www.facebook.com",
       "media-src 'self' blob: https://*.supabase.co", // community post video attachments
       // No AI provider here on purpose: every model call is server-side, so the
       // browser never talks to Anthropic or DeepInfra directly. The old
       // api.anthropic.com grant was dead weight and is removed.
-      "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://*.google-analytics.com https://*.analytics.google.com",
+      "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://*.google-analytics.com https://*.analytics.google.com https://connect.facebook.net https://www.facebook.com",
       "frame-src 'self' https://calendly.com",
       "object-src 'none'",
       "base-uri 'self'",
