@@ -2,7 +2,6 @@ import Link from "next/link";
 import { Check } from "lucide-react";
 import { foundingPlansFor, foundingPriceFrom } from "@/lib/founding";
 import type { RegionKey } from "@/lib/pricing";
-import { RegionSelector } from "@/components/landing/RegionSelector";
 import { PrimaryCta } from "@/components/ui/primary-cta";
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -66,11 +65,15 @@ export function PricingSection({ region = "global" }: { region?: RegionKey }) {
             and the no-code role tracks. No credit card anywhere below. Founding members keep
             whatever they pay now; the price never goes up on you.
           </p>
-        
-          {/* Detected region — always visible and changeable (IP geo is a guess) */}
-          <div className="mt-6 flex justify-center">
-            <RegionSelector region={region} />
-          </div>
+
+          {/* No region switcher here on purpose. Pricing still adapts to the
+              visitor's detected region (proxy.ts -> s1_region -> getRegion), but
+              the public page no longer advertises the other region's rates:
+              showing a global visitor the South Asia price invites arbitrage and
+              makes the number they're being asked to pay look arbitrary.
+              Trade-off accepted: a South Asian visitor on a VPN now has no
+              in-page way to correct a wrong geo guess. RegionSelector still
+              exists if we want it back behind a support link. */}
         </div>
 
         {/* Tiers */}
