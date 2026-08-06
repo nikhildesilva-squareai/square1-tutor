@@ -685,3 +685,43 @@ export async function sendManagerDigest(
     `,
   });
 }
+
+/* ─── SEO/AEO health alert (to the founder) ──────────────────────────────────
+ * Sent by the daily cron ONLY when a check that was passing yesterday fails
+ * today, or a countable signal drops sharply. Silence means healthy — an alert
+ * that arrives every morning stops being read, which defeats the point. */
+export async function sendSeoHealthAlert(opts: {
+  regressions: string[];
+  failures: number;
+  metrics: Record<string, number>;
+}) {
+  const rows = opts.regressions
+    .map((r) => `<li style="margin:0 0 6px">${escapeHtml(r)}</li>`)
+    .join("");
+  const metricRows = Object.entries(opts.metrics)
+    .map(([k, v]) => `<tr><td style="padding:3px 12px 3px 0;color:#64748B">${escapeHtml(k)}</td><td style="font-weight:600">${v}</td></tr>`)
+    .join("");
+
+  return getResend().emails.send({
+    from: FROM,
+    to: LEAD_NOTIFY_TO,
+    subject: `SEO health: ${opts.regressions.length} regression${opts.regressions.length === 1 ? "" : "s"} on square1ai.com`,
+    html: `<div style="font-family:system-ui,sans-serif;max-width:600px;color:#0F172A">
+      <h2 style="margin:0 0 4px;font-size:18px">Something that was working yesterday is not working today</h2>
+      <p style="margin:0 0 16px;color:#64748B;font-size:14px">
+        ${opts.failures} failing check${opts.failures === 1 ? "" : "s"} in total. Only new breakage is listed below.
+      </p>
+      <ul style="margin:0 0 20px;padding-left:20px;font-size:14px">${rows}</ul>
+      <h3 style="margin:0 0 6px;font-size:14px">Current signals</h3>
+      <table style="font-size:13px;border-collapse:collapse">${metricRows}</table>
+      <p style="margin:20px 0 0;font-size:12px;color:#94A3B8">
+        Detected by /api/cron/daily. Nothing was changed automatically.
+      </p>
+    </div>`,
+  });
+}
+
+function escapeHtml(s: string): string {
+  return s.replace(/[&<>"']/g, (c) =>
+    ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c] as string));
+}

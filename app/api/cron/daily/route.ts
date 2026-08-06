@@ -4,6 +4,8 @@ import { runStreakReminders, runWeeklyDigest, runActivationNudges, runInviteRemi
 import { checkAllIncompleteEnrollments } from "@/lib/enrollment-completion";
 import { ingestNews } from "@/lib/newsroom-pipeline";
 import { sweepMonth } from "@/lib/ai/budget";
+import { runSeoHealth, recordSeoHealth } from "@/lib/seo-health";
+import { sendSeoHealthAlert } from "@/lib/email/resend";
 
 export const maxDuration = 60;
 
@@ -52,6 +54,38 @@ export async function GET(request: Request) {
     } catch (err) {
       results.walletSweep = { error: err instanceof Error ? err.message : "failed" };
     }
+  }
+
+  // ── SEO / AEO / GEO regression monitor ──────────────────────────────────
+  // Checks the live site over HTTP, not the repo: crawler access, structured
+  // data, soft-404s, sitemap and llms.txt size. Detect-and-alert only — nothing
+  // here edits the site. Emails only on NEW breakage, so a quiet inbox means
+  // healthy rather than ignored.
+  try {
+    const health = await runSeoHealth();
+    let alerted = false;
+    if (health.regressions.length > 0) {
+      try {
+        await sendSeoHealthAlert({
+          regressions: health.regressions,
+          failures: health.failures,
+          metrics: health.metrics,
+        });
+        alerted = true;
+      } catch (err) {
+        console.error("[cron/daily] seo alert send failed:", err);
+      }
+    }
+    await recordSeoHealth(health, alerted);
+    results.seoHealth = {
+      ok: health.ok,
+      failures: health.failures,
+      regressions: health.regressions,
+      metrics: health.metrics,
+      alerted,
+    };
+  } catch (err) {
+    results.seoHealth = { error: err instanceof Error ? err.message : "failed" };
   }
 
   // ── Check incomplete enrollments for completion (fallback for on-demand triggers) ──
