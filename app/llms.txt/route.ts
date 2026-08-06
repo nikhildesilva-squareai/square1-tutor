@@ -80,7 +80,7 @@ export async function GET() {
   push("- Format: 100% text and code, zero video lectures. Roughly 45 minutes a day, self-paced.");
   push("- Grading: AI-graded exercises, projects and code review against per-project rubrics — not multiple-choice quizzes alone.");
   push("- Output: deployed projects with live URLs plus a verified skill report, rather than a completion certificate alone.");
-  push("- Entry point: a free 5-question skill check per subject, no account required.");
+  push("- Entry point: a free 5-question skill check per subject. An email address and country are required before starting it; no account, password or payment is created.");
   push(`- Courses currently live: ${courses.length}.`);
   push("- Based in Australia. Regional pricing applies; see the pricing section on the homepage.");
   push();
@@ -90,7 +90,7 @@ export async function GET() {
   push(`- [Home](${BASE}/): what the platform is, the two lanes, pricing and FAQ.`);
   push(`- [About](${BASE}/about): the company, the eight-part roadmap and what is live versus planned.`);
   push(`- [Courses](${BASE}/courses): the full catalogue, with every module and lesson title public.`);
-  push(`- [Skill checks](${BASE}/diagnostic): free 3-minute diagnostics, one per subject, no signup.`);
+  push(`- [Skill checks](${BASE}/diagnostic): free 3-minute diagnostics, one per subject. Email and country required to start; no account created.`);
   push(`- [AI roles directory](${BASE}/roles): what each AI-affected role actually does, the skills it needs, and the curriculum that trains for it.`);
   push(`- [For teams](${BASE}/business): the B2B offer — seats, manager portal, team skill reporting.`);
   push(`- [AI tools directory](${BASE}/tools): curated AI tools by role, with guidance on when NOT to use each. No affiliate links.`);
@@ -144,7 +144,7 @@ export async function GET() {
 
   push("## Skill checks");
   push();
-  push("Free, no account, five questions, instant result. One per subject:");
+  push("Five questions, instant result, free. Requires an email address and country up front; creates no account. One per subject:");
   push();
   for (const s of DIAG_SUBJECTS) {
     const seo = SUBJECT_SEO[s.slug];

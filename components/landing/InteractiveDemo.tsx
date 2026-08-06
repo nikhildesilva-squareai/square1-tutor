@@ -76,7 +76,7 @@ export function InteractiveDemo() {
       <div className="max-w-3xl mx-auto">
         <div className="text-center mb-8 sm:mb-10">
           <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-ink">
-            Try it right now — no sign-up needed
+            Try it right now — no account needed
           </h2>
           <p className="mt-3 text-ink-muted text-lg">
             Answer one real assessment question. See exactly how our AI grades your work.

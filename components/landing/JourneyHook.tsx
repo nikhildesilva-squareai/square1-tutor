@@ -252,7 +252,7 @@ function ClosingCTA() {
 
         {/* Ticked meta */}
         <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 mb-8" style={reveal(3)}>
-          {["5 quick questions", "No sign-up", "Instant skill snapshot"].map((t) => (
+          {["5 quick questions", "No account", "Instant skill snapshot"].map((t) => (
             <span key={t} className="inline-flex items-center gap-1.5 text-sm font-medium text-slate-700">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#0056CE" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
               {t}

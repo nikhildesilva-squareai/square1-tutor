@@ -296,7 +296,7 @@ export function WorkBlock() {
             Check your AI-at-work skills — free
             <ArrowRight className="h-4 w-4" />
           </Link>
-          <p className="mt-3 text-xs text-slate-500">3-minute skill check · no code · no signup</p>
+          <p className="mt-3 text-xs text-slate-500">3-minute skill check · no code · no account</p>
         </div>
       </div>
     </section>

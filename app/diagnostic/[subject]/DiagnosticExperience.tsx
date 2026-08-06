@@ -8,27 +8,29 @@ import { DiagnosticEvent } from "@/components/DiagnosticEvent";
 import { COUNTRIES } from "@/lib/countries";
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// The pre-test opt-in. Email + country, both optional, one screen, then straight
-// into question 1.
+// The pre-test gate. Email + country, one screen, then straight into question 1.
 //
-// It never blocks: "Skip" is a real control with equal prominence, not a greyed
-// afterthought, and a failed save still lets the visitor through. The check is
-// the product promise — losing someone at a mailing-list prompt would cost more
-// than the address is worth.
+// This is a REQUIRED step (product decision, 2026-08-06). There is no skip: the
+// address is the point, and a skip control was taking most of the traffic.
+//
+// Two things follow from that and must not be quietly undone:
+//   1. The submit path fails OPEN. Without a skip, a failing save would be a
+//      locked door across the whole top of the funnel.
+//   2. No account is created — no password, no verification. Copy may say "no
+//      account needed", which stays true, but must NOT say "no signup" or
+//      "instant results, no signup", which no longer is.
 // ═══════════════════════════════════════════════════════════════════════════════
 function OptInStep({
-  slug, subjectTitle, accent, onDone, onSkip,
+  slug, subjectTitle, accent, onDone,
 }: {
   slug: string;
   subjectTitle: string;
   accent: string;
   onDone: () => void;
-  onSkip: () => void;
 }) {
   const [email, setEmail] = useState("");
   const [country, setCountry] = useState("");
   const [saving, setSaving] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
   const ready = email.trim().length > 3 && country !== "";
 
@@ -36,23 +38,20 @@ function OptInStep({
     e.preventDefault();
     if (!ready || saving) return;
     setSaving(true);
-    setError(null);
     try {
       const res = await fetch("/api/diagnostic/lead", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: email.trim(), country, subject: slug }),
       });
-      if (!res.ok) {
-        // Never trap anyone behind our own outage — let them into the check.
-        setError("Couldn't save that, but you can carry on.");
-        setSaving(false);
-        return;
-      }
+      // Fail OPEN, and this now matters much more than it did. With no skip
+      // control, a failing save would be a locked door across the entire top of
+      // the funnel — an outage on our side would stop every visitor taking the
+      // check at all. A lost email address is cheaper than a lost visitor, so a
+      // failed save still lets them straight through.
       onDone();
     } catch {
-      setError("Couldn't save that, but you can carry on.");
-      setSaving(false);
+      onDone();
     }
   }
 
@@ -62,12 +61,12 @@ function OptInStep({
         {subjectTitle}
       </span>
       <h2 className="mt-2 text-2xl font-bold leading-snug text-slate-900">
-        Want your result emailed to you?
+        Where should we send your result?
       </h2>
       <p className="mt-2.5 text-sm leading-relaxed text-slate-600">
-        Optional. Give us an address and we&apos;ll send your skill snapshot plus the
-        roadmap that goes with it, so you still have it after you close the tab.
-        You can skip this and take the check anyway — no account either way.
+        We&apos;ll email your skill snapshot and the roadmap that goes with it, so
+        you still have it after you close the tab. No account, no password —
+        just an address and where you are.
       </p>
 
       <form onSubmit={submit} className="mt-6 space-y-3">
@@ -104,8 +103,6 @@ function OptInStep({
           </p>
         </div>
 
-        {error && <p className="text-xs font-semibold text-amber-700">{error}</p>}
-
         <button
           type="submit"
           disabled={!ready || saving}
@@ -114,13 +111,6 @@ function OptInStep({
         >
           {saving ? "Saving…" : "Send it and start the check"}
           {!saving && <ArrowRight className="h-4 w-4" />}
-        </button>
-        <button
-          type="button"
-          onClick={onSkip}
-          className="h-11 w-full rounded-lg border border-slate-300 bg-white text-sm font-semibold text-slate-700 transition-colors hover:bg-slate-50"
-        >
-          Skip — just start the check
         </button>
       </form>
 
@@ -175,13 +165,21 @@ export function DiagnosticExperience({ slug, subject, seo, modules, totalProject
       // Hero/deep-link handoff: ?a0=<option index> carries an answer to THIS
       // check's first question (same seeded option order everywhere), so the
       // visitor arrives already one question in — momentum preserved.
+      //
+      // This path used to skip the opt-in to protect that momentum. It no
+      // longer does: nobody takes the test without leaving an email and country
+      // (product decision, 2026-08-06). The answer is still carried over, so
+      // they resume at question 2 the moment they've filled it in.
       const a0 = params.get("a0");
       if (a0 !== null) {
         const idx = Number(a0);
         if (Number.isInteger(idx) && idx >= 0 && idx < (questions[0]?.options.length ?? 0)) {
           setAnswers([idx]);
           setQIdx(1);
-          setStarted(true);
+          let asked = false;
+          try { asked = localStorage.getItem("s1-diag-optin") === "done"; } catch { /* ignore */ }
+          if (asked) setStarted(true);
+          else setShowOptIn(true);
         }
       }
     } catch { /* ignore */ }
@@ -251,7 +249,6 @@ export function DiagnosticExperience({ slug, subject, seo, modules, totalProject
           subjectTitle={subject.title}
           accent={accent}
           onDone={() => { markOptInDone(); beginQuiz(); }}
-          onSkip={() => { markOptInDone(); beginQuiz(); }}
         />
       </main>
     );
