@@ -2,9 +2,10 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   LayoutDashboard, BookOpen, Sparkles, FolderGit2, Trophy,
-  Check, ArrowRight, GitBranch, Lock, type LucideIcon,
+  Check, ArrowRight, GitBranch, Lock, X, type LucideIcon,
 } from "lucide-react";
 
 const BRAND = "#0056CE";
@@ -102,6 +103,42 @@ export function ProductTourClient({ data }: { data: TourData }) {
     setPlaying(false);
     setCursor(null);
   }, []);
+
+  // ── Email gate on the section CTAs ──────────────────────────────────────────
+  // Same opt-in contract as the pre-test gate (product decision, 2026-08-06):
+  // the free lesson and the full curriculum are both behind an email. Shares
+  // the s1-diag-optin flag, so anyone who has answered it once — here or
+  // before the skill check — passes straight through, and answering it here
+  // means the skill check never asks again either. Fails OPEN: a failed save
+  // still navigates, because a lost address is cheaper than a lost visitor.
+  const router = useRouter();
+  const [gateHref, setGateHref] = useState<string | null>(null);
+  const [gateEmail, setGateEmail] = useState("");
+  const [gateSaving, setGateSaving] = useState(false);
+
+  function gateClick(e: React.MouseEvent, href: string) {
+    let done = false;
+    try { done = localStorage.getItem("s1-diag-optin") === "done"; } catch { /* private mode — ask */ }
+    if (done) return; // normal <Link> navigation
+    e.preventDefault();
+    stopAutoplay();
+    setGateHref(href);
+  }
+
+  async function gateSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    if (!gateHref || gateEmail.trim().length < 4 || gateSaving) return;
+    setGateSaving(true);
+    try {
+      await fetch("/api/diagnostic/lead", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: gateEmail.trim(), subject: data.courseSlug }),
+      });
+    } catch { /* fail open */ }
+    try { localStorage.setItem("s1-diag-optin", "done"); } catch { /* ignore */ }
+    router.push(gateHref);
+  }
 
   useEffect(() => {
     if (!playing || reducedMotion) return;
@@ -301,6 +338,7 @@ export function ProductTourClient({ data }: { data: TourData }) {
         <div className="relative mt-9 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
           <Link
             href={`/try/${data.courseSlug}`}
+            onClick={(e) => gateClick(e, `/try/${data.courseSlug}`)}
             className="group inline-flex h-12 items-center gap-2 rounded-xl bg-white px-7 text-sm font-bold transition-transform hover:-translate-y-0.5"
             style={{ color: "#01224F", boxShadow: "0 10px 30px -10px rgba(255,255,255,0.45)" }}
           >
@@ -309,6 +347,7 @@ export function ProductTourClient({ data }: { data: TourData }) {
           </Link>
           <Link
             href={`/courses/${data.courseSlug}`}
+            onClick={(e) => gateClick(e, `/courses/${data.courseSlug}`)}
             className="inline-flex h-12 items-center rounded-xl border px-7 text-sm font-semibold transition-colors"
             style={{ borderColor: "rgba(255,255,255,0.22)", color: "rgba(255,255,255,0.9)" }}
           >
@@ -316,6 +355,52 @@ export function ProductTourClient({ data }: { data: TourData }) {
           </Link>
         </div>
       </div>
+
+      {/* Email gate — one small honest ask, then straight through. Closing it
+          just stays on the page; there is no skip (same contract as the
+          pre-test gate). */}
+      {gateHref && (
+        <div
+          className="fixed inset-0 z-[90] flex items-center justify-center bg-[#00183A]/70 px-4 backdrop-blur-sm"
+          role="dialog" aria-modal="true" aria-label="Leave your email to continue"
+          onClick={() => setGateHref(null)}
+        >
+          <div
+            className="w-full max-w-sm rounded-2xl bg-white p-6 shadow-2xl motion-safe:animate-fade-in-up"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-start justify-between gap-3">
+              <h3 className="text-lg font-black tracking-tight text-slate-900">One thing before you dive in</h3>
+              <button type="button" onClick={() => setGateHref(null)} aria-label="Close"
+                className="rounded-md p-1 text-slate-400 transition-colors hover:text-slate-700">
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+            <p className="mt-2 text-sm leading-relaxed text-slate-600">
+              Leave an email so we can keep your place in {data.courseTitle} and follow up with
+              your next step. No account, no password — just an address.
+            </p>
+            <form onSubmit={gateSubmit} className="mt-4 space-y-3">
+              <input
+                type="email" value={gateEmail} onChange={(e) => setGateEmail(e.target.value)}
+                placeholder="you@example.com" autoComplete="email" autoFocus aria-label="Email"
+                className="h-11 w-full rounded-lg border border-slate-300 px-3.5 text-base outline-none transition-colors focus:border-[#0056CE] sm:text-sm"
+              />
+              <button
+                type="submit" disabled={gateEmail.trim().length < 4 || gateSaving}
+                className="flex h-11 w-full items-center justify-center gap-2 rounded-lg text-sm font-bold text-white transition-transform enabled:hover:-translate-y-px disabled:opacity-40"
+                style={{ background: "linear-gradient(135deg, #3388FF 0%, #0056CE 55%, #01224F 100%)" }}
+              >
+                {gateSaving ? "One sec…" : "Continue"}
+                {!gateSaving && <ArrowRight className="h-4 w-4" />}
+              </button>
+            </form>
+            <p className="mt-3 text-center text-[11px] text-slate-500">
+              We email your next step and occasional course updates. No spam, unsubscribe anytime.
+            </p>
+          </div>
+        </div>
+      )}
     </section>
   );
 }

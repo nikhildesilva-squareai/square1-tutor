@@ -5,10 +5,12 @@ import { useRouter } from "next/navigation";
 import { ArrowRight, Check } from "lucide-react";
 import { getDiagnostic, encodeAnswers, type DiagQuestion } from "@/lib/diagnostic";
 import { DiagnosticEvent } from "@/components/DiagnosticEvent";
-import { COUNTRIES } from "@/lib/countries";
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// The pre-test gate. Email + country, one screen, then straight into question 1.
+// The pre-test gate. Email ONLY, one screen, then straight into question 1.
+// Country was asked here for a day and dropped (2026-08-06): the server derives
+// it from the CDN geo header / analytics instead, and a second required field
+// costs momentum at the most fragile moment of the funnel.
 //
 // This is a REQUIRED step (product decision, 2026-08-06). There is no skip: the
 // address is the point, and a skip control was taking most of the traffic.
@@ -29,10 +31,9 @@ function OptInStep({
   onDone: () => void;
 }) {
   const [email, setEmail] = useState("");
-  const [country, setCountry] = useState("");
   const [saving, setSaving] = useState(false);
 
-  const ready = email.trim().length > 3 && country !== "";
+  const ready = email.trim().length > 3;
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
@@ -42,7 +43,7 @@ function OptInStep({
       const res = await fetch("/api/diagnostic/lead", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: email.trim(), country, subject: slug }),
+        body: JSON.stringify({ email: email.trim(), subject: slug }),
       });
       // Fail OPEN, and this now matters much more than it did. With no skip
       // control, a failing save would be a locked door across the entire top of
@@ -66,7 +67,7 @@ function OptInStep({
       <p className="mt-2.5 text-sm leading-relaxed text-slate-600">
         We&apos;ll email your skill snapshot and the roadmap that goes with it, so
         you still have it after you close the tab. No account, no password —
-        just an address and where you are.
+        just an address.
       </p>
 
       <form onSubmit={submit} className="mt-6 space-y-3">
@@ -84,25 +85,6 @@ function OptInStep({
             className="h-11 w-full rounded-lg border border-slate-300 px-3.5 text-base outline-none transition-colors focus:border-[#0056CE] sm:text-sm"
           />
         </div>
-        <div>
-          <label htmlFor="optin-country" className="mb-1.5 block text-sm font-semibold text-slate-700">
-            Country
-          </label>
-          <select
-            id="optin-country"
-            value={country}
-            onChange={(e) => setCountry(e.target.value)}
-            autoComplete="country-name"
-            className="h-11 w-full rounded-lg border border-slate-300 bg-white px-3 text-base outline-none transition-colors focus:border-[#0056CE] sm:text-sm"
-          >
-            <option value="">Select your country</option>
-            {COUNTRIES.map((c) => <option key={c} value={c}>{c}</option>)}
-          </select>
-          <p className="mt-1.5 text-xs text-slate-500">
-            So we show you the right pricing and course times for where you are.
-          </p>
-        </div>
-
         <button
           type="submit"
           disabled={!ready || saving}
@@ -167,7 +149,7 @@ export function DiagnosticExperience({ slug, subject, seo, modules, totalProject
       // visitor arrives already one question in — momentum preserved.
       //
       // This path used to skip the opt-in to protect that momentum. It no
-      // longer does: nobody takes the test without leaving an email and country
+      // longer does: nobody takes the test without leaving an email
       // (product decision, 2026-08-06). The answer is still carried over, so
       // they resume at question 2 the moment they've filled it in.
       const a0 = params.get("a0");
