@@ -775,3 +775,23 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .tour-progress { animation: none; width: 100%; }
 }
+
+/* Panel entrance. The screen changing is what sells the tour as a walkthrough,
+   so each switch gets a short rise-and-fade rather than an instant swap. */
+.tour-panel-in {
+  animation: tourPanelIn 420ms cubic-bezier(.2, .7, .3, 1) both;
+}
+@keyframes tourPanelIn {
+  from { opacity: 0; transform: translateY(10px) scale(0.992); }
+  to   { opacity: 1; transform: none; }
+}
+/* Steps lift slightly on hover so the rail invites a click. */
+.tour-step {
+  transition: transform 180ms ease, border-color 180ms ease, background-color 180ms ease, box-shadow 180ms ease;
+}
+.tour-step:hover { transform: translateY(-2px); }
+
+@media (prefers-reduced-motion: reduce) {
+  .tour-panel-in { animation: none; }
+  .tour-step:hover { transform: none; }
+}
