@@ -61,5 +61,9 @@ fbq('init','${PIXEL_ID}');fbq('track','PageView');`}
  */
 export function trackMeta(event: string, params?: Record<string, unknown>, eventId?: string) {
   if (typeof window === "undefined" || !window.fbq) return;
-  window.fbq("track", event, params ?? {}, eventId ? { eventID: eventId } : undefined);
+  // Build the argument list rather than passing an explicit `undefined` fourth
+  // argument. fbq inspects arguments.length, and a trailing undefined is not the
+  // same to it as an omitted argument.
+  if (eventId) window.fbq("track", event, params ?? {}, { eventID: eventId });
+  else window.fbq("track", event, params ?? {});
 }
