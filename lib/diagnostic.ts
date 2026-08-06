@@ -968,10 +968,10 @@ export interface SubjectSEO {
 export const SUBJECT_SEO: Record<string, SubjectSEO> = {
   "generative-ai": {
     h1: "Are you ready to be an AI Engineer?",
-    description: "Take this free 3-minute generative AI skill check. Five questions on LLMs, RAG, prompt engineering, embeddings, and AI safety — instant results, no signup.",
+    description: "Take this free 3-minute generative AI skill check. Five questions on LLMs, RAG, prompt engineering, embeddings, and AI safety — instant results, no account.",
     body: "Generative AI is transforming every industry. Companies are hiring AI Engineers who can build with large language models, design retrieval-augmented generation pipelines, and ship safe, reliable AI products. But the field moves fast — skills that were cutting-edge six months ago are table stakes today.\n\nThis 3-minute snapshot tests five core areas that hiring managers look for: LLM fundamentals, RAG architecture, inference controls, AI safety, and embeddings. It won't replace a full technical interview, but it will tell you where you stand and where to focus.\n\nWhether you're a software engineer pivoting into AI, a data scientist expanding your toolkit, or a student choosing your first specialisation, this diagnostic gives you an honest starting point.",
     faqs: [
-      { q: "How long does the AI skill check take?", a: "About 3 minutes. Five multiple-choice questions, instant results. No signup required." },
+      { q: "How long does the AI skill check take?", a: "About 3 minutes. Five multiple-choice questions, instant results. No account required." },
       { q: "What topics does it cover?", a: "LLM fundamentals, retrieval-augmented generation (RAG), inference controls like temperature, prompt injection defence, and embeddings for semantic search." },
       { q: "Is this a certification?", a: "No — it's a quick skill snapshot to help you identify gaps. For a full AI-graded assessment with a personalised learning plan, take the free full assessment after signing up." },
     ],
@@ -986,7 +986,7 @@ export const SUBJECT_SEO: Record<string, SubjectSEO> = {
   "machine-learning": {
     h1: "Are you ready to be an ML Engineer?",
     description: "Free 3-minute machine learning skill check. Test your knowledge of overfitting, evaluation, metrics, optimisation, and regularisation — instant results.",
-    body: "Machine learning engineers are among the most sought-after roles in tech. But the gap between completing a tutorial and being job-ready is wider than most people realise. Employers want engineers who understand not just how to call sklearn, but why a model overfits, when accuracy is the wrong metric, and how regularisation actually works.\n\nThis quick diagnostic tests five foundational ML concepts that separate beginners from practitioners: generalisation, honest evaluation, metric selection for imbalanced data, gradient-based optimisation, and regularisation techniques.\n\nIt takes about 3 minutes, requires no signup, and gives you an immediate snapshot of where you stand on the ML readiness spectrum.",
+    body: "Machine learning engineers are among the most sought-after roles in tech. But the gap between completing a tutorial and being job-ready is wider than most people realise. Employers want engineers who understand not just how to call sklearn, but why a model overfits, when accuracy is the wrong metric, and how regularisation actually works.\n\nThis quick diagnostic tests five foundational ML concepts that separate beginners from practitioners: generalisation, honest evaluation, metric selection for imbalanced data, gradient-based optimisation, and regularisation techniques.\n\nIt takes about 3 minutes, requires no account, and gives you an immediate snapshot of where you stand on the ML readiness spectrum.",
     faqs: [
       { q: "What ML topics does this test?", a: "Overfitting and generalisation, train/test splitting, metrics for imbalanced datasets, gradient descent, and regularisation (L1/L2)." },
       { q: "Do I need coding experience?", a: "No code is required for this quick check. The full assessment includes hands-on coding challenges." },
@@ -1002,7 +1002,7 @@ export const SUBJECT_SEO: Record<string, SubjectSEO> = {
   },
   "fullstack-development": {
     h1: "Are you ready to be a Full Stack Engineer?",
-    description: "Free 3-minute full stack development skill check. HTTP, SQL security, authentication, databases, and React — instant results, no signup.",
+    description: "Free 3-minute full stack development skill check. HTTP, SQL security, authentication, databases, and React — instant results, no account.",
     body: "Full stack engineering remains one of the most versatile and in-demand roles in software. But the breadth of skills required — from HTTP protocols to database design to frontend frameworks — makes it hard to know where your gaps are.\n\nThis diagnostic covers five areas that full stack interviews consistently test: HTTP status codes and API design, SQL injection prevention, secure authentication patterns, database indexing, and React fundamentals.\n\nThree minutes, five questions, and you'll know exactly which areas need work before your next interview or project.",
     faqs: [
       { q: "What does this full stack check cover?", a: "HTTP and API conventions, SQL injection prevention, JWT authentication best practices, database indexing, and React component patterns." },
@@ -1019,7 +1019,7 @@ export const SUBJECT_SEO: Record<string, SubjectSEO> = {
   },
   "cybersecurity": {
     h1: "Are you ready to be a Security Engineer?",
-    description: "Free 3-minute cybersecurity skill check. Password hashing, access control, XSS, TLS, and defensive security — instant results, no signup.",
+    description: "Free 3-minute cybersecurity skill check. Password hashing, access control, XSS, TLS, and defensive security — instant results, no account.",
     body: "Cybersecurity is no longer a niche specialisation — every organisation needs security engineers. But the field covers an enormous surface area, from cryptography to social engineering to network defence.\n\nThis quick diagnostic tests five areas that form the foundation of any security role: credential storage best practices, the principle of least privilege, common web vulnerabilities like XSS, transport-layer security, and practical defensive measures against phishing.\n\nWhether you're transitioning from IT, coming from development, or studying security formally, this 3-minute check will highlight where you're strong and where you need to dig deeper.",
     faqs: [
       { q: "What security topics does this cover?", a: "Password hashing vs encryption, principle of least privilege, cross-site scripting (XSS), TLS/encryption in transit, and multi-factor authentication as a defence against phishing." },
@@ -1036,7 +1036,7 @@ export const SUBJECT_SEO: Record<string, SubjectSEO> = {
   },
   "data-science": {
     h1: "Are you ready to be a Data Scientist?",
-    description: "Free 3-minute data science skill check. Statistics, SQL, inference, experimentation, and hypothesis testing — instant results, no signup.",
+    description: "Free 3-minute data science skill check. Statistics, SQL, inference, experimentation, and hypothesis testing — instant results, no account.",
     body: "Data science roles require a unique blend of statistics, programming, and domain expertise. Companies want data scientists who can design experiments, write SQL, interpret results honestly, and communicate findings to non-technical stakeholders.\n\nThis diagnostic tests five areas that data science interviews consistently probe: descriptive statistics and when to use median vs mean, SQL aggregation patterns, the distinction between correlation and causation, A/B test design, and statistical significance.\n\nThree minutes, five questions, and you'll know whether you're ready for data science interviews or need to strengthen your foundations first.",
     faqs: [
       { q: "What data science topics are tested?", a: "Central tendency (median vs mean), SQL GROUP BY, correlation vs causation, A/B testing methodology, and p-values / statistical significance." },
@@ -1053,7 +1053,7 @@ export const SUBJECT_SEO: Record<string, SubjectSEO> = {
   },
   "artificial-intelligence": {
     h1: "Are you ready to work in Artificial Intelligence?",
-    description: "Free 3-minute AI skill check. LLMs, RAG, prompt engineering, AI safety, and embeddings — instant results, no signup required.",
+    description: "Free 3-minute AI skill check. LLMs, RAG, prompt engineering, AI safety, and embeddings — instant results, no account required.",
     body: "Artificial intelligence is reshaping industries from healthcare to finance to education. Whether you're aiming for a research role, an applied AI position, or a product role involving AI, you need a solid grasp of how modern AI systems work.\n\nThis quick diagnostic covers five essential areas: how large language models process information, retrieval-augmented generation for grounding AI in real data, controlling model output through inference parameters, defending against prompt injection attacks, and using embeddings for semantic similarity.\n\nTake 3 minutes to find out where you stand — no account needed, instant results.",
     faqs: [
       { q: "How is this different from the Generative AI check?", a: "The questions overlap because modern AI is heavily driven by generative models. The full courses diverge: AI covers broader theory (classical ML, planning, search) while Generative AI focuses on LLM-specific engineering." },
@@ -1087,7 +1087,7 @@ export const SUBJECT_SEO: Record<string, SubjectSEO> = {
   },
   "llm-agent-architect": {
     h1: "Are you ready to be an LLM Agent Architect?",
-    description: "Free 3-minute LLM agent skill check. Context windows, RAG, temperature, prompt safety, and embeddings — instant results, no signup.",
+    description: "Free 3-minute LLM agent skill check. Context windows, RAG, temperature, prompt safety, and embeddings — instant results, no account.",
     body: "LLM Agent Architects design autonomous AI systems that can reason, use tools, and complete complex multi-step tasks. It's one of the newest and fastest-growing roles in AI engineering, sitting at the intersection of prompt engineering, system design, and AI safety.\n\nThis diagnostic tests five areas fundamental to agent architecture: how LLMs handle context, retrieval-augmented generation for grounding agents in real data, inference parameter tuning for reliable agent behaviour, prompt injection defence (critical for agents with tool access), and embeddings for semantic retrieval.\n\nThree minutes, five questions — find out if you have the foundations to build autonomous AI systems.",
     faqs: [
       { q: "What is an LLM Agent Architect?", a: "Someone who designs AI systems where language models autonomously use tools, make decisions, and complete multi-step tasks — think AI assistants, coding agents, and research agents." },
@@ -1104,8 +1104,8 @@ export const SUBJECT_SEO: Record<string, SubjectSEO> = {
   },
   "agentic-ai": {
     h1: "Are you ready to build agentic AI?",
-    description: "Free 3-minute agentic AI skill check. Tool use, agent loops, planning, memory, and agent safety — instant results, no signup.",
-    body: "Agentic AI is the shift from models that answer questions to systems that take action — calling tools, making decisions, and completing multi-step tasks on their own. It's one of the fastest-moving areas in AI, and the engineers who can design reliable agents are in short supply.\n\nThis quick diagnostic tests five foundations that separate a working agent from a demo: tool use and function calling, the reason–act loop that drives an agent, planning and task decomposition, memory systems for state and recall, and the safety concerns unique to systems that can act.\n\nIt takes about 3 minutes, needs no signup, and gives you an instant read on where you stand before diving into the full Agentic AI track.",
+    description: "Free 3-minute agentic AI skill check. Tool use, agent loops, planning, memory, and agent safety — instant results, no account.",
+    body: "Agentic AI is the shift from models that answer questions to systems that take action — calling tools, making decisions, and completing multi-step tasks on their own. It's one of the fastest-moving areas in AI, and the engineers who can design reliable agents are in short supply.\n\nThis quick diagnostic tests five foundations that separate a working agent from a demo: tool use and function calling, the reason–act loop that drives an agent, planning and task decomposition, memory systems for state and recall, and the safety concerns unique to systems that can act.\n\nIt takes about 3 minutes, needs no account, and gives you an instant read on where you stand before diving into the full Agentic AI track.",
     faqs: [
       { q: "What does an Agentic AI engineer do?", a: "They design systems where a language model autonomously uses tools, plans multi-step work, keeps memory, and completes tasks — from coding agents to research and workflow automation." },
       { q: "How is this different from the LLM Agent Architect check?", a: "The foundations overlap because both build on agent fundamentals. The full Agentic AI course focuses on building and shipping agents end-to-end; LLM Agent Architect goes deeper into protocols, harnesses, and frameworks." },
@@ -1121,7 +1121,7 @@ export const SUBJECT_SEO: Record<string, SubjectSEO> = {
   },
   "ai-product-management": {
     h1: "Are you ready to be an AI Product Manager?",
-    description: "Free 3-minute tech skill check for AI PMs. APIs, algorithms, version control, code quality, and testing — instant results, no signup.",
+    description: "Free 3-minute tech skill check for AI PMs. APIs, algorithms, version control, code quality, and testing — instant results, no account.",
     body: "AI Product Managers sit at the intersection of technology, business, and user experience. You don't need to write production code, but you do need enough technical literacy to make informed decisions, ask the right questions, and earn your engineering team's respect.\n\nThis diagnostic tests five areas of general technical literacy that separate effective AI PMs from those who get steamrolled in technical discussions: API design and system communication, algorithmic thinking, version control workflows, code quality principles, and testing methodology.\n\nThree minutes to find out whether your technical foundations are PM-ready.",
     faqs: [
       { q: "Do AI PMs need to code?", a: "Not production code, but you need enough technical literacy to evaluate trade-offs, read PRDs, and communicate with engineers. This check tests that literacy." },
@@ -1138,8 +1138,8 @@ export const SUBJECT_SEO: Record<string, SubjectSEO> = {
   },
   "ai-foundations": {
     h1: "How much is AI actually saving you each week?",
-    description: "Free 3-minute everyday AI skill check. Five workplace scenarios on briefing AI assistants, checking their work, tool choice, and privacy — instant results, no signup.",
-    body: "AI assistants like ChatGPT, Claude, Microsoft Copilot, and Google Gemini are now within reach of almost every desk job — but there's a big gap between having access to them and getting real work out of them. The difference isn't technical. It comes down to habits: how you brief an assistant, how you check its work, and where you draw the line on what you share.\n\nThis 3-minute check puts you in five everyday work situations and asks what you'd do: briefing an assistant so the first draft is actually usable, verifying output before you act on it, picking the right tool for the job, handling sensitive information safely, and turning a flat draft into a good one.\n\nNo code, no jargon, no signup — just an honest read on whether your current habits are getting you AI's full value or leaving most of it on the table.",
+    description: "Free 3-minute everyday AI skill check. Five workplace scenarios on briefing AI assistants, checking their work, tool choice, and privacy — instant results, no account.",
+    body: "AI assistants like ChatGPT, Claude, Microsoft Copilot, and Google Gemini are now within reach of almost every desk job — but there's a big gap between having access to them and getting real work out of them. The difference isn't technical. It comes down to habits: how you brief an assistant, how you check its work, and where you draw the line on what you share.\n\nThis 3-minute check puts you in five everyday work situations and asks what you'd do: briefing an assistant so the first draft is actually usable, verifying output before you act on it, picking the right tool for the job, handling sensitive information safely, and turning a flat draft into a good one.\n\nNo code, no jargon, no account — just an honest read on whether your current habits are getting you AI's full value or leaving most of it on the table.",
     faqs: [
       { q: "Do I need a technical background?", a: "No. The questions are about workplace judgment — briefing, checking, and privacy — not programming or how the models work under the hood." },
       { q: "Which AI tools does this apply to?", a: "All the mainstream assistants — ChatGPT, Claude, Microsoft Copilot, Google Gemini and others. The habits it tests are the same whichever one your workplace uses." },
@@ -1155,7 +1155,7 @@ export const SUBJECT_SEO: Record<string, SubjectSEO> = {
   },
   "ai-for-marketers": {
     h1: "Is AI pulling its weight in your marketing?",
-    description: "Free 3-minute AI skill check for marketers. Five scenarios on campaign briefs, claim checking, brand voice, and customer data — instant results, no signup.",
+    description: "Free 3-minute AI skill check for marketers. Five scenarios on campaign briefs, claim checking, brand voice, and customer data — instant results, no account.",
     body: "Marketing teams were among the first to adopt AI assistants — ChatGPT, Claude, Copilot, Gemini — for copy, ideas, and repurposing. But adoption isn't the same as advantage. The marketers getting real leverage brief assistants like they'd brief an agency, keep a human pass before anything ships, and never let a tool invent a claim their brand has to stand behind.\n\nThis 3-minute check tests five judgment calls working marketers face constantly: briefing an assistant for campaign ideas, catching unverifiable claims in AI copy, getting drafts that sound like your brand instead of everyone's, handling customer data responsibly, and knowing where AI belongs in the content pipeline.\n\nNo signup, instant results — and an honest look at whether you're using AI like a pro or like everyone else.",
     faqs: [
       { q: "Does this test a specific AI tool?", a: "No — the scenarios apply equally to ChatGPT, Claude, Microsoft Copilot, Google Gemini, or any assistant your team uses. Judgment transfers across tools." },
@@ -1172,7 +1172,7 @@ export const SUBJECT_SEO: Record<string, SubjectSEO> = {
   },
   "ai-for-finance": {
     h1: "Is AI pulling its weight in your finance work?",
-    description: "Free 3-minute AI skill check for finance professionals. Five scenarios on briefing analysis, verifying numbers, confidentiality, and review discipline — instant results, no signup.",
+    description: "Free 3-minute AI skill check for finance professionals. Five scenarios on briefing analysis, verifying numbers, confidentiality, and review discipline — instant results, no account.",
     body: "Finance work runs on accuracy and confidentiality — which is exactly why AI assistants like ChatGPT, Claude, Copilot, and Gemini need more careful handling here than almost anywhere else. Used well, they compress commentary drafting, stakeholder explanations, and first-pass analysis. Used carelessly, they put wrong numbers in front of decision-makers or company data in the wrong place.\n\nThis 3-minute check tests the five habits that make AI safe and genuinely useful in a finance role: briefing an assistant on analysis for a non-finance audience, verifying any number an assistant produces, knowing which tasks fit AI today and which don't, keeping company financials inside policy, and treating AI output as a draft rather than a deliverable.\n\nNo signup, no jargon — five scenarios, instant results.",
     faqs: [
       { q: "Is it safe to use AI assistants in finance at all?", a: "Yes, within limits: drafting, explaining, and summarising with human verification are strong uses. The risk comes from trusting unverified numbers or pasting confidential data into unapproved tools." },
@@ -1189,8 +1189,8 @@ export const SUBJECT_SEO: Record<string, SubjectSEO> = {
   },
   "ai-for-creators": {
     h1: "Is AI speeding you up — or flattening your voice?",
-    description: "Free 3-minute AI skill check for content creators. Five scenarios on creative briefs, keeping your voice, fact-checking, and platform rules — instant results, no signup.",
-    body: "For creators, AI assistants like ChatGPT, Claude, Copilot, and Gemini are a double-edged tool: they can compress the messy early stages of making things, or they can sand your voice down into the same output as everyone else's. The difference is in how you use them.\n\nThis 3-minute check tests five judgment calls working creators face: briefing an assistant so it amplifies your angle instead of replacing it, keeping your voice through AI-assisted drafts, fact-checking claims before they reach your audience, handling the rights and platform-policy side of AI-assisted work, and knowing where in your workflow AI genuinely pays off.\n\nYour audience follows you for you — this check tells you whether your AI habits protect that or dilute it. Five questions, instant results, no signup.",
+    description: "Free 3-minute AI skill check for content creators. Five scenarios on creative briefs, keeping your voice, fact-checking, and platform rules — instant results, no account.",
+    body: "For creators, AI assistants like ChatGPT, Claude, Copilot, and Gemini are a double-edged tool: they can compress the messy early stages of making things, or they can sand your voice down into the same output as everyone else's. The difference is in how you use them.\n\nThis 3-minute check tests five judgment calls working creators face: briefing an assistant so it amplifies your angle instead of replacing it, keeping your voice through AI-assisted drafts, fact-checking claims before they reach your audience, handling the rights and platform-policy side of AI-assisted work, and knowing where in your workflow AI genuinely pays off.\n\nYour audience follows you for you — this check tells you whether your AI habits protect that or dilute it. Five questions, instant results, no account.",
     faqs: [
       { q: "Will using AI make my content generic?", a: "It can, if you publish default output. Creators who feed assistants their own work and rewrite drafts in their own words keep their voice — that's part of what this check tests." },
       { q: "Does this apply to video, writing, and podcasts alike?", a: "Yes — the scenarios are about briefing, verification, voice, and rights, which apply whatever format you publish in." },
@@ -1206,8 +1206,8 @@ export const SUBJECT_SEO: Record<string, SubjectSEO> = {
   },
   "ai-for-founders": {
     h1: "Is AI a real lever in your company yet?",
-    description: "Free 3-minute AI skill check for founders. Five scenarios on delegating to AI, verifying claims, sensitive company data, and customer-facing rollout — instant results, no signup.",
-    body: "Founders have the most to gain from AI assistants — small teams, endless drafting, constant context-switching — and the most to lose from using them carelessly. ChatGPT, Claude, Copilot, and Gemini can absorb real work across investor updates, research prep, and support. But the same tools can also put an unsourced number in your pitch deck or company data somewhere it shouldn't be.\n\nThis 3-minute check tests five founder-shaped judgment calls: briefing an assistant so delegation actually saves time, verifying claims before they go in front of investors, picking the highest-leverage places for AI in a small team, protecting sensitive company data, and rolling out customer-facing AI responsibly.\n\nFive questions, instant results, no signup — a quick read on whether AI is a lever in your company or just another tab.",
+    description: "Free 3-minute AI skill check for founders. Five scenarios on delegating to AI, verifying claims, sensitive company data, and customer-facing rollout — instant results, no account.",
+    body: "Founders have the most to gain from AI assistants — small teams, endless drafting, constant context-switching — and the most to lose from using them carelessly. ChatGPT, Claude, Copilot, and Gemini can absorb real work across investor updates, research prep, and support. But the same tools can also put an unsourced number in your pitch deck or company data somewhere it shouldn't be.\n\nThis 3-minute check tests five founder-shaped judgment calls: briefing an assistant so delegation actually saves time, verifying claims before they go in front of investors, picking the highest-leverage places for AI in a small team, protecting sensitive company data, and rolling out customer-facing AI responsibly.\n\nFive questions, instant results, no account — a quick read on whether AI is a lever in your company or just another tab.",
     faqs: [
       { q: "Is this about building AI into my product?", a: "No — it's about using AI assistants to run the company: drafting, research, support, and operations. Product AI strategy is a separate topic the full course touches on." },
       { q: "Which tools does it assume?", a: "None in particular. The scenarios apply to ChatGPT, Claude, Microsoft Copilot, Google Gemini, and the growing set of AI features inside the tools you already use." },
@@ -1223,7 +1223,7 @@ export const SUBJECT_SEO: Record<string, SubjectSEO> = {
   },
   "ai-for-teachers": {
     h1: "Is AI saving you hours — without cutting corners?",
-    description: "Free 3-minute AI skill check for teachers. Five scenarios on lesson prep, content accuracy, student privacy, and academic integrity — instant results, no signup.",
+    description: "Free 3-minute AI skill check for teachers. Five scenarios on lesson prep, content accuracy, student privacy, and academic integrity — instant results, no account.",
     body: "Teachers are quietly among the heaviest users of AI assistants like ChatGPT, Claude, Copilot, and Gemini — for lesson activities, differentiation, worksheets, and feedback. The wins are real, and so are the pitfalls: plausible-sounding errors reaching students, identifiable student data going into unapproved tools, and unreliable AI-detection scores driving unfair integrity decisions.\n\nThis 3-minute check tests the five judgment calls that decide which side of that line you're on: briefing an assistant for lesson materials, checking AI-generated content before students see it, holding the line on student privacy, handling suspected AI use in student work fairly, and using AI in marking without handing over the judgment that's yours.\n\nNo signup, no jargon, no grading of you as a teacher — just an honest snapshot of your AI habits.",
     faqs: [
       { q: "Is using AI for lesson planning considered cutting corners?", a: "Not in itself — drafting activities and materials with AI and reviewing them carefully is a legitimate time-saver. The corner-cutting risk is in skipping the review or the privacy check." },
@@ -1240,8 +1240,8 @@ export const SUBJECT_SEO: Record<string, SubjectSEO> = {
   },
   "ai-for-project-managers": {
     h1: "Is AI making you a faster, sharper project manager?",
-    description: "Free 3-minute AI skill check for project managers. Five scenarios on briefing work, verifying summaries, meeting notes, and confidential data — instant results, no signup.",
-    body: "Project management is coordination work — briefs, summaries, notes, status updates — which makes it one of the richest surfaces for AI assistants like ChatGPT, Claude, Copilot, and Gemini. It also makes it one of the riskiest: a dropped point in an AI summary or an unchecked meeting note can quietly steer a project off course.\n\nThis 3-minute check tests five judgment calls PMs face weekly: briefing an assistant to draft work items that hold up, verifying AI summaries before they drive decisions, using AI meeting notes without letting them become an unchecked record, keeping confidential roadmap and customer material inside approved tools, and knowing which calls should never be delegated to an assistant.\n\nFive questions, instant results, no signup — and no pretending AI replaces the judgment that makes a good PM.",
+    description: "Free 3-minute AI skill check for project managers. Five scenarios on briefing work, verifying summaries, meeting notes, and confidential data — instant results, no account.",
+    body: "Project management is coordination work — briefs, summaries, notes, status updates — which makes it one of the richest surfaces for AI assistants like ChatGPT, Claude, Copilot, and Gemini. It also makes it one of the riskiest: a dropped point in an AI summary or an unchecked meeting note can quietly steer a project off course.\n\nThis 3-minute check tests five judgment calls PMs face weekly: briefing an assistant to draft work items that hold up, verifying AI summaries before they drive decisions, using AI meeting notes without letting them become an unchecked record, keeping confidential roadmap and customer material inside approved tools, and knowing which calls should never be delegated to an assistant.\n\nFive questions, instant results, no account — and no pretending AI replaces the judgment that makes a good PM.",
     faqs: [
       { q: "Does this apply outside software projects?", a: "Yes — the scenarios are about briefing, verification, meetings, and confidentiality, which apply to project work in any industry." },
       { q: "Which AI tools does it cover?", a: "It's tool-agnostic: chat assistants like ChatGPT, Claude, Copilot, and Gemini, plus AI notetakers and the AI features appearing inside project tools." },
@@ -1257,8 +1257,8 @@ export const SUBJECT_SEO: Record<string, SubjectSEO> = {
   },
   "ai-for-sales": {
     h1: "Is AI helping you sell more — or just sound generic?",
-    description: "Free 3-minute AI skill check for sales professionals. Five scenarios on outreach briefs, research verification, CRM data, and honest claims — instant results, no signup.",
-    body: "Sales teams reached for AI assistants early — ChatGPT, Claude, Copilot, Gemini — mostly for outreach and research. The result: inboxes full of AI-written emails that all sound the same. The sellers actually gaining ground use AI differently — real prospect specifics in the brief, verification before a 'personalised' detail goes out, and a hard line on claims the product can't back.\n\nThis 3-minute check tests five judgment calls that decide which group you're in: briefing AI for outreach that doesn't read like a template, verifying AI research before you reference it, handling CRM and customer data properly, prepping calls with AI without outsourcing your thinking, and keeping AI drafts honest about what you sell.\n\nFive questions, instant results, no signup.",
+    description: "Free 3-minute AI skill check for sales professionals. Five scenarios on outreach briefs, research verification, CRM data, and honest claims — instant results, no account.",
+    body: "Sales teams reached for AI assistants early — ChatGPT, Claude, Copilot, Gemini — mostly for outreach and research. The result: inboxes full of AI-written emails that all sound the same. The sellers actually gaining ground use AI differently — real prospect specifics in the brief, verification before a 'personalised' detail goes out, and a hard line on claims the product can't back.\n\nThis 3-minute check tests five judgment calls that decide which group you're in: briefing AI for outreach that doesn't read like a template, verifying AI research before you reference it, handling CRM and customer data properly, prepping calls with AI without outsourcing your thinking, and keeping AI drafts honest about what you sell.\n\nFive questions, instant results, no account.",
     faqs: [
       { q: "Won't buyers just ignore AI-written outreach?", a: "They ignore generic outreach, however it was written. The check covers what makes AI-assisted outreach specific enough to earn a reply — and that starts with your input, not the tool." },
       { q: "Does this cover AI tools built into CRMs?", a: "The judgment tested here applies to them too — briefing, verification, and data handling work the same whether the AI lives in a chat window or inside your CRM." },
@@ -1274,8 +1274,8 @@ export const SUBJECT_SEO: Record<string, SubjectSEO> = {
   },
   "ai-for-operations": {
     h1: "Is AI making your operations sharper — or just busier?",
-    description: "Free 3-minute AI skill check for operations & supply chain professionals. Five real scenarios on forecasting, data handling, and process judgment — instant results, no signup.",
-    body: "Operations and supply chain teams sit on exactly the kind of data AI is good with — forecasts, schedules, supplier emails, incident logs. The teams pulling ahead don't just automate; they brief AI with real constraints, verify its numbers before money moves, and keep sensitive customer and pricing data out of the wrong tools.\n\nThis 3-minute check tests five judgment calls that decide whether AI tightens your operation or just adds noise: briefing an AI forecast with the right inputs, sanity-checking its predictions before you reorder, handling confidential logistics data safely, knowing what to never hand off outright, and rolling out AI-drafted procedures the right way.\n\nFive questions, instant results, no signup.",
+    description: "Free 3-minute AI skill check for operations & supply chain professionals. Five real scenarios on forecasting, data handling, and process judgment — instant results, no account.",
+    body: "Operations and supply chain teams sit on exactly the kind of data AI is good with — forecasts, schedules, supplier emails, incident logs. The teams pulling ahead don't just automate; they brief AI with real constraints, verify its numbers before money moves, and keep sensitive customer and pricing data out of the wrong tools.\n\nThis 3-minute check tests five judgment calls that decide whether AI tightens your operation or just adds noise: briefing an AI forecast with the right inputs, sanity-checking its predictions before you reorder, handling confidential logistics data safely, knowing what to never hand off outright, and rolling out AI-drafted procedures the right way.\n\nFive questions, instant results, no account.",
     faqs: [
       { q: "Do I need to be technical to take this?", a: "No — it's about judgment, not tools. Every question is a real operations scenario; there's no code and no jargon." },
       { q: "Will AI replace planners and coordinators?", a: "This check reflects the opposite view: AI drafts and forecasts, but committing orders, dates, and trade-offs stays with you. It measures how well your AI habits support that." },
@@ -1291,8 +1291,8 @@ export const SUBJECT_SEO: Record<string, SubjectSEO> = {
   },
   "ai-for-students": {
     h1: "Are you using AI to learn — or to skip the learning?",
-    description: "Free 3-minute AI skill check for students. Five scenarios on studying with AI, checking facts, and academic honesty — instant results, no signup.",
-    body: "Almost every student now has an AI assistant a tab away. The ones it actually helps use it to understand the material — to be quizzed, to have a concept explained a different way, to get feedback on a draft. The ones it hurts hand in its answers and skip the part where the learning happens.\n\nThis 3-minute check tests five habits that decide which way AI takes you: using it to learn rather than to shortcut, checking the facts and citations it gives you, staying on the right side of academic-honesty rules, studying in a way that actually sticks, and using AI tutors safely and privately.\n\nFive questions, instant results, no signup.",
+    description: "Free 3-minute AI skill check for students. Five scenarios on studying with AI, checking facts, and academic honesty — instant results, no account.",
+    body: "Almost every student now has an AI assistant a tab away. The ones it actually helps use it to understand the material — to be quizzed, to have a concept explained a different way, to get feedback on a draft. The ones it hurts hand in its answers and skip the part where the learning happens.\n\nThis 3-minute check tests five habits that decide which way AI takes you: using it to learn rather than to shortcut, checking the facts and citations it gives you, staying on the right side of academic-honesty rules, studying in a way that actually sticks, and using AI tutors safely and privately.\n\nFive questions, instant results, no account.",
     faqs: [
       { q: "Is it cheating to use AI for schoolwork?", a: "It depends how. Using AI to explain, quiz, or give feedback is studying; submitting its work as your own usually breaks academic-honesty rules. This check helps you tell the difference." },
       { q: "Do I need to know anything technical?", a: "No — it's about how you study, not about the tools. There's no code and nothing to install." },

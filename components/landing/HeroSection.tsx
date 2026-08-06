@@ -161,7 +161,7 @@ function PromptCheck() {
         </div>
 
         {!answered && (
-          <p className="text-center text-[11px] text-slate-400 mt-3.5">Tap the one you'd trust — no signup.</p>
+          <p className="text-center text-[11px] text-slate-400 mt-3.5">Tap the one you'd trust — no account.</p>
         )}
 
         {/* Reveal — Nova's breakdown of the strong prompt + curiosity gap */}
@@ -213,7 +213,7 @@ function PromptCheck() {
               <ArrowRight className="h-4 w-4" />
             </Link>
             <p className="text-center text-[11px] text-slate-400 mt-2.5">
-              ~3 minutes · no signup ·{" "}
+              ~3 minutes · no account ·{" "}
               <Link href="/diagnostic" className="underline underline-offset-2 hover:text-slate-600">
                 prefer a different track?
               </Link>
@@ -362,7 +362,7 @@ export function HeroSection({
                 <ArrowRight className="h-4 w-4" />
               </Link>
               <span className="text-xs text-slate-500 sm:max-w-[9rem] text-center sm:text-left leading-snug">
-                Free · no signup to start · no credit card
+                Free · no account to start · no credit card
               </span>
             </div>
 

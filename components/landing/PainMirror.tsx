@@ -96,7 +96,7 @@ export function PainMirror() {
             >
               Find out where you stand — free, 3 minutes
             </Link>
-            <p className="mt-2.5 text-[11px] text-slate-500">No signup to start · real skill report at the end</p>
+            <p className="mt-2.5 text-[11px] text-slate-500">No account to start · real skill report at the end</p>
           </div>
         </div>
       </div>
