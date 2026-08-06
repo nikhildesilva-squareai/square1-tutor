@@ -42,11 +42,14 @@ export function CookieConsent() {
 
           <div className="flex-1 min-w-0">
             <p className="text-[12.5px] sm:text-sm text-slate-300 leading-snug sm:leading-relaxed">
+              {/* Names advertising explicitly, and no longer says "No ads" — the
+                  Meta pixel makes that untrue, and consent given against a
+                  description that isn't accurate isn't consent. */}
               <strong className="text-white font-semibold">Essential cookies</strong> keep you signed in.
-              May we also use <strong className="text-white font-semibold">analytics</strong>
-              <span className="hidden sm:inline"> (Google Analytics)</span> to see which lessons
-              actually work and improve them?{" "}
-              <span className="hidden sm:inline text-slate-400">No ads. We never sell your data.</span>{" "}
+              May we also use <strong className="text-white font-semibold">analytics and advertising</strong>
+              <span className="hidden sm:inline"> (Google Analytics, Meta)</span> to see which lessons
+              actually work and to measure our ads?{" "}
+              <span className="hidden sm:inline text-slate-400">We never sell your data.</span>{" "}
               <Link href="/privacy" className="text-slate-400 underline underline-offset-2 hover:text-white transition-colors">
                 Privacy Policy
               </Link>
@@ -67,7 +70,7 @@ export function CookieConsent() {
             onClick={() => choose("all")}
             className="flex-1 sm:flex-none h-10 sm:h-9 px-4 sm:px-5 rounded-xl bg-white text-[#0A0A0A] text-[13.5px] sm:text-sm font-bold hover:bg-white/90 transition-all"
           >
-            Allow analytics
+            Allow all
           </button>
         </div>
       </div>

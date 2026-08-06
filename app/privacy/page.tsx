@@ -162,16 +162,22 @@ export default function PrivacyPage() {
                 We never load it until you opt in, and you can decline with one click.
               </p>
               <p className="mt-2">
+                We also use the <strong>Meta pixel</strong> and Meta&apos;s Conversions API to measure
+                which of our ads bring people to the site and whether they go on to take the skill
+                check or create an account. Meta receives page-view and conversion events tied to
+                your browser, and may use them to measure and target advertising. Like analytics,
+                none of it loads until you opt in, and declining costs you nothing on the site.
+              </p>
+              <p className="mt-2">
                 We do <strong>not</strong> use:
               </p>
               <ul className="list-disc list-inside space-y-1 mt-1">
-                <li>Advertising or ad-targeting cookies (no Meta pixel, no ad networks)</li>
-                <li>Any cookie that profiles you across other websites</li>
+                <li>Any advertising network beyond the Meta pixel described above</li>
+                <li>Advanced Matching — we do not send your email address or phone number to Meta</li>
               </ul>
               <p className="mt-3">
-                We do not sell your data, and we do not share it with third parties for advertising.
-                To change your choice, clear this site&apos;s cookies and site data in your browser
-                and the banner will ask again.
+                We do not sell your data. To change your choice, clear this site&apos;s cookies and
+                site data in your browser and the banner will ask again.
               </p>
             </section>
 
