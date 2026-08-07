@@ -21,6 +21,10 @@ import { buildVerifiedProfile, inventoryBlock, curriculumBlock } from "@/lib/car
 
 const schema = z.object({
   jd: z.string().trim().min(100, "Paste the full job posting").max(12000),
+  /** Re-analysing a saved target: append to its readiness history instead of
+   *  creating a new row. Ownership enforced by RLS + an explicit student_id
+   *  match. */
+  targetId: z.string().uuid().optional(),
 });
 
 const SYSTEM = `You are the career agent on Square 1 AI, a learning platform whose entire promise is PROOF: students' skills are demonstrated through graded work, never asserted.
@@ -53,7 +57,11 @@ type Analysis = {
   company: string | null;
   readiness: number;
   summary: string;
-  requirements: { req: string; status: string; evidence: string | null; closes: string | null }[];
+  requirements: {
+    req: string; status: string; evidence: string | null; closes: string | null;
+    /** First lesson of the closing module — makes the gap map a study plan. */
+    closesLessonId?: string | null;
+  }[];
 };
 
 const STATUSES = new Set(["met", "partial", "missing", "not_assessable"]);
@@ -110,10 +118,94 @@ export async function POST(request: Request) {
         status: STATUSES.has(r.status) ? r.status : "not_assessable",
         evidence: r.evidence ? String(r.evidence).slice(0, 300) : null,
         closes: r.closes ? String(r.closes).slice(0, 120) : null,
+        closesLessonId: null as string | null,
       })).filter((r) => r.req),
     };
 
-    return NextResponse.json({ analysis, emptyRecord: profile.isEmpty });
+    // ── Resolve "closes" module names to real lesson deep links ────────────
+    // The prompt restricts suggestions to enrolled-course modules verbatim, so
+    // a title match against the profile's module list is exact by design; a
+    // non-match just stays a text suggestion.
+    try {
+      const moduleByTitle = new Map<string, string>();
+      for (const c of profile.enrolledModules) {
+        for (const m of c.modules) moduleByTitle.set(m.title.toLowerCase(), m.id);
+      }
+      const wanted = [...new Set(
+        analysis.requirements
+          .map((r) => r.closes && moduleByTitle.get(r.closes.toLowerCase()))
+          .filter((id): id is string => !!id),
+      )];
+      if (wanted.length > 0) {
+        const { data: lessonRows } = await supabase
+          .from("lessons")
+          .select("id, module_id, order_index")
+          .in("module_id", wanted)
+          .order("order_index", { ascending: true });
+        const firstLesson = new Map<string, string>();
+        for (const l of lessonRows ?? []) {
+          if (!firstLesson.has(l.module_id)) firstLesson.set(l.module_id, l.id);
+        }
+        for (const r of analysis.requirements) {
+          const moduleId = r.closes ? moduleByTitle.get(r.closes.toLowerCase()) : undefined;
+          r.closesLessonId = (moduleId && firstLesson.get(moduleId)) ?? null;
+        }
+      }
+    } catch (linkErr) {
+      console.error("[career/analyze] closes-link resolution (non-fatal):", linkErr);
+    }
+
+    // ── Persist as a job target (best-effort — the analysis still returns) ─
+    // New posting → new row; re-run of a saved target → replace the analysis
+    // and APPEND to the readiness history, which is the number the student
+    // watches climb as they learn.
+    let targetId: string | null = parsed.data.targetId ?? null;
+    let history: { at: string; readiness: number }[] = [];
+    try {
+      const entry = { at: new Date().toISOString(), readiness: analysis.readiness };
+      if (targetId) {
+        const { data: existing } = await supabase
+          .from("job_targets")
+          .select("history")
+          .eq("id", targetId)
+          .eq("student_id", student.id)
+          .maybeSingle();
+        if (existing) {
+          history = [...(Array.isArray(existing.history) ? existing.history : []), entry].slice(-24);
+          const { error: upErr } = await supabase
+            .from("job_targets")
+            .update({
+              role: analysis.role, company: analysis.company, jd: parsed.data.jd,
+              analysis, readiness: analysis.readiness, history,
+              updated_at: new Date().toISOString(),
+            })
+            .eq("id", targetId)
+            .eq("student_id", student.id);
+          if (upErr) throw upErr;
+        } else {
+          targetId = null; // stale id from the client — fall through to insert
+        }
+      }
+      if (!targetId) {
+        history = [entry];
+        const { data: inserted, error: insErr } = await supabase
+          .from("job_targets")
+          .insert({
+            student_id: student.id, role: analysis.role, company: analysis.company,
+            jd: parsed.data.jd, analysis, readiness: analysis.readiness, history,
+          })
+          .select("id")
+          .single();
+        if (insErr) throw insErr;
+        targetId = inserted?.id ?? null;
+      }
+    } catch (saveErr) {
+      console.error("[career/analyze] target save (non-fatal):", saveErr);
+      targetId = null;
+      history = [];
+    }
+
+    return NextResponse.json({ analysis, emptyRecord: profile.isEmpty, targetId, history });
   } catch (err) {
     console.error("[career/analyze]", err);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });

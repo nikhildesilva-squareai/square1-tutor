@@ -1,10 +1,12 @@
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { callAI } from "@/lib/ai/budget";
 import { extractJsonObject } from "@/lib/ai/json";
 import { rateLimitAI } from "@/lib/rate-limit";
 import { buildVerifiedProfile, inventoryBlock } from "@/lib/career/verified-profile";
+import { mergeGradedResults, updateStudentMemory } from "@/lib/nova-memory";
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // POST /api/career/interview — mock interview for a specific job posting.
@@ -26,6 +28,9 @@ const schema = z.discriminatedUnion("action", [
     jd: z.string().trim().min(100).max(12000),
     question: z.string().trim().min(5).max(600),
     answer: z.string().trim().min(1).max(4000),
+    /** Display context for the memory fold ("Interview: <focus> (<role>)"). */
+    role: z.string().trim().max(120).optional(),
+    focus: z.string().trim().max(80).optional(),
   }),
 ]);
 
@@ -97,8 +102,34 @@ export async function POST(request: Request) {
     const result = extractJsonObject<{ score: number; feedback: string; stronger: string[] }>(ai.text);
     if (!result) return NextResponse.json({ error: "Could not grade this answer — try again" }, { status: 502 });
 
+    const score = Math.max(0, Math.min(10, Math.round(Number(result.score) || 0)));
+
+    // ── Fold into Nova memory (best-effort) ────────────────────────────────
+    // Same thresholds as exercise grading (mergeGradedResults: <60% = gap,
+    // ≥90% = strength + resolves the matching gap) — a weak interview answer
+    // becomes something Nova follows up on in the next lesson, and a strong
+    // one clears it. That's the loop: practice → memory → tutoring → practice.
+    try {
+      // Hoisted before the closure — TS narrowing on parsed.data does not
+      // survive into the updateStudentMemory callback.
+      const grade = parsed.data;
+      const topic = `Interview: ${grade.focus?.trim() || grade.question.slice(0, 60)}`;
+      const roleCtx = grade.role?.trim() || "mock interview";
+      await updateStudentMemory(createAdminClient(), student.id, (m) =>
+        mergeGradedResults(m, [{
+          title: topic,
+          type: "short_answer",
+          score,
+          maxScore: 10,
+          lessonTitle: roleCtx,
+        }]),
+      );
+    } catch (memErr) {
+      console.error("[career/interview] memory update (non-fatal):", memErr);
+    }
+
     return NextResponse.json({
-      score: Math.max(0, Math.min(10, Math.round(Number(result.score) || 0))),
+      score,
       feedback: String(result.feedback ?? "").slice(0, 600),
       stronger: (Array.isArray(result.stronger) ? result.stronger : []).slice(0, 3).map((s) => String(s).slice(0, 200)),
     });

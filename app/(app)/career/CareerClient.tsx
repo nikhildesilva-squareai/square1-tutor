@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import {
   Target, Check, CircleDashed, X, Minus, FileText, Mail, Mic,
-  Copy, Loader2, ArrowRight, FolderGit2,
+  Copy, Loader2, ArrowRight, FolderGit2, Plus, Trash2, TrendingUp, BookOpen,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { RichContent } from "@/components/ui/rich-content";
@@ -28,10 +28,15 @@ type Inventory = {
   isEmpty: boolean;
 };
 
-type Requirement = { req: string; status: string; evidence: string | null; closes: string | null };
+type Requirement = { req: string; status: string; evidence: string | null; closes: string | null; closesLessonId?: string | null };
 type Analysis = { role: string; company: string | null; readiness: number; summary: string; requirements: Requirement[] };
 type Question = { q: string; focus: string };
 type Graded = { score: number; feedback: string; stronger: string[] };
+type HistoryPoint = { at: string; readiness: number };
+export type TargetSummary = {
+  id: string; role: string; company: string | null;
+  readiness: number; history: HistoryPoint[]; updated_at: string;
+};
 
 const JD_KEY = "s1-career-jd";
 
@@ -46,12 +51,18 @@ async function post<T>(url: string, body: unknown): Promise<T> {
   return json as T;
 }
 
-export function CareerClient({ firstName, inventory }: { firstName: string; inventory: Inventory }) {
+export function CareerClient({ firstName, inventory, initialTargets }: {
+  firstName: string; inventory: Inventory; initialTargets: TargetSummary[];
+}) {
   const [jd, setJd] = useState("");
   const [error, setError] = useState<string | null>(null);
 
   const [analysis, setAnalysis] = useState<Analysis | null>(null);
   const [analyzing, setAnalyzing] = useState(false);
+  const [targets, setTargets] = useState<TargetSummary[]>(initialTargets);
+  const [targetId, setTargetId] = useState<string | null>(null);
+  const [history, setHistory] = useState<HistoryPoint[]>([]);
+  const [loadingTarget, setLoadingTarget] = useState<string | null>(null);
 
   const [draft, setDraft] = useState<{ kind: "cv" | "cover"; markdown: string } | null>(null);
   const [drafting, setDrafting] = useState<"cv" | "cover" | null>(null);
@@ -77,12 +88,62 @@ export function CareerClient({ firstName, inventory }: { firstName: string; inve
     setError(null); setAnalyzing(true);
     setAnalysis(null); setDraft(null); setQuestions(null); setAnswers({}); setGrades({});
     try {
-      const res = await post<{ analysis: Analysis }>("/api/career/analyze", { jd: jd.trim() });
+      const res = await post<{ analysis: Analysis; targetId: string | null; history: HistoryPoint[] }>(
+        "/api/career/analyze",
+        { jd: jd.trim(), ...(targetId ? { targetId } : {}) },
+      );
       setAnalysis(res.analysis);
+      setTargetId(res.targetId);
+      setHistory(res.history ?? []);
+      if (res.targetId) {
+        const summary: TargetSummary = {
+          id: res.targetId, role: res.analysis.role, company: res.analysis.company,
+          readiness: res.analysis.readiness, history: res.history ?? [],
+          updated_at: new Date().toISOString(),
+        };
+        setTargets((t) => [summary, ...t.filter((x) => x.id !== res.targetId)]);
+      }
     } catch (e) {
       setError(e instanceof Error ? e.message : "Something went wrong");
     } finally {
       setAnalyzing(false);
+    }
+  }
+
+  async function loadTarget(id: string) {
+    if (loadingTarget || analyzing) return;
+    setError(null); setLoadingTarget(id);
+    try {
+      const r = await fetch(`/api/career/targets?id=${id}`);
+      const json = await r.json().catch(() => ({}));
+      if (!r.ok) throw new Error((json as { error?: string }).error ?? "Could not load this target");
+      const t = (json as { target: TargetSummary & { jd: string; analysis: Analysis } }).target;
+      setJd(t.jd);
+      setAnalysis(t.analysis);
+      setTargetId(t.id);
+      setHistory(Array.isArray(t.history) ? t.history : []);
+      setDraft(null); setQuestions(null); setAnswers({}); setGrades({});
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Something went wrong");
+    } finally {
+      setLoadingTarget(null);
+    }
+  }
+
+  function newTarget() {
+    setJd(""); setAnalysis(null); setTargetId(null); setHistory([]);
+    setDraft(null); setQuestions(null); setAnswers({}); setGrades({});
+    try { localStorage.removeItem(JD_KEY); } catch { /* ignore */ }
+  }
+
+  async function removeTarget(id: string) {
+    try {
+      const r = await fetch(`/api/career/targets?id=${id}`, { method: "DELETE" });
+      if (!r.ok) throw new Error("Could not delete");
+      setTargets((t) => t.filter((x) => x.id !== id));
+      if (targetId === id) newTarget();
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Something went wrong");
     }
   }
 
@@ -119,6 +180,7 @@ export function CareerClient({ firstName, inventory }: { firstName: string; inve
     try {
       const res = await post<Graded>("/api/career/interview", {
         action: "grade", jd: jd.trim(), question: questions[i].q, answer,
+        role: analysis?.role, focus: questions[i].focus,
       });
       setGrades((g) => ({ ...g, [i]: res }));
     } catch (e) {
@@ -193,6 +255,52 @@ export function CareerClient({ firstName, inventory }: { firstName: string; inve
         )}
       </div>
 
+      {/* Saved targets — click to reload, re-run to grow the readiness trend */}
+      {targets.length > 0 && (
+        <div className="mt-6">
+          <div className="flex items-center justify-between mb-2">
+            <p className="text-sm font-bold text-ink">Your job targets</p>
+            <button onClick={newTarget}
+              className="inline-flex items-center gap-1 text-xs font-bold text-ink-secondary hover:text-ink px-2 py-1 rounded-lg border border-border hover:bg-surface-alt transition-colors">
+              <Plus className="h-3.5 w-3.5" aria-hidden /> New target
+            </button>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+            {targets.map((t) => {
+              const first = t.history?.[0]?.readiness;
+              const grew = t.history && t.history.length >= 2 && t.readiness !== first;
+              return (
+                <div key={t.id}
+                  className={cn("group relative rounded-xl border px-4 py-3 cursor-pointer transition-colors",
+                    targetId === t.id ? "border-brand/50 bg-surface-tint" : "border-border bg-surface hover:bg-surface-alt")}
+                  onClick={() => loadTarget(t.id)}>
+                  <div className="flex items-center justify-between gap-2">
+                    <p className="text-sm font-bold text-ink truncate">
+                      {t.role}{t.company ? <span className="text-ink-secondary font-semibold"> · {t.company}</span> : null}
+                    </p>
+                    <span className="text-sm font-black text-brand tabular-nums shrink-0">
+                      {grew && <span className="text-[11px] font-bold text-ink-muted mr-1"><s>{first}%</s> →</span>}
+                      {t.readiness}%
+                    </span>
+                  </div>
+                  <div className="mt-1 flex items-center justify-between">
+                    <p className="text-[11px] text-ink-muted">
+                      {loadingTarget === t.id ? "Loading…" : `${t.history?.length ?? 1}× analysed`}
+                    </p>
+                    <button
+                      onClick={(e) => { e.stopPropagation(); removeTarget(t.id); }}
+                      aria-label={`Delete target ${t.role}`}
+                      className="opacity-0 group-hover:opacity-100 focus:opacity-100 text-ink-muted hover:text-red-500 transition-all p-1">
+                      <Trash2 className="h-3.5 w-3.5" aria-hidden />
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
       {/* JD input */}
       <div className="mt-6">
         <label htmlFor="career-jd" className="block text-sm font-bold text-ink mb-2">The job posting</label>
@@ -211,7 +319,7 @@ export function CareerClient({ firstName, inventory }: { firstName: string; inve
             className="inline-flex items-center gap-2 h-11 px-6 rounded-xl bg-brand text-white text-sm font-bold hover:bg-brand/90 transition-all disabled:opacity-40"
           >
             {analyzing ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden /> : <Target className="h-4 w-4" aria-hidden />}
-            {analyzing ? "Reading the posting…" : "Map it against my record"}
+            {analyzing ? "Reading the posting…" : targetId ? "Re-run — has my readiness moved?" : "Map it against my record"}
           </button>
           {!jdReady && jd.trim().length > 0 && (
             <span className="text-xs text-ink-muted">Paste the full posting — this looks like a fragment.</span>
@@ -233,6 +341,12 @@ export function CareerClient({ firstName, inventory }: { firstName: string; inve
             <div className="text-right">
               <p className="text-3xl font-black text-brand tabular-nums leading-none">{analysis.readiness}%</p>
               <p className="text-[11px] text-ink-muted font-semibold mt-0.5">of the assessable bar</p>
+              {history.length >= 2 && (
+                <p className="mt-1 inline-flex items-center gap-1 text-[11px] font-bold text-emerald-600">
+                  <TrendingUp className="h-3 w-3" aria-hidden />
+                  was {history[0].readiness}% when you first checked
+                </p>
+              )}
             </div>
           </div>
 
@@ -252,11 +366,17 @@ export function CareerClient({ firstName, inventory }: { firstName: string; inve
                       </span>
                     </p>
                     {r.evidence && <p className="mt-1 text-xs text-ink-secondary leading-snug">Evidence: {r.evidence}</p>}
-                    {r.closes && (
+                    {r.closes && (r.closesLessonId ? (
+                      <Link href={`/learn/${r.closesLessonId}`}
+                        className="mt-1.5 inline-flex items-center gap-1.5 text-xs font-bold text-brand px-2.5 py-1 rounded-full bg-surface-tint border border-brand/25 hover:border-brand/60 transition-colors">
+                        <BookOpen className="h-3 w-3" aria-hidden />
+                        Close this gap: {r.closes} →
+                      </Link>
+                    ) : (
                       <p className="mt-1 text-xs font-semibold text-brand">
                         Closes this: <span className="font-bold">{r.closes}</span>
                       </p>
-                    )}
+                    ))}
                   </div>
                 </div>
               </li>

@@ -26,13 +26,20 @@ export default async function CareerPage() {
     .maybeSingle();
   if (!student) redirect("/dashboard");
 
-  const profile = await buildVerifiedProfile(
-    supabase, student.id, student.name ?? user.email?.split("@")[0] ?? "Student",
-  );
+  const [profile, { data: targets }] = await Promise.all([
+    buildVerifiedProfile(supabase, student.id, student.name ?? user.email?.split("@")[0] ?? "Student"),
+    supabase
+      .from("job_targets")
+      .select("id, role, company, readiness, history, updated_at")
+      .eq("student_id", student.id)
+      .order("updated_at", { ascending: false })
+      .limit(20),
+  ]);
 
   return (
     <CareerClient
       firstName={(student.name ?? "there").split(" ")[0]}
+      initialTargets={(targets ?? []) as import("./CareerClient").TargetSummary[]}
       inventory={{
         tracks: profile.tracks.map((t) => ({
           title: t.courseTitle, done: t.lessonsCompleted, total: t.totalLessons,

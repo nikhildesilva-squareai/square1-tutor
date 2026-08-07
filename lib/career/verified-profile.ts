@@ -40,9 +40,10 @@ export type VerifiedProfile = {
   projects: VerifiedProject[];
   /** Latest graded placement-assessment topic results, best first. */
   topics: { topic: string; pct: number }[];
-  /** Module titles of enrolled courses — the only things "closes the gap"
-   *  suggestions may point at, so the agent can never invent curriculum. */
-  enrolledModules: { courseTitle: string; modules: string[] }[];
+  /** Modules of enrolled courses — the only things "closes the gap"
+   *  suggestions may point at, so the agent can never invent curriculum.
+   *  Ids ride along so suggestions can resolve to a real lesson deep link. */
+  enrolledModules: { courseTitle: string; modules: { id: string; title: string }[] }[];
   memory: StudentMemory;
   isEmpty: boolean;
 };
@@ -155,12 +156,14 @@ export async function buildVerifiedProfile(
   if (courses.length > 0) {
     const { data: moduleRows } = await supabase
       .from("modules")
-      .select("title, course_id")
+      .select("id, title, course_id")
       .in("course_id", courses.map((c) => c.course.id))
       .order("order_index", { ascending: true });
     enrolledModules = courses.map(({ course }) => ({
       courseTitle: course.title,
-      modules: (moduleRows ?? []).filter((m) => m.course_id === course.id).map((m) => m.title as string),
+      modules: (moduleRows ?? [])
+        .filter((m) => m.course_id === course.id)
+        .map((m) => ({ id: m.id as string, title: m.title as string })),
     }));
   }
 
@@ -214,6 +217,6 @@ export function curriculumBlock(p: VerifiedProfile): string {
   if (p.enrolledModules.length === 0) return "";
   return [
     `Modules available in the student's enrolled tracks (gap-closing suggestions must name ONLY these, verbatim):`,
-    ...p.enrolledModules.map((c) => `- ${c.courseTitle}: ${c.modules.join(" · ")}`),
+    ...p.enrolledModules.map((c) => `- ${c.courseTitle}: ${c.modules.map((m) => m.title).join(" · ")}`),
   ].join("\n").slice(0, 1500);
 }
