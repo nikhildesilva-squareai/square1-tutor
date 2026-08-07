@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect, useCallback } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { detectInAppBrowser, type InAppBrowser } from "@/lib/in-app-browser";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Shared B2B sign-in — Google (the reliable path: it's the configured, working
@@ -35,6 +36,8 @@ export function TeamSignIn({ next, onAuthed }: { next: string; onAuthed: () => v
   const [resend, setResend] = useState(0);
   const refs = useRef<(HTMLInputElement | null)[]>([]);
   const oauthStartedRef = useRef(false); // OAuth redirect must not fire twice (corrupts the PKCE verifier)
+  const [inApp, setInApp] = useState<InAppBrowser | null>(null);
+  useEffect(() => { setInApp(detectInAppBrowser()); }, []);
 
   useEffect(() => {
     if (resend <= 0) return;
@@ -44,6 +47,15 @@ export function TeamSignIn({ next, onAuthed }: { next: string; onAuthed: () => v
 
   async function signInWithGoogle() {
     if (oauthStartedRef.current) return; // never start the OAuth redirect twice
+    // Google refuses OAuth inside embedded webviews (Error 403:
+    // disallowed_useragent), so the button must not send an Instagram or
+    // Facebook visitor to a hard error page — most of our traffic arrives in
+    // exactly those browsers. login, signup and the results CTA all guard for
+    // this; this one did not.
+    if (inApp?.googleBlocked) {
+      setError(`Google sign-in doesn't work inside the ${inApp.name === "this app" ? "app's" : `${inApp.name} app's`} browser. Use the email code below, or open this page in Safari or Chrome.`);
+      return;
+    }
     oauthStartedRef.current = true;
     setLoading(true); setError(null);
     const { error } = await createClient().auth.signInWithOAuth({

@@ -33,21 +33,45 @@ export async function GET(request: NextRequest) {
       // Best-effort — country capture must NEVER block auth.
       try {
         const country = request.headers.get("x-vercel-ip-country");
-        if (country && country !== "XX") {
-          const { data: { user } } = await supabase.auth.getUser();
-          if (user) {
-            // Persist on the auth user so it's available when the student row is
-            // created (student rows are created lazily on first enrolment).
-            // Keep the first-seen country.
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+          if (country && country !== "XX") {
+            // Keep the first-seen country on the auth user.
             if (!user.user_metadata?.signup_country) {
               await supabase.auth.updateUser({ data: { signup_country: country } });
             }
             // Backfill an existing student row that has no country yet.
             await supabase.from("students").update({ country }).eq("user_id", user.id).is("country", null);
           }
+
+          // ── Every signed-in user IS a student ────────────────────────────
+          // Student rows used to be created lazily — at the /welcome country
+          // step, or on first enrolment. Anyone who authenticated and then did
+          // neither ended up in a state the app has no answer for: a valid
+          // session, no student row, and every (app) route bouncing them.
+          // 11 of 34 accounts were in that state, 2 of them having genuinely
+          // signed in.
+          //
+          // This callback is the single choke point every sign-in passes
+          // through — email OTP and OAuth alike — so the row is created here,
+          // once, and the lazy paths become no-ops rather than the only hope.
+          // ignoreDuplicates keeps it idempotent across repeat sign-ins.
+          const { error: studentError } = await supabase.from("students").upsert(
+            {
+              user_id: user.id,
+              email: user.email ?? "",
+              country: (user.user_metadata?.signup_country as string | undefined) ?? (country && country !== "XX" ? country : null),
+              subject_interest: (user.user_metadata?.signup_subject as string | undefined) ?? null,
+            },
+            { onConflict: "user_id", ignoreDuplicates: true },
+          );
+          // Logged, not thrown: a failure here must not strand someone who has
+          // just authenticated successfully. The lazy paths still cover it.
+          if (studentError) console.error("[auth/callback] student upsert:", studentError);
         }
-      } catch {
-        /* ignore — never break sign-in over geolocation */
+      } catch (e) {
+        /* never break sign-in over profile setup */
+        console.error("[auth/callback] post-auth setup:", e);
       }
 
       // sanitizeRedirect only vets the shape of the path, not whether the course
