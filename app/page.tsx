@@ -21,7 +21,6 @@ import { NewsroomStrip } from "@/components/landing/NewsroomStrip";
 import { ToolsMarquee } from "@/components/landing/ToolsMarquee";
 import { PainMirror } from "@/components/landing/PainMirror";
 import { CodeReviewSlider } from "@/components/landing/CodeReviewSlider";
-import { CookieConsent } from "@/components/ui/cookie-consent";
 import { MobileStickyCta } from "@/components/landing/MobileStickyCta";
 import { StickyCtaBar } from "@/components/landing/StickyCtaBar";
 import { LandingEngagement } from "@/components/LandingEngagement";
@@ -462,7 +461,6 @@ export default async function Home() {
         </footer>
       </section>
 
-      <CookieConsent />
       <StickyCtaBar seats={seats} />
       <MobileStickyCta seats={seats} />
       {/* Landing engagement: time-per-section + scroll depth → /api/track (prod only) */}
