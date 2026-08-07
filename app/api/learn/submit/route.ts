@@ -1,10 +1,12 @@
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { callAI } from "@/lib/ai/budget";
 import { GRADING_SYSTEM_PROMPT } from "@/lib/ai/prompts";
 import { extractJsonObject, extractJsonArray } from "@/lib/ai/json";
 import { rateLimitAI } from "@/lib/rate-limit";
+import { mergeGradedResults, updateStudentMemory } from "@/lib/nova-memory";
 
 const exerciseSchema = z.object({
   exerciseId: z.string(),
@@ -159,6 +161,31 @@ export async function POST(request: Request) {
           results.push(await gradeOneExercise(student.id, exercise, answer));
         }
       }
+    }
+
+    // ── Nova memory (best-effort) ─────────────────────────────────────────
+    // Fold this batch of graded outcomes into the student's distilled memory
+    // (lib/nova-memory.ts): sub-60% scores become tracked gaps, 90%+ on
+    // written/code work becomes strengths and resolves old gaps. This is the
+    // ONLY place per-exercise grades exist server-side, which is why the hook
+    // lives here and not in learn/complete. Admin client because students hold
+    // no write privilege on their own row (grade-integrity hardening).
+    try {
+      const { data: lessonRow } = await supabase
+        .from("lessons").select("title").eq("id", lessonId).maybeSingle();
+      const outcomes = results.flatMap((r) => {
+        const ex = dbExercises.find((e) => e.id === r.exerciseId);
+        return ex ? [{
+          title: ex.title, type: ex.type,
+          score: r.score, maxScore: r.maxScore,
+          lessonTitle: (lessonRow?.title as string | null) ?? null,
+        }] : [];
+      });
+      if (outcomes.length > 0) {
+        await updateStudentMemory(createAdminClient(), student.id, (m) => mergeGradedResults(m, outcomes));
+      }
+    } catch (memErr) {
+      console.error("[learn/submit] memory update (non-fatal):", memErr);
     }
 
     return NextResponse.json({ results });

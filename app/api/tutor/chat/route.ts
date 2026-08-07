@@ -4,6 +4,7 @@ import { z } from "zod";
 import { callAIStream, BudgetExceededError } from "@/lib/ai/budget";
 import { TUTOR_SYSTEM_PROMPT } from "@/lib/ai/prompts";
 import { rateLimitAI } from "@/lib/rate-limit";
+import { memoryPromptBlock, parseMemory } from "@/lib/nova-memory";
 
 const messageSchema = z.object({
   role: z.enum(["user", "assistant"]),
@@ -65,10 +66,10 @@ export async function POST(request: Request) {
     const body = await request.json();
     const { messages, context, conversationId } = schema.parse(body);
 
-    // Get student for budget tracking
+    // Get student for budget tracking + Nova's distilled memory of them
     const { data: student } = await supabase
       .from("students")
-      .select("id, name")
+      .select("id, name, memory")
       .eq("user_id", user.id)
       .maybeSingle();
 
@@ -82,6 +83,12 @@ export async function POST(request: Request) {
 
     const studentName = student.name ?? user.email?.split("@")[0] ?? "Student";
     let systemPrompt = buildSystemPrompt(studentName, context);
+
+    // Cross-session memory — SERVER truth (students.memory, written by the
+    // grading and completion paths), unlike `context`, which the client sends.
+    // Empty memory adds nothing; a malformed record parses to empty.
+    const memBlock = memoryPromptBlock(parseMemory(student.memory));
+    if (memBlock) systemPrompt += memBlock;
 
     // ── RAG: ground Nova in the curriculum via lexical retrieval (best-effort).
     // If anything fails, Nova proceeds exactly as before — never blocks the chat.

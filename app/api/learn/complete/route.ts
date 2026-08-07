@@ -3,6 +3,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { checkAndMarkEnrollmentComplete } from "@/lib/enrollment-completion";
+import { noteSession, updateStudentMemory } from "@/lib/nova-memory";
 
 const schema = z.object({
   lessonId: z.string(),
@@ -202,6 +203,24 @@ export async function POST(request: Request) {
     } catch (seedErr) {
       console.error("[learn/complete] review-seed error:", seedErr);
       // Non-critical — never block completion on review seeding.
+    }
+
+    // ── Nova memory: continuity line (best-effort) ─────────────────────────
+    // One sentence of "where they left off" so the tutor's next conversation
+    // can open with continuity instead of a cold "how can I help".
+    try {
+      const [{ data: lessonTitleRow }, { data: courseTitleRow }] = await Promise.all([
+        supabase.from("lessons").select("title").eq("id", lessonId).maybeSingle(),
+        supabase.from("courses").select("title").eq("id", lesson.course_id).maybeSingle(),
+      ]);
+      if (lessonTitleRow?.title) {
+        const line = courseTitleRow?.title
+          ? `Completed "${lessonTitleRow.title}" in ${courseTitleRow.title}`
+          : `Completed "${lessonTitleRow.title}"`;
+        await updateStudentMemory(createAdminClient(), student.id, (m) => noteSession(m, line));
+      }
+    } catch (memErr) {
+      console.error("[learn/complete] memory update (non-fatal):", memErr);
     }
 
     // Find the next lesson in this module, or the first lesson in the next module
