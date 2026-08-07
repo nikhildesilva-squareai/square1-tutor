@@ -23,9 +23,27 @@ export async function GET(request: NextRequest) {
   const { searchParams, origin } = new URL(request.url);
   const code = searchParams.get("code");
   const next = sanitizeRedirect(searchParams.get("next"));
+
+  // ── The provider refused before we ever got a code ──────────────────────
+  // Google sends ?error=access_denied (user cancelled) or
+  // ?error=disallowed_useragent (embedded webview) instead of ?code=. This
+  // used to fall through to the generic "auth_failed", losing the one piece
+  // of information that says what actually happened.
+  const providerError = searchParams.get("error");
+  if (providerError) {
+    console.error("[auth/callback] provider error:", providerError, searchParams.get("error_description"));
+    return NextResponse.redirect(`${origin}/login?error=${encodeURIComponent(providerError)}`);
+  }
+
   if (code) {
     const supabase = await createClient();
     const { error } = await supabase.auth.exchangeCodeForSession(code);
+    // Log the real reason. "auth_failed" on its own is undiagnosable after the
+    // fact — it covers a missing PKCE verifier, an already-used code and an
+    // expired one, which have completely different fixes.
+    if (error) {
+      console.error("[auth/callback] code exchange failed:", error.status, error.name, error.message);
+    }
     if (!error) {
       // Capture the visitor's country from Vercel's IP geolocation. Both Google
       // and email sign-ins pass through this callback, so this is the single

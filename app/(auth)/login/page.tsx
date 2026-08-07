@@ -83,11 +83,23 @@ export default function LoginPage() {
      forces a Suspense boundary for no benefit here. */
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
-    if (params.get("error") === "auth_failed") {
-      setError("Sign-in didn't complete. Please try again — it usually works on the second attempt.");
-      // Clean the URL so a refresh doesn't re-show a stale error.
-      window.history.replaceState(null, "", "/login");
-    }
+    const err = params.get("error");
+    if (!err) return;
+    // The callback now forwards the provider's own reason where there is one,
+    // so the message can say something true instead of "try again". Anything
+    // unrecognised falls back to the generic line rather than showing a raw
+    // provider code to a person mid sign-in.
+    const MESSAGES: Record<string, string> = {
+      access_denied: "Sign-in was cancelled. Try again, or use the email code below.",
+      disallowed_useragent:
+        "Google won't allow sign-in inside this app's built-in browser. Use the email code below, or open the site in Safari or Chrome.",
+      server_error: "Google had a problem signing you in. Try again in a moment, or use the email code below.",
+      temporarily_unavailable: "Google sign-in is temporarily unavailable. Use the email code below.",
+      auth_failed: "Sign-in didn't complete. Please try again — it usually works on the second attempt.",
+    };
+    setError(MESSAGES[err] ?? MESSAGES.auth_failed);
+    // Clean the URL so a refresh doesn't re-show a stale error.
+    window.history.replaceState(null, "", "/login");
   }, []);
 
   /* ── Countdown timer ──────────────────────────────────────────────────── */

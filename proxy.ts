@@ -64,14 +64,27 @@ export async function proxy(request: NextRequest) {
   // Rescue it: forward the code to the real callback on this host. Supabase
   // auth codes are UUIDs; the format guard keeps unrelated ?code= links alone.
   const authCode = request.nextUrl.searchParams.get("code");
+  const providerError = request.nextUrl.searchParams.get("error");
   if (
-    authCode &&
-    /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(authCode) &&
-    !request.nextUrl.pathname.startsWith("/api/")
+    !request.nextUrl.pathname.startsWith("/api/") &&
+    ((authCode && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(authCode)) ||
+      // A REFUSED sign-in lands the same way — ?error=access_denied on the Site
+      // URL. Previously only ?code= was rescued, so a refusal dropped the
+      // visitor on the landing page with an error in the address bar, no
+      // message, and no idea sign-in had failed at all.
+      (providerError && /^[a-z_]{3,40}$/i.test(providerError)))
   ) {
     const url = request.nextUrl.clone();
     url.pathname = "/api/auth/callback";
-    url.search = `?code=${authCode}`;
+    // Carry `next` through. Rebuilding the query as ?code=… alone silently
+    // discarded the intended destination, so anyone rescued here lost the
+    // lesson they were heading for and landed on the default router instead.
+    const next = request.nextUrl.searchParams.get("next");
+    const params = new URLSearchParams();
+    if (authCode) params.set("code", authCode);
+    if (providerError) params.set("error", providerError);
+    if (next && next.startsWith("/") && !next.startsWith("//")) params.set("next", next);
+    url.search = `?${params.toString()}`;
     return NextResponse.redirect(url);
   }
 
