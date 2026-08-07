@@ -14,6 +14,7 @@ type Theme = "light" | "dark" | "system";
 const DARK_SURFACES = [
   "/dashboard", "/learn", "/courses", "/projects", "/progress", "/settings",
   "/notes", "/tutor", "/messages", "/community", "/certificate", "/inbox", "/admin",
+  "/career",
 ];
 function isAppSurface(pathname: string): boolean {
   return DARK_SURFACES.some((p) => pathname === p || pathname.startsWith(p + "/"));

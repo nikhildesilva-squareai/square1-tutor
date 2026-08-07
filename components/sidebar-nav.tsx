@@ -12,6 +12,7 @@ import {
   MessagesSquare,
   Sparkles,
   Briefcase,
+  Target,
   Inbox,
   Settings,
   MessageSquarePlus,
@@ -32,6 +33,7 @@ const learnNav: { href: string; label: string; icon: LucideIcon }[] = [
   { href: "/projects", label: "My Projects", icon: FolderKanban },
   { href: "/progress", label: "Progress", icon: BarChart3 },
   { href: "/notes", label: "Study Hub", icon: Bookmark },
+  { href: "/career", label: "Career", icon: Target },
 ];
 
 const connectNav: { href: string; label: string; icon: LucideIcon }[] = [

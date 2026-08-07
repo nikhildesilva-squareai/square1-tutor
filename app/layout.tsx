@@ -95,7 +95,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             routes (mirrors DARK_SURFACES in components/ThemeProvider.tsx). */}
         <JsonLd data={ORGANIZATION_LD} />
         <JsonLd data={WEBSITE_LD} />
-        <script dangerouslySetInnerHTML={{ __html: `try{const p=location.pathname;if(/^\\/(dashboard|learn|courses|projects|progress|settings|notes|tutor|messages|community|certificate|inbox|admin)(\\/|$)/.test(p)){const t=localStorage.getItem("sq1-theme");if(t==="dark"||(t!=="light"&&matchMedia("(prefers-color-scheme:dark)").matches))document.documentElement.classList.add("dark")}}catch(e){}` }} />
+        <script dangerouslySetInnerHTML={{ __html: `try{const p=location.pathname;if(/^\\/(dashboard|learn|courses|projects|progress|settings|notes|tutor|messages|community|certificate|inbox|admin|career)(\\/|$)/.test(p)){const t=localStorage.getItem("sq1-theme");if(t==="dark"||(t!=="light"&&matchMedia("(prefers-color-scheme:dark)").matches))document.documentElement.classList.add("dark")}}catch(e){}` }} />
       </head>
       <body className="min-h-full flex flex-col">
         <a href="#main" className="sr-only focus:not-sr-only focus:absolute focus:top-3 focus:left-3 focus:z-[100] focus:px-4 focus:py-2 focus:rounded-lg focus:bg-brand focus:text-white focus:font-semibold">
