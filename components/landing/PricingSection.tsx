@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Check } from "lucide-react";
-import { foundingPlansFor, foundingPriceFrom } from "@/lib/founding";
+import { foundingPlansFor, foundingPriceFrom, standardPriceFor } from "@/lib/founding";
 import type { RegionKey } from "@/lib/pricing";
 import { PrimaryCta } from "@/components/ui/primary-cta";
 
@@ -36,6 +36,7 @@ export function PricingSection({ region = "global" }: { region?: RegionKey }) {
   // One region per render — every price on the page comes from this table.
   const plans = foundingPlansFor(region);
   const priceFrom = foundingPriceFrom(region);
+  const standard = standardPriceFor(region);
   return (
     <section id="pricing" className="relative overflow-hidden py-20 sm:py-28 px-4 sm:px-6 lg:px-8"
       style={{ background: "linear-gradient(180deg,#FFFFFF 0%,#F8FAFC 55%,#F4F8FF 100%)" }}>
@@ -118,6 +119,12 @@ export function PricingSection({ region = "global" }: { region?: RegionKey }) {
                 Cohort 01 · open now
               </span>
             </div>
+            {/* The anchor: what this costs once founding closes. Struck through
+                because founding members never pay it — that IS the offer. */}
+            <p className="relative text-sm font-bold text-slate-500 mb-1">
+              <s>{standard}/mo</s>{" "}
+              <span className="text-[11px] font-semibold text-slate-500">standard rate after founding</span>
+            </p>
             <p className="relative font-black leading-none" style={{ fontSize: 40 }}>
               from {priceFrom}
               <span className="text-base font-bold text-slate-400">/mo</span>

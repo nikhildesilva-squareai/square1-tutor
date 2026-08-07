@@ -25,6 +25,11 @@ export type RegionPricing = {
   label: string; // shown in the region selector
   /** Per-month rate by track length. Keys are the committed months. */
   rates: { 3: string; 6: string; 9: string };
+  /** The list rate once founding seats close — the anchor the founding rates
+   *  are measured against. Forward-looking (nobody pays it today): displayed
+   *  as "standard rate after founding", never as a current charge. Raising
+   *  this never touches a founding rate — those are promised for life. */
+  standard: string;
 };
 
 // Prices are USD in every region for now: one Stripe currency keeps refunds,
@@ -35,6 +40,7 @@ export const REGIONS: Record<RegionKey, RegionPricing> = {
     key: "global",
     label: "Global",
     rates: { 3: "$29.90", 6: "$19.90", 9: "$15.90" },
+    standard: "$34.90",
   },
   // Purchasing-power rate — roughly a third of the global rate, which is the
   // band the large platforms settle on for these markets.
@@ -42,6 +48,7 @@ export const REGIONS: Record<RegionKey, RegionPricing> = {
     key: "south_asia",
     label: "South Asia",
     rates: { 3: "$9.90", 6: "$6.90", 9: "$4.90" },
+    standard: "$11.90",
   },
 };
 

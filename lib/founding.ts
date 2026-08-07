@@ -41,3 +41,9 @@ export function foundingPriceFrom(region: RegionKey): string {
 export function foundingPriceLabel(region: RegionKey): string {
   return `from ${foundingPriceFrom(region)}/mo`;
 }
+
+/** The list rate once founding closes — the anchor founding rates beat.
+ *  Forward-looking only; nobody is charged this today. */
+export function standardPriceFor(region: RegionKey): string {
+  return pricingFor(region).standard;
+}

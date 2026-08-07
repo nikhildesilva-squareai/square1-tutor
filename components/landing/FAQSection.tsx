@@ -1,5 +1,5 @@
 import { ChevronDown } from "lucide-react";
-import { foundingPlansFor } from "@/lib/founding";
+import { foundingPlansFor, standardPriceFor } from "@/lib/founding";
 import type { RegionKey } from "@/lib/pricing";
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -18,7 +18,7 @@ function buildFaqs(courseCount: number, region: RegionKey) {
     },
     {
       q: "Is Square 1 really free right now?",
-      a: `Yes. Cohort 01 early access is free with no credit card required. When paid plans open, founding rates are ${foundingPlansFor(region).map((p) => `${p.perMonth}/mo on the ${p.months}-month track`).join(", ")} — and founding members lock their rate for life. It never goes up on you.`,
+      a: `Yes. Cohort 01 early access is free with no credit card required. When paid plans open, founding rates are ${foundingPlansFor(region).map((p) => `${p.perMonth}/mo on the ${p.months}-month track`).join(", ")} — and founding members lock their rate for life. It never goes up on you. Once founding seats close, new members join at the standard ${standardPriceFor(region)}/mo rate.`,
     },
     {
       q: "How does the AI code review actually work?",
