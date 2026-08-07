@@ -43,11 +43,14 @@ export async function ProductTour() {
         .eq("course_id", course.id).order("order_index", { ascending: true }).limit(1),
     ]);
 
-    // Scoped to the FIRST module, then ordered within it. Ordering lessons by
-    // order_index across the whole course returns whichever lesson happens to
-    // hold the lowest index in any module — which is not lesson 1, and the panel
-    // is labelled "Lesson 1".
-    const firstModuleId = modules?.[0]?.id;
+    // Scoped to Module 1, then ordered within it. Two caveats, both load-bearing:
+    // ordering lessons by order_index across the whole course returns whichever
+    // lesson holds the lowest index in any module — not lesson 1 — and the panel
+    // is labelled "Lesson 1". And the first module by sort order is no longer
+    // Module 1: the optional readiness module sits at 0 and the free AI
+    // Foundations block at -1, so taking modules[0] would advertise the course
+    // with a foundations lesson instead of its own content.
+    const firstModuleId = modules?.find((m) => m.order_index === 1)?.id ?? modules?.[0]?.id;
     const { data: lessons } = firstModuleId
       ? await db.from("lessons")
           .select("title, estimated_minutes, learning_objectives, theory_md, order_index")

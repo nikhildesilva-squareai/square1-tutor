@@ -39,11 +39,15 @@ async function getCoursePath(slug: string): Promise<CoursePath | null> {
       supabase.from("lessons").select("id, estimated_minutes").eq("course_id", course.id),
     ]);
 
-    // Lesson 1 = first lesson of the first module, matching how the course page
-    // orders them. Null if the track has no lessons yet; the CTA falls back.
+    // Lesson 1 = first lesson of Module 1 (Week 1), the course proper — NOT the
+    // first module by sort order. Two optional on-ramps sort ahead of it and must
+    // not capture this CTA: order_index 0 is the course's readiness Module 0, and
+    // order_index -1 is the free AI Foundations block. Someone who has just taken
+    // the diagnostic asked for this subject, so send them into it; the basics stay
+    // one click away in the syllabus.
     const { data: firstModule } = await supabase
       .from("modules").select("id").eq("course_id", course.id)
-      .order("order_index", { ascending: true }).limit(1).maybeSingle();
+      .eq("order_index", 1).maybeSingle();
     const { data: firstLesson } = firstModule
       ? await supabase.from("lessons").select("id").eq("module_id", firstModule.id)
           .order("order_index", { ascending: true }).limit(1).maybeSingle()
