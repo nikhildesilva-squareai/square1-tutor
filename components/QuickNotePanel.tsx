@@ -22,12 +22,6 @@ export function QuickNotePanel() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
 
-  // Course-material only: the quick-note pencil belongs on the lesson reader,
-  // where a student is consuming material and jots a note. Everywhere else it's
-  // redundant (Projects and the Study Hub have their own note surfaces) or
-  // collides with a pinned composer (Nova, Messages), so don't render it.
-  if (!pathname.startsWith("/learn")) return null;
-
   // Handle image selection (file input or paste)
   const handleImageFile = useCallback((file: File) => {
     const allowed = ["image/png", "image/jpeg", "image/gif", "image/webp"];
@@ -157,6 +151,20 @@ export function QuickNotePanel() {
   useEffect(() => {
     if (open) setTimeout(() => textareaRef.current?.focus(), 200);
   }, [open]);
+
+  // Course-material only: the quick-note pencil belongs on the lesson reader,
+  // where a student is consuming material and jots a note. Everywhere else it's
+  // redundant (Projects and the Study Hub have their own note surfaces) or
+  // collides with a pinned composer (Nova, Messages), so don't render it.
+  //
+  // This gate MUST come after every hook. It used to sit above the
+  // useCallbacks, which crashed the whole app shell with React #310
+  // ("rendered more hooks than during the previous render") the moment a
+  // student client-side navigated from any app page INTO a lesson: this
+  // component stays mounted in the layout across that navigation, so its
+  // hook count grew mid-lifecycle. Direct loads were fine, which is what
+  // made the crash look random.
+  if (!pathname.startsWith("/learn")) return null;
 
   return (
     <>
