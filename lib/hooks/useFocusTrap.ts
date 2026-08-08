@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, type RefObject } from "react";
+import { useEffect, useRef, type RefObject } from "react";
 
 /**
  * Accessible modal/dialog behaviour for an overlay:
@@ -17,6 +17,14 @@ export function useFocusTrap(
   onClose: () => void,
   containerRef: RefObject<HTMLElement | null>,
 ) {
+  // Callers pass onClose as an inline arrow, so its identity changes every
+  // parent render. Keeping it in a ref lets the trap effect depend only on
+  // `active` — otherwise any parent re-render (e.g. a ticking timer) would
+  // tear down and re-run the trap, yanking focus back to the first focusable
+  // element while the user is typing in the dialog.
+  const onCloseRef = useRef(onClose);
+  useEffect(() => { onCloseRef.current = onClose; });
+
   useEffect(() => {
     if (!active) return;
     const el = containerRef.current;
@@ -39,7 +47,7 @@ export function useFocusTrap(
     function onKey(e: KeyboardEvent) {
       if (e.key === "Escape") {
         e.preventDefault();
-        onClose();
+        onCloseRef.current();
         return;
       }
       if (e.key === "Tab" && el) {
@@ -62,5 +70,5 @@ export function useFocusTrap(
       document.removeEventListener("keydown", onKey);
       prevFocused?.focus?.();
     };
-  }, [active, onClose, containerRef]);
+  }, [active, containerRef]);
 }
