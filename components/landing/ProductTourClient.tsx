@@ -6,7 +6,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import {
   LayoutDashboard, BookOpen, Sparkles, FolderGit2, Trophy,
-  ArrowRight, Lock, X, type LucideIcon,
+  ArrowRight, ChevronRight, Lock, X, type LucideIcon,
 } from "lucide-react";
 
 const BRAND = "#0056CE";
@@ -69,7 +69,7 @@ function Shot({ src, alt, caption }: { src: string; alt: string; caption: string
         width={3200}
         height={2000}
         quality={85}
-        sizes="(max-width: 1100px) 100vw, 1040px"
+        sizes="(max-width: 900px) 100vw, 840px"
         className="block h-auto w-full"
       />
       <figcaption className="border-t border-slate-100 px-4 py-2.5 text-[11px] text-slate-400 sm:px-5">
@@ -341,7 +341,10 @@ export function ProductTourClient({ data }: { data: TourData }) {
             descriptive alt texts and captions. All five stay mounted with the
             inactive ones `hidden`, so switching tabs costs no re-render and the
             alt/caption text is in the server HTML. */}
-        <div className="relative mt-4">
+        {/* Narrower than the stage on purpose: at full width a 16:10 screenshot
+            towers past the viewport and the journey around it disappears —
+            the screen should sit IN the story, not be the whole page. */}
+        <div className="relative mx-auto mt-4 max-w-[840px]">
           {/* Glow behind the frame, so the screen looks lit rather than pasted on. */}
           <span aria-hidden className="pointer-events-none absolute -inset-x-6 -inset-y-4 rounded-3xl opacity-60 blur-2xl"
                 style={{ background: "radial-gradient(60% 60% at 50% 0%,rgba(51,136,255,0.35),transparent 70%)" }} />
@@ -358,6 +361,34 @@ export function ProductTourClient({ data }: { data: TourData }) {
               </div>
             </div>
           ))}
+        </div>
+
+        {/* The flow, attached to the screen. The numbered rail sits above, but
+            a tall screenshot pushes it out of view — this strip keeps the
+            five-step journey visible next to whichever screen you're on, and
+            each step is a shortcut. */}
+        <div className="relative mx-auto mt-5 flex max-w-[840px] flex-wrap items-center justify-center gap-y-1.5">
+          {STEPS.map((s, i) => {
+            const on = s.key === step;
+            return (
+              <span key={s.key} className="flex items-center">
+                {i > 0 && (
+                  <ChevronRight className="mx-0.5 h-3.5 w-3.5 shrink-0" aria-hidden
+                    style={{ color: "rgba(255,255,255,0.35)" }} />
+                )}
+                <button
+                  onClick={() => { stopAutoplay(); setStep(s.key); }}
+                  aria-current={on ? "step" : undefined}
+                  className="rounded-full border px-2.5 py-1 text-[11px] font-bold transition-colors"
+                  style={on
+                    ? { background: "rgba(51,136,255,0.22)", borderColor: "rgba(51,136,255,0.55)", color: "#fff" }
+                    : { borderColor: "transparent", color: "rgba(255,255,255,0.55)" }}
+                >
+                  {i + 1}. {s.label}
+                </button>
+              </span>
+            );
+          })}
         </div>
 
         <div className="relative mt-9 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
