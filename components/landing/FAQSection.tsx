@@ -67,6 +67,45 @@ function buildFaqs(courseCount: number, region: RegionKey) {
   ];
 }
 
+/**
+ * FAQPage structured data with no visible accordion.
+ *
+ * ⚠️ READ BEFORE USING. Google's FAQPage guidance requires the question and
+ * answer content to be VISIBLE to the user on the same page. Emitting this
+ * without the accordion is outside that guidance and is the kind of thing a
+ * structured-data manual action targets. The upside is also close to zero now:
+ * since 2023 Google has restricted FAQ rich results to well-known government
+ * and health sites, so a commercial page generally gets the risk without the
+ * snippet.
+ *
+ * It exists because the FAQ block was removed from the homepage for length and
+ * the markup was wanted back. If you want this to be both safe and useful, the
+ * answer is to render <FAQSection /> somewhere the content is actually visible
+ * (a /faq route, or lower on this page) rather than to keep this component.
+ *
+ * Built from the same buildFaqs() source as the visible section, so the two can
+ * never describe different content.
+ */
+export function FaqJsonLd({ courseCount = 9, region = "global" }: { courseCount?: number; region?: RegionKey }) {
+  const faqs = buildFaqs(courseCount, region);
+  return (
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{
+        __html: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          mainEntity: faqs.map((f) => ({
+            "@type": "Question",
+            name: f.q,
+            acceptedAnswer: { "@type": "Answer", text: f.a },
+          })),
+        }),
+      }}
+    />
+  );
+}
+
 export function FAQSection({ courseCount = 9, region = "global" }: { courseCount?: number; region?: RegionKey }) {
   const faqs = buildFaqs(courseCount, region);
 

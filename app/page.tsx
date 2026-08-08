@@ -12,6 +12,7 @@ import { ComparisonSection } from "@/components/landing/ComparisonSection";
 import { SocialProofSection } from "@/components/landing/SocialProofSection";
 import { PricingSection } from "@/components/landing/PricingSection";
 import { JourneyHook } from "@/components/landing/JourneyHook";
+import { FaqJsonLd } from "@/components/landing/FAQSection";
 import { LaneMapSection } from "@/components/landing/LaneMapSection";
 import { BuildPremiseSection, type RailTrack } from "@/components/landing/BuildPremiseSection";
 import { ProductTour } from "@/components/landing/ProductTour";
@@ -208,6 +209,12 @@ export default async function Home() {
       <div data-s1-section="pricing"><PricingSection region={region} /></div>
 
       <SectionWave />
+
+      {/* FAQPage structured data only — the visible accordion was removed for
+          page length. See the warning on FaqJsonLd: Google wants this content
+          visible, and FAQ rich results are effectively gone for commercial
+          sites, so this is one line away from being deleted again. */}
+      <FaqJsonLd courseCount={courses.length} region={region} />
 
       {/* ── About + Final CTA + Footer ────────────────────────────────────── */}
       <section data-s1-section="final-cta" className="relative overflow-hidden bg-white">
