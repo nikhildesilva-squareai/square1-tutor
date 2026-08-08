@@ -10,6 +10,7 @@ import { CodingExperienceQuestion } from "@/components/CodingExperienceQuestion"
 import { WelcomeTour } from "@/components/WelcomeTour";
 import { DIAG_SUBJECTS } from "@/lib/diagnostic";
 import { AdminDeskStrip } from "@/components/AdminDeskStrip";
+import { pickEntryModule } from "@/lib/course-entry";
 
 // ─── Course career mapping ────────────────────────────────────────────────────
 const COURSES = [
@@ -136,14 +137,13 @@ export default async function DashboardPage({ searchParams }: DashboardProps) {
     const { data: startCourseRow } = await supabase.from("courses").select("id,title").eq("slug", startSlug).maybeSingle();
     if (startCourseRow?.id) {
       startCourseTitle = startCourseRow.title ?? null;
-      // Start at Module 1 (Week 1) — the course proper. Every track has a module
-      // at order_index 1. The two on-ramps that sort ahead of it are optional and
-      // deliberately not the entry point: order_index 0 is the course's own
-      // readiness Module 0, and order_index -1 is the free AI Foundations block.
-      // Both stay visible in the syllabus for anyone who wants the basics first.
-      const { data: m1 } = await supabase.from("modules").select("id").eq("course_id", startCourseRow.id).eq("order_index", 1).maybeSingle();
-      if (m1?.id) {
-        const { data: l1 } = await supabase.from("lessons").select("id,title").eq("module_id", m1.id).order("order_index", { ascending: true }).limit(1).maybeSingle();
+      // Entry module per lib/course-entry: never the free AI Foundations block
+      // at order_index -1, otherwise the course's own Module 0 — except for the
+      // courses listed in STARTS_AT_WEEK_1, which open on Week 1.
+      const { data: mods } = await supabase.from("modules").select("id, order_index").eq("course_id", startCourseRow.id);
+      const entry = pickEntryModule(startSlug, mods);
+      if (entry?.id) {
+        const { data: l1 } = await supabase.from("lessons").select("id,title").eq("module_id", entry.id).order("order_index", { ascending: true }).limit(1).maybeSingle();
         firstLessonId = l1?.id ?? null;
         firstLessonTitle = l1?.title ?? null;
       }

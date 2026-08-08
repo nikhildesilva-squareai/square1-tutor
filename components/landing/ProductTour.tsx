@@ -2,6 +2,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { LEVEL_LABELS } from "@/lib/competency";
 import fixtures from "@/lib/tour-fixtures.json";
 import { ProductTourClient, type TourData } from "./ProductTourClient";
+import { pickEntryModule } from "@/lib/course-entry";
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // "See how it works" — the five surfaces a visitor can't otherwise see, because
@@ -43,14 +44,14 @@ export async function ProductTour() {
         .eq("course_id", course.id).order("order_index", { ascending: true }).limit(1),
     ]);
 
-    // Scoped to Module 1, then ordered within it. Two caveats, both load-bearing:
-    // ordering lessons by order_index across the whole course returns whichever
-    // lesson holds the lowest index in any module — not lesson 1 — and the panel
-    // is labelled "Lesson 1". And the first module by sort order is no longer
-    // Module 1: the optional readiness module sits at 0 and the free AI
-    // Foundations block at -1, so taking modules[0] would advertise the course
-    // with a foundations lesson instead of its own content.
-    const firstModuleId = modules?.find((m) => m.order_index === 1)?.id ?? modules?.[0]?.id;
+    // Scoped to the showcase course's entry module, then ordered within it. Two
+    // caveats, both load-bearing: ordering lessons by order_index across the
+    // whole course returns whichever lesson holds the lowest index in any module
+    // — not lesson 1 — and the panel is labelled "Lesson 1". And modules[0] is no
+    // longer the course's own first module: the free AI Foundations block sits at
+    // -1, so taking it would advertise the flagship with a generic prompting
+    // lesson. pickEntryModule excludes the optional on-ramps.
+    const firstModuleId = pickEntryModule(SHOWCASE, modules)?.id ?? modules?.[0]?.id;
     const { data: lessons } = firstModuleId
       ? await db.from("lessons")
           .select("title, estimated_minutes, learning_objectives, theory_md, order_index")

@@ -80,7 +80,11 @@ export function FeedbackWidget() {
   if (hidden) return null;
 
   return (
-    <div className="fixed bottom-20 lg:bottom-4 left-4 z-40 print:hidden">
+    // bottom-20 (80px) clears the 64px BottomNav on a flat-bottomed screen, but
+    // the nav also carries pb-[env(safe-area-inset-bottom)], so on a device with
+    // a home indicator (~34px) it grows to ~98px and the launcher lands on top
+    // of it. Add the same inset here so the clearance holds on every device.
+    <div className="fixed bottom-[calc(5rem+env(safe-area-inset-bottom))] lg:bottom-4 left-4 z-40 print:hidden">
       {open && (
         <div
           ref={panelRef}

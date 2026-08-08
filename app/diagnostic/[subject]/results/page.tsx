@@ -9,6 +9,7 @@ import { getSubject, getDiagnostic, scoreDiagnostic, decodeAnswers, readinessBan
 import ResultsClient from "./ResultsClient";
 import { DiagnosticEvent } from "@/components/DiagnosticEvent";
 import { getRegion } from "@/lib/pricing-server";
+import { pickEntryModule } from "@/lib/course-entry";
 
 // The real course path for this track — modules (in order), the honest guided-
 // hours number (same learnableHours model the course page uses), lesson total
@@ -39,17 +40,16 @@ async function getCoursePath(slug: string): Promise<CoursePath | null> {
       supabase.from("lessons").select("id, estimated_minutes").eq("course_id", course.id),
     ]);
 
-    // Lesson 1 = first lesson of Module 1 (Week 1), the course proper — NOT the
-    // first module by sort order. Two optional on-ramps sort ahead of it and must
-    // not capture this CTA: order_index 0 is the course's readiness Module 0, and
-    // order_index -1 is the free AI Foundations block. Someone who has just taken
-    // the diagnostic asked for this subject, so send them into it; the basics stay
-    // one click away in the syllabus.
-    const { data: firstModule } = await supabase
-      .from("modules").select("id").eq("course_id", course.id)
-      .eq("order_index", 1).maybeSingle();
-    const { data: firstLesson } = firstModule
-      ? await supabase.from("lessons").select("id").eq("module_id", firstModule.id)
+    // Lesson 1 = first lesson of the course's ENTRY module, not the first module
+    // by sort order. The free AI Foundations block sits at order_index -1, so a
+    // naive modules[0] would send someone who has just chosen a subject into
+    // generic prompting basics instead. pickEntryModule excludes it and picks
+    // Module 0 or Week 1 per the course. Subject slug == course slug.
+    const { data: entryMods } = await supabase
+      .from("modules").select("id, order_index").eq("course_id", course.id);
+    const entryModule = pickEntryModule(slug, entryMods);
+    const { data: firstLesson } = entryModule
+      ? await supabase.from("lessons").select("id").eq("module_id", entryModule.id)
           .order("order_index", { ascending: true }).limit(1).maybeSingle()
       : { data: null };
 
