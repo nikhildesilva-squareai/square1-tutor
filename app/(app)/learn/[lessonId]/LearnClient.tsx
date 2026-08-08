@@ -80,6 +80,12 @@ const STYLES = `
 .card-fade-up { animation: fadeUp 0.4s cubic-bezier(0.16,1,0.3,1) both }
 .card-scale { animation: scaleIn 0.3s cubic-bezier(0.16,1,0.3,1) both }
 .check-pop { animation: pulseCheck 0.4s cubic-bezier(0.16,1,0.3,1) both }
+.ring-progress { transition: stroke-dashoffset 0.7s cubic-bezier(0.16,1,0.3,1), stroke 0.3s ease }
+@keyframes breathe { 0%,100% { transform:scale(1) } 50% { transform:scale(1.02) } }
+.cta-breathe { animation: breathe 2s ease-in-out infinite }
+@keyframes riseIn { from { opacity:0; transform:translateY(8px) } to { opacity:1; transform:translateY(0) } }
+.rise-in { animation: riseIn 0.35s cubic-bezier(0.16,1,0.3,1) both }
+@media (prefers-reduced-motion: reduce) { .cta-breathe, .rise-in { animation:none } .ring-progress { transition:none } }
 `;
 
 // ─── Rich markdown renderer ───────────────────────────────────────────────
@@ -688,6 +694,26 @@ export function LearnClient({
   const isLastCard = currentCard === cards.length - 1;
   const totalScore = results?.reduce((s, r) => s + r.score, 0) ?? 0;
   const maxScore = results?.reduce((s, r) => s + r.maxScore, 0) ?? 1;
+
+  // ── Completion-card progress model ─────────────────────────────────
+  // MCQ counts as done once answered inline; short-answer/code count as
+  // done only after Nova has graded a submission (results !== null).
+  const isExDone = (ex: ExerciseData) => (ex.type === "mcq" ? !!quizAnswered[ex.id] : !!results);
+  const hasDraft = (ex: ExerciseData) => {
+    const r = responses[ex.id];
+    return !!(r?.responseText?.trim() || r?.codeResponse?.trim());
+  };
+  const exDoneCount = exercises.filter(isExDone).length;
+  const exMcqsDone = exercises.filter(e => e.type === "mcq").every(e => quizAnswered[e.id]);
+  const exPractices = exercises.filter(e => e.type !== "mcq");
+  const exAllDone = exMcqsDone && (exPractices.length === 0 || !!results);
+  const exReadyToSubmit = !results && exPractices.length > 0 && exPractices.every(hasDraft);
+  const totalMarksAvailable = exercises.reduce((s, e) => s + (e.marks ?? 0), 0);
+  // Next stop, module-aware: crossing into a NEW module is a milestone
+  // moment and gets its own celebratory CTA on the completion card.
+  const nextModule = nextLessonId ? outline.find(m => m.lessons.some(l => l.id === nextLessonId)) ?? null : null;
+  const nextLessonTitle = nextModule?.lessons.find(l => l.id === nextLessonId)?.title ?? null;
+  const nextIsNewModule = !!nextModule && !!module && nextModule.id !== module.id;
 
   // Keyboard navigation
   useEffect(() => {
@@ -1329,35 +1355,69 @@ export function LearnClient({
             {/* ═══ COMPLETION CARD ═══ */}
             {card.type === "complete" && (
               <div className="card-scale text-center py-6">
-                <div className={cn(
-                  "w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-5 check-pop",
-                  completed ? "bg-emerald-100" : "bg-surface-alt"
-                )}>
-                  {completed ? (
+                {completed ? (
+                  <div className="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-5 check-pop bg-emerald-100">
                     <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#059669" strokeWidth="2.5"><polyline points="20 6 9 17 4 12" /></svg>
-                  ) : (
-                    <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" strokeWidth="1.5" strokeLinecap="round">
-                      <circle cx="12" cy="12" r="10" /><path d="M12 6v6l4 2" />
+                  </div>
+                ) : (
+                  /* Progress ring — fills live as exercises are answered, flips
+                     emerald with a pop the moment everything is done. */
+                  <div className="relative w-28 h-28 mx-auto mb-5">
+                    <svg viewBox="0 0 120 120" className="w-28 h-28 -rotate-90">
+                      <circle cx="60" cy="60" r="52" fill="none" strokeWidth="8" stroke="currentColor" className="text-border" />
+                      <circle cx="60" cy="60" r="52" fill="none" strokeWidth="8" strokeLinecap="round" stroke="currentColor"
+                        strokeDasharray={2 * Math.PI * 52}
+                        strokeDashoffset={2 * Math.PI * 52 * (1 - (exercises.length === 0 ? 1 : exDoneCount / exercises.length))}
+                        className={cn("ring-progress", exAllDone ? "text-emerald-500" : "text-brand")} />
                     </svg>
-                  )}
-                </div>
+                    <div className="absolute inset-0 flex flex-col items-center justify-center">
+                      {exAllDone ? (
+                        <svg className="check-pop" width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#059669" strokeWidth="2.5"><polyline points="20 6 9 17 4 12" /></svg>
+                      ) : (
+                        <>
+                          <span className="text-xl font-black text-ink" style={{ fontVariantNumeric: "tabular-nums" }}>{exDoneCount}/{exercises.length}</span>
+                          <span className="text-[9px] font-bold uppercase tracking-[0.16em] text-ink-muted">answered</span>
+                        </>
+                      )}
+                    </div>
+                  </div>
+                )}
 
                 <h2 className="text-2xl font-black text-ink mb-2">
                   {completed
                     ? isFirstWin
                       ? "That's your first lesson done."
                       : "Lesson Complete!"
-                    : "Ready to finish?"}
+                    : exAllDone
+                      ? "Everything's answered — lock it in"
+                      : exReadyToSubmit && exMcqsDone
+                        ? "All answers in. Ready for grading?"
+                        : "Almost there"}
                 </h2>
-                <p className="text-sm text-ink-muted mb-6 max-w-sm mx-auto">
+                <p className="text-sm text-ink-muted mb-5 max-w-sm mx-auto">
                   {completed
                     ? isFirstWin
                       ? "You just did the thing most people who sign up never do — you finished something. Everything from here builds on it."
                       : lessonsDone
                         ? `Great work. That's ${lessonsDone} lessons done.`
                         : "Great work. This lesson is in your progress."
-                    : `You covered ${cards.filter(c => c.type === "theory").length} sections in ${Math.round(elapsed / 60)} minutes.`}
+                    : exAllDone
+                      ? results
+                        ? `Nova scored you ${Math.round((totalScore / maxScore) * 100)}% — mark the lesson complete to bank it.`
+                        : "Every check is done. Mark the lesson complete to bank it."
+                      : exReadyToSubmit && exMcqsDone
+                        ? `Nova grades instantly — ${totalMarksAvailable} marks on the table.`
+                        : `${exercises.length - exDoneCount} of ${exercises.length} to go — tap one below to jump straight to it.`}
                 </p>
+
+                {/* Session stat chips */}
+                {!completed && (
+                  <div className="flex items-center justify-center gap-2 mb-6 flex-wrap">
+                    <span className="px-3 py-1 rounded-full bg-surface-alt border border-border text-[11px] font-semibold text-ink-secondary">{cards.filter(c => c.type === "theory").length} sections read</span>
+                    <span className="px-3 py-1 rounded-full bg-surface-alt border border-border text-[11px] font-semibold text-ink-secondary">{Math.max(1, Math.round(elapsed / 60))} min in</span>
+                    <span className="px-3 py-1 rounded-full bg-surface-alt border border-border text-[11px] font-semibold text-ink-secondary">{totalMarksAvailable} marks available</span>
+                  </div>
+                )}
 
                 {/* First-win milestone — real facts only: what they just did,
                     and how long the next one takes. No invented stats. */}
@@ -1411,53 +1471,116 @@ export function LearnClient({
                   </a>
                 )}
 
-                {/* Comprehension check gate */}
-                {!completed && exercises.length > 0 && (() => {
-                  const mcqExercises = exercises.filter(e => e.type === "mcq");
-                  const nonMcqExercises = exercises.filter(e => e.type !== "mcq");
-                  const mcqsDone = mcqExercises.every(e => quizAnswered[e.id]);
-                  const nonMcqsDone = nonMcqExercises.length === 0 || !!results;
-                  const allDone = mcqsDone && nonMcqsDone;
+                {/* Interactive exercise checklist — every row is a shortcut
+                    straight to that exercise's card. Replaces the old dead-end
+                    amber warning with a path to action. */}
+                {!completed && exercises.length > 0 && (
+                  <div className="max-w-sm mx-auto mb-5 text-left space-y-2">
+                    {exercises.map((ex, i) => {
+                      const done = isExDone(ex);
+                      const draft = !done && ex.type !== "mcq" && hasDraft(ex);
+                      const cardIdx = cards.findIndex(c => c.exercise?.id === ex.id);
+                      return (
+                        <button key={ex.id} type="button"
+                          onClick={() => { if (cardIdx >= 0) goToCard(cardIdx); }}
+                          className={cn(
+                            "w-full flex items-center gap-3 px-4 py-3 rounded-xl border text-left transition-all group rise-in",
+                            done
+                              ? "border-emerald-200 bg-emerald-50/60"
+                              : draft
+                                ? "border-amber-200 bg-amber-50/60 hover:border-amber-300 hover:shadow-sm"
+                                : "border-border bg-surface hover:border-brand/40 hover:shadow-sm"
+                          )}
+                          style={{ animationDelay: `${i * 50}ms` }}>
+                          {done ? (
+                            <span className="w-6 h-6 rounded-full bg-emerald-100 flex items-center justify-center shrink-0 check-pop">
+                              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#059669" strokeWidth="3"><polyline points="20 6 9 17 4 12" /></svg>
+                            </span>
+                          ) : draft ? (
+                            <span className="w-6 h-6 rounded-full bg-amber-100 flex items-center justify-center shrink-0">
+                              <span className="w-2 h-2 rounded-full bg-amber-500" />
+                            </span>
+                          ) : (
+                            <span className="w-6 h-6 rounded-full border-2 border-border shrink-0" />
+                          )}
+                          <span className="flex-1 min-w-0">
+                            <span className={cn("block text-[13px] font-semibold truncate", done ? "text-emerald-800" : "text-ink")}>
+                              {ex.title || (ex.type === "mcq" ? `Quick check ${i + 1}` : `Exercise ${i + 1}`)}
+                            </span>
+                            <span className="block text-[10px] text-ink-muted">
+                              {ex.marks} mark{ex.marks === 1 ? "" : "s"} · {done ? "done" : draft ? "drafted — submit to grade" : ex.type === "mcq" ? "not answered yet" : "not started"}
+                            </span>
+                          </span>
+                          {!done && (
+                            <svg className="shrink-0 opacity-0 group-hover:opacity-100 transition-opacity text-brand" width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M6 3l5 5-5 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /></svg>
+                          )}
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
 
-                  if (!allDone) {
-                    const remaining: string[] = [];
-                    if (!mcqsDone) remaining.push(`${mcqExercises.filter(e => !quizAnswered[e.id]).length} quiz question${mcqExercises.filter(e => !quizAnswered[e.id]).length > 1 ? "s" : ""}`);
-                    if (!nonMcqsDone) remaining.push(`${nonMcqExercises.length} exercise${nonMcqExercises.length > 1 ? "s" : ""}`);
-                    return (
-                      <div className="bg-amber-50 border border-amber-200 rounded-xl px-4 py-3 mb-4 max-w-sm mx-auto">
-                        <p className="text-xs font-semibold text-amber-800 flex items-center gap-2">
-                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" /><line x1="12" y1="9" x2="12" y2="13" /><line x1="12" y1="17" x2="12.01" y2="17" /></svg>
-                          Complete {remaining.join(" and ")} first
-                        </p>
-                        <p className="text-[10px] text-amber-700 mt-1">Answer all exercises to unlock lesson completion.</p>
-                      </div>
-                    );
-                  }
-                  return null;
-                })()}
+                {/* Anticipation panel — what finishing unlocks, in real terms. */}
+                {!completed && (
+                  <div className="max-w-sm mx-auto mb-6 rounded-2xl border border-brand/15 bg-brand/[0.04] px-5 py-4 text-left">
+                    <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-brand mb-2.5">When you finish this lesson</p>
+                    <ul className="space-y-2 text-xs text-ink-secondary">
+                      {!results && exPractices.length > 0 && (
+                        <li className="flex items-start gap-2.5">
+                          <span className="mt-0.5 text-brand">•</span>
+                          <span>Nova grades your answers instantly — {totalMarksAvailable} marks feed your skill report</span>
+                        </li>
+                      )}
+                      <li className="flex items-start gap-2.5">
+                        <span className="mt-0.5 text-brand">•</span>
+                        <span>This lesson&apos;s key ideas join tomorrow&apos;s review deck</span>
+                      </li>
+                      {nextLessonId && (
+                        <li className="flex items-start gap-2.5">
+                          <span className="mt-0.5 text-brand">•</span>
+                          <span>
+                            {nextIsNewModule
+                              ? <>You unlock the next module: <strong className="text-ink">{nextModule?.title}</strong></>
+                              : <>Up next: <strong className="text-ink">{nextLessonTitle ?? "the next lesson"}</strong>{nextMinutes ? ` · ~${nextMinutes} min` : ""}</>}
+                          </span>
+                        </li>
+                      )}
+                    </ul>
+                  </div>
+                )}
 
                 {/* Actions */}
                 <div className="flex items-center justify-center gap-3 flex-wrap">
                   {!completed && !results && exercises.filter(e => e.type !== "mcq").length > 0 && (
-                    <Button onClick={handleSubmit} loading={submitting} disabled={submitting} className="rounded-xl">
-                      Submit Exercises
+                    <Button onClick={handleSubmit} loading={submitting} disabled={submitting}
+                      className={cn("rounded-xl", exReadyToSubmit && exMcqsDone && "cta-breathe")}>
+                      {exReadyToSubmit ? `Submit for grading · ${totalMarksAvailable} marks` : "Submit Exercises"}
                     </Button>
                   )}
-                  {!completed && (() => {
-                    const mcqsDone = exercises.filter(e => e.type === "mcq").every(e => quizAnswered[e.id]);
-                    const nonMcqsDone = exercises.filter(e => e.type !== "mcq").length === 0 || !!results;
-                    return mcqsDone && nonMcqsDone;
-                  })() && (
-                    <Button onClick={handleComplete} loading={completing} disabled={completing} className="rounded-xl">
+                  {!completed && exAllDone && (
+                    <Button onClick={handleComplete} loading={completing} disabled={completing} className="rounded-xl cta-breathe">
                       Mark Complete
                     </Button>
                   )}
                   {completed && nextLessonId && (
-                    <button onClick={() => router.push(`/learn/${nextLessonId}`)}
-                      className="h-11 px-6 rounded-xl bg-brand text-white font-bold text-sm hover:bg-brand/90 transition-all flex items-center gap-2">
-                      Next Lesson
-                      <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M6 3l5 5-5 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /></svg>
-                    </button>
+                    nextIsNewModule ? (
+                      /* Module hand-off — crossing into a new module is a
+                         milestone, not just another lesson hop. */
+                      <button onClick={() => router.push(`/learn/${nextLessonId}`)}
+                        className="group px-6 py-3 rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-700 text-white text-left transition-all hover:shadow-lg hover:-translate-y-0.5 flex items-center gap-4">
+                        <div>
+                          <p className="text-[9px] font-bold uppercase tracking-[0.18em] text-white/70 mb-0.5">Next module unlocked</p>
+                          <p className="text-sm font-bold">{nextModule?.title}</p>
+                        </div>
+                        <svg className="transition-transform group-hover:translate-x-0.5" width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M6 3l5 5-5 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /></svg>
+                      </button>
+                    ) : (
+                      <button onClick={() => router.push(`/learn/${nextLessonId}`)}
+                        className="group h-11 px-6 rounded-xl bg-brand text-white font-bold text-sm hover:bg-brand/90 transition-all flex items-center gap-2">
+                        Next Lesson{nextMinutes ? ` · ~${nextMinutes} min` : ""}
+                        <svg className="transition-transform group-hover:translate-x-0.5" width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M6 3l5 5-5 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /></svg>
+                      </button>
+                    )
                   )}
                   {completed && !nextLessonId && (
                     <Link href={course ? `/courses/${course.slug}` : "/dashboard"}
