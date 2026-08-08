@@ -136,7 +136,7 @@ export function TryLessonCards({ slug, courseTitle, icon, color, totalLessons, l
         {card?.type === "quiz" && (
           <div>
             <p className="text-[10px] tracking-widest uppercase font-bold text-slate-500 mb-2">Quick check</p>
-            <h2 className="text-lg sm:text-xl font-bold text-slate-900 leading-snug mb-5">{card.mcq.prompt}</h2>
+            <h2 className="text-lg sm:text-xl font-bold text-slate-900 leading-snug mb-5">{card.mcq.prompt.replace(/\*\*\*(.+?)\*\*\*/g, "$1").replace(/\*\*(.+?)\*\*/g, "$1")}</h2>
             <div className="space-y-2.5">
               {card.mcq.options.map((opt, i) => {
                 const chosen = picked[card.mcq.id];

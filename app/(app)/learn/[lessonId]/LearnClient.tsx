@@ -211,6 +211,20 @@ function renderSection(md: string): string {
   return html;
 }
 
+// Inline-only markdown for short strings (exercise prompts): escapes HTML, then
+// renders `code`, ***bold italic***, **bold**, *italic*. No block elements, so
+// it can live safely inside the prompt's <p> without breaking its typography.
+function renderInlineMd(md: string): string {
+  if (!md) return "";
+  return md
+    .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+    .replace(/`([^`]+)`/g, '<code class="px-1.5 py-0.5 rounded-md text-[13px] font-mono bg-brand/8 text-brand border border-brand/15">$1</code>')
+    .replace(/\*\*\*(.+?)\*\*\*/g, "<strong><em>$1</em></strong>")
+    .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
+    .replace(/\*(.+?)\*/g, "<em>$1</em>")
+    .replace(/\n/g, "<br />");
+}
+
 // ─── Parse theory into cards ───────────────────────────────────────────────
 
 function parseTheoryIntoCards(theory: string, exercises: ExerciseData[], objectives: string[], caseStudy: string, references: LessonReference[], hasAppliedTask: boolean, firstEverLesson = false): LessonCard[] {
@@ -678,6 +692,8 @@ export function LearnClient({
   // Keyboard navigation
   useEffect(() => {
     function handleKey(e: KeyboardEvent) {
+      const target = e.target as HTMLElement | null;
+      if (target && (target.tagName === "INPUT" || target.tagName === "TEXTAREA" || target.tagName === "SELECT" || target.isContentEditable)) return;
       if (e.key === "ArrowRight" || e.key === " ") { e.preventDefault(); goToCard(currentCard + 1); }
       if (e.key === "ArrowLeft") { e.preventDefault(); goToCard(currentCard - 1); }
     }
@@ -927,7 +943,7 @@ export function LearnClient({
                   </div>
 
                   <div className="bg-surface rounded-2xl border border-border p-6 shadow-card">
-                    <p className="text-base font-semibold text-ink leading-relaxed mb-5">{ex.prompt_md}</p>
+                    <p className="text-base font-semibold text-ink leading-relaxed mb-5" dangerouslySetInnerHTML={{ __html: renderInlineMd(ex.prompt_md) }} />
 
                     {ex.options && (
                       <div className="grid gap-3">
@@ -1191,7 +1207,7 @@ export function LearnClient({
                   </div>
 
                   <div className="bg-surface rounded-2xl border border-border p-6 shadow-card">
-                    <p className="text-base font-medium text-ink leading-relaxed mb-5">{ex.prompt_md}</p>
+                    <p className="text-base font-medium text-ink leading-relaxed mb-5" dangerouslySetInnerHTML={{ __html: renderInlineMd(ex.prompt_md) }} />
 
                     {ex.type === "short_answer" && (
                       <textarea
