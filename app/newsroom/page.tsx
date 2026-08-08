@@ -154,19 +154,11 @@ export default async function NewsroomPage({ searchParams }: PageProps) {
             </div>
           </div>
 
-          <div className="flex items-center gap-2.5">
-            <span className="shrink-0 w-[58px] text-[10px] font-bold tracking-[0.18em] uppercase text-slate-400">
-              Editions
-            </span>
-            <div className="flex items-center gap-2 overflow-x-auto no-scrollbar py-0.5"
-              role="group" aria-label="Filter by edition">
-              <FilterChip href={regionHref()} active={!region} label="All editions" count={counts.total} />
-              {(Object.keys(NEWS_REGIONS) as (keyof typeof NEWS_REGIONS)[]).map((r) => (
-                <FilterChip key={r} href={regionHref(r)} active={region === r}
-                  label={NEWS_REGIONS[r].short} count={counts.byRegion[r] ?? 0} />
-              ))}
-            </div>
-          </div>
+          {/* The edition filter row is gone. Several regions sat at 0 or 1 story,
+              so the row mostly advertised where we DON'T publish yet. Region is
+              still recorded per article and still shown on the cards, and
+              ?region= still filters — only the chip row is removed, so nothing
+              that links to an edition breaks. */}
         </div>
       </div>
 

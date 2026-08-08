@@ -7,6 +7,7 @@ type WWavePathProps = React.ComponentProps<'div'>;
 
 export function WavePath({ className, ...props }: WWavePathProps) {
 	const path = useRef<SVGPathElement>(null);
+	const wrap = useRef<HTMLDivElement>(null);
 	let progress = 0;
 	let x = 0.2;
 	let time = Math.PI / 2;
@@ -14,10 +15,27 @@ export function WavePath({ className, ...props }: WWavePathProps) {
 
 	useEffect(() => {
 		setPath(progress);
+		// The path is drawn in absolute pixels, so it has to be redrawn whenever
+		// the element's width changes — otherwise it keeps the width it was first
+		// rendered at and stops short of (or overshoots) the edge after a resize
+		// or an orientation change.
+		if (!wrap.current || typeof ResizeObserver === 'undefined') return;
+		const ro = new ResizeObserver(() => setPath(progress));
+		ro.observe(wrap.current);
+		return () => ro.disconnect();
 	}, []);
 
 	const setPath = (progress: number) => {
-		const width = window.innerWidth * 0.7;
+		// Measure the element rather than the viewport: the divider is full-bleed,
+		// and reading window.innerWidth would ignore any padding or scrollbar and
+		// leave the curve misaligned with its own container.
+		//
+		// Fall back to the viewport if the measurement is 0. That happens before
+		// layout has settled (and in headless renderers that never composite), and
+		// a 0-width path draws nothing at all — the ResizeObserver above corrects
+		// it the moment a real width exists.
+		const measured = wrap.current?.getBoundingClientRect().width ?? 0;
+		const width = measured > 0 ? measured : window.innerWidth;
 		if (path.current) {
 			path.current.setAttributeNS(
 				null,
@@ -68,7 +86,7 @@ export function WavePath({ className, ...props }: WWavePathProps) {
 	};
 
 	return (
-		<div className={cn('relative h-px w-[70vw]', className)} {...props}>
+		<div ref={wrap} className={cn('relative h-px w-full', className)} {...props}>
 			<div
 				onMouseEnter={manageMouseEnter}
 				onMouseMove={manageMouseMove}

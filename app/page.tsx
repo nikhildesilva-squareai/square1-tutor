@@ -11,7 +11,6 @@ import { RealityBand } from "@/components/landing/RealityBand";
 import { ComparisonSection } from "@/components/landing/ComparisonSection";
 import { SocialProofSection } from "@/components/landing/SocialProofSection";
 import { PricingSection } from "@/components/landing/PricingSection";
-import { FAQSection } from "@/components/landing/FAQSection";
 import { JourneyHook } from "@/components/landing/JourneyHook";
 import { LaneMapSection } from "@/components/landing/LaneMapSection";
 import { BuildPremiseSection, type RailTrack } from "@/components/landing/BuildPremiseSection";
@@ -19,7 +18,6 @@ import { ProductTour } from "@/components/landing/ProductTour";
 import { WorkBlock } from "@/components/landing/WorkBlock";
 import { NewsroomStrip } from "@/components/landing/NewsroomStrip";
 import { ToolsMarquee } from "@/components/landing/ToolsMarquee";
-import { PainMirror } from "@/components/landing/PainMirror";
 import { CodeReviewSlider } from "@/components/landing/CodeReviewSlider";
 import { MobileStickyCta } from "@/components/landing/MobileStickyCta";
 import { StickyCtaBar } from "@/components/landing/StickyCtaBar";
@@ -153,11 +151,6 @@ export default async function Home() {
       {/* ── Tool strip — the tools the curriculum trains on, drifting marquee ── */}
       <div data-s1-section="tools"><ToolsMarquee /></div>
 
-      {/* ── Pain mirror — name the visitor's situation with cited receipts,
-             then turn it: the hard part is PROVING, which is what we sell.
-             Placed before the lane map so the lane choice has a why. ── */}
-      <div data-s1-section="pain"><PainMirror /></div>
-
       {/* ── The lane map — every course fanned out from its lane, right after the hero ─ */}
       <div data-s1-section="courses" id="curriculum" className="scroll-mt-16"><LaneMapSection courses={courses} /></div>
 
@@ -213,11 +206,6 @@ export default async function Home() {
 
       {/* ── 9. Pricing — free start, founding rate locked for life ───────────── */}
       <div data-s1-section="pricing"><PricingSection region={region} /></div>
-
-      <SectionWave />
-
-      {/* ── 10. FAQ — objections answered + FAQPage structured data ──────────── */}
-      <div data-s1-section="faq"><FAQSection courseCount={courses.length} region={region} /></div>
 
       <SectionWave />
 

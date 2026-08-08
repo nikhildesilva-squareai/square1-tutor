@@ -50,12 +50,21 @@ function AppIcon({ size = 36 }: { size?: number }) {
         </linearGradient>
       </defs>
       <rect width="64" height="64" rx="14" fill="url(#sq1-appicon)" />
-      {/* White brand mark — same proportions as BracketMark (36px box, inset 14) */}
+      {/* The full app-icon lockup — bracket AND the S1, kept byte-identical to
+          app/icon.svg so the tab, the PWA icon and every in-app avatar show the
+          same mark. The bracket's bottom-right corner stays open and the S nests
+          into it, which is the whole point of the logo. */}
       <g fill="#FFFFFF">
-        <rect x="14" y="14" width="36" height="3.8" />
-        <rect x="14" y="14" width="3.8" height="36" />
-        <rect x="46.2" y="14" width="3.8" height="11.5" />
-        <rect x="14" y="46.2" width="21.6" height="3.8" />
+        <rect x="10" y="15" width="30" height="3.6" />
+        <rect x="10" y="15" width="3.6" height="30" />
+        <rect x="36.4" y="15" width="3.6" height="9.6" />
+        <rect x="10" y="41.4" width="17" height="3.6" />
+      </g>
+      {/* "S1" as paths, never <text>: a substituted font would change the
+          letterforms and the width at the sizes where there is no room for it. */}
+      <g fill="#FFFFFF">
+        <path d="M33.86 30.2c-3.98 0-6.9 2.36-6.9 5.72 0 3.02 2.02 4.62 5.3 5.44l1.86.46c1.9.48 2.62 1.06 2.62 2.06 0 1.2-1.12 2-2.9 2-2 0-3.32-.92-3.86-2.62l-3.5 1.72c1 3.04 3.72 4.72 7.36 4.72 4.28 0 7.18-2.34 7.18-5.94 0-2.98-1.9-4.62-5.42-5.5l-1.86-.46c-1.72-.42-2.5-1-2.5-1.96 0-1.1 1-1.86 2.62-1.86 1.74 0 2.88.8 3.4 2.28l3.42-1.76c-1.02-2.74-3.4-4.3-6.82-4.3z" />
+        <path d="M48.9 30.5l-5.6 2.3 1.02 3.34 2.9-1.06v14.16h4.06V30.5z" />
       </g>
     </svg>
   );

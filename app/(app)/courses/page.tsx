@@ -5,6 +5,7 @@ import { LEARNING_PATHS } from "@/lib/learning-paths";
 import { ArrowRight, BookOpen, FolderGit2, GraduationCap, Sparkles, type LucideIcon } from "lucide-react";
 import type { Course } from "@/types/database";
 import type { Metadata } from "next";
+import { WORK_LANE_SLUGS, CATALOG_HIDDEN_SLUGS } from "@/lib/work-lanes";
 
 export const metadata: Metadata = {
   title: "Courses",
@@ -46,20 +47,14 @@ function monogram(title: string): string {
   return (words.length >= 2 ? words[0][0] + words[1][0] : title.slice(0, 2)).toUpperCase();
 }
 
-// "AI for your work — no code" lane: non-technical, role-based courses.
-// These form the second category, and appear ONLY once activated
-// (status = "active") — so the lane auto-appears on launch day with no code
-// change, and renders nothing while the courses stay hidden.
-const WORK_LANE_SLUGS = new Set([
-  "ai-foundations",
-  "ai-for-marketers",
-  "ai-for-finance",
-  "ai-for-creators",
-  "ai-for-founders",
-  "ai-for-teachers",
-  "ai-for-project-managers",
-  "ai-for-sales",
-]);
+// "AI for your work — no code" lane: non-technical, role-based courses. These
+// form the second category, and appear ONLY once activated (status = "active"),
+// so the lane auto-appears on launch day with no code change.
+//
+// The list used to be duplicated here and had already drifted — it was missing
+// ai-for-operations and ai-for-students, so both were being rendered as
+// engineering career tracks on this page while the rest of the app laned them
+// correctly. It now comes from the one shared definition.
 
 // ─── Category header — states the CATEGORY and its OUTCOME ────────────────────
 // The two categories exist to serve two different outcomes: an AI engineering
@@ -227,7 +222,12 @@ export default async function CoursesPage() {
 
   // Map slugs -> course rows so the curated career paths render live titles/colours.
   const coursesBySlug = new Map((courses ?? []).map((c) => [c.slug, c] as const));
-  const visibleCourses = (courses ?? []).filter((c) => !c.parent_course_id);
+  // Advanced tiers are reached from their parent course, and CATALOG_HIDDEN_SLUGS
+  // covers courses that ship as a module inside other courses rather than as a
+  // track of their own — neither belongs in a lane here.
+  const visibleCourses = (courses ?? []).filter(
+    (c) => !c.parent_course_id && !CATALOG_HIDDEN_SLUGS.has(c.slug),
+  );
 
   // The two categories. Work lane = only activated lane courses (nothing pre-launch);
   // engineering = everything else (the technical, career-outcome catalog).

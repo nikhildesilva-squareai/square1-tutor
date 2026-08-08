@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { NeuralField } from "@/components/ui/neural-field";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { NOVA_TUTOR_THREAD, type NovaTurn } from "@/lib/nova-demo";
 
 // Compact, interactive "Meet Nova" — full-black section (matches the main page's
 // dark-band rhythm). Shows Nova's full value (tutor / reviews code / coaches the
@@ -14,16 +14,121 @@ const CAPS = [
   { key: "adapt", title: "Knows each learner", desc: "Adapts to every employee's level, weak topics, and current lesson — personal, at scale.", accent: "#1E40AF", icon: "M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2M12 11a4 4 0 100-8 4 4 0 000 8z" },
 ];
 
-function NovaPanel({ k }: { k: string }) {
-  if (k === "tutor") {
-    return (
-      <div className="p-4 space-y-2.5">
-        <div className="ml-auto max-w-[80%] rounded-2xl rounded-br-sm bg-white/10 px-3 py-2 text-[11px] text-slate-200">Why does my API call fail intermittently?</div>
-        <div className="max-w-[88%] rounded-2xl rounded-bl-sm px-3 py-2 text-[11px] text-slate-100" style={{ background: "rgba(51,136,255,0.18)" }}>You&apos;re missing a timeout + error handling. Add <span className="font-mono">timeout=5</span> and call <span className="font-mono">raise_for_status()</span> — here&apos;s why that fixes the flakiness…</div>
-        <div className="ml-auto max-w-[55%] rounded-2xl rounded-br-sm bg-white/10 px-3 py-2 text-[11px] text-slate-200">That worked — thanks!</div>
+/** Nova's reply with the code fragments in monospace. */
+function NovaAnswer({ text, code }: { text: string; code?: string[] }) {
+  if (!code?.length) return <>{text}</>;
+  // Split on the code fragments, keeping them, so they can be styled inline
+  // without dangerouslySetInnerHTML.
+  const pattern = new RegExp(`(${code.map((c) => c.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("|")})`, "g");
+  return (
+    <>
+      {text.split(pattern).map((part, i) =>
+        code.includes(part)
+          ? <span key={i} className="rounded bg-white/10 px-1 font-mono text-[10.5px]">{part}</span>
+          : <span key={i}>{part}</span>,
+      )}
+    </>
+  );
+}
+
+/**
+ * The tutor panel: the visitor picks a question and watches Nova answer.
+ * Interactive on purpose — a static transcript reads as a screenshot, and the
+ * point of this section is that Nova responds to YOUR question.
+ */
+function NovaTutorChat() {
+  const [asked, setAsked] = useState<number | null>(null);
+  const [typed, setTyped] = useState(0);
+  const [thinking, setThinking] = useState(false);
+  const timers = useRef<ReturnType<typeof setTimeout>[]>([]);
+
+  const clearTimers = useCallback(() => {
+    timers.current.forEach(clearTimeout);
+    timers.current = [];
+  }, []);
+  useEffect(() => clearTimers, [clearTimers]);
+
+  const ask = (i: number) => {
+    clearTimers();
+    setAsked(i);
+    setTyped(0);
+    setThinking(true);
+    timers.current.push(setTimeout(() => setThinking(false), 550));
+  };
+
+  const turn: NovaTurn | null = asked === null ? null : NOVA_TUTOR_THREAD[asked];
+
+  // Reveal the answer a few characters at a time once "thinking" ends. Respects
+  // reduced-motion by jumping straight to the full answer.
+  useEffect(() => {
+    if (!turn || thinking) return;
+    const reduce = typeof window !== "undefined"
+      && window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+    if (reduce) { setTyped(turn.a.length); return; }
+    let n = 0;
+    const tick = () => {
+      n = Math.min(turn.a.length, n + 3);
+      setTyped(n);
+      if (n < turn.a.length) timers.current.push(setTimeout(tick, 16));
+    };
+    tick();
+  }, [turn, thinking]);
+
+  const remaining = NOVA_TUTOR_THREAD.filter((_, i) => i !== asked);
+
+  return (
+    <div className="flex h-full flex-col p-4">
+      <div className="flex-1 space-y-2.5">
+        {turn ? (
+          <>
+            <div className="ml-auto max-w-[80%] rounded-2xl rounded-br-sm bg-white/10 px-3 py-2 text-[11px] text-slate-200">
+              {turn.q}
+            </div>
+            <div
+              className="max-w-[92%] rounded-2xl rounded-bl-sm px-3 py-2 text-[11px] leading-relaxed text-slate-100"
+              style={{ background: "rgba(51,136,255,0.18)" }}
+              aria-live="polite"
+            >
+              {thinking
+                ? <span className="inline-flex gap-1 py-0.5" aria-label="Nova is typing">
+                    {[0, 1, 2].map((d) => (
+                      <span key={d} className="h-1.5 w-1.5 animate-bounce rounded-full bg-slate-300"
+                        style={{ animationDelay: `${d * 120}ms` }} />
+                    ))}
+                  </span>
+                : <NovaAnswer text={turn.a.slice(0, typed)} code={turn.code} />}
+            </div>
+          </>
+        ) : (
+          <p className="pt-1 text-[11px] leading-relaxed text-slate-400">
+            Ask Nova something a learner would actually get stuck on:
+          </p>
+        )}
       </div>
-    );
-  }
+
+      <div className="mt-3 space-y-1.5">
+        {remaining.map((t) => {
+          const i = NOVA_TUTOR_THREAD.indexOf(t);
+          return (
+            <button
+              key={t.q}
+              onClick={() => ask(i)}
+              className="block w-full rounded-lg border border-white/10 px-3 py-2 text-left text-[11px] text-slate-300 transition-colors hover:border-white/25 hover:bg-white/5 hover:text-white"
+            >
+              {t.q}
+            </button>
+          );
+        })}
+        <p className="pt-1 text-[9.5px] leading-snug text-slate-500">
+          Illustration of how Nova answers. In the product it reads your actual lesson and your own code.
+        </p>
+      </div>
+    </div>
+  );
+}
+
+function NovaPanel({ k }: { k: string }) {
+  if (k === "tutor") return <NovaTutorChat />;
   if (k === "review") {
     return (
       <div className="p-4">
@@ -71,17 +176,21 @@ export function NovaCapabilities() {
   const [visible, setVisible] = useState(false);
   const [active, setActive] = useState(0);
   const [paused, setPaused] = useState(false);
+  const [touched, setTouched] = useState(false);
 
   useEffect(() => {
     const o = new IntersectionObserver(([e]) => e.isIntersecting && setVisible(true), { threshold: 0.15 });
     if (ref.current) o.observe(ref.current);
     return () => o.disconnect();
   }, []);
+  // Auto-rotate stops for good once the visitor picks a capability themselves.
+  // The tutor panel is now interactive, and rotating the panel out from under
+  // someone who has just asked Nova a question is the one thing it must not do.
   useEffect(() => {
-    if (!visible || paused) return;
+    if (!visible || paused || touched) return;
     const id = setInterval(() => setActive((a) => (a + 1) % CAPS.length), 3000);
     return () => clearInterval(id);
-  }, [visible, paused]);
+  }, [visible, paused, touched]);
 
   return (
     <section ref={ref} className="relative overflow-hidden py-20 sm:py-24 px-4 sm:px-6 lg:px-8" style={{ background: "linear-gradient(180deg,#F4F8FF 0%,#FFFFFF 100%)" }}>
@@ -105,7 +214,7 @@ export function NovaCapabilities() {
             {CAPS.map((c, i) => {
               const on = i === active;
               return (
-                <button key={c.key} onClick={() => setActive(i)}
+                <button key={c.key} onClick={() => { setActive(i); setTouched(true); }}
                   className="w-full text-left flex items-start gap-3 rounded-xl border p-3.5 transition-all"
                   style={{ borderColor: on ? `${c.accent}66` : "#E2E8F0", background: on ? `${c.accent}12` : "#FFFFFF", boxShadow: on ? `0 8px 24px ${c.accent}22` : "0 1px 3px rgba(15,28,49,0.04)" }}>
                   <span className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0 transition-transform" style={{ background: `linear-gradient(135deg, ${c.accent}, ${c.accent}cc)`, transform: on ? "scale(1.05)" : "scale(1)" }}>
@@ -120,9 +229,11 @@ export function NovaCapabilities() {
             })}
           </div>
 
-          {/* Nova panel — neural field glows behind the UI (dark = perfect canvas) */}
-          <div className="relative rounded-2xl border border-white/10 overflow-hidden flex flex-col" style={{ background: "linear-gradient(180deg,#0B1626 0%,#070E1A 100%)", boxShadow: "0 20px 56px rgba(5,11,20,0.4)" }}>
-            <NeuralField color="#3388FF" />
+          {/* Nova panel. The decorative neural field that used to sit behind this
+              is gone: it competed with the chat for attention and made a real
+              product surface look like an illustration, which is the opposite of
+              what this section is arguing. */}
+          <div className="relative rounded-2xl border border-white/10 overflow-hidden flex flex-col min-h-[320px]" style={{ background: "linear-gradient(180deg,#0B1626 0%,#070E1A 100%)", boxShadow: "0 20px 56px rgba(5,11,20,0.4)" }}>
             <div className="relative z-10 flex items-center gap-2 px-4 py-2.5 border-b border-white/8">
               <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
               <span className="text-[11px] font-bold text-slate-300">Nova</span>

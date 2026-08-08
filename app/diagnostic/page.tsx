@@ -8,7 +8,7 @@ import { Logo } from "@/components/ui/logo";
 import { DIAG_SUBJECTS as SUBJECTS } from "@/lib/diagnostic";
 import { GOAL_KEY } from "@/components/RoutingQuestion";
 import { CourseIcon } from "@/components/ui/course-icon";
-import { WORK_LANE_SLUGS } from "@/lib/work-lanes";
+import { WORK_LANE_SLUGS, CATALOG_HIDDEN_SLUGS } from "@/lib/work-lanes";
 
 /* What the report actually contains. Every line here maps to a real tile on
    /diagnostic/[subject]/results — the neural map, the per-topic bars, the
@@ -56,9 +56,14 @@ export default function DiagnosticPage() {
   }, [router]);
 
   const filtered = useMemo(() => {
+    // CATALOG_HIDDEN_SLUGS drops anything that ships as a module inside other
+    // courses rather than as a track of its own. Without it AI Foundations would
+    // fall out of the work lane and into the CAREER lane, which is worse than
+    // where it started — the career lane is the engineering tracks.
+    const listed = SUBJECTS.filter((s) => !CATALOG_HIDDEN_SLUGS.has(s.slug));
     const q = query.trim().toLowerCase();
-    if (!q) return SUBJECTS;
-    return SUBJECTS.filter((s) => s.title.toLowerCase().includes(q) || s.role.toLowerCase().includes(q));
+    if (!q) return listed;
+    return listed.filter((s) => s.title.toLowerCase().includes(q) || s.role.toLowerCase().includes(q));
   }, [query]);
 
   // The two lanes, in the visitor's order (work-goal visitors see role tracks first).
