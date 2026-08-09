@@ -456,6 +456,15 @@ export function LearnClient({
   const [promptErrors, setPromptErrors] = useState<Record<string, string | null>>({});
   const [promptImprovedOpen, setPromptImprovedOpen] = useState<Record<string, boolean>>({});
 
+  // ── Session memory: resume exactly where the student stopped ──────────────
+  // Card position, typed answers, and locked quick-check results survive
+  // leaving the lesson (tab close, navigation, the phone→computer bridge).
+  // localStorage per lesson; restored once on mount, cleared on completion.
+  // MCQ restore is safe across the per-mount option shuffle because answers
+  // are stored as option TEXT, not index.
+  const [resumed, setResumed] = useState(false);
+  const restoredRef = useRef(false);
+
   async function gradePromptDrill(exId: string) {
     const text = (responses[exId]?.responseText ?? "").trim();
     if (text.length < 10) {
@@ -581,6 +590,59 @@ export function LearnClient({
   const [results, setResults] = useState<ExerciseResult[] | null>(null);
   const [completing, setCompleting] = useState(false);
   const [completed, setCompleted] = useState(alreadyCompleted);
+
+  // Restore the saved session once, before any interaction. Merge order puts
+  // live state last so anything the student has already done this visit wins.
+  useEffect(() => {
+    if (restoredRef.current || alreadyCompleted || cards.length === 0) return;
+    restoredRef.current = true;
+    try {
+      const raw = localStorage.getItem(`s1-lesson-pos-${lesson.id}`);
+      if (!raw) return;
+      const saved = JSON.parse(raw) as {
+        card?: number;
+        responses?: typeof responses;
+        quizAnswered?: Record<string, boolean>;
+        quizCorrect?: Record<string, boolean>;
+        quizAttempts?: Record<string, number>;
+        results?: ExerciseResult[] | null;
+        appliedAnswer?: string;
+      };
+      if (!saved || typeof saved.card !== "number") return;
+      const card = Math.min(Math.max(0, saved.card), cards.length - 1);
+      if (saved.responses && typeof saved.responses === "object") {
+        setResponses(p => {
+          const merged = { ...p };
+          for (const [id, r] of Object.entries(saved.responses!)) {
+            if (merged[id]) merged[id] = { ...merged[id], ...r };
+          }
+          return merged;
+        });
+      }
+      if (saved.quizAnswered) setQuizAnswered(p => ({ ...saved.quizAnswered, ...p }));
+      if (saved.quizCorrect) setQuizCorrect(p => ({ ...saved.quizCorrect, ...p }));
+      if (saved.quizAttempts) setQuizAttempts(p => ({ ...saved.quizAttempts, ...p }));
+      if (Array.isArray(saved.results) && saved.results.length > 0) setResults(saved.results);
+      if (typeof saved.appliedAnswer === "string" && saved.appliedAnswer) setAppliedAnswer(saved.appliedAnswer);
+      if (card > 0) {
+        setCurrentCard(card);
+        setVisitedCards(new Set(Array.from({ length: card + 1 }, (_, i) => i)));
+        setResumed(true);
+      }
+    } catch { /* corrupt or blocked storage — start from the top */ }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [cards.length, alreadyCompleted, lesson.id]);
+
+  // Save on every meaningful change. Cheap (a few KB), synchronous, and only
+  // after the restore has run so a fresh mount can't clobber a saved session.
+  useEffect(() => {
+    if (!restoredRef.current || completed) return;
+    try {
+      localStorage.setItem(`s1-lesson-pos-${lesson.id}`, JSON.stringify({
+        card: currentCard, responses, quizAnswered, quizCorrect, quizAttempts, results, appliedAnswer,
+      }));
+    } catch { /* storage full/blocked — resume just won't work this session */ }
+  }, [currentCard, responses, quizAnswered, quizCorrect, quizAttempts, results, appliedAnswer, completed, lesson.id]);
   // Milestone facts from /api/learn/complete. isFirstWin drives the celebration
   // for lesson ONE — the highest-leverage screen a new learner ever sees.
   const [isFirstWin, setIsFirstWin] = useState(false);
@@ -685,6 +747,8 @@ export function LearnClient({
       if (typeof data?.lessonsCompleted === "number") setLessonsDone(data.lessonsCompleted);
       if (typeof data?.nextLessonMinutes === "number") setNextMinutes(data.nextLessonMinutes);
       setCompleted(true);
+      // The lesson is banked — the saved session has done its job.
+      try { localStorage.removeItem(`s1-lesson-pos-${lesson.id}`); } catch { /* ignore */ }
     } catch (err) { setError(err instanceof Error ? err.message : "Something went wrong"); }
     finally { setCompleting(false); }
   }
@@ -872,6 +936,20 @@ export function LearnClient({
       {/* ── Card content ──────────────────────────────────────────── */}
       <div className="flex-1 flex flex-col overflow-hidden">
         <div key={animKey} className="flex-1 overflow-y-auto px-4 sm:px-6 py-6 sm:py-8 card-enter">
+          {/* Resume chip — tells the student their place was kept, with an
+              escape hatch back to the top of the lesson. */}
+          {resumed && (
+            <div className="max-w-3xl mx-auto mb-4 flex items-center justify-between gap-3 rounded-xl border border-brand/20 bg-brand/[0.05] px-4 py-2.5 card-fade-up">
+              <p className="text-xs font-semibold text-ink">
+                ↩ Picked up where you left off — card {currentCard + 1} of {cards.length}.
+              </p>
+              <button
+                onClick={() => { setResumed(false); goToCard(0); }}
+                className="text-[11px] font-bold text-brand hover:underline shrink-0">
+                Start from the top
+              </button>
+            </div>
+          )}
           <div className="max-w-3xl mx-auto">
 
             {/* ═══ OBJECTIVES CARD ═══ */}
@@ -1567,7 +1645,8 @@ export function LearnClient({
                       /* Module hand-off — crossing into a new module is a
                          milestone, not just another lesson hop. */
                       <button onClick={() => router.push(`/learn/${nextLessonId}`)}
-                        className="group px-6 py-3 rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-700 text-white text-left transition-all hover:shadow-lg hover:-translate-y-0.5 flex items-center gap-4">
+                        className="group px-6 py-3 rounded-2xl text-white text-left transition-all hover:shadow-lg hover:-translate-y-0.5 flex items-center gap-4"
+                        style={{ background: "linear-gradient(135deg, #3388FF 0%, #0056CE 55%, #01224F 100%)" }}>
                         <div>
                           <p className="text-[9px] font-bold uppercase tracking-[0.18em] text-white/70 mb-0.5">Next module unlocked</p>
                           <p className="text-sm font-bold">{nextModule?.title}</p>
@@ -1592,7 +1671,8 @@ export function LearnClient({
 
                 {/* Advanced course upsell — fires on final lesson completion */}
                 {completed && !nextLessonId && advancedCourse && (
-                  <div className="mt-6 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-xl p-5 text-white max-w-xs mx-auto">
+                  <div className="mt-6 rounded-xl p-5 text-white max-w-xs mx-auto"
+                    style={{ background: "linear-gradient(135deg, #3388FF 0%, #0056CE 55%, #01224F 100%)" }}>
                     <p className="text-[10px] font-bold uppercase tracking-widest text-white/60 mb-1">What&apos;s Next</p>
                     <h3 className="text-sm font-bold mb-1">{advancedCourse.title}</h3>
                     <p className="text-xs text-white/70 mb-3">6 senior modules · capstone · certificate. Included in your plan.</p>
