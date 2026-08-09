@@ -7,6 +7,7 @@ import { z } from "zod";
 import { rateLimitAI } from "@/lib/rate-limit";
 import { fetchRepo, enrichCodeComments } from "@/lib/github/fetch-repo";
 import { scoreObjective, type GradingConfig, type ObjectiveResult } from "@/lib/grading/objective";
+import { verifyCiActions } from "@/lib/grading/ci";
 import { reviewProject, type RubricCriterion } from "@/lib/grading/project-review";
 import { checkAndMarkEnrollmentComplete } from "@/lib/enrollment-completion";
 
@@ -59,9 +60,15 @@ export async function POST(request: Request) {
     const grading = (project.grading ?? null) as GradingConfig | null;
     const hasObjective = !!(grading && grading.metric);
 
-    // ── 1. OBJECTIVE check (token-free): student output vs withheld answer key ──
+    // ── 1. OBJECTIVE check (token-free): student output vs withheld answer key,
+    //       or — for ci_actions kits — live GitHub verification that the kit's
+    //       unmodified contract tests pass in Actions on the current HEAD. ──
     let objective: ObjectiveResult | null = null;
-    if (hasObjective) objective = scoreObjective(grading as GradingConfig, output ?? "");
+    if (hasObjective) {
+      objective = (grading as GradingConfig).metric === "ci_actions"
+        ? await verifyCiActions(githubUrl, grading as GradingConfig)
+        : scoreObjective(grading as GradingConfig, output ?? "");
+    }
 
     // ── 2. AI rubric review of the actual code, against THIS project's rubric ──
     const repoAnalysis = await fetchRepo(githubUrl);

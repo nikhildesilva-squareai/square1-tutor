@@ -7,6 +7,10 @@ interface SubmissionFormProps {
   projectId: string;
   /** Public instructions for the objective check — what output to paste. Null = no objective gate. */
   submitFormat?: string | null;
+  /** True when the objective gate is CI-based (grading.metric === "ci_actions"):
+   *  verification reads the repo's GitHub Actions run server-side, so there is
+   *  no output to paste — the form shows instructions instead of a textarea. */
+  ciMode?: boolean;
 }
 
 interface SnippetLine {
@@ -63,7 +67,7 @@ interface SubmitResult {
   submission_history?: PreviousAttempt[] | null;
 }
 
-export function SubmissionForm({ projectId, submitFormat }: SubmissionFormProps) {
+export function SubmissionForm({ projectId, submitFormat, ciMode = false }: SubmissionFormProps) {
   const [githubUrl, setGithubUrl] = useState("");
   const [liveUrl, setLiveUrl] = useState("");
   const [description, setDescription] = useState("");
@@ -71,7 +75,7 @@ export function SubmissionForm({ projectId, submitFormat }: SubmissionFormProps)
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<SubmitResult | null>(null);
-  const objectiveRequired = !!submitFormat;
+  const objectiveRequired = !!submitFormat && !ciMode;
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -143,6 +147,17 @@ export function SubmissionForm({ projectId, submitFormat }: SubmissionFormProps)
           Must be a public repository. We&apos;ll read your actual code for a real review.
         </p>
       </div>
+
+      {ciMode && submitFormat && (
+        <div className="rounded-xl border border-brand/20 bg-brand/[0.04] px-4 py-3">
+          <p className="text-[10px] font-bold uppercase tracking-widest text-brand mb-1.5">Objective check — verified from GitHub Actions</p>
+          <p className="text-xs text-ink-secondary leading-relaxed">{submitFormat}</p>
+          <p className="text-[11px] text-ink-muted mt-2">
+            Nothing to paste: when you submit, we read your repository&apos;s latest Contract Tests run
+            and confirm the kit&apos;s test files are unmodified. Make sure CI is green on your newest commit.
+          </p>
+        </div>
+      )}
 
       {objectiveRequired && (
         <div>

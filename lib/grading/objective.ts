@@ -10,7 +10,8 @@ export type GradingMetric =
   | "set_recall"        // same, but score = recall (did they catch the planted items)
   | "accuracy"          // per-item label match (id_field → label_field)
   | "exact"             // exact match of value(s) (e.g. recovered plaintext / shift)
-  | "numeric_tolerance"; // numbers within a relative tolerance (e.g. risk scores)
+  | "numeric_tolerance" // numbers within a relative tolerance (e.g. risk scores)
+  | "ci_actions";       // GitHub Actions verification — handled by lib/grading/ci.ts, not scoreObjective
 
 export interface GradingConfig {
   metric: GradingMetric;
@@ -21,6 +22,9 @@ export interface GradingConfig {
   id_field?: string;          // accuracy : field that matches student↔truth items
   label_field?: string;       // accuracy : field compared for correctness
   tolerance?: number;         // numeric_tolerance : relative tolerance (default 0.05)
+  starter_repo?: string;      // ci_actions : "owner/name" of the starter template to compare against
+  protected_paths?: string[]; // ci_actions : files that must be byte-identical to the starter
+  workflow_file?: string;     // ci_actions : workflow filename (default "contract-tests.yml")
 }
 
 export interface ObjectiveResult {

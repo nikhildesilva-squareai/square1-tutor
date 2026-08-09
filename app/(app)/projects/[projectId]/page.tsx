@@ -486,6 +486,7 @@ export default async function ProjectBriefPage({ params }: PageProps) {
                 <SubmissionForm
                   projectId={projectId}
                   submitFormat={(project as unknown as { grading?: { submit_format?: string } | null }).grading?.submit_format ?? null}
+                  ciMode={(project as unknown as { grading?: { metric?: string } | null }).grading?.metric === "ci_actions"}
                 />
               </div>
             )}
