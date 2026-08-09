@@ -310,6 +310,20 @@ function parseTheoryIntoCards(theory: string, exercises: ExerciseData[], objecti
     }
   });
 
+  // 3a. Flush every quick check the pacing loop didn't place. A lesson with
+  // more MCQs than sections÷2 used to ORPHAN the extras: no card existed for
+  // them, so the completion checklist's jump went nowhere, the deck never
+  // asked the question, and the server-side completion gate demanded answers
+  // the student was never shown. Every exercise must own a card, always.
+  while (quizIdx < mcqExercises.length) {
+    cards.push({
+      type: "quiz",
+      title: "Quick Check",
+      exercise: mcqExercises[quizIdx],
+    });
+    quizIdx++;
+  }
+
   // 3b. First-win milestone — ONLY on a student's very first lesson. The full
   // lesson is a 30–40 minute ask; the honest "5-minute first win" is the first
   // concept + its quick check. Right there we celebrate and offer a clean exit
