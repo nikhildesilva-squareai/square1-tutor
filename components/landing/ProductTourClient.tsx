@@ -4,12 +4,23 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { fpTrack } from "@/lib/first-party";
 import {
   LayoutDashboard, BookOpen, Sparkles, FolderGit2, Trophy,
   ArrowRight, Lock, X, Play, Pause, type LucideIcon,
 } from "lucide-react";
 
 const BRAND = "#0056CE";
+
+// Founder walkthrough (Loom, 41s). The interactive tour below stays the primary
+// surface — it is instant, crawlable, works without JS and never buffers — and
+// the video is the deeper cut for anyone who wants a human driving it.
+//
+// Loaded as a FACADE: the iframe only mounts once someone asks for it, so the
+// landing page pays nothing for it in LCP or bytes, and no third-party frame
+// (or its cookies) loads until the visitor takes an explicit action.
+const LOOM_ID = "4594f27c84f64d26a925c5c9ec120beb";
+const LOOM_SECONDS = 41;
 
 export type TourData = {
   courseTitle: string;
@@ -217,6 +228,14 @@ export function ProductTourClient({ data }: { data: TourData }) {
   // Camera + pointer state for the active panel. When the tour is paused, a
   // visitor took over, or motion is reduced, everything resolves to the final
   // frame (detail + label, no pointer) so a still tour is still complete.
+  const [videoOpen, setVideoOpen] = useState(false);
+  useEffect(() => {
+    if (!videoOpen) return;
+    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") setVideoOpen(false); };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [videoOpen]);
+
   const [phase, setPhase] = useState<"wide" | "focus">("focus");
   const [showPin, setShowPin] = useState(true);
   const [cursor, setCursor] = useState<"off" | "enter" | "arrived">("off");
@@ -309,6 +328,21 @@ export function ProductTourClient({ data }: { data: TourData }) {
             Five screens from the {data.courseTitle} track — the lessons, the marking and
             the projects exactly as they arrive on day one.
           </p>
+
+          {/* Naming the length is the whole persuasion: "41 seconds" is a
+              decision anyone can make instantly, where "watch our video" is a
+              commitment nobody wants to price. */}
+          <button
+            onClick={() => { stopAutoplay(); setVideoOpen(true); fpTrack("cta_click", "tour:watch-walkthrough"); }}
+            className="group mt-5 inline-flex h-11 items-center gap-2.5 rounded-full border px-5 text-sm font-bold transition-colors"
+            style={{ borderColor: "rgba(255,255,255,0.22)", background: "rgba(255,255,255,0.07)", color: "#fff" }}
+          >
+            <span className="flex h-6 w-6 items-center justify-center rounded-full transition-transform group-hover:scale-110"
+                  style={{ background: "#fff" }}>
+              <Play className="h-3 w-3 translate-x-[1px]" fill="#01224F" style={{ color: "#01224F" }} aria-hidden />
+            </span>
+            Watch the {LOOM_SECONDS}-second walkthrough
+          </button>
         </header>
 
         {/* ── Body: rail + stage ─────────────────────────────────────────────
@@ -442,6 +476,47 @@ export function ProductTourClient({ data }: { data: TourData }) {
           </Link>
         </div>
       </div>
+
+      {/* Founder walkthrough. The iframe is created here and nowhere else, so it
+          is genuinely absent from the page until this point. */}
+      {videoOpen && (
+        <div
+          className="fixed inset-0 z-[95] flex items-center justify-center bg-[#00183A]/85 px-4 backdrop-blur-sm"
+          role="dialog" aria-modal="true" aria-label="Product walkthrough video"
+          onClick={() => setVideoOpen(false)}
+        >
+          <div
+            className="w-full"
+            style={{ maxWidth: "min(56rem, calc((85dvh - 3.5rem) * 16 / 9))" }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="mb-3 flex items-center justify-between gap-3">
+              <p className="text-sm font-bold text-white">
+                Square 1 in {LOOM_SECONDS} seconds
+              </p>
+              <button
+                onClick={() => setVideoOpen(false)}
+                aria-label="Close video"
+                className="flex h-9 w-9 items-center justify-center rounded-full border text-white/80 transition-colors hover:text-white"
+                style={{ borderColor: "rgba(255,255,255,0.25)" }}
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+            <div className="relative w-full overflow-hidden rounded-2xl bg-black shadow-2xl"
+                 style={{ aspectRatio: "16 / 9" }}>
+              <iframe
+                src={`https://www.loom.com/embed/${LOOM_ID}?hideEmbedTopBar=true&hide_owner=true`}
+                title="Square 1 AI product walkthrough"
+                allow="autoplay; fullscreen; picture-in-picture"
+                allowFullScreen
+                className="absolute inset-0 h-full w-full"
+                style={{ border: 0 }}
+              />
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Email gate — unchanged contract. */}
       {gateHref && (
