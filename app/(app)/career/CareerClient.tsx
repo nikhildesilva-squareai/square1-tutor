@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { computeReadiness } from "@/lib/readiness";
 import {
   Target, Check, CircleDashed, X, Minus, FileText, Mail, Mic,
   Copy, Loader2, ArrowRight, FolderGit2, Plus, Trash2, TrendingUp, BookOpen,
@@ -227,7 +228,29 @@ export function CareerClient({ firstName, inventory, initialTargets }: {
 
       {/* What the agent stands on */}
       <div className="mt-5 rounded-2xl border border-border bg-surface p-4">
-        <p className="text-[10px] tracking-widest uppercase font-bold text-ink-muted mb-2">Your verified record — what the agent may claim</p>
+        <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
+          <p className="text-[10px] tracking-widest uppercase font-bold text-ink-muted">Your verified record — what the agent may claim</p>
+          {/* Global tier from the SAME model /portfolio uses (UX review R1).
+              Distinct from the per-posting % below: this is "where am I
+              overall", the gap map is "how ready for THIS role". */}
+          {!inventory.isEmpty && inventory.projects.length > 0 && (() => {
+            const pct = Math.round(
+              inventory.projects.reduce((s, p) => s + (p.maxScore > 0 ? (p.score / p.maxScore) * 100 : 0), 0) /
+              inventory.projects.length,
+            );
+            const r = computeReadiness(pct, inventory.projects.length);
+            return (
+              <Link
+                href="/portfolio"
+                title={r.next ?? "Top tier — keep shipping."}
+                className="inline-flex items-center gap-1.5 rounded-full border border-brand/25 bg-surface-tint px-2.5 py-1 text-[11px] font-bold text-brand transition-colors hover:border-brand/50"
+              >
+                Overall level: {r.label}
+                <svg width="10" height="10" viewBox="0 0 16 16" fill="none"><path d="M6 3l5 5-5 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /></svg>
+              </Link>
+            );
+          })()}
+        </div>
         {inventory.isEmpty ? (
           /* UX review R2: for a student who doesn't feel like "learning" but
              does want a job, this screen is the strongest motivator in the

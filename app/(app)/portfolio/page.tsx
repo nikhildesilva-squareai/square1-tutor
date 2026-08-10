@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import type { ProjectSubmission } from "@/types/database";
 import { SharePortfolioButton } from "@/components/SharePortfolioButton";
+import { computeReadiness, READINESS_TIERS } from "@/lib/readiness";
 
 /* ─── Types ─────────────────────────────────────────────────────────────── */
 interface ProjectWithSubmission {
@@ -11,12 +12,14 @@ interface ProjectWithSubmission {
   course: { title: string; color: string } | null;
 }
 
-function getCareerLevel(avgScore: number): { label: string; color: string; bg: string; border: string; tier: number } {
-  if (avgScore >= 90) return { label: "Senior Engineer", color: "text-emerald-600", bg: "bg-emerald-50", border: "border-emerald-200", tier: 5 };
-  if (avgScore >= 80) return { label: "AI Engineer",     color: "text-blue-600",    bg: "bg-blue-50",    border: "border-blue-200",    tier: 4 };
-  if (avgScore >= 70) return { label: "Mid-Level",       color: "text-violet-600",  bg: "bg-violet-50",  border: "border-violet-200",  tier: 3 };
-  if (avgScore >= 60) return { label: "Junior Engineer",  color: "text-amber-600",   bg: "bg-amber-50",   border: "border-amber-200",   tier: 2 };
-  return { label: "Foundation",  color: "text-ink-muted",  bg: "bg-surface-alt",  border: "border-border",  tier: 1 };
+// One readiness model shared with /career (UX review R1) — lib/readiness is
+// the single source of truth; this maps its tier to display styling only.
+function tierStyle(tier: number): { color: string; bg: string; border: string } {
+  if (tier >= 5) return { color: "text-emerald-600", bg: "bg-emerald-50", border: "border-emerald-200" };
+  if (tier === 4) return { color: "text-blue-600", bg: "bg-blue-50", border: "border-blue-200" };
+  if (tier === 3) return { color: "text-violet-600", bg: "bg-violet-50", border: "border-violet-200" };
+  if (tier === 2) return { color: "text-amber-600", bg: "bg-amber-50", border: "border-amber-200" };
+  return { color: "text-ink-muted", bg: "bg-surface-alt", border: "border-border" };
 }
 
 /* ─── Score ring (SVG) ─────────────────────────────────────────────────── */
@@ -120,7 +123,8 @@ export default async function PortfolioPage() {
   const total = totalProjects ?? 0;
   const deployed = totalScored;
   const readinessPct = total > 0 ? Math.round((deployed / total) * 100) : 0;
-  const career = getCareerLevel(avgScore);
+  const readiness = computeReadiness(avgScore, totalScored);
+  const career = { ...tierStyle(readiness.tier), label: readiness.label, tier: readiness.tier, next: readiness.next };
 
   // Tech stack with score weighting
   const techScores = new Map<string, { count: number; totalScore: number }>();
@@ -257,12 +261,16 @@ export default async function PortfolioPage() {
             </div>
             {/* Level markers */}
             <div className="flex items-center justify-between mt-2">
-              {["Foundation", "Junior", "Mid", "Senior", "Lead"].map((lvl, i) => (
+              {READINESS_TIERS.map((lvl, i) => (
                 <span key={lvl} className={["text-[9px] font-bold uppercase tracking-wider",
                   career.tier > i ? "text-slate-300" : "text-slate-600"
                 ].join(" ")}>{lvl}</span>
               ))}
             </div>
+            {/* What earns the next tier — concrete, from lib/readiness (R1). */}
+            {career.next && (
+              <p className="mt-2.5 text-[11px] leading-relaxed text-slate-400">{career.next}</p>
+            )}
           </div>
 
           {/* Share portfolio */}

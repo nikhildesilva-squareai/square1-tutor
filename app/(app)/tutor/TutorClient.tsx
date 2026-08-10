@@ -59,6 +59,36 @@ export function TutorClient({ studentName, userEmail, enrollments, weakTopics, l
 
   // Conversation state
   const [conversations, setConversations] = useState<Conversation[]>([]);
+  // Conversation management (UX review V3): inline rename + delete.
+  const [renamingId, setRenamingId] = useState<string | null>(null);
+  const [renameDraft, setRenameDraft] = useState("");
+
+  async function commitRename(convId: string) {
+    const title = renameDraft.trim().slice(0, 80);
+    setRenamingId(null);
+    if (!title) return;
+    const prev = conversations;
+    setConversations(p => p.map(c => (c.id === convId ? { ...c, title } : c)));
+    try {
+      const res = await fetch("/api/tutor/conversations", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: convId, title }),
+      });
+      if (!res.ok) setConversations(prev); // roll back — the list must mirror the server
+    } catch { setConversations(prev); }
+  }
+
+  async function deleteConversation(convId: string) {
+    if (!window.confirm("Delete this conversation? Nova's replies in it are gone for good.")) return;
+    const prev = conversations;
+    setConversations(p => p.filter(c => c.id !== convId));
+    if (activeConvId === convId) startNewChat();
+    try {
+      const res = await fetch(`/api/tutor/conversations?id=${encodeURIComponent(convId)}`, { method: "DELETE" });
+      if (!res.ok) setConversations(prev);
+    } catch { setConversations(prev); }
+  }
   const [activeConvId, setActiveConvId] = useState<string | null>(null);
   const [loadingHistory, setLoadingHistory] = useState(true);
 
@@ -274,14 +304,53 @@ export function TutorClient({ studentName, userEmail, enrollments, weakTopics, l
           ) : (
             <div className="space-y-0.5 px-2">
               {conversations.map(conv => (
-                <button key={conv.id} onClick={() => loadConversation(conv.id)}
+                <div key={conv.id}
                   className={cn(
-                    "w-full text-left px-3 py-2.5 rounded-lg transition-all",
+                    "group relative rounded-lg transition-all",
                     activeConvId === conv.id ? "bg-surface-tint border border-brand/20" : "hover:bg-surface-alt"
                   )}>
-                  <p className="text-xs font-medium text-ink truncate">{conv.title}</p>
-                  <p className="text-[10px] text-ink-muted mt-0.5">{conv.message_count} messages · {timeAgo(conv.last_message_at)}</p>
-                </button>
+                  {renamingId === conv.id ? (
+                    <form
+                      className="px-3 py-2"
+                      onSubmit={(e) => { e.preventDefault(); void commitRename(conv.id); }}
+                    >
+                      <input
+                        autoFocus
+                        value={renameDraft}
+                        onChange={(e) => setRenameDraft(e.target.value)}
+                        onBlur={() => void commitRename(conv.id)}
+                        onKeyDown={(e) => { if (e.key === "Escape") setRenamingId(null); }}
+                        aria-label="Conversation title"
+                        className="w-full rounded-md border border-brand/40 bg-surface px-2 py-1 text-xs font-medium text-ink outline-none"
+                      />
+                    </form>
+                  ) : (
+                    <button onClick={() => loadConversation(conv.id)} className="w-full px-3 py-2.5 pr-14 text-left">
+                      <p className="text-xs font-medium text-ink truncate">{conv.title}</p>
+                      <p className="text-[10px] text-ink-muted mt-0.5">{conv.message_count} messages · {timeAgo(conv.last_message_at)}</p>
+                    </button>
+                  )}
+                  {/* Rename / delete — visible on hover (desktop) and always
+                      on touch via focus-within; UX review V3. */}
+                  {renamingId !== conv.id && (
+                    <div className="absolute right-1.5 top-1/2 flex -translate-y-1/2 items-center gap-0.5 opacity-0 transition-opacity group-hover:opacity-100 focus-within:opacity-100">
+                      <button
+                        onClick={(e) => { e.stopPropagation(); setRenamingId(conv.id); setRenameDraft(conv.title); }}
+                        aria-label="Rename conversation" title="Rename"
+                        className="flex h-6 w-6 items-center justify-center rounded-md text-ink-muted hover:bg-surface hover:text-brand"
+                      >
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M12 20h9" /><path d="M16.5 3.5a2.12 2.12 0 013 3L7 19l-4 1 1-4z" /></svg>
+                      </button>
+                      <button
+                        onClick={(e) => { e.stopPropagation(); void deleteConversation(conv.id); }}
+                        aria-label="Delete conversation" title="Delete"
+                        className="flex h-6 w-6 items-center justify-center rounded-md text-ink-muted hover:bg-red-50 hover:text-red-600"
+                      >
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><polyline points="3 6 5 6 21 6" /><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2" /></svg>
+                      </button>
+                    </div>
+                  )}
+                </div>
               ))}
             </div>
           )}

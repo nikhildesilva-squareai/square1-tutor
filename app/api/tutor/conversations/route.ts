@@ -67,3 +67,57 @@ export async function POST(request: Request) {
 
   return NextResponse.json({ conversation });
 }
+
+// PATCH — Rename a conversation (UX review V3)
+export async function PATCH(request: Request) {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+  const { data: student } = await supabase.from("students").select("id").eq("user_id", user.id).maybeSingle();
+  if (!student) return NextResponse.json({ error: "Student not found" }, { status: 404 });
+
+  const body = await request.json().catch(() => null);
+  const id = typeof body?.id === "string" ? body.id : null;
+  const title = typeof body?.title === "string" ? body.title.trim().slice(0, 80) : "";
+  if (!id || !title) return NextResponse.json({ error: "Invalid input" }, { status: 400 });
+
+  // Ownership enforced in the WHERE clause — no cross-student renames.
+  const { error } = await supabase
+    .from("tutor_conversations")
+    .update({ title })
+    .eq("id", id)
+    .eq("student_id", student.id);
+  if (error) return NextResponse.json({ error: "Failed to rename" }, { status: 500 });
+
+  return NextResponse.json({ ok: true });
+}
+
+// DELETE — Remove a conversation and its messages (UX review V3)
+export async function DELETE(request: Request) {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+  const { data: student } = await supabase.from("students").select("id").eq("user_id", user.id).maybeSingle();
+  if (!student) return NextResponse.json({ error: "Student not found" }, { status: 404 });
+
+  const url = new URL(request.url);
+  const id = url.searchParams.get("id");
+  if (!id) return NextResponse.json({ error: "Invalid input" }, { status: 400 });
+
+  // Verify ownership before touching messages.
+  const { data: conv } = await supabase
+    .from("tutor_conversations")
+    .select("id")
+    .eq("id", id)
+    .eq("student_id", student.id)
+    .maybeSingle();
+  if (!conv) return NextResponse.json({ error: "Not found" }, { status: 404 });
+
+  await supabase.from("tutor_messages").delete().eq("conversation_id", id);
+  const { error } = await supabase.from("tutor_conversations").delete().eq("id", id).eq("student_id", student.id);
+  if (error) return NextResponse.json({ error: "Failed to delete" }, { status: 500 });
+
+  return NextResponse.json({ ok: true });
+}
