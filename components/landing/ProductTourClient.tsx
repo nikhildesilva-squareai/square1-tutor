@@ -50,12 +50,17 @@ type StepKey = "dashboard" | "lesson" | "nova" | "projects" | "outcome";
 type Shot = {
   src: string;
   alt: string;
-  /** object-position + transform-origin, in %. */
+  /** object-position + transform-origin, in %. The camera pushes INTO this point. */
   x: number;
   y: number;
+  /** Zoom once the camera has pushed in. */
   scale: number;
-  /** Where the annotation pin sits inside the window, in %, and which way its
-   *  label opens. A label must never cover the element it points at. */
+  /** Opening framing: near 1 shows the WHOLE screen, so a visitor sees the app's
+   *  navigation and layout — the "space" — before we push into the detail. */
+  wide: number;
+  /** The control the cursor flies to and clicks. Doubles as the annotation pin:
+   *  one marker, named once, then actually used. `place` keeps the label off
+   *  the element it names. */
   pin: { x: number; y: number; label: string; place?: "right" | "left" | "top" | "bottom" };
 };
 
@@ -81,8 +86,8 @@ const STEPS: Step[] = [
       src: "/product/dashboard.png",
       alt:
         "The Square 1 student dashboard: a Continue Learning card for the Data Science track showing the current Pandas DataFrames lesson, with a circular progress ring at 49% complete beside it.",
-      x: 65, y: 25, scale: 1.46,
-      pin: { x: 33, y: 24, label: "Picks up exactly where you stopped", place: "right" },
+      x: 62, y: 27, scale: 1.34, wide: 1.02,
+      pin: { x: 17, y: 26, label: "Resume where you stopped", place: "bottom" },
     },
   },
   {
@@ -96,8 +101,8 @@ const STEPS: Step[] = [
       src: "/product/lesson.png",
       alt:
         "The Square 1 lesson player showing the Pandas DataFrames lesson: a numbered section header, an 'In short' takeaway strip summarising the section in one line, then the Why This Matters prose beneath it.",
-      x: 58, y: 24, scale: 1.6,
-      pin: { x: 29, y: 28, label: "The section in one line, before the detail", place: "top" },
+      x: 56, y: 25, scale: 1.45, wide: 1.02,
+      pin: { x: 13, y: 31, label: "The one line that matters", place: "top" },
     },
   },
   {
@@ -111,8 +116,8 @@ const STEPS: Step[] = [
       src: "/product/nova.png",
       alt:
         "A graded exercise in the Square 1 lesson player: the prompt asks the student to explain the difference between df.loc and df.iloc in Pandas, the student's written answer sits below it, and Nova's marking shows Correct 3 out of 3 with written feedback explaining what the answer demonstrated.",
-      x: 53, y: 43, scale: 1.9,
-      pin: { x: 64, y: 52, label: "Marked by the live grader", place: "right" },
+      x: 53, y: 44, scale: 1.72, wide: 1.02,
+      pin: { x: 18, y: 60, label: "Nova's mark, written live", place: "bottom" },
     },
   },
   {
@@ -126,8 +131,8 @@ const STEPS: Step[] = [
       src: "/product/project.png",
       alt:
         "A Square 1 project brief: Automated EDA Profiler, a beginner Data Science project estimated at 8 hours, with a narrative client scenario and a Getting Started panel offering a GitHub starter template and a clone command.",
-      x: 72, y: 46, scale: 1.5,
-      pin: { x: 84, y: 70, label: "Your repo, one click", place: "top" },
+      x: 70, y: 46, scale: 1.42, wide: 1.02,
+      pin: { x: 84, y: 66, label: "Clone your starter repo", place: "top" },
     },
   },
   {
@@ -140,7 +145,19 @@ const STEPS: Step[] = [
   },
 ];
 
-const DWELL_MS = 6000;
+// ── Shot choreography ───────────────────────────────────────────────────────
+// Each step plays like a screen recording rather than a slide: the camera opens
+// WIDE (you see the whole app — sidebar, layout, where things live), pushes in
+// to the detail, names the control, then a cursor flies to that control and
+// clicks it — and the click is what hands over to the next screen. Cause, then
+// effect. Timings are the beats of that sentence.
+const WIDE_HOLD_MS = 1000;   // hold the establishing shot
+const ZOOM_MS = 1600;        // camera push (also the CSS transition)
+const PIN_AT_MS = 2500;      // label the control once we're close enough to read it
+const CURSOR_AT_MS = 3700;   // pointer enters
+const CURSOR_TRAVEL_MS = 800;
+const CLICK_AT_MS = 4700;
+const DWELL_MS = 5500;       // ...and the screen changes
 
 export function ProductTourClient({ data }: { data: TourData }) {
   const [step, setStep] = useState<StepKey>("dashboard");
@@ -197,12 +214,30 @@ export function ProductTourClient({ data }: { data: TourData }) {
     rail.scrollBy({ left: delta, behavior: "smooth" });
   }, [step]);
 
+  // Camera + pointer state for the active panel. When the tour is paused, a
+  // visitor took over, or motion is reduced, everything resolves to the final
+  // frame (detail + label, no pointer) so a still tour is still complete.
+  const [phase, setPhase] = useState<"wide" | "focus">("focus");
+  const [showPin, setShowPin] = useState(true);
+  const [cursor, setCursor] = useState<"off" | "enter" | "arrived">("off");
+  const [clicked, setClicked] = useState(false);
+
   useEffect(() => {
-    if (!playing || reducedMotion) return;
-    const t = window.setTimeout(() => {
-      setStep(STEPS[(activeIdx + 1) % STEPS.length].key);
-    }, DWELL_MS);
-    return () => window.clearTimeout(t);
+    if (!playing || reducedMotion) {
+      setPhase("focus"); setShowPin(true); setCursor("off"); setClicked(false);
+      return;
+    }
+    setPhase("wide"); setShowPin(false); setCursor("off"); setClicked(false);
+    const timers = [
+      window.setTimeout(() => setPhase("focus"), WIDE_HOLD_MS),
+      window.setTimeout(() => setShowPin(true), PIN_AT_MS),
+      window.setTimeout(() => setCursor("enter"), CURSOR_AT_MS),
+      // A frame later so the pointer has a start position to travel FROM.
+      window.setTimeout(() => setCursor("arrived"), CURSOR_AT_MS + 40),
+      window.setTimeout(() => setClicked(true), CLICK_AT_MS),
+      window.setTimeout(() => setStep(STEPS[(activeIdx + 1) % STEPS.length].key), DWELL_MS),
+    ];
+    return () => timers.forEach(window.clearTimeout);
   }, [playing, activeIdx, reducedMotion]);
 
   // Arrow keys move through the rail, as a real tablist should.
@@ -376,7 +411,9 @@ export function ProductTourClient({ data }: { data: TourData }) {
                    hidden={s.key !== step} className="relative">
                 <div key={s.key === step ? `in-${step}` : "idle"} className={s.key === step ? "tour-panel-in" : undefined}>
                   <Frame url={s.url} caption={s.caption} real={Boolean(s.shot)}>
-                    {s.shot ? <FocusShot shot={s.shot} /> : <OutcomePanel data={data} />}
+                    {s.shot
+                      ? <FocusShot shot={s.shot} phase={phase} showPin={showPin} cursor={cursor} clicked={clicked} />
+                      : <OutcomePanel data={data} />}
                   </Frame>
                 </div>
               </div>
@@ -503,7 +540,18 @@ function pinLabelOffset(place: "right" | "left" | "top" | "bottom"): React.CSSPr
   }
 }
 
-function FocusShot({ shot }: { shot: Shot }) {
+function FocusShot({ shot, phase, showPin, cursor, clicked }: {
+  shot: Shot;
+  phase: "wide" | "focus";
+  showPin: boolean;
+  cursor: "off" | "enter" | "arrived";
+  clicked: boolean;
+}) {
+  // The pointer starts down-and-right of the target and glides onto it, the way
+  // a hand actually moves to a button.
+  const cursorX = cursor === "arrived" ? shot.pin.x : shot.pin.x + 13;
+  const cursorY = cursor === "arrived" ? shot.pin.y : shot.pin.y + 22;
+
   return (
     <div className="relative aspect-[16/9] w-full overflow-hidden bg-white">
       <Image
@@ -516,17 +564,26 @@ function FocusShot({ shot }: { shot: Shot }) {
         style={{
           objectFit: "cover",
           objectPosition: `${shot.x}% ${shot.y}%`,
-          transform: `scale(calc(var(--tour-zoom, 1) * ${shot.scale}))`,
+          // Wide establishing framing, then the push in. Same origin as the
+          // object-position, so the camera drives INTO the point.
+          transform: `scale(calc(var(--tour-zoom, 1) * ${phase === "wide" ? shot.wide : shot.scale}))`,
           transformOrigin: `${shot.x}% ${shot.y}%`,
+          transition: `transform ${ZOOM_MS}ms cubic-bezier(.22,.61,.36,1)`,
         }}
         priority={false}
       />
 
-      {/* Annotation pin — the "show, don't tell" beat. It names the one thing
-          in this crop that proves the step's claim, so the visitor doesn't have
-          to hunt for it. Decorative and inert. */}
-      <span aria-hidden className="pointer-events-none absolute z-10 hidden sm:block"
-            style={{ left: `${shot.pin.x}%`, top: `${shot.pin.y}%`, transform: "translate(-50%,-50%)" }}>
+      {/* The control this step turns on: named, then clicked. Desktop only —
+          on a phone the label is wider than the thing it points at. */}
+      <span
+        aria-hidden
+        className="pointer-events-none absolute z-10 hidden transition-opacity duration-300 sm:block"
+        style={{
+          left: `${shot.pin.x}%`, top: `${shot.pin.y}%`,
+          transform: "translate(-50%,-50%)",
+          opacity: showPin ? 1 : 0,
+        }}
+      >
         <span className="relative flex h-3 w-3">
           <span className="tour-pin-ping absolute inline-flex h-full w-full rounded-full" style={{ background: BRAND, opacity: 0.45 }} />
           <span className="relative inline-flex h-3 w-3 rounded-full border-2 border-white" style={{ background: BRAND }} />
@@ -536,47 +593,113 @@ function FocusShot({ shot }: { shot: Shot }) {
           {shot.pin.label}
         </span>
       </span>
+
+      {/* Simulated pointer. Decorative and inert: it never intercepts events,
+          and real focus/clicks are untouched. */}
+      {cursor !== "off" && (
+        <span
+          aria-hidden
+          className="pointer-events-none absolute z-20 hidden sm:block"
+          style={{
+            left: `${cursorX}%`, top: `${cursorY}%`,
+            transition: `left ${CURSOR_TRAVEL_MS}ms cubic-bezier(.4,.1,.2,1), top ${CURSOR_TRAVEL_MS}ms cubic-bezier(.4,.1,.2,1)`,
+          }}
+        >
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+               style={{ filter: "drop-shadow(0 1px 3px rgba(0,0,0,.35))", transform: clicked ? "scale(.85)" : "scale(1)", transition: "transform 120ms ease" }}>
+            <path d="M5 2l14 8.5-6.2 1.3L9.7 19 5 2z" fill="#0F172A" stroke="#fff" strokeWidth="1.4" strokeLinejoin="round" />
+          </svg>
+          {clicked && (
+            <span className="tour-click absolute -left-3 -top-3 h-9 w-9 rounded-full"
+                  style={{ border: `2.5px solid ${BRAND}` }} />
+          )}
+        </span>
+      )}
     </div>
   );
 }
 
-/* ── Step 5: the outcome, as real DOM ──────────────────────────────────────
+/* ── Step 5: the record the track leaves behind ────────────────────────────
    The only panel with no capture behind it, because "what you leave with" is a
-   claim about the future rather than a screen that exists today. Sized to sit
-   in the same 16:9 window as the shots so the frame never jumps height. */
-function OutcomePanel({ data }: { data: TourData }) {
-  return (
-    <div className="flex aspect-[16/9] w-full flex-col justify-center px-5 py-4 sm:px-7">
-      <p className="text-[13px] leading-relaxed text-slate-700 sm:text-sm">
-        Finish the track and the work itself is the proof. Every project is marked against a
-        published rubric, and the result is a report an employer can check — not a certificate
-        that only says you attended.
-      </p>
+   claim about the end of the track rather than a screen that exists on day one.
+   It used to be three sentences floating in a 16:9 box — mostly dead space, and
+   the weakest beat in the tour. Now it's laid out like the progress screen it
+   describes: counts, the level ladder, then the three artefacts.
 
-      <div className="mt-4">
-        <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Levels you move through</p>
-        <div className="mt-2 flex flex-wrap gap-1.5">
+   Every number is REAL (the track's own lesson/project/module counts from the
+   database). Nothing here invents a student's progress — no fake percentages,
+   no invented mastery bars — because a fabricated progress screen on a page
+   selling verifiable proof would be the one lie that matters. */
+function OutcomePanel({ data }: { data: TourData }) {
+  const stats = [
+    { n: data.totalProjects, label: "projects deployed", sub: "public repo + live URL" },
+    { n: data.totalLessons, label: "lessons completed", sub: "each one graded" },
+    { n: data.modules.length, label: "modules mastered", sub: "beginner to advanced" },
+  ];
+
+  return (
+    <div className="flex aspect-[16/9] w-full flex-col justify-center gap-3.5 px-5 py-4 sm:gap-4 sm:px-7">
+      <div className="flex items-end justify-between gap-3">
+        <div>
+          <p className="text-[9.5px] font-bold uppercase tracking-[0.16em] text-slate-400">
+            Your record after the track
+          </p>
+          <p className="text-[15px] font-bold leading-tight text-slate-900 sm:text-base">{data.courseTitle}</p>
+        </div>
+        <span className="shrink-0 rounded-full px-2.5 py-1 text-[10px] font-bold"
+              style={{ background: "rgba(0,86,206,0.10)", color: BRAND }}>
+          Employer-verifiable
+        </span>
+      </div>
+
+      {/* Counts — the track's real shape */}
+      <div className="grid grid-cols-3 gap-2">
+        {stats.map((s) => (
+          <div key={s.label} className="rounded-lg border border-slate-200 bg-slate-50/60 px-3 py-2.5">
+            <p className="text-lg font-black leading-none tabular-nums text-slate-900 sm:text-xl">{s.n}</p>
+            <p className="mt-1 text-[10.5px] font-bold leading-tight text-slate-700">{s.label}</p>
+            <p className="mt-0.5 text-[9.5px] leading-tight text-slate-400">{s.sub}</p>
+          </div>
+        ))}
+      </div>
+
+      {/* The ladder you climb — real band names from the competency model */}
+      <div>
+        <p className="mb-1.5 text-[9.5px] font-bold uppercase tracking-[0.16em] text-slate-400">
+          Levels you move through
+        </p>
+        <div className="flex items-center gap-1">
           {data.levels.map((l, i) => (
-            <span key={l} className="rounded-lg px-2.5 py-1 text-[11px] font-bold"
-                  style={i <= 1 ? { background: BRAND, color: "#fff" } : { background: "#F1F5F9", color: "#64748B" }}>
-              {l}
+            <span key={l} className="flex min-w-0 flex-1 items-center gap-1">
+              <span
+                className="w-full truncate rounded-md px-1.5 py-1 text-center text-[10px] font-bold"
+                style={i === data.levels.length - 1
+                  ? { background: BRAND, color: "#fff" }
+                  : { background: "#F1F5F9", color: "#64748B" }}
+              >
+                {l}
+              </span>
+              {i < data.levels.length - 1 && (
+                <span aria-hidden className="text-[9px] text-slate-300">›</span>
+              )}
             </span>
           ))}
         </div>
       </div>
 
-      <ul className="mt-4 grid gap-2 sm:grid-cols-3">
+      {/* The three artefacts that leave with you */}
+      <div className="grid grid-cols-3 gap-2">
         {[
-          { t: `${data.totalProjects} projects`, d: "Deployed, with live URLs and a public repo." },
+          { t: "A portfolio page", d: "One link an employer opens and runs." },
           { t: "A skill report", d: "Strengths and gaps per topic, from marked work." },
-          { t: "A portfolio page", d: "One link an employer can open and run." },
+          { t: "A verified certificate", d: "Checkable by credential ID at /verify." },
         ].map((x) => (
-          <li key={x.t} className="rounded-lg border border-slate-200 p-3">
-            <p className="text-[12.5px] font-bold text-slate-900">{x.t}</p>
-            <p className="mt-0.5 text-[11px] leading-relaxed text-slate-600">{x.d}</p>
-          </li>
+          <div key={x.t} className="rounded-lg border border-slate-200 px-3 py-2.5">
+            <p className="text-[11.5px] font-bold leading-tight text-slate-900">{x.t}</p>
+            <p className="mt-0.5 text-[9.5px] leading-snug text-slate-500">{x.d}</p>
+          </div>
         ))}
-      </ul>
+      </div>
     </div>
   );
 }

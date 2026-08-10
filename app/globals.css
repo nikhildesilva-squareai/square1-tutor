@@ -786,6 +786,13 @@ body {
    which is how a "real screenshot" turns back into unreadable mush. Legibility
    beats completeness on a phone: show less of the screen, but show it properly. */
 .tour-shot { --tour-zoom: 1; }
+/* Click ripple where the simulated pointer lands — the visual "something just
+   happened" that makes the next screen read as a consequence. */
+.tour-click { animation: tourClick 420ms ease-out forwards; }
+@keyframes tourClick {
+  from { transform: scale(0.35); opacity: 0.9; }
+  to   { transform: scale(1.15); opacity: 0; }
+}
 @media (max-width: 640px) { .tour-shot { --tour-zoom: 1.35; } }
 
 /* Panel entrance. The screen changing is what sells the tour as a walkthrough,
