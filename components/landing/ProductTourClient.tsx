@@ -12,15 +12,19 @@ import {
 
 const BRAND = "#0056CE";
 
-// Founder walkthrough (Loom, 41s). The interactive tour below stays the primary
-// surface — it is instant, crawlable, works without JS and never buffers — and
-// the video is the deeper cut for anyone who wants a human driving it.
+// Founder walkthrough (Loom, 2:54). The interactive tour below stays the primary
+// surface — instant, crawlable, works without JS, never buffers — and the video
+// is the deeper cut for anyone who wants a human driving it.
+//
+// The runtime is stated up front and the contents are listed beside it: a
+// three-minute ask has to justify itself before the click, where a 40-second
+// one doesn't. "Watch our video" prices a commitment nobody can size.
 //
 // Loaded as a FACADE: the iframe only mounts once someone asks for it, so the
 // landing page pays nothing for it in LCP or bytes, and no third-party frame
 // (or its cookies) loads until the visitor takes an explicit action.
-const LOOM_ID = "4594f27c84f64d26a925c5c9ec120beb";
-const LOOM_SECONDS = 41;
+const LOOM_ID = "26f163e2468b4f62a5def2c602e4a458";
+const LOOM_RUNTIME = "2:54";
 
 export type TourData = {
   courseTitle: string;
@@ -329,21 +333,36 @@ export function ProductTourClient({ data }: { data: TourData }) {
             the projects exactly as they arrive on day one.
           </p>
 
-          {/* Naming the length is the whole persuasion: "41 seconds" is a
-              decision anyone can make instantly, where "watch our video" is a
-              commitment nobody wants to price. */}
-          <button
-            onClick={() => { stopAutoplay(); setVideoOpen(true); fpTrack("cta_click", "tour:watch-walkthrough"); }}
-            className="group mt-5 inline-flex h-11 items-center gap-2.5 rounded-full border px-5 text-sm font-bold transition-colors"
-            style={{ borderColor: "rgba(255,255,255,0.22)", background: "rgba(255,255,255,0.07)", color: "#fff" }}
-          >
-            <span className="flex h-6 w-6 items-center justify-center rounded-full transition-transform group-hover:scale-110"
-                  style={{ background: "#fff" }}>
-              <Play className="h-3 w-3 translate-x-[1px]" fill="#01224F" style={{ color: "#01224F" }} aria-hidden />
-            </span>
-            Watch the {LOOM_SECONDS}-second walkthrough
-          </button>
         </header>
+
+        {/* The trigger states the runtime and what the runtime buys, so the click
+            is an informed one rather than a leap. Full container width, so its
+            edges meet the rail and the frame below rather than floating. */}
+        <button
+          onClick={() => { stopAutoplay(); setVideoOpen(true); fpTrack("cta_click", "tour:watch-walkthrough"); }}
+          className="group relative mt-9 flex w-full items-center gap-3.5 rounded-2xl border p-3 text-left transition-colors hover:border-white/30 sm:gap-4 sm:p-3.5"
+          style={{ borderColor: "rgba(255,255,255,0.16)", background: "rgba(255,255,255,0.06)" }}
+        >
+          <span
+            className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl transition-transform group-hover:scale-105 sm:h-14 sm:w-14"
+            style={{ background: "linear-gradient(135deg,#3388FF,#0056CE)", boxShadow: "0 10px 26px -12px rgba(51,136,255,0.9)" }}
+          >
+            <Play className="h-5 w-5 translate-x-[1px] text-white" fill="currentColor" aria-hidden />
+          </span>
+          <span className="min-w-0 flex-1">
+            <span className="block text-[14.5px] font-bold text-white">
+              Watch the founder walk the whole product
+            </span>
+            <span className="block text-[12.5px]" style={{ color: "rgba(255,255,255,0.62)" }}>
+              {LOOM_RUNTIME} · the dashboard, a lesson, Nova marking real work, and a project brief
+            </span>
+          </span>
+          <span className="hidden shrink-0 rounded-full border px-3 py-1 text-[11px] font-bold text-white/80 sm:block"
+                style={{ borderColor: "rgba(255,255,255,0.2)" }}>
+            {LOOM_RUNTIME}
+          </span>
+        </button>
+
 
         {/* ── Body: rail + stage ─────────────────────────────────────────────
             Two columns on desktop so the story sits BESIDE the screen instead
@@ -478,31 +497,42 @@ export function ProductTourClient({ data }: { data: TourData }) {
       </div>
 
       {/* Founder walkthrough. The iframe is created here and nowhere else, so it
-          is genuinely absent from the page until this point. */}
+          is genuinely absent from the page until this point.
+
+          The player is not the end of the screen: someone who just watched the
+          whole product is at the highest intent they will reach on this page,
+          and the old build answered that moment with a close button. The action
+          now sits directly under the video, where the attention already is. */}
       {videoOpen && (
         <div
-          className="fixed inset-0 z-[95] flex items-center justify-center bg-[#00183A]/85 px-4 backdrop-blur-sm"
+          className="fixed inset-0 z-[95] flex items-center justify-center overflow-y-auto bg-[#00183A]/85 px-4 py-6 backdrop-blur-sm"
           role="dialog" aria-modal="true" aria-label="Product walkthrough video"
           onClick={() => setVideoOpen(false)}
         >
           <div
             className="w-full"
-            style={{ maxWidth: "min(56rem, calc((85dvh - 3.5rem) * 16 / 9))" }}
+            style={{ maxWidth: "min(56rem, calc((88dvh - 11rem) * 16 / 9))" }}
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="mb-3 flex items-center justify-between gap-3">
-              <p className="text-sm font-bold text-white">
-                Square 1 in {LOOM_SECONDS} seconds
-              </p>
+            <div className="mb-3 flex items-end justify-between gap-3">
+              <div className="min-w-0">
+                <p className="text-[15px] font-bold leading-tight text-white">
+                  The whole product, walked through
+                </p>
+                <p className="mt-0.5 text-[12.5px]" style={{ color: "rgba(255,255,255,0.6)" }}>
+                  {LOOM_RUNTIME} · recorded on the live platform, nothing staged
+                </p>
+              </div>
               <button
                 onClick={() => setVideoOpen(false)}
                 aria-label="Close video"
-                className="flex h-9 w-9 items-center justify-center rounded-full border text-white/80 transition-colors hover:text-white"
+                className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border text-white/80 transition-colors hover:text-white"
                 style={{ borderColor: "rgba(255,255,255,0.25)" }}
               >
                 <X className="h-4 w-4" />
               </button>
             </div>
+
             <div className="relative w-full overflow-hidden rounded-2xl bg-black shadow-2xl"
                  style={{ aspectRatio: "16 / 9" }}>
               <iframe
@@ -513,6 +543,32 @@ export function ProductTourClient({ data }: { data: TourData }) {
                 className="absolute inset-0 h-full w-full"
                 style={{ border: 0 }}
               />
+            </div>
+
+            {/* The close of the sale, at the moment of peak intent. */}
+            <div className="mt-4 flex flex-col items-center gap-3 sm:flex-row sm:justify-between">
+              <p className="text-[12.5px] leading-snug" style={{ color: "rgba(255,255,255,0.68)" }}>
+                Seen enough? Find your starting point — it takes three minutes.
+              </p>
+              <div className="flex w-full shrink-0 flex-col gap-2 sm:w-auto sm:flex-row">
+                <Link
+                  href="/skill-check"
+                  onClick={() => fpTrack("cta_click", "tour:video-skillcheck")}
+                  className="inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-white px-6 text-sm font-bold transition-transform hover:-translate-y-0.5"
+                  style={{ color: "#01224F" }}
+                >
+                  Take the free skill check
+                  <ArrowRight className="h-4 w-4" />
+                </Link>
+                <Link
+                  href={`/courses/${data.courseSlug}`}
+                  onClick={(e) => { fpTrack("cta_click", "tour:video-curriculum"); gateClick(e, `/courses/${data.courseSlug}`); }}
+                  className="inline-flex h-11 items-center justify-center rounded-xl border px-6 text-sm font-semibold text-white/90 transition-colors"
+                  style={{ borderColor: "rgba(255,255,255,0.22)" }}
+                >
+                  See the curriculum
+                </Link>
+              </div>
             </div>
           </div>
         </div>
