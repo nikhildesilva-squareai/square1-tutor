@@ -53,7 +53,14 @@ export async function POST(request: Request) {
       }));
 
     if (rows.length > 0) {
-      await createAdminClient().from("events").insert(rows);
+      // The insert result MUST be inspected. This route returns 204 no matter
+      // what, so an ignored error is invisible: on 2026-08-10 the events_type_check
+      // constraint rejected every new funnel event type for a full day and the
+      // beacons kept returning 204, so the funnel read recorded nothing while
+      // looking healthy. A dropped analytics row must never break a page — but it
+      // must leave a trace somewhere.
+      const { error } = await createAdminClient().from("events").insert(rows);
+      if (error) console.error("[track] insert failed", { code: error.code, message: error.message, types: [...new Set(rows.map((r) => r.type))] });
     }
     // 204 keeps the beacon happy with no body.
     return new NextResponse(null, { status: 204 });
