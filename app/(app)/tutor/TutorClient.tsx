@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect, useCallback } from "react";
+import Link from "next/link";
 import { cn } from "@/lib/utils";
 
 interface Message { role: "user" | "assistant"; content: string }
@@ -41,6 +42,8 @@ const MODES = [
   { id: "review", label: "Review", icon: "M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8zM14 2v6h6" },
   { id: "interview", label: "Interview", icon: "M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3zM19 10v2a7 7 0 01-14 0v-2M12 19v4M8 23h8" },
 ] as const;
+
+const ERROR_NOTICE = "Sorry, I hit an error. Please try again.";
 
 type Mode = typeof MODES[number]["id"];
 
@@ -151,7 +154,9 @@ export function TutorClient({ studentName, userEmail, enrollments, weakTopics, l
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          messages: [...messages, { role: "user", content: modePrefix + userMessage }],
+          // Local error notices are UI state, not conversation content —
+          // filtered here so they never enter the saved transcript (V3).
+          messages: [...messages.filter(m => m.content !== ERROR_NOTICE), { role: "user", content: modePrefix + userMessage }],
           context: selectedEnrollment ? {
             courseTitle: selectedEnrollment.courseTitle,
             currentLessonTitle: selectedEnrollment.currentLessonTitle,
@@ -186,7 +191,7 @@ export function TutorClient({ studentName, userEmail, enrollments, weakTopics, l
         ));
       }
     } catch {
-      setMessages(prev => [...prev, { role: "assistant", content: "Sorry, I hit an error. Please try again." }]);
+      setMessages(prev => [...prev, { role: "assistant", content: ERROR_NOTICE }]);
     } finally { setLoading(false); }
   }
 
@@ -235,7 +240,7 @@ export function TutorClient({ studentName, userEmail, enrollments, weakTopics, l
   }
 
   return (
-    <div className="flex h-full max-h-[calc(100vh-3.5rem)] lg:max-h-screen">
+    <div className="flex h-full max-h-[calc(100dvh-3.5rem-4rem-env(safe-area-inset-bottom))] lg:max-h-screen">
       {/* ── Sidebar — Chat history ──────────────────────────────── */}
       <div className={cn(
         "fixed lg:relative inset-y-0 left-0 z-40 w-72 bg-surface border-r border-border flex flex-col transition-transform duration-300 lg:translate-x-0",
@@ -309,9 +314,10 @@ export function TutorClient({ studentName, userEmail, enrollments, weakTopics, l
               </p>
             </div>
 
-            {/* New chat button */}
-            <button onClick={startNewChat}
-              className="h-8 px-3 rounded-lg border border-border text-xs font-semibold text-ink-muted hover:text-brand hover:border-brand/30 transition-all flex items-center gap-1.5">
+            {/* New chat — hidden on lg where the history sidebar's + is
+                visible (two identical controls on one screen, UX review V3) */}
+            <button onClick={startNewChat} data-newchat="header"
+              className="lg:hidden h-8 px-3 rounded-lg border border-border text-xs font-semibold text-ink-muted hover:text-brand hover:border-brand/30 transition-all flex items-center gap-1.5">
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></svg>
               New
             </button>
@@ -325,8 +331,10 @@ export function TutorClient({ studentName, userEmail, enrollments, weakTopics, l
                   "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all flex-1 justify-center",
                   mode === m.id ? "bg-brand text-white shadow-sm" : "text-ink-muted hover:text-ink hover:bg-surface-alt"
                 )}>
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d={m.icon} /></svg>
-                <span className="hidden sm:inline">{m.label}</span>
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" className="hidden sm:block"><path d={m.icon} /></svg>
+                {/* UX review V2: labels always visible — on phones the five
+                    modes were unlabelled mystery glyphs. Icons yield instead. */}
+                <span className="text-[11px] sm:text-xs">{m.label}</span>
               </button>
             ))}
           </div>
@@ -363,6 +371,17 @@ export function TutorClient({ studentName, userEmail, enrollments, weakTopics, l
                   <p className="text-sm text-ink-muted max-w-sm mx-auto">
                     {mode === "learn" ? "I'll explain any concept with examples and code." : mode === "debug" ? "Share your code and the error — I'll find the fix." : mode === "quiz" ? "I'll generate practice questions for your weak areas." : mode === "interview" ? "I'll run a realistic mock interview for your target role — one question at a time, with feedback." : "Paste code and I'll review for bugs and improvements."}
                   </p>
+                  {/* UX review V4: the graded, job-targeted mock interview
+                      lives in Career — this casual practice mode points to it
+                      instead of pretending to be a separate product. */}
+                  {mode === "interview" && (
+                    <p className="mt-2 text-xs text-ink-muted">
+                      Want it scored against a real job posting?{" "}
+                      <Link href="/career" className="font-semibold text-brand hover:underline">
+                        Run the graded mock interview in Career →
+                      </Link>
+                    </p>
+                  )}
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-w-lg mx-auto">
                   {suggestions.map((s, i) => (

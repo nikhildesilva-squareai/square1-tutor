@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 
 interface Props {
@@ -20,9 +21,20 @@ interface Props {
 
 export function CertificateView(props: Props) {
   const router = useRouter();
+  const [copied, setCopied] = useState(false);
 
   function handlePrint() {
     window.print();
+  }
+
+  // R4: copying silently taught users the button was broken — now it says so.
+  async function handleShare() {
+    const url = `${window.location.origin}/certificate/${props.courseSlug}`;
+    try {
+      await navigator.clipboard.writeText(url);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch { /* clipboard denied — nothing useful to do */ }
   }
 
   const levelLabel =
@@ -43,14 +55,15 @@ export function CertificateView(props: Props) {
         </button>
         <div className="flex items-center gap-3">
           <button
-            onClick={() => {
-              const url = `${window.location.origin}/certificate/${props.courseSlug}`;
-              navigator.clipboard.writeText(url);
-            }}
+            onClick={handleShare}
             className="h-10 px-5 rounded-xl border border-border text-ink text-sm font-semibold hover:bg-surface-alt transition-all flex items-center gap-2"
           >
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71" /><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71" /></svg>
-            Share
+            {copied ? (
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#059669" strokeWidth="2.5" strokeLinecap="round"><polyline points="20 6 9 17 4 12" /></svg>
+            ) : (
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71" /><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71" /></svg>
+            )}
+            {copied ? "Link copied" : "Share"}
           </button>
           <button
             onClick={handlePrint}
@@ -115,11 +128,15 @@ export function CertificateView(props: Props) {
                 <div className="w-12 h-0.5 mx-auto rounded-full" style={{ background: props.courseColor }} />
               </div>
 
-              {/* Achievement summary */}
+              {/* Achievement summary — the score clause only prints when a
+                  graded score exists ("a verified assessment score of —%" on a
+                  certificate was the opposite of verified — UX review R4). */}
               <p className="text-xs sm:text-sm text-ink-muted max-w-lg mx-auto leading-relaxed">
-                an online programme offered by Square 1 AI, with a verified assessment score
-                of <span className="font-bold text-ink">{props.assessmentScore ?? "—"}%</span> at
-                the <span className="font-bold text-ink">{levelLabel}</span> level,
+                an online programme offered by Square 1 AI
+                {props.assessmentScore != null ? (
+                  <>, with a verified assessment score of <span className="font-bold text-ink">{props.assessmentScore}%</span></>
+                ) : null}{" "}
+                at the <span className="font-bold text-ink">{levelLabel}</span> level,
                 completing <span className="font-bold text-ink">{props.lessonsCompleted} lessons</span> and <span className="font-bold text-ink">{props.projectsCompleted} projects</span>.
               </p>
             </div>
@@ -159,9 +176,12 @@ export function CertificateView(props: Props) {
                     Credential ID: {props.verificationId}
                   </span>
                 </div>
-                <span className="text-[9px] sm:text-[10px] text-ink-muted">
-                  Verify at <span className="font-semibold">square1ai.com/verify</span>
-                </span>
+                <a
+                  href={`/verify?id=${props.verificationId}`}
+                  className="text-[9px] sm:text-[10px] text-ink-muted hover:text-brand transition-colors"
+                >
+                  Verify at <span className="font-semibold underline underline-offset-2">square1ai.com/verify</span>
+                </a>
               </div>
             </div>
           </div>

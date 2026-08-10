@@ -229,10 +229,25 @@ export function CareerClient({ firstName, inventory, initialTargets }: {
       <div className="mt-5 rounded-2xl border border-border bg-surface p-4">
         <p className="text-[10px] tracking-widest uppercase font-bold text-ink-muted mb-2">Your verified record — what the agent may claim</p>
         {inventory.isEmpty ? (
-          <p className="text-sm text-ink-secondary">
-            Nothing graded yet. Complete a lesson or submit a project first — this agent only argues from proof, so right now it has none.{" "}
-            <Link href="/dashboard" className="text-brand font-semibold hover:underline">Start learning →</Link>
-          </p>
+          /* UX review R2: for a student who doesn't feel like "learning" but
+             does want a job, this screen is the strongest motivator in the
+             app — so the empty state gives a taste of the loop instead of a
+             locked door. Paste a posting below and the gap map still runs;
+             every requirement will honestly read "not yet evidenced", each
+             with the lesson that starts closing it. */
+          <div className="text-sm text-ink-secondary">
+            <p>
+              Nothing graded yet — and this agent only argues from proof. But here&apos;s the loop:
+            </p>
+            <ol className="mt-2 space-y-1 list-decimal list-inside text-[13px]">
+              <li>Paste a real job posting below (that part works right now).</li>
+              <li>You&apos;ll get the requirement map — today everything shows <span className="font-semibold text-amber-700">&quot;not yet evidenced&quot;</span>.</li>
+              <li>Each gap names the exact lesson that starts closing it. Finish work, re-run, watch the % climb.</li>
+            </ol>
+            <p className="mt-2">
+              <Link href="/dashboard" className="text-brand font-semibold hover:underline">Or bank your first lesson now →</Link>
+            </p>
+          </div>
         ) : (
           <div className="flex flex-wrap gap-2">
             {inventory.tracks.map((t) => (

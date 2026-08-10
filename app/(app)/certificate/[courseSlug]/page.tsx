@@ -1,19 +1,11 @@
 import { createClient } from "@/lib/supabase/server";
 import { notFound, redirect } from "next/navigation";
 import { CertificateView } from "./CertificateView";
+// Shared with /verify (UX review R3) so issuing and checking can never drift.
+import { generateVerificationId } from "@/lib/certificates";
 
 interface PageProps {
   params: Promise<{ courseSlug: string }>;
-}
-
-function generateVerificationId(enrollmentId: string, studentId: string): string {
-  const raw = `${enrollmentId}-${studentId}`;
-  let hash = 0;
-  for (let i = 0; i < raw.length; i++) {
-    hash = ((hash << 5) - hash + raw.charCodeAt(i)) | 0;
-  }
-  const hex = Math.abs(hash).toString(16).toUpperCase().padStart(8, "0");
-  return `SQ1-${hex.slice(0, 4)}-${hex.slice(4, 8)}`;
 }
 
 export default async function CertificatePage({ params }: PageProps) {

@@ -426,15 +426,20 @@ export default async function ProjectBriefPage({ params }: PageProps) {
           {/* ═══ ACTION RAIL (sticky) ═══ */}
           <aside className="lg:sticky lg:top-6 space-y-4">
 
-            {/* Status */}
+            {/* Status — a multi-hour task deserves more than a binary (UX
+                review P2): a submission awaiting grading now says so instead
+                of "Not started". Difficulty/hours live in the hero and the
+                At-a-glance tiles already, so they're not repeated a third
+                time here (P4). */}
             <div className="bg-surface rounded-2xl border border-border p-5 shadow-card">
               <div className="text-[10px] font-bold uppercase tracking-widest text-ink-muted mb-3">Your status</div>
-              <span className="mb-3 inline-flex rounded-full px-3 py-1 text-xs font-bold" style={{ background: hasResult ? "rgba(25,166,95,0.14)" : `${courseColor}18`, color: hasResult ? "#19A65F" : courseColor }}>
-                {hasResult ? "Completed" : "Not started"}
+              <span className="mb-3 inline-flex rounded-full px-3 py-1 text-xs font-bold" style={{
+                background: hasResult ? "rgba(25,166,95,0.14)" : submission ? "rgba(217,119,6,0.14)" : `${courseColor}18`,
+                color: hasResult ? "#19A65F" : submission ? "#B45309" : courseColor,
+              }}>
+                {hasResult ? "Completed" : submission ? "Submitted · being reviewed" : "Not started"}
               </span>
               <div className="space-y-2 text-sm">
-                <div className="flex items-center justify-between"><span className="text-ink-muted">Difficulty</span><span className="font-medium text-ink capitalize">{project.difficulty}</span></div>
-                <div className="flex items-center justify-between"><span className="text-ink-muted">Estimated</span><span className="font-medium text-ink">{project.estimated_hours}h</span></div>
                 {due && dueStatus && (
                   <div className="flex items-center justify-between"><span className="text-ink-muted">Due</span><span className="font-medium text-ink">{fmtDate(due)}</span></div>
                 )}
@@ -479,17 +484,25 @@ export default async function ProjectBriefPage({ params }: PageProps) {
               </div>
             </div>
 
-            {/* Submit */}
-            {!hasResult && (
-              <div className="bg-surface rounded-2xl border border-border p-5 shadow-card">
-                <div className="text-[10px] font-bold uppercase tracking-widest text-ink-muted mb-3">Submit for review</div>
-                <SubmissionForm
-                  projectId={projectId}
-                  submitFormat={(project as unknown as { grading?: { submit_format?: string } | null }).grading?.submit_format ?? null}
-                  ciMode={(project as unknown as { grading?: { metric?: string } | null }).grading?.metric === "ci_actions"}
-                />
+            {/* Submit — stays visible after grading (UX review P2): the
+                backend supports resubmission with attempt history, so a
+                graded project gets an explicit "improve your score" path
+                instead of a vanished form. */}
+            <div className="bg-surface rounded-2xl border border-border p-5 shadow-card">
+              <div className="text-[10px] font-bold uppercase tracking-widest text-ink-muted mb-3">
+                {hasResult ? "Improve your score" : "Submit for review"}
               </div>
-            )}
+              {hasResult && (
+                <p className="mb-3 text-xs leading-relaxed text-ink-muted">
+                  Not happy with {submission!.score}/{submission!.max_score}? Push your improvements and resubmit — Nova re-reviews the whole thing and keeps your best attempt history.
+                </p>
+              )}
+              <SubmissionForm
+                projectId={projectId}
+                submitFormat={(project as unknown as { grading?: { submit_format?: string } | null }).grading?.submit_format ?? null}
+                ciMode={(project as unknown as { grading?: { metric?: string } | null }).grading?.metric === "ci_actions"}
+              />
+            </div>
           </aside>
         </div>
 

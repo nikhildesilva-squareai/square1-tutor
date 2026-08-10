@@ -138,13 +138,9 @@ export default async function PortfolioPage() {
     .sort((a, b) => b.count - a.count)
     .slice(0, 10);
 
-  // Achievements
-  const achievements: { icon: string; label: string; earned: boolean }[] = [
-    { icon: "M12 2L2 7l10 5 10-5-10-5z", label: "First Project", earned: deployed >= 1 },
-    { icon: "M13 2L3 14h9l-1 8 10-12h-9l1-8z", label: "5 Projects", earned: deployed >= 5 },
-    { icon: "M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z", label: "High Scorer", earned: highScore >= 90 },
-    { icon: "M22 11.08V12a10 10 0 11-5.93-9.14", label: "All Complete", earned: deployed >= total && total > 0 },
-  ];
+  // The old parallel "Achievements" badge set was merged into the /progress
+  // milestone ladder (UX review G4) — one badge system, one source of truth.
+  void highScore;
 
   /* ═══ EMPTY STATE ═══ */
   if (enriched.length === 0) {
@@ -245,7 +241,7 @@ export default async function PortfolioPage() {
               <div className="relative">
                 <ScoreRing score={avgScore} max={100} size={80} color="#22C55E" />
               </div>
-              <p className="text-slate-500 text-[10px] uppercase tracking-wider font-bold mt-1">Avg Score</p>
+              <p className="text-slate-400 text-[10px] uppercase tracking-wider font-bold mt-1">Avg Score</p>
             </div>
           </div>
 
@@ -299,33 +295,40 @@ export default async function PortfolioPage() {
           )}
         </div>
 
-        {/* Achievements */}
+        {/* One badge system, not two (UX review G4): the milestone ladder
+            lives on /progress; this card points at it and at the Career gap
+            map (R1) instead of running a parallel "Achievements" set that
+            overlapped it badge-for-badge. */}
         <div className="bg-surface rounded-xl border border-border p-5">
-          <p className="text-[10px] font-bold text-ink-muted uppercase tracking-widest mb-4">Achievements</p>
-          <div className="grid grid-cols-2 gap-3">
-            {achievements.map((a) => (
-              <div key={a.label} className={[
-                "flex items-center gap-2.5 px-3 py-2.5 rounded-xl border transition-all",
-                a.earned ? "bg-surface-tint border-brand/20" : "bg-surface-alt/50 border-border opacity-40",
-              ].join(" ")}>
-                <div className={[
-                  "w-8 h-8 rounded-lg flex items-center justify-center shrink-0",
-                  a.earned ? "bg-brand text-white" : "bg-surface-alt text-ink-muted",
-                ].join(" ")}>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-                    <path d={a.icon} />
-                  </svg>
-                </div>
-                <span className={["text-xs font-semibold", a.earned ? "text-ink" : "text-ink-muted"].join(" ")}>{a.label}</span>
-              </div>
-            ))}
+          <p className="text-[10px] font-bold text-ink-muted uppercase tracking-widest mb-4">Your record, everywhere it works for you</p>
+          <div className="space-y-2.5">
+            <Link href="/progress" className="flex items-center gap-3 rounded-xl border border-border px-3.5 py-3 transition-colors hover:border-brand/30 hover:bg-surface-tint/40">
+              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-surface-tint text-brand">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M18 20V10" /><path d="M12 20V4" /><path d="M6 20v-6" /></svg>
+              </span>
+              <span className="min-w-0 flex-1">
+                <span className="block text-xs font-semibold text-ink">Milestones &amp; mastery</span>
+                <span className="block text-[10.5px] text-ink-muted">Streaks, badges and topic mastery live on Progress</span>
+              </span>
+              <svg width="13" height="13" viewBox="0 0 16 16" fill="none" className="text-ink-muted"><path d="M6 3l5 5-5 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /></svg>
+            </Link>
+            <Link href="/career" className="flex items-center gap-3 rounded-xl border border-border px-3.5 py-3 transition-colors hover:border-brand/30 hover:bg-surface-tint/40">
+              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-surface-tint text-brand">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10" /><circle cx="12" cy="12" r="6" /><circle cx="12" cy="12" r="2" /></svg>
+              </span>
+              <span className="min-w-0 flex-1">
+                <span className="block text-xs font-semibold text-ink">Map this record to a real job</span>
+                <span className="block text-[10.5px] text-ink-muted">Career argues from these exact projects — paste a posting</span>
+              </span>
+              <svg width="13" height="13" viewBox="0 0 16 16" fill="none" className="text-ink-muted"><path d="M6 3l5 5-5 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /></svg>
+            </Link>
           </div>
         </div>
       </div>
 
       {/* ── Deployed Projects ─────────────────────────────────────────── */}
       <div className="mb-4">
-        <p className="text-[10px] font-bold text-ink-muted uppercase tracking-widest">Deployed Projects</p>
+        <p className="text-[10px] font-bold text-ink-muted uppercase tracking-widest">Graded Projects</p>
       </div>
 
       <div className="space-y-3">

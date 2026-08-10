@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { COUNTRIES } from "@/lib/countries";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 interface Props {
   studentId: string;
@@ -32,6 +33,7 @@ export function SettingsClient({ studentId, studentName, studentCountry, userEma
   const [emailsOn, setEmailsOn] = useState(!emailOptOut);
   const [togglingEmails, setTogglingEmails] = useState(false);
   const [exporting, setExporting] = useState(false);
+  const [exportError, setExportError] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [deleteConfirmText, setDeleteConfirmText] = useState("");
   const [deleting, setDeleting] = useState(false);
@@ -106,6 +108,7 @@ export function SettingsClient({ studentId, studentName, studentCountry, userEma
   async function handleExport() {
     if (exporting) return;
     setExporting(true);
+    setExportError(false);
     try {
       const res = await fetch("/api/account/export");
       if (!res.ok) throw new Error("export failed");
@@ -119,7 +122,9 @@ export function SettingsClient({ studentId, studentName, studentCountry, userEma
       a.remove();
       URL.revokeObjectURL(url);
     } catch {
-      // silent — button re-enables so the user can retry
+      // UX review M3: a silently re-enabling button reads as "nothing
+      // happened". Say it failed and how to recover.
+      setExportError(true);
     } finally {
       setExporting(false);
     }
@@ -272,6 +277,16 @@ export function SettingsClient({ studentId, studentName, studentCountry, userEma
             />
           </button>
         </div>
+
+        {/* Theme — mirrored here because Settings is where people look for it
+            (UX review M3); the sidebar/drawer account-card toggle remains. */}
+        <div className="mt-5 flex items-center justify-between border-t border-border pt-5">
+          <div>
+            <p className="text-sm font-semibold text-ink">Appearance</p>
+            <p className="text-xs text-ink-muted">Switch between light and dark theme</p>
+          </div>
+          <ThemeToggle className="h-9 w-9" />
+        </div>
       </div>
 
       {/* ── Support ──────────────────────────────────────────────── */}
@@ -304,7 +319,7 @@ export function SettingsClient({ studentId, studentName, studentCountry, userEma
             disabled={exporting}
             className="h-9 px-4 shrink-0 rounded-xl border border-border text-ink text-sm font-semibold hover:bg-surface-soft disabled:opacity-50 transition-all"
           >
-            {exporting ? "Preparing..." : "Export"}
+            {exporting ? "Preparing..." : exportError ? "Try again" : "Export"}
           </button>
         </div>
       </div>

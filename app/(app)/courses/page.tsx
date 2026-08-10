@@ -18,10 +18,14 @@ export const metadata: Metadata = {
   },
 };
 
+// UX review C1: beginner used to wear the ERROR (red) variant — the entry
+// door painted in the danger colour, for exactly the person most likely to be
+// nervous. Beginner is the welcoming state (success/green, "you can start
+// here"); advanced carries the caution colour (it assumes prior ground).
 function levelVariant(level: string): "success" | "warning" | "error" | "muted" {
-  if (level === "advanced") return "success";
-  if (level === "intermediate") return "warning";
-  if (level === "beginner") return "error";
+  if (level === "beginner") return "success";
+  if (level === "intermediate") return "muted";
+  if (level === "advanced") return "warning";
   return "muted";
 }
 
@@ -239,13 +243,21 @@ export default async function CoursesPage() {
   return (
     <div className="min-h-full bg-surface-soft">
       <div className="mx-auto max-w-6xl px-6 py-8">
-        {/* ── Page header ─────────────────────────────────────────────── */}
+        {/* ── Page header — honest about what's actually on the page (UX
+               review C2): the "two ways" promise only renders when the no-code
+               lane has live courses; until then the header sells what exists. */}
         <header className="mb-11">
           <h1 className="text-3xl font-black tracking-tight text-ink">Choose your path</h1>
-          <p className="mt-2 max-w-2xl text-[15px] text-ink-secondary">
-            Two ways to learn AI — <span className="font-semibold text-ink">build a career in it</span>, or{" "}
-            <span className="font-semibold text-ink">get more out of it at your job</span>. Both are hands-on and graded by Nova, our AI tutor.
-          </p>
+          {workLaneCourses.length > 0 ? (
+            <p className="mt-2 max-w-2xl text-[15px] text-ink-secondary">
+              Two ways to learn AI — <span className="font-semibold text-ink">build a career in it</span>, or{" "}
+              <span className="font-semibold text-ink">get more out of it at your job</span>. Both are hands-on and graded by Nova, our AI tutor.
+            </p>
+          ) : (
+            <p className="mt-2 max-w-2xl text-[15px] text-ink-secondary">
+              Job-ready AI engineering and data tracks — <span className="font-semibold text-ink">hands-on, project-first, and graded by Nova</span>, our AI tutor.
+            </p>
+          )}
         </header>
 
         {/* ═══ CATEGORY 1 — AI Engineering (career outcome) ═══════════════ */}

@@ -569,28 +569,41 @@ export function StudyHubClient({ initialNotes, stats, totalCount }: Props) {
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
-          <button onClick={() => setTourSignal((n) => n + 1)}
-            className="h-9 px-4 rounded-xl border border-border text-xs font-bold text-ink-muted hover:text-brand hover:border-brand/30 transition-all flex items-center gap-1.5">
+        {/* Actions — flex-wrap so five controls never crush a 375px screen
+            (UX review S4); low-frequency buttons drop their labels on phones. */}
+        <div className="flex flex-wrap items-center gap-2">
+          <button onClick={() => setTourSignal((n) => n + 1)} aria-label="How this works"
+            className="h-9 px-3 sm:px-4 rounded-xl border border-border text-xs font-bold text-ink-muted hover:text-brand hover:border-brand/30 transition-all flex items-center gap-1.5">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="10" /><path d="M9.1 9a3 3 0 115 2.2c-.9.7-1.6 1.2-1.6 2.3" /><line x1="12" y1="17" x2="12.01" y2="17" /></svg>
-            How this works
+            <span className="hidden sm:inline">How this works</span>
           </button>
-          <a href="/notes/cheatsheet" data-tour="hub-cheatsheet"
-            className="h-9 px-4 rounded-xl border border-border text-xs font-bold text-ink-muted hover:text-brand hover:border-brand/30 transition-all flex items-center gap-1.5">
+          <a href="/notes/cheatsheet" data-tour="hub-cheatsheet" aria-label="Cheatsheet"
+            className="h-9 px-3 sm:px-4 rounded-xl border border-border text-xs font-bold text-ink-muted hover:text-brand hover:border-brand/30 transition-all flex items-center gap-1.5">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M16 18l6-6-6-6M8 6l-6 6 6 6" /></svg>
-            Cheatsheet
+            <span className="hidden sm:inline">Cheatsheet</span>
           </a>
           <button data-tour="hub-error" onClick={() => { setShowErrorForm(v => !v); setShowNewNote(false); }}
-            className="h-9 px-4 rounded-xl border border-border text-xs font-bold text-ink-muted hover:text-red-500 hover:border-red-300 transition-all flex items-center gap-1.5">
+            className="h-9 px-3 sm:px-4 rounded-xl border border-border text-xs font-bold text-ink-muted hover:text-red-500 hover:border-red-300 transition-all flex items-center gap-1.5">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M9 18h6M10 22h4M12 2v1M12 7a4 4 0 014 4c0 1.5-.8 2.8-2 3.4V16H10v-1.6C8.8 13.8 8 12.5 8 11a4 4 0 014-4z" /></svg>
             Log error
           </button>
-          {counts.dueFlashcards > 0 && (
+          {/* The review CTA always exists (UX review S1): Duolingo never hides
+              the lesson button. When nothing is due it becomes an anticipation
+              state instead of vanishing — the page's core purpose stays
+              visible on quiet days. */}
+          {counts.dueFlashcards > 0 ? (
             <button data-tour="hub-review" onClick={startReview}
               className="h-9 px-4 rounded-xl bg-emerald-600 text-white text-xs font-bold hover:bg-emerald-700 transition-all flex items-center gap-1.5">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><rect x="2" y="4" width="20" height="16" rx="2" /><path d="M12 4v16" /></svg>
               Review ({counts.dueFlashcards})
             </button>
+          ) : (
+            <span data-tour="hub-review"
+              className="h-9 px-4 rounded-xl border border-emerald-200 bg-emerald-50 text-emerald-700 text-xs font-bold flex items-center gap-1.5"
+              title="Cards come due on a spaced schedule — finish lessons and log errors to grow tomorrow's deck.">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><polyline points="20 6 9 17 4 12" /></svg>
+              Deck clear — more due soon
+            </span>
           )}
           <button data-tour="hub-new" onClick={() => setShowNewNote(!showNewNote)}
             className="h-9 px-4 rounded-xl bg-brand text-white text-xs font-bold hover:bg-brand/90 transition-all flex items-center gap-1.5">

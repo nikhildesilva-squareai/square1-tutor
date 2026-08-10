@@ -9,10 +9,11 @@ import {
   BarChart3,
   Bookmark,
   Users,
-  MessagesSquare,
+  LifeBuoy,
   Sparkles,
   Briefcase,
   Target,
+  Award,
   Inbox,
   Settings,
   MessageSquarePlus,
@@ -26,20 +27,27 @@ import { ThemeToggle } from "@/components/ThemeToggle";
 import { useUnreadMessages } from "@/lib/hooks/useUnreadMessages";
 import { COMMUNITY_ENABLED } from "@/lib/flags";
 
-// Two quiet clusters: core learning, then the social / AI "Connect" group.
+// Restructured 2026-08-10 (UX review N1/N3/M2). Two ideas drive the order:
+// the DOING cluster answers "what do I work on?", the PROOF cluster answers
+// "what have I earned?" — the product's whole promise. Portfolio finally gets
+// a nav home (it was reachable only from a dashboard tile). Nova is a
+// standout companion row, not buried in a "Connect" group, and Messages is
+// renamed Support until community DMs return (it is one support thread).
 const learnNav: { href: string; label: string; icon: LucideIcon }[] = [
-  { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
+  { href: "/dashboard", label: "Home", icon: LayoutDashboard },
   { href: "/courses", label: "Courses", icon: BookOpen },
-  { href: "/projects", label: "My Projects", icon: FolderKanban },
-  { href: "/progress", label: "Progress", icon: BarChart3 },
+  { href: "/projects", label: "Projects", icon: FolderKanban },
   { href: "/notes", label: "Study Hub", icon: Bookmark },
   { href: "/career", label: "Career", icon: Target },
 ];
 
+const proofNav: { href: string; label: string; icon: LucideIcon }[] = [
+  { href: "/progress", label: "Progress", icon: BarChart3 },
+  { href: "/portfolio", label: "Portfolio", icon: Award },
+];
+
 const connectNav: { href: string; label: string; icon: LucideIcon }[] = [
   ...(COMMUNITY_ENABLED ? [{ href: "/community", label: "Community", icon: Users }] : []),
-  { href: "/messages", label: "Messages", icon: MessagesSquare },
-  { href: "/tutor", label: "Nova", icon: Sparkles },
 ];
 
 // One row style for every item in the sidebar — nav and utility alike.
@@ -109,20 +117,42 @@ export function SidebarNav({ userEmail, userName, isManager = false, isAdmin = f
           ))}
         </div>
 
+        {/* Nova — the companion, visually distinct from destinations. The
+            gradient chip matches Nova's identity in the lesson player. */}
+        <div className="mt-2 space-y-0.5">
+          <Link
+            href="/tutor"
+            data-tour="nav-tutor"
+            className={cn(ROW, isActive("/tutor") ? ROW_ACTIVE : ROW_INACTIVE)}
+          >
+            <span
+              className="flex h-[22px] w-[22px] shrink-0 items-center justify-center rounded-full text-white"
+              style={{ background: "linear-gradient(135deg, #0056CE, #7C3AED)" }}
+            >
+              <Sparkles className="h-3 w-3" />
+            </span>
+            <span className="flex-1">Ask Nova</span>
+          </Link>
+        </div>
+
         <div className="my-2 h-px bg-border mx-1" />
 
         <p className="px-3 pt-1 pb-1.5 text-[10.5px] font-bold uppercase tracking-[0.1em] text-ink-muted">
-          Connect
+          Your proof
         </p>
         <div className="space-y-0.5">
-          {connectNav.map((item) => (
-            <NavRow
-              key={item.href}
-              {...item}
-              badge={item.href === "/messages" ? unread : undefined}
-            />
+          {proofNav.map((item) => (
+            <NavRow key={item.href} {...item} />
           ))}
         </div>
+
+        {connectNav.length > 0 && (
+          <div className="mt-2 space-y-0.5">
+            {connectNav.map((item) => (
+              <NavRow key={item.href} {...item} />
+            ))}
+          </div>
+        )}
 
         {/* Manager portal — only for team managers; the sole in-app route back */}
         {isManager && (
@@ -159,8 +189,18 @@ export function SidebarNav({ userEmail, userName, isManager = false, isAdmin = f
         </div>
       </div>
 
-      {/* Utility rows — same style as the nav */}
+      {/* Utility rows — same style as the nav. Messages is labelled Support
+          while community DMs are off: one team thread is what it really is. */}
       <div className="px-3 py-2 space-y-0.5">
+        <Link href="/messages" className={cn(ROW, isActive("/messages") ? ROW_ACTIVE : ROW_INACTIVE)}>
+          <LifeBuoy className="w-[18px] h-[18px] shrink-0" />
+          <span className="flex-1">Support</span>
+          {unread ? (
+            <span className="min-w-[18px] h-[18px] px-1.5 rounded-full bg-brand text-white text-[10px] font-bold flex items-center justify-center">
+              {unread > 9 ? "9+" : unread}
+            </span>
+          ) : null}
+        </Link>
         <Link href="/settings" className={cn(ROW, isActive("/settings") ? ROW_ACTIVE : ROW_INACTIVE)}>
           <Settings className="w-[18px] h-[18px] shrink-0" />
           <span className="flex-1">Settings</span>

@@ -251,7 +251,7 @@ export function MessagesClient() {
       >
         <div className="px-4 py-4 border-b border-border shrink-0">
           <p className="text-lg font-bold text-ink">Messages</p>
-          <p className="text-[11px] text-ink-muted mt-0.5">The Square 1 team and your fellow learners.</p>
+          <p className="text-[11px] text-ink-muted mt-0.5">A direct line to the Square 1 team.</p>
         </div>
         <div className="flex-1 overflow-y-auto">
           {/* Square 1 team — pinned */}
@@ -278,7 +278,7 @@ export function MessagesClient() {
 
           {conversations.length === 0 ? (
             <p className="px-4 py-3 text-[12px] text-ink-muted leading-relaxed">
-              No conversations yet. Open a community and message a fellow learner from their profile.
+              No other conversations yet — the Square 1 team thread above is always open. Message us anything: questions, bugs, ideas.
             </p>
           ) : (
             conversations.map((c) => (

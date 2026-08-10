@@ -10,7 +10,8 @@ import {
   BarChart3,
   Bookmark,
   Users,
-  MessagesSquare,
+  LifeBuoy,
+  Award,
   Sparkles,
   Briefcase,
   Target,
@@ -30,19 +31,25 @@ import { ThemeToggle } from "@/components/ThemeToggle";
 import { useUnreadMessages } from "@/lib/hooks/useUnreadMessages";
 
 // Mirrors the desktop sidebar: core learning, then a labelled "Connect" group.
+// Mirrors sidebar-nav (UX review N1/N3/M2): doing cluster, Nova companion,
+// proof cluster, Support in utilities.
 const learnNav: { href: string; label: string; icon: LucideIcon }[] = [
-  { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
+  { href: "/dashboard", label: "Home", icon: LayoutDashboard },
   { href: "/courses", label: "Courses", icon: BookOpen },
-  { href: "/projects", label: "My Projects", icon: FolderKanban },
-  { href: "/progress", label: "Progress", icon: BarChart3 },
+  { href: "/projects", label: "Projects", icon: FolderKanban },
   { href: "/notes", label: "Study Hub", icon: Bookmark },
   { href: "/career", label: "Career", icon: Target },
 ];
 
+const proofNav: { href: string; label: string; icon: LucideIcon }[] = [
+  { href: "/progress", label: "Progress", icon: BarChart3 },
+  { href: "/portfolio", label: "Portfolio", icon: Award },
+];
+
 const connectNav: { href: string; label: string; icon: LucideIcon }[] = [
   ...(COMMUNITY_ENABLED ? [{ href: "/community", label: "Community", icon: Users }] : []),
-  { href: "/messages", label: "Messages", icon: MessagesSquare },
-  { href: "/tutor", label: "Nova", icon: Sparkles },
+  { href: "/tutor", label: "Ask Nova", icon: Sparkles },
+  { href: "/messages", label: "Support", icon: LifeBuoy },
 ];
 
 const ROW =
@@ -146,7 +153,13 @@ export function MobileNav({ userEmail, userName, isManager = false, isAdmin = fa
 
           <div className="my-2 h-px bg-border mx-1" />
 
-          <p className="px-3 pt-1 pb-1.5 text-[10.5px] font-bold uppercase tracking-[0.1em] text-ink-muted">Connect</p>
+          <p className="px-3 pt-1 pb-1.5 text-[10.5px] font-bold uppercase tracking-[0.1em] text-ink-muted">Your proof</p>
+          <div className="space-y-0.5">
+            {proofNav.map((item) => <NavRow key={item.href} {...item} />)}
+          </div>
+
+          <div className="my-2 h-px bg-border mx-1" />
+
           <div className="space-y-0.5">
             {connectNav.map((item) => (
               <NavRow key={item.href} {...item} badge={item.href === "/messages" ? unread : undefined} />

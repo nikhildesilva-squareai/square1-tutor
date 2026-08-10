@@ -325,7 +325,7 @@ export default async function CourseDetailPage({ params }: PageProps) {
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
                     <path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z" /><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z" />
                   </svg>
-                  Re-assess
+                  Quick re-check
                 </Link>
               </div>
             ) : hasAssessment ? (
@@ -408,7 +408,14 @@ export default async function CourseDetailPage({ params }: PageProps) {
                       {modLessons.map((lesson, li) => {
                         const status = getLessonStatus(lesson.id, mi);
                         return (
-                          <div key={lesson.id} className={["px-4 py-2.5 flex items-center gap-3", status === "locked" ? "opacity-50" : ""].join(" ")}>
+                          <div
+                            key={lesson.id}
+                            className={["px-4 py-2.5 flex items-center gap-3", status === "locked" ? "opacity-50" : ""].join(" ")}
+                            // UX review C4: a dimmed row with no reason reads as
+                            // broken. Same explanation the lesson player's jump
+                            // menu already gives — locked means NEXT, not dead.
+                            title={status === "locked" ? "You'll unlock this as you progress — finish the lessons before it" : undefined}
+                          >
                             <div className={[
                               "w-6 h-6 rounded-lg flex items-center justify-center shrink-0",
                               status === "completed" ? "bg-emerald-100" :
@@ -526,7 +533,11 @@ export default async function CourseDetailPage({ params }: PageProps) {
                                 : lesson.id === currentLessonId ? "current" as const
                                 : "locked" as const;
                               return (
-                                <div key={lesson.id} className={["px-4 py-2.5 flex items-center gap-3", advStatus === "locked" ? "opacity-50" : ""].join(" ")}>
+                                <div
+                                  key={lesson.id}
+                                  className={["px-4 py-2.5 flex items-center gap-3", advStatus === "locked" ? "opacity-50" : ""].join(" ")}
+                                  title={advStatus === "locked" ? (enrolledInAdvanced ? "You'll unlock this as you progress" : "Part of the Advanced Tier — unlock it below") : undefined}
+                                >
                                   <div className={[
                                     "w-6 h-6 rounded-lg flex items-center justify-center shrink-0",
                                     advStatus === "completed" ? "bg-emerald-100" :
@@ -582,10 +593,10 @@ export default async function CourseDetailPage({ params }: PageProps) {
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
                     <path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z" /><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z" />
                   </svg>
-                  Re-Assess My Skills
+                  Quick Re-Check
                 </Link>
                 <p className="text-[10px] text-ink-muted text-center leading-relaxed">
-                  5 questions, ~10 min. See how much you&apos;ve improved.
+                  5 questions, ~10 min — see how much you&apos;ve improved. (The full 20-question assessment stays on your record.)
                 </p>
               </div>
             )}

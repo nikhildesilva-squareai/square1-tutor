@@ -161,22 +161,22 @@ export default async function ProjectsPage() {
     return (
       <div className="px-4 sm:px-6 py-8 max-w-5xl mx-auto">
         {/* ── Hero ──────────────────────────────────────────────── */}
-        <div className="relative rounded-2xl overflow-hidden mb-8" style={{ background: "linear-gradient(135deg, #0F172A 0%, #1E293B 50%, #0F172A 100%)" }}>
+        <div className="relative rounded-2xl overflow-hidden mb-8" style={{ background: "linear-gradient(135deg, #01224F 0%, #0056CE 55%, #01224F 100%)" }}>
           <div className="absolute inset-0 opacity-[0.04]" style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23fff' fill-rule='evenodd'%3E%3Cpath d='M0 0h1v40H0V0zm39 0h1v40h-1V0zM0 0h40v1H0V0zm0 39h40v1H0v-1z'/%3E%3C/g%3E%3C/svg%3E\")" }} />
           <div className="relative p-8 sm:p-10">
-            <p className="text-[10px] font-bold text-slate-500 uppercase tracking-[0.2em] mb-3">Project Lab</p>
+            <p className="text-[10px] font-bold text-white/60 uppercase tracking-[0.2em] mb-3">Project Lab</p>
             <h1 className="text-3xl sm:text-4xl font-black text-white tracking-tight mb-3">
               Build what companies<br />actually hire for.
             </h1>
-            <p className="text-sm text-slate-500 leading-relaxed max-w-lg mb-6">
+            <p className="text-sm text-white/70 leading-relaxed max-w-lg mb-6">
               {totalProjectCount} real projects across {allCourseList.length} tech disciplines. From your first API to a production SaaS — every project is AI code-reviewed and ships to your portfolio.
             </p>
             <div className="flex items-center gap-4 flex-wrap">
-              <Link href="/courses" className="h-11 px-6 rounded-xl bg-white text-[#0F172A] font-bold text-sm hover:bg-white/90 transition-all inline-flex items-center gap-2">
+              <Link href="/courses" className="h-11 px-6 rounded-xl bg-white text-ink font-bold text-sm hover:bg-white/90 transition-all inline-flex items-center gap-2">
                 Start Free Assessment
                 <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M6 3l5 5-5 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /></svg>
               </Link>
-              <div className="flex items-center gap-5 text-sm text-slate-500">
+              <div className="flex items-center gap-5 text-sm text-white/70">
                 <span className="flex items-center gap-1.5">
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round"><path d="M22 11.08V12a10 10 0 11-5.93-9.14" /><polyline points="22 4 12 14.01 9 11.01" /></svg>
                   AI code review
@@ -198,7 +198,7 @@ export default async function ProjectsPage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {capstones.map((cap) => (
               <Link key={cap.id} href={`/courses/${cap.courseSlug}`}
-                className="group relative bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden hover:shadow-md hover:scale-[1.01] transition-all duration-300">
+                className="group relative bg-surface rounded-2xl border border-border shadow-card overflow-hidden hover:shadow-md hover:scale-[1.01] transition-all duration-300">
                 {/* Top accent line */}
                 <div className="h-1" style={{ background: cap.courseColor }} />
 
@@ -208,34 +208,34 @@ export default async function ProjectsPage() {
                     <span className="text-[9px] font-bold uppercase tracking-widest" style={{ color: cap.courseColor }}>
                       {cap.courseTitle}
                     </span>
-                    <span className="text-[10px] text-gray-400 font-medium">
+                    <span className="text-[10px] text-ink-muted font-medium">
                       {cap.projectCount} projects
                     </span>
                   </div>
 
                   {/* Title */}
-                  <h3 className="text-base font-bold text-gray-900 mb-2 group-hover:text-brand transition-colors leading-snug">
+                  <h3 className="text-base font-bold text-ink mb-2 group-hover:text-brand transition-colors leading-snug">
                     {cap.title}
                   </h3>
 
                   {/* Brief */}
-                  <p className="text-xs text-gray-500 line-clamp-2 mb-4 leading-relaxed">
+                  <p className="text-xs text-ink-muted line-clamp-2 mb-4 leading-relaxed">
                     {cap.description_md.replace(/[#*`]/g, "").slice(0, 120)}
                   </p>
 
                   {/* Tech stack */}
                   <div className="flex items-center gap-1.5 flex-wrap mb-4">
                     {cap.tech_stack.slice(0, 3).map((t: string) => (
-                      <span key={t} className="px-2 py-0.5 rounded-md text-[10px] font-medium bg-gray-50 text-gray-600 border border-gray-200">{t}</span>
+                      <span key={t} className="px-2 py-0.5 rounded-md text-[10px] font-medium bg-surface-alt text-ink-secondary border border-border">{t}</span>
                     ))}
                     {cap.tech_stack.length > 3 && (
-                      <span className="text-[10px] text-gray-400">+{cap.tech_stack.length - 3}</span>
+                      <span className="text-[10px] text-ink-muted">+{cap.tech_stack.length - 3}</span>
                     )}
                   </div>
 
                   {/* Footer */}
-                  <div className="flex items-center justify-between pt-3 border-t border-gray-100">
-                    <div className="flex items-center gap-3 text-[11px] text-gray-400">
+                  <div className="flex items-center justify-between pt-3 border-t border-border">
+                    <div className="flex items-center gap-3 text-[11px] text-ink-muted">
                       <span className="flex items-center gap-1">
                         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" /></svg>
                         {cap.estimated_hours}h
@@ -334,19 +334,29 @@ export default async function ProjectsPage() {
           <h1 className="text-2xl font-black text-ink">Projects</h1>
           <p className="text-sm text-ink-muted mt-0.5">{completedProjects} of {totalProjects} completed</p>
         </div>
-        <div className="flex items-center gap-3">
-          {/* Search-style filter (visual only for now) */}
-          <div className="hidden sm:flex items-center gap-2 h-9 px-3 rounded-lg border border-border bg-surface text-sm text-ink-muted">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" /></svg>
-            <span className="text-xs">Find a project...</span>
-          </div>
-        </div>
+        {/* The decorative "Find a project..." box was removed (UX review P1):
+            a control that looks interactive but does nothing teaches people
+            that controls do nothing. Search returns when it actually searches. */}
       </div>
 
       {/* Course sections */}
       {courseList.map((course, courseIdx) => {
         const courseProjects = grouped.get(course.id) ?? [];
-        if (courseProjects.length === 0) return null;
+        if (courseProjects.length === 0) {
+          return (
+            <div key={course.id} className="mb-8">
+              <div className="flex items-center gap-2 mb-3 pb-3 border-b border-border">
+                <div className="w-5 h-5 rounded flex items-center justify-center" style={{ background: course.color }}>
+                  <svg width="10" height="10" viewBox="0 0 24 24" fill="white" stroke="none"><path d="M4 19.5A2.5 2.5 0 016.5 17H20V2H6.5A2.5 2.5 0 014 4.5v15z" /></svg>
+                </div>
+                <span className="text-sm font-semibold text-ink">{course.title}</span>
+              </div>
+              <p className="rounded-xl border border-dashed border-border px-4 py-5 text-sm text-ink-muted">
+                Projects for this course are on their way — keep working through the lessons and they&apos;ll appear here.
+              </p>
+            </div>
+          );
+        }
         const completed = courseProjects.filter(p => subMap.has(p.id) && subMap.get(p.id)!.score !== null).length;
         const lessonsComplete = completionsByCourse.get(course.id) ?? 0;
 

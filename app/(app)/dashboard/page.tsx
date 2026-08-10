@@ -1,8 +1,8 @@
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import Link from "next/link";
 import { CourseSwitcher } from "@/components/CourseSwitcher";
 import { CourseRoadmap } from "@/components/CourseRoadmap";
-import { ActivityHeatmap } from "@/components/ActivityHeatmap";
 import { computeStreak } from "@/lib/streaks";
 import { SubjectSync } from "@/components/SubjectSync";
 import { RoutingQuestion } from "@/components/RoutingQuestion";
@@ -29,12 +29,9 @@ const COURSES = [
 
 const COURSE_COLORS: Record<string, string> = Object.fromEntries(COURSES.map(c => [c.slug, c.color]));
 
-function getGreeting() {
-  const hour = new Date().getUTCHours() + 10;
-  if (hour < 12) return "Good morning";
-  if (hour < 17) return "Good afternoon";
-  return "Good evening";
-}
+// Time-of-day greetings were dropped (UX review D4): the server hardcoded
+// UTC+10, so every non-AEST learner got "Good evening" at breakfast. A wrong
+// personal touch is worse than none — "Welcome back" is always true.
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 interface EnrollmentRow {
@@ -99,7 +96,6 @@ export default async function DashboardPage({ searchParams }: DashboardProps) {
 
   const name = student?.name ?? user.email?.split("@")[0] ?? "there";
   const firstName = name.split(" ")[0];
-  const greeting = getGreeting();
   const allEnrollments = enrollments ?? [];
 
   // Split enrollments into active (in-progress) and completed
@@ -197,7 +193,6 @@ export default async function DashboardPage({ searchParams }: DashboardProps) {
             style={{ background: "radial-gradient(circle, white 0%, transparent 70%)", transform: "translate(-30%, 30%)" }} />
           <div className="relative grid gap-6 lg:grid-cols-[1fr_auto] lg:items-center">
             <div>
-              <p className="text-white/60 text-sm font-medium mb-1">{greeting}</p>
               <h1 className="text-3xl sm:text-4xl font-black text-white tracking-tight mb-3">
                 Welcome, {firstName}
               </h1>
@@ -263,56 +258,11 @@ export default async function DashboardPage({ searchParams }: DashboardProps) {
           </div>
         </div>
 
-        {/* 3-step funnel */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mb-10">
-          <div className="relative bg-surface rounded-2xl border border-border p-6 hover:shadow-card transition-shadow group">
-            <div className="flex items-center gap-3 mb-4">
-              <span className="w-8 h-8 rounded-full bg-brand text-white flex items-center justify-center text-sm font-bold">1</span>
-              <span className="text-[10px] tracking-widest uppercase font-bold text-ink-muted">Step one</span>
-            </div>
-            <h3 className="text-lg font-bold text-ink mb-2">Pick your course</h3>
-            <p className="text-sm text-ink-muted mb-5 leading-relaxed">
-              Every subject leads to a real career with a real salary.
-            </p>
-            {/* Quiet link, not a filled button — the first-lesson card above is
-                the screen's ONE primary action; this must not compete. */}
-            <Link href="/courses"
-              className="inline-flex items-center gap-1.5 text-sm font-semibold text-brand hover:underline">
-              Browse courses
-              <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M6 3l5 5-5 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
-            </Link>
-          </div>
-
-          <div className="bg-surface rounded-2xl border border-border p-6">
-            <div className="flex items-center gap-3 mb-4">
-              <span className="w-8 h-8 rounded-full bg-surface-alt text-ink-muted flex items-center justify-center text-sm font-bold">2</span>
-              <span className="text-[10px] tracking-widest uppercase font-bold text-ink-muted">Step two</span>
-            </div>
-            <h3 className="text-lg font-bold text-ink mb-2">Take the assessment</h3>
-            <p className="text-sm text-ink-muted mb-5 leading-relaxed">
-              20 questions. MCQ + short answer + code. AI grades instantly.
-            </p>
-            <span className="text-xs text-ink-muted flex items-center gap-2">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" /></svg>
-              ~30 minutes
-            </span>
-          </div>
-
-          <div className="bg-surface rounded-2xl border border-border p-6">
-            <div className="flex items-center gap-3 mb-4">
-              <span className="w-8 h-8 rounded-full bg-surface-alt text-ink-muted flex items-center justify-center text-sm font-bold">3</span>
-              <span className="text-[10px] tracking-widest uppercase font-bold text-ink-muted">Step three</span>
-            </div>
-            <h3 className="text-lg font-bold text-ink mb-2">Get your skill report</h3>
-            <p className="text-sm text-ink-muted mb-5 leading-relaxed">
-              See your strengths, gaps, and a personalised learning plan.
-            </p>
-            <span className="text-xs text-ink-muted flex items-center gap-2">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 20V10" /><path d="M12 20V4" /><path d="M6 20v-6" /></svg>
-              Topic-by-topic breakdown
-            </span>
-          </div>
-        </div>
+        {/* The old "3-step funnel" cards were removed (UX review D5): steps 2
+            and 3 were inert text with no CTA, and "Take the assessment · ~30
+            minutes" sat directly under a hero promising "free, no test, about
+            5 minutes." One screen, one story: the first-lesson card above is
+            the only ask; the assessment gets introduced after that first win. */}
 
         {/* Recommended course */}
         {preferredCourse && (
@@ -334,31 +284,51 @@ export default async function DashboardPage({ searchParams }: DashboardProps) {
                 </div>
               </div>
               <span className="text-sm font-semibold text-brand flex items-center gap-1 group-hover:gap-2 transition-all">
-                Start Assessment
+                View course
                 <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M6 3l5 5-5 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
               </span>
             </Link>
           </div>
         )}
 
-        {/* All courses grid */}
-        <div>
-          <div className="flex items-center justify-between mb-4">
-            <p className="text-[11px] font-semibold text-ink-muted uppercase tracking-widest">All courses</p>
-            <Link href="/courses" className="text-xs text-brand hover:underline font-semibold">View all</Link>
-          </div>
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
-            {COURSES.map((course) => (
-              <Link key={course.slug} href={`/courses/${course.slug}`}
-                className="group bg-surface rounded-2xl border border-border shadow-card p-4 hover:shadow-card hover:border-brand/20 transition-all">
-                <div className="w-8 h-1 rounded-full mb-3" style={{ background: course.color }} />
-                <p className="text-sm font-semibold text-ink mb-1 group-hover:text-brand transition-colors leading-snug">{course.title}</p>
-                <p className="text-[10px] text-ink-muted">{course.role}</p>
-                <p className="text-[10px] font-semibold mt-1" style={{ color: course.color }}>{course.salary}</p>
-              </Link>
-            ))}
-          </div>
-        </div>
+        {/* All courses grid — titles and count come from the DB (UX review D6)
+            so this can never drift from /courses again; the editorial
+            role/salary bands stay in the COURSES map, matched by slug. */}
+        {await (async () => {
+          const { data: dbCourseRows } = await supabase
+            .from("courses")
+            .select("slug,title")
+            .eq("status", "active")
+            .is("parent_course_id", null)
+            .not("slug", "in", "(game-development,drone-technology,devops-engineering)")
+            .order("title");
+          const gridCourses =
+            (dbCourseRows ?? []).length > 0
+              ? (dbCourseRows ?? []).map((c) => {
+                  const meta = COURSES.find((m) => m.slug === c.slug);
+                  return { slug: c.slug as string, title: c.title as string, role: meta?.role ?? null, salary: meta?.salary ?? null, color: meta?.color ?? "#0056CE" };
+                })
+              : COURSES.map((c) => ({ slug: c.slug, title: c.title, role: c.role as string | null, salary: c.salary as string | null, color: c.color }));
+          return (
+            <div>
+              <div className="flex items-center justify-between mb-4">
+                <p className="text-[11px] font-semibold text-ink-muted uppercase tracking-widest">All courses · {gridCourses.length}</p>
+                <Link href="/courses" className="text-xs text-brand hover:underline font-semibold">View all</Link>
+              </div>
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+                {gridCourses.map((course) => (
+                  <Link key={course.slug} href={`/courses/${course.slug}`}
+                    className="group bg-surface rounded-2xl border border-border shadow-card p-4 hover:shadow-card hover:border-brand/20 transition-all">
+                    <div className="w-8 h-1 rounded-full mb-3" style={{ background: course.color }} />
+                    <p className="text-sm font-semibold text-ink mb-1 group-hover:text-brand transition-colors leading-snug">{course.title}</p>
+                    {course.role && <p className="text-[10px] text-ink-muted">{course.role}</p>}
+                    {course.salary && <p className="text-[10px] font-semibold mt-1" style={{ color: course.color }}>{course.salary}</p>}
+                  </Link>
+                ))}
+              </div>
+            </div>
+          );
+        })()}
       </div>
     );
   }
@@ -369,7 +339,9 @@ export default async function DashboardPage({ searchParams }: DashboardProps) {
   const courseColor = primaryEnrollment?.course?.slug ? COURSE_COLORS[primaryEnrollment.course.slug] ?? "#0056CE" : "#0056CE";
   const courseSlug = primaryEnrollment?.course?.slug ?? "";
   const courseTitle = primaryEnrollment?.course?.title ?? "Your Course";
-  const totalLessons = primaryEnrollment?.course?.total_lessons ?? 40;
+  // No invented denominators (UX review G2/#11): a missing course row means we
+  // don't know the lesson count — show 0 progress honestly, never /40.
+  const totalLessons = primaryEnrollment?.course?.total_lessons ?? 0;
   const currentLesson = primaryEnrollment?.current_lesson;
   const level = primaryEnrollment?.assessment_level ?? "beginner";
 
@@ -391,6 +363,7 @@ export default async function DashboardPage({ searchParams }: DashboardProps) {
     { data: nextProject },
     { data: allCompletionDates },
     { count: dueFlashcardCount },
+    cohortToday,
   ] = await Promise.all([
     supabase.from("lesson_completions").select("id", { count: "exact", head: true }).eq("student_id", studentId).eq("enrollment_id", enrollmentId),
     supabase.from("modules").select("id, title, order_index, week_number, course_id").eq("course_id", courseId).order("order_index", { ascending: true }) as unknown as Promise<{ data: ModuleRow[] | null }>,
@@ -401,6 +374,21 @@ export default async function DashboardPage({ searchParams }: DashboardProps) {
     supabase.from("projects").select("id, title, difficulty").eq("course_id", courseId).order("order_index", { ascending: true }).limit(1).maybeSingle(),
     supabase.from("lesson_completions").select("completed_at").eq("student_id", studentId).gte("completed_at", ninetyDaysAgo),
     supabase.from("study_notes").select("id", { count: "exact", head: true }).eq("student_id", studentId).eq("type", "flashcard").lte("next_review_at", now.toISOString()),
+    // Cohort pulse (UX review K4): a REAL platform-wide aggregate — lessons
+    // completed by anyone today. Honest ambient humanity: no fake counts, and
+    // it renders nothing when the answer is zero. Service role because RLS
+    // (rightly) hides other students' rows; an aggregate count leaks nothing.
+    (async () => {
+      try {
+        const dayStart = new Date();
+        dayStart.setHours(0, 0, 0, 0);
+        const { count } = await createAdminClient()
+          .from("lesson_completions")
+          .select("id", { count: "exact", head: true })
+          .gte("completed_at", dayStart.toISOString());
+        return count ?? 0;
+      } catch { return 0; }
+    })(),
   ]);
 
   const dueFlashcards = dueFlashcardCount ?? 0;
@@ -438,11 +426,9 @@ export default async function DashboardPage({ searchParams }: DashboardProps) {
 
   // Streak computation
   const streakInfo = computeStreak((allCompletionDates ?? []).map(c => c.completed_at));
-  const heatmapDates = (allCompletionDates ?? []).map(c => c.completed_at);
 
-  // Weekly + window active-day tallies for the This Week bar and Activity pill.
+  // Weekly active-day tally for the This Week bar + streak-fallback tile.
   const activeThisWeek = streakData.filter(d => d.active).length;
-  const activeDaysCount = new Set(heatmapDates.map(d => new Date(d).toDateString())).size;
 
   return (
     <div className="min-h-full px-4 sm:px-6 py-8 max-w-6xl mx-auto">
@@ -478,7 +464,7 @@ export default async function DashboardPage({ searchParams }: DashboardProps) {
               </div>
             )}
 
-            <p className="text-white/70 text-sm font-medium mb-2">{greeting}, {firstName}</p>
+            <p className="text-white/70 text-sm font-medium mb-2">Welcome back, {firstName}</p>
 
             {currentLesson ? (
               <>
@@ -558,6 +544,90 @@ export default async function DashboardPage({ searchParams }: DashboardProps) {
         resumeHref={currentLesson ? `/learn/${currentLesson.id}` : null}
         resumeLabel={currentLesson ? "Resume lesson" : null}
       />
+
+      {/* ── Today's quest (UX review D1/K1) — the one card that answers "what
+             do I do right now?" for someone who doesn't feel like learning.
+             At most three concrete items with honest states, a total-minutes
+             promise, and a banked state when the day is done. Everything here
+             is measured: today's completion, the real due-card count, the
+             actual next project. ─────────────────────────────────────────── */}
+      {(() => {
+        const lessonDone = streakInfo.todayDone;
+        const reviewDue = dueFlashcards > 0;
+        const projectStep = projectsDone === 0 && nextProject ? nextProject : null;
+        const questMinutes =
+          (lessonDone ? 0 : (currentLesson?.estimated_minutes ?? 25)) +
+          (reviewDue ? 2 : 0);
+        const questClear = lessonDone && !reviewDue;
+        const ItemRow = ({ href, done, title, sub, mins }: { href: string; done: boolean; title: string; sub: string; mins: string }) => (
+          <Link
+            href={href}
+            className={`flex items-center gap-3 rounded-xl border px-4 py-3 transition-colors ${done ? "border-border bg-surface-soft opacity-70" : "border-border bg-surface hover:border-brand/40 hover:bg-surface-tint/40"}`}
+          >
+            <span className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full border-2 ${done ? "border-emerald-500 bg-emerald-500 text-white" : "border-border text-transparent"}`}>
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><polyline points="20 6 9 17 4 12" /></svg>
+            </span>
+            <span className="min-w-0 flex-1">
+              <span className={`block truncate text-sm font-semibold ${done ? "text-ink-muted line-through" : "text-ink"}`}>{title}</span>
+              <span className="block truncate text-[11px] text-ink-muted">{sub}</span>
+            </span>
+            <span className="shrink-0 text-[11px] font-bold tabular-nums text-ink-muted">{mins}</span>
+          </Link>
+        );
+        return (
+          <div className="mb-6 rounded-2xl border border-border bg-surface shadow-card p-5">
+            <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+              <p className="text-[10px] font-bold uppercase tracking-widest text-ink-muted">
+                Today&apos;s quest{!questClear && questMinutes > 0 && (
+                  <span className="ml-2 normal-case tracking-normal text-brand">~{questMinutes} min total</span>
+                )}
+              </p>
+              {questClear ? (
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-2.5 py-1 text-[11px] font-bold text-emerald-700">
+                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><polyline points="20 6 9 17 4 12" /></svg>
+                  Today is banked — streak safe
+                </span>
+              ) : (
+                <span className="text-[11px] font-semibold text-ink-muted">
+                  Clear it and today lights up on your streak
+                </span>
+              )}
+            </div>
+            <div className="space-y-2">
+              {currentLesson && (
+                <ItemRow
+                  href={`/learn/${currentLesson.id}`}
+                  done={lessonDone}
+                  title={lessonDone ? "Lesson banked for today" : currentLesson.title}
+                  sub={lessonDone ? "Come back tomorrow — or keep going below" : `${courseTitle} · pick up where you left off`}
+                  mins={lessonDone ? "done" : `${currentLesson.estimated_minutes ?? 25} min`}
+                />
+              )}
+              <ItemRow
+                href="/notes?filter=flashcard"
+                done={!reviewDue}
+                title={reviewDue ? `Review ${dueFlashcards} flashcard${dueFlashcards === 1 ? "" : "s"}` : "Review deck clear"}
+                sub={reviewDue ? "2 minutes keeps what you learned stuck" : "New cards arrive as you finish lessons"}
+                mins={reviewDue ? "2 min" : "done"}
+              />
+              {projectStep && (
+                <ItemRow
+                  href={`/projects/${projectStep.id}`}
+                  done={false}
+                  title={`Optional: read the "${projectStep.title}" brief`}
+                  sub="Your first project — just read it, no commitment"
+                  mins="5 min"
+                />
+              )}
+            </div>
+            {cohortToday > 0 && (
+              <p className="mt-3 text-[11px] text-ink-muted">
+                {cohortToday} lesson{cohortToday === 1 ? "" : "s"} completed across Square 1 today — you&apos;re not doing this alone.
+              </p>
+            )}
+          </div>
+        );
+      })()}
 
       {/* ── Day-one welcome — celebrate, don't show a wall of zeros ────── */}
       {lessonsCompleted === 0 && (
@@ -659,10 +729,12 @@ export default async function DashboardPage({ searchParams }: DashboardProps) {
           </div>
         </div>
 
-        {/* Streak OR progress. A bold "0 Day Streak" is the most demoralising
-            thing you can show someone still forming the habit — so with no live
-            streak we surface what they've actually banked (lessons done), which
-            can't be lost. The streak tile returns the moment there's one. */}
+        {/* Streak OR the next useful number. A bold "0 Day Streak" is the most
+            demoralising thing you can show someone still forming the habit —
+            and the old fallback (lessons done) duplicated tile 1 exactly (UX
+            review D3). With no live streak we now surface the review deck when
+            cards are due (an actionable 2-minute door), else this week's
+            active days — always distinct, never a zero. */}
         {streakInfo.current > 0 ? (
           <div className="bg-surface rounded-2xl border border-border shadow-card p-4 flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-amber-50 flex items-center justify-center shrink-0">
@@ -673,15 +745,25 @@ export default async function DashboardPage({ searchParams }: DashboardProps) {
               <p className="text-[10px] text-ink-muted uppercase tracking-wider">Day Streak</p>
             </div>
           </div>
+        ) : dueFlashcards > 0 ? (
+          <Link href="/notes?filter=flashcard" className="bg-surface rounded-2xl border border-amber-200 shadow-card p-4 flex items-center gap-3 hover:bg-amber-50/50 transition-colors">
+            <div className="w-10 h-10 rounded-xl bg-amber-50 flex items-center justify-center shrink-0">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#D97706" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="7" width="13" height="13" rx="2"/><path d="M8 7V5a2 2 0 012-2h9a2 2 0 012 2v9a2 2 0 01-2 2h-2"/></svg>
+            </div>
+            <div>
+              <p className="text-lg font-black text-ink">{dueFlashcards}</p>
+              <p className="text-[10px] text-ink-muted uppercase tracking-wider">Cards To Review</p>
+            </div>
+          </Link>
         ) : (
           <div className="bg-surface rounded-2xl border border-border shadow-card p-4 flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center shrink-0">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0056CE" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
             </div>
             <div>
-              <p className="text-lg font-black text-ink">{lessonsCompleted}</p>
+              <p className="text-lg font-black text-ink">{activeThisWeek}</p>
               <p className="text-[10px] text-ink-muted uppercase tracking-wider">
-                {lessonsCompleted === 1 ? "Lesson Done" : "Lessons Done"}
+                Active {activeThisWeek === 1 ? "Day" : "Days"} This Week
               </p>
             </div>
           </div>
@@ -703,6 +785,17 @@ export default async function DashboardPage({ searchParams }: DashboardProps) {
                   <span className="flex items-center gap-1.5 text-xs font-bold text-amber-600 bg-amber-50 px-2.5 py-1 rounded-full">
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 12c2-2.96 0-7-1-8 0 3.038-1.773 4.741-3 6-1.226 1.26-2 3.24-2 5a6 6 0 1012 0c0-1.532-1.056-3.94-2-5-1.786 3-2.791 3-4 2z" /></svg>
                     {streakInfo.current} day streak
+                  </span>
+                )}
+                {/* Streak shield (K2): a solid week earns one bridged miss —
+                    shown, never silent, so the number stays honest. */}
+                {streakInfo.shieldUsedOn && (
+                  <span
+                    className="flex items-center gap-1 text-[10px] font-bold text-sky-700 bg-sky-50 px-2 py-1 rounded-full"
+                    title={`Your solid week earned a streak shield — it covered ${new Date(streakInfo.shieldUsedOn + "T00:00:00").toLocaleDateString("en-AU", { weekday: "long" })} so one busy day didn't erase your streak.`}
+                  >
+                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /></svg>
+                    shield used {new Date(streakInfo.shieldUsedOn + "T00:00:00").toLocaleDateString("en-AU", { weekday: "short" })}
                   </span>
                 )}
                 {streakInfo.todayDone ? (
@@ -752,14 +845,10 @@ export default async function DashboardPage({ searchParams }: DashboardProps) {
             </div>
           </div>
 
-          {/* Activity heatmap */}
-          <div className="bg-surface rounded-2xl border border-border shadow-card p-5">
-            <div className="flex items-center justify-between mb-4">
-              <p className="text-[10px] font-bold text-ink-muted uppercase tracking-widest">Activity — Last 13 Weeks</p>
-              <span className="text-[11px] font-semibold text-ink-muted bg-surface-alt px-2.5 py-1 rounded-full tabular-nums">{activeDaysCount} active {activeDaysCount === 1 ? "day" : "days"}</span>
-            </div>
-            <ActivityHeatmap activeDates={heatmapDates} weeks={13} />
-          </div>
+          {/* The 13-week activity heatmap moved to /progress (UX review D2):
+              hero ring + This Week + heatmap was three tellings of "how much
+              have I done" on one screen. The dashboard keeps the two that
+              drive today's action; the long view lives on Progress. */}
 
           {/* Module roadmap */}
           <div className="bg-surface rounded-2xl border border-border shadow-card p-5">
@@ -938,7 +1027,7 @@ export default async function DashboardPage({ searchParams }: DashboardProps) {
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-semibold text-brand">Add Another Course</p>
-                <p className="text-[10px] text-ink-muted">Explore 9 career paths</p>
+                <p className="text-[10px] text-ink-muted">Explore every career path</p>
               </div>
               <svg width="14" height="14" viewBox="0 0 16 16" fill="none" className="text-ink-muted group-hover:text-brand transition-colors"><path d="M6 3l5 5-5 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /></svg>
             </Link>

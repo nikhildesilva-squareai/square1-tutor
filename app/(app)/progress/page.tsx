@@ -2,36 +2,24 @@ import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { rollUpDomains } from "@/lib/competency";
+import { computeStreak } from "@/lib/streaks";
 import { SkillBrain } from "@/components/SkillBrain";
 
-// ─── Streak calculation ──────────────────────────────────────────────────────
-function calculateStreak(dates: string[]): { current: number; best: number; thisWeek: boolean[] } {
-  if (dates.length === 0) return { current: 0, best: 0, thisWeek: [false,false,false,false,false,false,false] };
-  const uniqueDays = [...new Set(dates.map(d => d.substring(0, 10)))].sort().reverse();
-  const today = new Date(); today.setHours(0,0,0,0);
-  const todayStr = today.toISOString().substring(0, 10);
-  const yesterday = new Date(today); yesterday.setDate(yesterday.getDate() - 1);
-  const yesterdayStr = yesterday.toISOString().substring(0, 10);
-  let current = 0;
-  let checkDate = uniqueDays[0] === todayStr || uniqueDays[0] === yesterdayStr ? new Date(uniqueDays[0]) : null;
-  if (checkDate) {
-    for (const day of uniqueDays) {
-      if (day === checkDate.toISOString().substring(0, 10)) { current++; checkDate.setDate(checkDate.getDate() - 1); }
-      else if (day < checkDate.toISOString().substring(0, 10)) break;
-    }
-  }
-  let best = 0; let run = 1;
-  const sorted = [...uniqueDays].sort();
-  for (let i = 1; i < sorted.length; i++) {
-    const diff = (new Date(sorted[i]).getTime() - new Date(sorted[i - 1]).getTime()) / 86400000;
-    if (diff === 1) run++; else { best = Math.max(best, run); run = 1; }
-  }
-  best = Math.max(best, run); if (uniqueDays.length === 0) best = 0;
+// ─── Streak — single source of truth (UX review G3) ─────────────────────────
+// The page used to carry its own streak algorithm that could disagree with
+// the dashboard's on the exact day a student cares about. Both now call
+// lib/streaks (which also brings the K2 streak shield along).
+function calculateStreak(dates: string[]): { current: number; best: number; thisWeek: boolean[]; shieldUsedOn: string | null } {
+  const info = computeStreak(dates);
+  const today = new Date(); today.setHours(0, 0, 0, 0);
   const dayOfWeek = today.getDay();
   const monday = new Date(today); monday.setDate(today.getDate() - ((dayOfWeek + 6) % 7));
   const thisWeek: boolean[] = [];
-  for (let i = 0; i < 7; i++) { const d = new Date(monday); d.setDate(monday.getDate() + i); thisWeek.push(uniqueDays.includes(d.toISOString().substring(0, 10))); }
-  return { current, best, thisWeek };
+  for (let i = 0; i < 7; i++) {
+    const d = new Date(monday); d.setDate(monday.getDate() + i);
+    thisWeek.push(info.activeDates.has(d.toISOString().substring(0, 10)));
+  }
+  return { current: info.current, best: info.longest, thisWeek, shieldUsedOn: info.shieldUsedOn };
 }
 
 // ─── Progress ring SVG ───────────────────────────────────────────────────────
@@ -114,13 +102,47 @@ export default async function ProgressPage() {
   const avgProjectScore = projectsDone > 0
     ? Math.round((projectSubs ?? []).reduce((s, p) => s + (p.score ?? 0), 0) / projectsDone) : 0;
 
+  // ── Day-one gate (UX review G1) ────────────────────────────────────────────
+  // With zero completions this page used to render four 0% rings, an empty
+  // 12-week heatmap, an all-zero velocity chart, 8 zero stats and 8 grey
+  // badges — a mirror of failure for exactly the person still deciding
+  // whether to start. The dashboard was engineered to never show that; now
+  // this page matches: a warm promise and ONE action until there's real
+  // progress to show.
+  if (completedLessons === 0 && projectsDone === 0) {
+    const firstLessonHref = enrollmentList[0]?.course?.slug ? `/courses/${enrollmentList[0].course.slug}` : "/courses";
+    return (
+      <div className="min-h-full flex items-center justify-center px-6 py-16">
+        <div className="max-w-md text-center">
+          <div className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-surface-tint text-brand">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 20V10" /><path d="M12 20V4" /><path d="M6 20v-6" /></svg>
+          </div>
+          <h1 className="text-xl font-black text-ink">Your progress page unlocks with your first lesson</h1>
+          <p className="mt-2 text-sm leading-relaxed text-ink-secondary">
+            Streaks, your skill brain, mastery bars, milestones — it all comes alive the moment
+            you finish lesson one. It&apos;s worth it: this becomes the proof you show employers.
+          </p>
+          <Link
+            href={firstLessonHref}
+            className="mt-6 inline-flex h-11 items-center gap-2 rounded-xl bg-brand px-6 text-sm font-bold text-white transition-all hover:bg-brand/90"
+          >
+            Start your first lesson
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M6 3l5 5-5 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
   // Streak
   const streak = calculateStreak(completionList.map(c => c.completed_at));
   const dayNames = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
   const todayIdx = (() => { const d = new Date().getDay(); return d === 0 ? 6 : d - 1; })();
 
   // Time invested
-  const totalMinutes = completionList.reduce((s, c) => s + (c.time_spent_minutes ?? 25), 0);
+  // Measured minutes only (UX review G2): a lesson without telemetry adds 0,
+  // never a silently invented 25.
+  const totalMinutes = completionList.reduce((s, c) => s + (c.time_spent_minutes ?? 0), 0);
   const totalHours = Math.round(totalMinutes / 60);
 
   // Skill reports for topic mastery
@@ -239,13 +261,23 @@ export default async function ProgressPage() {
         </span>
       </div>
 
-      {/* ── Overview rings ──────────────────────────────────────── */}
+      {/* ── Overview — measured numbers only (UX review G2). The old Projects
+             and Time rings divided by invented denominators (/10 projects,
+             /100 hours) and presented them as completion; on a platform whose
+             brand is verified proof, fabricated framing is poison. Rings stay
+             where a real denominator exists; counts stand alone otherwise. */}
       <div className="bg-surface rounded-2xl border border-border shadow-card p-6 sm:p-8 mb-6">
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 place-items-center">
           <ProgressRing pct={overallPct} label={`${Math.round(overallPct * 100)}%`} sublabel="Overall" color="#0056CE" />
-          <ProgressRing pct={completedLessons / Math.max(totalLessons, 1)} size={80} stroke={5} label={String(completedLessons)} sublabel={`of ${totalLessons} lessons`} color="#8B5CF6" />
-          <ProgressRing pct={Math.min(projectsDone / 10, 1)} size={80} stroke={5} label={String(projectsDone)} sublabel="Projects" color="#059669" />
-          <ProgressRing pct={Math.min(totalHours / 100, 1)} size={80} stroke={5} label={`${totalHours}h`} sublabel="Time Invested" color="#F59E0B" />
+          <ProgressRing pct={completedLessons / Math.max(totalLessons, 1)} size={80} stroke={5} label={String(completedLessons)} sublabel={`of ${totalLessons} lessons`} color="#0056CE" />
+          <div className="text-center">
+            <p className="text-3xl font-black tabular-nums text-ink">{projectsDone}</p>
+            <p className="mt-1 text-[11px] font-semibold uppercase tracking-wider text-ink-muted">Projects shipped</p>
+          </div>
+          <div className="text-center">
+            <p className="text-3xl font-black tabular-nums text-ink">{totalHours > 0 ? `${totalHours}h` : "—"}</p>
+            <p className="mt-1 text-[11px] font-semibold uppercase tracking-wider text-ink-muted">Time tracked</p>
+          </div>
         </div>
       </div>
 

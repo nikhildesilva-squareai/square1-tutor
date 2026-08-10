@@ -1479,7 +1479,7 @@ export function LearnClient({
                   {completed
                     ? isFirstWin
                       ? "That's your first lesson done."
-                      : "Lesson Complete!"
+                      : ["Lesson banked. Nice.", "Another one down.", "That's how it compounds.", "Lesson complete — streak fed."][(lessonsDone ?? 0) % 4]
                     : exAllDone
                       ? "Everything's answered — lock it in"
                       : exReadyToSubmit && exMcqsDone
@@ -1491,7 +1491,7 @@ export function LearnClient({
                     ? isFirstWin
                       ? "You just did the thing most people who sign up never do — you finished something. Everything from here builds on it."
                       : lessonsDone
-                        ? `Great work. That's ${lessonsDone} lessons done.`
+                        ? `That's ${lessonsDone} lessons banked — today lights up on your streak, and this lesson's key ideas join tomorrow's review deck.`
                         : "Great work. This lesson is in your progress."
                     : exAllDone
                       ? results
@@ -1683,13 +1683,27 @@ export function LearnClient({
                   )}
                 </div>
 
+                {/* The humane off-ramp, on EVERY completion (UX review L3 —
+                    it used to exist only on the very first lesson). Stopping
+                    while you're ahead is a valid, celebrated choice: today is
+                    already banked, the streak is safe, and saying so beats
+                    silently pressuring one more lesson. */}
+                {completed && nextLessonId && (
+                  <Link
+                    href="/dashboard"
+                    className="mt-3 inline-block text-xs font-semibold text-ink-muted underline underline-offset-4 hover:text-ink transition-colors"
+                  >
+                    I&apos;m done for today — today&apos;s already banked
+                  </Link>
+                )}
+
                 {/* Advanced course upsell — fires on final lesson completion */}
                 {completed && !nextLessonId && advancedCourse && (
                   <div className="mt-6 rounded-xl p-5 text-white max-w-xs mx-auto"
                     style={{ background: "linear-gradient(135deg, #3388FF 0%, #0056CE 55%, #01224F 100%)" }}>
                     <p className="text-[10px] font-bold uppercase tracking-widest text-white/60 mb-1">What&apos;s Next</p>
                     <h3 className="text-sm font-bold mb-1">{advancedCourse.title}</h3>
-                    <p className="text-xs text-white/70 mb-3">6 senior modules · capstone · certificate. Included in your plan.</p>
+                    <p className="text-xs text-white/70 mb-3">Senior modules · capstone · certificate. Included in your plan.</p>
                     <Link href={`/courses/${advancedCourse.slug}`}
                       className="inline-flex items-center gap-2 h-9 px-4 rounded-xl bg-white text-blue-700 font-bold text-xs hover:bg-white/90 transition-all">
                       Start Advanced

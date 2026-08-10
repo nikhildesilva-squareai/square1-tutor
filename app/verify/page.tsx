@@ -1,184 +1,143 @@
-import { createClient } from "@/lib/supabase/server";
-import Link from "next/link";
 import type { Metadata } from "next";
+import Link from "next/link";
+import { createAdminClient } from "@/lib/supabase/admin";
+import { Logo } from "@/components/ui/logo";
+import { generateVerificationId, normaliseCredentialId } from "@/lib/certificates";
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// /verify — public certificate verification (UX review R3).
+//
+// Every certificate footer has said "Verify at square1ai.com/verify" since
+// launch; this makes that sentence true. An employer pastes the credential ID
+// and gets the verified facts — student, course, completion date — or an
+// honest "not found". Verification recomputes IDs over COMPLETED enrollments
+// server-side (the completion gate is what makes a certificate real), so
+// nothing here trusts the visitor's input beyond matching a string.
+// ═══════════════════════════════════════════════════════════════════════════════
 
 export const metadata: Metadata = {
-  title: "Verify Certificate",
-  description: "Verify a Square 1 AI certificate credential using its unique verification ID.",
+  title: "Verify a certificate — Square 1 AI",
+  description:
+    "Check any Square 1 AI certificate of completion by its credential ID. Verified against real course completions.",
 };
 
-function generateVerificationId(enrollmentId: string, studentId: string): string {
-  const raw = `${enrollmentId}-${studentId}`;
-  let hash = 0;
-  for (let i = 0; i < raw.length; i++) {
-    hash = ((hash << 5) - hash + raw.charCodeAt(i)) | 0;
-  }
-  const hex = Math.abs(hash).toString(16).toUpperCase().padStart(8, "0");
-  return `SQ1-${hex.slice(0, 4)}-${hex.slice(4, 8)}`;
-}
+type VerifiedCert = {
+  studentName: string;
+  courseTitle: string;
+  completedAt: string;
+};
 
-interface PageProps {
-  searchParams: Promise<{ id?: string }>;
-}
-
-export default async function VerifyPage({ searchParams }: PageProps) {
-  const { id } = await searchParams;
-
-  let result: {
-    valid: boolean;
-    studentName?: string;
-    courseTitle?: string;
-    courseColor?: string;
-    level?: string;
-    issueDate?: string;
-    verificationId?: string;
-  } = { valid: false };
-
-  if (id?.startsWith("SQ1-")) {
-    const supabase = await createClient();
-
-    // Only FINISHED enrolments can back a valid certificate — mirrors the gate on
-    // the certificate page itself. Verifying an unfinished enrolment as "valid"
-    // would confirm a credential the learner never earned.
-    const { data: enrollments } = await supabase
+async function lookupCredential(id: string): Promise<VerifiedCert | null> {
+  try {
+    const admin = createAdminClient();
+    const { data: rows } = await admin
       .from("student_enrollments")
-      .select("id, student_id, assessment_level, enrolled_at, course_id, completed_at")
-      .eq("status", "active")
+      .select("id, student_id, completed_at, courses(title), students(name)")
       .not("completed_at", "is", null);
-
-    if (enrollments) {
-      for (const enrollment of enrollments) {
-        const vid = generateVerificationId(enrollment.id, enrollment.student_id);
-        if (vid === id) {
-          const [{ data: student }, { data: course }] = await Promise.all([
-            supabase.from("students").select("name, email").eq("id", enrollment.student_id).maybeSingle(),
-            supabase.from("courses").select("title, color").eq("id", enrollment.course_id).maybeSingle(),
-          ]);
-
-          result = {
-            valid: true,
-            studentName: student?.name ?? student?.email?.split("@")[0] ?? "Student",
-            courseTitle: course?.title ?? "Course",
-            courseColor: course?.color ?? "#0056CE",
-            level: enrollment.assessment_level ?? "beginner",
-            issueDate: new Date(enrollment.enrolled_at).toLocaleDateString("en-AU", { year: "numeric", month: "long", day: "numeric" }),
-            verificationId: vid,
-          };
-          break;
-        }
+    for (const row of rows ?? []) {
+      if (generateVerificationId(row.id as string, row.student_id as string) === id) {
+        const course = row.courses as unknown as { title: string } | null;
+        const student = row.students as unknown as { name: string | null } | null;
+        return {
+          studentName: student?.name ?? "Square 1 student",
+          courseTitle: course?.title ?? "Square 1 course",
+          completedAt: row.completed_at as string,
+        };
       }
     }
+    return null;
+  } catch {
+    return null;
   }
+}
 
-  const searched = !!id;
+export default async function VerifyPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ id?: string }>;
+}) {
+  const { id: rawId } = await searchParams;
+  const id = rawId ? normaliseCredentialId(rawId) : null;
+  const result = id ? await lookupCredential(id) : null;
 
   return (
-    <div className="min-h-dvh bg-surface-soft flex flex-col">
-      {/* Header */}
-      <header className="border-b border-border bg-surface">
-        <div className="max-w-3xl mx-auto px-4 py-4 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/logo-square1.png" alt="Square 1 AI" className="h-8 w-auto" />
-          </Link>
-          <span className="text-xs font-semibold text-ink-muted uppercase tracking-widest">Certificate Verification</span>
+    <main className="min-h-dvh bg-[#F8FAFC] px-4 py-10">
+      <div className="mx-auto max-w-lg">
+        <div className="mb-8 flex items-center justify-between">
+          <Link href="/" aria-label="Square 1 AI home"><Logo variant="dark" size="sm" /></Link>
+          <Link href="/login" className="text-sm font-medium text-slate-500 hover:text-slate-800">Sign in</Link>
         </div>
-      </header>
 
-      {/* Main */}
-      <main className="flex-1 flex items-center justify-center px-4 py-12">
-        <div className="max-w-md w-full">
-          {/* Search form */}
-          <div className="bg-surface rounded-2xl border border-border p-6 shadow-card mb-6">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 rounded-xl bg-brand/10 flex items-center justify-center">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0056CE" strokeWidth="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /></svg>
-              </div>
-              <div>
-                <h1 className="text-lg font-bold text-ink">Verify a Credential</h1>
-                <p className="text-xs text-ink-muted">Enter a Square 1 AI credential ID</p>
-              </div>
+        <div className="rounded-2xl border border-[#E8EEF5] bg-white p-6 shadow-[0_1px_2px_rgba(21,47,84,0.04)] sm:p-8">
+          <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-[#0056CE]">Certificate verification</p>
+          <h1 className="mt-1.5 text-2xl font-bold text-slate-900">Check a Square 1 credential</h1>
+          <p className="mt-2 text-sm leading-relaxed text-slate-500">
+            Every Square 1 AI certificate carries a credential ID (e.g.{" "}
+            <code className="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[12px]">SQ1-1A2B-3C4D</code>).
+            Enter it below — we verify against real, completed coursework, never a mailing list.
+          </p>
+
+          <form method="get" className="mt-5 flex gap-2">
+            <input
+              type="text"
+              name="id"
+              defaultValue={rawId ?? ""}
+              placeholder="SQ1-XXXX-XXXX"
+              aria-label="Credential ID"
+              className="h-11 min-w-0 flex-1 rounded-xl border border-[#D8E2ED] px-3.5 font-mono text-sm uppercase tracking-wide text-slate-900 outline-none focus:border-[#0056CE]"
+            />
+            <button
+              type="submit"
+              className="h-11 shrink-0 rounded-xl bg-[#0056CE] px-5 text-sm font-bold text-white transition-colors hover:bg-[#004AB0]"
+            >
+              Verify
+            </button>
+          </form>
+
+          {rawId && !id && (
+            <div className="mt-5 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800">
+              That doesn&apos;t look like a Square 1 credential ID — the format is{" "}
+              <span className="font-mono font-semibold">SQ1-XXXX-XXXX</span>.
             </div>
+          )}
 
-            <form className="flex gap-2">
-              <input
-                name="id"
-                type="text"
-                defaultValue={id ?? ""}
-                placeholder="SQ1-XXXX-XXXX"
-                className="flex-1 h-11 px-4 rounded-xl border border-border bg-surface-soft text-sm font-mono text-ink placeholder:text-ink-muted focus:outline-none focus:border-brand"
-              />
-              <button type="submit" className="h-11 px-5 rounded-xl bg-brand text-white text-sm font-bold hover:bg-brand/90 transition-all">
-                Verify
-              </button>
-            </form>
-          </div>
-
-          {/* Result */}
-          {searched && (
-            result.valid ? (
-              <div className="bg-surface rounded-2xl border-2 border-emerald-300 p-6 shadow-card">
-                <div className="flex items-center gap-3 mb-5">
-                  <div className="w-10 h-10 rounded-full bg-emerald-100 flex items-center justify-center">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#059669" strokeWidth="2.5"><polyline points="20 6 9 17 4 12" /></svg>
-                  </div>
-                  <div>
-                    <p className="text-sm font-bold text-emerald-700">Verified Credential</p>
-                    <p className="text-[10px] text-ink-muted font-mono">{result.verificationId}</p>
-                  </div>
-                </div>
-
-                <div className="space-y-3">
-                  <div>
-                    <p className="text-[10px] text-ink-muted uppercase tracking-wider font-semibold mb-0.5">Student</p>
-                    <p className="text-base font-bold text-ink">{result.studentName}</p>
-                  </div>
-                  <div>
-                    <p className="text-[10px] text-ink-muted uppercase tracking-wider font-semibold mb-0.5">Course</p>
-                    <p className="text-base font-bold" style={{ color: result.courseColor }}>{result.courseTitle}</p>
-                  </div>
-                  <div className="flex gap-6">
-                    <div>
-                      <p className="text-[10px] text-ink-muted uppercase tracking-wider font-semibold mb-0.5">Level</p>
-                      <p className="text-sm font-semibold text-ink capitalize">{result.level}</p>
-                    </div>
-                    <div>
-                      <p className="text-[10px] text-ink-muted uppercase tracking-wider font-semibold mb-0.5">Issued</p>
-                      <p className="text-sm font-semibold text-ink">{result.issueDate}</p>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="mt-5 pt-4 border-t border-border flex items-center gap-2">
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#059669" strokeWidth="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /></svg>
-                  <span className="text-[10px] text-ink-muted">This credential was issued by Square 1 AI and is valid.</span>
-                </div>
+          {id && result && (
+            <div className="mt-5 rounded-xl border border-emerald-200 bg-emerald-50 p-5">
+              <div className="flex items-center gap-2">
+                <span className="flex h-7 w-7 items-center justify-center rounded-full bg-emerald-600 text-white">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><polyline points="20 6 9 17 4 12" /></svg>
+                </span>
+                <p className="text-sm font-bold text-emerald-800">Verified credential</p>
               </div>
-            ) : (
-              <div className="bg-surface rounded-2xl border-2 border-red-200 p-6 shadow-card">
-                <div className="flex items-center gap-3 mb-3">
-                  <div className="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#DC2626" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
-                  </div>
-                  <div>
-                    <p className="text-sm font-bold text-red-700">Credential Not Found</p>
-                    <p className="text-xs text-ink-muted">No matching certificate was found for this ID.</p>
-                  </div>
-                </div>
-                <p className="text-xs text-ink-muted">Please double-check the credential ID and try again. The format should be SQ1-XXXX-XXXX.</p>
-              </div>
-            )
+              <dl className="mt-3 space-y-1.5 text-sm">
+                <div className="flex justify-between gap-4"><dt className="text-emerald-800/70">Issued to</dt><dd className="font-semibold text-emerald-900">{result.studentName}</dd></div>
+                <div className="flex justify-between gap-4"><dt className="text-emerald-800/70">Course</dt><dd className="font-semibold text-emerald-900">{result.courseTitle}</dd></div>
+                <div className="flex justify-between gap-4"><dt className="text-emerald-800/70">Completed</dt><dd className="font-semibold tabular-nums text-emerald-900">{new Date(result.completedAt).toLocaleDateString("en-AU", { day: "numeric", month: "long", year: "numeric" })}</dd></div>
+                <div className="flex justify-between gap-4"><dt className="text-emerald-800/70">Credential ID</dt><dd className="font-mono font-semibold text-emerald-900">{id}</dd></div>
+              </dl>
+              <p className="mt-3 text-xs leading-relaxed text-emerald-800/80">
+                This certificate is backed by completed, AI-graded coursework on Square 1 AI —
+                not attendance. Ask the candidate for their portfolio link to see the graded projects behind it.
+              </p>
+            </div>
+          )}
+
+          {id && !result && (
+            <div className="mt-5 rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-800">
+              <p className="font-bold">No matching credential.</p>
+              <p className="mt-1 leading-relaxed">
+                <span className="font-mono">{id}</span>{" "}doesn&apos;t match any completed Square 1 course.
+                Check the ID for typos — if it still fails, the certificate wasn&apos;t issued by us.
+              </p>
+            </div>
           )}
         </div>
-      </main>
 
-      {/* Footer */}
-      <footer className="border-t border-border bg-surface py-4">
-        <div className="max-w-3xl mx-auto px-4 flex items-center justify-between text-xs text-ink-muted">
-          <span>&copy; {new Date().getFullYear()} Square 1 AI</span>
-          <Link href="/" className="hover:text-brand transition-colors">Back to Square 1 AI</Link>
-        </div>
-      </footer>
-    </div>
+        <p className="mt-6 text-center text-xs text-slate-400">
+          Square 1 AI · proof over certificates —{" "}
+          <Link href="/" className="underline underline-offset-2 hover:text-slate-600">square1ai.com</Link>
+        </p>
+      </div>
+    </main>
   );
 }
