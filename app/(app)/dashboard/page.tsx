@@ -11,6 +11,8 @@ import { WelcomeTour } from "@/components/WelcomeTour";
 import { DIAG_SUBJECTS } from "@/lib/diagnostic";
 import { AdminDeskStrip } from "@/components/AdminDeskStrip";
 import { pickEntryModule } from "@/lib/course-entry";
+import { NovaMemoryCard } from "@/components/NovaMemoryCard";
+import { parseMemory } from "@/lib/nova-memory";
 
 // ─── Course career mapping ────────────────────────────────────────────────────
 const COURSES = [
@@ -82,7 +84,7 @@ export default async function DashboardPage({ searchParams }: DashboardProps) {
 
   const { data: student } = await supabase
     .from("students")
-    .select("id, name, email, subject_interest")
+    .select("id, name, email, subject_interest, memory")
     .eq("user_id", user.id)
     .maybeSingle();
 
@@ -547,6 +549,15 @@ export default async function DashboardPage({ searchParams }: DashboardProps) {
           </div>
         </div>
       </div>
+
+      {/* ── Nova remembers — the retention greeting (audit R6a). Renders
+             nothing until graded work has given Nova something real to
+             remember, so day one stays clean. ─────────────────────────────── */}
+      <NovaMemoryCard
+        memory={parseMemory(student?.memory)}
+        resumeHref={currentLesson ? `/learn/${currentLesson.id}` : null}
+        resumeLabel={currentLesson ? "Resume lesson" : null}
+      />
 
       {/* ── Day-one welcome — celebrate, don't show a wall of zeros ────── */}
       {lessonsCompleted === 0 && (

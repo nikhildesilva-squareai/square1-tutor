@@ -643,6 +643,23 @@ export default function ResultsClient({ initialSeats = null, coursePath = null, 
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  // Living report (audit R6b, 2026-08-10): this permalink is emailed to every
+  // completer and re-opened later. For a signed-in student who enrolled in
+  // this track, the snapshot visibly MOVES — a measured "since your check"
+  // strip replaces the frozen-in-time feeling with progress they earned.
+  type LiveProgress = {
+    enrolled: boolean; courseTitle?: string; totalLessons?: number;
+    lessonsCompleted?: number; currentLessonId?: string | null; courseCompleted?: boolean;
+  };
+  const [live, setLive] = useState<LiveProgress | null>(null);
+  useEffect(() => {
+    if (!slug) return;
+    fetch(`/api/diagnostic/progress?subject=${encodeURIComponent(slug)}`)
+      .then((r) => r.json())
+      .then((d: LiveProgress) => { if (d?.enrolled) setLive(d); })
+      .catch(() => { /* the static report is always the fallback */ });
+  }, [slug]);
+
   // Report unlock (audit R2, 2026-08-09): the deep tiles render blurred until
   // the visitor leaves an email (or signs in with Google) at the unlock card.
   // Once unlocked in a browser, always unlocked — the emailed permalink and a
@@ -730,6 +747,63 @@ export default function ResultsClient({ initialSeats = null, coursePath = null, 
             You're <span style={{ color: C.blue }}>{bandLabel}</span> in {subject.title}.
           </h1>
         </div>
+
+        {/* ── Living report — "your report has moved" (R6b). Only for a
+               signed-in student enrolled in THIS track; every number is
+               measured (lesson_completions), never estimated. ─────────────── */}
+        {live?.enrolled && (
+          <div style={{
+            display: "flex", flexWrap: "wrap", alignItems: "center", gap: "14px 18px",
+            marginBottom: 22, padding: "16px 20px", borderRadius: 14,
+            background: "linear-gradient(180deg, rgba(25,166,95,0.07), rgba(25,166,95,0.03))",
+            border: `1.5px solid rgba(25,166,95,0.35)`,
+          }}>
+            <span style={{
+              flexShrink: 0, width: 34, height: 34, borderRadius: 999,
+              background: "rgba(25,166,95,0.14)", display: "inline-flex",
+              alignItems: "center", justifyContent: "center", color: C.success,
+            }} aria-hidden>
+              <svg viewBox="0 0 24 24" width={16} height={16} fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.5V12a10 10 0 1 1-5.93-9.14" /><path d="m9 11 3 3L22 4" /></svg>
+            </span>
+            <div style={{ minWidth: 220, flex: "1 1 260px" }}>
+              <div style={{ fontFamily: FIGTREE, fontSize: 10.5, fontWeight: 800, letterSpacing: "0.12em", textTransform: "uppercase", color: C.success }}>
+                Your report has moved
+              </div>
+              <div style={{ fontSize: 15, fontWeight: 700, color: C.ink, marginTop: 2 }}>
+                {live.courseCompleted
+                  ? `You finished the ${live.courseTitle} track since this check.`
+                  : (live.lessonsCompleted ?? 0) > 0
+                    ? `Since your check: ${live.lessonsCompleted} of ${live.totalLessons} lessons done in ${live.courseTitle}.`
+                    : `You're enrolled in ${live.courseTitle} — Lesson 1 is waiting.`}
+              </div>
+              {!live.courseCompleted && (live.totalLessons ?? 0) > 0 && (
+                <div style={{ marginTop: 8, height: 6, borderRadius: 999, background: "rgba(15,23,42,0.08)", overflow: "hidden", maxWidth: 340 }}>
+                  <div style={{ height: "100%", borderRadius: 999, background: C.success, width: `${Math.max(2, Math.round(((live.lessonsCompleted ?? 0) / (live.totalLessons || 1)) * 100))}%` }} />
+                </div>
+              )}
+            </div>
+            <div style={{ display: "flex", alignItems: "center", gap: 12, flexShrink: 0 }}>
+              <Link
+                href={live.courseCompleted ? "/portfolio" : live.currentLessonId ? `/learn/${live.currentLessonId}` : "/dashboard"}
+                onClick={() => fpTrack("cta_click", "live-report:continue")}
+                style={{
+                  display: "inline-flex", alignItems: "center", gap: 7, height: 42,
+                  padding: "0 18px", borderRadius: 11, background: CTA_GRADIENT, boxShadow: CTA_INSET,
+                  color: "#FFFFFF", fontWeight: 800, fontSize: 13.5, textDecoration: "none",
+                }}
+              >
+                {live.courseCompleted ? "See your portfolio →" : (live.lessonsCompleted ?? 0) > 0 ? "Continue learning →" : "Start Lesson 1 →"}
+              </Link>
+              <Link
+                href="/progress"
+                onClick={() => fpTrack("cta_click", "live-report:progress")}
+                style={{ fontSize: 13, fontWeight: 600, color: C.sec, textDecoration: "underline", textUnderlineOffset: 3 }}
+              >
+                Live skill report
+              </Link>
+            </div>
+          </div>
+        )}
 
         {/* ── BENTO ──────────────────────────────────────────────────────── */}
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-3 sm:gap-4">
