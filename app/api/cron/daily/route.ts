@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { runStreakReminders, runWeeklyDigest, runActivationNudges, runInviteReminders, runManagerDigests, runLeadFollowups } from "@/lib/email/jobs";
+import { runStreakReminders, runWeeklyDigest, runActivationNudges, runInviteReminders, runManagerDigests, runLeadFollowups, runDeltaEmails } from "@/lib/email/jobs";
 import { checkAllIncompleteEnrollments } from "@/lib/enrollment-completion";
 import { ingestNews } from "@/lib/newsroom-pipeline";
 import { sweepMonth } from "@/lib/ai/budget";
@@ -51,6 +51,7 @@ const TOTAL_BUDGET_MS = 52_000;
 /** Per-job caps. A job may not exceed its cap or the remaining budget. */
 const CAP = {
   activationNudges: 15_000,
+  deltaEmails: 12_000,
   leadFollowups: 15_000,
   streakReminders: 15_000,
   inviteReminders: 10_000,
@@ -126,6 +127,9 @@ export async function GET(request: Request) {
   // send, not a delayed one. That is why they lead.
   await Promise.all([
     job("activationNudges", CAP.activationNudges, runActivationNudges),
+    // Day-1/day-3 "your gap map moved" for students who DID start — window-
+    // bound like the nudges, so it also belongs in the one-and-done group.
+    job("deltaEmails", CAP.deltaEmails, runDeltaEmails),
     job("leadFollowups", CAP.leadFollowups, runLeadFollowups),
     job("streakReminders", CAP.streakReminders, runStreakReminders),
     job("inviteReminders", CAP.inviteReminders, runInviteReminders),

@@ -450,6 +450,72 @@ ${gap ? `
 }
 
 /* ─── Weekly Progress Digest ─────────────────────────────────────────────── */
+/* ─── Delta email — day 1 / day 3: "your gap map moved" (retention #9) ─────
+   Sent only to students who STARTED (the activation nudge owns everyone
+   else), so every number here is real movement they earned. Day 1 lands the
+   proof-of-motion; day 3 lands the habit frame. The gap line names Nova's
+   freshest memory so the email reads personal because it IS personal. */
+export async function sendDeltaEmail(to: string, name: string, delta: {
+  day: 1 | 3;
+  lessonsDone: number;
+  topicsLit: number;
+  topGap: string | null;
+}) {
+  const r = getResend();
+  const lessonWord = delta.lessonsDone === 1 ? "lesson" : "lessons";
+  const subject = delta.day === 1
+    ? `24 hours in — your gap map already moved`
+    : `Three days in: ${delta.lessonsDone} ${lessonWord} banked`;
+  const heading = delta.day === 1 ? "Your gap map moved." : "Look at the line.";
+  const bodyLine = delta.day === 1
+    ? `One day on Square 1 and there's already measured movement, ${name} — this is the map most people never start drawing.`
+    : `Three days in, ${name}. Most people who sign up anywhere never get here — you have receipts.`;
+
+  return r.emails.send({
+    from: FROM,
+    to,
+    subject,
+    html: `
+      <div style="font-family:system-ui,-apple-system,sans-serif;max-width:520px;margin:0 auto;padding:40px 20px;">
+        <div style="text-align:center;margin-bottom:28px;">
+          <img src="https://www.square1ai.com/logo-square1.png" alt="Square 1 AI" width="150" style="display:inline-block;margin-bottom:16px;max-width:150px;height:auto;" />
+          <h1 style="color:#0F172A;font-size:24px;font-weight:800;margin:0 0 8px;">${heading}</h1>
+          <p style="color:#64748B;font-size:14px;margin:0;">${bodyLine}</p>
+        </div>
+
+        <div style="display:flex;gap:12px;margin-bottom:20px;">
+          <div style="flex:1;background:#F8FAFC;border:1px solid #E2E8F0;border-radius:12px;padding:16px;text-align:center;">
+            <p style="color:#0F172A;font-size:24px;font-weight:900;margin:0;">${delta.lessonsDone}</p>
+            <p style="color:#64748B;font-size:11px;text-transform:uppercase;letter-spacing:1px;margin:4px 0 0;">${lessonWord} banked</p>
+          </div>
+          ${delta.topicsLit > 0 ? `
+          <div style="flex:1;background:linear-gradient(135deg,#EFF6FF,#F5F3FF);border:1px solid #DBEAFE;border-radius:12px;padding:16px;text-align:center;">
+            <p style="color:#0056CE;font-size:24px;font-weight:900;margin:0;">${delta.topicsLit}</p>
+            <p style="color:#64748B;font-size:11px;text-transform:uppercase;letter-spacing:1px;margin:4px 0 0;">topic${delta.topicsLit === 1 ? "" : "s"} lit 🧠</p>
+          </div>` : ""}
+        </div>
+
+        ${delta.topGap ? `
+        <div style="background:#FFFBEB;border:1px solid #FDE68A;border-radius:12px;padding:14px 16px;margin-bottom:20px;">
+          <p style="color:#92400E;font-size:13px;font-weight:700;margin:0;">Next gap on your map: ${delta.topGap}</p>
+          <p style="color:#B45309;font-size:12px;margin:4px 0 0;">Nova remembers exactly where you left it — ten focused minutes usually closes it.</p>
+        </div>` : ""}
+
+        <div style="text-align:center;margin-bottom:28px;">
+          <a href="https://www.square1ai.com/dashboard" style="display:inline-block;background:#0056CE;color:white;font-weight:700;font-size:14px;text-decoration:none;padding:12px 32px;border-radius:12px;">
+            ${delta.day === 1 ? "Keep the map moving" : "Open today's quest"}
+          </a>
+          <p style="color:#94A3B8;font-size:12px;margin:10px 0 0;">Today's quest is usually under 30 minutes — the review deck alone is 2.</p>
+        </div>
+
+        <p style="color:#94A3B8;font-size:11px;text-align:center;">
+          <a href="https://www.square1ai.com/settings" style="color:#94A3B8;">Unsubscribe</a> · Square 1 AI
+        </p>
+      </div>
+    `,
+  });
+}
+
 export async function sendWeeklyDigest(to: string, name: string, stats: {
   lessonsCompleted: number;
   streak: number;

@@ -2,6 +2,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { computeStreak } from "@/lib/streaks";
 import { usableWeakTopics, joinTopics } from "@/lib/skill-gaps";
 import { getOrgStats } from "@/lib/org-stats";
+import { parseMemory } from "@/lib/nova-memory";
 import {
   sendStreakReminder,
   sendWeeklyDigest,
@@ -10,6 +11,7 @@ import {
   sendInviteReminder,
   sendManagerDigest,
   sendLeadFollowup,
+  sendDeltaEmail,
 } from "@/lib/email/resend";
 
 /**
@@ -428,6 +430,103 @@ export async function runActivationNudges(): Promise<JobResult> {
     try {
       await sendActivationNudge(student.email, student.name ?? student.email.split("@")[0], gap);
       await logSend(supabase, student.id, "activation_nudge");
+      result.sent++;
+    } catch (err) {
+      result.errors.push(`${student.email}: ${err instanceof Error ? err.message : "unknown"}`);
+    }
+  }
+
+  return result;
+}
+
+/* ─── Delta emails — day 1 & day 3: "your gap map moved" (retention #9) ────
+   The activation nudge owns signups stalled at ZERO lessons. This job owns
+   the opposite, previously-unserved cohort: students who DID start. At 24h
+   and again at 72h after signup they get their measured movement — lessons
+   banked, topics lit (exercises ≥90%), and the freshest gap Nova remembers —
+   because progress a student can SEE is the strongest reason to come back
+   for day two. Every number is measured; a student with nothing new gets
+   nothing (no fake momentum). One send per window, deduped forever via
+   email_log, windows sized double the cron cadence so a missed day still
+   lands once. */
+export async function runDeltaEmails(): Promise<JobResult> {
+  const supabase = createAdminClient();
+  const result: JobResult = { sent: 0, skipped: 0, errors: [] };
+
+  const now = Date.now();
+  const h24 = new Date(now - 24 * 60 * 60 * 1000).toISOString();
+  const h96 = new Date(now - 96 * 60 * 60 * 1000).toISOString();
+
+  // One query spans both windows; the loop below assigns day 1 vs day 3.
+  const { data: students } = await supabase
+    .from("students")
+    .select("id, name, email, email_opt_out, created_at, memory")
+    .lt("created_at", h24)
+    .gt("created_at", h96);
+  if (!students || students.length === 0) return result;
+
+  const studentIds = students.map((s) => s.id);
+  const [{ data: completions }, sentDay1, sentDay3] = await Promise.all([
+    supabase
+      .from("lesson_completions")
+      .select("student_id, exercise_scores")
+      .in("student_id", studentIds),
+    recentlySent(supabase, "delta_day1", new Date(0).toISOString()),
+    recentlySent(supabase, "delta_day3", new Date(0).toISOString()),
+  ]);
+
+  // Per-student measured deltas: completions + lobes lit (exercises ≥90%).
+  const lessonCount = new Map<string, number>();
+  const litCount = new Map<string, number>();
+  for (const c of completions ?? []) {
+    const sid = c.student_id as string;
+    lessonCount.set(sid, (lessonCount.get(sid) ?? 0) + 1);
+    const raw = (c as { exercise_scores?: unknown }).exercise_scores;
+    if (Array.isArray(raw)) {
+      let lit = litCount.get(sid) ?? 0;
+      for (const e of raw) {
+        const score = Number((e as { score?: unknown })?.score);
+        const max = Number((e as { maxScore?: unknown })?.maxScore ?? (e as { max_score?: unknown })?.max_score);
+        if (Number.isFinite(score) && Number.isFinite(max) && max > 0 && score / max >= 0.9) lit++;
+      }
+      litCount.set(sid, lit);
+    }
+  }
+
+  for (const student of students) {
+    if (result.sent >= BATCH_CAP) break;
+
+    const ageHours = (now - new Date(student.created_at as string).getTime()) / 3_600_000;
+    const day: 1 | 3 | null = ageHours >= 24 && ageHours < 48 ? 1 : ageHours >= 72 && ageHours < 96 ? 3 : null;
+    const lessonsDone = lessonCount.get(student.id) ?? 0;
+
+    if (
+      day === null ||
+      !student.email ||
+      student.email_opt_out ||
+      lessonsDone === 0 || // the activation nudge owns the not-started cohort
+      (day === 1 && sentDay1.has(student.id)) ||
+      (day === 3 && sentDay3.has(student.id))
+    ) {
+      result.skipped++;
+      continue;
+    }
+
+    // The freshest gap Nova remembers, cleaned for subject-line duty.
+    const memory = parseMemory(student.memory);
+    const rawGap = memory.gaps.length > 0 ? memory.gaps[memory.gaps.length - 1].t : null;
+    const topGap = rawGap
+      ? rawGap.replace(/\s*\([^)]*\)\s*$/, "").replace(/^(Explain|Code|Build|Debug|Design|Write)\s*:\s*/i, "").trim()
+      : null;
+
+    try {
+      await sendDeltaEmail(student.email, student.name ?? student.email.split("@")[0], {
+        day,
+        lessonsDone,
+        topicsLit: litCount.get(student.id) ?? 0,
+        topGap,
+      });
+      await logSend(supabase, student.id, `delta_day${day}`);
       result.sent++;
     } catch (err) {
       result.errors.push(`${student.email}: ${err instanceof Error ? err.message : "unknown"}`);
