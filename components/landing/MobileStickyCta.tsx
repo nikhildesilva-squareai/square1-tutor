@@ -14,7 +14,10 @@ import { PrimaryCta } from "@/components/ui/primary-cta";
 // "animated counter" pattern) - dramatizes the REAL claimed count, no
 // invented events. Runs once; reduced-motion gets the final value instantly.
 function useSeatRoll(target: number, from: number, run: boolean) {
-  const [v, setV] = useState(from);
+  // Trust fix (audit R5): initialize at the TRUE count — SSR and pre-reveal
+  // must never display "500 of 500" when 497 is the real number. The cap→left
+  // roll still plays as a client-side flourish the moment the bar reveals.
+  const [v, setV] = useState(target);
   const done = useRef(false);
   useEffect(() => {
     if (!run || done.current) return;
@@ -55,10 +58,10 @@ export function MobileStickyCta({ seats = null }: { seats?: { left: number; cap:
     >
       {seats && (
         <p className="mb-1.5 text-center text-[10px] font-bold text-slate-600">
-          {rolledLeft} of {seats.cap} compute-capped free seats left
+          {rolledLeft} of {seats.cap} free early-access seats left
         </p>
       )}
-      <PrimaryCta href="/diagnostic" className="w-full">
+      <PrimaryCta href="/skill-check" className="w-full">
         Free skill check — 3 min
       </PrimaryCta>
     </div>

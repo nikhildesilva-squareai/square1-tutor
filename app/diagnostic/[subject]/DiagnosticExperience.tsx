@@ -5,103 +5,17 @@ import { useRouter } from "next/navigation";
 import { ArrowRight, Check } from "lucide-react";
 import { getDiagnostic, encodeAnswers, type DiagQuestion } from "@/lib/diagnostic";
 import { DiagnosticEvent } from "@/components/DiagnosticEvent";
+import { fpTrack } from "@/lib/first-party";
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// The pre-test gate. Email ONLY, one screen, then straight into question 1.
-// Country was asked here for a day and dropped (2026-08-06): the server derives
-// it from the CDN geo header / analytics instead, and a second required field
-// costs momentum at the most fragile moment of the funnel.
-//
-// This is a REQUIRED step (product decision, 2026-08-06). There is no skip: the
-// address is the point, and a skip control was taking most of the traffic.
-//
-// Two things follow from that and must not be quietly undone:
-//   1. The submit path fails OPEN. Without a skip, a failing save would be a
-//      locked door across the whole top of the funnel.
-//   2. No account is created — no password, no verification. Copy may say "no
-//      account needed", which stays true, but must NOT say "no signup" or
-//      "instant results, no signup", which no longer is.
+// The pre-test email gate was REMOVED 2026-08-09 (audit finding F3): it sat
+// directly after three screens promising "no email", captured 3 leads in 5
+// days, and priced the subject-page → question-1 step at −38%. Email capture
+// now happens on the RESULTS page, at the report reveal — after the check has
+// demonstrated value — via the unlock in ResultsClient (same
+// /api/diagnostic/report-email endpoint, so one person stays one lead row).
+// Every "no signup / no email to start" claim on this page is true again.
 // ═══════════════════════════════════════════════════════════════════════════════
-function OptInStep({
-  slug, subjectTitle, accent, onDone,
-}: {
-  slug: string;
-  subjectTitle: string;
-  accent: string;
-  onDone: () => void;
-}) {
-  const [email, setEmail] = useState("");
-  const [saving, setSaving] = useState(false);
-
-  const ready = email.trim().length > 3;
-
-  async function submit(e: React.FormEvent) {
-    e.preventDefault();
-    if (!ready || saving) return;
-    setSaving(true);
-    try {
-      const res = await fetch("/api/diagnostic/lead", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: email.trim(), subject: slug }),
-      });
-      // Fail OPEN, and this now matters much more than it did. With no skip
-      // control, a failing save would be a locked door across the entire top of
-      // the funnel — an outage on our side would stop every visitor taking the
-      // check at all. A lost email address is cheaper than a lost visitor, so a
-      // failed save still lets them straight through.
-      onDone();
-    } catch {
-      onDone();
-    }
-  }
-
-  return (
-    <div className="mx-auto max-w-md animate-fade-in-up">
-      <span className="text-xs font-bold tracking-wide" style={{ color: accent }}>
-        {subjectTitle}
-      </span>
-      <h2 className="mt-2 text-2xl font-bold leading-snug text-slate-900">
-        Where should we send your result?
-      </h2>
-      <p className="mt-2.5 text-sm leading-relaxed text-slate-600">
-        We&apos;ll email your skill snapshot and the roadmap that goes with it, so
-        you still have it after you close the tab. No account, no password —
-        just an address.
-      </p>
-
-      <form onSubmit={submit} className="mt-6 space-y-3">
-        <div>
-          <label htmlFor="optin-email" className="mb-1.5 block text-sm font-semibold text-slate-700">
-            Email
-          </label>
-          <input
-            id="optin-email"
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="you@example.com"
-            autoComplete="email"
-            className="h-11 w-full rounded-lg border border-slate-300 px-3.5 text-base outline-none transition-colors focus:border-[#0056CE] sm:text-sm"
-          />
-        </div>
-        <button
-          type="submit"
-          disabled={!ready || saving}
-          className="flex h-11 w-full items-center justify-center gap-2 rounded-lg text-sm font-bold text-white transition-transform enabled:hover:-translate-y-px disabled:opacity-40"
-          style={{ background: accent }}
-        >
-          {saving ? "Saving…" : "Send it and start the check"}
-          {!saving && <ArrowRight className="h-4 w-4" />}
-        </button>
-      </form>
-
-      <p className="mt-4 text-center text-xs text-slate-500">
-        We email your result and occasional course updates. No spam, unsubscribe anytime.
-      </p>
-    </div>
-  );
-}
 
 interface Mod { title: string; lessons: number }
 interface Props {
@@ -135,33 +49,18 @@ export function DiagnosticExperience({ slug, subject, seo, modules, totalProject
   useEffect(() => {
     try {
       const params = new URLSearchParams(window.location.search);
-      if (params.get("start") === "1") {
-        // Still a first click, so it still gets the opt-in — unless this
-        // browser has already answered it once. Read storage directly rather
-        // than the optInDone state, which this effect races.
-        let asked = false;
-        try { asked = localStorage.getItem("s1-diag-optin") === "done"; } catch { /* ignore */ }
-        if (asked) setStarted(true);
-        else setShowOptIn(true);
-      }
+      if (params.get("start") === "1") setStarted(true);
       // Hero/deep-link handoff: ?a0=<option index> carries an answer to THIS
       // check's first question (same seeded option order everywhere), so the
-      // visitor arrives already one question in — momentum preserved.
-      //
-      // This path used to skip the opt-in to protect that momentum. It no
-      // longer does: nobody takes the test without leaving an email
-      // (product decision, 2026-08-06). The answer is still carried over, so
-      // they resume at question 2 the moment they've filled it in.
+      // visitor arrives already one question in — momentum preserved, straight
+      // to question 2. No email gate anywhere before the questions (2026-08-09).
       const a0 = params.get("a0");
       if (a0 !== null) {
         const idx = Number(a0);
         if (Number.isInteger(idx) && idx >= 0 && idx < (questions[0]?.options.length ?? 0)) {
           setAnswers([idx]);
           setQIdx(1);
-          let asked = false;
-          try { asked = localStorage.getItem("s1-diag-optin") === "done"; } catch { /* ignore */ }
-          if (asked) setStarted(true);
-          else setShowOptIn(true);
+          setStarted(true);
         }
       }
     } catch { /* ignore */ }
@@ -184,60 +83,16 @@ export function DiagnosticExperience({ slug, subject, seo, modules, totalProject
 
   const accent = subject.color;
 
-  // ── Pre-test soft opt-in ──────────────────────────────────────────────────
-  // Shown once, between "Start the skill check" and question 1. Skippable by
-  // design: the check itself stays free and account-free, so every "no signup
-  // required" claim on this page (and in its FAQPage schema) stays true.
-  //
-  // Asked once per browser — a visitor who already gave us an address, or who
-  // skipped, is never asked again. Anyone arriving with ?a0= is exempt: they
-  // answered question 1 from the homepage hero, and interrupting a handoff
-  // built for momentum to ask for an email is the one place this clearly loses.
-  const [showOptIn, setShowOptIn] = useState(false);
-  const [optInDone, setOptInDone] = useState(false);
-
-  useEffect(() => {
-    try {
-      if (localStorage.getItem("s1-diag-optin") === "done") setOptInDone(true);
-    } catch { /* private mode — just ask again */ }
-  }, []);
-
-  function markOptInDone() {
-    setOptInDone(true);
-    try { localStorage.setItem("s1-diag-optin", "done"); } catch { /* ignore */ }
-  }
-
-  function beginQuiz() {
-    setShowOptIn(false);
-    setStarted(true);
-    if (typeof window !== "undefined") window.scrollTo({ top: 0, behavior: "smooth" });
-  }
-
+  // Straight into question 1 — no interstitial, no gate. The click IS the start.
   function start() {
-    if (!optInDone) {
-      setShowOptIn(true);
-      if (typeof window !== "undefined") window.scrollTo({ top: 0, behavior: "smooth" });
-      return;
-    }
-    beginQuiz();
-  }
-
-  // ── Opt-in step ───────────────────────────────────────────────────────────
-  if (showOptIn) {
-    return (
-      <main className="flex-1 px-4 py-10 sm:px-6" style={{ background: "linear-gradient(180deg,#F8FAFC,#fff)" }}>
-        <OptInStep
-          slug={slug}
-          subjectTitle={subject.title}
-          accent={accent}
-          onDone={() => { markOptInDone(); beginQuiz(); }}
-        />
-      </main>
-    );
+    setStarted(true);
+    fpTrack("cta_click", `diag-start:${slug}`);
+    if (typeof window !== "undefined") window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
   function answer(optIdx: number) {
     setPicked(optIdx);
+    fpTrack("quiz_step", `q${qIdx + 1}_answered`);
     setTimeout(() => {
       const next = [...answers, optIdx];
       setAnswers(next);

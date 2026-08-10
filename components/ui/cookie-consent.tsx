@@ -8,11 +8,23 @@ export function CookieConsent() {
   const [animating, setAnimating] = useState(false);
 
   useEffect(() => {
-    if (!readConsent()) {
-      // Delay appearance for smooth entrance
-      const timer = setTimeout(() => { setVisible(true); setAnimating(true); }, 1500);
-      return () => clearTimeout(timer);
-    }
+    if (readConsent()) return;
+    // Audit R5 (2026-08-09): at 1.5s this card was every visitor's first
+    // impression, sitting over the hero's interactive Prompt Lab on phones.
+    // Nothing tracks before consent, so the ask can wait until the visitor has
+    // actually engaged: first scroll, or 6s, whichever comes first.
+    let shown = false;
+    const show = () => {
+      if (shown) return;
+      shown = true;
+      setVisible(true);
+      requestAnimationFrame(() => setAnimating(true));
+      window.removeEventListener("scroll", onScroll);
+    };
+    const onScroll = () => { if (window.scrollY > 120) show(); };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    const timer = setTimeout(show, 6000);
+    return () => { clearTimeout(timer); window.removeEventListener("scroll", onScroll); };
   }, []);
 
   if (!visible) return null;
@@ -31,7 +43,7 @@ export function CookieConsent() {
        itself is unchanged; only the icon and the padding give way, and the
        "no ads" reassurance moves to a second line at sm and up. */
     <div className={`fixed bottom-3 sm:bottom-5 left-1/2 -translate-x-1/2 z-50 w-[calc(100%-1.5rem)] sm:w-[calc(100%-2rem)] max-w-lg transition-all duration-500 ${animating ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}>
-      <div className="bg-[#0A0A0A] rounded-2xl border border-white/10 p-3.5 sm:p-5 shadow-[0_8px_40px_rgba(0,0,0,0.4)]">
+      <div className="bg-[#0A0A0A] rounded-2xl border border-white/10 p-3 sm:p-5 shadow-[0_8px_40px_rgba(0,0,0,0.4)]">
         <div className="flex items-start gap-3 sm:gap-4">
           {/* Shield icon — decorative, so it is the first thing to go on a phone. */}
           <div className="hidden sm:flex w-9 h-9 rounded-xl bg-white/5 border border-white/10 items-center justify-center shrink-0 mt-0.5">

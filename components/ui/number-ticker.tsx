@@ -22,7 +22,12 @@ export function useNumberTicker({
   delay?: number;
   decimals?: number;
 }) {
-  const [value, setValue] = useState(from);
+  // TRUST FIX (audit R5, 2026-08-09): initial value is the TARGET, not `from`.
+  // These tickers render cited statistics and product claims — starting the DOM
+  // at 0 meant crawlers, link previews, screen readers and anyone whose scroll
+  // missed the trigger read "0 real projects deployed". The page now ships the
+  // true number; the roll-up runs only as a client-side enhancement on reveal.
+  const [value, setValue] = useState(target);
 
   useEffect(() => {
     if (!start) return;

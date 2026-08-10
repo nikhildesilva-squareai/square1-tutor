@@ -458,7 +458,7 @@ export function CourseGridSection({ courses: allCourses }: { courses: Course[] }
             Not sure which track is right for you?{" "}
             <span className="font-semibold text-slate-700">The free 3-minute skill check shows you.</span>
           </p>
-          <PrimaryCta href="/diagnostic">Get your free skill report</PrimaryCta>
+          <PrimaryCta href="/skill-check">Get your free skill report</PrimaryCta>
         </div>
       </div>
 

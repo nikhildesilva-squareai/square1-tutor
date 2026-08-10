@@ -85,7 +85,7 @@ export function InlineDiagnostic({
                   ? "One question barely scratches it. The full 3-minute check maps your real level and the gaps between you and the role you want."
                   : "No shame — most people miss it. The full 3-minute check shows your real level and a path to close every gap."}
               </p>
-              <PrimaryCta href="/diagnostic">
+              <PrimaryCta href="/skill-check">
                 See your full snapshot — 4 more questions
               </PrimaryCta>
             </div>

@@ -93,7 +93,7 @@ export function PainMirror() {
               in public repos an employer can open, behind a certificate anyone can verify.
             </p>
             <Link
-              href="/diagnostic"
+              href="/skill-check"
               className="mt-6 inline-flex items-center justify-center gap-2 h-12 px-7 rounded-xl text-white text-[15px] font-bold transition-transform motion-safe:hover:-translate-y-0.5"
               style={{ background: "linear-gradient(135deg, #3388FF 0%, #0056CE 55%, #01224F 100%)", border: "1px solid rgba(255,255,255,0.18)", boxShadow: "0 14px 30px -12px rgba(0,86,206,0.55)" }}
             >

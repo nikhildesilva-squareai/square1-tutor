@@ -9,10 +9,20 @@ import { NextResponse } from "next/server";
  * can't set the auth headers browser inserts rely on).
  *
  * Accepted event types: "section_time" (label=section, value=seconds),
- * "scroll_depth" (value=max % reached). Anything else is dropped.
+ * "scroll_depth" (value=max % reached), "cta_click" (label=which CTA/section),
+ * "quiz_step" (label=step through the skill check), "gate_shown" /
+ * "gate_submitted" (the report-unlock on the results page). Anything else is
+ * dropped.
  */
 
-const ALLOWED = new Set(["section_time", "scroll_depth"]);
+const ALLOWED = new Set([
+  "section_time",
+  "scroll_depth",
+  "cta_click",
+  "quiz_step",
+  "gate_shown",
+  "gate_submitted",
+]);
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 type Incoming = {

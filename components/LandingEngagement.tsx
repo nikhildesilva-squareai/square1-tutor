@@ -17,20 +17,7 @@ import { useEffect } from "react";
  * Production only, fire-and-forget — never throws, never blocks the page.
  */
 
-const IDLE_MS = 30 * 60 * 1000;
-
-function uuid() { return crypto.randomUUID(); }
-
-function ids(): { anonymous_id: string; session_id: string } {
-  let aid = localStorage.getItem("s1_aid");
-  if (!aid) { aid = uuid(); localStorage.setItem("s1_aid", aid); }
-  const now = Date.now();
-  const last = Number(sessionStorage.getItem("s1_last") ?? 0);
-  let sid = sessionStorage.getItem("s1_sid");
-  if (!sid || now - last > IDLE_MS) { sid = uuid(); sessionStorage.setItem("s1_sid", sid); }
-  sessionStorage.setItem("s1_last", String(now));
-  return { anonymous_id: aid, session_id: sid };
-}
+import { fpIds as ids } from "@/lib/first-party";
 
 export function LandingEngagement() {
   useEffect(() => {
@@ -39,6 +26,16 @@ export function LandingEngagement() {
     try {
       const sections = Array.from(document.querySelectorAll<HTMLElement>("[data-s1-section]"));
       if (sections.length === 0) return;
+
+      // One transport for everything below — sendBeacon so events survive
+      // navigation/tab-close; fetch keepalive as the fallback.
+      const beacon = (events: Array<Record<string, unknown>>) => {
+        try {
+          const blob = new Blob([JSON.stringify({ events })], { type: "application/json" });
+          if (navigator.sendBeacon) navigator.sendBeacon("/api/track", blob);
+          else void fetch("/api/track", { method: "POST", body: blob, keepalive: true });
+        } catch { /* ignore */ }
+      };
 
       const accumMs = new Map<string, number>();   // time since last flush
       const enterAt = new Map<string, number>();    // when the section started attending (0 = not)
@@ -74,8 +71,12 @@ export function LandingEngagement() {
       );
       sections.forEach((s) => io.observe(s));
 
-      // Scroll depth (rAF-throttled).
+      // Scroll depth (rAF-throttled). Audit R7: depth used to be reported only
+      // on the leave-flush, which collapsed the metric to "100 or nothing" —
+      // now each 25/50/75/100 threshold crossing beacons immediately, so the
+      // distribution of how far people actually get is measurable again.
       let raf = 0;
+      let sentThreshold = 0;
       const onScroll = () => {
         if (raf) return;
         raf = requestAnimationFrame(() => {
@@ -85,11 +86,30 @@ export function LandingEngagement() {
           if (denom > 0) {
             const depth = Math.min(100, Math.round(((window.scrollY + window.innerHeight) / denom) * 100));
             if (depth > maxDepth) maxDepth = depth;
+            const threshold = depth >= 100 ? 100 : depth >= 75 ? 75 : depth >= 50 ? 50 : depth >= 25 ? 25 : 0;
+            if (threshold > sentThreshold) {
+              sentThreshold = threshold;
+              beacon([{ ...ids(), type: "scroll_depth", path: window.location.pathname, value: threshold }]);
+            }
           }
         });
       };
       window.addEventListener("scroll", onScroll, { passive: true });
       onScroll();
+
+      // CTA clicks (audit R7 — there were NO click events at all). Delegated:
+      // any click that lands on a link into the skill-check funnel is recorded
+      // with the section it came from, so "which section converts" is finally
+      // a queryable number. sendBeacon survives the navigation.
+      const onClick = (e: MouseEvent) => {
+        try {
+          const a = (e.target as HTMLElement | null)?.closest?.('a[href^="/skill-check"], a[href^="/diagnostic"]');
+          if (!a) return;
+          const section = (a.closest("[data-s1-section]") as HTMLElement | null)?.dataset.s1Section ?? "page";
+          beacon([{ ...ids(), type: "cta_click", path: window.location.pathname, label: section }]);
+        } catch { /* never interfere with the click */ }
+      };
+      document.addEventListener("click", onClick, true);
 
       const flush = () => {
         // Settle any actively-attending sections first.
@@ -104,12 +124,7 @@ export function LandingEngagement() {
         }
         if (maxDepth > 0) events.push({ anonymous_id, session_id, type: "scroll_depth", path, value: maxDepth });
         if (events.length === 0) return;
-
-        try {
-          const blob = new Blob([JSON.stringify({ events })], { type: "application/json" });
-          if (navigator.sendBeacon) navigator.sendBeacon("/api/track", blob);
-          else void fetch("/api/track", { method: "POST", body: blob, keepalive: true });
-        } catch { /* ignore */ }
+        beacon(events);
       };
 
       const onVisibility = () => {
@@ -127,6 +142,7 @@ export function LandingEngagement() {
         flush();
         io.disconnect();
         window.removeEventListener("scroll", onScroll);
+        document.removeEventListener("click", onClick, true);
         document.removeEventListener("visibilitychange", onVisibility);
         window.removeEventListener("pagehide", flush);
         if (raf) cancelAnimationFrame(raf);

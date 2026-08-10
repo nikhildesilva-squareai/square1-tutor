@@ -296,7 +296,7 @@ export function LaneMapSection({ courses }: { courses: Course[] }) {
             Not sure which lane is yours?{" "}
             <span className="font-semibold text-slate-700">The free 3-minute skill check tells you.</span>
           </p>
-          <PrimaryCta href="/diagnostic">Take the free 3-min skill check</PrimaryCta>
+          <PrimaryCta href="/skill-check">Take the free 3-min skill check</PrimaryCta>
         </div>
       </div>
 

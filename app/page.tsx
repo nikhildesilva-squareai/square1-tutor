@@ -8,18 +8,11 @@ import { FREE_ACCESS_CAP, freeWindowOpen } from "@/lib/free-access";
 import { getRegion } from "@/lib/pricing-server";
 import { HeroSection } from "@/components/landing/HeroSection";
 import { RealityBand } from "@/components/landing/RealityBand";
-import { ComparisonSection } from "@/components/landing/ComparisonSection";
 import { SocialProofSection } from "@/components/landing/SocialProofSection";
 import { PricingSection } from "@/components/landing/PricingSection";
-import { JourneyHook } from "@/components/landing/JourneyHook";
 import { FaqJsonLd } from "@/components/landing/FAQSection";
 import { LaneMapSection } from "@/components/landing/LaneMapSection";
-import { BuildPremiseSection, type RailTrack } from "@/components/landing/BuildPremiseSection";
 import { ProductTour } from "@/components/landing/ProductTour";
-import { WorkBlock } from "@/components/landing/WorkBlock";
-import { NewsroomStrip } from "@/components/landing/NewsroomStrip";
-import { ToolsMarquee } from "@/components/landing/ToolsMarquee";
-import { CodeReviewSlider } from "@/components/landing/CodeReviewSlider";
 import { MobileStickyCta } from "@/components/landing/MobileStickyCta";
 import { StickyCtaBar } from "@/components/landing/StickyCtaBar";
 import { LandingEngagement } from "@/components/LandingEngagement";
@@ -75,47 +68,6 @@ const FALLBACK_COURSES: CourseRow[] = [
   { id: "9",  slug: "ai-product-management",   title: "AI Product Management",  description: "Ship AI products — strategy, roadmapping, and go-to-market.",  icon: "📋", color: "#0EA5E9", total_lessons: 40, total_projects: 10, status: "active" },
 ];
 
-// Real syllabi for the project-rail track explorer: each tab is a career
-// track, each stop a real project (title + tech stack) from the DB. On any
-// failure return [] — BuildPremiseSection falls back to a static snapshot.
-const RAIL_TRACK_LABELS: [slug: string, label: string][] = [
-  ["machine-learning", "Machine Learning"],
-  ["data-science", "Data Science"],
-  ["generative-ai", "Generative AI"],
-  ["agentic-ai", "Agentic AI"],
-  ["llm-agent-architect", "LLM Agents"],
-  ["artificial-intelligence", "Artificial Intelligence"],
-  ["computer-vision", "Computer Vision"],
-  ["cybersecurity", "Cybersecurity"],
-  ["fullstack-development", "Full Stack"],
-  ["ai-product-management", "AI Product Management"],
-];
-
-async function getRailTracks(): Promise<RailTrack[]> {
-  try {
-    const supabase = await createClient();
-    const { data } = await supabase
-      .from("projects")
-      .select("order_index,title,tech_stack,courses!inner(slug)")
-      .in("courses.slug", RAIL_TRACK_LABELS.map(([slug]) => slug))
-      .order("order_index");
-    if (!data) return [];
-    return RAIL_TRACK_LABELS.flatMap(([slug, label]) => {
-      const projects = data
-        .filter((p) => (p.courses as unknown as { slug: string }).slug === slug)
-        .map((p) => ({
-          n: p.order_index as number,
-          title: p.title as string,
-          stack: ((p.tech_stack as string[] | null) ?? []).slice(0, 3).join(" · "),
-        }));
-      // A track with a partial syllabus would make the rail lie — skip it.
-      return projects.length >= 6 ? [{ slug, label, projects }] : [];
-    });
-  } catch {
-    return [];
-  }
-}
-
 // How many of the 100 free early-access seats are still open. Null (→ hidden
 // in the UI) when the window is closed or the count can't be read — the
 // counter must never show a made-up number.
@@ -135,7 +87,7 @@ async function getFreeSeatsLeft(): Promise<{ left: number; cap: number } | null>
 
 // ─── PAGE ─────────────────────────────────────────────────────────────────────
 export default async function Home() {
-  const [dbCourses, seats, railTracks] = await Promise.all([getCourses(), getFreeSeatsLeft(), getRailTracks()]);
+  const [dbCourses, seats] = await Promise.all([getCourses(), getFreeSeatsLeft()]);
   // One pricing region per request — every price surface below reads it.
   const region = await getRegion();
   const courses = dbCourses.length > 0 ? dbCourses : FALLBACK_COURSES;
@@ -144,68 +96,44 @@ export default async function Home() {
     <main id="main" className="overflow-x-hidden">
 
       {/* data-s1-section markers feed landing engagement tracking (time-per-
-          section + scroll depth). Plain block wrappers — layout-neutral. */}
+          section + scroll depth). Plain block wrappers — layout-neutral.
 
-      {/* ── 1. Hero (with goal-typer) ───────────────────────────────────────── */}
+          RESTRUCTURED 2026-08-09 (audit R4): the measured funnel showed a
+          2-second median hero dwell and 96% of sessions never engaging below
+          the hero, while the product tour — buried at 96% page depth — held
+          attention 3–8× longer than any other section (52s avg). The page is
+          now SEVEN beats: promise → the real product → the lanes → the stakes
+          → the founder's offer → pricing → close. The retired sections
+          (ToolsMarquee, BuildPremise, CodeReviewSlider, WorkBlock, JourneyHook,
+          NewsroomStrip, Comparison) still exist as components for their own
+          pages — a visitor giving us 20 seconds now meets the product, not a
+          logo marquee. */}
+
+      {/* ── 1. Hero — the promise + the Prompt Lab (interactive proof) ──────── */}
       <div data-s1-section="hero"><HeroSection courseCount={courses.length} seats={seats} /></div>
 
-      {/* ── Tool strip — the tools the curriculum trains on, drifting marquee ── */}
-      <div data-s1-section="tools"><ToolsMarquee /></div>
-
-      {/* ── The lane map — every course fanned out from its lane, right after the hero ─ */}
-      <div data-s1-section="courses" id="curriculum" className="scroll-mt-16"><LaneMapSection courses={courses} /></div>
-
-      <SectionWave />
-
-      {/* ── 2. Stakes — why now (the 2026 wedge) ─────────────────────────────── */}
-      <div data-s1-section="reality"><RealityBand /></div>
-
-      <SectionWave />
-
-      {/* ── 2b. The premise — practice-first: 10 real projects per track.
-             Answers RealityBand's closing line ("project by graded project"). ── */}
-      <div data-s1-section="build-premise"><BuildPremiseSection tracks={railTracks} /></div>
-
-      <SectionWave />
-
-      {/* Everything the funnel talks about lives behind sign-in, so a visitor has
-          to take our word for it. This walks the five surfaces — dashboard,
-          lesson, Nova marking, projects, outcome — using live curriculum rows and
-          captured real grading output. Renders null if the data fetch fails. */}
+      {/* ── 2. The real product — five actual app screens, straight after the
+             promise. The single highest-dwell asset on the page. ─────────────── */}
       <div data-s1-section="product-tour"><ProductTour /></div>
 
       <SectionWave />
 
-      {/* ── 3–4. Nova product proof, escalating: the hero teased prompt grading;
-             here the code-review depth, then prompt grading applied to real work.
-             (No career/work fork anywhere — one funnel, one CTA.) ─────────────── */}
-      <div data-s1-section="code-review"><CodeReviewSlider /></div>
+      {/* ── 3. The lane map — every course fanned out from its lane ──────────── */}
+      <div data-s1-section="courses" id="curriculum" className="scroll-mt-16"><LaneMapSection courses={courses} /></div>
 
       <SectionWave />
 
-      <div data-s1-section="work"><WorkBlock /></div>
+      {/* ── 4. Stakes — why now (the 2026 wedge, Candidate A vs B) ───────────── */}
+      <div data-s1-section="reality"><RealityBand /></div>
 
       <SectionWave />
 
-      {/* ── 5. Outcomes — "Get hired as an [role]" journey + employer view ───── */}
-      <div data-s1-section="journey"><JourneyHook /></div>
-
-      <SectionWave />
-
-      {/* ── Newsroom — renders nothing until stories are published ───────────── */}
-      <div data-s1-section="newsroom"><NewsroomStrip /></div>
-
-      {/* ── 6. Vs alternatives — portfolio over certificates ─────────────────── */}
-      <div data-s1-section="comparison"><ComparisonSection region={region} /></div>
-
-      <SectionWave />
-
-      {/* ── 8. Honest proof — founder note + founding offer ──────────────────── */}
+      {/* ── 5. Honest proof — founder note + founding offer ──────────────────── */}
       <div data-s1-section="social-proof"><SocialProofSection courseCount={courses.length} seats={seats} region={region} /></div>
 
       <SectionWave />
 
-      {/* ── 9. Pricing — free start, founding rate locked for life ───────────── */}
+      {/* ── 6. Pricing — free start, founding rate locked for life ───────────── */}
       <div data-s1-section="pricing"><PricingSection region={region} /></div>
 
       <SectionWave />
@@ -328,7 +256,7 @@ export default async function Home() {
           {/* One action — the same single funnel entry as everywhere else. The
               career/work question is asked inside the check, not here. */}
           <div className="flex flex-col items-center gap-4 mb-5">
-            <PrimaryCta href="/diagnostic" size="lg">
+            <PrimaryCta href="/skill-check" size="lg">
               Take the free 3-min skill check
             </PrimaryCta>
             {seats && (

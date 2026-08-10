@@ -199,13 +199,13 @@ function PromptCheck() {
               </div>
             </div>
 
-            {/* Momentum handoff: they just answered a question — continue
-                STRAIGHT INTO the skill check (question 1 of the GenAI test,
-                the highest-demand/highest-completion check), not to the track
-                picker. The picker was where this momentum went to die: only
-                31 sessions in 14 days survived the / → picker → test route. */}
+            {/* Momentum handoff: they just answered the warm-up — continue into
+                the quiz-first /skill-check with the warm-up already credited
+                (?w=done), so the very next screen is the one-tap track pick
+                INSIDE the quiz frame, then straight into question 3 of 7. No
+                interstitial pages anywhere on this path (audit R1). */}
             <Link
-              href="/diagnostic/generative-ai?start=1"
+              href="/skill-check?w=done"
               className="flex items-center justify-center gap-2 h-12 rounded-xl text-white text-[15px] font-bold transition-transform duration-150 motion-safe:hover:-translate-y-0.5"
               style={{ background: BLUE_GRADIENT, boxShadow: "0 14px 30px -12px rgba(0,86,206,0.55)" }}
             >
@@ -213,10 +213,7 @@ function PromptCheck() {
               <ArrowRight className="h-4 w-4" />
             </Link>
             <p className="text-center text-[11px] text-slate-400 mt-2.5">
-              ~3 minutes · no account ·{" "}
-              <Link href="/diagnostic" className="underline underline-offset-2 hover:text-slate-600">
-                prefer a different track?
-              </Link>
+              ~3 minutes · no account · your track is the next question
             </p>
           </div>
         )}
@@ -287,7 +284,7 @@ export function HeroSection({
                 design. That opt-out caught the primary CTA too and left it at
                 36px on a phone. The class below wins on specificity over the
                 element selector, and releases at sm so desktop is unchanged. */}
-            <Link href="/diagnostic" data-tap-target
+            <Link href="/skill-check" data-tap-target
               className="flex items-center justify-center gap-2.5 px-4 sm:px-5 py-2.5 rounded-full bg-brand text-white text-xs font-bold tracking-wide uppercase hover:bg-brand/90 transition-all shadow-[0_6px_20px_rgba(0,86,206,0.25)]">
               Get Started
               <span className="w-2 h-2 rounded-full bg-white/70 shrink-0" />
@@ -335,10 +332,14 @@ export function HeroSection({
             {/* H1: three short beats, instantly parseable — what you do, what you
                 get, why it matters. Eyebrow pill removed (user call 2026-07-24):
                 the headline IS the message, nothing above it to slow the eye. */}
+            {/* The gradient-clipped span gets inline-block + a hair of right
+                padding: background-clip text crops the final glyph's edge at
+                tight tracking on small screens ("hired." lost its right side —
+                audit R5). */}
             <h1 className="font-black leading-[1.02] tracking-tight text-slate-900 mb-5 hero-enter"
               style={{ fontSize: "clamp(2.5rem, 5.4vw, 4.6rem)", animationDelay: "90ms" }}>
               Learn AI. Build proof.{" "}
-              <span className="animate-text-sheen" style={{ background: BLUE_GRADIENT, backgroundSize: "200% auto", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>
+              <span className="animate-text-sheen" style={{ background: BLUE_GRADIENT, backgroundSize: "200% auto", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text", display: "inline-block", paddingRight: "0.06em", marginRight: "-0.06em" }}>
                 Get hired.
               </span>
             </h1>
@@ -354,7 +355,7 @@ export function HeroSection({
               {/* "3-min" in the button label pre-answers the effort objection at the
                   exact moment of the click decision. */}
               <Link
-                href="/diagnostic"
+                href="/skill-check"
                 className="inline-flex items-center justify-center gap-2 h-14 px-7 rounded-[15px] text-white text-[15px] font-bold transition-transform duration-150 motion-safe:hover:-translate-y-0.5 w-full sm:w-auto"
                 style={{ background: BLUE_GRADIENT, boxShadow: "0 14px 30px -12px rgba(0,86,206,0.6)" }}
               >

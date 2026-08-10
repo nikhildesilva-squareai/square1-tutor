@@ -96,7 +96,7 @@ export function PricingSection({ region = "global" }: { region?: RegionKey }) {
                 </li>
               ))}
             </ul>
-            <Link href="/diagnostic"
+            <Link href="/skill-check"
               className="mt-7 inline-flex items-center justify-center px-6 py-3 rounded-full text-sm font-bold text-slate-700 border border-slate-300 hover:border-slate-400 hover:bg-slate-50 transition-all">
               Take the skill check
             </Link>

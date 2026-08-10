@@ -219,7 +219,7 @@ export function SocialProofSection({
 
         {/* Bottom CTA */}
         <div className="mt-12 sm:mt-14 flex flex-col items-center gap-4">
-          <PrimaryCta href="/diagnostic">
+          <PrimaryCta href="/skill-check">
             Get your free skill report
           </PrimaryCta>
           <p className="text-xs text-slate-500">Free · 3 minutes · No credit card</p>

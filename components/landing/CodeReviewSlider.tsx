@@ -141,7 +141,7 @@ export function CodeReviewSlider() {
           <p className="text-xs text-slate-500">
             ← your draft &nbsp;·&nbsp; Nova&apos;s reviewed version →
           </p>
-          <PrimaryCta href="/diagnostic">
+          <PrimaryCta href="/skill-check">
             Get your code reviewed — free
           </PrimaryCta>
         </div>

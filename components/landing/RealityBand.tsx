@@ -361,7 +361,7 @@ export function RealityBand() {
             Square 1 turns you into Candidate B —{" "}
             <span className="font-bold text-slate-900">project by graded project.</span>
           </p>
-          <PrimaryCta href="/diagnostic">Start building proof — free 3-min skill check</PrimaryCta>
+          <PrimaryCta href="/skill-check">Start building proof — free 3-min skill check</PrimaryCta>
           {/* Third-party-verifiable proof, not a testimonial: every claim above
               is checkable on GitHub right now. (No real student quotes exist
               yet — nothing gets invented.) */}

@@ -320,7 +320,7 @@ export function BuildPremiseSection({ tracks }: { tracks?: RailTrack[] }) {
 
         {/* CTA — same single funnel */}
         <div className="mt-8 flex justify-center">
-          <PrimaryCta href="/diagnostic">Start project 01 — free 3-min skill check</PrimaryCta>
+          <PrimaryCta href="/skill-check">Start project 01 — free 3-min skill check</PrimaryCta>
         </div>
       </div>
     </section>

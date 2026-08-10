@@ -263,7 +263,7 @@ function ClosingCTA() {
         {/* Square 1 Blue magnetic CTA — right-sized, confident */}
         <div className="flex flex-col items-center" style={reveal(4)}>
           <div className="relative px-6 py-3" onMouseMove={onMove} onMouseLeave={onLeave}>
-            <PrimaryCta ref={btnRef} href="/diagnostic" size="lg">
+            <PrimaryCta ref={btnRef} href="/skill-check" size="lg">
               Get your free skill report
             </PrimaryCta>
           </div>

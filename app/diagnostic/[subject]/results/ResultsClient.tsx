@@ -6,6 +6,7 @@ import Link from "next/link";
 import { Logo } from "@/components/ui/logo";
 import { createClient } from "@/lib/supabase/client";
 import { detectInAppBrowser, type InAppBrowser } from "@/lib/in-app-browser";
+import { fpTrack } from "@/lib/first-party";
 import { ShareResultButton } from "@/components/ShareResultButton";
 import { foundingPlansFor } from "@/lib/founding";
 import type { RegionKey } from "@/lib/pricing";
@@ -90,6 +91,7 @@ function PrimaryStartCta({ afterAuth, signupHref }: { afterAuth: string; signupH
     if (startedRef.current) return;
     startedRef.current = true;
     setLoading(true);
+    fpTrack("cta_click", "lesson1:primary");
     if (inApp?.googleBlocked) {
       window.location.href = signupHref;
       return;
@@ -125,6 +127,117 @@ function PrimaryStartCta({ afterAuth, signupHref }: { afterAuth: string; signupH
         </Link>
       </p>
     </>
+  );
+}
+
+/* ── Report unlock — email capture at the moment of peak motivation ─────────
+   The audit (2026-08-09) moved lead capture here from the pre-quiz gate: the
+   summary score is fully visible, the deep tiles below are the visitor's REAL
+   computed report shown blurred (never fake data), and the unlock asks for
+   the email exactly when the product has just demonstrated value. The same
+   /api/diagnostic/report-email endpoint sends the permalink AND records the
+   lead with score, so one person stays one row. Fails OPEN: any error still
+   unlocks — a lost address is cheaper than a lost report. */
+function ReportUnlockGate({
+  slug, answersParam, onUnlock, afterAuth, signupHref,
+}: {
+  slug: string; answersParam: string; onUnlock: () => void;
+  afterAuth: string; signupHref: string;
+}) {
+  const [email, setEmail] = useState("");
+  const [status, setStatus] = useState<"idle" | "sending">("idle");
+  const [inApp, setInApp] = useState<InAppBrowser | null>(null);
+  const oauthRef = useRef(false);
+  useEffect(() => { setInApp(detectInAppBrowser()); }, []);
+  useEffect(() => { fpTrack("gate_shown", "report-unlock"); }, []);
+
+  async function submit(e: React.FormEvent) {
+    e.preventDefault();
+    if (!email.trim() || status === "sending") return;
+    setStatus("sending");
+    fpTrack("gate_submitted", "report-unlock");
+    try {
+      await fetch("/api/diagnostic/report-email", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: email.trim(), subject: slug, a: answersParam }),
+      });
+    } catch { /* fail open — the report belongs to them either way */ }
+    onUnlock();
+  }
+
+  async function google() {
+    if (oauthRef.current) return;
+    oauthRef.current = true;
+    fpTrack("cta_click", "lesson1:gate-google");
+    if (inApp?.googleBlocked) { window.location.href = signupHref; return; }
+    const { error } = await createClient().auth.signInWithOAuth({
+      provider: "google",
+      options: { redirectTo: `${window.location.origin}/api/auth/callback?next=${encodeURIComponent(afterAuth)}` },
+    });
+    if (error) window.location.href = signupHref;
+  }
+
+  return (
+    <div
+      className="lg:col-span-4"
+      style={{
+        position: "relative", zIndex: 2, textAlign: "center",
+        background: "linear-gradient(180deg, #F3F8FF 0%, #FFFFFF 160px)",
+        border: `2px solid ${C.blue}`, borderRadius: 18, padding: "28px 22px 26px",
+        boxShadow: "0 22px 54px -26px rgba(0,86,206,0.45)",
+      }}
+    >
+      <div style={{ ...eyebrow, color: C.blue, marginBottom: 8 }}>Your full report is ready</div>
+      <h2 style={{ fontSize: 24, fontWeight: 800, letterSpacing: "-0.02em", margin: "0 auto", maxWidth: 520, lineHeight: 1.15 }}>
+        Unlock the full breakdown — free.
+      </h2>
+      <p style={{ fontSize: 14, color: C.sec2, margin: "10px auto 0", maxWidth: 460, lineHeight: 1.5 }}>
+        Topic-by-topic results, your AI brain, the gap map and the exact roadmap
+        that closes each gap. We&apos;ll email you the permalink so it&apos;s yours
+        for good — that&apos;s it.
+      </p>
+
+      <form onSubmit={submit} style={{ margin: "20px auto 0", maxWidth: 420 }}>
+        <div style={{ display: "flex", gap: 8 }}>
+          <input
+            type="email" required value={email} onChange={(e) => setEmail(e.target.value)}
+            placeholder="you@example.com" aria-label="Email address to unlock your report"
+            autoComplete="email" autoFocus
+            className="text-base sm:text-sm"
+            style={{ flex: 1, minWidth: 0, height: 48, padding: "0 14px", borderRadius: 11, border: `1px solid ${C.borderStrong}`, background: C.card, color: C.ink, outline: "none" }}
+          />
+          <button
+            type="submit" disabled={status === "sending"}
+            style={{ height: 48, padding: "0 18px", borderRadius: 11, border: "none", background: CTA_GRADIENT, boxShadow: CTA_INSET, color: "#FFFFFF", fontWeight: 800, fontSize: 14, cursor: "pointer", opacity: status === "sending" ? 0.6 : 1, whiteSpace: "nowrap" }}
+          >
+            {status === "sending" ? "Unlocking…" : "Unlock my report"}
+          </button>
+        </div>
+      </form>
+
+      <div style={{ display: "flex", alignItems: "center", gap: 12, maxWidth: 420, margin: "16px auto" }}>
+        <span style={{ flex: 1, height: 1, background: C.border }} />
+        <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", color: C.ter }}>OR</span>
+        <span style={{ flex: 1, height: 1, background: C.border }} />
+      </div>
+
+      <button
+        onClick={google}
+        style={{
+          display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 8,
+          height: 46, padding: "0 20px", borderRadius: 11, background: C.card,
+          border: `1px solid ${C.borderStrong}`, color: C.ink, fontWeight: 700, fontSize: 14, cursor: "pointer",
+        }}
+      >
+        <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.27-4.74 3.27-8.1z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84A11 11 0 0 0 12 23z"/><path fill="#FBBC05" d="M5.84 14.1a6.6 6.6 0 0 1 0-4.2V7.06H2.18a11 11 0 0 0 0 9.88l3.66-2.84z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1A11 11 0 0 0 2.18 7.06l3.66 2.84C6.71 7.3 9.14 5.38 12 5.38z"/></svg>
+        Continue with Google — unlock + start Lesson 1
+      </button>
+
+      <p style={{ fontSize: 12, color: C.ter, margin: "14px 0 0" }}>
+        Your result is free either way · the link brings this exact report back · no spam, unsubscribe anytime
+      </p>
+    </div>
   );
 }
 
@@ -530,6 +643,29 @@ export default function ResultsClient({ initialSeats = null, coursePath = null, 
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  // Report unlock (audit R2, 2026-08-09): the deep tiles render blurred until
+  // the visitor leaves an email (or signs in with Google) at the unlock card.
+  // Once unlocked in a browser, always unlocked — the emailed permalink and a
+  // revisit must never re-gate a report someone already owns. Signed-in
+  // students skip the gate entirely. SSR renders locked; the effects below can
+  // only flip toward unlocked, so hydration never re-blurs an open report.
+  const [unlocked, setUnlocked] = useState(false);
+  useEffect(() => {
+    try { if (localStorage.getItem("s1-report-unlocked") === "1") setUnlocked(true); } catch { /* ignore */ }
+    createClient().auth.getUser()
+      .then(({ data }) => { if (data.user) setUnlocked(true); })
+      .catch(() => { /* signed-out is the normal case */ });
+  }, []);
+  function unlock() {
+    setUnlocked(true);
+    try { localStorage.setItem("s1-report-unlocked", "1"); } catch { /* ignore */ }
+  }
+  // Blur is applied per-tile so the bento grid keeps its column spans. The
+  // blurred tiles are the visitor's REAL report — never placeholder data.
+  const lockStyle: React.CSSProperties = unlocked
+    ? { filter: "blur(0) saturate(1)", transition: "filter 500ms ease" }
+    : { filter: "blur(9px) saturate(0.9)", pointerEvents: "none", userSelect: "none", transition: "filter 500ms ease" };
+
   if (!subject || !seo || !answers) {
     return (
       <div className="min-h-dvh flex flex-col items-center justify-center px-4" style={{ background: C.bg, color: C.ink }}>
@@ -650,6 +786,7 @@ export default function ResultsClient({ initialSeats = null, coursePath = null, 
             </p>
             <Link
               href={signupHref}
+              onClick={() => fpTrack("cta_click", "lesson1:inline-mobile")}
               style={{
                 display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
                 height: 52, borderRadius: 12, background: CTA_GRADIENT, boxShadow: CTA_INSET,
@@ -672,8 +809,20 @@ export default function ResultsClient({ initialSeats = null, coursePath = null, 
             </div>
           </div>
 
+          {/* Unlock card — sits between the visible summary and the blurred
+              deep report. Disappears once the report is unlocked. */}
+          {!unlocked && (
+            <ReportUnlockGate
+              slug={slug}
+              answersParam={answersParam}
+              onUnlock={unlock}
+              afterAuth={afterAuth}
+              signupHref={signupHref}
+            />
+          )}
+
           {/* AI brain — full-width hero band (mirrors the in-app Skill brain) */}
-          <div className="lg:col-span-4" style={{ ...tileBase, padding: 24 }}>
+          <div className="lg:col-span-4" aria-hidden={!unlocked} style={{ ...tileBase, padding: 24, ...lockStyle }}>
             <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 16, flexWrap: "wrap" }}>
               <div style={{ maxWidth: 560 }}>
                 <div style={{ ...eyebrow, marginBottom: 8 }}>Your AI Brain</div>
@@ -707,24 +856,34 @@ export default function ResultsClient({ initialSeats = null, coursePath = null, 
           </div>
 
           {/* Topic mastery — measured bar chart, straight after the brain */}
-          <TopicMasteryBars topics={topicResults} className="lg:col-span-2" />
+          <div className="lg:col-span-2" aria-hidden={!unlocked} style={lockStyle}>
+            <TopicMasteryBars topics={topicResults} />
+          </div>
 
           {/* Skill matrix — measured from the diagnostic (was a locked preview) */}
-          <SkillMatrixTile topics={topicResults} relevance={seo.topicRelevance} score={result.score} total={result.total} className="lg:col-span-2" />
+          <div className="lg:col-span-2" aria-hidden={!unlocked} style={lockStyle}>
+            <SkillMatrixTile topics={topicResults} relevance={seo.topicRelevance} score={result.score} total={result.total} />
+          </div>
 
           {/* Strengths vs gaps donut */}
-          <StrengthsDonut topics={topicResults} score={result.score} total={result.total} className="lg:col-span-2" />
+          <div className="lg:col-span-2" aria-hidden={!unlocked} style={lockStyle}>
+            <StrengthsDonut topics={topicResults} score={result.score} total={result.total} />
+          </div>
 
           {/* Role readiness — core areas covered for the track's role */}
-          <RoleReadiness score={result.score} total={result.total} role={subject.role} coursePath={coursePath} className="lg:col-span-2" />
+          <div className="lg:col-span-2" aria-hidden={!unlocked} style={lockStyle}>
+            <RoleReadiness score={result.score} total={result.total} role={subject.role} coursePath={coursePath} />
+          </div>
 
           {/* Your path to job-ready — real curriculum roadmap (hidden if no course) */}
           {coursePath && coursePath.modules.length > 0 && (
-            <Roadmap coursePath={coursePath} weakTopics={topicResults.filter((t) => !t.correct).map((t) => t.topic)} track={subject.title} className="lg:col-span-4" />
+            <div className="lg:col-span-4" aria-hidden={!unlocked} style={lockStyle}>
+              <Roadmap coursePath={coursePath} weakTopics={topicResults.filter((t) => !t.correct).map((t) => t.topic)} track={subject.title} />
+            </div>
           )}
 
           {/* Share — full-width band */}
-          <div className="lg:col-span-4" style={{ ...tileBase, padding: 26, textAlign: "center" }}>
+          <div className="lg:col-span-4" aria-hidden={!unlocked} style={{ ...tileBase, padding: 26, textAlign: "center", ...lockStyle }}>
             <div style={{ ...eyebrow, marginBottom: 6 }}>Share your result</div>
             <h3 style={{ fontSize: 20, fontWeight: 700, letterSpacing: "-0.01em", margin: "0 0 4px" }}>Show them where you stand.</h3>
             <p style={{ fontSize: 13.5, color: C.sec2, margin: "0 auto 20px", maxWidth: 440 }}>
@@ -860,6 +1019,7 @@ export default function ResultsClient({ initialSeats = null, coursePath = null, 
           </div>
           <Link
             href={signupHref}
+            onClick={() => fpTrack("cta_click", "lesson1:sticky")}
             style={{
               display: "inline-flex", alignItems: "center", justifyContent: "center",
               height: 46, padding: "0 18px", borderRadius: 11, background: CTA_GRADIENT,
