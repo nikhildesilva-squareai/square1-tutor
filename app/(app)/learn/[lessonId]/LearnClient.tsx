@@ -6,393 +6,27 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { CodeEditor } from "@/components/ui/code-editor";
 import { cn } from "@/lib/utils";
-import katex from "katex";
 import { SaveNoteButton } from "@/components/SaveNoteButton";
 import { NovaPanel } from "@/components/NovaPanel";
 import { ProductTour } from "@/components/ProductTour";
-
-// ─── Types ─────────────────────────────────────────────────────────────────
-
-interface LessonReference { title: string; url: string; note?: string }
-interface AppliedTask { type: "writing" | "design"; prompt: string; model_answer?: string; checklist?: string[] }
-interface LessonData {
-  id: string; module_id: string; course_id: string; order_index: number;
-  title: string; theory_md: string; estimated_minutes: number; learning_objectives: string[];
-  case_study?: string | null; reference_links?: LessonReference[] | null;
-  applied_task?: AppliedTask | null;
-}
-interface ModuleData { id: string; title: string; order_index: number; course_id: string }
-interface CourseData { id: string; slug: string; title: string; total_lessons: number }
-interface ExerciseData {
-  id: string; lesson_id: string; order_index: number;
-  type: "mcq" | "short_answer" | "code"; title: string; prompt_md: string;
-  starter_code: string | null; marks: number; language: string | null;
-  options: string[] | null; correct_answer: string | null;
-}
-interface ExerciseResult { exerciseId: string; correct: boolean; score: number; maxScore: number; feedback: string }
-// Prompt Lab: a short_answer exercise with language='prompt' — the student writes
-// the PROMPT they'd send an AI assistant for a scenario, and Nova grades the prompt.
-interface PromptGrade {
-  total: number;
-  dimensions: { key: string; label: string; score: number; tip: string }[];
-  strength: string;
-  improved_prompt: string;
-}
-const PROMPT_LAB_MAX_TRIES = 3;
-
-interface OutlineLesson { id: string; title: string; completed: boolean; reachable: boolean }
-interface OutlineModule { id: string; title: string; orderIndex: number; lessons: OutlineLesson[] }
-
-interface LearnClientProps {
-  lesson: LessonData; module: ModuleData | null; course: CourseData | null;
-  exercises: ExerciseData[]; lessonPosition: number; totalLessonsInModule: number;
-  prevLessonId: string | null; nextLessonId: string | null; alreadyCompleted: boolean;
-  outline: OutlineModule[];
-  weakTopics: string[];
-  advancedCourse?: { slug: string; title: string } | null;
-  /** True when this student has never completed ANY lesson — unlocks the
-   *  "first win" milestone card ~5 minutes in (see parseTheoryIntoCards). */
-  firstEverLesson?: boolean;
-}
-
-// ─── Card types ────────────────────────────────────────────────────────────
-
-type CardType = "objectives" | "theory" | "quiz" | "summary" | "casestudy" | "applied" | "practice" | "complete" | "milestone";
-
-interface LessonCard {
-  type: CardType;
-  title: string;
-  content?: string;       // rendered HTML for theory cards
-  rawContent?: string;    // raw markdown section
-  exercise?: ExerciseData; // for quiz/practice cards
-  takeaway?: string;      // optional one-line "In short" section takeaway
-}
-
-// ─── Styles ────────────────────────────────────────────────────────────────
-
-const STYLES = `
-@keyframes fadeUp { from { opacity:0; transform:translateY(20px) } to { opacity:1; transform:translateY(0) } }
-@keyframes slideIn { from { opacity:0; transform:translateX(40px) } to { opacity:1; transform:translateX(0) } }
-@keyframes slideOut { from { opacity:1; transform:translateX(0) } to { opacity:0; transform:translateX(-40px) } }
-@keyframes scaleIn { from { opacity:0; transform:scale(0.96) } to { opacity:1; transform:scale(1) } }
-@keyframes pulseCheck { 0% { transform:scale(0) } 50% { transform:scale(1.2) } 100% { transform:scale(1) } }
-.card-enter { animation: slideIn 0.35s cubic-bezier(0.16,1,0.3,1) both }
-.card-fade-up { animation: fadeUp 0.4s cubic-bezier(0.16,1,0.3,1) both }
-.card-scale { animation: scaleIn 0.3s cubic-bezier(0.16,1,0.3,1) both }
-.check-pop { animation: pulseCheck 0.4s cubic-bezier(0.16,1,0.3,1) both }
-.ring-progress { transition: stroke-dashoffset 0.7s cubic-bezier(0.16,1,0.3,1), stroke 0.3s ease }
-@keyframes breathe { 0%,100% { transform:scale(1) } 50% { transform:scale(1.02) } }
-.cta-breathe { animation: breathe 2s ease-in-out infinite }
-@keyframes riseIn { from { opacity:0; transform:translateY(8px) } to { opacity:1; transform:translateY(0) } }
-.rise-in { animation: riseIn 0.35s cubic-bezier(0.16,1,0.3,1) both }
-@media (prefers-reduced-motion: reduce) { .cta-breathe, .rise-in { animation:none } .ring-progress { transition:none } }
-`;
-
-// ─── Rich markdown renderer ───────────────────────────────────────────────
-
-function renderMarkdownTable(tableBlock: string): string {
-  const rows = tableBlock.trim().split("\n").filter(r => r.trim());
-  if (rows.length < 2) return tableBlock;
-
-  // Parse cells from a pipe-delimited row
-  const parseCells = (row: string) =>
-    row.split("|").map(c => c.trim()).filter((_, i, a) => i > 0 && i < a.length - 1);
-
-  // Detect separator row (|---|---|)
-  const isSeparator = (row: string) => /^\|[\s:-]+\|/.test(row.trim()) && row.includes("-");
-
-  const headerCells = parseCells(rows[0]);
-  const hasSeparator = rows.length > 1 && isSeparator(rows[1]);
-  const dataRows = hasSeparator ? rows.slice(2) : rows.slice(1);
-
-  let tableHtml = `<div class="my-6 overflow-x-auto rounded-xl border border-border shadow-card">`;
-  tableHtml += `<table class="w-full text-sm border-collapse">`;
-
-  // Header
-  if (hasSeparator && headerCells.length > 0) {
-    tableHtml += `<thead><tr class="bg-brand/5 border-b-2 border-brand/15">`;
-    for (const cell of headerCells) {
-      tableHtml += `<th class="px-4 py-3 text-left text-xs font-bold text-ink uppercase tracking-wider">${cell}</th>`;
-    }
-    tableHtml += `</tr></thead>`;
-  }
-
-  // Body
-  tableHtml += `<tbody>`;
-  for (let i = 0; i < dataRows.length; i++) {
-    const cells = parseCells(dataRows[i]);
-    const stripe = i % 2 === 0 ? "bg-surface" : "bg-surface-soft/50";
-    tableHtml += `<tr class="${stripe} border-b border-border/50 last:border-0">`;
-    for (let j = 0; j < cells.length; j++) {
-      const isFirstCol = j === 0;
-      tableHtml += `<td class="px-4 py-3 ${isFirstCol ? "font-semibold text-ink" : "text-ink-secondary"}">${cells[j]}</td>`;
-    }
-    tableHtml += `</tr>`;
-  }
-  tableHtml += `</tbody></table></div>`;
-  return tableHtml;
-}
-
-function renderSection(md: string): string {
-  if (!md) return "";
-
-  // ── Step 1: Extract fenced code blocks to protect them ──
-  const codeBlocks: string[] = [];
-  let processed = md.replace(/```(\w+)?\n([\s\S]*?)```/g, (_m, lang, code) => {
-    const language = lang ?? "text";
-    const encoded = encodeURIComponent(code.trim());
-    const btn = "flex items-center gap-1 px-2 py-1 rounded text-[9px] font-bold text-slate-400 hover:text-white transition-colors cursor-pointer";
-    const block = `<div class="relative rounded-xl overflow-hidden my-6 border border-white/10 shadow-lg">
-        <div class="flex items-center gap-2 px-4 py-2.5" style="background:#161B22">
-          <div class="flex gap-1.5"><div class="w-2.5 h-2.5 rounded-full bg-[#FF5F57]"></div><div class="w-2.5 h-2.5 rounded-full bg-[#FEBC2E]"></div><div class="w-2.5 h-2.5 rounded-full bg-[#28C840]"></div></div>
-          <span class="text-[10px] font-bold tracking-widest uppercase text-slate-500 ml-2">${language}</span>
-          <div class="ml-auto flex items-center gap-1">
-            <button type="button" data-code-action="copy" data-code="${encoded}" class="${btn}">Copy</button>
-            <button type="button" data-code-action="save" data-code="${encoded}" data-lang="${language}" class="${btn}" title="Save to your Study Hub cheatsheet">Save ➜ Hub</button>
-          </div>
-        </div>
-        <pre class="p-5 overflow-x-auto text-[13px] leading-[1.75] font-mono" style="background:#0D1117;color:#E6EDF3"><code>${code.trim()}</code></pre>
-      </div>`;
-    codeBlocks.push(block);
-    return `\x00CODE${codeBlocks.length - 1}\x00`;
-  });
-
-  // ── Step 1.5: Extract math ($$ block + $ inline) and render with KaTeX ──
-  const mathBlocks: string[] = [];
-  const renderMath = (tex: string, displayMode: boolean) => {
-    try { return katex.renderToString(tex.trim(), { displayMode, throwOnError: false, output: "html" }); }
-    catch { return tex; }
-  };
-  processed = processed.replace(/\$\$([\s\S]+?)\$\$/g, (_m, tex: string) => {
-    mathBlocks.push(`<div class="my-5 overflow-x-auto text-center">${renderMath(tex, true)}</div>`);
-    return `\x00MATH${mathBlocks.length - 1}\x00`;
-  });
-  processed = processed.replace(/\$([^$\n]+?)\$/g, (_m, tex: string) => {
-    mathBlocks.push(renderMath(tex, false));
-    return `\x00MATH${mathBlocks.length - 1}\x00`;
-  });
-
-  // ── Step 2: Extract markdown tables ──
-  const tableBlocks: string[] = [];
-  processed = processed.replace(/((?:^\|.+\|\s*\n){2,})/gm, (tableMatch) => {
-    tableBlocks.push(renderMarkdownTable(tableMatch));
-    return `\x00TABLE${tableBlocks.length - 1}\x00`;
-  });
-
-  // ── Step 3: Escape HTML ──
-  processed = processed
-    .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-
-  // ── Step 4: Inline + block formatting ──
-  let html = processed
-    .replace(/`([^`]+)`/g, '<code class="px-1.5 py-0.5 rounded-md text-[13px] font-mono bg-brand/8 text-brand border border-brand/15">$1</code>')
-    .replace(/^#### (.+)$/gm, '<h4 class="text-base font-bold text-ink mt-6 mb-2 flex items-center gap-2"><span class="w-1 h-5 rounded-full bg-brand/30"></span>$1</h4>')
-    .replace(/^### (.+)$/gm, '<h3 class="text-lg font-extrabold text-ink mt-8 mb-3 flex items-center gap-2"><span class="w-1.5 h-6 rounded-full bg-brand"></span>$1</h3>')
-    .replace(/\*\*\*(.+?)\*\*\*/g, "<strong><em>$1</em></strong>")
-    .replace(/\*\*(.+?)\*\*/g, '<strong class="text-ink font-semibold">$1</strong>')
-    .replace(/\*(.+?)\*/g, "<em>$1</em>")
-    .replace(/^&gt; (.+)$/gm, `<div class="flex gap-3 my-5 px-5 py-4 rounded-xl bg-amber-50 border border-amber-200 dark:bg-amber-950/30 dark:border-amber-800">
-      <svg class="shrink-0 mt-0.5" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#D97706" stroke-width="2" stroke-linecap="round"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M12 2v1"/><path d="M12 7a4 4 0 014 4c0 1.5-.8 2.8-2 3.4V16H10v-1.6C8.8 13.8 8 12.5 8 11a4 4 0 014-4z"/></svg>
-      <p class="text-sm text-amber-800 dark:text-amber-200 leading-relaxed font-medium">$1</p>
-    </div>`)
-    .replace(/^- (.+)$/gm, '<li class="flex items-start gap-3 leading-relaxed py-1"><span class="w-1.5 h-1.5 rounded-full bg-brand mt-[9px] shrink-0"></span><span>$1</span></li>')
-    .replace(/^\d+\. (.+)$/gm, '<li class="flex items-start gap-3 leading-relaxed py-1"><span class="w-6 h-6 rounded-lg bg-surface-tint text-brand text-[11px] font-bold flex items-center justify-center mt-0.5 shrink-0">·</span><span>$1</span></li>')
-    .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" class="text-brand hover:underline font-medium" target="_blank" rel="noopener">$1</a>')
-    .replace(/\n\n/g, '</p><p class="lc-para">')
-    .replace(/\n/g, "<br />");
-  html = `<p class="lc-para">${html}</p>`;
-  html = html.replace(/<p class="lc-para"><\/p>/g, "");
-
-  // ── Step 5: Restore code blocks and tables ──
-  for (let i = 0; i < codeBlocks.length; i++) {
-    html = html.replace(`\x00CODE${i}\x00`, codeBlocks[i]);
-  }
-  for (let i = 0; i < tableBlocks.length; i++) {
-    html = html.replace(`\x00TABLE${i}\x00`, tableBlocks[i]);
-  }
-  for (let i = 0; i < mathBlocks.length; i++) {
-    html = html.replace(`\x00MATH${i}\x00`, mathBlocks[i]);
-  }
-
-  return html;
-}
-
-// Inline-only markdown for short strings (exercise prompts): escapes HTML, then
-// renders `code`, ***bold italic***, **bold**, *italic*. No block elements, so
-// it can live safely inside the prompt's <p> without breaking its typography.
-function renderInlineMd(md: string): string {
-  if (!md) return "";
-  return md
-    .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
-    .replace(/`([^`]+)`/g, '<code class="px-1.5 py-0.5 rounded-md text-[13px] font-mono bg-brand/8 text-brand border border-brand/15">$1</code>')
-    .replace(/\*\*\*(.+?)\*\*\*/g, "<strong><em>$1</em></strong>")
-    .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
-    .replace(/\*(.+?)\*/g, "<em>$1</em>")
-    .replace(/\n/g, "<br />");
-}
-
-// ─── Parse theory into cards ───────────────────────────────────────────────
-
-function parseTheoryIntoCards(theory: string, exercises: ExerciseData[], objectives: string[], caseStudy: string, references: LessonReference[], hasAppliedTask: boolean, firstEverLesson = false): LessonCard[] {
-  const cards: LessonCard[] = [];
-
-  // 1. Objectives card (if any)
-  if (objectives && objectives.length > 0) {
-    cards.push({ type: "objectives", title: "What You'll Learn" });
-  }
-
-  // 2. Split theory on ## headers into sections.
-  //    Strip the leading "# Title" block first — it duplicates the lesson header
-  //    and would otherwise render as an empty first step (showing a literal "#").
-  const theoryBody = theory.replace(/^\s*#(?!#)\s+.*(?:\r?\n)+/, "");
-  const sections: { title: string; content: string }[] = [];
-  const parts = theoryBody.split(/^## /gm);
-
-  parts.forEach((part, idx) => {
-    const trimmed = part.trim();
-    if (!trimmed) return;
-    // Anything before the FIRST "## " is the lesson's lead-in paragraph, not a section
-    // heading. It must render as body copy: dropping it into the section <h2> would
-    // show the whole paragraph as one bold block with literal "**" markers, and leave
-    // the card body empty. (Only fires when parts[0] is non-empty — a lesson whose
-    // theory starts straight at "## " yields an empty parts[0], which is skipped.)
-    if (idx === 0) {
-      sections.push({ title: "Overview", content: trimmed });
-      return;
-    }
-    const firstNewline = trimmed.indexOf("\n");
-    const rawTitle = firstNewline === -1 ? trimmed : trimmed.substring(0, firstNewline);
-    const title = rawTitle.replace(/^#+\s*/, "").trim();           // never show a literal "#"
-    // Strip the `---` section separators that glue to the section body when we
-    // split on `##` — renderSection prints them as literal dashes otherwise.
-    const content = (firstNewline === -1 ? "" : trimmed.substring(firstNewline + 1))
-      .replace(/(?:\r?\n)\s*-{3,}\s*$/, "")   // trailing separator
-      .replace(/^\s*-{3,}\s*(?:\r?\n)/, "")    // leading separator
-      .trim();
-    sections.push({ title, content });
-  });
-
-  // 3. Add theory cards with inline quizzes after every 2 sections
-  const mcqExercises = exercises.filter(e => e.type === "mcq");
-  let quizIdx = 0;
-
-  sections.forEach((section, i) => {
-    // Lift an optional author takeaway from the FIRST non-empty line —
-    // `**In short:** …` or `> [!KEY] …` — into a chip and strip it from the body.
-    let takeaway: string | undefined;
-    let body = section.content;
-    const bodyLines = body.split(/\r?\n/);
-    const firstIdx = bodyLines.findIndex((l) => l.trim().length > 0);
-    if (firstIdx !== -1) {
-      const m = bodyLines[firstIdx].match(/^\s*(?:\*\*In short:\*\*|>\s*\[!KEY\])\s*(.+?)\s*$/i);
-      if (m) {
-        takeaway = m[1].trim();
-        bodyLines.splice(firstIdx, 1);
-        body = bodyLines.join("\n").replace(/^\s+/, "");
-      }
-    }
-    cards.push({
-      type: "theory",
-      title: section.title,
-      content: renderSection(body),
-      rawContent: body,
-      takeaway,
-    });
-
-    // Insert an inline quiz after every 2 theory sections
-    if ((i + 1) % 2 === 0 && quizIdx < mcqExercises.length) {
-      cards.push({
-        type: "quiz",
-        title: "Quick Check",
-        exercise: mcqExercises[quizIdx],
-      });
-      quizIdx++;
-    }
-  });
-
-  // 3a. Flush every quick check the pacing loop didn't place. A lesson with
-  // more MCQs than sections÷2 used to ORPHAN the extras: no card existed for
-  // them, so the completion checklist's jump went nowhere, the deck never
-  // asked the question, and the server-side completion gate demanded answers
-  // the student was never shown. Every exercise must own a card, always.
-  while (quizIdx < mcqExercises.length) {
-    cards.push({
-      type: "quiz",
-      title: "Quick Check",
-      exercise: mcqExercises[quizIdx],
-    });
-    quizIdx++;
-  }
-
-  // 3b. First-win milestone — ONLY on a student's very first lesson. The full
-  // lesson is a 30–40 minute ask; the honest "5-minute first win" is the first
-  // concept + its quick check. Right there we celebrate and offer a clean exit
-  // (momentum by choice, not by trap). Placed after the first quiz card, or
-  // after the opening cards when a lesson has no MCQs.
-  if (firstEverLesson && cards.length > 1) {
-    const firstQuiz = cards.findIndex((c) => c.type === "quiz");
-    const anchor = firstQuiz !== -1 ? firstQuiz + 1 : Math.min(cards.length, 3);
-    cards.splice(anchor, 0, { type: "milestone", title: "First win" });
-  }
-
-  // 4. Summary card
-  cards.push({ type: "summary", title: "Key Takeaways" });
-
-  // 4b. Real-world case study (how companies use this) — shown after the recap.
-  if ((caseStudy && caseStudy.trim()) || (references && references.length > 0)) {
-    cards.push({ type: "casestudy", title: "Real-World Case Study" });
-  }
-
-  // 4c. Applied "Apply It" task — reflective (not graded), optional Nova feedback.
-  if (hasAppliedTask) {
-    cards.push({ type: "applied", title: "Apply It" });
-  }
-
-  // 5. Practice cards (non-MCQ exercises)
-  const practiceExercises = exercises.filter(e => e.type !== "mcq");
-  for (const ex of practiceExercises) {
-    cards.push({ type: "practice", title: ex.title, exercise: ex });
-  }
-
-  // 6. Completion card
-  cards.push({ type: "complete", title: "Lesson Complete" });
-
-  return cards;
-}
-
-// ═══════════════════════════════════════════════════════════════════════════
-//  Phone → computer bridge
-// ═══════════════════════════════════════════════════════════════════════════
-// Code exercises are painful on a phone keyboard. On small screens each code
-// exercise carries a one-tap "Email me this lesson" so the student can finish
-// on a computer without losing their place (deep link via /api/learn/email-link).
-function EmailLessonLinkButton({ lessonId }: { lessonId: string }) {
-  const [status, setStatus] = useState<"idle" | "sending" | "sent" | "error">("idle");
-  async function send() {
-    if (status === "sending" || status === "sent") return;
-    setStatus("sending");
-    try {
-      const res = await fetch("/api/learn/email-link", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ lessonId }),
-      });
-      setStatus(res.ok ? "sent" : "error");
-    } catch {
-      setStatus("error");
-    }
-  }
-  return (
-    <button
-      type="button"
-      onClick={send}
-      disabled={status === "sending" || status === "sent"}
-      className="shrink-0 text-[11px] font-bold text-amber-900 underline underline-offset-2 disabled:no-underline disabled:opacity-80"
-    >
-      {status === "sent" ? "✓ Sent to your inbox" : status === "sending" ? "Sending…" : status === "error" ? "Failed — tap to retry" : "Email me this lesson"}
-    </button>
-  );
-}
+// Split modules (UX review L4): types/styles, markdown renderer, card parser
+// and the phone-bridge button each live in their own file now — this file is
+// the PLAYER (state machine + cards UI) only.
+import {
+  PROMPT_LAB_MAX_TRIES,
+  STYLES,
+  type LessonData,
+  type ModuleData,
+  type CourseData,
+  type ExerciseData,
+  type ExerciseResult,
+  type PromptGrade,
+  type LearnClientProps,
+  type LessonCard,
+} from "./lesson-types";
+import { renderSection, renderInlineMd } from "./lesson-markdown";
+import { parseTheoryIntoCards } from "./lesson-cards";
+import { EmailLessonLinkButton } from "./EmailLessonLinkButton";
 
 // ═══════════════════════════════════════════════════════════════════════════
 //  MAIN COMPONENT
@@ -657,6 +291,19 @@ export function LearnClient({
       }));
     } catch { /* storage full/blocked — resume just won't work this session */ }
   }, [currentCard, responses, quizAnswered, quizCorrect, quizAttempts, results, appliedAnswer, completed, lesson.id]);
+  // ── Session goal (UX review L1) ──────────────────────────────────────────
+  // Reluctant learners commit to small things: on entry (fresh sessions only)
+  // the student can pick the size of this sitting. "Quick rep" = the first
+  // concept + its quick check (~5 min) with a celebrated, guilt-free exit at
+  // the end of the rep; "Deep session" queues the next lesson mentally. The
+  // chooser is skippable — just continuing means a normal full lesson. Honest
+  // by design: the rep moment never claims to bank the streak (completions
+  // do); it keeps the habit alive and often rolls into the full lesson.
+  const [sessionGoal, setSessionGoal] = useState<"quick" | "full" | "deep" | null>(null);
+  const [repMomentSeen, setRepMomentSeen] = useState(false);
+  const firstQuizIdx = cards.findIndex((c) => c.type === "quiz");
+  const repTargetIdx = firstQuizIdx !== -1 ? firstQuizIdx : Math.min(2, Math.max(cards.length - 2, 0));
+
   // Milestone facts from /api/learn/complete. isFirstWin drives the celebration
   // for lesson ONE — the highest-leverage screen a new learner ever sees.
   const [isFirstWin, setIsFirstWin] = useState(false);
@@ -915,6 +562,12 @@ export function LearnClient({
                 <span className="w-4 h-4 rounded-full bg-white/25 flex items-center justify-center text-[10px] font-black">N</span>
                 Nova
               </button>
+              {sessionGoal === "quick" && !repMomentSeen && (
+                <span className="hidden sm:inline rounded-full bg-amber-50 px-2 py-0.5 text-[10px] font-bold text-amber-700">⚡ Quick rep</span>
+              )}
+              {sessionGoal === "deep" && (
+                <span className="hidden sm:inline rounded-full bg-violet-50 px-2 py-0.5 text-[10px] font-bold text-violet-700">🔥 Deep session</span>
+              )}
               <span className="hidden sm:inline text-[10px] text-ink-muted font-medium">{minutesLeft}m left</span>
               <span className="text-xs font-bold text-ink tabular-nums">{currentCard + 1}/{cards.length}</span>
             </div>
@@ -962,6 +615,74 @@ export function LearnClient({
                 className="text-[11px] font-bold text-brand hover:underline shrink-0">
                 Start from the top
               </button>
+            </div>
+          )}
+
+          {/* ── Session-goal chooser (L1) — fresh sessions, first card only.
+                 Optional by design: continuing without choosing = full lesson. */}
+          {currentCard === 0 && !completed && !resumed && sessionGoal === null && cards.length > 3 && (
+            <div className="max-w-3xl mx-auto mb-5 rounded-2xl border border-border bg-surface p-4 card-fade-up">
+              <p className="mb-2.5 text-[11px] font-bold uppercase tracking-[0.14em] text-ink-muted">
+                How much time do you have?
+              </p>
+              <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
+                <button
+                  onClick={() => setSessionGoal("quick")}
+                  className="flex items-center gap-2.5 rounded-xl border-2 border-border bg-surface px-3.5 py-2.5 text-left transition-all hover:-translate-y-px hover:border-amber-300"
+                >
+                  <span className="text-base" aria-hidden>⚡</span>
+                  <span className="min-w-0">
+                    <span className="block text-[13px] font-bold text-ink">Quick rep</span>
+                    <span className="block text-[11px] text-ink-muted">First concept + check · ~5 min</span>
+                  </span>
+                </button>
+                <button
+                  onClick={() => setSessionGoal("full")}
+                  className="flex items-center gap-2.5 rounded-xl border-2 border-brand/30 bg-surface-tint/40 px-3.5 py-2.5 text-left transition-all hover:-translate-y-px hover:border-brand/60"
+                >
+                  <span className="text-base" aria-hidden>📖</span>
+                  <span className="min-w-0">
+                    <span className="block text-[13px] font-bold text-ink">One lesson</span>
+                    <span className="block text-[11px] text-ink-muted">Banks today · ~{lesson.estimated_minutes || 25} min</span>
+                  </span>
+                </button>
+                <button
+                  onClick={() => setSessionGoal("deep")}
+                  className="flex items-center gap-2.5 rounded-xl border-2 border-border bg-surface px-3.5 py-2.5 text-left transition-all hover:-translate-y-px hover:border-violet-300"
+                >
+                  <span className="text-base" aria-hidden>🔥</span>
+                  <span className="min-w-0">
+                    <span className="block text-[13px] font-bold text-ink">Deep session</span>
+                    <span className="block text-[11px] text-ink-muted">This lesson, then the next</span>
+                  </span>
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* ── Rep banked (L1) — the celebrated, guilt-free exit at the end
+                 of a quick rep. Honest: it names what actually banks the day. */}
+          {sessionGoal === "quick" && currentCard > repTargetIdx && !repMomentSeen && !completed && (
+            <div className="max-w-3xl mx-auto mb-5 rounded-2xl border border-emerald-200 bg-emerald-50/70 p-4 card-fade-up">
+              <p className="text-sm font-bold text-emerald-800">⚡ Rep banked — that&apos;s your five minutes.</p>
+              <p className="mt-1 text-xs leading-relaxed text-emerald-800/80">
+                You showed up, and that&apos;s the whole habit. Finishing the lesson is what banks
+                today on your streak — but stopping here is a win too.
+              </p>
+              <div className="mt-3 flex flex-wrap gap-2">
+                <button
+                  onClick={() => setRepMomentSeen(true)}
+                  className="h-9 rounded-xl bg-emerald-600 px-4 text-xs font-bold text-white transition-colors hover:bg-emerald-700"
+                >
+                  Keep rolling — {minutesLeft} min to bank the day
+                </button>
+                <Link
+                  href="/dashboard"
+                  className="inline-flex h-9 items-center rounded-xl border border-emerald-300 px-4 text-xs font-bold text-emerald-800 transition-colors hover:bg-emerald-100"
+                >
+                  I&apos;m done for today
+                </Link>
+              </div>
             </div>
           )}
           <div className="max-w-3xl mx-auto">
