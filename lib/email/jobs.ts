@@ -215,11 +215,11 @@ export async function runWeeklyDigest(): Promise<JobResult> {
       continue;
     }
 
-    const [{ count: weekLessons }, { count: totalCompleted }, { count: projects }, { data: recentDays }] =
+    const [{ data: weekCompletions }, { count: totalCompleted }, { count: projects }, { data: recentDays }] =
       await Promise.all([
         supabase
           .from("lesson_completions")
-          .select("id", { count: "exact", head: true })
+          .select("id, exercise_scores")
           .eq("student_id", student.id)
           .gte("completed_at", weekAgo),
         supabase
@@ -255,6 +255,20 @@ export async function runWeeklyDigest(): Promise<JobResult> {
 
     const streak = computeStreak((recentDays ?? []).map((c) => c.completed_at as string));
     const overallPct = totalLessons > 0 ? Math.round((totalCompleted / totalLessons) * 100) : 0;
+    const weekLessons = (weekCompletions ?? []).length;
+
+    // "Lobes lit" (K3): exercises scored >=90% across this week's completions.
+    // exercise_scores is best-effort jsonb; anything unparseable counts 0.
+    let topicsLit = 0;
+    for (const c of weekCompletions ?? []) {
+      const raw = (c as { exercise_scores?: unknown }).exercise_scores;
+      if (!Array.isArray(raw)) continue;
+      for (const e of raw) {
+        const score = Number((e as { score?: unknown })?.score);
+        const max = Number((e as { maxScore?: unknown })?.maxScore ?? (e as { max_score?: unknown })?.max_score);
+        if (Number.isFinite(score) && Number.isFinite(max) && max > 0 && score / max >= 0.9) topicsLit++;
+      }
+    }
 
     try {
       await sendWeeklyDigest(student.email, student.name ?? student.email.split("@")[0], {
@@ -262,6 +276,7 @@ export async function runWeeklyDigest(): Promise<JobResult> {
         streak: streak.current,
         projectsDone: projects ?? 0,
         overallPct,
+        topicsLit,
       });
       await logSend(supabase, student.id, "weekly_digest");
       result.sent++;

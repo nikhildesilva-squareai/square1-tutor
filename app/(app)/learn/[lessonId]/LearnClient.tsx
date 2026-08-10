@@ -36,6 +36,7 @@ export function LearnClient({
   lesson, module, course, exercises,
   lessonPosition, totalLessonsInModule, prevLessonId, nextLessonId, alreadyCompleted,
   outline, weakTopics, advancedCourse, firstEverLesson = false,
+  nextModuleWarStory = null,
 }: LearnClientProps) {
   const router = useRouter();
   const styleRef = useRef(false);
@@ -1267,6 +1268,54 @@ export function LearnClient({
                   </div>
                 )}
 
+                {/* Brain-lobe ignition (UX review K3) — the identity object.
+                    Each exercise scored ≥90% is a lobe LIT, drawn igniting in
+                    sequence, exactly the visual language of the skill-check
+                    brain and /progress SkillBrain. Measured only: the lit
+                    count comes from real graded results, and the block skips
+                    entirely when nothing lit. */}
+                {completed && results && (() => {
+                  const lit = results.filter(r => r.maxScore > 0 && r.score / r.maxScore >= 0.9).length;
+                  if (lit === 0) return null;
+                  const n = results.length;
+                  return (
+                    <div className="max-w-xs mx-auto mb-6 rounded-2xl border border-brand/15 p-4"
+                      style={{ background: "radial-gradient(60% 80% at 50% 40%, rgba(0,86,206,0.06), transparent 75%)" }}>
+                      <svg viewBox="0 0 200 64" width="100%" role="img"
+                        aria-label={`${lit} of ${n} topics lit up in your AI brain this lesson.`}>
+                        {Array.from({ length: Math.min(n, 6) }, (_, i) => {
+                          const x = 28 + (144 / Math.max(Math.min(n, 6) - 1, 1)) * i;
+                          const isLit = i < Math.min(lit, 6);
+                          return (
+                            <g key={i}>
+                              {i > 0 && (
+                                <line x1={28 + (144 / Math.max(Math.min(n, 6) - 1, 1)) * (i - 1)} y1={32} x2={x} y2={32}
+                                  stroke={isLit ? "#3388FF" : "#CBD5E1"} strokeWidth={1.4}
+                                  strokeDasharray={isLit ? "2.5 5" : undefined} opacity={isLit ? 0.5 : 0.4} />
+                              )}
+                              {isLit ? (
+                                <circle cx={x} cy={32} r={7} fill="#0056CE" className="brain-ignite"
+                                  style={{ animationDelay: `${i * 220}ms` }} />
+                              ) : (
+                                <circle cx={x} cy={32} r={5.5} fill="none" stroke="#9AAEC6" strokeWidth={2} />
+                              )}
+                            </g>
+                          );
+                        })}
+                      </svg>
+                      <p className="mt-1 text-center text-xs font-bold text-ink">
+                        {lit === n ? `All ${n} topics lit 🔥` : `${lit} of ${n} topics lit`}
+                        <span className="ml-1 font-medium text-ink-muted">— your AI brain just grew</span>
+                      </p>
+                      <style>{`
+                        @keyframes brainIgnite { 0% { opacity:.25; transform:scale(.4) } 55% { opacity:1; transform:scale(1.35) } 100% { opacity:1; transform:scale(1) } }
+                        .brain-ignite { transform-origin: center; transform-box: fill-box; animation: brainIgnite .7s cubic-bezier(0.16,1,0.3,1) both }
+                        @media (prefers-reduced-motion: reduce) { .brain-ignite { animation: none } }
+                      `}</style>
+                    </div>
+                  );
+                })()}
+
                 {/* Score summary */}
                 {results && (
                   <div className="bg-surface rounded-xl border border-border p-5 max-w-xs mx-auto mb-6">
@@ -1359,6 +1408,28 @@ export function LearnClient({
                         </li>
                       )}
                     </ul>
+                  </div>
+                )}
+
+                {/* War-story unlock (UX review K5) — crossing into a new
+                    module unlocks a REAL case study from it. Curiosity is the
+                    pull into tomorrow's session; the content is straight from
+                    the next module's lessons, never invented. */}
+                {completed && nextIsNewModule && nextModuleWarStory && (
+                  <div className="max-w-sm mx-auto mb-6 overflow-hidden rounded-2xl border border-sky-200 text-left card-fade-up">
+                    <div className="flex items-center gap-2 bg-sky-50 px-4 py-2.5 border-b border-sky-200">
+                      <span className="text-sm" aria-hidden>🔓</span>
+                      <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-sky-700">
+                        Unlocked · a war story from {nextModule?.title ?? "the next module"}
+                      </p>
+                    </div>
+                    <div className="bg-surface p-4">
+                      <p className="text-[13px] font-bold text-ink">{nextModuleWarStory.lessonTitle}</p>
+                      <p className="mt-1.5 text-xs leading-relaxed text-ink-secondary">{nextModuleWarStory.snippet}</p>
+                      <p className="mt-2.5 text-[11px] font-semibold text-sky-700">
+                        The full story — and how it&apos;s done in production — is waiting in the module you just unlocked.
+                      </p>
+                    </div>
                   </div>
                 )}
 

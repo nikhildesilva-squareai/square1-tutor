@@ -121,7 +121,8 @@ export function QuickNotePanel() {
         throw new Error(d.error ?? "Failed to save");
       }
 
-      // Success
+      // Success — linger a beat longer with a link into the hub, so the
+      // capture surfaces read as one system (UX review S3).
       setSaved(true);
       setTimeout(() => {
         setSaved(false);
@@ -129,7 +130,7 @@ export function QuickNotePanel() {
         setTitle("");
         setContent("");
         removeImage();
-      }, 1500);
+      }, 2200);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong");
     } finally {
@@ -241,7 +242,7 @@ export function QuickNotePanel() {
             <div>
               <h2 className="text-base font-bold text-ink">Quick Note</h2>
               <p className="text-[10px] text-ink-muted">
-                Write, paste, or drop a screenshot
+                Saves to your Study Hub — write, paste, or drop a screenshot
               </p>
             </div>
           </div>
@@ -432,7 +433,7 @@ export function QuickNotePanel() {
                 >
                   <polyline points="20 6 9 17 4 12" />
                 </svg>
-                Saved!
+                Saved to Study Hub
               </>
             ) : saving ? (
               <>
@@ -468,6 +469,18 @@ export function QuickNotePanel() {
               </>
             )}
           </button>
+        </div>
+
+        {/* One system, three doors (UX review S3): quick capture here, the
+            full hub for organising, the error journal for bug fixes. */}
+        <div className="flex items-center justify-center gap-4 px-5 pb-4 text-[11px] font-semibold shrink-0">
+          <a href="/notes" className="text-ink-muted hover:text-brand transition-colors underline underline-offset-2">
+            Open Study Hub
+          </a>
+          <span className="text-border" aria-hidden>·</span>
+          <a href="/notes#log-error" className="text-ink-muted hover:text-brand transition-colors underline underline-offset-2">
+            Log a bug fix instead
+          </a>
         </div>
       </div>
     </>

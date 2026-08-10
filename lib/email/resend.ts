@@ -455,6 +455,8 @@ export async function sendWeeklyDigest(to: string, name: string, stats: {
   streak: number;
   projectsDone: number;
   overallPct: number;
+  /** Exercises scored >=90% this week — "lobes lit" (UX review K3). 0 hides the line. */
+  topicsLit?: number;
 }) {
   const r = getResend();
   return r.emails.send({
@@ -483,6 +485,12 @@ export async function sendWeeklyDigest(to: string, name: string, stats: {
             <p style="color:#64748B;font-size:11px;text-transform:uppercase;letter-spacing:1px;margin:4px 0 0;">Complete</p>
           </div>
         </div>
+
+        ${(stats.topicsLit ?? 0) > 0 ? `
+        <div style="background:linear-gradient(135deg,#EFF6FF,#F5F3FF);border:1px solid #DBEAFE;border-radius:12px;padding:14px 16px;margin-bottom:24px;text-align:center;">
+          <p style="color:#0F172A;font-size:14px;font-weight:700;margin:0;">🧠 Your AI brain lit ${stats.topicsLit} new topic${stats.topicsLit === 1 ? "" : "s"} this week</p>
+          <p style="color:#64748B;font-size:12px;margin:4px 0 0;">Every one earned by a 90%+ graded answer — see them glow on your progress page.</p>
+        </div>` : ""}
 
         <div style="text-align:center;margin-bottom:32px;">
           <a href="https://www.square1ai.com/progress" style="display:inline-block;background:#0056CE;color:white;font-weight:700;font-size:14px;text-decoration:none;padding:12px 32px;border-radius:12px;">

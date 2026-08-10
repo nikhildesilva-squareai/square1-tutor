@@ -70,6 +70,43 @@ export default async function LearnPage({ params }: PageProps) {
   const prevLessonId = courseIdx > 0 ? orderedLessons[courseIdx - 1].id : null;
   const nextLessonId = courseIdx >= 0 && courseIdx < orderedLessons.length - 1 ? orderedLessons[courseIdx + 1].id : null;
 
+  // War-story unlock (UX review K5): when finishing this lesson crosses into a
+  // NEW module, fetch a real case study from that next module as the unlock
+  // reward — curiosity as the pull into tomorrow. Real content from the DB
+  // (case_study on the module's lessons), never invented; null when the next
+  // module has no case studies and the UI simply skips it.
+  let nextModuleWarStory: { lessonTitle: string; snippet: string } | null = null;
+  const nextLessonRow = nextLessonId ? orderedLessons[courseIdx + 1] : null;
+  if (nextLessonRow && nextLessonRow.module_id !== lesson.module_id) {
+    try {
+      const { data: nextModLessons } = await supabase
+        .from("lessons")
+        .select("title, case_study, order_index")
+        .eq("module_id", nextLessonRow.module_id)
+        .not("case_study", "is", null)
+        .order("order_index", { ascending: true })
+        .limit(3);
+      const withStory = (nextModLessons ?? []).find(
+        (l) => typeof l.case_study === "string" && l.case_study.trim().length > 80,
+      );
+      if (withStory) {
+        // First real paragraph, markdown headers stripped, clipped for a teaser.
+        const plain = (withStory.case_study as string)
+          .replace(/^#+\s.*$/gm, "")
+          .replace(/[*_`>]/g, "")
+          .split(/\n\s*\n/)
+          .map((p) => p.trim())
+          .find((p) => p.length > 60) ?? "";
+        if (plain) {
+          nextModuleWarStory = {
+            lessonTitle: withStory.title as string,
+            snippet: plain.length > 220 ? `${plain.slice(0, 219)}…` : plain,
+          };
+        }
+      }
+    } catch { /* the unlock is a bonus — never block the lesson over it */ }
+  }
+
   // Full course outline for the in-lesson jump menu, with this student's completions
   // marked, so any already-covered lesson is one click away from anywhere in the course.
   const [{ data: courseCompletions }, { data: enrollment }] = await Promise.all([
@@ -199,6 +236,7 @@ export default async function LearnPage({ params }: PageProps) {
       alreadyCompleted={!!completion}
       weakTopics={weakTopics}
       advancedCourse={advancedCourse}
+      nextModuleWarStory={nextModuleWarStory}
       firstEverLesson={(completionsEver ?? 0) === 0}
     />
   );

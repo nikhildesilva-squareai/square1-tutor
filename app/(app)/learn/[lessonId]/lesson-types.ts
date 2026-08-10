@@ -43,6 +43,9 @@ export interface LearnClientProps {
   outline: OutlineModule[];
   weakTopics: string[];
   advancedCourse?: { slug: string; title: string } | null;
+  /** K5 war-story unlock: a real case study from the NEXT module, shown at the
+   *  module hand-off as the unlock reward. Null = the UI skips it. */
+  nextModuleWarStory?: { lessonTitle: string; snippet: string } | null;
   /** True when this student has never completed ANY lesson — unlocks the
    *  "first win" milestone card ~5 minutes in (see parseTheoryIntoCards). */
   firstEverLesson?: boolean;
