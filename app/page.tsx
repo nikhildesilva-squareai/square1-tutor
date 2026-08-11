@@ -8,6 +8,7 @@ import { FREE_ACCESS_CAP, freeWindowOpen } from "@/lib/free-access";
 import { getRegion } from "@/lib/pricing-server";
 import { HeroSection } from "@/components/landing/HeroSection";
 import { RealityBand } from "@/components/landing/RealityBand";
+import { ProductivityGap } from "@/components/landing/ProductivityGap";
 import { SocialProofSection } from "@/components/landing/SocialProofSection";
 import { PricingSection } from "@/components/landing/PricingSection";
 import { FaqJsonLd } from "@/components/landing/FAQSection";
@@ -128,12 +129,23 @@ export default async function Home() {
 
       <SectionWave />
 
-      {/* ── 5. Honest proof — founder note + founding offer ──────────────────── */}
+      {/* ── 5. The other half of the stakes. RealityBand argues to the career
+             changer ("your degree is no longer enough"); this argues to the
+             person already employed ("you were handed AI and taught nothing"),
+             which is the no-code lane's entire audience and previously had no
+             case made for it anywhere on the page. Cited research only — this
+             is deliberately NOT a salary-uplift graphic; see the note in the
+             component for why that was rejected. ─────────────────────────────── */}
+      <div data-s1-section="productivity-gap"><ProductivityGap /></div>
+
+      <SectionWave />
+
+      {/* ── 6. Honest proof — founder note + founding offer ──────────────────── */}
       <div data-s1-section="social-proof"><SocialProofSection courseCount={courses.length} seats={seats} region={region} /></div>
 
       <SectionWave />
 
-      {/* ── 6. Pricing — free start, founding rate locked for life ───────────── */}
+      {/* ── 7. Pricing — free start, founding rate locked for life ───────────── */}
       <div data-s1-section="pricing"><PricingSection region={region} /></div>
 
       <SectionWave />
