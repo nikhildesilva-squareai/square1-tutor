@@ -130,14 +130,22 @@ function PrimaryStartCta({ afterAuth, signupHref }: { afterAuth: string; signupH
   );
 }
 
-/* ── Report unlock — email capture at the moment of peak motivation ─────────
-   The audit (2026-08-09) moved lead capture here from the pre-quiz gate: the
-   summary score is fully visible, the deep tiles below are the visitor's REAL
-   computed report shown blurred (never fake data), and the unlock asks for
-   the email exactly when the product has just demonstrated value. The same
-   /api/diagnostic/report-email endpoint sends the permalink AND records the
-   lead with score, so one person stays one row. Fails OPEN: any error still
-   unlocks — a lost address is cheaper than a lost report. */
+/* ── Report unlock — SIGN UP at the moment of peak motivation ───────────────
+   This is the highest-intent screen in the funnel: the score is on screen, the
+   deep breakdown is one action away, and the visitor wants it. Product decision
+   (2026-08-11): that action is a real SIGN UP, not a mailing-list capture — an
+   account is worth an order of magnitude more than an address, and someone who
+   has just watched their own gaps get named is as willing as they will ever be.
+
+   Two paths, both of which genuinely create an account:
+     • Google — one tap, no email-deliverability risk, lands signed in.
+     • Email  — a 6-digit code entered inline (the same mechanism as /signup, so
+                the product has one auth story). No page hop, so the report
+                never leaves the screen.
+
+   The wording says "sign up" and the thing that happens IS a sign up. The lead
+   row is still written on submit, so a code that never arrives is not a lost
+   contact. */
 function ReportUnlockGate({
   slug, answersParam, onUnlock, afterAuth, signupHref,
 }: {
@@ -145,31 +153,65 @@ function ReportUnlockGate({
   afterAuth: string; signupHref: string;
 }) {
   const [email, setEmail] = useState("");
-  const [status, setStatus] = useState<"idle" | "sending">("idle");
+  const [stage, setStage] = useState<"email" | "code">("email");
+  const [code, setCode] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState<string | null>(null);
+  const [resendIn, setResendIn] = useState(0);
   const [inApp, setInApp] = useState<InAppBrowser | null>(null);
   const oauthRef = useRef(false);
-  useEffect(() => { setInApp(detectInAppBrowser()); }, []);
-  useEffect(() => { fpTrack("gate_shown", "report-unlock"); }, []);
 
-  async function submit(e: React.FormEvent) {
+  useEffect(() => { setInApp(detectInAppBrowser()); }, []);
+  useEffect(() => { fpTrack("gate_shown", "report-signup"); }, []);
+  useEffect(() => {
+    if (resendIn <= 0) return;
+    const t = setTimeout(() => setResendIn((n) => n - 1), 1000);
+    return () => clearTimeout(t);
+  }, [resendIn]);
+
+  async function sendCode(e: React.FormEvent) {
     e.preventDefault();
-    if (!email.trim() || status === "sending") return;
-    setStatus("sending");
-    fpTrack("gate_submitted", "report-unlock");
-    try {
-      await fetch("/api/diagnostic/report-email", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: email.trim(), subject: slug, a: answersParam }),
-      });
-    } catch { /* fail open — the report belongs to them either way */ }
+    const addr = email.trim().toLowerCase();
+    if (addr.length < 4 || busy) return;
+    setBusy(true); setErr(null);
+    fpTrack("gate_submitted", "report-signup:email");
+
+    // Record the lead first and independently of auth: if the code never lands,
+    // we still know who wanted this report. Fire-and-forget by design.
+    void fetch("/api/diagnostic/lead", {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email: addr, subject: slug }),
+    }).catch(() => { /* never block a signup on the CRM write */ });
+
+    const { error } = await createClient().auth.signInWithOtp({
+      email: addr,
+      options: { shouldCreateUser: true },
+    });
+    setBusy(false);
+    if (error) { setErr(error.message); return; }
+    // Carry the chosen track into post-verify onboarding — same key /signup uses.
+    try { localStorage.setItem("sq1_pending_subject", slug); } catch { /* ignore */ }
+    setStage("code"); setResendIn(45);
+  }
+
+  async function verify(e: React.FormEvent) {
+    e.preventDefault();
+    const token = code.trim();
+    if (token.length < 6 || busy) return;
+    setBusy(true); setErr(null);
+    const { error } = await createClient().auth.verifyOtp({
+      email: email.trim().toLowerCase(), token, type: "email",
+    });
+    setBusy(false);
+    if (error) { setErr("That code did not match. Check the most recent email and try again."); return; }
+    fpTrack("gate_submitted", "report-signup:verified");
     onUnlock();
   }
 
   async function google() {
     if (oauthRef.current) return;
     oauthRef.current = true;
-    fpTrack("cta_click", "lesson1:gate-google");
+    fpTrack("gate_submitted", "report-signup:google");
     if (inApp?.googleBlocked) { window.location.href = signupHref; return; }
     const { error } = await createClient().auth.signInWithOAuth({
       provider: "google",
@@ -177,6 +219,8 @@ function ReportUnlockGate({
     });
     if (error) window.location.href = signupHref;
   }
+
+  void answersParam; // the report is reproduced from the URL; nothing to post here
 
   return (
     <div
@@ -189,53 +233,98 @@ function ReportUnlockGate({
       }}
     >
       <div style={{ ...eyebrow, color: C.blue, marginBottom: 8 }}>Your full report is ready</div>
-      <h2 style={{ fontSize: 24, fontWeight: 800, letterSpacing: "-0.02em", margin: "0 auto", maxWidth: 520, lineHeight: 1.15 }}>
-        Unlock the full breakdown — free.
+      <h2 style={{ fontSize: 24, fontWeight: 800, letterSpacing: "-0.02em", margin: "0 auto", maxWidth: 540, lineHeight: 1.15 }}>
+        Sign up free to see your full report
       </h2>
-      <p style={{ fontSize: 14, color: C.sec2, margin: "10px auto 0", maxWidth: 460, lineHeight: 1.5 }}>
-        Topic-by-topic results, your AI brain, the gap map and the exact roadmap
-        that closes each gap. We&apos;ll email you the permalink so it&apos;s yours
-        for good — that&apos;s it.
+      <p style={{ fontSize: 14, color: C.sec2, margin: "10px auto 0", maxWidth: 470, lineHeight: 1.5 }}>
+        Topic-by-topic results, your AI brain, the gap map and the roadmap that closes
+        each gap — saved to your account, so it keeps updating as you learn.
       </p>
 
-      <form onSubmit={submit} style={{ margin: "20px auto 0", maxWidth: 420 }}>
-        <div style={{ display: "flex", gap: 8 }}>
-          <input
-            type="email" required value={email} onChange={(e) => setEmail(e.target.value)}
-            placeholder="you@example.com" aria-label="Email address to unlock your report"
-            autoComplete="email" autoFocus
-            className="text-base sm:text-sm"
-            style={{ flex: 1, minWidth: 0, height: 48, padding: "0 14px", borderRadius: 11, border: `1px solid ${C.borderStrong}`, background: C.card, color: C.ink, outline: "none" }}
-          />
+      {stage === "email" ? (
+        <>
           <button
-            type="submit" disabled={status === "sending"}
-            style={{ height: 48, padding: "0 18px", borderRadius: 11, border: "none", background: CTA_GRADIENT, boxShadow: CTA_INSET, color: "#FFFFFF", fontWeight: 800, fontSize: 14, cursor: "pointer", opacity: status === "sending" ? 0.6 : 1, whiteSpace: "nowrap" }}
+            onClick={google}
+            style={{
+              display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 10,
+              height: 50, padding: "0 22px", borderRadius: 12, background: C.card,
+              border: `1px solid ${C.borderStrong}`, color: C.ink, fontWeight: 700, fontSize: 15,
+              cursor: "pointer", margin: "20px auto 0", width: "100%", maxWidth: 420,
+            }}
           >
-            {status === "sending" ? "Unlocking…" : "Unlock my report"}
+            <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.27-4.74 3.27-8.1z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84A11 11 0 0 0 12 23z"/><path fill="#FBBC05" d="M5.84 14.1a6.6 6.6 0 0 1 0-4.2V7.06H2.18a11 11 0 0 0 0 9.88l3.66-2.84z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1A11 11 0 0 0 2.18 7.06l3.66 2.84C6.71 7.3 9.14 5.38 12 5.38z"/></svg>
+            Sign up with Google
           </button>
-        </div>
-      </form>
 
-      <div style={{ display: "flex", alignItems: "center", gap: 12, maxWidth: 420, margin: "16px auto" }}>
-        <span style={{ flex: 1, height: 1, background: C.border }} />
-        <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", color: C.ter }}>OR</span>
-        <span style={{ flex: 1, height: 1, background: C.border }} />
-      </div>
+          <div style={{ display: "flex", alignItems: "center", gap: 12, maxWidth: 420, margin: "16px auto" }}>
+            <span style={{ flex: 1, height: 1, background: C.border }} />
+            <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", color: C.ter }}>OR</span>
+            <span style={{ flex: 1, height: 1, background: C.border }} />
+          </div>
 
-      <button
-        onClick={google}
-        style={{
-          display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 8,
-          height: 46, padding: "0 20px", borderRadius: 11, background: C.card,
-          border: `1px solid ${C.borderStrong}`, color: C.ink, fontWeight: 700, fontSize: 14, cursor: "pointer",
-        }}
-      >
-        <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.27-4.74 3.27-8.1z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84A11 11 0 0 0 12 23z"/><path fill="#FBBC05" d="M5.84 14.1a6.6 6.6 0 0 1 0-4.2V7.06H2.18a11 11 0 0 0 0 9.88l3.66-2.84z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1A11 11 0 0 0 2.18 7.06l3.66 2.84C6.71 7.3 9.14 5.38 12 5.38z"/></svg>
-        Continue with Google — unlock + start Lesson 1
-      </button>
+          <form onSubmit={sendCode} style={{ margin: "0 auto", maxWidth: 420 }}>
+            <div style={{ display: "flex", gap: 8 }}>
+              <input
+                type="email" required value={email} onChange={(ev) => setEmail(ev.target.value)}
+                placeholder="you@example.com" aria-label="Email address to sign up"
+                autoComplete="email" className="text-base sm:text-sm"
+                style={{ flex: 1, minWidth: 0, height: 48, padding: "0 14px", borderRadius: 11, border: `1px solid ${C.borderStrong}`, background: C.card, color: C.ink, outline: "none" }}
+              />
+              <button
+                type="submit" disabled={busy}
+                style={{ height: 48, padding: "0 18px", borderRadius: 11, border: "none", background: CTA_GRADIENT, boxShadow: CTA_INSET, color: "#FFFFFF", fontWeight: 800, fontSize: 14, cursor: "pointer", opacity: busy ? 0.6 : 1, whiteSpace: "nowrap" }}
+              >
+                {busy ? "Sending…" : "Sign up with email"}
+              </button>
+            </div>
+          </form>
+        </>
+      ) : (
+        <form onSubmit={verify} style={{ margin: "20px auto 0", maxWidth: 420 }}>
+          <p style={{ fontSize: 13.5, color: C.sec, margin: "0 0 10px" }}>
+            We sent a 6-digit code to <strong style={{ color: C.ink }}>{email.trim().toLowerCase()}</strong>.
+            Enter it and your report opens — no password to remember.
+          </p>
+          <div style={{ display: "flex", gap: 8 }}>
+            <input
+              value={code}
+              onChange={(ev) => setCode(ev.target.value.replace(/[^0-9]/g, "").slice(0, 6))}
+              inputMode="numeric" autoComplete="one-time-code" autoFocus
+              placeholder="123456" aria-label="6-digit code"
+              style={{ flex: 1, minWidth: 0, height: 48, padding: "0 14px", borderRadius: 11, border: `1px solid ${C.borderStrong}`, background: C.card, color: C.ink, outline: "none", fontSize: 18, letterSpacing: "0.3em", fontWeight: 700, textAlign: "center" }}
+            />
+            <button
+              type="submit" disabled={busy || code.length < 6}
+              style={{ height: 48, padding: "0 18px", borderRadius: 11, border: "none", background: CTA_GRADIENT, boxShadow: CTA_INSET, color: "#FFFFFF", fontWeight: 800, fontSize: 14, cursor: "pointer", opacity: busy || code.length < 6 ? 0.5 : 1, whiteSpace: "nowrap" }}
+            >
+              {busy ? "Checking…" : "Open my report"}
+            </button>
+          </div>
+          <div style={{ marginTop: 10, display: "flex", justifyContent: "center", gap: 14, fontSize: 12.5 }}>
+            <button
+              type="button"
+              onClick={() => { setStage("email"); setCode(""); setErr(null); }}
+              style={{ background: "none", border: "none", color: C.sec2, cursor: "pointer", textDecoration: "underline" }}
+            >
+              Use a different email
+            </button>
+            <button
+              type="button" disabled={resendIn > 0}
+              onClick={(ev) => { if (resendIn === 0) void sendCode(ev as unknown as React.FormEvent); }}
+              style={{ background: "none", border: "none", color: resendIn > 0 ? C.ter : C.blue, cursor: resendIn > 0 ? "default" : "pointer", fontWeight: 600 }}
+            >
+              {resendIn > 0 ? `Resend in ${resendIn}s` : "Resend code"}
+            </button>
+          </div>
+        </form>
+      )}
+
+      {err && (
+        <p style={{ fontSize: 12.5, color: C.error, margin: "10px auto 0", maxWidth: 420 }}>{err}</p>
+      )}
 
       <p style={{ fontSize: 12, color: C.ter, margin: "14px 0 0" }}>
-        Your result is free either way · the link brings this exact report back · no spam, unsubscribe anytime
+        Free account · no card · your report is saved to it and keeps updating as you learn
       </p>
     </div>
   );
