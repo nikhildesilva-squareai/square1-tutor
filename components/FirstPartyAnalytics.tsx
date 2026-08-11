@@ -3,6 +3,7 @@
 import { useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { isLikelyBot } from "@/lib/first-party";
 
 /**
  * First-party analytics — writes to the `events` table in our own Supabase
@@ -89,6 +90,10 @@ export function FirstPartyAnalytics() {
       const anonymous_id = getAnonymousId();
       const { sessionId: session_id, isNew } = getSession();
 
+      // Traffic is classified at write time (see lib/first-party). Crawler rows
+      // are kept but flagged: dropping them would hide how much of the traffic
+      // is bots, and every analysis query filters on is_bot anyway.
+      const is_bot = isLikelyBot();
       const rows: Array<Record<string, unknown>> = [];
 
       if (isNew) {
@@ -99,11 +104,12 @@ export function FirstPartyAnalytics() {
           path: pathname,
           referrer: externalReferrer(),
           device: deviceClass(),
+          is_bot,
           ...utmFromUrl(),
         });
       }
 
-      rows.push({ anonymous_id, session_id, type: "page_view", path: pathname });
+      rows.push({ anonymous_id, session_id, type: "page_view", path: pathname, is_bot });
 
       void supabase
         .from("events")

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import { isLikelyBot } from "@/lib/first-party";
 
 /**
  * Landing-page engagement tracking — answers "which section holds attention?"
@@ -22,6 +23,9 @@ import { fpIds as ids } from "@/lib/first-party";
 export function LandingEngagement() {
   useEffect(() => {
     if (process.env.NODE_ENV !== "production") return;
+    // Attention time and scroll depth are behavioural; a crawler's values do not
+    // dilute them, they corrupt them. Nothing is recorded for bots.
+    if (isLikelyBot()) return;
     let cleanup = () => {};
     try {
       const sections = Array.from(document.querySelectorAll<HTMLElement>("[data-s1-section]"));
