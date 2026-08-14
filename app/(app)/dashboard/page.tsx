@@ -10,6 +10,7 @@ import { CodingExperienceQuestion } from "@/components/CodingExperienceQuestion"
 import { WelcomeTour } from "@/components/WelcomeTour";
 import { DIAG_SUBJECTS } from "@/lib/diagnostic";
 import { AdminDeskStrip } from "@/components/AdminDeskStrip";
+import { LearningModes } from "@/components/LearningModes";
 import { pickEntryModule } from "@/lib/course-entry";
 import { NovaMemoryCard } from "@/components/NovaMemoryCard";
 import { parseMemory } from "@/lib/nova-memory";
@@ -39,6 +40,7 @@ interface EnrollmentRow {
   status: string;
   assessment_level: string | null;
   target_completion_date: string | null;
+  plan_months: number | null;
   current_lesson_id: string | null;
   completed_at: string | null;
   course: { id: string; slug: string; title: string; icon: string; total_lessons: number } | null;
@@ -87,7 +89,7 @@ export default async function DashboardPage({ searchParams }: DashboardProps) {
 
   const { data: enrollments } = await supabase
     .from("student_enrollments")
-    .select(`id, status, assessment_level, target_completion_date, current_lesson_id, completed_at,
+    .select(`id, status, assessment_level, target_completion_date, plan_months, current_lesson_id, completed_at,
       course:courses(id, slug, title, icon, total_lessons),
       current_lesson:lessons!student_enrollments_current_lesson_id_fkey(id, title, estimated_minutes, module_id)`)
     .eq("student_id", student?.id ?? "")
@@ -535,6 +537,22 @@ export default async function DashboardPage({ searchParams }: DashboardProps) {
           </div>
         </div>
       </div>
+
+      {/* ── The two learning elements: how Square 1 serves you ───────────
+             Bootcamp = the committed paced program (real plan machinery:
+             pace, weekly schedule, target date). AI Tutor = always-on,
+             self-paced with Nova. Same curriculum, two ways to move through
+             it — the learner picks, and can hold both. ──────────────────── */}
+      <LearningModes
+        courseSlug={courseSlug}
+        courseTitle={courseTitle}
+        planMonths={primaryEnrollment?.plan_months ?? null}
+        targetDate={primaryEnrollment?.target_completion_date ?? null}
+        lessonsDone={lessonsCompleted}
+        totalLessons={totalLessons}
+        currentLessonId={currentLesson?.id ?? null}
+        reviewsDue={dueFlashcards}
+      />
 
       {/* ── Nova remembers — the retention greeting (audit R6a). Renders
              nothing until graded work has given Nova something real to
