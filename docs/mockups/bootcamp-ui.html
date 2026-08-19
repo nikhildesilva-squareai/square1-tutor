@@ -1,0 +1,275 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Square 1 — Bootcamp UI Mockup</title>
+<style>
+:root{
+--brand:#0056CE;--brand-dark:#01224F;--brand-light:#3388FF;--brand-sky:#0EA5E9;
+--surface:#fff;--surface-soft:#F8FAFC;--surface-alt:#E8EEF5;--surface-tint:#E5F0FF;
+--border:#E8EEF5;--border-mid:#99A4B3;
+--ink:#0F172A;--ink-2:#475569;--ink-muted:#94A3B8;
+--success:#19A65F;--success-bg:#D0FBED;--error:#D93636;--error-bg:#FEE2E2;--warning:#E5B217;--warning-bg:#FEF3C7;
+--r-sm:6px;--r-md:8px;--r-lg:12px;--pill:9999px;
+--shadow:0 1px 2px rgb(15 23 42/.05);
+}
+.dark{--surface:#0D1117;--surface-soft:#010409;--surface-alt:#161B22;--surface-tint:#0D2240;
+--border:#30363D;--border-mid:#484F58;--ink:#E6EDF3;--ink-2:#8B949E;--ink-muted:#6E7681;
+--success-bg:#0D2818;--error-bg:#2D1117;--warning-bg:#2D2407;--shadow:0 1px 3px rgb(0 0 0/.3);color-scheme:dark;}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;background:var(--surface-soft);color:var(--ink);
+font-family:"Geist","Inter",ui-sans-serif,system-ui,-apple-system,sans-serif;font-size:14px;line-height:1.5}
+.lbl{font-size:11px;font-weight:600;color:var(--ink-muted);text-transform:uppercase;letter-spacing:.1em}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);box-shadow:var(--shadow)}
+.pad{padding:20px}
+.btn{display:inline-flex;align-items:center;gap:8px;border:0;border-radius:var(--r-md);padding:9px 16px;
+font-size:13px;font-weight:600;cursor:pointer;background:var(--brand);color:#fff;text-decoration:none}
+.btn.ghost{background:transparent;color:var(--ink-2);border:1px solid var(--border)}
+.chip{display:inline-flex;align-items:center;gap:6px;border-radius:var(--pill);padding:4px 11px;font-size:12px;font-weight:600}
+.shell{display:grid;grid-template-columns:210px 1fr;min-height:100vh}
+.nav{background:var(--surface);border-right:1px solid var(--border);padding:18px 12px}
+.logo{display:flex;align-items:center;gap:9px;font-weight:700;font-size:15px;padding:0 8px 18px}
+.dot{width:22px;height:22px;border-radius:var(--r-sm);background:var(--brand);display:grid;place-items:center;color:#fff;font-size:11px}
+.nrow{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:var(--r-md);color:var(--ink-2);font-size:13px;font-weight:500;margin-bottom:1px}
+.nrow.on{background:var(--surface-tint);color:var(--brand);font-weight:600}
+.nrow .ic{width:15px;height:15px;border-radius:3px;background:currentColor;opacity:.5}
+.ngrp{margin-top:14px}
+.main{padding:24px 28px 60px;max-width:1180px}
+.sw{display:flex;gap:6px;margin-bottom:20px;background:var(--surface-alt);padding:4px;border-radius:var(--pill);width:fit-content}
+.sw button{border:0;background:transparent;padding:7px 16px;border-radius:var(--pill);font:inherit;font-size:13px;font-weight:600;color:var(--ink-2);cursor:pointer}
+.sw button.on{background:var(--surface);color:var(--brand);box-shadow:var(--shadow)}
+.live{display:flex;align-items:center;gap:16px;padding:14px 20px;border-radius:var(--r-lg);margin-bottom:18px;
+background:linear-gradient(90deg,var(--brand) 0%,var(--brand-dark) 100%);color:#fff}
+.pulse{width:9px;height:9px;border-radius:50%;background:#5EF08A;box-shadow:0 0 0 0 rgba(94,240,138,.8);animation:p 2s infinite}
+@keyframes p{70%{box-shadow:0 0 0 9px rgba(94,240,138,0)}100%{box-shadow:0 0 0 0 rgba(94,240,138,0)}}
+.weeks{display:flex;gap:3px;align-items:flex-end;height:34px}
+.wk{flex:1;background:var(--surface-alt);border-radius:2px;height:11px}
+.wk.done{background:var(--brand);opacity:.32}
+.wk.now{background:var(--brand);height:26px}
+.wk.gate{background:var(--ink-muted);height:20px}
+.wk.gate.passed{background:var(--success)}
+.gates{display:grid;grid-template-columns:repeat(6,1fr);gap:8px}
+.gate{border:1px solid var(--border);border-radius:var(--r-md);padding:11px;background:var(--surface-soft)}
+.gate.passed{background:var(--success-bg);border-color:transparent}
+.gate.open{background:var(--surface-tint);border-color:var(--brand)}
+.gate .n{font-size:11px;font-weight:700;color:var(--ink-muted)}
+.gate .t{font-size:12px;font-weight:600;margin:3px 0 6px}
+.grid2{display:grid;grid-template-columns:1.55fr 1fr;gap:16px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--border)}
+.row:last-child{border-bottom:0}
+.av{width:28px;height:28px;border-radius:50%;background:var(--brand);color:#fff;display:grid;place-items:center;font-size:11px;font-weight:700;flex:none}
+.bar{height:5px;background:var(--surface-alt);border-radius:var(--pill);overflow:hidden}
+.bar i{display:block;height:100%;background:var(--brand);border-radius:var(--pill)}
+.room{display:grid;grid-template-columns:1fr 330px;gap:16px;height:560px}
+.stage{background:#0B1220;border-radius:var(--r-lg);position:relative;overflow:hidden;display:grid;place-items:center;color:#64748B}
+.stagebar{position:absolute;left:0;right:0;bottom:0;padding:12px 16px;background:linear-gradient(transparent,rgba(0,0,0,.75));
+display:flex;align-items:center;gap:10px}
+.ctrl{width:34px;height:34px;border-radius:var(--r-md);background:rgba(255,255,255,.12);display:grid;place-items:center;color:#fff;font-size:13px}
+.ctrl.red{background:var(--error)}
+.tabs{display:flex;gap:4px;border-bottom:1px solid var(--border);margin-bottom:12px}
+.tabs span{padding:8px 12px;font-size:12px;font-weight:600;color:var(--ink-muted);border-bottom:2px solid transparent}
+.tabs span.on{color:var(--brand);border-bottom-color:var(--brand)}
+.q{border:1px solid var(--border);border-radius:var(--r-md);padding:10px;margin-bottom:8px;background:var(--surface-soft)}
+.count{background:var(--brand);color:#fff;border-radius:var(--pill);padding:1px 8px;font-size:11px;font-weight:700}
+.lost{width:100%;border:1px dashed var(--warning);background:var(--warning-bg);color:#8a6d0b;border-radius:var(--r-md);
+padding:11px;font:inherit;font-size:12px;font-weight:600;cursor:pointer;margin-bottom:10px}
+.nova{background:var(--surface-tint);border:1px solid var(--brand);border-radius:var(--r-md);padding:11px;font-size:12px}
+.risk{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--border)}
+.score{width:40px;height:40px;border-radius:var(--r-md);display:grid;place-items:center;font-weight:700;font-size:14px;flex:none}
+.hi{background:var(--error-bg);color:var(--error)}.md{background:var(--warning-bg);color:#8a6d0b}
+.heat{display:flex;gap:2px;height:22px;align-items:flex-end}
+.heat i{flex:1;background:var(--brand);border-radius:1px;opacity:.25}
+h1{font-size:22px;margin:0 0 3px;letter-spacing:-.01em}
+h2{font-size:15px;margin:0 0 12px}
+p.sub{color:var(--ink-2);margin:0 0 18px;font-size:13px}
+.view{display:none}.view.on{display:block}
+.muted{color:var(--ink-muted);font-size:12px}
+.s2{color:var(--ink-2);font-size:12px}
+</style></head><body>
+<div class="shell">
+ <aside class="nav">
+  <div class="logo"><span class="dot">S1</span> Square 1</div>
+  <div class="lbl" style="padding:0 8px 7px">Learn</div>
+  <div class="nrow"><span class="ic"></span>Home</div>
+  <div class="nrow on"><span class="ic"></span>Bootcamp</div>
+  <div class="nrow"><span class="ic"></span>Courses</div>
+  <div class="nrow"><span class="ic"></span>Projects</div>
+  <div class="nrow"><span class="ic"></span>Study Hub</div>
+  <div class="nrow"><span class="ic"></span>Career</div>
+  <div class="ngrp lbl" style="padding:0 8px 7px">Proof</div>
+  <div class="nrow"><span class="ic"></span>Progress</div>
+  <div class="nrow"><span class="ic"></span>Portfolio</div>
+  <div class="ngrp lbl" style="padding:0 8px 7px">Connect</div>
+  <div class="nrow"><span class="ic"></span>Community</div>
+ </aside>
+
+ <main class="main">
+  <div class="sw">
+   <button class="on" onclick="go(0,this)">Student cockpit</button>
+   <button onclick="go(1,this)">Live classroom</button>
+   <button onclick="go(2,this)">Instructor desk</button>
+   <button onclick="document.body.classList.toggle('dark')">&#9686;</button>
+  </div>
+
+  <section class="view on">
+   <div class="live">
+    <span class="pulse"></span>
+    <div style="flex:1">
+     <div style="font-weight:700;font-size:15px">Live class starts in 14 minutes</div>
+     <div style="opacity:.8;font-size:12px">Week 7 &middot; Model evaluation &amp; error analysis &middot; 19:00 Colombo</div>
+    </div>
+    <a class="btn" style="background:#fff;color:var(--brand)" href="#">Join class &rarr;</a>
+   </div>
+
+   <h1>AI Engineering Bootcamp</h1>
+   <p class="sub">Cohort 1 &middot; Week 7 of 24 &middot; <span style="color:var(--success);font-weight:600">On track</span></p>
+
+   <div class="card pad" style="margin-bottom:16px">
+    <div style="display:flex;justify-content:space-between;margin-bottom:9px">
+     <div class="lbl">Programme</div><div class="muted">17 weeks remaining &middot; ends 22 Mar 2027</div>
+    </div>
+    <div class="weeks">
+     <i class="wk done"></i><i class="wk done"></i><i class="wk done"></i><i class="wk done"></i>
+     <i class="wk gate passed"></i><i class="wk done"></i><i class="wk now"></i><i class="wk"></i><i class="wk"></i>
+     <i class="wk"></i><i class="wk gate"></i><i class="wk"></i><i class="wk"></i><i class="wk"></i>
+     <i class="wk gate"></i><i class="wk"></i><i class="wk"></i><i class="wk"></i><i class="wk gate"></i>
+     <i class="wk"></i><i class="wk"></i><i class="wk"></i><i class="wk gate"></i><i class="wk"></i>
+    </div>
+   </div>
+
+   <div class="lbl" style="margin-bottom:9px">Gates</div>
+   <div class="gates" style="margin-bottom:18px">
+    <div class="gate passed"><div class="n">GATE 1</div><div class="t">Foundations</div><span class="chip" style="background:var(--success);color:#fff">Passed 84%</span></div>
+    <div class="gate open"><div class="n">GATE 2</div><div class="t">Core craft</div><span class="chip" style="background:var(--brand);color:#fff">Due in 9 days</span></div>
+    <div class="gate"><div class="n">GATE 3</div><div class="t">Squad build</div><span class="chip s2">Locked</span></div>
+    <div class="gate"><div class="n">GATE 4</div><div class="t">Employer brief</div><span class="chip s2">Locked</span></div>
+    <div class="gate"><div class="n">GATE 5</div><div class="t">Capstone + viva</div><span class="chip s2">Locked</span></div>
+    <div class="gate"><div class="n">GATE 6</div><div class="t">Hiring sprint</div><span class="chip s2">Locked</span></div>
+   </div>
+
+   <div class="grid2" style="margin-bottom:16px">
+    <div class="card pad">
+     <h2>This week</h2>
+     <div class="row"><div><div style="font-weight:600">Error analysis &amp; failure modes</div><div class="muted">4 of 6 lessons complete</div></div><a class="btn ghost" href="#">Resume</a></div>
+     <div class="row"><div><div style="font-weight:600">Project &mdash; Model triage report</div><div class="muted">Gate 2 requirement</div></div><span class="chip" style="background:var(--warning-bg);color:#8a6d0b">Due in 9 days</span></div>
+     <div class="row"><div><div style="font-weight:600">Review 2 squad PRs</div><div class="muted">Priya &middot; Marcus</div></div><span class="chip" style="background:var(--error-bg);color:var(--error)">1 overdue</span></div>
+    </div>
+
+    <div class="card pad" style="border-color:var(--brand)">
+     <div class="lbl" style="color:var(--brand)">Your 1-1</div>
+     <h2 style="margin-top:7px">Thu 21 Aug &middot; 18:30</h2>
+     <div class="s2" style="margin-bottom:12px">30 min with Dilan &mdash; your instructor</div>
+     <div class="nova">
+      <div style="font-weight:700;margin-bottom:5px">Nova prepared your agenda</div>
+      <div class="s2" style="color:var(--ink-2)">&bull; Your precision/recall confusion in Ex 4.3<br>&bull; Capstone dataset choice<br>&bull; You are 2 days behind pace</div>
+     </div>
+     <a class="btn ghost" style="margin-top:11px;width:100%;justify-content:center" href="#">Weekly Nova 1-1 &middot; 15 min</a>
+    </div>
+   </div>
+
+   <div class="grid3">
+    <div class="card pad">
+     <div class="lbl">Last class</div>
+     <div style="height:74px;background:var(--surface-alt);border-radius:var(--r-md);margin:9px 0 8px;display:grid;place-items:center;color:var(--ink-muted);font-size:12px">&#9654; Week 6 &middot; 1h 32m</div>
+     <div class="bar"><i style="width:38%"></i></div>
+     <div class="muted" style="margin-top:6px">38% watched &middot; resume at 34:12</div>
+    </div>
+    <div class="card pad">
+     <div class="lbl">Your squad</div>
+     <div style="display:flex;margin:11px 0 8px">
+      <span class="av">PR</span><span class="av" style="background:var(--brand-sky);margin-left:-6px">MK</span>
+      <span class="av" style="background:var(--brand-dark);margin-left:-6px">AJ</span><span class="av" style="background:var(--success);margin-left:-6px">YOU</span>
+     </div>
+     <div class="s2">Squad Kepler &middot; you are <b>Reviewer</b> this sprint</div>
+     <div class="muted" style="margin-top:5px">2 PRs awaiting your review</div>
+    </div>
+    <div class="card pad">
+     <div class="lbl">Study from class</div>
+     <div class="s2" style="margin:11px 0 9px">Week 6 generated <b>12 flashcards</b>, a mind map and 8 Q&amp;A</div>
+     <span class="chip" style="background:var(--success-bg);color:var(--success)">&#10003; Instructor approved</span>
+     <div class="muted" style="margin-top:9px">6 cards due for review today</div>
+    </div>
+   </div>
+  </section>
+
+  <section class="view">
+   <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+    <div><h1>Week 7 &mdash; Model evaluation</h1><p class="sub" style="margin:0">50 in the room &middot; recording &middot; 41 min elapsed</p></div>
+    <a class="btn ghost" href="#">Open in Zoom app &#8599;</a>
+   </div>
+   <div class="room">
+    <div class="stage">
+     <div style="text-align:center"><div style="font-size:36px;opacity:.35">&#9635;</div><div style="font-size:12px;margin-top:7px">Instructor screen share &mdash; Zoom Meeting SDK</div></div>
+     <div class="stagebar">
+      <span class="ctrl">&#127908;</span><span class="ctrl">&#128247;</span><span class="ctrl">&#9995;</span>
+      <span style="flex:1"></span>
+      <span class="chip" style="background:rgba(255,255,255,.14);color:#fff">&#9679; REC</span>
+      <span class="ctrl red">&#9211;</span>
+     </div>
+    </div>
+    <div class="card pad" style="overflow:auto">
+     <div class="tabs"><span class="on">Questions</span><span>Roster 50</span><span>My notes</span></div>
+     <button class="lost">&#129300; Lost me &mdash; flag this moment (anonymous)</button>
+     <div class="q">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px">
+       <span class="count">8&times;</span><span class="muted">38:04</span></div>
+      <div style="font-size:13px;font-weight:600">How does batch norm interact with dropout?</div>
+      <div class="muted" style="margin-top:4px">Clustered from 8 similar questions</div>
+     </div>
+     <div class="q">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px">
+       <span class="count">5&times;</span><span class="muted">31:47</span></div>
+      <div style="font-size:13px;font-weight:600">When is F1 the wrong metric?</div>
+      <div class="muted" style="margin-top:4px">Clustered from 5 similar questions</div>
+     </div>
+     <div class="q" style="opacity:.6">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px">
+       <span class="chip" style="background:var(--success-bg);color:var(--success)">answered</span><span class="muted">22:10</span></div>
+      <div style="font-size:13px;font-weight:600">Why stratify the split?</div>
+     </div>
+     <div class="nova" style="margin-top:12px">
+      <div style="font-weight:700;margin-bottom:5px">Ask Nova &mdash; without interrupting</div>
+      <div class="s2" style="color:var(--ink-2)">&ldquo;Explain the last 2 minutes at my level&rdquo;</div>
+     </div>
+    </div>
+   </div>
+  </section>
+
+  <section class="view">
+   <h1>AI Engineering &middot; Cohort 1</h1>
+   <p class="sub">50 students &middot; week 7 &middot; instructor desk</p>
+   <div class="grid2" style="margin-bottom:16px">
+    <div class="card pad">
+     <div style="display:flex;justify-content:space-between;margin-bottom:5px">
+      <h2 style="margin:0">Call list this week</h2><span class="chip" style="background:var(--surface-tint);color:var(--brand)">AI ranked</span></div>
+     <p class="muted" style="margin:0 0 9px">5 of 50 &mdash; ranked by churn risk, not alphabetically</p>
+     <div class="risk"><span class="score hi">87</span><div style="flex:1"><div style="font-weight:600">Marcus O.</div><div class="muted">No login 9 days &middot; missed 2 classes &middot; Gate 2 not started</div></div><a class="btn ghost" href="#">Contact</a></div>
+     <div class="risk"><span class="score hi">74</span><div style="flex:1"><div style="font-weight:600">Aisha R.</div><div class="muted">Exercise failure rate up 40% &middot; watched 0 recordings</div></div><a class="btn ghost" href="#">Contact</a></div>
+     <div class="risk"><span class="score md">61</span><div style="flex:1"><div style="font-weight:600">Tom L.</div><div class="muted">Pace slipped 11 days &middot; 1-1 no-show</div></div><a class="btn ghost" href="#">Contact</a></div>
+    </div>
+    <div class="card pad">
+     <div class="lbl">Aim sheet &mdash; before Thursday</div>
+     <h2 style="margin:9px 0 4px">Top confusions</h2>
+     <p class="muted" style="margin:0 0 11px">From 218 failed exercises &amp; 44 questions</p>
+     <div class="row"><div style="font-weight:600;font-size:13px">Precision vs recall trade-off</div><span class="chip" style="background:var(--error-bg);color:var(--error)">23 students</span></div>
+     <div class="row"><div style="font-weight:600;font-size:13px">Data leakage in CV splits</div><span class="chip" style="background:var(--warning-bg);color:#8a6d0b">17 students</span></div>
+     <div class="row"><div style="font-weight:600;font-size:13px">Batch norm + dropout</div><span class="chip" style="background:var(--warning-bg);color:#8a6d0b">11 students</span></div>
+     <div style="margin-top:12px"><div class="lbl" style="margin-bottom:5px">Live confusion &mdash; week 6</div><div class="heat">
+      <i style="height:30%"></i><i style="height:45%"></i><i style="height:22%"></i><i style="height:88%;opacity:1"></i><i style="height:95%;opacity:1"></i><i style="height:40%"></i><i style="height:18%"></i><i style="height:25%"></i><i style="height:60%;opacity:.6"></i><i style="height:30%"></i>
+     </div><div class="muted" style="margin-top:5px">Spike at 34:00 &mdash; 19 &ldquo;lost me&rdquo; flags</div></div>
+    </div>
+   </div>
+   <div class="card pad">
+    <div style="display:flex;justify-content:space-between;margin-bottom:5px">
+     <h2 style="margin:0">Gate 2 review queue</h2><span class="muted">31 of 50 submitted &middot; median turnaround 19h</span></div>
+    <div class="row"><div style="display:flex;gap:11px;align-items:center"><span class="av">PR</span><div><div style="font-weight:600">Priya N. &mdash; Model triage report</div><div class="muted">Objective 0.91 &#10003; &middot; CI pass &#10003; &middot; Rubric 88%</div></div></div><span class="chip" style="background:var(--success-bg);color:var(--success)">Sign off &rarr;</span></div>
+    <div class="row"><div style="display:flex;gap:11px;align-items:center"><span class="av" style="background:var(--error)">JK</span><div><div style="font-weight:600">James K. &mdash; Model triage report</div><div class="muted">Objective 0.44 &#10007; &middot; CI fail &#10007; &middot; Rubric 51%</div></div></div><span class="chip" style="background:var(--error-bg);color:var(--error)">Needs decision</span></div>
+    <div class="row"><div style="display:flex;gap:11px;align-items:center"><span class="av" style="background:var(--brand-sky)">MK</span><div><div style="font-weight:600">Mia K. &mdash; Model triage report</div><div class="muted">Objective 0.78 &#10003; &middot; CI pass &#10003; &middot; Rubric 71% &mdash; borderline</div></div></div><span class="chip" style="background:var(--warning-bg);color:#8a6d0b">Needs decision</span></div>
+   </div>
+  </section>
+ </main>
+</div>
+<script>
+function go(i,btn){document.querySelectorAll('.view').forEach(function(v,n){v.classList.toggle('on',n===i)});
+document.querySelectorAll('.sw button').forEach(function(b){b.classList.remove('on')});btn.classList.add('on');}
+</script>
+</body></html>

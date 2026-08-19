@@ -1,0 +1,96 @@
+ID,Persona,Epic,As a,I want,So that,Priority,Maps to
+ST-01,S1/S2/S3,Discovery,prospective student,every live session shown in my own timezone before I pay,I never buy a program I can't attend,M,L1
+ST-02,S1/S2/S3,Discovery,prospective student,"the full 24-week schedule, six gates and weekly hours up front",I can judge honestly whether I can commit,M,P1
+ST-03,S1,Discovery,prospective student,a placement assessment that tells me if I'm not ready before I pay,I don't fail out in week 3 having spent real money,M,P1
+ST-04,S2,Discovery,applicant outside the open band,"to be waitlisted for my band, not sold a seat",I'm not paying to attend class at 4am,M,P1
+ST-05,S1,Discovery,accepted applicant,to pay a deposit and see exactly what is refundable,I know my financial exposure before committing,M,P1
+ST-06,S1,Discovery,rejected applicant,a clear non-humiliating route into the self-paced track,I still have a path forward,S,P1
+ST-07,S1/S2,Onboarding,new student,a device and network check ~24h before my first class,"my first experience isn't 20 minutes of ""can you hear me?""",M,L3
+ST-08,S1,Onboarding,new student,to meet my squad and know my rotating role,I know who to talk to on day one,M,P2/L5
+ST-09,S1,Onboarding,new student,a one-page learning contract of exactly what graduating requires,expectations are unambiguous from the start,M,P1
+ST-10,S2,Onboarding,new student,to subscribe to my session calendar (ICS) in my timezone,sessions appear where I already look,S,L1
+ST-11,S1,Weekly rhythm,student,one screen telling me what's due this week and what happens if I miss it,I never have to reconstruct my obligations,M,P1
+ST-12,S1,Weekly rhythm,student,"to join the live class in one click, without a Zoom account",joining is never the hard part,M,L1
+ST-13,S2,Weekly rhythm,student whose embed fails,"an obvious ""open in the Zoom app"" fallback",a bad network doesn't cost me the class,M,L1
+ST-14,S1,Weekly rhythm,student,to ask a question during class that's captured and answered later,running out of time doesn't mean losing my question,S,C8
+ST-15,S1,Weekly rhythm,student,squad lab to place me automatically in a breakout with my squad,no manual coordination every week,S,L5
+ST-16,S1/S2,After class,student,to watch the recording in the cohort space and resume where I left off,I can learn in 20-minute fragments,M,C1
+ST-17,S2,After class,constrained learner,attendance credit for watching the recording,my timezone doesn't disqualify me from graduating,M,C3
+ST-18,S1,After class,student,to search every class for a phrase and jump to that moment,"the archive is usable, not just stored",S,C2
+ST-19,S2,After class,constrained learner,"a ""you missed it"" summary within a few hours",I stay in sync without watching 90 minutes,S,C7
+ST-20,S1,After class,student,"short notes, flashcards, a mind map and Q&A generated from each class",the class converts into something I can revise,S,A1-A6
+ST-21,S1,After class,student,class flashcards to land in the review queue I already use,I don't manage a second app,S,A4
+ST-22,S1,After class,student,clear labelling of which cards are instructor-approved vs auto-generated,I never drill a hallucinated fact for months,M*,A3
+ST-23,S1,After class,student,to jump from a flashcard to the moment in the recording it came from,I can verify anything I doubt,S,A2
+ST-24,S1,Work & feedback,student,my project graded quickly with a rubric breakdown,I know where I actually stand,M,P1
+ST-25,S1,Work & feedback,student,a private back-and-forth conversation with my instructor about my submission,"feedback is a dialogue, not a one-shot AI verdict",M,C5
+ST-26,S1,Work & feedback,student,"to resubmit after fixing, within a stated window and attempt limit",failure is recoverable and bounded,M,P1
+ST-27,S1,Work & feedback,student who failed a gate,to know precisely why and exactly what to do next,I can act instead of guess,M,P1
+ST-28,S1,Work & feedback,student,to see and review my squadmates' pull requests,"I learn to read code, not just write it",S,P2
+ST-29,S1,Work & feedback,student,credit for reviewing well,the skill is treated as real work,S,P2
+ST-30,S1,Work & feedback,student on a squad project,my individual contribution visible and auditable,I'm neither carried nor exploited,M,P2
+ST-31,S2,Support,student stuck at 2am,a tutor that's awake and remembers my history,no timezone is unsupported,M,exists
+ST-32,S1,Support,student,"to know I'm slipping before it's terminal, with a concrete way back",I can recover instead of quietly dropping out,M,P2
+ST-33,S1,Support,struggling student,to defer to the next cohort without losing money or dignity,a bad quarter doesn't end my program,M,P1
+ST-34,S1/S3,Support,student,to book a 1-1 with a mentor at a time that works in my timezone,I get human attention when I need it,M**,L4
+ST-35,S1,Support,student,to privately say I'm struggling without telling the cohort,asking for help costs me nothing socially,S,P2
+ST-36,S1,Hiring,graduating student,a CV built from graded work containing nothing I can't defend,I'm never caught out in an interview,M,exists
+ST-37,S1,Hiring,graduating student,a public portfolio URL that beats my CV,my proof travels without me,M,P3
+ST-38,S1,Hiring,job-seeking graduate,to track my applications in-app,the effort is visible and counts toward the guarantee,M,P3
+ST-39,S1,Hiring,graduating student,unlimited AI mock interviews plus one human panel,I practise until the real thing is boring,S,P3
+ST-40,S1,Hiring,graduate,introductions to hiring partners based on proven competency,the program's value doesn't stop at the certificate,M,P3
+ST-41,S1,Hiring,graduate,a Demo Day slot with a permanent link,I have one artifact to send any employer,S,P3
+ST-42,S1/S3,Credential,graduate,"a credential an employer can verify in 20 seconds, with evidence",the certificate means something to someone else,M,P3
+ST-43,S1,Credential,graduate,"control over whether my viva recording is public, revocable later",my face isn't permanently on the internet by default,M,C1
+ST-44,S1,Credential,alum,"my recordings, notes and portfolio to stay accessible after graduating",what I paid for doesn't disappear,M,C1
+IN-01,T1,Before class,lead instructor,to see who's behind and at risk before I teach,I aim the session at real problems,M,C6
+IN-02,T1,Before class,lead instructor,the top confusions from last week's questions and failed exercises,I teach what people actually didn't get,S,A6
+IN-03,T2,Before class,mentor dropping into a 1-1,"the student's standing, last submission, gaps and memory in 60 seconds",I'm useful without reading a thread,M,L4/C6
+IN-04,T1,During class,lead instructor,"to start class as host in one click, start URL never exposed",students can't hijack or pre-start the meeting,M,L1
+IN-05,T1,During class,lead instructor,breakout rooms auto-populated from the squad roster,I'm not dragging names every week,S,L5
+IN-06,T1,During class,lead instructor,recording to start automatically,I never lose a class to forgetting,M,L2
+IN-07,T1,During class,lead instructor,student questions captured with timestamps,I can answer the ones I couldn't reach live,S,C8
+IN-08,T1,After class,lead instructor,"to approve, edit or reject generated cards in under five minutes",artifacts are trustworthy without eating my week,M*,A3
+IN-09,T1,After class,lead instructor,to post a cohort announcement that reaches everyone,important things don't get lost in chat,M,C4
+IN-10,T1,After class,lead instructor,to see who has and hasn't watched the recording,I can chase the right people,S,C3
+IN-11,T1,After class,lead instructor,to mark a great 2-minute explanation as a clip on the lesson,my best teaching outlives the cohort,L,C9
+IN-12,T1,Grading,lead instructor,a review queue where AI has already scored objective gate and rubric,I sign off rather than grade from scratch,M,P1
+IN-13,T1,Grading,lead instructor,to pass or fail with written reasons the student sees,decisions are explainable and defensible,M,P1
+IN-14,T1,Grading,lead instructor,a threaded private conversation with a student about their submission,I can teach through feedback,M,C5
+IN-15,T1,Grading,lead instructor,"one gradebook grid of students x gates x attendance x standing, with CSV export",I can see the whole cohort at a glance,M,C6
+IN-16,T1,Grading,lead instructor,to flag a student at risk and trigger the intervention workflow,concern turns into action,M,P2
+IN-17,T2,Instructor ops,mentor,to publish my availability and have 1-1s auto-create their meetings,booking costs me no admin,M**,L4
+IN-18,T1,Instructor ops,lead instructor,to see my committed hours for the coming week,I can flag overload before it happens,S,C6
+IN-19,T1/T2,Instructor ops,instructor,"it to be impossible to leak a start URL, answer key or gate threshold",I can't compromise integrity by accident,M,P1/L1
+IN-20,T1,Instructor ops,lead instructor,to hand a session or review queue to another instructor,being sick doesn't stall the cohort,L,-
+AD-01,A2,Cohort setup,ops admin,"to create a cohort (dates, band, timezone, seats, price, deadline) without an engineer",launching an intake isn't a deploy,S,P1
+AD-02,A2,Cohort setup,ops admin,to publish the calendar with holiday skip-weeks for that band,"we don't schedule class on Eid, Diwali, Poya or Thanksgiving",M,L1
+AD-03,A1,Cohort setup,program owner,gates defined once per bootcamp and reused by every cohort,standards don't drift between intakes,M,P1
+AD-04,A2,Cohort setup,ops admin,to clone last cohort's configuration for the next intake,"setup is minutes, not days",S,P1
+AD-05,A2,Admissions,ops admin,"one admissions queue with assessment score, hours committed and timezone","decisions are made on evidence, fast",M,P1
+AD-06,A2,Admissions,ops admin,"to accept, waitlist, reject or defer with templated emails and bulk actions",admissions doesn't consume a week,M,P1
+AD-07,A1,Admissions,program owner,the public seat counter to reflect real accepted applications,we never publish a fake scarcity number,M,P1
+AD-08,A2,Admissions,ops admin,"squads auto-suggested by timezone cluster, with manual override",squads can actually find a time to meet,S,P2
+AD-09,A1,Running,program owner,"a cohort health dashboard (retention, pass rates, attendance, at-risk)","I see trouble in week 4, not week 20",M,C6
+AD-10,A1,Running,program owner,gate-1 first-attempt pass rate surfaced prominently,above ~85% tells me my bar is decorative,M,C6
+AD-11,A1,Running,program owner,reviewer SLA monitoring against the 72h submit-to-reviewed target,slow feedback is caught before students churn,M,C6
+AD-12,A1,Running,program owner,instructor hours per week per cohort,I know when to stop selling seats,S,C6
+AD-13,A2,Running,ops admin,to cancel or reschedule a session with automatic notification,changes don't require 20 manual messages,S,L1/C4
+AD-14,A2,Operations,ops admin,recording ingest health with retry on failed jobs,"a lost recording is caught in hours, not weeks",M,C1
+AD-15,A2,Operations,ops admin,Zoom host licence utilisation and double-booking warnings,two sessions never collide on one host,S,L1
+AD-16,A1,Operations,program owner,cost per student (instructor hours + AI spend + video storage),"unit economics are observed, not assumed",S,C6
+AD-17,A2,Operations,ops admin,roster and gradebook CSV export,data isn't trapped in the app,S,C6
+AD-18,A1,Integrity,program owner,"students to be unable to write their own gate result, attendance or credential",the credential can't be forged,M,P1/C3
+AD-19,A1,Integrity,program owner,"every gate decision, waiver and override to leave an audit record",outcomes are defensible under scrutiny,M,P1
+AD-20,A2,Integrity,ops admin,"to delete a student's recordings and data on request, genuinely","we can honour deletion, not just hide a flag",M,C1
+AD-21,A1,Integrity,program owner,"recording consent at enrolment and opt-in, revocable viva publication",we're lawful across every jurisdiction we sell into,M,C1
+AD-22,A1,Outcomes,program owner,automated outcome surveys at 90/180/365 days with response rate,outcomes claims rest on data,M,P4
+AD-23,A1,Outcomes,program owner,"an outcomes page that states response rate and says ""no data yet"" honestly",trust is built before the numbers are good,M,P4
+AD-24,A1,Outcomes,program owner,"an employer pipeline (briefs issued, intros, hires confirmed)","employer supply is managed, not hoped for",M,P3
+AD-25,A1,Outcomes,program owner,refund and guarantee liability tracked against conditions each student met,I know my exposure at all times,S,P3
+AD-26,A1,Growth,program owner,"to open a second timezone band with configuration, not code",growth doesn't need a rebuild,S,Sec 8.2
+AD-27,A1,Growth,program owner,alumni to become paid mentors,instructor supply grows with the program,L,P4
+EM-01,EM,Employer,employer,to search graduates by proven competency and see the evidence,I'm not reading self-reported skill claims,M,P3
+EM-02,EM,Employer,employer,"to verify a credential in under a minute, including the viva",I can trust it without a technical screen,M,P3
+EM-03,EM,Employer,employer,to submit a real brief and get a scored shortlist from the cohort,I see candidates solve my actual problem,M,P3
+EM-04,EM,Employer,employer,to request an intro and track it to an outcome,hiring through the platform is measurable,S,P3
