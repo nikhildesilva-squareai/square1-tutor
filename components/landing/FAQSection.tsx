@@ -14,7 +14,7 @@ function buildFaqs(courseCount: number, region: RegionKey) {
   return [
     {
       q: "What's the difference between the skill check and the full assessment?",
-      a: "The skill check is 5 quick questions, takes about 3 minutes, and needs no account — you get an instant skill snapshot. The full assessment is 20 questions across multiple choice, short answer, and real code; Claude AI grades it in about 30 minutes and builds your personalised learning plan. Both are free.",
+      a: "The skill check is 5 quick questions, takes about 3 minutes, and needs nothing but your email address — no account, no password — and you get an instant skill snapshot plus an emailed copy. The full assessment is 20 questions across multiple choice, short answer, and real code; Claude AI grades it in about 30 minutes and builds your personalised learning plan. Both are free.",
     },
     {
       q: "Is Square 1 really free right now?",
@@ -41,7 +41,7 @@ function buildFaqs(courseCount: number, region: RegionKey) {
       a: `There are ${courseCount} subjects, and each maps to a real role with a real salary range — AI Engineer, ML Engineer, Data Scientist, Security Engineer, and more. If you're unsure, the free 3-minute skill check recommends a starting track.`,
     },
     {
-      q: "Is this a bootcamp or a video course?",
+      q: "Is this videos, or actual coding?",
       a: "Neither. It's 100% code and zero videos — you learn by building, every line you write gets AI feedback, and Nova (your AI tutor) knows your code, your weak topics, and your current lesson.",
     },
     {

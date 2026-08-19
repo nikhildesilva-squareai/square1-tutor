@@ -196,7 +196,7 @@ export default async function Home() {
 
             <p className="text-sm sm:text-base text-slate-500 leading-relaxed max-w-2xl mx-auto">
               Traditional education gives you theory and hopes you figure out the rest.
-              Bootcamps rush you through and hand you a certificate.{" "}
+              $15,000 bootcamps rush you through and hand you a certificate.{" "}
               <span className="text-slate-900 font-semibold">We give you 10+ deployed projects,
               Nova — an AI tutor that knows your code — and a skill report that proves you&apos;re
               ready. </span>That&apos;s the difference.

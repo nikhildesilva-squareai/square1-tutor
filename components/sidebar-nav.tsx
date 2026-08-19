@@ -18,14 +18,17 @@ import {
   Settings,
   MessageSquarePlus,
   LogOut,
+  Rocket,
+  Trophy,
   type LucideIcon,
+  CalendarRange,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { createClient } from "@/lib/supabase/client";
 import { Logo } from "@/components/ui/logo";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { useUnreadMessages } from "@/lib/hooks/useUnreadMessages";
-import { COMMUNITY_ENABLED } from "@/lib/flags";
+import { COMMUNITY_ENABLED, STARTUP_SCHOOL_ENABLED, COMPETITIONS_ENABLED, BOOTCAMP_ENABLED } from "@/lib/flags";
 
 // Restructured 2026-08-10 (UX review N1/N3/M2). Two ideas drive the order:
 // the DOING cluster answers "what do I work on?", the PROOF cluster answers
@@ -35,10 +38,19 @@ import { COMMUNITY_ENABLED } from "@/lib/flags";
 // renamed Support until community DMs return (it is one support thread).
 const learnNav: { href: string; label: string; icon: LucideIcon }[] = [
   { href: "/dashboard", label: "Home", icon: LayoutDashboard },
+  // Bootcamp sits directly under Home for anyone in a cohort: it is the screen
+  // they open first, and burying the thing they paid $890 for under Courses
+  // would be the wrong hierarchy. Hidden entirely while the flag is off, so
+  // the 99% of students on the self-paced product never see a dead entry.
+  ...(BOOTCAMP_ENABLED ? [{ href: "/bootcamp", label: "Bootcamp", icon: CalendarRange }] : []),
   { href: "/courses", label: "Courses", icon: BookOpen },
   { href: "/projects", label: "Projects", icon: FolderKanban },
+  ...(COMPETITIONS_ENABLED ? [{ href: "/competitions", label: "Competitions", icon: Trophy }] : []),
   { href: "/notes", label: "Study Hub", icon: Bookmark },
   { href: "/career", label: "Career", icon: Target },
+  // Startup School: a different product for a different buyer, so it only
+  // appears once the programme is running (lib/flags.ts).
+  ...(STARTUP_SCHOOL_ENABLED ? [{ href: "/venture", label: "Your venture", icon: Rocket }] : []),
 ];
 
 const proofNav: { href: string; label: string; icon: LucideIcon }[] = [

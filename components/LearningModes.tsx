@@ -5,10 +5,15 @@ import { CalendarRange, Sparkles, ArrowRight, BookOpen, Layers } from "lucide-re
 // The two learning elements — the two ways Square 1 serves a learner, side by
 // side on the dashboard:
 //
-//   BOOTCAMP — the committed, paced program that already exists in the plan
-//   machinery: a 3/6/9-month track with a weekly schedule and a target
+//   PACED TRACK — the committed, self-paced program that already exists in the
+//   plan machinery: a 3/6/9-month track with a weekly schedule and a target
 //   completion date. Everything shown is real enrolment data; the pace line is
 //   plain arithmetic (lessons remaining ÷ weeks remaining), never a judgement.
+//
+//   Named "Paced Track" and NOT "Bootcamp": Bootcamp is now a separate paid
+//   product (live cohorts, weekly 1-1, gated projects — docs/bootcamp-prd.md).
+//   Two things called Bootcamp in one app is a support nightmare, and this one
+//   is the cheaper, solo, no-instructor option.
 //
 //   AI TUTOR — the always-on, self-paced side: Nova (who remembers your graded
 //   work), the current lesson, and the spaced-repetition review deck.
@@ -58,12 +63,12 @@ export function LearningModes({
       </p>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
 
-        {/* ── Bootcamp — the committed, paced program ─────────────────────── */}
+        {/* ── Paced Track — the committed, self-paced program ──────────────── */}
         <div className="relative rounded-2xl border border-border bg-surface p-5 sm:p-6 flex flex-col overflow-hidden">
           <div className="flex items-center justify-between gap-3 mb-3">
             <span className="inline-flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.16em] text-brand">
               <CalendarRange className="h-3.5 w-3.5" aria-hidden />
-              Bootcamp
+              Paced Track
             </span>
             <span className="text-[10px] font-bold uppercase tracking-wide px-2 py-0.5 rounded-full border"
               style={hasPlan
@@ -98,7 +103,7 @@ export function LearningModes({
           ) : (
             <>
               <p className="text-base font-black text-ink leading-snug">
-                Turn {courseTitle} into a bootcamp
+                Turn {courseTitle} into a paced track
               </p>
               <p className="mt-1 text-sm text-ink-secondary leading-relaxed">
                 Commit to a pace — 3, 6 or 9 months — and get a weekly schedule with a

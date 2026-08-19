@@ -344,7 +344,7 @@ export default function AboutPage() {
             <div className="space-y-6">
               <p className="text-base sm:text-lg text-slate-700 leading-relaxed">
                 Traditional education gives you theory and hopes you figure out the rest.
-                Bootcamps rush you through and hand you a certificate. YouTube gives you
+                $15,000 bootcamps rush you through and hand you a certificate. YouTube gives you
                 content but zero feedback.
               </p>
               <p className="text-base sm:text-lg text-slate-700 leading-relaxed">
