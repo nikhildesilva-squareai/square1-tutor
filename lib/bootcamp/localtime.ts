@@ -143,3 +143,62 @@ export function resolveViewerTimeZone(
   if (supplied && isValidTimeZone(supplied)) return supplied;
   return fallback;
 }
+
+// ─── Band anchors ────────────────────────────────────────────────────────────
+
+/**
+ * Every band anchors its weekly class at 19:00 LOCAL to its own zone — an hour
+ * that works for a working adult in that band. The zone differs per cohort
+ * (bootcamp_cohorts.timezone); the hour does not.
+ *
+ *   Band A  Asia/Colombo     19:00  -> South Asia, Gulf, East Africa
+ *   Band B  Europe/London    19:00  -> Europe, West Africa
+ *   Band C  America/New_York 19:00  -> the Americas
+ */
+export const BAND_ANCHOR_HOUR = 19;
+export const BAND_ANCHOR_MINUTE = 0;
+
+/** The wall-clock time an instant shows in `tz`, expressed as a UTC timestamp so
+ *  two wall-clocks can be subtracted. Not a real instant — an intermediate. */
+function wallClockAsUtcMs(instant: Date, tz: string): number {
+  const parts = new Intl.DateTimeFormat("en-US", {
+    timeZone: tz,
+    year: "numeric", month: "2-digit", day: "2-digit",
+    hour: "2-digit", minute: "2-digit", second: "2-digit",
+    hour12: false,
+  }).formatToParts(instant);
+  const n = (t: string) => Number(parts.find((p) => p.type === t)?.value ?? 0);
+  const hour = n("hour") % 24; // some locales render midnight as 24
+  return Date.UTC(n("year"), n("month") - 1, n("day"), hour, n("minute"), n("second"));
+}
+
+/**
+ * Turn a wall-clock time in a zone into the absolute instant it refers to.
+ *
+ * Sessions are authored as "19:00 in the band's zone on this date" but STORED as
+ * timestamptz. This is the conversion, and it is the one piece of genuine
+ * timezone maths in the codebase — done by measuring the offset with Intl rather
+ * than assuming it, so DST is handled rather than hard-coded.
+ *
+ * Two passes: the first corrects the bulk offset, the second settles the case
+ * where that correction crossed a DST boundary.
+ */
+export function zonedTimeToInstant(
+  dateISO: string,
+  hour: number,
+  minute: number,
+  timeZone: string,
+): Date {
+  const [y, m, d] = dateISO.split("-").map(Number);
+  const target = Date.UTC(y, m - 1, d, hour, minute, 0);
+  let utc = target;
+  for (let i = 0; i < 2; i++) {
+    utc += target - wallClockAsUtcMs(new Date(utc), timeZone);
+  }
+  return new Date(utc);
+}
+
+/** The instant of a cohort's first live class: its start date at the band anchor. */
+export function firstClassInstant(startsOn: string, cohortTz: string): Date {
+  return zonedTimeToInstant(startsOn, BAND_ANCHOR_HOUR, BAND_ANCHOR_MINUTE, cohortTz);
+}

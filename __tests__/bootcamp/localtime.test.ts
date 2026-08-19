@@ -29,6 +29,8 @@ import {
   confirmationSentence,
   isValidTimeZone,
   resolveViewerTimeZone,
+  zonedTimeToInstant,
+  firstClassInstant,
 } from "../../lib/bootcamp/localtime.ts";
 
 const BAND_A = "Asia/Colombo";
@@ -190,5 +192,66 @@ describe("input shape", () => {
 
   test("the zone used is echoed back for the UI to display", () => {
     assert.equal(inZone("Africa/Nairobi").timeZone, "Africa/Nairobi");
+  });
+});
+
+describe("zonedTimeToInstant — wall clock to absolute instant", () => {
+  test("19:00 Asia/Colombo on 5 Oct 2026 is 13:30 UTC", () => {
+    // Colombo is UTC+5:30 year-round. 19:00 - 5:30 = 13:30 UTC.
+    assert.equal(
+      zonedTimeToInstant("2026-10-05", 19, 0, "Asia/Colombo").toISOString(),
+      "2026-10-05T13:30:00.000Z",
+    );
+  });
+
+  test("19:00 Europe/London in October is 18:00 UTC (BST, +1)", () => {
+    assert.equal(
+      zonedTimeToInstant("2026-10-05", 19, 0, "Europe/London").toISOString(),
+      "2026-10-05T18:00:00.000Z",
+    );
+  });
+
+  test("19:00 Europe/London in December is 19:00 UTC (GMT, +0)", () => {
+    // The same wall clock is a DIFFERENT instant after the clocks change. This is
+    // the case hard-coded offsets get wrong.
+    assert.equal(
+      zonedTimeToInstant("2026-12-07", 19, 0, "Europe/London").toISOString(),
+      "2026-12-07T19:00:00.000Z",
+    );
+  });
+
+  test("19:00 America/New_York in October is 23:00 UTC (EDT, -4)", () => {
+    assert.equal(
+      zonedTimeToInstant("2026-10-05", 19, 0, "America/New_York").toISOString(),
+      "2026-10-05T23:00:00.000Z",
+    );
+  });
+
+  test("19:00 America/New_York in December is 00:00 UTC next day (EST, -5)", () => {
+    assert.equal(
+      zonedTimeToInstant("2026-12-07", 19, 0, "America/New_York").toISOString(),
+      "2026-12-08T00:00:00.000Z",
+    );
+  });
+
+  test("round trip: the instant renders back as the wall clock we asked for", () => {
+    for (const tz of ["Asia/Colombo", "Europe/London", "America/New_York", "Pacific/Auckland"]) {
+      const inst = zonedTimeToInstant("2026-10-05", 19, 0, tz);
+      const back = localSessionTime(inst, tz, tz);
+      assert.equal(back.hour24, 19, `${tz} did not round trip`);
+    }
+  });
+});
+
+describe("firstClassInstant", () => {
+  test("Cohort 1 Band A first class is Mon 5 Oct 2026, 13:30 UTC", () => {
+    assert.equal(
+      firstClassInstant("2026-10-05", "Asia/Colombo").toISOString(),
+      "2026-10-05T13:30:00.000Z",
+    );
+  });
+
+  test("which is the SLOT anchor every other test in this file uses", () => {
+    assert.equal(firstClassInstant("2026-10-05", "Asia/Colombo").toISOString(), new Date(SLOT).toISOString());
   });
 });
