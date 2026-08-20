@@ -29,6 +29,12 @@ const PROTECTED_PREFIXES = [
   "/certificate",
   "/community",
   "/messages",
+  // A student's own application status. The page re-checks the session and
+  // redirects on its own, but it also exports static `metadata` alongside
+  // force-dynamic, so the shell flushes before redirect() can set a status and
+  // the bounce lands as a 200 instead of a 307. Handling it at the edge gets the
+  // status code right. The rest of /bootcamp stays public.
+  "/bootcamp/application",
   // Post-signup onboarding, staff surfaces.
   "/welcome",
   "/inbox",
@@ -57,7 +63,13 @@ export async function proxy(request: NextRequest) {
   // The proxy runs BEFORE filesystem routes, so the status here is authoritative
   // and nothing renders at all. Delete this block when the product ships — the
   // pages keep their own notFound() as defence in depth.
-  if (!BOOTCAMP_ENABLED && request.nextUrl.pathname.startsWith("/bootcamp")) {
+  // /api/bootcamp is covered too. The pages were dark but the API was not, and
+  // /api/bootcamp/waitlist is unauthenticated by design (it captures an email),
+  // so anyone who guessed the URL could write to the waitlist table before the
+  // product existed publicly. A feature that is off should be off at every
+  // entrance, not just the ones with a UI.
+  const path = request.nextUrl.pathname;
+  if (!BOOTCAMP_ENABLED && (path.startsWith("/bootcamp") || path.startsWith("/api/bootcamp"))) {
     return new NextResponse(null, { status: 404 });
   }
 

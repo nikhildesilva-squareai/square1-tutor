@@ -364,7 +364,11 @@ export type CohortStatus =
   | "draft" | "open" | "full" | "running" | "complete" | "cancelled";
 export type BootcampApplicationStatus =
   | "submitted" | "assessed" | "accepted" | "waitlisted"
-  | "rejected" | "withdrawn" | "deferred";
+  | "rejected" | "withdrawn" | "deferred"
+  // Written by /api/cron/bootcamp when an offer lapses. Migration 026 added it
+  // to the CHECK constraint; leaving it out here let callers index status maps
+  // with a value the DB really produces and get `undefined` back.
+  | "expired";
 export type BootcampEnrollmentStatus =
   | "active" | "suspended" | "deferred" | "withdrawn" | "graduated";
 export type BootcampStanding = "good" | "at_risk" | "probation";
@@ -440,6 +444,10 @@ export interface BootcampApplication {
   reviewed_by: string | null;
   decision_note: string | null;
   decided_at: string | null;
+  /** When an acceptance stops holding the seat. Added in migration 026; with no
+   *  deposit, acceptance itself is the hold, so a DB constraint refuses an
+   *  accepted row without one. Null for every other status. */
+  offer_expires_at: string | null;
   created_at: string;
   updated_at: string;
 }

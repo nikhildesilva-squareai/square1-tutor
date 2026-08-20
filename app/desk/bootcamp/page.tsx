@@ -5,6 +5,9 @@ import { createAdminClient, isAdminEmail } from "@/lib/supabase/admin";
 import { cohortAvailability, displaySeatsLeft } from "@/lib/bootcamp/availability";
 import { formatCohortDate } from "@/lib/bootcamp/catalog";
 import { DecisionButtons } from "@/components/bootcamp/DecisionButtons";
+import { MarkPaidButton } from "@/components/bootcamp/MarkPaidButton";
+import { formatUsd } from "@/lib/bootcamp/pricing";
+import { isOfferLive, daysLeftOnOffer } from "@/lib/bootcamp/enrolment";
 import type { BootcampCohort } from "@/types/database";
 
 // Admissions queue (AD-06 / AD-07).
@@ -28,6 +31,7 @@ const STATUS_STYLE: Record<string, string> = {
   rejected:   "bg-error-bg text-error",
   withdrawn:  "bg-surface-alt text-ink-muted",
   deferred:   "bg-surface-alt text-ink-muted",
+  expired:    "bg-error-bg text-error",
 };
 
 export default async function AdmissionsDeskPage() {
@@ -55,11 +59,26 @@ export default async function AdmissionsDeskPage() {
     .order("created_at", { ascending: true });
 
   const applications = (appRows ?? []) as {
-    id: string; cohort_id: string; status: string; assessment_pct: number | null;
+    id: string; cohort_id: string; student_id: string; status: string; assessment_pct: number | null;
     hours_committed: number | null; timezone: string | null; motivation: string | null;
     local_time_confirmed: boolean; created_at: string; decision_note: string | null;
+    offer_expires_at: string | null;
     student: { name: string | null; email: string } | null;
   }[];
+
+  // Who has actually paid. Keyed by cohort+student because that is what the
+  // enrolment is unique on — an application is not the thing that holds a seat
+  // once money has changed hands.
+  const { data: enrolRows } = await admin
+    .from("bootcamp_enrollments")
+    .select("cohort_id, student_id, payment_plan, amount_paid_cents")
+    .in("cohort_id", cohorts.map((c) => c.id).length ? cohorts.map((c) => c.id) : ["__none__"]);
+  const enrolments = new Map(
+    ((enrolRows ?? []) as {
+      cohort_id: string; student_id: string;
+      payment_plan: string; amount_paid_cents: number;
+    }[]).map((e) => [`${e.cohort_id}:${e.student_id}`, e]),
+  );
 
   return (
     <main className="min-h-screen bg-surface-soft text-ink">
@@ -145,6 +164,36 @@ export default async function AdmissionsDeskPage() {
                           seatsLeft={displaySeatsLeft(availability) ?? 0}
                         />
                       )}
+
+                      {a.status === "accepted" && (() => {
+                        const paid = enrolments.get(`${a.cohort_id}:${a.student_id}`);
+                        if (paid) {
+                          return (
+                            <p className="mt-4 text-xs text-success font-semibold">
+                              Enrolled · {paid.payment_plan === "full" ? "paid in full" : "three-part plan"}
+                              {" · "}{formatUsd(paid.amount_paid_cents)} received
+                            </p>
+                          );
+                        }
+                        // An accepted application keeps reading `accepted` until the
+                        // daily sweep relabels it, so the deadline is checked here
+                        // rather than trusted from the status column.
+                        const live = isOfferLive(a.offer_expires_at, new Date());
+                        return live ? (
+                          <>
+                            <p className="mt-4 text-xs text-ink-muted">
+                              Unpaid · offer expires in {daysLeftOnOffer(a.offer_expires_at, new Date())}{" "}
+                              day(s)
+                            </p>
+                            <MarkPaidButton applicationId={a.id} />
+                          </>
+                        ) : (
+                          <p className="mt-4 text-xs text-error font-semibold">
+                            Offer lapsed and unpaid — the seat returns to the pool at the next
+                            sweep. Re-accept if you mean to hold it again.
+                          </p>
+                        );
+                      })()}
                     </article>
                   ))}
                 </div>
