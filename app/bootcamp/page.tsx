@@ -45,7 +45,7 @@ export default async function BootcampIndexPage() {
     <main className="min-h-screen bg-surface-soft text-ink">
       <nav className="max-w-6xl mx-auto px-6 sm:px-8 py-5 flex items-center justify-between">
         <Link href="/" className="shrink-0"><Logo variant="dark" size="sm" /></Link>
-        <Link href="/" className="text-sm font-medium text-ink-secondary hover:text-brand">
+        <Link href="/courses" className="text-sm font-medium text-ink-secondary hover:text-brand">
           Learn at your own pace →
         </Link>
       </nav>

@@ -218,10 +218,9 @@ export default async function BootcampSalesPage({ params }: PageProps) {
           <Link href="/skill-check" className="text-brand font-medium hover:underline">
             Take the free skill check
           </Link>{" "}
-          — it takes five minutes, costs nothing, and tells you honestly where you stand. The
-          same curriculum is also available{" "}
-          <Link href="/" className="text-brand font-medium hover:underline">
-            self-paced
+          — five minutes, costs nothing, and it tells you honestly where you stand. Or take{" "}
+          <Link href={`/courses/${course.slug}`} className="text-brand font-medium hover:underline">
+            the same curriculum self-paced
           </Link>{" "}
           — no cohort, no deadlines, no 1-1, and a lot cheaper.
         </p>
