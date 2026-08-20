@@ -3,11 +3,12 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Logo } from "@/components/ui/logo";
 import { BOOTCAMP_ENABLED } from "@/lib/flags";
-import { getBootcamp, formatCohortDate } from "@/lib/bootcamp/catalog";
+import { getBootcamp, getGates, formatCohortDate } from "@/lib/bootcamp/catalog";
 import { displaySeatsLeft } from "@/lib/bootcamp/availability";
 import { getRegion } from "@/lib/pricing-server";
 import { BOOTCAMP_PRICING, formatUsd, threePartTotal } from "@/lib/bootcamp/pricing";
 import { firstClassInstant, localSessionTime } from "@/lib/bootcamp/localtime";
+import { WaitlistForm } from "@/components/bootcamp/WaitlistForm";
 
 const BASE = "https://www.square1ai.com";
 
@@ -44,6 +45,7 @@ export default async function BootcampSalesPage({ params }: PageProps) {
 
   const { bootcamp, course, cohort, availability, joinable } = entry;
   const seatsLeft = displaySeatsLeft(availability);
+  const gates = await getGates(bootcamp.id);
   const region = await getRegion();
   const price = BOOTCAMP_PRICING[region];
 
@@ -139,6 +141,35 @@ export default async function BootcampSalesPage({ params }: PageProps) {
         </div>
       </section>
 
+      {gates.length > 0 && (
+        <section className="max-w-5xl mx-auto px-6 sm:px-8 pb-12">
+          <div className="flex items-baseline justify-between gap-4 mb-4">
+            <h2 className="text-[11px] font-semibold text-ink-muted uppercase tracking-widest">
+              The {gates.length} gates
+            </h2>
+            <Link href={`/bootcamp/${slug}/schedule`} className="text-sm font-medium text-brand hover:underline">
+              See the full {bootcamp.weeks}-week schedule →
+            </Link>
+          </div>
+          <ol className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+            {gates.map((g) => (
+              <li key={g.id} className="bg-surface border border-border rounded-[12px] p-4 shadow-sm">
+                <p className="text-[11px] font-semibold text-ink-muted uppercase tracking-widest">
+                  Gate {g.order_index} · week {g.week}
+                </p>
+                <p className="mt-1 font-semibold text-sm">{g.title}</p>
+                <p className="mt-1 text-xs text-ink-secondary leading-relaxed">{g.summary_md}</p>
+              </li>
+            ))}
+          </ol>
+          <p className="mt-4 text-sm text-ink-secondary max-w-2xl leading-relaxed">
+            The next block does not open until the gate before it is passed. The exact pass
+            thresholds are not published — a bar you can read is a bar you can do the minimum
+            against.
+          </p>
+        </section>
+      )}
+
       <section className="max-w-5xl mx-auto px-6 sm:px-8 pb-20">
         <div className="bg-surface border border-brand rounded-[12px] p-6 sm:p-8 shadow-sm max-w-2xl">
           {joinable && cohort ? (
@@ -203,12 +234,14 @@ export default async function BootcampSalesPage({ params }: PageProps) {
                   </>
                 )}
               </p>
-              <Link
-                href={`/bootcamp/${slug}/apply?waitlist=1`}
-                className="mt-6 inline-flex items-center justify-center rounded-[8px] border border-border font-semibold text-sm px-6 py-3 hover:border-brand hover:text-brand transition"
-              >
-                {availability.state === "not_open_yet" ? "Notify me when it opens" : "Join the waitlist"}
-              </Link>
+              <WaitlistForm
+                slug={slug}
+                label={
+                  availability.state === "full"
+                    ? "Get first refusal on the next intake"
+                    : "Get the application link the day it opens"
+                }
+              />
             </>
           )}
         </div>
