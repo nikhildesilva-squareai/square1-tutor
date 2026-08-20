@@ -11,6 +11,7 @@ import { RealityBand } from "@/components/landing/RealityBand";
 import { ProductivityGap } from "@/components/landing/ProductivityGap";
 import { SocialProofSection } from "@/components/landing/SocialProofSection";
 import { PricingSection } from "@/components/landing/PricingSection";
+import { BootcampBand } from "@/components/landing/BootcampBand";
 import { FaqJsonLd } from "@/components/landing/FAQSection";
 import { LaneMapSection } from "@/components/landing/LaneMapSection";
 import { ProductTour } from "@/components/landing/ProductTour";
@@ -147,6 +148,12 @@ export default async function Home() {
 
       {/* ── 7. Pricing — free start, founding rate locked for life ───────────── */}
       <div data-s1-section="pricing"><PricingSection region={region} /></div>
+
+      {/* ── 7b. The other product. Renders nothing while BOOTCAMP_ENABLED is
+             false, so this page is byte-identical until the flag flips. Placed
+             AFTER pricing on purpose: someone who has just seen $19.90 and
+             hesitated is exactly who the cohort is for. ──────────────────────── */}
+      <div data-s1-section="bootcamp"><BootcampBand region={region} /></div>
 
       <SectionWave />
 

@@ -12,7 +12,11 @@ const BASE = "https://www.square1ai.com";
 // The one Square 1 headline gradient, same as the landing page and /newsroom.
 const BRAND_GRADIENT = "linear-gradient(135deg, #3388FF 0%, #0056CE 55%, #01224F 100%)";
 
-export const metadata: Metadata = {
+// generateMetadata, not a static `metadata` export: a static one is resolved and
+// FLUSHED before the component runs, so notFound() rendered a 404 body under an
+// HTTP 200. An async resolver defers the flush so the status can still be set.
+export async function generateMetadata(): Promise<Metadata> {
+  return {
   title: "Bootcamps — Square 1 AI",
   description:
     "Six-month live bootcamps with a weekly 1-1 with your instructor, six projects you cannot skip, and a credential an employer can verify in twenty seconds — including a recording of you defending your own code.",
@@ -24,7 +28,8 @@ export const metadata: Metadata = {
     url: `${BASE}/bootcamp`,
     type: "website",
   },
-};
+  };
+}
 
 // Seat counts must never be cached — a stale count is a dishonest count (AD-08).
 export const dynamic = "force-dynamic";
