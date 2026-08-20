@@ -6,6 +6,7 @@ import { BOOTCAMP_ENABLED } from "@/lib/flags";
 import { formatCohortDate } from "@/lib/bootcamp/catalog";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { linkAssessmentToApplication } from "@/lib/bootcamp/assessment";
 import type { BootcampApplication, BootcampApplicationStatus } from "@/types/database";
 
 interface PageProps {
@@ -70,7 +71,7 @@ export default async function ApplicationStatusPage({ params }: PageProps) {
   const admin = createAdminClient();
   const { data } = await admin
     .from("bootcamp_applications")
-    .select("*, cohort:bootcamp_cohorts(name, starts_on, timezone, bootcamp:bootcamps(slug, title))")
+    .select("*, cohort:bootcamp_cohorts(name, starts_on, timezone, bootcamp:bootcamps(slug, title, course_id, course:courses(slug, title)))")
     .eq("id", id)
     .maybeSingle();
 
@@ -78,9 +79,25 @@ export default async function ApplicationStatusPage({ params }: PageProps) {
   // IS the authorisation. Without it, any signed-in user could read any
   // application by guessing a UUID.
   const app = data as (BootcampApplication & {
-    cohort: { name: string; starts_on: string; timezone: string; bootcamp: { slug: string; title: string } };
+    cohort: {
+      name: string; starts_on: string; timezone: string;
+      bootcamp: { slug: string; title: string; course_id: string; course: { slug: string; title: string } };
+    };
   }) | null;
   if (!app || app.student_id !== (student as { id: string }).id) notFound();
+
+  // ST-03: self-healing link between the placement assessment and this
+  // application. The assessment flow knows nothing about bootcamps — it ends at
+  // its own report page — so instead of threading a return path through three
+  // files of shared, working code, we ask here whether a graded attempt exists
+  // and record it. Idempotent, so a student can take it, wander off, and come
+  // back whenever.
+  const linked = await linkAssessmentToApplication(admin, app, app.cohort.bootcamp.course_id);
+  if (linked && app.status === "submitted") {
+    app.status = "assessed";
+    app.assessment_pct = linked.percentage;
+  }
+  const courseSlug = app.cohort.bootcamp.course.slug;
 
   const copy = COPY[app.status];
   const tone =
@@ -132,9 +149,38 @@ export default async function ApplicationStatusPage({ params }: PageProps) {
         )}
 
         {app.status === "submitted" && (
-          <p className="mt-8 text-sm text-ink-secondary">
-            The assessment link will appear here and arrive by email. Nothing has been charged.
-          </p>
+          <div className="mt-8 rounded-[12px] border border-brand bg-surface p-6 shadow-sm max-w-2xl">
+            <p className="text-[11px] font-semibold text-brand uppercase tracking-widest">
+              Next step
+            </p>
+            <h2 className="mt-2 font-semibold">Take the placement assessment</h2>
+            <p className="mt-2 text-sm text-ink-secondary leading-relaxed">
+              About twenty minutes. It is not pass-or-fail in the usual sense — it tells us
+              whether this track is the right level for you right now. Come back to this page
+              afterwards and your result will be attached automatically. Nothing has been
+              charged.
+            </p>
+            <Link
+              href={`/courses/${courseSlug}/assess`}
+              className="mt-5 inline-flex rounded-[8px] bg-brand text-white font-semibold text-sm px-5 py-2.5 hover:opacity-90 transition"
+            >
+              Start the assessment
+            </Link>
+          </div>
+        )}
+
+        {app.assessment_pct !== null && (
+          <div className="mt-8 rounded-[12px] border border-border bg-surface p-6 shadow-sm max-w-2xl">
+            <p className="text-[11px] font-semibold text-ink-muted uppercase tracking-widest">
+              Your placement assessment
+            </p>
+            <p className="mt-2 text-3xl font-bold">{Math.round(Number(app.assessment_pct))}%</p>
+            <p className="mt-2 text-sm text-ink-secondary leading-relaxed">
+              This is context for the person reading your application, not a pass mark. A lower
+              score on a track you are new to is expected and is not on its own a reason we would
+              turn you down.
+            </p>
+          </div>
         )}
       </div>
     </main>

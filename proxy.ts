@@ -1,6 +1,7 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 import { S1_REGION_COOKIE, parseRegion, regionForCountry } from "@/lib/pricing";
+import { BOOTCAMP_ENABLED } from "@/lib/flags";
 
 // Signed-in-only surfaces. This is a DENYLIST on purpose: anything not named
 // here falls through to the app, so an unknown path renders a real 404 instead
@@ -40,6 +41,26 @@ const PROTECTED_PREFIXES = [
 const PROTECTED_EXACT = ["/portfolio"];
 
 export async function proxy(request: NextRequest) {
+  // ── Unreleased product: /bootcamp is a real 404 until the flag flips ─────
+  //
+  // notFound() inside the pages is NOT enough, and this was verified against a
+  // production build rather than assumed. Those routes are `force-dynamic`, so
+  // Next streams the shell before the component throws: the body is the 404
+  // page but the status was already committed as 200. Every /bootcamp URL
+  // answered 200 in `next start`.
+  //
+  // A 200 on a page that reads "404" is an indexable page. An unreleased $890
+  // product becoming crawlable is exactly what the flag exists to prevent, and
+  // a soft-404 also teaches answer engines the wrong thing about the site (the
+  // same failure the PROTECTED_PREFIXES denylist below was written to undo).
+  //
+  // The proxy runs BEFORE filesystem routes, so the status here is authoritative
+  // and nothing renders at all. Delete this block when the product ships — the
+  // pages keep their own notFound() as defence in depth.
+  if (!BOOTCAMP_ENABLED && request.nextUrl.pathname.startsWith("/bootcamp")) {
+    return new NextResponse(null, { status: 404 });
+  }
+
   // ── Canonical host: apex → www ──────────────────────────────────────────
   // Auth cookies (session AND the PKCE code-verifier) are host-only, so a
   // Google sign-in that starts on one host and returns on the other can never

@@ -68,3 +68,20 @@ export {
   type Availability,
   type CohortWindow,
 } from "./availability";
+
+export {
+  OFFER_WINDOW_DAYS,
+  offerExpiry,
+  isOfferLive,
+  daysLeftOnOffer,
+  scheduleFor,
+  dueOnAcceptanceCents,
+  planTotalCents,
+  outstandingCents,
+  isFullyPaid,
+  nextInstalment,
+  enrolmentStep,
+  type PlanPrices,
+  type Instalment,
+  type EnrolmentStep,
+} from "./enrolment";
