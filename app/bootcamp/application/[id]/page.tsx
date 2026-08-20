@@ -212,6 +212,7 @@ export default async function ApplicationStatusPage({ params }: PageProps) {
 
         {step.step === "pay" && (
           <PayPanel
+            applicationId={app.id}
             dueCents={step.dueCents}
             daysLeft={step.daysLeft}
             fullCents={prices.full}

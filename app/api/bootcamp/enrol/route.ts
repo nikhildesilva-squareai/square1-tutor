@@ -96,84 +96,34 @@ export async function POST(request: Request) {
     );
     const amountCents = dueOnAcceptanceCents(BOOTCAMP_PRICING[region].plans, plan);
 
-    // The base enrolment. A bootcamp student IS a normal enrolled student, so the
-    // ordinary row comes first and everything else hangs off it — dashboard,
-    // streaks, Nova memory and certificates keep working with no special cases.
-    let baseEnrolmentId: string;
-    const { data: existingBase } = await admin
-      .from("student_enrollments")
-      .select("id")
-      .eq("student_id", application.student_id)
-      .eq("course_id", (await courseIdFor(admin, cohort.bootcamp_id)) ?? "")
-      .maybeSingle();
-
-    if (existingBase) {
-      baseEnrolmentId = (existingBase as { id: string }).id;
-    } else {
-      const courseId = await courseIdFor(admin, cohort.bootcamp_id);
-      if (!courseId) return NextResponse.json({ error: "Course not found" }, { status: 404 });
-      const { data: created, error: baseErr } = await admin
-        .from("student_enrollments")
-        .insert({
-          student_id: application.student_id,
-          course_id: courseId,
-          plan_months: 6,
-          status: "active",
-        })
-        .select("id")
-        .single();
-      if (baseErr || !created) {
-        console.error("[bootcamp/enrol] base enrolment", baseErr);
-        return NextResponse.json({ error: "Could not create the enrolment." }, { status: 500 });
-      }
-      baseEnrolmentId = (created as { id: string }).id;
-    }
-
-    const { data: enrolment, error: enrolErr } = await admin
-      .from("bootcamp_enrollments")
-      .upsert(
-        {
-          cohort_id: cohort.id,
-          student_id: application.student_id,
-          enrollment_id: baseEnrolmentId,
-          status: "active",
-          timezone: application.timezone,
-          payment_plan: plan,
-          amount_paid_cents: amountCents,
-          currency: "USD",
-          paid_in_full_at: plan === "full" ? new Date().toISOString() : null,
-        },
-        { onConflict: "cohort_id,student_id" },
-      )
-      .select("id")
-      .single();
-
-    if (enrolErr || !enrolment) {
-      console.error("[bootcamp/enrol] cohort enrolment", enrolErr);
-      return NextResponse.json({ error: "Could not create the enrolment." }, { status: 500 });
-    }
-    const enrolmentId = (enrolment as { id: string }).id;
-
-    // Ledger row. UNIQUE (application_id, instalment) means a double-clicked
-    // button or a retried webhook lands once, not twice.
-    const { error: payErr } = await admin.from("bootcamp_payments").insert({
-      application_id: application.id,
-      bootcamp_enrollment_id: enrolmentId,
-      student_id: application.student_id,
-      provider,
-      provider_ref: providerRef ?? null,
-      plan,
-      instalment: 1,
-      amount_cents: amountCents,
-      region,
-      status: "paid",
-      note: note ?? null,
-      recorded_by: user.email,
+    // ONE FUNCTION, ONE TRANSACTION. This used to be two sequential inserts —
+    // student_enrollments, then bootcamp_enrollments — and a failure between them
+    // left a base enrolment with no cohort row. It self-healed on retry, but a
+    // payment path is exactly where nobody is watching. s1_bootcamp_enrol also
+    // re-checks status and offer liveness under a row lock, so two concurrent
+    // calls cannot both enrol.
+    const { data: enrolmentId, error: enrolErr } = await admin.rpc("s1_bootcamp_enrol", {
+      p_application_id: application.id,
+      p_plan: plan,
+      p_amount_cents: amountCents,
+      p_region: region,
+      p_provider: provider,
+      p_provider_ref: providerRef ?? null,
+      p_note: note ?? null,
+      p_recorded_by: user.email,
     });
 
-    if (payErr && payErr.code !== "23505") {
-      console.error("[bootcamp/enrol] payment", payErr);
-      return NextResponse.json({ error: "Enrolled, but the payment did not record." }, { status: 500 });
+    if (enrolErr || !enrolmentId) {
+      console.error("[bootcamp/enrol]", enrolErr);
+      // The function raises check_violation for a state the desk can fix (not
+      // accepted, offer lapsed, already fully paid), so say which rather than
+      // reporting a generic failure.
+      const message = enrolErr?.message ?? "Could not create the enrolment.";
+      const isState = /not accepted|expired|already paid/i.test(message);
+      return NextResponse.json(
+        { error: isState ? message : "Could not create the enrolment." },
+        { status: isState ? 409 : 500 },
+      );
     }
 
     await admin.from("bootcamp_audit_log").insert({
@@ -200,13 +150,3 @@ export async function POST(request: Request) {
   }
 }
 
-/** The curriculum a bootcamp runs on. A track is a delivery mode over an existing
- *  course, so the base enrolment is against that course. */
-async function courseIdFor(
-  admin: ReturnType<typeof createAdminClient>,
-  bootcampId: string,
-): Promise<string | null> {
-  const { data } = await admin
-    .from("bootcamps").select("course_id").eq("id", bootcampId).maybeSingle();
-  return (data as { course_id: string } | null)?.course_id ?? null;
-}

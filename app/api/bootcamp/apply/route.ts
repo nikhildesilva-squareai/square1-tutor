@@ -32,6 +32,11 @@ const schema = z.object({
   // not confirm the local class hour is not accepted at all — the whole point is
   // that nobody buys a seat they cannot attend.
   localTimeConfirmed: z.literal(true),
+  // Every live class is recorded and the viva recording is the evidence behind
+  // the credential, so this is a condition of applying rather than a preference.
+  // z.literal(true) means an application without it is rejected by the schema —
+  // there is no path that stores a student with consent unrecorded.
+  recordingConsent: z.literal(true),
 });
 
 export async function POST(request: Request) {
@@ -115,6 +120,10 @@ export async function POST(request: Request) {
         hours_committed: input.hoursCommitted,
         motivation: input.motivation ?? null,
         local_time_confirmed: true,
+        // Timestamped server-side. A boolean from the client says "they ticked a
+        // box"; a server timestamp says when we recorded that they did, which is
+        // the thing worth having if it is ever questioned.
+        recording_consent_at: new Date().toISOString(),
       })
       .select("id")
       .single();
