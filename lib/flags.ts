@@ -17,3 +17,11 @@ export const COMMUNITY_ENABLED = false;
 // Turning this on is a PRICING and MARKETING decision, not an engineering one —
 // it puts a $890 product in front of every visitor.
 export const BOOTCAMP_ENABLED = false;
+
+// STARTUP_SCHOOL_ENABLED: the founder programme that rides the bootcamp cohort
+// spine. Referenced by the sidebar nav; kept off until the programme opens.
+export const STARTUP_SCHOOL_ENABLED = false;
+
+// COMPETITIONS_ENABLED: the competitions surface. Off, matching production —
+// /competitions currently 404s and no nav entry appears.
+export const COMPETITIONS_ENABLED = false;

@@ -53,6 +53,17 @@ function GoogleIcon() {
   );
 }
 
+function MicrosoftIcon() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M2 2h9.5v9.5H2z" fill="#F25022" />
+      <path d="M12.5 2H22v9.5h-9.5z" fill="#7FBA00" />
+      <path d="M2 12.5h9.5V22H2z" fill="#00A4EF" />
+      <path d="M12.5 12.5H22V22h-9.5z" fill="#FFB900" />
+    </svg>
+  );
+}
+
 /* ─── Page ─────────────────────────────────────────────────────────────────── */
 
 export default function LoginPage() {
@@ -110,11 +121,18 @@ export default function LoginPage() {
     return () => clearInterval(id);
   }, [resendCountdown]);
 
-  /* ── OAuth handler (Google) ───────────────────────────────────────────── */
-  // Microsoft/Azure is intentionally absent until the provider is configured
-  // in Supabase — a visible-but-broken auth option costs signups.
+  /* ── OAuth handlers (Google, Microsoft) ───────────────────────────────── */
+  // Both providers are enabled in Supabase. Azure was configured but never
+  // surfaced here, so the button simply didn't exist — a working sign-in route
+  // nobody could reach.
+  //
+  // Azure needs its scopes stated explicitly. Supabase defaults the provider to
+  // `openid` alone, which returns a token with NO email claim — and the auth
+  // callback writes `email: user.email ?? ""` into the students row, so a
+  // Microsoft sign-in would have created a student with a blank email.
+  // Supabase already prepends `openid`, so `email profile` is what we add.
 
-  async function handleOAuth(provider: "google") {
+  async function handleOAuth(provider: "google" | "azure") {
     if (oauthStartedRef.current) return; // never start the OAuth redirect twice
     oauthStartedRef.current = true;
     setLoading(true);
@@ -124,6 +142,7 @@ export default function LoginPage() {
       provider,
       options: {
         redirectTo: `${window.location.origin}/api/auth/callback`,
+        ...(provider === "azure" ? { scopes: "email profile" } : {}),
       },
     });
     // On success the browser redirects away (leave the button disabled). Only
@@ -324,6 +343,16 @@ export default function LoginPage() {
                 >
                   <GoogleIcon />
                   Continue with Google
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleOAuth("azure")}
+                  disabled={loading}
+                  className="mt-2.5 w-full flex items-center justify-center gap-3 h-12 rounded-xl bg-white text-slate-900 font-semibold text-sm border-2 hover:bg-slate-50 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                  style={{ borderColor: "rgba(15,23,42,0.18)" }}
+                >
+                  <MicrosoftIcon />
+                  Continue with Microsoft
                 </button>
                 {inApp && (
                   <p className="mt-1.5 text-[10px] text-slate-500 text-center">
