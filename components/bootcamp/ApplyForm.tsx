@@ -45,6 +45,7 @@ export function ApplyForm({
 
   const [timeZone, setTimeZone] = useState(detected);
   const [confirmed, setConfirmed] = useState(false);
+  const [recordingConsent, setRecordingConsent] = useState(false);
   const [hours, setHours] = useState<number | "">("");
   const [motivation, setMotivation] = useState("");
   const [submitting, setSubmitting] = useState(false);
@@ -61,7 +62,12 @@ export function ApplyForm({
     return [...set];
   }, [detected]);
 
-  const canSubmit = confirmed && typeof hours === "number" && hours >= 1 && !submitting;
+  // Consent is a hard gate, not a nicety: every live class is recorded and the
+  // viva recording is what backs the credential. Someone who will not be
+  // recorded cannot do the programme, and finding that out after they have paid
+  // would be our failure, not theirs.
+  const canSubmit =
+    confirmed && recordingConsent && typeof hours === "number" && hours >= 1 && !submitting;
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
@@ -78,6 +84,7 @@ export function ApplyForm({
           hoursCommitted: hours,
           motivation: motivation.trim() || undefined,
           localTimeConfirmed: confirmed,
+          recordingConsent,
         }),
       });
       const body = await res.json();
@@ -168,6 +175,24 @@ export function ApplyForm({
             onChange={(e) => setHours(e.target.value === "" ? "" : Number(e.target.value))}
             className="mt-1.5 w-32 rounded-[8px] border border-border bg-surface px-3 py-2 text-sm"
           />
+        </label>
+
+        <label className="mt-5 flex items-start gap-3 cursor-pointer">
+          <input
+            type="checkbox"
+            checked={recordingConsent}
+            onChange={(e) => setRecordingConsent(e.target.checked)}
+            className="mt-1 h-4 w-4 shrink-0 accent-[#0056CE]"
+          />
+          <span className="text-sm text-ink leading-relaxed">
+            I understand that <strong>live classes are recorded</strong> so the cohort can
+            review them, and that my <strong>end-of-programme viva is recorded</strong> because
+            it is the evidence behind the credential.{" "}
+            <span className="text-ink-secondary">
+              Recordings are shown to your cohort and kept as proof of your work — never sold,
+              and never used in advertising without asking you first.
+            </span>
+          </span>
         </label>
 
         <label className="mt-5 block">

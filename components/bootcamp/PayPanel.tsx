@@ -6,23 +6,28 @@ import { formatUsd } from "@/lib/bootcamp/pricing";
 /**
  * What an accepted applicant owes, and how long they have to pay it.
  *
- * DELIBERATELY NOT A CHECKOUT BUTTON. Stripe is not wired yet, and a button that
- * looks like it takes payment but does not is worse than no button: the student
- * believes their seat is secured, stops acting, and finds out it lapsed. Until
- * checkout exists this panel is honest about the mechanism — real amounts, real
- * deadline, a real way to reach a human.
+ * The button opens Stripe Checkout when the keys are present. When they are not,
+ * the server answers 503 with `unconfigured` and this falls back to the manual
+ * route — write to admissions, we take a transfer and mark it paid by hand.
  *
- * The plan toggle is display-only on purpose. Which plan they pick is recorded
- * when the payment is taken, by the desk or later by Stripe — never by a
- * client-side choice, because the amount owed is a server decision.
+ * That fallback is not a placeholder to delete later: Cohort 1 runs concierge,
+ * and a bank transfer must stay as real as a card charge. What it must never be
+ * is a button that LOOKS like checkout and silently does nothing — the student
+ * would believe the seat was secured, stop acting, and find out when it lapsed.
+ *
+ * The plan choice is sent to the server, which decides the amount from it and
+ * from the student's own region. The figure shown here is a display of that
+ * decision, never an input to it.
  */
 export function PayPanel({
+  applicationId,
   dueCents,
   daysLeft,
   fullCents,
   threePart,
   cohortStarts,
 }: {
+  applicationId: string;
   dueCents: number;
   daysLeft: number;
   fullCents: number;
@@ -30,9 +35,38 @@ export function PayPanel({
   cohortStarts: string;
 }) {
   const [plan, setPlan] = useState<"full" | "three_part">("full");
+  const [busy, setBusy] = useState(false);
+  const [manual, setManual] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const threePartTotal = threePart.reduce((a, b) => a + b, 0);
   const saving = threePartTotal - fullCents;
   const dueNow = plan === "full" ? fullCents : threePart[0];
+
+  async function pay() {
+    setBusy(true);
+    setError(null);
+    try {
+      const res = await fetch("/api/bootcamp/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ applicationId, plan }),
+      });
+      const body = await res.json().catch(() => null);
+      if (res.status === 503 || body?.unconfigured) {
+        setManual(true);
+        return;
+      }
+      if (!res.ok || !body?.url) {
+        setError(body?.error ?? "Could not open checkout.");
+        return;
+      }
+      window.location.href = body.url;
+    } catch {
+      setError("Could not reach the server.");
+    } finally {
+      setBusy(false);
+    }
+  }
 
   return (
     <div className="mt-8 rounded-[12px] border border-brand bg-surface p-6 shadow-sm max-w-2xl">
@@ -94,14 +128,37 @@ export function PayPanel({
           <span className="text-ink-secondary">Due now to confirm your seat: </span>
           <span className="font-bold">{formatUsd(dueNow)}</span>
         </p>
-        <p className="mt-2 text-sm text-ink-secondary leading-relaxed">
-          Card checkout is not open yet. Reply to your acceptance email, or write to{" "}
-          <a href="mailto:admissions@square1ai.com" className="text-brand font-medium hover:underline">
-            admissions@square1ai.com
-          </a>
-          , and we will send payment details and confirm your seat by hand. Your offer will not
-          lapse while we are mid-conversation — tell us and we will hold it.
-        </p>
+
+        {manual ? (
+          <p className="mt-2 text-sm text-ink-secondary leading-relaxed">
+            Card checkout is not open yet. Reply to your acceptance email, or write to{" "}
+            <a href="mailto:admissions@square1ai.com" className="text-brand font-medium hover:underline">
+              admissions@square1ai.com
+            </a>
+            , and we will send payment details and confirm your seat by hand. Your offer will not
+            lapse while we are mid-conversation — tell us and we will hold it.
+          </p>
+        ) : (
+          <>
+            <button
+              type="button"
+              onClick={pay}
+              disabled={busy}
+              className="mt-3 w-full sm:w-auto rounded-[8px] bg-brand text-white font-semibold text-sm px-6 py-3 hover:opacity-90 disabled:opacity-50 transition"
+            >
+              {busy ? "Opening checkout…" : `Pay ${formatUsd(dueNow)} and confirm my seat`}
+            </button>
+            <p className="mt-2 text-xs text-ink-muted">
+              Secure payment via Stripe. Prefer a bank transfer?{" "}
+              <a href="mailto:admissions@square1ai.com" className="text-brand hover:underline">
+                Write to admissions
+              </a>
+              .
+            </p>
+          </>
+        )}
+
+        {error && <p className="mt-2 text-sm text-error font-medium">{error}</p>}
       </div>
 
       <p className="mt-4 text-xs text-ink-muted leading-relaxed">
