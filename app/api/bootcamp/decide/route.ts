@@ -3,6 +3,7 @@ import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient, isAdminEmail } from "@/lib/supabase/admin";
 import { cohortAvailability } from "@/lib/bootcamp/availability";
+import { offerExpiry } from "@/lib/bootcamp/enrolment";
 import type { BootcampCohort } from "@/types/database";
 
 // POST /api/bootcamp/decide
@@ -69,6 +70,11 @@ export async function POST(request: Request) {
       return NextResponse.json({ ok: true, unchanged: true });
     }
 
+    // Set when accepting: with no deposit, acceptance IS the seat hold, so the
+    // offer must carry a deadline or the seat is held by nobody's decision. A DB
+    // constraint refuses an accepted row without one.
+    let offerExpiresAt: string | null = null;
+
     // Seat cap. Only checked when ACCEPTING, and only counting other rows — an
     // application already accepted must be able to be re-saved without tripping
     // its own count.
@@ -92,6 +98,17 @@ export async function POST(request: Request) {
           { status: 409 },
         );
       }
+
+      const expiry = offerExpiry(new Date(), cohort.applications_close_on, cohort.starts_on);
+      // Clamped by the cohort start, so an acceptance made after the cohort has
+      // begun would expire in the past. Refuse rather than issue a dead offer.
+      if (expiry.getTime() <= Date.now()) {
+        return NextResponse.json(
+          { error: "This cohort has already started — an offer made now would expire immediately." },
+          { status: 409 },
+        );
+      }
+      offerExpiresAt = expiry.toISOString();
     }
 
     const { error: updateErr } = await admin
@@ -101,6 +118,9 @@ export async function POST(request: Request) {
         decision_note: reason?.trim() || null,
         reviewed_by: user.id,
         decided_at: new Date().toISOString(),
+        // Cleared on any non-accept: a waitlisted or rejected application must not
+        // keep a live offer sitting on it.
+        offer_expires_at: offerExpiresAt,
       })
       .eq("id", application.id);
 
@@ -119,10 +139,10 @@ export async function POST(request: Request) {
       subject_id: application.id,
       reason: reason?.trim() || null,
       before_state: { status: application.status, assessment_pct: application.assessment_pct },
-      after_state: { status: decision },
+      after_state: { status: decision, offer_expires_at: offerExpiresAt },
     });
 
-    return NextResponse.json({ ok: true, status: decision });
+    return NextResponse.json({ ok: true, status: decision, offerExpiresAt });
   } catch (err) {
     console.error("[bootcamp/decide]", err);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });

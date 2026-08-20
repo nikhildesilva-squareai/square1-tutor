@@ -11,6 +11,14 @@
     {
       "path": "/api/cron/curriculum",
       "schedule": "15 20 * * *"
+    },
+    {
+      "path": "/api/cron/competitions",
+      "schedule": "5 * * * *"
+    },
+    {
+      "path": "/api/cron/bootcamp",
+      "schedule": "20 * * * *"
     }
   ]
 }
