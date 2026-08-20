@@ -7,6 +7,9 @@ import { formatCohortDate } from "@/lib/bootcamp/catalog";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { linkAssessmentToApplication } from "@/lib/bootcamp/assessment";
+import { BOOTCAMP_PRICING, formatUsd, regionForCountry } from "@/lib/bootcamp/pricing";
+import { enrolmentStep, scheduleFor } from "@/lib/bootcamp/enrolment";
+import { PayPanel } from "@/components/bootcamp/PayPanel";
 import type { BootcampApplication, BootcampApplicationStatus } from "@/types/database";
 
 interface PageProps {
@@ -32,7 +35,7 @@ const COPY: Record<BootcampApplicationStatus, { heading: string; body: string; t
   accepted: {
     heading: "You're in",
     tone: "good",
-    body: "A seat is held for you. The next step is the deposit, which is credited against your tuition and is refundable until two weeks after the cohort starts.",
+    body: "A seat is held for you, and it is held by this offer rather than by a deposit — so it has a deadline. Pay in full or start the three-part plan before it runs out and the seat is yours.",
   },
   waitlisted: {
     heading: "Waitlisted",
@@ -53,6 +56,11 @@ const COPY: Record<BootcampApplicationStatus, { heading: string; body: string; t
     heading: "Moved to the next cohort",
     tone: "neutral",
     body: "Your application has been carried over to the next intake. Nothing is lost and you keep your place in the queue.",
+  },
+  expired: {
+    heading: "Your offer ran out",
+    tone: "bad",
+    body: "You were accepted, but the offer passed its deadline before it was taken up and the seat has gone back to the pool. This is not a rejection — you cleared the bar. Email us and if a seat is still free we will put it back.",
   },
 };
 
@@ -99,7 +107,40 @@ export default async function ApplicationStatusPage({ params }: PageProps) {
   }
   const courseSlug = app.cohort.bootcamp.course.slug;
 
-  const copy = COPY[app.status];
+  // What actually happens next. Resolved by the SAME function the desk and the
+  // enrol route use, so a student is never invited to pay for a seat the server
+  // would refuse — three screens deriving this independently is exactly how that
+  // happens.
+  const { data: enrolRow } = await admin
+    .from("bootcamp_enrollments")
+    .select("id, payment_plan, amount_paid_cents")
+    .eq("cohort_id", app.cohort_id)
+    .eq("student_id", app.student_id)
+    .maybeSingle();
+  const enrolment = enrolRow as
+    { id: string; payment_plan: "full" | "three_part"; amount_paid_cents: number } | null;
+
+  const { data: countryRow } = await admin
+    .from("students").select("country").eq("id", app.student_id).maybeSingle();
+  // Region is resolved server-side from the student's own country, never from
+  // anything the page was asked for. A displayed price is not an entitlement.
+  const region = regionForCountry((countryRow as { country: string | null } | null)?.country);
+  const prices = BOOTCAMP_PRICING[region].plans;
+
+  const step = enrolmentStep({
+    applicationStatus: app.status,
+    offerExpiresAt: app.offer_expires_at,
+    assessmentRecorded: app.assessment_pct !== null,
+    enrolled: enrolment !== null,
+    prices,
+    plan: enrolment?.payment_plan ?? "full",
+    paidCents: enrolment?.amount_paid_cents ?? 0,
+  });
+
+  // An accepted application whose offer has lapsed still reads `accepted` in the
+  // database until the daily sweep relabels it. Show the applicant the truth now
+  // rather than a pay button that would 409.
+  const copy = step.step === "offer_expired" ? COPY.expired : COPY[app.status];
   const tone =
     copy.tone === "good" ? "border-success bg-success-bg"
     : copy.tone === "bad" ? "border-error bg-error-bg"
@@ -166,6 +207,51 @@ export default async function ApplicationStatusPage({ params }: PageProps) {
             >
               Start the assessment
             </Link>
+          </div>
+        )}
+
+        {step.step === "pay" && (
+          <PayPanel
+            dueCents={step.dueCents}
+            daysLeft={step.daysLeft}
+            fullCents={prices.full}
+            threePart={[...prices.threePart]}
+            cohortStarts={formatCohortDate(app.cohort.starts_on)}
+          />
+        )}
+
+        {step.step === "enrolled" && (
+          <div className="mt-8 rounded-[12px] border border-success bg-success-bg p-6 shadow-sm max-w-2xl">
+            <p className="text-[11px] font-semibold text-success uppercase tracking-widest">
+              Enrolled
+            </p>
+            <h2 className="mt-2 font-semibold">
+              Your seat is paid for and confirmed
+            </h2>
+            {step.outstandingCents === 0 ? (
+              <p className="mt-2 text-sm text-ink-secondary leading-relaxed">
+                Nothing further is owed. You will get the joining details and the class
+                calendar before {formatCohortDate(app.cohort.starts_on)}.
+              </p>
+            ) : (
+              <>
+                <p className="mt-2 text-sm text-ink-secondary leading-relaxed">
+                  You are on the three-part plan. {formatUsd(step.outstandingCents)} is still to
+                  come, collected in weeks 4 and 8 — the whole plan is settled by week 8, so
+                  nothing is chasing you late in the course.
+                </p>
+                <ul className="mt-4 space-y-1.5">
+                  {scheduleFor(prices, enrolment?.payment_plan ?? "three_part").map((i) => (
+                    <li key={i.number} className="text-sm flex justify-between max-w-xs">
+                      <span className="text-ink-secondary">
+                        {i.dueWeek === null ? "Paid on acceptance" : `Week ${i.dueWeek}`}
+                      </span>
+                      <span className="font-semibold">{formatUsd(i.amountCents)}</span>
+                    </li>
+                  ))}
+                </ul>
+              </>
+            )}
           </div>
         )}
 
