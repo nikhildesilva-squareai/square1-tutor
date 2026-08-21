@@ -8,7 +8,8 @@ import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { linkAssessmentToApplication } from "@/lib/bootcamp/assessment";
 import { BOOTCAMP_PRICING, formatUsd, regionForCountry } from "@/lib/bootcamp/pricing";
-import { enrolmentStep, scheduleFor } from "@/lib/bootcamp/enrolment";
+import { enrolmentStep, scheduleFor, nextDueInstalment } from "@/lib/bootcamp/enrolment";
+import { InstalmentPanel } from "@/components/bootcamp/InstalmentPanel";
 import { PayPanel } from "@/components/bootcamp/PayPanel";
 import type { BootcampApplication, BootcampApplicationStatus } from "@/types/database";
 
@@ -126,6 +127,26 @@ export default async function ApplicationStatusPage({ params }: PageProps) {
   // anything the page was asked for. A displayed price is not an entitlement.
   const region = regionForCountry((countryRow as { country: string | null } | null)?.country);
   const prices = BOOTCAMP_PRICING[region].plans;
+
+  const { data: paidRows } = await admin
+    .from("bootcamp_payments")
+    .select("instalment")
+    .eq("application_id", app.id)
+    .eq("status", "paid");
+  const paidInstalments = ((paidRows ?? []) as { instalment: number }[]).map((r) => r.instalment);
+
+  // Payment is one-off checkout — no stored card — so an enrolled three-part
+  // student has to be shown what is next and given a way to pay it. Resolved by
+  // the SAME function the reminder cron reads, so the email and this page can
+  // never disagree about what is owed.
+  const upcoming = enrolment
+    ? nextDueInstalment(
+        prices,
+        enrolment.payment_plan,
+        paidInstalments,
+        app.cohort.starts_on,
+      )
+    : null;
 
   const step = enrolmentStep({
     applicationStatus: app.status,
@@ -254,6 +275,17 @@ export default async function ApplicationStatusPage({ params }: PageProps) {
               </>
             )}
           </div>
+        )}
+
+        {step.step === "enrolled" && upcoming && (
+          <InstalmentPanel
+            applicationId={app.id}
+            number={upcoming.number}
+            amountCents={upcoming.amountCents}
+            dueDate={formatCohortDate(upcoming.dueDate.toISOString().slice(0, 10))}
+            state={upcoming.state}
+            daysLate={upcoming.daysLate}
+          />
         )}
 
         {app.assessment_pct !== null && (

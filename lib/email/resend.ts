@@ -799,3 +799,182 @@ function escapeHtml(s: string): string {
   return s.replace(/[&<>"']/g, (c) =>
     ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c] as string));
 }
+
+/* ─── Startup School: the weekly update ──────────────────────────────────────
+ * The ritual is the product (docs/startup-school-roadmap.md §4), and a ritual
+ * nobody is reminded about stops happening by week four. Two sends: Sunday
+ * "due tomorrow", Monday "due today" for anyone who hasn't filed.
+ *
+ * The email is really one line — the number they committed to last week. All
+ * venture-supplied strings are escaped; these are user-authored. */
+export async function sendVentureUpdateReminder(params: {
+  to: string;
+  name: string;
+  ventureName: string;
+  metricLabel: string;
+  /** Formatted number they committed to, or null if they set no target. */
+  committedLabel: string | null;
+  kind: "due_tomorrow" | "due_today";
+}) {
+  const r = getResend();
+  const { to, name, ventureName, metricLabel, committedLabel, kind } = params;
+  const dueToday = kind === "due_today";
+  const venture = escapeHtml(ventureName);
+
+  return r.emails.send({
+    from: FROM,
+    to,
+    ...(REPLY_TO ? { replyTo: REPLY_TO } : {}),
+    subject: committedLabel
+      ? `${venture}: you committed to ${escapeHtml(committedLabel)}`
+      : dueToday ? `${venture}: this week's update is due today` : `${venture}: update due tomorrow`,
+    html: `
+      <div style="font-family:system-ui,-apple-system,sans-serif;max-width:520px;margin:0 auto;padding:40px 20px;">
+        <div style="text-align:center;margin-bottom:28px;">
+          <img src="https://www.square1ai.com/logo-square1.png" alt="Square 1 AI" width="150" style="display:inline-block;margin-bottom:16px;max-width:150px;height:auto;" />
+          <h1 style="color:#0F172A;font-size:22px;font-weight:800;margin:0 0 8px;">
+            ${dueToday ? "Your update is due today" : "Update due tomorrow"}
+          </h1>
+          <p style="color:#64748B;font-size:14px;margin:0;">${escapeHtml(name)}, two minutes on ${venture}.</p>
+        </div>
+        ${committedLabel ? `
+        <div style="border:1px solid #E2E8F0;border-radius:12px;padding:20px;text-align:center;margin-bottom:24px;">
+          <p style="margin:0 0 4px;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#94A3B8;">You committed to</p>
+          <p style="margin:0;font-size:28px;font-weight:800;color:#0F172A;">${escapeHtml(committedLabel)}</p>
+          <p style="margin:6px 0 0;font-size:13px;color:#64748B;">${escapeHtml(metricLabel)}</p>
+        </div>` : `
+        <p style="color:#334155;font-size:14px;line-height:1.6;margin:0 0 24px;">
+          You didn't set a target last week, so there's nothing to score this one against.
+          Set one when you file — an unscored week is a week that didn't count.
+        </p>`}
+        <div style="text-align:center;">
+          <a href="https://www.square1ai.com/venture" style="display:inline-block;background:#0F172A;color:#fff;text-decoration:none;font-weight:700;font-size:14px;padding:12px 28px;border-radius:10px;">
+            File this week's update
+          </a>
+        </div>
+        <p style="color:#94A3B8;font-size:12px;text-align:center;margin:20px 0 0;">
+          Your partner reads it and replies before anyone else sees it.
+        </p>
+      </div>`,
+  });
+}
+
+/* ─── Startup School: standing alert (internal) ──────────────────────────────
+ * Goes to the operator, never to the founder. Missed updates are the earliest
+ * signal a venture is drifting, and the intervention that works is a human
+ * getting in touch — not another automated email at someone who has already
+ * stopped opening them. */
+export async function sendVentureStandingAlert(params: {
+  ventureName: string;
+  founderName: string;
+  founderEmail: string;
+  standing: "at_risk" | "probation";
+  missedInARow: number;
+}) {
+  const r = getResend();
+  const { ventureName, founderName, founderEmail, standing, missedInARow } = params;
+  const urgent = standing === "probation";
+
+  return r.emails.send({
+    from: LEAD_FROM,
+    to: LEAD_NOTIFY_TO,
+    subject: `${urgent ? "[probation]" : "[at risk]"} ${ventureName} — ${missedInARow} weeks without an update`,
+    html: `
+      <div style="font-family:system-ui,-apple-system,sans-serif;max-width:520px;margin:0 auto;padding:32px 20px;">
+        <h2 style="margin:0 0 12px;font-size:18px;color:#0F172A;">
+          ${escapeHtml(ventureName)} is ${urgent ? "on probation" : "at risk"}
+        </h2>
+        <p style="margin:0 0 8px;font-size:14px;color:#334155;line-height:1.6;">
+          ${escapeHtml(founderName)} (${escapeHtml(founderEmail)}) has missed
+          <strong>${missedInARow}</strong> weekly updates in a row.
+        </p>
+        <p style="margin:0 0 16px;font-size:14px;color:#334155;line-height:1.6;">
+          ${urgent
+            ? "Call them. Three missed weeks is the point where founders quietly leave the programme."
+            : "Worth a message before it becomes three."}
+        </p>
+        <p style="margin:0;font-size:12px;color:#94A3B8;">
+          Detected by /api/cron/daily. No email was sent to the founder.
+        </p>
+      </div>`,
+  });
+}
+
+/* ─── Bootcamp instalment reminder ───────────────────────────────────────────
+ * Tuition is one-off checkout — no card is stored and nothing is charged while
+ * the student is away — so instalments 2 and 3 have to be ASKED FOR. This is
+ * that ask, and eventually the warning before access is suspended.
+ *
+ * The tone shifts with lateness but never becomes a threat. This person has
+ * already paid for part of a six-month programme they are in the middle of; the
+ * likeliest reason a payment has not landed is an expired card or a bank that
+ * blocked a foreign charge, not an unwillingness to pay. */
+export async function sendInstalmentReminder(
+  to: string,
+  name: string,
+  opts: {
+    instalment: number;
+    amount: string;
+    dueDate: string;
+    daysLate: number;
+    graceDaysLeft: number;
+    applicationId: string;
+    trackTitle: string;
+  },
+) {
+  const r = getResend();
+  const late = opts.daysLate > 0;
+  const url = `https://www.square1ai.com/bootcamp/application/${opts.applicationId}`;
+
+  const subject = late
+    ? `Payment ${opts.instalment} of 3 is overdue — ${opts.trackTitle}`
+    : `Payment ${opts.instalment} of 3 is due — ${opts.trackTitle}`;
+
+  const lead = late
+    ? `Payment ${opts.instalment} was due on ${opts.dueDate} and has not come through. If a card expired or your bank blocked the charge, this link will sort it in a minute.`
+    : `Payment ${opts.instalment} of 3 is due on ${opts.dueDate}. Nothing is charged automatically — we do not keep your card on file — so this needs a click from you.`;
+
+  return r.emails.send({
+    from: FROM,
+    to,
+    subject,
+    html: `
+      <div style="font-family:system-ui,-apple-system,sans-serif;max-width:520px;margin:0 auto;padding:40px 20px;">
+        <div style="text-align:center;margin-bottom:32px;">
+          <img src="https://www.square1ai.com/logo-square1.png" alt="Square 1 AI" width="150" style="display:inline-block;margin-bottom:16px;max-width:150px;height:auto;" />
+          <h1 style="color:#0F172A;font-size:24px;font-weight:800;margin:0 0 8px;">${late ? "A payment did not go through" : `Payment ${opts.instalment} of 3`}</h1>
+          <p style="color:#64748B;font-size:14px;margin:0;">${opts.trackTitle}</p>
+        </div>
+
+        <div style="background:#F8FAFC;border:1px solid #E2E8F0;border-radius:12px;padding:24px;margin-bottom:24px;">
+          <p style="color:#334155;font-size:14px;line-height:1.6;margin:0 0 12px;">Hi ${name},</p>
+          <p style="color:#334155;font-size:14px;line-height:1.6;margin:0 0 12px;">${lead}</p>
+          <p style="color:#0F172A;font-size:20px;font-weight:800;margin:0;">${opts.amount}</p>
+        </div>
+
+        ${late ? `
+        <div style="background:#FEF2F2;border:1px solid #FECACA;border-radius:12px;padding:16px;margin-bottom:24px;">
+          <p style="color:#991B1B;font-size:13px;line-height:1.6;margin:0;">
+            If we do not hear from you within ${opts.graceDaysLeft} day${opts.graceDaysLeft === 1 ? "" : "s"},
+            live class access and gate submissions pause until the balance is settled.
+            <strong>Your recordings, your work and your place in the cohort stay exactly where they are</strong> —
+            nothing is deleted and nothing is given away.
+          </p>
+        </div>` : ""}
+
+        <div style="text-align:center;margin-bottom:32px;">
+          <a href="${url}" style="display:inline-block;background:#0056CE;color:white;font-weight:700;font-size:14px;text-decoration:none;padding:12px 32px;border-radius:12px;">
+            Pay ${opts.amount}
+          </a>
+        </div>
+
+        <p style="color:#64748B;font-size:13px;line-height:1.6;text-align:center;margin-bottom:24px;">
+          Struggling to pay right now? Reply to this email. We would much rather rearrange
+          the schedule with you than have you drop out over timing.
+        </p>
+
+        <p style="color:#94A3B8;font-size:11px;text-align:center;">Square 1 AI</p>
+      </div>
+    `,
+  });
+}
