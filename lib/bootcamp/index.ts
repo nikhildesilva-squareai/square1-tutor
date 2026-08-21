@@ -38,11 +38,6 @@ export {
 
 export {
   BOOTCAMP_PRICING,
-  depositCents,
-  threePartTotal,
-  payInFullSavingCents,
-  payInFullSavingPct,
-  amountDueCents,
   formatUsd,
   regionForCountry,
   type PriceRegion,
@@ -74,14 +69,11 @@ export {
   offerExpiry,
   isOfferLive,
   daysLeftOnOffer,
-  scheduleFor,
   dueOnAcceptanceCents,
   planTotalCents,
   outstandingCents,
   isFullyPaid,
-  nextInstalment,
   enrolmentStep,
   type PlanPrices,
-  type Instalment,
   type EnrolmentStep,
 } from "./enrolment";

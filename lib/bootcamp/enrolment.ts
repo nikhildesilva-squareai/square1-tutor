@@ -1,9 +1,9 @@
 // ═══════════════════════════════════════════════════════════════════════════════
 // Enrolment state — pure, no imports beyond sibling pure modules.
 //
-// PAYMENT HAPPENS ON ACCEPTANCE. There is no deposit: an accepted applicant
-// either pays in full or starts the three-part plan, and until they do they are
-// not enrolled.
+// PAYMENT HAPPENS ON ACCEPTANCE, ONCE. There is no deposit and no instalment
+// plan: an accepted applicant pays their tuition in a single charge, and until
+// they do they are not enrolled.
 //
 // The consequence, which is the reason most of this file exists: acceptance
 // itself is what holds a seat. An accepted applicant who never pays holds one of
@@ -19,10 +19,12 @@
 /** Structurally satisfied by BOOTCAMP_PRICING[region].plans. */
 export interface PlanPrices {
   full: number;
-  threePart: readonly [number, number, number];
 }
 
-export type PaymentPlan = "full" | "three_part";
+/** Pay in full, one payment. The three-part plan was removed on 2026-08-21 —
+ *  the product takes a single payment and nothing else, so this is a union of
+ *  one on purpose: it makes any surviving instalment assumption a type error. */
+export type PaymentPlan = "full";
 
 const DAY_MS = 86_400_000;
 
@@ -67,44 +69,19 @@ export function daysLeftOnOffer(
 
 // ─── What is owed ────────────────────────────────────────────────────────────
 
-export interface Instalment {
-  /** 1-based. Instalment 1 is what unlocks enrolment. */
-  number: number;
-  amountCents: number;
-  /** Null for instalment 1 — it is due now, not on a date. */
-  dueWeek: number | null;
+
+
+/** What must be paid before the student is enrolled at all. Tuition is a single
+ *  charge, so this is simply the price. */
+export function dueOnAcceptanceCents(prices: PlanPrices, _plan: PaymentPlan): number {
+  return prices.full;
 }
 
-/**
- * The payment schedule for a plan.
- *
- * Pay-in-full is one charge. The three-part plan is three, and they are all
- * collected by WEEK 8 — deliberately early, before dropout risk materialises, so
- * we are never chasing money from someone who has already disengaged.
- */
-export function scheduleFor(prices: PlanPrices, plan: PaymentPlan): Instalment[] {
-  if (plan === "full") {
-    return [{ number: 1, amountCents: prices.full, dueWeek: null }];
-  }
-  const [first, second, third] = prices.threePart;
-  return [
-    { number: 1, amountCents: first,  dueWeek: null },
-    { number: 2, amountCents: second, dueWeek: 4 },
-    { number: 3, amountCents: third,  dueWeek: 8 },
-  ];
-}
-
-/** What must be paid before the student is enrolled at all. */
-export function dueOnAcceptanceCents(prices: PlanPrices, plan: PaymentPlan): number {
-  return scheduleFor(prices, plan)[0].amountCents;
-}
-
-/** Total across the whole plan. Pay-in-full is genuinely cheaper — asserted in
- *  the pricing tests, not merely intended. */
-export function planTotalCents(prices: PlanPrices, plan: PaymentPlan): number {
-  return plan === "full"
-    ? prices.full
-    : prices.threePart.reduce((a, b) => a + b, 0);
+/** Total tuition. One payment, so this and dueOnAcceptanceCents agree by
+ *  construction — kept as a separate name because the settlement check reads it
+ *  to work out whether what ARRIVED covers what is OWED. */
+export function planTotalCents(prices: PlanPrices, _plan: PaymentPlan): number {
+  return prices.full;
 }
 
 /** Still outstanding after some payments have landed. Never negative: an
@@ -125,15 +102,6 @@ export function isFullyPaid(
   return outstandingCents(prices, plan, paidCents) === 0;
 }
 
-/** The next instalment to collect, or null when nothing is owed. */
-export function nextInstalment(
-  prices: PlanPrices,
-  plan: PaymentPlan,
-  paidInstalments: number[],
-): Instalment | null {
-  const done = new Set(paidInstalments);
-  return scheduleFor(prices, plan).find((i) => !done.has(i.number)) ?? null;
-}
 
 // ─── Where an applicant stands ───────────────────────────────────────────────
 
@@ -195,81 +163,4 @@ export function enrolmentStep(
     default:
       return { step: "closed", status: input.applicationStatus };
   }
-}
-
-// ─── When the later instalments fall due ─────────────────────────────────────
-//
-// Payment is ONE-OFF CHECKOUT, deliberately: no card is stored and nothing is
-// charged while the student is away. The cost of that choice is that instalments
-// 2 and 3 will not collect themselves — somebody has to be asked. These
-// functions are what the reminder cron and the status page both read, so a
-// student is never emailed "payment 2 is due" by one and shown "nothing owed" by
-// the other.
-
-/** Days after an instalment falls due before access is suspended.
- *
- *  Long enough to cover a card that expired, a bank that blocked a foreign
- *  charge, or a week away from email — all ordinary, none of them a reason to
- *  lock someone out of a course they are halfway through. */
-export const INSTALMENT_GRACE_DAYS = 10;
-
-export type InstalmentState = "upcoming" | "due" | "overdue";
-
-/** When an instalment falls due: its week, counted from the cohort start. */
-export function instalmentDueDate(cohortStartsOn: string, dueWeek: number): Date {
-  const start = new Date(`${cohortStartsOn}T00:00:00Z`);
-  return new Date(start.getTime() + dueWeek * 7 * DAY_MS);
-}
-
-export function instalmentState(dueDate: Date, now: Date = new Date()): InstalmentState {
-  if (now.getTime() < dueDate.getTime()) return "upcoming";
-  const graceEnds = dueDate.getTime() + INSTALMENT_GRACE_DAYS * DAY_MS;
-  return now.getTime() <= graceEnds ? "due" : "overdue";
-}
-
-export interface DueInstalment extends Instalment {
-  dueDate: Date;
-  state: InstalmentState;
-  /** Whole days past the due date. 0 while upcoming. */
-  daysLate: number;
-}
-
-/**
- * The next instalment still to collect, with its date and where it stands.
- *
- * Null when the plan is fully paid, or when the next instalment is number 1 —
- * that one is due on acceptance, has no week, and is governed by the OFFER
- * deadline rather than by the cohort calendar.
- */
-export function nextDueInstalment(
-  prices: PlanPrices,
-  plan: PaymentPlan,
-  paidInstalments: number[],
-  cohortStartsOn: string,
-  now: Date = new Date(),
-): DueInstalment | null {
-  const next = nextInstalment(prices, plan, paidInstalments);
-  if (!next || next.dueWeek === null) return null;
-
-  const dueDate = instalmentDueDate(cohortStartsOn, next.dueWeek);
-  const state = instalmentState(dueDate, now);
-  const daysLate = Math.max(
-    0,
-    Math.floor((now.getTime() - dueDate.getTime()) / DAY_MS),
-  );
-  return { ...next, dueDate, state, daysLate };
-}
-
-/** Whether a missed instalment has run past its grace period. The cron suspends
- *  on this and nothing else — never on "is there a balance", which would catch
- *  every three-part student the day they enrol. */
-export function shouldSuspendForNonPayment(
-  prices: PlanPrices,
-  plan: PaymentPlan,
-  paidInstalments: number[],
-  cohortStartsOn: string,
-  now: Date = new Date(),
-): boolean {
-  const due = nextDueInstalment(prices, plan, paidInstalments, cohortStartsOn, now);
-  return due?.state === "overdue";
 }

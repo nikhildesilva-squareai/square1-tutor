@@ -18,11 +18,6 @@ import assert from "node:assert/strict";
 
 import {
   BOOTCAMP_PRICING,
-  depositCents,
-  threePartTotal,
-  payInFullSavingCents,
-  payInFullSavingPct,
-  amountDueCents,
   formatUsd,
   regionForCountry,
 } from "../../lib/bootcamp/pricing.ts";
@@ -38,7 +33,7 @@ describe("published prices match the PRD", () => {
     assert.equal(BOOTCAMP_PRICING.south_asia.list, 79000);
   });
 
-  test("pay-in-full is $799 global, $441 regional", () => {
+  test("tuition is $799 global, $441 regional — one payment, no plan", () => {
     assert.equal(BOOTCAMP_PRICING.global.plans.full, 79900);
     assert.equal(BOOTCAMP_PRICING.south_asia.plans.full, 44100);
   });
@@ -46,57 +41,15 @@ describe("published prices match the PRD", () => {
   test("every amount is a whole number of cents", () => {
     for (const r of ["global", "south_asia"] as const) {
       const p = BOOTCAMP_PRICING[r];
-      for (const v of [p.list, p.founding, p.plans.full, ...p.plans.threePart]) {
+      for (const v of [p.list, p.founding, p.plans.full]) {
         assert.ok(Number.isInteger(v), `${r}: ${v} is not an integer`);
       }
     }
   });
 });
 
-describe("the 3-part plan is honest", () => {
-  test("global instalments sum to the founding price, not more", () => {
-    assert.equal(threePartTotal("global"), BOOTCAMP_PRICING.global.founding);
-  });
 
-  test("regional instalments sum to the founding price, not more", () => {
-    assert.equal(threePartTotal("south_asia"), BOOTCAMP_PRICING.south_asia.founding);
-  });
 
-  test("the deposit is the first instalment, not an extra charge", () => {
-    assert.equal(depositCents("global"), 15000);
-    assert.equal(depositCents("south_asia"), 7500);
-    assert.equal(depositCents("global"), BOOTCAMP_PRICING.global.plans.threePart[0]);
-  });
-
-  test("paying in three parts never costs less than paying up front", () => {
-    for (const r of ["global", "south_asia"] as const) {
-      assert.ok(threePartTotal(r) > BOOTCAMP_PRICING[r].plans.full, `${r} inverted`);
-    }
-  });
-});
-
-describe("the discount claim is true", () => {
-  test("pay-in-full saves ~10% in both regions", () => {
-    assert.equal(payInFullSavingPct("global"), 10);
-    assert.equal(payInFullSavingPct("south_asia"), 10);
-  });
-
-  test("the saving is a positive amount of real money", () => {
-    assert.equal(payInFullSavingCents("global"), 9100);   // $890 - $799
-    assert.equal(payInFullSavingCents("south_asia"), 4900); // $490 - $441
-  });
-});
-
-describe("amountDueCents", () => {
-  test("full charges the discounted price", () => {
-    assert.equal(amountDueCents("global", "full"), 79900);
-  });
-
-  test("three_part charges the founding price across instalments", () => {
-    assert.equal(amountDueCents("global", "three_part"), 89000);
-    assert.equal(amountDueCents("south_asia", "three_part"), 49000);
-  });
-});
 
 describe("regional pricing is not the software ⅓ ratio", () => {
   test("the ratio is ~0.55 — a ⅓ seat would sell below instructor cost", () => {

@@ -29,7 +29,7 @@ const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 const schema = z.object({
   applicationId: z.string().regex(UUID),
-  plan: z.enum(["full", "three_part"]),
+  // Tuition is a single payment; there is no plan to choose.
   // Manual only for now. The amount is NOT accepted from the client at all.
   provider: z.literal("manual").default("manual"),
   providerRef: z.string().max(200).optional(),
@@ -52,7 +52,8 @@ export async function POST(request: Request) {
     if (!parsed.success) {
       return NextResponse.json({ error: "Invalid request" }, { status: 400 });
     }
-    const { applicationId, plan, provider, providerRef, note } = parsed.data;
+    const { applicationId, provider, providerRef, note } = parsed.data;
+    const plan = "full" as const;
 
     const admin = createAdminClient();
 

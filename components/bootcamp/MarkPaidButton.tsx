@@ -7,16 +7,16 @@ import { useRouter } from "next/navigation";
  * Records a payment taken outside the product (bank transfer, card by phone) and
  * turns an accepted application into a real enrolment.
  *
- * The amount is NOT sent from here. The server derives it from the plan and the
- * student's own region, so a tampered request cannot enrol anyone for a dollar,
- * and the desk cannot fat-finger a price either. This component only says WHICH
- * plan was paid — the ledger row and the enrolment are the server's business.
+ * The amount is NOT sent from here. Tuition is a single payment and the server
+ * derives its size from the student's own region, so a tampered request cannot
+ * enrol anyone for a dollar and the desk cannot fat-finger a price either. This
+ * button only says "the money arrived" — the ledger row, the amount and the
+ * enrolment are all the server's business.
  *
  * When Stripe lands, its webhook calls the same route and this button becomes a
  * fallback for the payments that never go through a card.
  */
 export function MarkPaidButton({ applicationId }: { applicationId: string }) {
-  const [plan, setPlan] = useState<"full" | "three_part">("full");
   const [providerRef, setProviderRef] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -32,7 +32,6 @@ export function MarkPaidButton({ applicationId }: { applicationId: string }) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           applicationId,
-          plan,
           provider: "manual",
           providerRef: providerRef.trim() || undefined,
         }),
@@ -68,21 +67,6 @@ export function MarkPaidButton({ applicationId }: { applicationId: string }) {
         Record a payment
       </p>
 
-      <div className="mt-3 flex flex-wrap gap-2">
-        {(["full", "three_part"] as const).map((p) => (
-          <button
-            key={p}
-            type="button"
-            onClick={() => setPlan(p)}
-            className={`rounded-[8px] border font-semibold text-xs px-3 py-1.5 transition ${
-              plan === p ? "border-brand text-brand bg-surface" : "border-border hover:border-brand"
-            }`}
-          >
-            {p === "full" ? "Paid in full" : "First of three"}
-          </button>
-        ))}
-      </div>
-
       <input
         value={providerRef}
         onChange={(e) => setProviderRef(e.target.value)}
@@ -91,8 +75,8 @@ export function MarkPaidButton({ applicationId }: { applicationId: string }) {
       />
 
       <p className="mt-2 text-[11px] text-ink-muted leading-relaxed">
-        The amount is worked out by the server from the plan and the student&rsquo;s region — it is
-        not taken from this form. Recording the same payment twice is harmless.
+        The amount is worked out by the server from the student&rsquo;s region — it is not taken
+        from this form. Recording the same payment twice is harmless.
       </p>
 
       {error && <p className="mt-2 text-xs text-error font-medium">{error}</p>}

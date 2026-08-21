@@ -13,6 +13,10 @@
 // this way rather than by refusing the payment — is that a mismatched payer ends
 // up with an outstanding balance instead of a silent discount, and nobody has
 // money taken and then gets turned away.
+//
+// Since tuition became a SINGLE payment, this is the only way an enrolled
+// student can carry a balance at all, which makes a non-zero one a signal rather
+// than routine bookkeeping.
 
 import { test, describe } from "node:test";
 import assert from "node:assert/strict";
@@ -21,8 +25,8 @@ import { verifyRegionAtCheckout } from "../../lib/pricing.ts";
 import { planTotalCents, outstandingCents } from "../../lib/bootcamp/enrolment.ts";
 
 // Hand-typed from the PRD pricing table, as in enrolment.test.ts.
-const GLOBAL = { full: 79900, threePart: [15000, 37000, 37000] as const };
-const SOUTH_ASIA = { full: 44100, threePart: [7500, 20800, 20700] as const };
+const GLOBAL = { full: 79900 };
+const SOUTH_ASIA = { full: 44100 };
 
 describe("verifyRegionAtCheckout — only the card decides the rate", () => {
   test("a South Asian card keeps the South Asia rate", () => {
@@ -79,19 +83,19 @@ describe("settlement — a mismatch becomes a balance, not a free discount", () 
     );
   });
 
-  test("the same holds on the three-part plan", () => {
-    // First instalment at the South Asia rate ($75) against the global plan.
-    const owed = outstandingCents(GLOBAL, "three_part", 7500);
-    assert.equal(owed, 89000 - 7500);
-    assert.ok(owed > outstandingCents(SOUTH_ASIA, "three_part", 7500));
+  test("the shortfall is the only way a balance can exist", () => {
+    // Tuition is a single payment, so an enrolled student owes nothing unless
+    // the settlement check downgraded their region. That makes any non-zero
+    // balance a signal worth acting on rather than routine bookkeeping.
+    assert.equal(outstandingCents(GLOBAL, "full", 79900), 0);
+    assert.equal(outstandingCents(SOUTH_ASIA, "full", 44100), 0);
+    assert.ok(outstandingCents(GLOBAL, "full", 44100) > 0);
   });
 
   test("an honest payer is never left with a phantom balance", () => {
     for (const [prices, plan, paid] of [
       [GLOBAL, "full", 79900],
       [SOUTH_ASIA, "full", 44100],
-      [GLOBAL, "three_part", 89000],
-      [SOUTH_ASIA, "three_part", 49000],   // 7500+20800+20700 = the $490 founding price
     ] as const) {
       assert.equal(outstandingCents(prices, plan, paid), 0, `${plan}`);
     }

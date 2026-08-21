@@ -18,13 +18,9 @@ import { getStripe, webhookSecretConfigured, billingCountryFrom } from "@/lib/bo
 // IDEMPOTENT ON THE PAYMENT INTENT. Stripe redelivers on any non-2xx and on its
 // own timeouts. s1_bootcamp_enrol() takes a row lock and then checks whether a
 // PAID ledger row already carries this provider_ref; if so it returns the
-// existing enrolment and writes nothing.
-//
-// The unique index alone is NOT enough and it is worth saying why: the function
-// derives the instalment number as one past the highest already paid, so a
-// redelivery would arrive looking like the NEXT instalment — a different number,
-// no conflict, one payment counted twice. The payment_intent is the only value
-// that is stable across deliveries.
+// existing enrolment and writes nothing. The payment_intent is the only value
+// stable across deliveries, which is why the guard keys on it rather than on the
+// ledger's own uniqueness.
 //
 // THE REGION IS DECIDED HERE, NOT AT CHECKOUT
 //
@@ -78,7 +74,7 @@ export async function POST(request: Request) {
         }
 
         const applicationId = session.metadata?.["applicationId"];
-        const plan = session.metadata?.["plan"] as "full" | "three_part" | undefined;
+        const plan = session.metadata?.["plan"] as "full" | undefined;
         const claimedRegion = session.metadata?.["claimedRegion"] as PriceRegion | undefined;
         if (!applicationId || !plan || !claimedRegion) {
           console.error("[bootcamp/webhook] session missing metadata", session.id);
@@ -135,8 +131,14 @@ export async function POST(request: Request) {
         return NextResponse.json({ received: true, enrolmentId });
       }
 
-      // A later instalment failing is the ordinary case this handles: the student
-      // is already enrolled, and the card for payment 2 or 3 bounced.
+      // A FAILED PAYMENT NO LONGER MEANS SUSPENSION, because tuition is a single
+      // charge: if it fails, the student was never enrolled and there is nothing
+      // to suspend. Their offer keeps running until its own deadline, so the
+      // right response is to record what happened and leave them able to retry.
+      //
+      // Suspending here — as this did while a three-part plan existed — would
+      // have meant reaching for an enrolment row that does not exist, and in the
+      // worst case suspending someone whose earlier payment had succeeded.
       case "payment_intent.payment_failed": {
         const intent = event.data.object as Stripe.PaymentIntent;
         const applicationId = intent.metadata?.["applicationId"];
@@ -144,36 +146,19 @@ export async function POST(request: Request) {
           return NextResponse.json({ received: true, ignored: "no application" });
         }
 
-        const { data: appRow } = await admin
-          .from("bootcamp_applications")
-          .select("id, cohort_id, student_id")
-          .eq("id", applicationId)
-          .maybeSingle();
-        const application = appRow as
-          { id: string; cohort_id: string; student_id: string } | null;
-        if (!application) {
-          return NextResponse.json({ received: true, ignored: "unknown application" });
-        }
-
-        // Suspension loses live access and gate submission but KEEPS recordings
-        // and the enrolment row (PRD S3). A failed card is a billing problem, not
-        // a reason to erase someone's work.
-        await admin
-          .from("bootcamp_enrollments")
-          .update({ status: "suspended" })
-          .eq("cohort_id", application.cohort_id)
-          .eq("student_id", application.student_id);
-
         await admin.from("bootcamp_audit_log").insert({
           actor_email: "stripe-webhook",
           action: "payment.failed",
           subject_table: "bootcamp_applications",
           subject_id: applicationId,
           reason: intent.last_payment_error?.message ?? "card declined",
-          after_state: { status: "suspended", payment_intent: intent.id },
+          after_state: {
+            payment_intent: intent.id,
+            note: "Not enrolled; the offer stands until its deadline and the student can retry.",
+          },
         });
 
-        return NextResponse.json({ received: true, suspended: true });
+        return NextResponse.json({ received: true, recorded: true });
       }
 
       default:

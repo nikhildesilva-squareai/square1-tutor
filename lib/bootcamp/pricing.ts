@@ -18,20 +18,20 @@
 // ═══════════════════════════════════════════════════════════════════════════════
 
 export type PriceRegion = "global" | "south_asia";
-export type PaymentPlan = "full" | "three_part";
+/** Pay in full, one payment. See lib/bootcamp/enrolment.ts. */
+export type PaymentPlan = "full";
 
 export interface PlanPricing {
-  /** Charged once, up front. The promoted default. */
+  /** Charged once, up front. The only option — see the note on BOOTCAMP_PRICING. */
   full: number;
-  /** Deposit, then two instalments. Deposit is credited to tuition. */
-  threePart: readonly [number, number, number];
 }
 
 export interface RegionPricing {
   /** Forward-looking list rate. Nobody pays this during founding cohorts —
    *  shown struck through, never charged. */
   list: number;
-  /** The real Cohort 1 price, and the base the 3-part plan sums to. */
+  /** The undiscounted Cohort 1 rate. Retained as the reference the PRD quotes;
+   *  NOT displayed anywhere and NOT charged — `plans.full` is the real price. */
   founding: number;
   plans: PlanPricing;
   currency: "USD";
@@ -40,58 +40,37 @@ export interface RegionPricing {
 /**
  * Cohort 1 founding rates.
  *
- * Pay-in-full is the DEFAULT and the promoted option: with a hard 50-seat cap,
- * commitment quality matters more than conversion rate. It also funds instructors
- * before delivery and removes Stripe Subscriptions, dunning and suspension logic.
+ * ONE PAYMENT, ONE PRICE. The three-part plan was removed on 2026-08-21: tuition
+ * is a single charge and nothing follows it. That deletes instalment scheduling,
+ * reminder mail, dunning and payment-failure suspension along with it — a whole
+ * class of ways to get someone's money wrong, gone rather than merely handled.
  *
- * The 3-part plan exists so the regional price stays reachable — $441 up front can
- * be a month's salary for the exact career-switcher the regional rate is for. It is
- * fully collected by week 8, before dropout risk materialises.
+ * With a hard 50-seat cap, commitment quality matters more than conversion rate,
+ * and paying up front funds instructors before delivery rather than after.
+ *
+ * The cost of the decision, stated plainly: $441 up front can be a month's
+ * salary for exactly the career-switcher the regional rate exists for. The
+ * regional price is the answer to that, and it is the only answer we now offer.
  */
 export const BOOTCAMP_PRICING: Record<PriceRegion, RegionPricing> = {
   global: {
     list: 1490_00,
     founding: 890_00,
-    plans: { full: 799_00, threePart: [150_00, 370_00, 370_00] },
+    plans: { full: 799_00 },
     currency: "USD",
   },
   south_asia: {
     list: 790_00,
     founding: 490_00,
-    plans: { full: 441_00, threePart: [75_00, 208_00, 207_00] },
+    plans: { full: 441_00 },
     currency: "USD",
   },
 } as const;
 
-/** Deposit — charged at acceptance, credited against tuition. Non-refundable
- *  after week 2, which is what makes ST-06 ("see exactly what is refundable")
- *  an honest promise rather than a vague one. */
-export function depositCents(region: PriceRegion): number {
-  return BOOTCAMP_PRICING[region].plans.threePart[0];
-}
 
-/** Total a 3-part payer hands over. Must equal the founding price — a plan that
- *  silently costs more is a dark pattern. */
-export function threePartTotal(region: PriceRegion): number {
-  return BOOTCAMP_PRICING[region].plans.threePart.reduce((a, b) => a + b, 0);
-}
 
-/** What paying up front saves, in cents. */
-export function payInFullSavingCents(region: PriceRegion): number {
-  return threePartTotal(region) - BOOTCAMP_PRICING[region].plans.full;
-}
 
-/** Saving as a whole-number percentage, for "save 10%" copy. */
-export function payInFullSavingPct(region: PriceRegion): number {
-  return Math.round((payInFullSavingCents(region) / threePartTotal(region)) * 100);
-}
 
-/** What this student will actually be charged, given their chosen plan. */
-export function amountDueCents(region: PriceRegion, plan: PaymentPlan): number {
-  return plan === "full"
-    ? BOOTCAMP_PRICING[region].plans.full
-    : threePartTotal(region);
-}
 
 /** Cents -> "$890" or "$1,490". No trailing ".00": prices here are always whole
  *  dollars, and "$890.00" reads like a utility bill. */
