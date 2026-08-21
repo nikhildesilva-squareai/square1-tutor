@@ -6,7 +6,7 @@ import { BOOTCAMP_ENABLED } from "@/lib/flags";
 import { listBootcamps, formatCohortDate } from "@/lib/bootcamp/catalog";
 import { displaySeatsLeft } from "@/lib/bootcamp/availability";
 import { getRegion } from "@/lib/pricing-server";
-import { BOOTCAMP_PRICING, formatUsd, threePartTotal } from "@/lib/bootcamp/pricing";
+import { BOOTCAMP_PRICING, formatUsd } from "@/lib/bootcamp/pricing";
 
 const BASE = "https://www.square1ai.com";
 const BRAND_GRADIENT = "linear-gradient(135deg, #3388FF 0%, #0056CE 55%, #01224F 100%)";
@@ -245,9 +245,8 @@ export default async function BootcampLandingPage() {
             <span className="text-ink-muted line-through text-lg">{formatUsd(price.list)}</span>
           </div>
           <p className="mt-4 text-sm text-ink-secondary leading-relaxed">
-            Paid in full, saving 10%. Or {formatUsd(price.plans.threePart[0])} to start and two
-            payments of {formatUsd(price.plans.threePart[1])} —{" "}
-            {formatUsd(threePartTotal(region))} in total, all collected by week 8.
+            One payment, and nothing after it — no instalments, no subscription, no card kept
+            on file. {formatUsd(price.list)} once the founding cohorts are gone.
           </p>
           <p className="mt-4 text-sm text-ink-secondary leading-relaxed">
             A US bootcamp is $15,000 and does not give you a weekly 1-1. Applying costs nothing,

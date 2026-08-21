@@ -18,21 +18,18 @@ import {
   offerExpiry,
   isOfferLive,
   daysLeftOnOffer,
-  scheduleFor,
   dueOnAcceptanceCents,
   planTotalCents,
   outstandingCents,
   isFullyPaid,
-  nextInstalment,
   enrolmentStep,
 } from "../../lib/bootcamp/enrolment.ts";
 
 // Hand-typed from the PRD pricing table. Deliberately literals rather than an
 // import of BOOTCAMP_PRICING: pricing.test.ts already asserts the real table
 // matches these, so if the two ever diverge that test fails, not this one.
-const GLOBAL = { full: 79900, threePart: [15000, 37000, 37000] as const };
-const SOUTH_ASIA = { full: 44100, threePart: [7500, 20800, 20700] as const };
-const PRICES = { global: GLOBAL, south_asia: SOUTH_ASIA };
+const GLOBAL = { full: 79900 };
+const SOUTH_ASIA = { full: 44100 };
 
 const CLOSE = "2026-10-01";
 const START = "2026-10-05";
@@ -92,49 +89,26 @@ describe("offer liveness", () => {
 });
 
 describe("what is due on acceptance", () => {
-  test("pay-in-full is one charge of the discounted price", () => {
+  test("tuition is one charge — the price, and nothing after it", () => {
     assert.equal(dueOnAcceptanceCents(GLOBAL, "full"), 79900);
     assert.equal(dueOnAcceptanceCents(SOUTH_ASIA, "full"), 44100);
-    assert.equal(scheduleFor(GLOBAL, "full").length, 1);
   });
 
-  test("three-part collects the first instalment up front", () => {
-    assert.equal(dueOnAcceptanceCents(GLOBAL, "three_part"), 15000);
-    assert.equal(dueOnAcceptanceCents(SOUTH_ASIA, "three_part"), 7500);
-  });
-
-  test("the three-part schedule is fully collected by week 8", () => {
-    const s = scheduleFor(GLOBAL, "three_part");
-    assert.equal(s.length, 3);
-    assert.equal(s[0].dueWeek, null, "the first is due now, not on a week");
-    assert.equal(s[1].dueWeek, 4);
-    assert.equal(s[2].dueWeek, 8);
-  });
-
-  test("the instalments sum to the plan total — no silent surcharge", () => {
-    for (const r of ["global", "south_asia"] as const) {
-      const sum = scheduleFor(PRICES[r], "three_part").reduce((a, i) => a + i.amountCents, 0);
-      assert.equal(sum, planTotalCents(PRICES[r], "three_part"), r);
-    }
-  });
-
-  test("paying in full costs less than paying in three", () => {
-    for (const r of ["global", "south_asia"] as const) {
-      assert.ok(planTotalCents(PRICES[r], "full") < planTotalCents(PRICES[r], "three_part"), r);
+  test("what is due and what the plan totals are the same number", () => {
+    // With instalments gone these cannot diverge, and a test that says so is
+    // what will fail loudly if a plan is ever reintroduced without care.
+    for (const p of [GLOBAL, SOUTH_ASIA]) {
+      assert.equal(dueOnAcceptanceCents(p, "full"), planTotalCents(p, "full"));
     }
   });
 });
 
 describe("outstanding balance", () => {
-  test("nothing paid means the whole plan is owed", () => {
-    assert.equal(outstandingCents(GLOBAL, "three_part", 0), 89000);
+  test("nothing paid means the whole fee is owed", () => {
+    assert.equal(outstandingCents(GLOBAL, "full", 0), 79900);
   });
 
-  test("part-paid subtracts", () => {
-    assert.equal(outstandingCents(GLOBAL, "three_part", 15000), 74000);
-  });
-
-  test("fully paid is zero and reports as such", () => {
+  test("paid in full is zero and reports as such", () => {
     assert.equal(outstandingCents(GLOBAL, "full", 79900), 0);
     assert.equal(isFullyPaid(GLOBAL, "full", 79900), true);
   });
@@ -148,24 +122,14 @@ describe("outstanding balance", () => {
   test("one cent short is not fully paid", () => {
     assert.equal(isFullyPaid(GLOBAL, "full", 79899), false);
   });
-});
 
-describe("nextInstalment", () => {
-  test("nothing paid yet means instalment 1", () => {
-    assert.equal(nextInstalment(GLOBAL, "three_part", [])?.number, 1);
-  });
-
-  test("after the first, the second at week 4", () => {
-    const n = nextInstalment(GLOBAL, "three_part", [1]);
-    assert.equal(n?.number, 2);
-    assert.equal(n?.dueWeek, 4);
-  });
-
-  test("all paid means nothing next", () => {
-    assert.equal(nextInstalment(GLOBAL, "three_part", [1, 2, 3]), null);
-    assert.equal(nextInstalment(GLOBAL, "full", [1]), null);
+  test("a partial payment leaves exactly the shortfall", () => {
+    // The one way a balance can now exist: the settlement region check found
+    // the card entitled a different rate than the session was priced at.
+    assert.equal(outstandingCents(GLOBAL, "full", 44100), 35800);
   });
 });
+
 
 describe("enrolmentStep — one source of truth for what happens next", () => {
   const base = {
@@ -227,12 +191,12 @@ describe("enrolmentStep — one source of truth for what happens next", () => {
     assert.equal(s.step === "enrolled" && s.outstandingCents, 0);
   });
 
-  test("an enrolled three-part student still shows what is outstanding", () => {
-    const s = enrolmentStep(
-      { ...base, applicationStatus: "accepted", enrolled: true, plan: "three_part", paidCents: 15000 },
+  test("an enrolled student who underpaid still shows the shortfall", () => {
+    const s2 = enrolmentStep(
+      { ...base, applicationStatus: "accepted", enrolled: true, paidCents: 44100 },
       now,
     );
-    assert.equal(s.step === "enrolled" && s.outstandingCents, 74000);
+    assert.equal(s2.step === "enrolled" && s2.outstandingCents, 35800);
   });
 
   test("every terminal status closes the page rather than offering an action", () => {

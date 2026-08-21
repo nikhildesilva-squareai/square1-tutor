@@ -6,6 +6,10 @@ import { formatUsd } from "@/lib/bootcamp/pricing";
 /**
  * What an accepted applicant owes, and how long they have to pay it.
  *
+ * ONE PAYMENT, ONE PRICE. The three-part plan was removed on 2026-08-21, so
+ * there is no plan to choose and no "saves $X" to compute — a saving is only
+ * meaningful against an alternative, and there is no longer an alternative.
+ *
  * The button opens Stripe Checkout when the keys are present. When they are not,
  * the server answers 503 with `unconfigured` and this falls back to the manual
  * route — write to admissions, we take a transfer and mark it paid by hand.
@@ -15,32 +19,23 @@ import { formatUsd } from "@/lib/bootcamp/pricing";
  * is a button that LOOKS like checkout and silently does nothing — the student
  * would believe the seat was secured, stop acting, and find out when it lapsed.
  *
- * The plan choice is sent to the server, which decides the amount from it and
- * from the student's own region. The figure shown here is a display of that
- * decision, never an input to it.
+ * The amount shown is a display of a server decision, never an input to it. The
+ * checkout route takes no amount and no plan from the client at all.
  */
 export function PayPanel({
   applicationId,
   dueCents,
   daysLeft,
-  fullCents,
-  threePart,
   cohortStarts,
 }: {
   applicationId: string;
   dueCents: number;
   daysLeft: number;
-  fullCents: number;
-  threePart: number[];
   cohortStarts: string;
 }) {
-  const [plan, setPlan] = useState<"full" | "three_part">("full");
   const [busy, setBusy] = useState(false);
   const [manual, setManual] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const threePartTotal = threePart.reduce((a, b) => a + b, 0);
-  const saving = threePartTotal - fullCents;
-  const dueNow = plan === "full" ? fullCents : threePart[0];
 
   async function pay() {
     setBusy(true);
@@ -49,7 +44,7 @@ export function PayPanel({
       const res = await fetch("/api/bootcamp/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ applicationId, plan }),
+        body: JSON.stringify({ applicationId }),
       });
       const body = await res.json().catch(() => null);
       if (res.status === 503 || body?.unconfigured) {
@@ -85,52 +80,24 @@ export function PayPanel({
         </p>
       </div>
 
-      <h2 className="mt-2 font-semibold">Choose how you want to pay</h2>
+      <h2 className="mt-2 font-semibold">Pay your tuition and confirm your place</h2>
       <p className="mt-2 text-sm text-ink-secondary leading-relaxed">
         There is no deposit — the offer itself is what holds your seat, which is why it has a
-        deadline. Once this is paid your place in the cohort starting {cohortStarts} is
-        confirmed.
+        deadline. One payment, nothing after it. Once this is paid your place in the cohort
+        starting {cohortStarts} is confirmed.
       </p>
 
-      <div className="mt-5 grid sm:grid-cols-2 gap-3">
-        <button
-          type="button"
-          onClick={() => setPlan("full")}
-          className={`text-left rounded-[10px] border p-4 transition ${
-            plan === "full" ? "border-brand bg-surface-tint" : "border-border hover:border-brand"
-          }`}
-        >
-          <p className="font-semibold text-sm">Pay in full</p>
-          <p className="mt-1 text-2xl font-bold">{formatUsd(fullCents)}</p>
-          <p className="mt-1 text-xs text-success font-semibold">
-            Saves {formatUsd(saving)}
-          </p>
-        </button>
-
-        <button
-          type="button"
-          onClick={() => setPlan("three_part")}
-          className={`text-left rounded-[10px] border p-4 transition ${
-            plan === "three_part" ? "border-brand bg-surface-tint" : "border-border hover:border-brand"
-          }`}
-        >
-          <p className="font-semibold text-sm">Three payments</p>
-          <p className="mt-1 text-2xl font-bold">{formatUsd(threePart[0])}</p>
-          <p className="mt-1 text-xs text-ink-muted">
-            then {formatUsd(threePart[1])} at week 4 and {formatUsd(threePart[2])} at week 8 ·{" "}
-            {formatUsd(threePartTotal)} total
-          </p>
-        </button>
-      </div>
-
-      <div className="mt-5 rounded-[10px] bg-surface-alt border border-border p-4">
-        <p className="text-sm">
-          <span className="text-ink-secondary">Due now to confirm your seat: </span>
-          <span className="font-bold">{formatUsd(dueNow)}</span>
+      <div className="mt-5 rounded-[10px] bg-surface-alt border border-border p-5">
+        <p className="text-[11px] font-semibold text-ink-muted uppercase tracking-widest">
+          Tuition in full
+        </p>
+        <p className="mt-1 text-4xl font-bold">{formatUsd(dueCents)}</p>
+        <p className="mt-1 text-xs text-ink-muted">
+          Six months, live. Nothing further to pay.
         </p>
 
         {manual ? (
-          <p className="mt-2 text-sm text-ink-secondary leading-relaxed">
+          <p className="mt-4 text-sm text-ink-secondary leading-relaxed">
             Card checkout is not open yet. Reply to your acceptance email, or write to{" "}
             <a href="mailto:admissions@square1ai.com" className="text-brand font-medium hover:underline">
               admissions@square1ai.com
@@ -144,9 +111,9 @@ export function PayPanel({
               type="button"
               onClick={pay}
               disabled={busy}
-              className="mt-3 w-full sm:w-auto rounded-[8px] bg-brand text-white font-semibold text-sm px-6 py-3 hover:opacity-90 disabled:opacity-50 transition"
+              className="mt-4 w-full sm:w-auto rounded-[8px] bg-brand text-white font-semibold text-sm px-6 py-3 hover:opacity-90 disabled:opacity-50 transition"
             >
-              {busy ? "Opening checkout…" : `Pay ${formatUsd(dueNow)} and confirm my seat`}
+              {busy ? "Opening checkout…" : `Pay ${formatUsd(dueCents)} and confirm my seat`}
             </button>
             <p className="mt-2 text-xs text-ink-muted">
               Secure payment via Stripe. Prefer a bank transfer?{" "}
@@ -162,11 +129,6 @@ export function PayPanel({
       </div>
 
       <p className="mt-4 text-xs text-ink-muted leading-relaxed">
-        {dueCents !== dueNow && (
-          <>
-            The amount charged is decided by us at the point of payment, not by this page.{" "}
-          </>
-        )}
         Full refund if you withdraw within two weeks of the cohort starting.
       </p>
     </div>

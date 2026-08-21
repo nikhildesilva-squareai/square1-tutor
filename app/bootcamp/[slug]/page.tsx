@@ -6,7 +6,7 @@ import { BOOTCAMP_ENABLED } from "@/lib/flags";
 import { getBootcamp, getGates, formatCohortDate } from "@/lib/bootcamp/catalog";
 import { displaySeatsLeft } from "@/lib/bootcamp/availability";
 import { getRegion } from "@/lib/pricing-server";
-import { BOOTCAMP_PRICING, formatUsd, threePartTotal } from "@/lib/bootcamp/pricing";
+import { BOOTCAMP_PRICING, formatUsd } from "@/lib/bootcamp/pricing";
 import { firstClassInstant, localSessionTime } from "@/lib/bootcamp/localtime";
 import { WaitlistForm } from "@/components/bootcamp/WaitlistForm";
 
@@ -181,13 +181,12 @@ export default async function BootcampSalesPage({ params }: PageProps) {
                 <span className="text-4xl font-bold">{formatUsd(price.plans.full)}</span>
                 <span className="text-ink-muted line-through text-lg">{formatUsd(price.list)}</span>
                 <span className="text-xs font-semibold rounded-full px-2.5 py-1 bg-success-bg text-success">
-                  paid in full — save 10%
+                  one payment
                 </span>
               </div>
               <p className="mt-3 text-sm text-ink-secondary">
-                Or {formatUsd(price.plans.threePart[0])} deposit, then two payments of{" "}
-                {formatUsd(price.plans.threePart[1])} — {formatUsd(threePartTotal(region))} in total,
-                fully paid by week 8.
+                Paid once, up front. No instalments, no subscription, and we do not keep your
+                card on file.
               </p>
               <Link
                 href={`/bootcamp/${slug}/apply`}

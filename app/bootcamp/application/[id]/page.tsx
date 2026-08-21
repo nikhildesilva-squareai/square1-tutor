@@ -8,8 +8,7 @@ import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { linkAssessmentToApplication } from "@/lib/bootcamp/assessment";
 import { BOOTCAMP_PRICING, formatUsd, regionForCountry } from "@/lib/bootcamp/pricing";
-import { enrolmentStep, scheduleFor, nextDueInstalment } from "@/lib/bootcamp/enrolment";
-import { InstalmentPanel } from "@/components/bootcamp/InstalmentPanel";
+import { enrolmentStep } from "@/lib/bootcamp/enrolment";
 import { PayPanel } from "@/components/bootcamp/PayPanel";
 import type { BootcampApplication, BootcampApplicationStatus } from "@/types/database";
 
@@ -119,7 +118,7 @@ export default async function ApplicationStatusPage({ params }: PageProps) {
     .eq("student_id", app.student_id)
     .maybeSingle();
   const enrolment = enrolRow as
-    { id: string; payment_plan: "full" | "three_part"; amount_paid_cents: number } | null;
+    { id: string; payment_plan: "full"; amount_paid_cents: number } | null;
 
   const { data: countryRow } = await admin
     .from("students").select("country").eq("id", app.student_id).maybeSingle();
@@ -128,33 +127,13 @@ export default async function ApplicationStatusPage({ params }: PageProps) {
   const region = regionForCountry((countryRow as { country: string | null } | null)?.country);
   const prices = BOOTCAMP_PRICING[region].plans;
 
-  const { data: paidRows } = await admin
-    .from("bootcamp_payments")
-    .select("instalment")
-    .eq("application_id", app.id)
-    .eq("status", "paid");
-  const paidInstalments = ((paidRows ?? []) as { instalment: number }[]).map((r) => r.instalment);
-
-  // Payment is one-off checkout — no stored card — so an enrolled three-part
-  // student has to be shown what is next and given a way to pay it. Resolved by
-  // the SAME function the reminder cron reads, so the email and this page can
-  // never disagree about what is owed.
-  const upcoming = enrolment
-    ? nextDueInstalment(
-        prices,
-        enrolment.payment_plan,
-        paidInstalments,
-        app.cohort.starts_on,
-      )
-    : null;
-
   const step = enrolmentStep({
     applicationStatus: app.status,
     offerExpiresAt: app.offer_expires_at,
     assessmentRecorded: app.assessment_pct !== null,
     enrolled: enrolment !== null,
     prices,
-    plan: enrolment?.payment_plan ?? "full",
+    plan: "full",
     paidCents: enrolment?.amount_paid_cents ?? 0,
   });
 
@@ -236,8 +215,6 @@ export default async function ApplicationStatusPage({ params }: PageProps) {
             applicationId={app.id}
             dueCents={step.dueCents}
             daysLeft={step.daysLeft}
-            fullCents={prices.full}
-            threePart={[...prices.threePart]}
             cohortStarts={formatCohortDate(app.cohort.starts_on)}
           />
         )}
@@ -256,36 +233,17 @@ export default async function ApplicationStatusPage({ params }: PageProps) {
                 calendar before {formatCohortDate(app.cohort.starts_on)}.
               </p>
             ) : (
-              <>
-                <p className="mt-2 text-sm text-ink-secondary leading-relaxed">
-                  You are on the three-part plan. {formatUsd(step.outstandingCents)} is still to
-                  come, collected in weeks 4 and 8 — the whole plan is settled by week 8, so
-                  nothing is chasing you late in the course.
-                </p>
-                <ul className="mt-4 space-y-1.5">
-                  {scheduleFor(prices, enrolment?.payment_plan ?? "three_part").map((i) => (
-                    <li key={i.number} className="text-sm flex justify-between max-w-xs">
-                      <span className="text-ink-secondary">
-                        {i.dueWeek === null ? "Paid on acceptance" : `Week ${i.dueWeek}`}
-                      </span>
-                      <span className="font-semibold">{formatUsd(i.amountCents)}</span>
-                    </li>
-                  ))}
-                </ul>
-              </>
+              // Tuition is a single payment, so a balance here means exactly one
+              // thing: the card's billing country entitles a different rate than
+              // the one the payment was priced at. We do not chase it silently or
+              // reverse the enrolment — a person is told, by a person.
+              <p className="mt-2 text-sm text-ink-secondary leading-relaxed">
+                Your seat is confirmed. There is a {formatUsd(step.outstandingCents)} difference
+                between what was paid and the rate your card&rsquo;s country is eligible for —
+                we will email you about it, and it does not affect your place in the cohort.
+              </p>
             )}
           </div>
-        )}
-
-        {step.step === "enrolled" && upcoming && (
-          <InstalmentPanel
-            applicationId={app.id}
-            number={upcoming.number}
-            amountCents={upcoming.amountCents}
-            dueDate={formatCohortDate(upcoming.dueDate.toISOString().slice(0, 10))}
-            state={upcoming.state}
-            daysLate={upcoming.daysLate}
-          />
         )}
 
         {app.assessment_pct !== null && (

@@ -372,7 +372,8 @@ export type BootcampApplicationStatus =
 export type BootcampEnrollmentStatus =
   | "active" | "suspended" | "deferred" | "withdrawn" | "graduated";
 export type BootcampStanding = "good" | "at_risk" | "probation";
-export type BootcampPaymentPlan = "full" | "three_part";
+/** Pay in full, one payment. Migration 028 narrowed the DB CHECK to match. */
+export type BootcampPaymentPlan = "full";
 export type BootcampGateStatus =
   | "locked" | "open" | "submitted" | "passed" | "failed" | "waived";
 export type BootcampSessionKind =

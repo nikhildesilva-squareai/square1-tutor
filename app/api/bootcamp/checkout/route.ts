@@ -3,7 +3,7 @@ import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { BOOTCAMP_PRICING, regionForCountry, type PriceRegion } from "@/lib/bootcamp/pricing";
-import { dueOnAcceptanceCents, isOfferLive, nextInstalment } from "@/lib/bootcamp/enrolment";
+import { dueOnAcceptanceCents, isOfferLive } from "@/lib/bootcamp/enrolment";
 import { getStripe, stripeConfigured, siteUrl } from "@/lib/bootcamp/stripe";
 
 // POST /api/bootcamp/checkout
@@ -22,6 +22,9 @@ import { getStripe, stripeConfigured, siteUrl } from "@/lib/bootcamp/stripe";
 //   an expired offer means the seat went back to the pool, and collecting for it
 //   would be selling something we no longer have.
 //
+//   Charge twice. Tuition is a SINGLE payment, so a paid application has nothing
+//   left to collect and a second session must not open.
+//
 // THE REGION HERE IS PROVISIONAL. It comes from the student's own profile
 // country, which is self-declared. It is re-checked at settlement in the webhook
 // against the card's billing country via verifyRegionAtCheckout() — a ~$400 gap
@@ -29,9 +32,10 @@ import { getStripe, stripeConfigured, siteUrl } from "@/lib/bootcamp/stripe";
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
+// No plan field: tuition is a single payment. Accepting a plan from the client
+// would be accepting an amount from the client by another name.
 const schema = z.object({
   applicationId: z.string().regex(UUID),
-  plan: z.enum(["full", "three_part"]),
 });
 
 export async function POST(request: Request) {
@@ -53,7 +57,8 @@ export async function POST(request: Request) {
     if (!parsed.success) {
       return NextResponse.json({ error: "Invalid request" }, { status: 400 });
     }
-    const { applicationId, plan } = parsed.data;
+    const { applicationId } = parsed.data;
+    const plan = "full" as const;
 
     const { data: studentRow } = await supabase
       .from("students").select("id, email, country").eq("user_id", user.id).maybeSingle();
@@ -107,21 +112,19 @@ export async function POST(request: Request) {
     const region: PriceRegion = regionForCountry(student.country);
     const prices = BOOTCAMP_PRICING[region].plans;
 
-    // Which charge this is. Instalment 1 unlocks enrolment; 2 and 3 are the
-    // rest of the three-part plan, collected in weeks 4 and 8.
-    const { data: paidRows } = await admin
+    // One payment, so there is nothing to schedule and nothing to count — but
+    // there IS a question of whether it already happened. Opening a second
+    // checkout for someone who has paid would take their money twice.
+    const { count: paidCount } = await admin
       .from("bootcamp_payments")
-      .select("instalment")
+      .select("id", { count: "exact", head: true })
       .eq("application_id", application.id)
       .eq("status", "paid");
-    const paid = ((paidRows ?? []) as { instalment: number }[]).map((r) => r.instalment);
-
-    const next = paid.length === 0
-      ? { number: 1, amountCents: dueOnAcceptanceCents(prices, plan), dueWeek: null }
-      : nextInstalment(prices, plan, paid);
-    if (!next) {
-      return NextResponse.json({ error: "Nothing is outstanding." }, { status: 409 });
+    if ((paidCount ?? 0) > 0) {
+      return NextResponse.json({ error: "This is already paid." }, { status: 409 });
     }
+
+    const amountCents = dueOnAcceptanceCents(prices, plan);
 
     const stripe = getStripe();
     if (!stripe) {
@@ -138,12 +141,8 @@ export async function POST(request: Request) {
         quantity: 1,
         price_data: {
           currency: "usd",
-          unit_amount: next.amountCents,
-          product_data: {
-            name: plan === "full"
-              ? "Square 1 AI Bootcamp — tuition, paid in full"
-              : `Square 1 AI Bootcamp — payment ${next.number} of 3`,
-          },
+          unit_amount: amountCents,
+          product_data: { name: "Square 1 AI Bootcamp — tuition" },
         },
       }],
       // Everything the webhook needs to enrol without trusting its own inputs.
@@ -151,7 +150,6 @@ export async function POST(request: Request) {
         applicationId: application.id,
         plan,
         claimedRegion: region,
-        instalment: String(next.number),
       },
       // THE SAME METADATA ON THE PAYMENT INTENT, AND IT IS NOT REDUNDANT.
       // Stripe does not copy session metadata onto the PaymentIntent, and
@@ -163,14 +161,13 @@ export async function POST(request: Request) {
           applicationId: application.id,
           plan,
           claimedRegion: region,
-          instalment: String(next.number),
         },
       },
       success_url: siteUrl(`/bootcamp/application/${application.id}?paid=1`),
       cancel_url: siteUrl(`/bootcamp/application/${application.id}`),
     });
 
-    return NextResponse.json({ url: session.url, amountCents: next.amountCents });
+    return NextResponse.json({ url: session.url, amountCents });
   } catch (err) {
     console.error("[bootcamp/checkout]", err);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
