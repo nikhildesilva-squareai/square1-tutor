@@ -85,7 +85,19 @@ export async function POST(request: Request) {
         { status: 409 },
       );
     }
-    if (!isOfferLive(application.offer_expires_at)) {
+
+    // Already enrolled? Then this is instalment 2 or 3, and the OFFER IS
+    // IRRELEVANT — it expired weeks ago by design, because a seat held by
+    // payment is not a seat held by a deadline. Checking offer liveness here
+    // unconditionally would make the later instalments impossible to pay.
+    const { data: existing } = await admin
+      .from("bootcamp_enrollments")
+      .select("id")
+      .eq("cohort_id", application.cohort_id)
+      .eq("student_id", application.student_id)
+      .maybeSingle();
+
+    if (!existing && !isOfferLive(application.offer_expires_at)) {
       return NextResponse.json(
         { error: "This offer has expired and the seat has gone back to the pool." },
         { status: 409 },
@@ -140,6 +152,19 @@ export async function POST(request: Request) {
         plan,
         claimedRegion: region,
         instalment: String(next.number),
+      },
+      // THE SAME METADATA ON THE PAYMENT INTENT, AND IT IS NOT REDUNDANT.
+      // Stripe does not copy session metadata onto the PaymentIntent, and
+      // payment_intent.payment_failed delivers the INTENT, not the session. The
+      // failure handler reads applicationId off the intent — without this it
+      // finds nothing, and the suspension path is dead code that looks alive.
+      payment_intent_data: {
+        metadata: {
+          applicationId: application.id,
+          plan,
+          claimedRegion: region,
+          instalment: String(next.number),
+        },
       },
       success_url: siteUrl(`/bootcamp/application/${application.id}?paid=1`),
       cancel_url: siteUrl(`/bootcamp/application/${application.id}`),

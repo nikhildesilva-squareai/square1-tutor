@@ -196,3 +196,80 @@ export function enrolmentStep(
       return { step: "closed", status: input.applicationStatus };
   }
 }
+
+// ─── When the later instalments fall due ─────────────────────────────────────
+//
+// Payment is ONE-OFF CHECKOUT, deliberately: no card is stored and nothing is
+// charged while the student is away. The cost of that choice is that instalments
+// 2 and 3 will not collect themselves — somebody has to be asked. These
+// functions are what the reminder cron and the status page both read, so a
+// student is never emailed "payment 2 is due" by one and shown "nothing owed" by
+// the other.
+
+/** Days after an instalment falls due before access is suspended.
+ *
+ *  Long enough to cover a card that expired, a bank that blocked a foreign
+ *  charge, or a week away from email — all ordinary, none of them a reason to
+ *  lock someone out of a course they are halfway through. */
+export const INSTALMENT_GRACE_DAYS = 10;
+
+export type InstalmentState = "upcoming" | "due" | "overdue";
+
+/** When an instalment falls due: its week, counted from the cohort start. */
+export function instalmentDueDate(cohortStartsOn: string, dueWeek: number): Date {
+  const start = new Date(`${cohortStartsOn}T00:00:00Z`);
+  return new Date(start.getTime() + dueWeek * 7 * DAY_MS);
+}
+
+export function instalmentState(dueDate: Date, now: Date = new Date()): InstalmentState {
+  if (now.getTime() < dueDate.getTime()) return "upcoming";
+  const graceEnds = dueDate.getTime() + INSTALMENT_GRACE_DAYS * DAY_MS;
+  return now.getTime() <= graceEnds ? "due" : "overdue";
+}
+
+export interface DueInstalment extends Instalment {
+  dueDate: Date;
+  state: InstalmentState;
+  /** Whole days past the due date. 0 while upcoming. */
+  daysLate: number;
+}
+
+/**
+ * The next instalment still to collect, with its date and where it stands.
+ *
+ * Null when the plan is fully paid, or when the next instalment is number 1 —
+ * that one is due on acceptance, has no week, and is governed by the OFFER
+ * deadline rather than by the cohort calendar.
+ */
+export function nextDueInstalment(
+  prices: PlanPrices,
+  plan: PaymentPlan,
+  paidInstalments: number[],
+  cohortStartsOn: string,
+  now: Date = new Date(),
+): DueInstalment | null {
+  const next = nextInstalment(prices, plan, paidInstalments);
+  if (!next || next.dueWeek === null) return null;
+
+  const dueDate = instalmentDueDate(cohortStartsOn, next.dueWeek);
+  const state = instalmentState(dueDate, now);
+  const daysLate = Math.max(
+    0,
+    Math.floor((now.getTime() - dueDate.getTime()) / DAY_MS),
+  );
+  return { ...next, dueDate, state, daysLate };
+}
+
+/** Whether a missed instalment has run past its grace period. The cron suspends
+ *  on this and nothing else — never on "is there a balance", which would catch
+ *  every three-part student the day they enrol. */
+export function shouldSuspendForNonPayment(
+  prices: PlanPrices,
+  plan: PaymentPlan,
+  paidInstalments: number[],
+  cohortStartsOn: string,
+  now: Date = new Date(),
+): boolean {
+  const due = nextDueInstalment(prices, plan, paidInstalments, cohortStartsOn, now);
+  return due?.state === "overdue";
+}
