@@ -9,7 +9,7 @@
     "test:competitions": "node --test __tests__/competitions/metrics.test.ts __tests__/competitions/parse.test.ts",
     "backfill:enrollment-completion": "BACKFILL_CONFIRM=0 npx ts-node scripts/backfill-enrollment-completion.ts",
     "backfill:enrollment-completion:confirm": "BACKFILL_CONFIRM=1 npx ts-node scripts/backfill-enrollment-completion.ts",
-    "test:bootcamp": "node --test __tests__/bootcamp/gates.test.ts __tests__/bootcamp/standing.test.ts __tests__/bootcamp/pricing.test.ts __tests__/bootcamp/localtime.test.ts __tests__/bootcamp/availability.test.ts __tests__/bootcamp/enrolment.test.ts __tests__/bootcamp/settlement.test.ts __tests__/bootcamp/instalments.test.ts",
+    "test:bootcamp": "node --test __tests__/bootcamp/gates.test.ts __tests__/bootcamp/standing.test.ts __tests__/bootcamp/pricing.test.ts __tests__/bootcamp/localtime.test.ts __tests__/bootcamp/availability.test.ts __tests__/bootcamp/enrolment.test.ts __tests__/bootcamp/settlement.test.ts __tests__/bootcamp/integrity.test.ts __tests__/bootcamp/sessions.test.ts __tests__/bootcamp/review.test.ts",
     "test": "npm run test:bootcamp && npm run test:competitions"
   },
   "dependencies": {

@@ -40,6 +40,14 @@ const schema = z.object({
 
 export async function POST(request: Request) {
   try {
+    // AUTH FIRST, configuration second. Answering "checkout is not open yet" to
+    // an unauthenticated caller tells a stranger about our billing state before
+    // establishing they are anyone at all. Harmless here, but the ordering is
+    // the habit worth keeping.
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
     if (!stripeConfigured()) {
       // Not an error state — it is the current state. The pay panel shows the
       // manual route (write to admissions) while this is true.
@@ -48,10 +56,6 @@ export async function POST(request: Request) {
         { status: 503 },
       );
     }
-
-    const supabase = await createClient();
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
     const parsed = schema.safeParse(await request.json().catch(() => null));
     if (!parsed.success) {

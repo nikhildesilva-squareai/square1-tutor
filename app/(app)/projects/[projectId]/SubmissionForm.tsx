@@ -11,6 +11,12 @@ interface SubmissionFormProps {
    *  verification reads the repo's GitHub Actions run server-side, so there is
    *  no output to paste — the form shows instructions instead of a textarea. */
   ciMode?: boolean;
+  /** BOOTCAMP ONLY. When set, the submission binds to this gate: the bootcamp
+   *  bar (75) applies instead of the self-paced 60/70, the attempt budget is
+   *  enforced server-side, and the AI review becomes message #1 of the private
+   *  feedback thread. Undefined on every self-paced project page, which leaves
+   *  the request body exactly as it was. */
+  gateId?: string;
 }
 
 interface SnippetLine {
@@ -67,7 +73,7 @@ interface SubmitResult {
   submission_history?: PreviousAttempt[] | null;
 }
 
-export function SubmissionForm({ projectId, submitFormat, ciMode = false }: SubmissionFormProps) {
+export function SubmissionForm({ projectId, submitFormat, ciMode = false, gateId }: SubmissionFormProps) {
   const [githubUrl, setGithubUrl] = useState("");
   const [liveUrl, setLiveUrl] = useState("");
   const [description, setDescription] = useState("");
@@ -92,6 +98,7 @@ export function SubmissionForm({ projectId, submitFormat, ciMode = false }: Subm
           liveUrl: liveUrl || undefined,
           description: description || undefined,
           output: output || undefined,
+          gateId,
         }),
       });
 
