@@ -42,7 +42,9 @@ const learnNav: { href: string; label: string; icon: LucideIcon }[] = [
   // they open first, and burying the thing they paid $890 for under Courses
   // would be the wrong hierarchy. Hidden entirely while the flag is off, so
   // the 99% of students on the self-paced product never see a dead entry.
-  ...(BOOTCAMP_ENABLED ? [{ href: "/bootcamp", label: "Bootcamp", icon: CalendarRange }] : []),
+  // Points at the signed-in cockpit, not the public marketing page. A signed-in
+  // visitor with no enrolment is redirected back to /bootcamp by that route.
+  ...(BOOTCAMP_ENABLED ? [{ href: "/bootcamp/home", label: "Bootcamp", icon: CalendarRange }] : []),
   { href: "/courses", label: "Courses", icon: BookOpen },
   { href: "/projects", label: "Projects", icon: FolderKanban },
   ...(COMPETITIONS_ENABLED ? [{ href: "/competitions", label: "Competitions", icon: Trophy }] : []),

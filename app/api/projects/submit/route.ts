@@ -10,6 +10,16 @@ import { scoreObjective, type GradingConfig, type ObjectiveResult } from "@/lib/
 import { verifyCiActions } from "@/lib/grading/ci";
 import { reviewProject, type RubricCriterion } from "@/lib/grading/project-review";
 import { checkAndMarkEnrollmentComplete } from "@/lib/enrollment-completion";
+import { BOOTCAMP_PASS_BAR } from "@/lib/bootcamp";
+import {
+  loadGateSpine,
+  checkGateEligibility,
+  recordGateSubmission,
+  postThreadMessage,
+  renderAiReviewMessage,
+  attemptsRemaining,
+} from "@/lib/bootcamp-gate-service";
+import { loadEnrolmentContext } from "@/app/(app)/bootcamp/_lib/cockpit";
 
 const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
@@ -21,10 +31,17 @@ const schema = z.object({
   // The student's tool OUTPUT (findings/IOCs/recovered text/scored register), pasted
   // for the objective completion check against the withheld answer key.
   output: z.string().max(20000).optional(),
+  // BOOTCAMP ONLY. Present when this submission is the evidence for a gate, in
+  // which case a harder bar, an attempt budget and a human sign-off apply. Its
+  // ABSENCE must leave the self-paced path byte-for-byte as it was.
+  gateId: z.string().regex(UUID_REGEX, "Invalid gateId").optional(),
 });
 
 const RUBRIC_BAR = 60;   // rubric % needed when an objective gate also applies
 const SOLO_BAR = 70;     // rubric % needed when there is no objective gate
+// The bootcamp bar (75) comes from lib/bootcamp/gates.ts — the same constant
+// evaluateGate applies, so the number enforced at submission and the number
+// enforced at review cannot drift apart.
 
 export async function POST(request: Request) {
   try {
@@ -34,7 +51,7 @@ export async function POST(request: Request) {
     if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
     const body = await request.json();
-    const { projectId, githubUrl, liveUrl, description, output } = schema.parse(body);
+    const { projectId, githubUrl, liveUrl, description, output, gateId } = schema.parse(body);
 
     const { data: student } = await supabase
       .from("students").select("id").eq("user_id", user.id).maybeSingle();
@@ -55,6 +72,82 @@ export async function POST(request: Request) {
       .from("student_enrollments")
       .select("id").eq("student_id", student.id).eq("course_id", project.course_id).maybeSingle();
     if (!enrollment) return NextResponse.json({ error: "Not enrolled in this course" }, { status: 403 });
+
+    // ── 0. GATE BINDING (bootcamp only) ─────────────────────────────────────
+    //
+    // Resolved BEFORE any grading work: refusing after we have spent an AI call
+    // and two GitHub round-trips on a submission the student was never allowed
+    // to make is money and latency thrown away, and it tells them "no" a minute
+    // later than we knew.
+    //
+    // Everything below reads the gate under the SERVICE ROLE, because
+    // `bootcamp_gates.requires` carries no grant to `authenticated` (migration
+    // 021) — it is a withheld answer key. The thresholds never leave this route.
+    const admin = createAdminClient();
+    let gateBinding: {
+      gateId: string;
+      title: string;
+      enrolmentId: string;
+      previousAttempts: number;
+      hasExistingRow: boolean;
+      bar: number;
+    } | null = null;
+
+    if (gateId) {
+      const ctx = await loadEnrolmentContext();
+      if (!ctx) {
+        return NextResponse.json(
+          { error: "You are not enrolled in a bootcamp cohort." },
+          { status: 403 },
+        );
+      }
+      // A suspended enrolment loses live access AND gate submissions — /bootcamp/home
+      // says so in the billing banner, and a gate accepted while payment has failed
+      // would contradict it.
+      if (ctx.enrolment.status !== "active") {
+        return NextResponse.json(
+          { error: "Gate submissions are paused while your enrolment is not active." },
+          { status: 403 },
+        );
+      }
+
+      const spine = await loadGateSpine(admin, ctx.bootcamp.id, ctx.enrolment.id);
+      const gate = spine.gates.find((g) => g.id === gateId);
+      // A gate from ANOTHER bootcamp is not "not found" by accident — it is the
+      // shape a cross-cohort forgery attempt takes. Same 404 either way.
+      if (!gate) return NextResponse.json({ error: "Gate not found" }, { status: 404 });
+
+      const eligibility = checkGateEligibility(spine, gate.id, new Date());
+      if (!eligibility.allowed) {
+        return NextResponse.json(
+          { error: eligibility.reason ?? "This gate is not open to you.", gateBlocked: true },
+          { status: 409 },
+        );
+      }
+
+      // The gate names the projects that count as its evidence. Submitting an
+      // unrelated project against it would let a student clear a capstone gate
+      // with a week-2 exercise.
+      const gateProjects = gate.requires.project_ids ?? [];
+      if (gateProjects.length > 0 && !gateProjects.includes(projectId)) {
+        return NextResponse.json(
+          { error: "That project is not the evidence this gate asks for." },
+          { status: 400 },
+        );
+      }
+
+      const existing = spine.results.get(gate.id) ?? null;
+      gateBinding = {
+        gateId: gate.id,
+        title: gate.title,
+        enrolmentId: ctx.enrolment.id,
+        previousAttempts: existing?.attempts ?? 0,
+        hasExistingRow: !!existing,
+        // requires.min_score when the gate sets one, otherwise the bootcamp bar.
+        // Never the self-paced 60/70.
+        bar: gate.requires.min_score ?? BOOTCAMP_PASS_BAR,
+      };
+    }
 
     const rubric: RubricCriterion[] = Array.isArray(project.rubric) ? (project.rubric as RubricCriterion[]) : [];
     const grading = (project.grading ?? null) as GradingConfig | null;
@@ -93,9 +186,14 @@ export async function POST(request: Request) {
 
     // ── 3. Completion gate ──────────────────────────────────────────────────
     const rubricPct = review.max_score ? (review.score / review.max_score) * 100 : 0;
+    // A gate submission is held to the bootcamp bar on BOTH branches — the
+    // 60-with-an-objective concession is a self-paced affordance, and people
+    // paying for a cohort are paying for the harder standard.
+    const objectiveBar = gateBinding ? gateBinding.bar : RUBRIC_BAR;
+    const soloBar = gateBinding ? gateBinding.bar : SOLO_BAR;
     const complete = hasObjective
-      ? !!objective?.passed && rubricPct >= RUBRIC_BAR
-      : rubricPct >= SOLO_BAR;
+      ? !!objective?.passed && rubricPct >= objectiveBar
+      : rubricPct >= soloBar;
 
     // ── 4. Re-submission history ────────────────────────────────────────────
     const { data: existingSubmission } = await supabase
@@ -129,7 +227,7 @@ export async function POST(request: Request) {
     // Service role: students hold no write privilege on the grade tables, so a
     // score can only be set by this route, after Nova has actually graded the
     // work. student_id comes from the session, never the request body.
-    const { data: submission, error: upsertError } = await createAdminClient()
+    const { data: submission, error: upsertError } = await admin
       .from("project_submissions")
       .upsert(
         {
@@ -164,8 +262,80 @@ export async function POST(request: Request) {
     }
 
     // ── Check if enrollment is now complete ──────────────────────────────────
-    const admin = createAdminClient();
     const enrollmentCompleted = await checkAndMarkEnrollmentComplete(enrollment.id, admin);
+
+    // ── 5. GATE RESULT + FEEDBACK THREAD (bootcamp only) ────────────────────
+    //
+    // status goes to 'submitted' and NEVER to 'passed'. The AI has scored; the
+    // decision is a human's, made on /desk/bootcamp/gates, and the DB CHECK
+    // bootcamp_gate_results_decision_attributed refuses a decided row that names
+    // no reviewer anyway. `attempts` is incremented inside recordGateSubmission,
+    // which is the single place that number moves.
+    let gateResponse: {
+      gateId: string;
+      status: "submitted";
+      attempt: number;
+      attemptsRemaining: number;
+      bar: number;
+    } | null = null;
+
+    if (gateBinding) {
+      // The two columns mean different things and must not double-count one
+      // result: a `ci_actions` kit is verified by GitHub Actions (ci_passed),
+      // everything else by the withheld answer key (objective_passed).
+      const isCi = !!objective && objective.metric === "ci_actions";
+      const objectivePassed = objective && !isCi ? objective.passed : null;
+      const ciPassed = isCi ? objective!.passed : null;
+
+      const recorded = await recordGateSubmission(admin, {
+        enrolmentId: gateBinding.enrolmentId,
+        gateId: gateBinding.gateId,
+        submissionId: submission.id,
+        rubricPct,
+        autoScore: review.score,
+        objectivePassed,
+        ciPassed,
+        previousAttempts: gateBinding.previousAttempts,
+        hasExistingRow: gateBinding.hasExistingRow,
+      });
+
+      if (recorded.error) {
+        // The grade is saved either way; what failed is the gate binding. Say so
+        // rather than returning a success that quietly did not count.
+        console.error("[projects/submit] gate result write:", recorded.error);
+        return NextResponse.json(
+          { error: "Your work was graded but the gate did not record it. Contact the desk before resubmitting." },
+          { status: 500 },
+        );
+      }
+
+      // Message #1 of the private thread. Service role, because the migration-021
+      // trigger forces author_kind='student' on any authenticated insert — which
+      // is exactly the protection that stops a student manufacturing a sign-off.
+      await postThreadMessage(admin, {
+        submissionId: submission.id,
+        authorKind: "ai",
+        authorId: null,
+        bodyMd: renderAiReviewMessage({
+          gateTitle: gateBinding.title,
+          rubricPct,
+          attempt: recorded.attempts,
+          strengths: review.strengths ?? [],
+          improvements: review.improvements ?? [],
+          overallFeedback: review.overall_feedback ?? "",
+          objectivePassed,
+          ciPassed,
+        }),
+      });
+
+      gateResponse = {
+        gateId: gateBinding.gateId,
+        status: "submitted",
+        attempt: recorded.attempts,
+        attemptsRemaining: attemptsRemaining(recorded.attempts),
+        bar: gateBinding.bar,
+      };
+    }
 
     const previousAttempt = submissionHistory.length > 0 ? submissionHistory[submissionHistory.length - 1] : null;
 
@@ -186,6 +356,9 @@ export async function POST(request: Request) {
         ? { score: objective.score, passed: objective.passed, metric: objective.metric, detail: objective.detail, threshold: grading?.threshold ?? null, error: objective.error ?? null }
         : null,
       objective_required: hasObjective,
+      // Null on every self-paced submission — the shape of the response is
+      // otherwise unchanged.
+      gate: gateResponse,
       previous_attempt: previousAttempt,
       repo_stats: {
         totalFiles: repoAnalysis.totalFiles,

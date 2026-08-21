@@ -29,12 +29,21 @@ const PROTECTED_PREFIXES = [
   "/certificate",
   "/community",
   "/messages",
-  // A student's own application status. The page re-checks the session and
-  // redirects on its own, but it also exports static `metadata` alongside
-  // force-dynamic, so the shell flushes before redirect() can set a status and
-  // the bounce lands as a 200 instead of a 307. Handling it at the edge gets the
-  // status code right. The rest of /bootcamp stays public.
+  // The signed-in Bootcamp surfaces. Each page re-checks the session and
+  // redirects on its own, but under force-dynamic the shell flushes before
+  // redirect() can set a status, so the bounce lands as a 200 instead of a 307.
+  // Handling it at the edge gets the status code right.
+  //
+  // Listed individually BY NECESSITY: bare "/bootcamp" and "/bootcamp/{slug}"
+  // are the public catalogue and must stay reachable signed-out, so a single
+  // "/bootcamp" prefix would gate the marketing site. Any NEW signed-in route
+  // under /bootcamp has to be added here too — verify with a signed-out curl
+  // that it answers 307, not 200.
   "/bootcamp/application",
+  "/bootcamp/home",
+  "/bootcamp/standing",
+  "/bootcamp/contract",
+  "/bootcamp/gates",
   // Post-signup onboarding, staff surfaces.
   "/welcome",
   "/inbox",

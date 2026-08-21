@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { notFound, redirect } from "next/navigation";
 import { LearnClient } from "./LearnClient";
+import { moduleLockedForStudent } from "@/lib/bootcamp-module-access";
 
 interface PageProps {
   params: Promise<{ lessonId: string }>;
@@ -30,6 +31,13 @@ export default async function LearnPage({ params }: PageProps) {
     .maybeSingle();
 
   if (!lesson) notFound();
+
+  // BOOTCAMP GATING (S7). A bootcamp is sold as strictly gated, so a module
+  // behind a gate the student has not cleared is genuinely unreachable rather
+  // than merely greyed out. No-ops with zero queries for self-paced learners —
+  // see lib/bootcamp-module-access.ts.
+  const lock = await moduleLockedForStudent(student.id, lesson.course_id, lesson.module_id);
+  if (lock) redirect(`/bootcamp/gates/${lock.gateId}`);
 
   // Get module info
   const { data: module } = await supabase

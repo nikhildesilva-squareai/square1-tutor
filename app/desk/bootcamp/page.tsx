@@ -88,6 +88,11 @@ export default async function AdmissionsDeskPage() {
         </p>
         <h1 className="text-3xl font-bold tracking-tight">Bootcamp admissions</h1>
 
+        <nav className="mt-4 flex flex-wrap gap-4 text-sm">
+          <Link href="/desk/bootcamp/roster" className="text-brand hover:underline">Roster</Link>
+          <Link href="/desk/bootcamp/health" className="text-brand hover:underline">Cohort health</Link>
+        </nav>
+
         {cohorts.length === 0 && (
           <p className="mt-8 text-ink-secondary">No open cohorts.</p>
         )}

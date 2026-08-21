@@ -352,13 +352,15 @@ Evidence-backed `/verify` (repos, tests passed, objective scores, rubric, **viva
 
 ## S12 — Test & launch readiness · 7 days
 
-**There is no test runner in this repo.** No `test` script; no jest/vitest/playwright config. Files under `__tests__/` are `describe`/`test` blocks containing comments — documentation, not assertions. **Wiring a runner is step one.**
+**Superseded 2026-08-21.** The repo now runs **`node --test`** with real assertions — `npm run test:bootcamp`, 178+ passing across `lib/bootcamp/*`. **T0 and T2 are done.**
+
+Do **not** add Vitest. It would fragment the suite for no gain, and the pure-lib layer is deliberately import-free per file so the built-in runner works without a bundler — a constraint worth preserving, not replacing.
 
 | ID | Layer | Priority |
 |---|---|---|
-| T0 | **Vitest** + `test` script. Leave existing `__tests__/*` alone — they're specs | First |
+| T0 | ~~Vitest~~ → `node --test` + `test:bootcamp` script | ✅ **Done** |
 | T1 | **Integrity/RLS** — assert every forgery **fails**: writing gate results, writing attendance, inflating watch seconds, reading `gates.requires`, reading `start_url`. Against a Supabase branch | **Highest value** |
-| T2 | Unit — `lib/bootcamp/*` pure functions | High |
+| T2 | Unit — `lib/bootcamp/*` pure functions | ✅ **Done** (178 assertions) |
 | T3 | API — application validation · webhook signature + `url_validation` + idempotency · checkout region gate | High |
 | T4 | E2E (Playwright) — apply → accept → pay → command centre → submit gate → reviewed → unlocked | Medium |
 | T5 | **Manual QA script** for the live class — Zoom cannot be meaningfully automated | High |
