@@ -91,30 +91,9 @@ export async function POST(request: Request) {
       );
     }
 
-    // Already enrolled? Then this is instalment 2 or 3, and the OFFER IS
-    // IRRELEVANT — it expired weeks ago by design, because a seat held by
-    // payment is not a seat held by a deadline. Checking offer liveness here
-    // unconditionally would make the later instalments impossible to pay.
-    const { data: existing } = await admin
-      .from("bootcamp_enrollments")
-      .select("id")
-      .eq("cohort_id", application.cohort_id)
-      .eq("student_id", application.student_id)
-      .maybeSingle();
-
-    if (!existing && !isOfferLive(application.offer_expires_at)) {
-      return NextResponse.json(
-        { error: "This offer has expired and the seat has gone back to the pool." },
-        { status: 409 },
-      );
-    }
-
-    const region: PriceRegion = regionForCountry(student.country);
-    const prices = BOOTCAMP_PRICING[region].plans;
-
-    // One payment, so there is nothing to schedule and nothing to count — but
-    // there IS a question of whether it already happened. Opening a second
-    // checkout for someone who has paid would take their money twice.
+    // Already paid? Then there is nothing to collect, and opening a second
+    // session would take someone's money twice. With a single payment this is
+    // also the "already enrolled" check — the two are the same fact now.
     const { count: paidCount } = await admin
       .from("bootcamp_payments")
       .select("id", { count: "exact", head: true })
@@ -123,6 +102,18 @@ export async function POST(request: Request) {
     if ((paidCount ?? 0) > 0) {
       return NextResponse.json({ error: "This is already paid." }, { status: 409 });
     }
+
+    // Unconditional: every payment is the first payment, so a lapsed offer means
+    // the seat is genuinely gone.
+    if (!isOfferLive(application.offer_expires_at)) {
+      return NextResponse.json(
+        { error: "This offer has expired and the seat has gone back to the pool." },
+        { status: 409 },
+      );
+    }
+
+    const region: PriceRegion = regionForCountry(student.country);
+    const prices = BOOTCAMP_PRICING[region].plans;
 
     const amountCents = dueOnAcceptanceCents(prices, plan);
 
@@ -155,7 +146,7 @@ export async function POST(request: Request) {
       // Stripe does not copy session metadata onto the PaymentIntent, and
       // payment_intent.payment_failed delivers the INTENT, not the session. The
       // failure handler reads applicationId off the intent — without this it
-      // finds nothing, and the suspension path is dead code that looks alive.
+      // finds nothing and a declined card goes unrecorded.
       payment_intent_data: {
         metadata: {
           applicationId: application.id,
