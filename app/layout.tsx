@@ -68,6 +68,15 @@ const ORGANIZATION_LD = {
   description:
     "AI education platform with two lanes: career tracks that train people for AI engineering roles through code and deployed projects, and no-code role tracks that teach professionals to use AI well in the job they already have. Work is graded by Nova, the platform's AI tutor.",
   areaServed: "Worldwide",
+  // Byline entity (AI-SEO): the founder is named and visible on the homepage
+  // (hero answer-block byline + founder note), so publishing the Person here
+  // stays within the "facts published on the site" rule above.
+  founder: {
+    "@type": "Person",
+    name: "Nikhil De Silva",
+    jobTitle: "Founder",
+    url: `${siteUrl}/about`,
+  },
   sameAs: [
     "https://www.linkedin.com/company/square-1-ai/",
     "https://x.com/square1ai",

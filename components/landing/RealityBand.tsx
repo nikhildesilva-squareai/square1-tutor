@@ -225,9 +225,11 @@ export function RealityBand() {
         </div>
         <h2 className="mt-4 text-center font-black tracking-tight text-slate-900 leading-[1.0] max-w-3xl mx-auto"
           style={{ fontSize: "clamp(26px, 4vw, 46px)", letterSpacing: "-0.03em" }}>
-          A degree used to be enough.{" "}
+          {/* Question-form H2 (AI-SEO): a real question an AI can lift a clean
+              answer from — the paragraph below is that answer. */}
+          Why isn&apos;t a degree{" "}
           <span style={{ background: BLUE_GRADIENT, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>
-            Not anymore.
+            enough anymore?
           </span>
         </h2>
         <p className="mt-5 text-center text-sm sm:text-base text-slate-600 leading-relaxed max-w-2xl mx-auto">

@@ -3,7 +3,9 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
 // Allowed redirect paths after auth callback
-const ALLOWED_REDIRECTS = ["/dashboard", "/courses", "/tutor", "/projects", "/progress", "/settings", "/notes", "/portfolio"];
+// /skill-check: the gate offers "Continue with Google" (2026-08-23) and must be
+// able to return the visitor to the check they were about to start.
+const ALLOWED_REDIRECTS = ["/dashboard", "/courses", "/tutor", "/projects", "/progress", "/settings", "/notes", "/portfolio", "/skill-check"];
 
 function sanitizeRedirect(next: string | null): string {
   // No explicit destination → the smart post-auth router: fresh accounts land
@@ -11,8 +13,10 @@ function sanitizeRedirect(next: string | null): string {
   if (!next) return "/api/auth/landing";
   // Must start with / and not contain // (prevents protocol-relative redirects like //evil.com)
   if (!next.startsWith("/") || next.startsWith("//") || next.includes("://")) return "/dashboard";
-  // Only allow known paths or paths starting with known prefixes
-  const isAllowed = ALLOWED_REDIRECTS.some(p => next === p || next.startsWith(p + "/"));
+  // Only allow known paths or paths starting with known prefixes. "?" counts
+  // like "/": an allowed path may carry its own query string (e.g.
+  // /skill-check?subject=…&w=done preserves the gate's deep-link params).
+  const isAllowed = ALLOWED_REDIRECTS.some(p => next === p || next.startsWith(p + "/") || next.startsWith(p + "?"));
   if (!isAllowed && !next.startsWith("/learn/") && !next.startsWith("/courses/") && !next.startsWith("/certificate/") && !next.startsWith("/business")) {
     return "/dashboard";
   }

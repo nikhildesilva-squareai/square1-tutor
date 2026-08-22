@@ -34,10 +34,18 @@ function comparisonsFor(region: RegionKey): Comparison[] {
 }
 
 // ─── Count-up hook (runs once the table scrolls into view) ────────────────────
+// Initialised to the TARGET, not 0: the server-rendered HTML (what a crawler
+// or answer engine quotes) must show the real numbers, not "$0+ bootcamp
+// tuition". The animation drops to 0 and counts up only once the table is
+// actually in view.
 function useCountUp(target: number | undefined, run: boolean, duration = 1100) {
-  const [v, setV] = useState(0);
+  const [v, setV] = useState(target ?? 0);
   useEffect(() => {
     if (!run || target === undefined) return;
+    if (typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      setV(target);
+      return;
+    }
     const start = performance.now();
     let raf = 0;
     function tick(now: number) {
@@ -61,14 +69,14 @@ function Row({ comp, visible, last }: { comp: Comparison; visible: boolean; last
   const newDisplay = comp.newNumber === undefined ? comp.newValue : `${comp.newPrefix ?? ""}${fmt(newC)}${comp.newSuffix ?? ""}`;
 
   return (
-    <div className="group grid grid-cols-[1.1fr_1fr_1fr] items-center">
+    <div role="row" className="group grid grid-cols-[1.1fr_1fr_1fr] items-center">
       {/* Metric */}
-      <div className="px-3 sm:px-6 py-4 sm:py-5 border-t border-slate-100 transition-colors group-hover:bg-slate-50/60">
+      <div role="rowheader" className="px-3 sm:px-6 py-4 sm:py-5 border-t border-slate-100 transition-colors group-hover:bg-slate-50/60">
         <p className="text-sm sm:text-base font-bold text-slate-900 leading-tight">{comp.category}</p>
       </div>
 
       {/* The Old Way */}
-      <div className="px-2 sm:px-6 py-4 sm:py-5 border-t border-slate-100 text-center transition-colors group-hover:bg-slate-50/60">
+      <div role="cell" className="px-2 sm:px-6 py-4 sm:py-5 border-t border-slate-100 text-center transition-colors group-hover:bg-slate-50/60">
         <span className="relative inline-block font-black tabular-nums text-slate-500 text-lg sm:text-2xl leading-none">
           {oldDisplay}
           <span className="absolute top-1/2 -left-0.5 -right-0.5 h-[2px] rounded-full -translate-y-1/2" style={{ background: "#EF4444" }} />
@@ -77,7 +85,7 @@ function Row({ comp, visible, last }: { comp: Comparison; visible: boolean; last
       </div>
 
       {/* Square 1 AI — highlighted winner column */}
-      <div className={`px-2 sm:px-6 py-4 sm:py-5 text-center bg-blue-50/70 border-x border-t border-blue-100 ${last ? "rounded-b-2xl" : ""}`}>
+      <div role="cell" className={`px-2 sm:px-6 py-4 sm:py-5 text-center bg-blue-50/70 border-x border-t border-blue-100 ${last ? "rounded-b-2xl" : ""}`}>
         <span className="inline-flex items-center gap-1.5 leading-none">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#0056CE" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className="shrink-0"><polyline points="20 6 9 17 4 12" /></svg>
           <span className="font-black tabular-nums text-lg sm:text-2xl"
@@ -119,9 +127,11 @@ export function ComparisonSection({ region = "global" }: { region?: RegionKey })
         <div className="text-center mb-10 sm:mb-12">
           <span className="text-[10px] sm:text-[11px] tracking-[0.35em] uppercase text-brand font-bold">Why Square 1</span>
           <h2 className="mt-3 font-black tracking-tight text-slate-900 leading-[1.02]" style={{ fontSize: "clamp(32px, 5vw, 56px)", letterSpacing: "-0.02em" }}>
-            The math is{" "}
+            {/* Question-form H2 (AI-SEO): the table below is the quotable
+                answer. */}
+            How does it compare to{" "}
             <span style={{ background: "linear-gradient(135deg, #0056CE 0%, #01224F 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>
-              simple.
+              the old way?
             </span>
           </h2>
           <p className="mt-4 text-sm sm:text-base text-slate-600 max-w-lg mx-auto">
@@ -129,15 +139,18 @@ export function ComparisonSection({ region = "global" }: { region?: RegionKey })
           </p>
         </div>
 
-        {/* Comparison table */}
-        <div className="rounded-3xl border border-slate-200 bg-white overflow-hidden" style={{ boxShadow: "0 24px 64px rgba(15,28,49,0.10)" }}>
+        {/* Comparison table — ARIA table semantics on the styled grid so
+            crawlers and assistive tech read it as the feature/price table it
+            is (AI-SEO element 12), without giving up the count-up styling. */}
+        <div role="table" aria-label="Square 1 AI compared with bootcamps and self-teaching"
+          className="rounded-3xl border border-slate-200 bg-white overflow-hidden" style={{ boxShadow: "0 24px 64px rgba(15,28,49,0.10)" }}>
           {/* Header */}
-          <div className="grid grid-cols-[1.1fr_1fr_1fr] items-end">
-            <div className="px-3 sm:px-6 pt-5 pb-3" />
-            <div className="px-2 sm:px-6 pt-5 pb-3 text-center">
+          <div role="row" className="grid grid-cols-[1.1fr_1fr_1fr] items-end">
+            <div role="columnheader" aria-label="Metric" className="px-3 sm:px-6 pt-5 pb-3" />
+            <div role="columnheader" className="px-2 sm:px-6 pt-5 pb-3 text-center">
               <p className="text-[10px] sm:text-[11px] tracking-[0.2em] uppercase text-slate-500 font-bold">The Old Way</p>
             </div>
-            <div className="px-2 sm:px-6 pt-4 pb-3 text-center bg-blue-50/70 border-x border-t border-blue-100 rounded-t-2xl">
+            <div role="columnheader" className="px-2 sm:px-6 pt-4 pb-3 text-center bg-blue-50/70 border-x border-t border-blue-100 rounded-t-2xl">
               <span className="inline-flex items-center gap-1 text-[9px] sm:text-[10px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full text-white" style={{ background: "#0056CE" }}>
                 Square 1 AI
               </span>

@@ -44,6 +44,12 @@ const nextConfig: NextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
+  images: {
+    // The product-tour captures render at quality 90 (they're UI screenshots —
+    // text smears at the default 75). Next requires every non-default quality
+    // to be declared here or it logs on every request.
+    qualities: [75, 90],
+  },
   async headers() {
     return [{ source: "/(.*)", headers: securityHeaders }];
   },

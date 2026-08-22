@@ -62,21 +62,24 @@ export function SocialProofSection({
           <span className="text-[10px] sm:text-[11px] tracking-[0.35em] uppercase text-slate-500 font-bold">
             Straight Talk
           </span>
+          {/* Question-form H2 (AI-SEO): the question a sceptical visitor is
+              already asking. The honest answer below IS the proof story. */}
           <h2 className="mt-4 font-black tracking-tight text-slate-900 leading-[0.95]"
             style={{ fontSize: "clamp(36px, 6vw, 80px)" }}>
-            No fake testimonials.{" "}
+            Where are the{" "}
             <span style={{
               background: "linear-gradient(135deg, #3388FF 0%, #0056CE 55%, #01224F 100%)",
               WebkitBackgroundClip: "text",
               WebkitTextFillColor: "transparent",
               backgroundClip: "text",
             }}>
-              Just the product.
+              testimonials?
             </span>
           </h2>
           <p className="mt-4 text-sm sm:text-base text-slate-600 max-w-lg mx-auto">
-            Square 1 is brand new. We could invent glowing reviews — plenty of
-            landing pages do. Here&apos;s our deal with you instead.
+            There aren&apos;t any — Square 1 is brand new, and we don&apos;t invent social
+            proof. What we can show you is checkable: the product itself, and our deal
+            with the people who join first.
           </p>
         </div>
 
@@ -215,6 +218,47 @@ export function SocialProofSection({
               <p className="text-[10px] sm:text-xs text-slate-500 mt-1.5 font-medium">{s.label}</p>
             </div>
           ))}
+        </div>
+
+        {/* Proof you can check yourself (AI-SEO proof block, honest version):
+            no invented case studies — instead, the three artifacts a sceptic
+            can open right now and verify independently. */}
+        <div className="mt-10 sm:mt-12 max-w-3xl mx-auto">
+          <p className="text-center text-[10px] tracking-[0.3em] uppercase text-slate-500 font-bold mb-4">
+            Check it yourself
+          </p>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            {[
+              {
+                href: "https://github.com/nikhildesilva-squareai?tab=repositories",
+                external: true,
+                title: "152 public starter repos",
+                desc: "Every project starter is a public GitHub template. Open the code before you sign up.",
+              },
+              {
+                href: "/verify",
+                external: false,
+                title: "Certificate verification",
+                desc: "Every certificate has a credential ID an employer can verify at square1ai.com/verify.",
+              },
+              {
+                href: "/research",
+                external: false,
+                title: "Cited research",
+                desc: "Every statistic on this page traces to a named, dated source. Read them all.",
+              },
+            ].map((l) => (
+              <a
+                key={l.title}
+                href={l.href}
+                {...(l.external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+                className="group rounded-2xl border border-slate-200 bg-white px-5 py-4 text-left transition-all hover:border-brand/30 hover:shadow-[0_8px_24px_rgba(0,86,206,0.08)] motion-safe:hover:-translate-y-0.5"
+              >
+                <p className="text-sm font-bold text-slate-900 group-hover:text-brand transition-colors">{l.title}</p>
+                <p className="mt-1 text-xs text-slate-500 leading-relaxed">{l.desc}</p>
+              </a>
+            ))}
+          </div>
         </div>
 
         {/* Bottom CTA */}

@@ -4,7 +4,6 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { fpTrack } from "@/lib/first-party";
 import {
   LayoutDashboard, BookOpen, Sparkles, FolderGit2, Trophy,
   ArrowRight, Lock, X, Play, Pause, type LucideIcon,
@@ -12,19 +11,9 @@ import {
 
 const BRAND = "#0056CE";
 
-// Founder walkthrough (Loom, 2:54). The interactive tour below stays the primary
-// surface — instant, crawlable, works without JS, never buffers — and the video
-// is the deeper cut for anyone who wants a human driving it.
-//
-// The runtime is stated up front and the contents are listed beside it: a
-// three-minute ask has to justify itself before the click, where a 40-second
-// one doesn't. "Watch our video" prices a commitment nobody can size.
-//
-// Loaded as a FACADE: the iframe only mounts once someone asks for it, so the
-// landing page pays nothing for it in LCP or bytes, and no third-party frame
-// (or its cookies) loads until the visitor takes an explicit action.
-const LOOM_ID = "26f163e2468b4f62a5def2c602e4a458";
-const LOOM_RUNTIME = "2:54";
+// The founder-walkthrough video (Loom facade + modal) was cut 2026-08-23 (user
+// call): the interactive tour is the only surface now, and the section's
+// interactivity budget went into explorable hotspots instead.
 
 export type TourData = {
   courseTitle: string;
@@ -62,21 +51,34 @@ type StepKey = "dashboard" | "lesson" | "nova" | "projects" | "outcome";
 // actual product" and have it be true. Re-capture is still queued; when the new
 // PNGs land they drop straight in here with no layout change.
 // ═══════════════════════════════════════════════════════════════════════════════
+/** One explorable point on a capture. Coordinates are IMAGE-space percentages
+ *  (measured off the real 3200×2000 PNGs), which — because the camera keeps
+ *  object-position and transform-origin on the same point — also equal the
+ *  point's FRAME-space position whenever the camera is focused on it. One
+ *  coordinate system for the camera, the pin, and the fake cursor. */
+type Spot = {
+  x: number;
+  y: number;
+  /** Zoom while this spot holds the camera. */
+  scale: number;
+  label: string;
+  /** Which side of the dot the label sits on, so it never covers the element
+   *  it names. */
+  place?: "right" | "left" | "top" | "bottom";
+};
+
 type Shot = {
   src: string;
   alt: string;
-  /** object-position + transform-origin, in %. The camera pushes INTO this point. */
-  x: number;
-  y: number;
-  /** Zoom once the camera has pushed in. */
-  scale: number;
   /** Opening framing: near 1 shows the WHOLE screen, so a visitor sees the app's
    *  navigation and layout — the "space" — before we push into the detail. */
   wide: number;
-  /** The control the cursor flies to and clicks. Doubles as the annotation pin:
-   *  one marker, named once, then actually used. `place` keeps the label off
-   *  the element it names. */
-  pin: { x: number; y: number; label: string; place?: "right" | "left" | "top" | "bottom" };
+  /** The explorable points. spots[0] is the step's STORY beat: it's where the
+   *  autoplay camera lands, what the label names, and what the cursor clicks.
+   *  The rest exist for the visitor — once they take over, every spot is a
+   *  tappable dot that drives the camera itself. Placed on real controls in
+   *  the captures, never on invented UI. */
+  spots: Spot[];
 };
 
 type Step = {
@@ -101,8 +103,13 @@ const STEPS: Step[] = [
       src: "/product/dashboard.png",
       alt:
         "The Square 1 student dashboard: a Continue Learning card for the Data Science track showing the current Pandas DataFrames lesson, with a circular progress ring at 49% complete beside it.",
-      x: 62, y: 27, scale: 1.34, wide: 1.02,
-      pin: { x: 17, y: 26, label: "Resume where you stopped", place: "bottom" },
+      wide: 1.02,
+      spots: [
+        { x: 31, y: 23.5, scale: 1.55, label: "Resume where you stopped", place: "bottom" },
+        { x: 81, y: 15.5, scale: 1.55, label: "Progress, always visible", place: "bottom" },
+        { x: 46, y: 56, scale: 1.55, label: "A 7-day streak, tracked", place: "right" },
+        { x: 81.5, y: 61, scale: 1.55, label: "Your next project, queued", place: "left" },
+      ],
     },
   },
   {
@@ -116,8 +123,12 @@ const STEPS: Step[] = [
       src: "/product/lesson.png",
       alt:
         "The Square 1 lesson player showing the Pandas DataFrames lesson: a numbered section header, an 'In short' takeaway strip summarising the section in one line, then the Why This Matters prose beneath it.",
-      x: 56, y: 25, scale: 1.45, wide: 1.02,
-      pin: { x: 13, y: 31, label: "The one line that matters", place: "top" },
+      wide: 1.02,
+      spots: [
+        { x: 58, y: 25, scale: 1.55, label: "The one line that matters", place: "bottom" },
+        { x: 42, y: 40, scale: 1.55, label: "Written to be read, not watched", place: "right" },
+        { x: 74, y: 7, scale: 1.55, label: "Nova, one tap away", place: "bottom" },
+      ],
     },
   },
   {
@@ -131,8 +142,12 @@ const STEPS: Step[] = [
       src: "/product/nova.png",
       alt:
         "A graded exercise in the Square 1 lesson player: the prompt asks the student to explain the difference between df.loc and df.iloc in Pandas, the student's written answer sits below it, and Nova's marking shows Correct 3 out of 3 with written feedback explaining what the answer demonstrated.",
-      x: 53, y: 44, scale: 1.72, wide: 1.02,
-      pin: { x: 18, y: 60, label: "Nova's mark, written live", place: "bottom" },
+      wide: 1.02,
+      spots: [
+        { x: 58, y: 51, scale: 1.65, label: "Nova's mark, written live", place: "bottom" },
+        { x: 57, y: 25.5, scale: 1.6, label: "A real exam-style prompt", place: "bottom" },
+        { x: 58, y: 37, scale: 1.6, label: "Your answer, actually read", place: "right" },
+      ],
     },
   },
   {
@@ -146,8 +161,12 @@ const STEPS: Step[] = [
       src: "/product/project.png",
       alt:
         "A Square 1 project brief: Automated EDA Profiler, a beginner Data Science project estimated at 8 hours, with a narrative client scenario and a Getting Started panel offering a GitHub starter template and a clone command.",
-      x: 70, y: 46, scale: 1.42, wide: 1.02,
-      pin: { x: 84, y: 66, label: "Clone your starter repo", place: "top" },
+      wide: 1.02,
+      spots: [
+        { x: 82, y: 59.5, scale: 1.55, label: "Clone your starter repo", place: "top" },
+        { x: 33, y: 42, scale: 1.55, label: "A story brief, not a tutorial", place: "right" },
+        { x: 84, y: 25, scale: 1.55, label: "Reviewed by Nova to 100%", place: "left" },
+      ],
     },
   },
   {
@@ -232,24 +251,28 @@ export function ProductTourClient({ data }: { data: TourData }) {
   // Camera + pointer state for the active panel. When the tour is paused, a
   // visitor took over, or motion is reduced, everything resolves to the final
   // frame (detail + label, no pointer) so a still tour is still complete.
-  const [videoOpen, setVideoOpen] = useState(false);
-  useEffect(() => {
-    if (!videoOpen) return;
-    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") setVideoOpen(false); };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [videoOpen]);
-
   const [phase, setPhase] = useState<"wide" | "focus">("focus");
   const [showPin, setShowPin] = useState(true);
   const [cursor, setCursor] = useState<"off" | "enter" | "arrived">("off");
   const [clicked, setClicked] = useState(false);
+
+  // Which hotspot holds the camera. spots[0] is the story beat; the visitor can
+  // hand the camera to any other spot by tapping its dot — that's the takeover
+  // moment, so autoplay yields exactly like a tab click.
+  const [spotIdx, setSpotIdx] = useState(0);
+  useEffect(() => { setSpotIdx(0); }, [step]);
+  const pickSpot = useCallback((i: number) => {
+    stopAutoplay();
+    setPhase("focus"); setShowPin(true); setCursor("off"); setClicked(false);
+    setSpotIdx(i);
+  }, [stopAutoplay]);
 
   useEffect(() => {
     if (!playing || reducedMotion) {
       setPhase("focus"); setShowPin(true); setCursor("off"); setClicked(false);
       return;
     }
+    setSpotIdx(0);
     setPhase("wide"); setShowPin(false); setCursor("off"); setClicked(false);
     const timers = [
       window.setTimeout(() => setPhase("focus"), WIDE_HOLD_MS),
@@ -262,6 +285,25 @@ export function ProductTourClient({ data }: { data: TourData }) {
     ];
     return () => timers.forEach(window.clearTimeout);
   }, [playing, activeIdx, reducedMotion]);
+
+  // Swipe on the stage moves between steps — the gesture a phone visitor will
+  // try unprompted. Horizontal-dominant only, so vertical page scroll (which
+  // the browser keeps, via touch-action: pan-y) is never fought over.
+  const swipeStart = useRef<{ x: number; y: number } | null>(null);
+  function onStagePointerDown(e: React.PointerEvent) {
+    swipeStart.current = { x: e.clientX, y: e.clientY };
+  }
+  function onStagePointerUp(e: React.PointerEvent) {
+    const s = swipeStart.current;
+    swipeStart.current = null;
+    if (!s) return;
+    const dx = e.clientX - s.x;
+    const dy = e.clientY - s.y;
+    if (Math.abs(dx) < 48 || Math.abs(dx) < Math.abs(dy) * 2) return;
+    stopAutoplay();
+    const dir = dx < 0 ? 1 : -1;
+    setStep(STEPS[(activeIdx + dir + STEPS.length) % STEPS.length].key);
+  }
 
   // Arrow keys move through the rail, as a real tablist should.
   function onRailKey(e: React.KeyboardEvent) {
@@ -325,8 +367,10 @@ export function ProductTourClient({ data }: { data: TourData }) {
             <span aria-hidden className="h-1.5 w-1.5 rounded-full" style={{ background: "#3388FF" }} />
             See how it works
           </span>
+          {/* Question-form H2 (AI-SEO): the five real screens below are the
+              answer. */}
           <h2 id="tour-heading" className="mt-5 text-3xl font-bold leading-[1.1] tracking-tight text-white sm:text-[2.5rem]">
-            The whole thing, before you sign up
+            What does it actually look like inside?
           </h2>
           <p className="mx-auto mt-4 text-base leading-relaxed" style={{ color: "rgba(255,255,255,0.7)" }}>
             Five screens from the {data.courseTitle} track — the lessons, the marking and
@@ -334,35 +378,6 @@ export function ProductTourClient({ data }: { data: TourData }) {
           </p>
 
         </header>
-
-        {/* The trigger states the runtime and what the runtime buys, so the click
-            is an informed one rather than a leap. Full container width, so its
-            edges meet the rail and the frame below rather than floating. */}
-        <button
-          onClick={() => { stopAutoplay(); setVideoOpen(true); fpTrack("cta_click", "tour:watch-walkthrough"); }}
-          className="group relative mt-9 flex w-full items-center gap-3.5 rounded-2xl border p-3 text-left transition-colors hover:border-white/30 sm:gap-4 sm:p-3.5"
-          style={{ borderColor: "rgba(255,255,255,0.16)", background: "rgba(255,255,255,0.06)" }}
-        >
-          <span
-            className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl transition-transform group-hover:scale-105 sm:h-14 sm:w-14"
-            style={{ background: "linear-gradient(135deg,#3388FF,#0056CE)", boxShadow: "0 10px 26px -12px rgba(51,136,255,0.9)" }}
-          >
-            <Play className="h-5 w-5 translate-x-[1px] text-white" fill="currentColor" aria-hidden />
-          </span>
-          <span className="min-w-0 flex-1">
-            <span className="block text-[14.5px] font-bold text-white">
-              Watch the founder walk the whole product
-            </span>
-            <span className="block text-[12.5px]" style={{ color: "rgba(255,255,255,0.62)" }}>
-              {LOOM_RUNTIME} · the dashboard, a lesson, Nova marking real work, and a project brief
-            </span>
-          </span>
-          <span className="hidden shrink-0 rounded-full border px-3 py-1 text-[11px] font-bold text-white/80 sm:block"
-                style={{ borderColor: "rgba(255,255,255,0.2)" }}>
-            {LOOM_RUNTIME}
-          </span>
-        </button>
-
 
         {/* ── Body: rail + stage ─────────────────────────────────────────────
             Two columns on desktop so the story sits BESIDE the screen instead
@@ -448,8 +463,14 @@ export function ProductTourClient({ data }: { data: TourData }) {
             )}
           </div>
 
-          {/* Stage */}
-          <div className="relative min-w-0">
+          {/* Stage. Swipe changes steps (mobile-first gesture); touch-action
+              pan-y leaves vertical page scroll to the browser. */}
+          <div
+            className="relative min-w-0"
+            style={{ touchAction: "pan-y" }}
+            onPointerDown={onStagePointerDown}
+            onPointerUp={onStagePointerUp}
+          >
             {/* Mobile blurb: the desktop rail carries it inline, so this only
                 renders where the chips can't. */}
             <p className="mb-3 text-sm leading-relaxed lg:hidden" style={{ color: "rgba(255,255,255,0.7)" }}>
@@ -463,11 +484,29 @@ export function ProductTourClient({ data }: { data: TourData }) {
               <div key={s.key} id={`tour-panel-${s.key}`} role="tabpanel" aria-label={s.label}
                    hidden={s.key !== step} className="relative">
                 <div key={s.key === step ? `in-${step}` : "idle"} className={s.key === step ? "tour-panel-in" : undefined}>
-                  <Frame url={s.url} caption={s.caption} real={Boolean(s.shot)}>
-                    {s.shot
-                      ? <FocusShot shot={s.shot} phase={phase} showPin={showPin} cursor={cursor} clicked={clicked} />
-                      : <OutcomePanel data={data} />}
-                  </Frame>
+                  <TiltBox disabled={reducedMotion}>
+                    <Frame
+                      url={s.url}
+                      caption={s.caption}
+                      real={Boolean(s.shot)}
+                      hint={s.shot && s.shot.spots.length > 1 && !playing ? `${s.shot.spots.length} hotspots — tap to explore` : undefined}
+                    >
+                      {s.shot
+                        ? (
+                          <FocusShot
+                            shot={s.shot}
+                            spotIdx={Math.min(spotIdx, s.shot.spots.length - 1)}
+                            onPickSpot={pickSpot}
+                            exploring={!playing}
+                            phase={phase}
+                            showPin={showPin}
+                            cursor={cursor}
+                            clicked={clicked}
+                          />
+                        )
+                        : <OutcomePanel data={data} />}
+                    </Frame>
+                  </TiltBox>
                 </div>
               </div>
             ))}
@@ -495,84 +534,6 @@ export function ProductTourClient({ data }: { data: TourData }) {
           </Link>
         </div>
       </div>
-
-      {/* Founder walkthrough. The iframe is created here and nowhere else, so it
-          is genuinely absent from the page until this point.
-
-          The player is not the end of the screen: someone who just watched the
-          whole product is at the highest intent they will reach on this page,
-          and the old build answered that moment with a close button. The action
-          now sits directly under the video, where the attention already is. */}
-      {videoOpen && (
-        <div
-          className="fixed inset-0 z-[95] flex items-center justify-center overflow-y-auto bg-[#00183A]/85 px-4 py-6 backdrop-blur-sm"
-          role="dialog" aria-modal="true" aria-label="Product walkthrough video"
-          onClick={() => setVideoOpen(false)}
-        >
-          <div
-            className="w-full"
-            style={{ maxWidth: "min(56rem, calc((88dvh - 11rem) * 16 / 9))" }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="mb-3 flex items-end justify-between gap-3">
-              <div className="min-w-0">
-                <p className="text-[15px] font-bold leading-tight text-white">
-                  The whole product, walked through
-                </p>
-                <p className="mt-0.5 text-[12.5px]" style={{ color: "rgba(255,255,255,0.6)" }}>
-                  {LOOM_RUNTIME} · recorded on the live platform, nothing staged
-                </p>
-              </div>
-              <button
-                onClick={() => setVideoOpen(false)}
-                aria-label="Close video"
-                className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border text-white/80 transition-colors hover:text-white"
-                style={{ borderColor: "rgba(255,255,255,0.25)" }}
-              >
-                <X className="h-4 w-4" />
-              </button>
-            </div>
-
-            <div className="relative w-full overflow-hidden rounded-2xl bg-black shadow-2xl"
-                 style={{ aspectRatio: "16 / 9" }}>
-              <iframe
-                src={`https://www.loom.com/embed/${LOOM_ID}?hideEmbedTopBar=true&hide_owner=true`}
-                title="Square 1 AI product walkthrough"
-                allow="autoplay; fullscreen; picture-in-picture"
-                allowFullScreen
-                className="absolute inset-0 h-full w-full"
-                style={{ border: 0 }}
-              />
-            </div>
-
-            {/* The close of the sale, at the moment of peak intent. */}
-            <div className="mt-4 flex flex-col items-center gap-3 sm:flex-row sm:justify-between">
-              <p className="text-[12.5px] leading-snug" style={{ color: "rgba(255,255,255,0.68)" }}>
-                Seen enough? Find your starting point — it takes three minutes.
-              </p>
-              <div className="flex w-full shrink-0 flex-col gap-2 sm:w-auto sm:flex-row">
-                <Link
-                  href="/skill-check"
-                  onClick={() => fpTrack("cta_click", "tour:video-skillcheck")}
-                  className="inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-white px-6 text-sm font-bold transition-transform hover:-translate-y-0.5"
-                  style={{ color: "#01224F" }}
-                >
-                  Take the free skill check
-                  <ArrowRight className="h-4 w-4" />
-                </Link>
-                <Link
-                  href={`/courses/${data.courseSlug}`}
-                  onClick={(e) => { fpTrack("cta_click", "tour:video-curriculum"); gateClick(e, `/courses/${data.courseSlug}`); }}
-                  className="inline-flex h-11 items-center justify-center rounded-xl border px-6 text-sm font-semibold text-white/90 transition-colors"
-                  style={{ borderColor: "rgba(255,255,255,0.22)" }}
-                >
-                  See the curriculum
-                </Link>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* Email gate — unchanged contract. */}
       {gateHref && (
@@ -624,8 +585,8 @@ export function ProductTourClient({ data }: { data: TourData }) {
    three traffic-light dots never do, and everything else gets out of the
    screenshot's way. The "Real screen" chip is the honesty claim made visible —
    this section's whole job is being checkable. */
-function Frame({ url, caption, real, children }: {
-  url: string; caption: string; real: boolean; children: React.ReactNode;
+function Frame({ url, caption, real, hint, children }: {
+  url: string; caption: string; real: boolean; hint?: string; children: React.ReactNode;
 }) {
   return (
     <figure className="relative m-0 overflow-hidden rounded-2xl bg-white"
@@ -651,10 +612,46 @@ function Frame({ url, caption, real, children }: {
 
       {children}
 
-      <figcaption className="border-t border-slate-100 px-4 py-2.5 text-[11px] leading-relaxed text-slate-400 sm:px-5">
-        {caption}
+      <figcaption className="flex items-baseline justify-between gap-3 border-t border-slate-100 px-4 py-2.5 text-[11px] leading-relaxed text-slate-400 sm:px-5">
+        <span className="min-w-0">{caption}</span>
+        {hint && (
+          <span className="shrink-0 whitespace-nowrap font-semibold" style={{ color: BRAND }}>
+            {hint}
+          </span>
+        )}
       </figcaption>
     </figure>
+  );
+}
+
+/* ── Cursor-follow tilt ─────────────────────────────────────────────────────
+   A degree or two of perspective tilt tracking the mouse — enough that the
+   frame answers the hand, never enough to read as an effect. Style is written
+   straight to the node (no state, no re-renders); touch pointers and
+   reduced-motion get nothing. */
+function TiltBox({ disabled, children }: { disabled: boolean; children: React.ReactNode }) {
+  const ref = useRef<HTMLDivElement>(null);
+  function onMove(e: React.PointerEvent) {
+    if (disabled || e.pointerType !== "mouse") return;
+    const el = ref.current;
+    if (!el) return;
+    const r = el.getBoundingClientRect();
+    const dx = (e.clientX - r.left) / r.width - 0.5;
+    const dy = (e.clientY - r.top) / r.height - 0.5;
+    el.style.transform = `perspective(1200px) rotateX(${(-dy * 2.2).toFixed(2)}deg) rotateY(${(dx * 2.2).toFixed(2)}deg)`;
+  }
+  function onLeave() {
+    if (ref.current) ref.current.style.transform = "";
+  }
+  return (
+    <div
+      ref={ref}
+      onPointerMove={onMove}
+      onPointerLeave={onLeave}
+      style={{ transition: "transform 220ms ease-out", willChange: "transform" }}
+    >
+      {children}
+    </div>
   );
 }
 
@@ -671,17 +668,36 @@ function pinLabelOffset(place: "right" | "left" | "top" | "bottom"): React.CSSPr
   }
 }
 
-function FocusShot({ shot, phase, showPin, cursor, clicked }: {
+/** Where an image point lands in the 16:9 frame given the current camera.
+ *  The captures are 16:10 in a 16:9 cover window, so the vertical axis carries
+ *  a 0.9 overflow factor; the focused spot itself always projects to its own
+ *  coordinates (that's the object-position/transform-origin pairing). */
+function project(p: Spot, origin: Spot, s: number) {
+  return {
+    x: s * (p.x - origin.x) + origin.x,
+    y: (s * (p.y - origin.y)) / 0.9 + origin.y,
+  };
+}
+
+function FocusShot({ shot, spotIdx, onPickSpot, exploring, phase, showPin, cursor, clicked }: {
   shot: Shot;
+  spotIdx: number;
+  onPickSpot: (i: number) => void;
+  /** True once autoplay has yielded (or never ran): every spot becomes a
+   *  tappable dot and the hint invites the visitor to drive the camera. */
+  exploring: boolean;
   phase: "wide" | "focus";
   showPin: boolean;
   cursor: "off" | "enter" | "arrived";
   clicked: boolean;
 }) {
+  const spot = shot.spots[spotIdx];
+  const scale = phase === "wide" ? shot.wide : spot.scale;
+
   // The pointer starts down-and-right of the target and glides onto it, the way
   // a hand actually moves to a button.
-  const cursorX = cursor === "arrived" ? shot.pin.x : shot.pin.x + 13;
-  const cursorY = cursor === "arrived" ? shot.pin.y : shot.pin.y + 22;
+  const cursorX = cursor === "arrived" ? spot.x : spot.x + 13;
+  const cursorY = cursor === "arrived" ? spot.y : spot.y + 22;
 
   return (
     <div className="relative aspect-[16/9] w-full overflow-hidden bg-white">
@@ -694,23 +710,25 @@ function FocusShot({ shot, phase, showPin, cursor, clicked }: {
         className="tour-shot select-none"
         style={{
           objectFit: "cover",
-          objectPosition: `${shot.x}% ${shot.y}%`,
+          objectPosition: `${spot.x}% ${spot.y}%`,
           // Wide establishing framing, then the push in. Same origin as the
-          // object-position, so the camera drives INTO the point.
-          transform: `scale(calc(var(--tour-zoom, 1) * ${phase === "wide" ? shot.wide : shot.scale}))`,
-          transformOrigin: `${shot.x}% ${shot.y}%`,
-          transition: `transform ${ZOOM_MS}ms cubic-bezier(.22,.61,.36,1)`,
+          // object-position, so the camera drives INTO the point — and pans
+          // between spots when the visitor picks a different dot.
+          transform: `scale(calc(var(--tour-zoom, 1) * ${scale}))`,
+          transformOrigin: `${spot.x}% ${spot.y}%`,
+          transition: `transform ${ZOOM_MS}ms cubic-bezier(.22,.61,.36,1), object-position ${ZOOM_MS}ms cubic-bezier(.22,.61,.36,1), transform-origin ${ZOOM_MS}ms cubic-bezier(.22,.61,.36,1)`,
         }}
         priority={false}
       />
 
-      {/* The control this step turns on: named, then clicked. Desktop only —
-          on a phone the label is wider than the thing it points at. */}
+      {/* The active spot: named, then (during autoplay) clicked. The floating
+          label is desktop-only — on a phone it's wider than what it points at,
+          so the label pill below the image carries it instead. */}
       <span
         aria-hidden
         className="pointer-events-none absolute z-10 hidden transition-opacity duration-300 sm:block"
         style={{
-          left: `${shot.pin.x}%`, top: `${shot.pin.y}%`,
+          left: `${spot.x}%`, top: `${spot.y}%`,
           transform: "translate(-50%,-50%)",
           opacity: showPin ? 1 : 0,
         }}
@@ -720,9 +738,49 @@ function FocusShot({ shot, phase, showPin, cursor, clicked }: {
           <span className="relative inline-flex h-3 w-3 rounded-full border-2 border-white" style={{ background: BRAND }} />
         </span>
         <span className="absolute whitespace-nowrap rounded-md px-2 py-1 text-[10.5px] font-bold text-white shadow-lg"
-              style={{ background: "rgba(1,34,79,0.92)", ...pinLabelOffset(shot.pin.place ?? "right") }}>
-          {shot.pin.label}
+              style={{ background: "rgba(1,34,79,0.92)", ...pinLabelOffset(spot.place ?? "right") }}>
+          {spot.label}
         </span>
+      </span>
+
+      {/* The other spots, once the visitor is driving: numbered dots that hand
+          the camera over on tap. Projected through the current camera so they
+          sit on the actual pixels they annotate, and hidden when the camera
+          pushes them out of frame. */}
+      {exploring && shot.spots.map((sp, i) => {
+        if (i === spotIdx) return null;
+        const pos = project(sp, spot, scale);
+        if (pos.x < 4 || pos.x > 96 || pos.y < 6 || pos.y > 94) return null;
+        return (
+          <button
+            key={`${sp.x}-${sp.y}`}
+            type="button"
+            aria-label={`Show: ${sp.label}`}
+            onClick={() => onPickSpot(i)}
+            className="absolute z-10 flex h-10 w-10 items-center justify-center"
+            style={{
+              left: `${pos.x}%`, top: `${pos.y}%`,
+              transform: "translate(-50%,-50%)",
+              transition: `left ${ZOOM_MS}ms cubic-bezier(.22,.61,.36,1), top ${ZOOM_MS}ms cubic-bezier(.22,.61,.36,1)`,
+            }}
+          >
+            <span
+              className="flex h-5 w-5 items-center justify-center rounded-full border-2 border-white text-[9px] font-black text-white shadow-md transition-transform hover:scale-125"
+              style={{ background: "rgba(1,34,79,0.85)" }}
+            >
+              {i + 1}
+            </span>
+          </button>
+        );
+      })}
+
+      {/* Mobile label pill for the active spot — the floating label above is
+          desktop-only. */}
+      <span
+        className="pointer-events-none absolute bottom-2 left-2 z-10 max-w-[85%] rounded-full px-2.5 py-1 text-[10px] font-bold text-white shadow-lg transition-opacity duration-300 sm:hidden"
+        style={{ background: "rgba(1,34,79,0.92)", opacity: showPin ? 1 : 0 }}
+      >
+        {spot.label}
       </span>
 
       {/* Simulated pointer. Decorative and inert: it never intercepts events,

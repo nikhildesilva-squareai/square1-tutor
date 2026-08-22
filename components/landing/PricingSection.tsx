@@ -12,7 +12,7 @@ import { PrimaryCta } from "@/components/ui/primary-cta";
 // ═══════════════════════════════════════════════════════════════════════════════
 
 const FREE_FEATURES = [
-  "3-minute skill check — no account",
+  "3-minute skill check — email or Google to start",
   "Full 20-question AI-graded assessment",
   "Personal skill report with gap map",
   "Lesson 1 of every course, free",
@@ -51,20 +51,23 @@ export function PricingSection({ region = "global" }: { region?: RegionKey }) {
           </span>
           <h2 className="mt-4 font-black tracking-tight text-slate-900 leading-[0.95]"
             style={{ fontSize: "clamp(30px, 5vw, 60px)" }}>
-            Start free.{" "}
+            {/* Question-form H2 (AI-SEO): "how much does it cost" is the exact
+                query a buyer types; the paragraph + cards below answer it with
+                the real regional numbers. */}
+            How much does{" "}
             <span style={{
               background: "linear-gradient(135deg, #3388FF 0%, #0056CE 55%, #01224F 100%)",
               WebkitBackgroundClip: "text",
               WebkitTextFillColor: "transparent",
               backgroundClip: "text",
             }}>
-              Lock your rate for life.
+              Square 1 AI cost?
             </span>
           </h2>
           <p className="mt-4 text-sm sm:text-base text-slate-600 max-w-lg mx-auto">
-            One membership, one price — both paths included: the career engineering tracks
-            and the no-code role tracks. No credit card anywhere below. Founding members keep
-            whatever they pay now; the price never goes up on you.
+            You start free — no credit card anywhere below. One membership, one price, both
+            paths included: the career engineering tracks and the no-code role tracks.
+            Founding members keep whatever they pay now; the price never goes up on you.
           </p>
 
           {/* No region switcher here on purpose. Pricing still adapts to the

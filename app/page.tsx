@@ -12,7 +12,10 @@ import { ProductivityGap } from "@/components/landing/ProductivityGap";
 import { SocialProofSection } from "@/components/landing/SocialProofSection";
 import { PricingSection } from "@/components/landing/PricingSection";
 import { BootcampBand } from "@/components/landing/BootcampBand";
-import { FaqJsonLd } from "@/components/landing/FAQSection";
+import { FAQSection } from "@/components/landing/FAQSection";
+import type { CourseDepth } from "@/components/landing/CourseGridSection";
+import { ComparisonSection } from "@/components/landing/ComparisonSection";
+import { JsonLd } from "@/components/seo/JsonLd";
 import { LaneMapSection } from "@/components/landing/LaneMapSection";
 import { ProductTour } from "@/components/landing/ProductTour";
 import { MobileStickyCta } from "@/components/landing/MobileStickyCta";
@@ -70,6 +73,45 @@ const FALLBACK_COURSES: CourseRow[] = [
   { id: "9",  slug: "ai-product-management",   title: "AI Product Management",  description: "Ship AI products — strategy, roadmapping, and go-to-market.",  icon: "📋", color: "#0EA5E9", total_lessons: 40, total_projects: 10, status: "active" },
 ];
 
+// ─── Course depth for the showcase (REAL syllabus, not marketing copy) ────────
+// The lane map's explorer used to show three hardcoded sample project names per
+// course. The actual depth — 8–12 modules and 10–12 authored project briefs per
+// career track — already lives in the DB, so fetch it and let the showcase
+// prove the depth instead of asserting it. Two indexed queries across all
+// landing courses; on any failure the explorer falls back to its static list.
+async function getCourseDepth(courses: CourseRow[]): Promise<Record<string, CourseDepth>> {
+  try {
+    const admin = createAdminClient();
+    const ids = courses.map((c) => c.id);
+    const idToSlug = new Map(courses.map((c) => [c.id, c.slug]));
+    const [mods, projs] = await Promise.all([
+      // order_index >= 1: Module 0 and the Foundations duplicate are optional
+      // on-ramps — the roadmap shows the core spine.
+      admin.from("modules").select("course_id,title,order_index")
+        .in("course_id", ids).gte("order_index", 1).order("order_index"),
+      admin.from("projects").select("course_id,title,difficulty,estimated_hours,order_index")
+        .in("course_id", ids).order("order_index"),
+    ]);
+    const bySlug: Record<string, CourseDepth> = {};
+    for (const c of courses) bySlug[c.slug] = { modules: [], projects: [] };
+    for (const m of mods.data ?? []) {
+      const s = idToSlug.get(m.course_id as string);
+      if (s) bySlug[s].modules.push({ title: m.title as string });
+    }
+    for (const p of projs.data ?? []) {
+      const s = idToSlug.get(p.course_id as string);
+      if (s) bySlug[s].projects.push({
+        title: p.title as string,
+        difficulty: (p.difficulty as string | null) ?? null,
+        hours: (p.estimated_hours as number | null) ?? null,
+      });
+    }
+    return bySlug;
+  } catch {
+    return {};
+  }
+}
+
 // How many of the 100 free early-access seats are still open. Null (→ hidden
 // in the UI) when the window is closed or the count can't be read — the
 // counter must never show a made-up number.
@@ -87,12 +129,34 @@ async function getFreeSeatsLeft(): Promise<{ left: number; cap: number } | null>
   }
 }
 
+// ─── Homepage metadata (AI-SEO) ───────────────────────────────────────────────
+// Title = the H1's question, so the query match starts in the tab title and
+// the SERP snippet. Description = the hero's 40-60 word answer block, cut to
+// meta length. `absolute` bypasses the "%s | Square 1 AI" template because the
+// brand is already in the string.
+export const metadata = {
+  title: { absolute: "How do you learn AI — and prove it? | Square 1 AI" },
+  description:
+    "Square 1 AI teaches AI by doing — code or no-code. Nova, our AI tutor, grades every exercise and project against real rubrics, and you graduate with 10+ deployed projects and a verified skill report an employer can check.",
+};
+
+// ─── Last-updated stamp (AI-SEO element 14) ───────────────────────────────────
+// A visible date + matching WebPage dateModified so answer engines treat the
+// page as live. Manually bumped: update it when the page's CONTENT meaningfully
+// changes (copy, pricing, sections) — not on every deploy, or the signal is
+// noise. Format is ISO for schema; the visible stamp renders from the same
+// constant so the two can never disagree.
+const PAGE_LAST_UPDATED = "2026-08-23";
+const PAGE_FIRST_PUBLISHED = "2026-07-06"; // landing redesign go-live
+
 // ─── PAGE ─────────────────────────────────────────────────────────────────────
 export default async function Home() {
   const [dbCourses, seats] = await Promise.all([getCourses(), getFreeSeatsLeft()]);
   // One pricing region per request — every price surface below reads it.
   const region = await getRegion();
   const courses = dbCourses.length > 0 ? dbCourses : FALLBACK_COURSES;
+  // Real modules + project briefs for the course explorer (depends on courses).
+  const depth = await getCourseDepth(courses);
 
   return (
     <main id="main" className="overflow-x-hidden">
@@ -121,7 +185,7 @@ export default async function Home() {
       <SectionWave />
 
       {/* ── 3. The lane map — every course fanned out from its lane ──────────── */}
-      <div data-s1-section="courses" id="curriculum" className="scroll-mt-16"><LaneMapSection courses={courses} /></div>
+      <div data-s1-section="courses" id="curriculum" className="scroll-mt-16"><LaneMapSection courses={courses} depth={depth} /></div>
 
       <SectionWave />
 
@@ -146,6 +210,12 @@ export default async function Home() {
 
       <SectionWave />
 
+      {/* ── 6b. Comparison table (AI-SEO element 12) — the numbers vs the
+             alternatives in a real table an answer engine can quote row-by-row.
+             Reinstated for the framework; placed directly before pricing so the
+             "$15,000 bootcamp vs founding rate" row primes the price reveal. ── */}
+      <div data-s1-section="comparison"><ComparisonSection region={region} /></div>
+
       {/* ── 7. Pricing — free start, founding rate locked for life ───────────── */}
       <div data-s1-section="pricing"><PricingSection region={region} /></div>
 
@@ -157,11 +227,31 @@ export default async function Home() {
 
       <SectionWave />
 
-      {/* FAQPage structured data only — the visible accordion was removed for
-          page length. See the warning on FaqJsonLd: Google wants this content
-          visible, and FAQ rich results are effectively gone for commercial
-          sites, so this is one line away from being deleted again. */}
-      <FaqJsonLd courseCount={courses.length} region={region} />
+      {/* ── 8. FAQ — VISIBLE again (AI-SEO element 8). Real questions as
+             headers, clean answers, native <details> so every word is in the
+             raw HTML. This also retires the schema-without-visible-content
+             risk FaqJsonLd carried, and un-breaks the footer's /#faq link.
+             The section emits its own FAQPage structured data from the same
+             source, so markup and visible content can never diverge. ────────── */}
+      <div data-s1-section="faq"><FAQSection courseCount={courses.length} region={region} /></div>
+
+      {/* WebPage entity for the homepage: binds the visible last-updated stamp
+          to machine-readable dateModified, and the page to the site-wide
+          Organization/WebSite nodes in layout.tsx. */}
+      <JsonLd
+        data={{
+          "@context": "https://schema.org",
+          "@type": "WebPage",
+          "@id": "https://www.square1ai.com/#webpage",
+          url: "https://www.square1ai.com/",
+          name: "How do you learn AI — and prove it? | Square 1 AI",
+          isPartOf: { "@id": "https://www.square1ai.com/#website" },
+          about: { "@id": "https://www.square1ai.com/#organization" },
+          datePublished: PAGE_FIRST_PUBLISHED,
+          dateModified: PAGE_LAST_UPDATED,
+          inLanguage: "en",
+        }}
+      />
 
       {/* ── About + Final CTA + Footer ────────────────────────────────────── */}
       <section data-s1-section="final-cta" className="relative overflow-hidden bg-white">
@@ -183,14 +273,16 @@ export default async function Home() {
           <div className="text-center max-w-3xl mx-auto">
             <h2 className="font-black tracking-tight text-slate-900 leading-[1.05] mb-6"
               style={{ fontSize: "clamp(32px, 5vw, 60px)", letterSpacing: "-0.03em" }}>
-              We&apos;re building the future of{" "}
+              {/* Question-form H2 (AI-SEO): the entity-defining question. The
+                  two paragraphs below are the liftable answer. */}
+              What is{" "}
               <span style={{
                 background: "linear-gradient(135deg, #3388FF 0%, #0056CE 55%, #01224F 100%)",
                 WebkitBackgroundClip: "text",
                 WebkitTextFillColor: "transparent",
                 backgroundClip: "text",
               }}>
-                technical education.
+                Square 1 AI?
               </span>
             </h2>
 
@@ -397,6 +489,14 @@ export default async function Home() {
             <div className="mt-12 pt-8 border-t border-white/[0.06] flex flex-col sm:flex-row items-center justify-between gap-4">
               <p className="text-xs text-slate-400">
                 © 2026 Square 1 Ai. All rights reserved.
+              </p>
+              {/* Visible last-updated stamp (AI-SEO element 14) — same constant
+                  as the WebPage dateModified above, so they can't drift. */}
+              <p className="text-xs text-slate-400">
+                Page last updated{" "}
+                <time dateTime={PAGE_LAST_UPDATED}>
+                  {new Date(`${PAGE_LAST_UPDATED}T00:00:00`).toLocaleDateString("en-AU", { day: "numeric", month: "long", year: "numeric" })}
+                </time>
               </p>
             </div>
           </div>

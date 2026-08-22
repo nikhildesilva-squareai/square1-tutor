@@ -20,6 +20,15 @@ export type Course = {
   status: string;
 };
 
+// Real syllabus data for the explorer, fetched server-side in app/page.tsx:
+// the course's core module spine (in order) and its authored project briefs.
+// Optional everywhere — when absent the explorer falls back to the static
+// sample lists below, so the modal never renders empty.
+export type CourseDepth = {
+  modules: { title: string }[];
+  projects: { title: string; difficulty: string | null; hours: number | null }[];
+};
+
 // ─── Career outcome + sample projects per course (by slug) ────────────────────
 type CourseMeta = {
   role:     string;
@@ -220,61 +229,208 @@ function DesktopCourseCard({
   );
 }
 
-// ─── Inline explorer modal — opens when a course card is clicked ──────────────
+// ─── Difficulty pill colors (matches the app's own difficulty language) ───────
+function difficultyStyle(d: string | null): { bg: string; fg: string } {
+  switch ((d ?? "").toLowerCase()) {
+    case "beginner":     return { bg: "rgba(16,185,129,0.10)", fg: "#059669" };
+    case "intermediate": return { bg: "rgba(245,158,11,0.12)", fg: "#B45309" };
+    case "advanced":     return { bg: "rgba(244,63,94,0.10)",  fg: "#BE123C" };
+    default:             return { bg: "#F1F5F9",               fg: "#64748B" };
+  }
+}
+
+// ─── Inline explorer modal — the course dossier ───────────────────────────────
 // Exported: LaneMapSection reuses it so a chip click anywhere opens the same
 // course detail + CTA experience.
-export function CourseExplorer({ course, isWork, onClose }: { course: Course; isWork: boolean; onClose: () => void }) {
+//
+// REBUILT 2026-08-23 (user call: "show the depth, get students excited"): the
+// old modal showed three hardcoded sample project names. This one renders the
+// course's REAL syllabus — the module spine in order and every authored
+// project brief with its difficulty and hours — passed down from the DB via
+// the `depth` prop. Nothing here is marketing copy: every line is a row a
+// student will actually meet inside the product. Falls back to the static
+// sample list only when the depth fetch failed.
+export function CourseExplorer({ course, isWork, depth, onClose }: {
+  course: Course; isWork: boolean; depth?: CourseDepth; onClose: () => void;
+}) {
   const meta = resolveMeta(course.slug, isWork);
   const dialogRef = useRef<HTMLDivElement>(null);
   useFocusTrap(true, onClose, dialogRef);
+
+  const accent = course.color || BRAND;
+  const modules = depth?.modules ?? [];
+  const projects = depth?.projects ?? [];
+  const hasDepth = modules.length > 0;
+  const buildHours = projects.reduce((a, p) => a + (p.hours ?? 0), 0);
+
+  const stats: { n: number; label: string }[] = [
+    { n: course.total_lessons, label: "lessons" },
+    ...(modules.length > 1 ? [{ n: modules.length, label: "modules" }] : []),
+    ...(course.total_projects > 1 ? [{ n: course.total_projects, label: "projects" }] : []),
+    ...(buildHours > 0 && course.total_projects > 1 ? [{ n: buildHours, label: "build hrs" }] : []),
+  ];
+
   return (
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
       <div className="absolute inset-0 bg-slate-900/50 backdrop-blur-sm" onClick={onClose} />
       <div ref={dialogRef} role="dialog" aria-modal="true" aria-label={course.title}
-        className="relative w-full sm:max-w-lg rounded-t-3xl sm:rounded-3xl bg-white shadow-2xl overflow-hidden animate-fade-in-up">
-        <div className="p-6 sm:p-7" style={{ background: `linear-gradient(135deg, ${BRAND}10, #fff)` }}>
-          <div className="flex items-start justify-between">
-            <div>
-              <span className="inline-flex w-11 h-11 rounded-xl items-center justify-center"
+        className="relative flex w-full max-h-[88dvh] flex-col sm:max-w-2xl rounded-t-3xl sm:rounded-3xl bg-white shadow-2xl overflow-hidden animate-fade-in-up">
+
+        {/* Header — stays pinned while the syllabus scrolls */}
+        <div className="shrink-0 p-5 sm:p-6 border-b border-slate-100"
+          style={{ background: `linear-gradient(135deg, ${accent}12, #fff 65%)` }}>
+          <div className="flex items-start justify-between gap-3">
+            <div className="flex items-start gap-3 min-w-0">
+              <span className="inline-flex w-11 h-11 rounded-xl items-center justify-center shrink-0"
                 style={{ background: `${course.color}15`, border: `1px solid ${course.color}30` }}>
                 <CourseIcon slug={course.slug} color={course.color} />
               </span>
-              <h3 className="mt-2 text-2xl font-black text-slate-900 leading-tight">{course.title}</h3>
-              <p className="text-sm font-semibold mt-1" style={{ color: BRAND }}>
-                {meta.role}{!isWork && <> · <span style={{ color: "#10B981" }}>{meta.topRight}</span></>}
-                {isWork && <> · <span className="text-slate-500">No code</span></>}
-              </p>
+              <div className="min-w-0">
+                <h3 className="text-xl sm:text-2xl font-black text-slate-900 leading-tight">{course.title}</h3>
+                <p className="text-[13px] font-semibold mt-0.5" style={{ color: BRAND }}>
+                  {meta.role}{!isWork && <> · <span style={{ color: "#10B981" }}>{meta.topRight}</span></>}
+                  {isWork && <> · <span className="text-slate-500">No code</span></>}
+                </p>
+              </div>
             </div>
-            <button onClick={onClose} className="w-8 h-8 rounded-lg hover:bg-black/5 flex items-center justify-center text-slate-500" aria-label="Close">
+            <button onClick={onClose} className="w-8 h-8 rounded-lg hover:bg-black/5 flex items-center justify-center text-slate-500 shrink-0" aria-label="Close">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
             </button>
           </div>
+
+          {/* The size of the thing, in numbers — all real counts */}
+          {stats.length > 0 && (
+            <div className="mt-4 flex items-stretch gap-2">
+              {stats.map((s) => (
+                <div key={s.label} className="flex-1 rounded-xl border border-slate-200/80 bg-white/70 px-2 py-2 text-center">
+                  <p className="text-lg sm:text-xl font-black leading-none tabular-nums text-slate-900">{s.n}</p>
+                  <p className="mt-1 text-[9px] sm:text-[10px] font-bold uppercase tracking-wide text-slate-500">{s.label}</p>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
 
-        <div className="p-6 sm:p-7 pt-5">
+        {/* Scrollable body — the actual syllabus */}
+        <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain p-5 sm:p-6">
           <p className="text-sm text-slate-600 leading-relaxed mb-5">{course.description}</p>
 
-          <p className="text-[10px] tracking-widest uppercase font-bold text-slate-500 mb-3">
-            {isWork ? "What you'll practise & build" : "Real projects you'll ship"}
-          </p>
-          <div className="space-y-2 mb-6">
-            {meta.items.map((p, i) => (
-              <div key={p} className="flex items-center gap-2.5 px-3 py-2 rounded-lg border bg-slate-50/60" style={{ borderColor: `${BRAND}15` }}>
-                <span className="text-[9px] font-mono font-bold tabular-nums" style={{ color: BRAND }}>{String(i + 1).padStart(2, "0")}</span>
-                <span className="text-sm font-semibold text-slate-700">{p}</span>
-              </div>
-            ))}
-            <p className="text-[11px] text-slate-500 pt-1">{course.total_lessons} lessons{course.total_projects > 0 ? ` · ${course.total_projects} projects` : ""}</p>
-          </div>
+          {hasDepth ? (
+            <>
+              {/* The road — every core module, in the order you'll meet it */}
+              <p className="text-[10px] tracking-widest uppercase font-bold text-slate-500 mb-3">
+                The road — every module, in order
+              </p>
+              <ol className="relative mb-6 space-y-0">
+                {modules.map((m, i) => (
+                  <li key={`${m.title}-${i}`} className="relative flex gap-3 pb-2.5 last:pb-0 motion-safe:animate-fade-in-up"
+                    style={{ animationDelay: `${Math.min(i * 45, 450)}ms` }}>
+                    {/* Spine: node + connector down to the next module */}
+                    <span className="flex flex-col items-center shrink-0" aria-hidden>
+                      <span className="flex h-6 w-6 items-center justify-center rounded-full text-[9px] font-black tabular-nums"
+                        style={{ background: `${accent}14`, color: accent, border: `1.5px solid ${accent}45` }}>
+                        {i + 1}
+                      </span>
+                      {i < modules.length - 1 && (
+                        <span className="w-px flex-1 min-h-2" style={{ background: `${accent}30` }} />
+                      )}
+                    </span>
+                    <span className="pt-1 text-[13px] font-semibold text-slate-700 leading-snug">{m.title}</span>
+                  </li>
+                ))}
+              </ol>
 
-          <div className="flex flex-col gap-2.5">
-            <PrimaryCta href={`/try/${course.slug}`}>Preview Lesson 1 — free</PrimaryCta>
-            <Link href={`/diagnostic?subject=${course.slug}`}
-              className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-bold text-sm border-2 transition-all hover:bg-slate-50"
-              style={{ borderColor: `${BRAND}25`, color: "#334155" }}>
-              {isWork ? "Check your skills — free" : "Get your free skill report"}
-            </Link>
-          </div>
+              {/* What you'll ship — the real briefs, not sample names */}
+              {projects.length > 0 && (
+                <>
+                  <p className="text-[10px] tracking-widest uppercase font-bold text-slate-500 mb-3">
+                    {isWork
+                      ? "The capstone you'll build"
+                      : `What you'll ship — all ${projects.length} real project briefs`}
+                  </p>
+                  <div className="mb-2 grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    {projects.map((p, i) => {
+                      const ds = difficultyStyle(p.difficulty);
+                      return (
+                        <div key={`${p.title}-${i}`}
+                          className="rounded-xl border border-slate-200 bg-slate-50/50 px-3 py-2.5 motion-safe:animate-fade-in-up"
+                          style={{ animationDelay: `${Math.min(200 + i * 40, 600)}ms` }}>
+                          <div className="flex items-start justify-between gap-2">
+                            <p className="text-[12.5px] font-bold text-slate-800 leading-snug">
+                              <span className="mr-1.5 font-mono text-[9px] font-bold tabular-nums" style={{ color: accent }}>
+                                {String(i + 1).padStart(2, "0")}
+                              </span>
+                              {p.title}
+                            </p>
+                          </div>
+                          <div className="mt-1.5 flex items-center gap-2">
+                            {p.difficulty && (
+                              <span className="rounded-full px-1.5 py-0.5 text-[9px] font-black uppercase tracking-wide"
+                                style={{ background: ds.bg, color: ds.fg }}>
+                                {p.difficulty}
+                              </span>
+                            )}
+                            {p.hours != null && p.hours > 0 && (
+                              <span className="text-[10px] font-semibold text-slate-500 tabular-nums">~{p.hours}h</span>
+                            )}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                  {!isWork && (
+                    <p className="mb-4 text-[11px] text-slate-500 leading-relaxed">
+                      Every brief ships with a public starter repo and a marking rubric — Nova
+                      grades what you push.
+                    </p>
+                  )}
+                </>
+              )}
+
+              {/* Work tracks: the practice, alongside the single capstone */}
+              {isWork && (
+                <>
+                  <p className="text-[10px] tracking-widest uppercase font-bold text-slate-500 mb-3">
+                    What you&apos;ll practise, graded by Nova
+                  </p>
+                  <div className="space-y-2 mb-5">
+                    {meta.items.map((p, i) => (
+                      <div key={p} className="flex items-center gap-2.5 px-3 py-2 rounded-lg border bg-slate-50/60" style={{ borderColor: `${BRAND}15` }}>
+                        <span className="text-[9px] font-mono font-bold tabular-nums" style={{ color: BRAND }}>{String(i + 1).padStart(2, "0")}</span>
+                        <span className="text-sm font-semibold text-slate-700">{p}</span>
+                      </div>
+                    ))}
+                  </div>
+                </>
+              )}
+            </>
+          ) : (
+            /* Depth fetch failed — the pre-2026-08-23 static sample list */
+            <>
+              <p className="text-[10px] tracking-widest uppercase font-bold text-slate-500 mb-3">
+                {isWork ? "What you'll practise & build" : "Real projects you'll ship"}
+              </p>
+              <div className="space-y-2 mb-6">
+                {meta.items.map((p, i) => (
+                  <div key={p} className="flex items-center gap-2.5 px-3 py-2 rounded-lg border bg-slate-50/60" style={{ borderColor: `${BRAND}15` }}>
+                    <span className="text-[9px] font-mono font-bold tabular-nums" style={{ color: BRAND }}>{String(i + 1).padStart(2, "0")}</span>
+                    <span className="text-sm font-semibold text-slate-700">{p}</span>
+                  </div>
+                ))}
+                <p className="text-[11px] text-slate-500 pt-1">{course.total_lessons} lessons{course.total_projects > 0 ? ` · ${course.total_projects} projects` : ""}</p>
+              </div>
+            </>
+          )}
+        </div>
+
+        {/* CTAs — pinned under the scroll, always reachable */}
+        <div className="shrink-0 flex flex-col gap-2.5 border-t border-slate-100 bg-white p-5 sm:p-6 pt-4">
+          <PrimaryCta href={`/try/${course.slug}`}>Preview Lesson 1 — free</PrimaryCta>
+          <Link href={`/diagnostic?subject=${course.slug}`}
+            className="inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-xl font-bold text-sm border-2 transition-all hover:bg-slate-50"
+            style={{ borderColor: `${BRAND}25`, color: "#334155" }}>
+            {isWork ? "Check your skills — free" : "Get your free skill report"}
+          </Link>
         </div>
       </div>
     </div>
