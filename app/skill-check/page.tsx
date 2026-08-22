@@ -16,7 +16,7 @@ import { SkillCheckClient } from "./SkillCheckClient";
 export const metadata: Metadata = {
   title: "Free 3-minute AI skill check — Square 1 AI",
   description:
-    "Answer a handful of quick questions and get an instant skill snapshot: your strengths, your gaps, and exactly what to learn next. Free, no account.",
+    "Answer a handful of quick questions and get an instant skill snapshot: your strengths, your gaps, and exactly what to learn next. Free — start with your email and country, or sign in with Google. No password, no credit card.",
   robots: { index: false }, // funnel entrance for warm traffic; the indexable versions live under /diagnostic
 };
 

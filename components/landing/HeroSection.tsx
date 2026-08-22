@@ -161,7 +161,7 @@ function PromptCheck() {
         </div>
 
         {!answered && (
-          <p className="text-center text-[11px] text-slate-400 mt-3.5">Tap the one you'd trust — no account.</p>
+          <p className="text-center text-[11px] text-slate-400 mt-3.5">Tap the one you&apos;d trust — no wrong answers.</p>
         )}
 
         {/* Reveal — Nova's breakdown of the strong prompt + curiosity gap */}
@@ -213,7 +213,7 @@ function PromptCheck() {
               <ArrowRight className="h-4 w-4" />
             </Link>
             <p className="text-center text-[11px] text-slate-400 mt-2.5">
-              ~3 minutes · no account · your track is the next question
+              ~3 minutes · email or Google sign-in · your track is the next question
             </p>
           </div>
         )}
@@ -336,19 +336,24 @@ export function HeroSection({
                 padding: background-clip text crops the final glyph's edge at
                 tight tracking on small screens ("hired." lost its right side —
                 audit R5). */}
+            {/* AI-SEO framework, element 1: the H1 is the question the buyer
+                would type, answered in the same line. The old three-beat promise
+                ("Learn AI. Build proof. Get hired.") survives as the answer
+                half, so the funnel voice is unchanged — the question half is
+                what an answer engine lifts as the query match. */}
             <h1 className="font-black leading-[1.02] tracking-tight text-slate-900 mb-5 hero-enter"
-              style={{ fontSize: "clamp(2.5rem, 5.4vw, 4.6rem)", animationDelay: "90ms" }}>
-              Learn AI. Build proof.{" "}
+              style={{ fontSize: "clamp(2.4rem, 5.2vw, 4.4rem)", animationDelay: "90ms" }}>
+              How do you learn AI — and prove it?{" "}
               <span className="animate-text-sheen" style={{ background: BLUE_GRADIENT, backgroundSize: "200% auto", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text", display: "inline-block", paddingRight: "0.06em", marginRight: "-0.06em" }}>
-                Get hired.
+                Build. Get graded. Get hired.
               </span>
             </h1>
 
-            {/* Subhead names the differentiator (Nova grades code AND prompts) and
-                the proof artifact (portfolio, not certificate) in one breath. */}
-            <p className="text-sm sm:text-lg text-slate-600 leading-relaxed mb-8 max-w-xl mx-auto lg:mx-0 hero-enter" style={{ animationDelay: "200ms" }}>
-              Learn by doing — code or no-code. Nova, our AI tutor, grades every rep against
-              real rubrics, and you graduate with a portfolio employers can run, not a certificate.
+            {/* Element 3 — subheadline: one line naming the outcome they walk
+                away with. */}
+            <p className="text-sm sm:text-lg text-slate-600 leading-relaxed mb-6 max-w-xl mx-auto lg:mx-0 hero-enter" style={{ animationDelay: "200ms" }}>
+              You finish with 10+ deployed projects, a verified skill report, and a
+              portfolio employers can run — not a certificate PDF.
             </p>
 
             <div className="flex flex-col sm:flex-row items-center lg:items-start gap-3 sm:gap-4 justify-center lg:justify-start hero-enter" style={{ animationDelay: "320ms" }}>
@@ -363,13 +368,38 @@ export function HeroSection({
                 <ArrowRight className="h-4 w-4" />
               </Link>
               <span className="text-xs text-slate-500 sm:max-w-[9rem] text-center sm:text-left leading-snug">
-                Free · no account to start · no credit card
+                Free · email or Google sign-in · no credit card
               </span>
             </div>
 
             {/* Seat counter deliberately NOT in the hero (user call): the first
                 screen stays pure promise + action. Scarcity lives in the sticky
                 bars + final CTA where it does the closing. */}
+
+            {/* Elements 5 + 2 — the answer block (a 40–60 word direct answer to
+                the H1's question, above the fold, quotable whole by an answer
+                engine) with a named byline so a real person stands behind the
+                page. Visually quiet on purpose: it's for crawlers and careful
+                readers; the CTA above stays the action. */}
+            <div className="mt-7 max-w-xl mx-auto lg:mx-0 text-left rounded-xl border border-slate-200/80 bg-slate-50/70 px-5 py-4 hero-enter" style={{ animationDelay: "380ms" }}>
+              <p className="text-[10px] tracking-[0.2em] uppercase text-slate-500 font-bold mb-1.5">The short answer</p>
+              <p className="text-[13px] text-slate-600 leading-relaxed">
+                Square 1 AI teaches AI by doing — code or no-code. Nova, our AI tutor,
+                grades every exercise and project against real rubrics, from your first
+                prompt to your final deployed build. You graduate with proof an employer
+                can open, run, and verify: 10+ live projects and a skill report.
+              </p>
+              <div className="mt-3 pt-3 border-t border-slate-200/80 flex items-center gap-2.5">
+                <span className="w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-black text-white shrink-0"
+                  style={{ background: BLUE_GRADIENT }} aria-hidden>
+                  ND
+                </span>
+                <p className="text-[11px] text-slate-500">
+                  <span className="font-bold text-slate-700">Nikhil De Silva</span>, Founder — Square 1 AI ·{" "}
+                  <Link href="/about" className="font-semibold text-brand hover:underline">About</Link>
+                </p>
+              </div>
+            </div>
 
             {/* Mini trust bar — DB-driven course count */}
             <div className="mt-6 flex items-center justify-center lg:justify-start gap-4 text-[10px] text-slate-500 uppercase tracking-widest font-semibold hero-enter" style={{ animationDelay: "440ms" }}>

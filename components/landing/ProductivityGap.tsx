@@ -75,9 +75,11 @@ export function ProductivityGap() {
           </span>
           <h2 id="gap-heading"
               className="mt-4 text-3xl font-black leading-[1.08] tracking-tight text-slate-900 sm:text-[2.5rem]">
-            Everyone was handed AI.
+            {/* Question-form H2 (AI-SEO): asked in the reader's words; the
+                cited findings below are the answer. */}
+            You were handed AI.
             <br className="hidden sm:block" />{" "}
-            <span className="text-brand">Almost nobody was taught it.</span>
+            <span className="text-brand">Did anyone teach you to use it?</span>
           </h2>
           <p className="mx-auto mt-4 text-base leading-relaxed text-slate-600">
             This is not a prediction about your career. It is what independent research
@@ -157,7 +159,7 @@ export function ProductivityGap() {
               <path d="M6 3l5 5-5 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
           </Link>
-          <p className="text-xs text-slate-500">3 minutes · no account to start</p>
+          <p className="text-xs text-slate-500">3 minutes · email or Google to start</p>
         </div>
       </div>
     </section>

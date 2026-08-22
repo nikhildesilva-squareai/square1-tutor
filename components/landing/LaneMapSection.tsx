@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { Code2, Briefcase } from "lucide-react";
 import { PrimaryCta } from "@/components/ui/primary-cta";
 import { WORK_LANE_SLUGS } from "@/lib/work-lanes";
-import { CourseExplorer, type Course } from "@/components/landing/CourseGridSection";
+import { CourseExplorer, type Course, type CourseDepth } from "@/components/landing/CourseGridSection";
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // "Two ways in" lane map — the course showcase straight after the hero.
@@ -103,7 +103,7 @@ function Chip({
   );
 }
 
-export function LaneMapSection({ courses }: { courses: Course[] }) {
+export function LaneMapSection({ courses, depth }: { courses: Course[]; depth?: Record<string, CourseDepth> }) {
   const career = courses.filter((c) => !WORK_LANE_SLUGS.has(c.slug));
   const work = courses.filter((c) => WORK_LANE_SLUGS.has(c.slug));
 
@@ -188,14 +188,16 @@ export function LaneMapSection({ courses }: { courses: Course[] }) {
           <h2 className="mt-3 font-black tracking-tight text-slate-900 leading-[1.0]"
             style={{ fontSize: "clamp(26px, 4.4vw, 52px)" }}>
             {/* Count the lanes actually drawn — the on-ramp is excluded above,
-                so courses.length would overstate by one. */}
-            {career.length + work.length} courses.{" "}
+                so courses.length would overstate by one. Question-form H2
+                (AI-SEO): the lane map below is the answer. */}
+            Which of the {career.length + work.length} courses{" "}
             <span style={{ background: BLUE_GRADIENT, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>
-              Pick your lane.
+              is for you?
             </span>
           </h2>
           <p className="mt-3 text-xs sm:text-base text-slate-600 max-w-xl mx-auto">
-            Every course graded by Nova. Tap any course to see what you&apos;ll build.
+            Every course graded by Nova. Tap any course to open its real syllabus —{" "}
+            <span className="font-semibold text-slate-700">every module, every project brief.</span>
           </p>
         </div>
 
@@ -301,7 +303,8 @@ export function LaneMapSection({ courses }: { courses: Course[] }) {
       </div>
 
       {selected && (
-        <CourseExplorer course={selected} isWork={WORK_LANE_SLUGS.has(selected.slug)} onClose={() => setSelected(null)} />
+        <CourseExplorer course={selected} isWork={WORK_LANE_SLUGS.has(selected.slug)}
+          depth={depth?.[selected.slug]} onClose={() => setSelected(null)} />
       )}
     </section>
   );
