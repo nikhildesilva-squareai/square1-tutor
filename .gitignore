@@ -46,3 +46,9 @@ next-env.d.ts
 # Generated course SQL - rebuild with scripts/generate-module0-programming.js
 content/programming-foundations/sql/
 .gstack/
+
+# Playwright E2E (browser end-to-end suite)
+/test-results/
+/playwright-report/
+/blob-report/
+/.e2e/

@@ -83,10 +83,23 @@ export async function loadEnrolmentContext(): Promise<EnrolmentContext | null> {
   if (!studentRow) return null;
   const studentId = (studentRow as { id: string }).id;
 
-  const { data: rows } = await supabase
+  // The FK is NAMED, and it has to be. bootcamp_enrollments points at
+  // bootcamp_cohorts twice — `cohort_id` and `deferred_to_cohort_id` (migration
+  // 021) — so the bare embed `cohort:bootcamp_cohorts(...)` is ambiguous and
+  // PostgREST refuses it outright with PGRST201, returning NO ROWS. Every
+  // enrolled student was therefore treated as having no enrolment and bounced to
+  // the public /bootcamp page from all four cockpit routes.
+  const { data: rows, error } = await supabase
     .from("bootcamp_enrollments")
-    .select("*, cohort:bootcamp_cohorts(*, bootcamp:bootcamps(*))")
+    .select(
+      "*, cohort:bootcamp_cohorts!bootcamp_enrollments_cohort_id_fkey(*, bootcamp:bootcamps(*))",
+    )
     .eq("student_id", studentId);
+
+  // A read error here is indistinguishable from "not enrolled" at the call site,
+  // and the call site's response to "not enrolled" is to redirect away. Log it,
+  // or the next schema-shaped failure is silent again.
+  if (error) console.error("[bootcamp/cockpit] enrolment load failed:", error);
 
   const enrolments = (rows ?? []) as unknown as (BootcampEnrollment & {
     cohort: (BootcampCohort & { bootcamp: Bootcamp | null }) | null;
