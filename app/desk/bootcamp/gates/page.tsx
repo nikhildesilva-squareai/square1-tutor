@@ -303,7 +303,12 @@ async function hydrate(
   const [{ data: enrolRows }, { data: gateRows }, { data: subRows }] = await Promise.all([
     admin
       .from("bootcamp_enrollments")
-      .select("id, student_id, student:students(name, email), cohort:bootcamp_cohorts(name)")
+      // Named FK: bootcamp_enrollments references bootcamp_cohorts twice
+      // (cohort_id and deferred_to_cohort_id), and the bare embed is rejected
+      // with PGRST201 — which here emptied the whole reviewer queue.
+      .select(
+        "id, student_id, student:students(name, email), cohort:bootcamp_cohorts!bootcamp_enrollments_cohort_id_fkey(name)",
+      )
       .in("id", enrolmentIds),
     // `requires` is NOT selected. The desk does not need the thresholds to make
     // a judgement, and the fewer places that touch the answer key the better.

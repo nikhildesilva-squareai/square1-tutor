@@ -63,7 +63,10 @@ export async function moduleLockedForStudent(
 
     const { data: enrolRows } = await admin
       .from("bootcamp_enrollments")
-      .select("id, cohort:bootcamp_cohorts(bootcamp_id)")
+      // Named FK: bootcamp_enrollments references bootcamp_cohorts twice
+      // (cohort_id and deferred_to_cohort_id), and the bare embed is rejected
+      // with PGRST201, which here silently unlocked every gated module.
+      .select("id, cohort:bootcamp_cohorts!bootcamp_enrollments_cohort_id_fkey(bootcamp_id)")
       .eq("student_id", studentId)
       .in("status", ["active", "suspended"]);
 
